@@ -1,0 +1,38 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+local.properties
+
+# Editor / operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+coverage/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Android / Gradle
+.gradle/
+build/
+**/build/
+*.apk
+*.aab
+
+# Local model/data artifacts (tracked only through an approved task)
+artifacts/
+checkpoints/
+

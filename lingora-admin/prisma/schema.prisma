@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  LEARNER
+  ADMIN
+}
+
+enum Cefr {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+enum ExerciseType {
+  MCQ
+  FILL_BLANK
+  REORDER
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ChatRole {
+  USER
+  AI
+}
+
+model Language {
+  code        String  @id @db.VarChar(8)
+  name        String
+  nativeName  String  @map("native_name")
+  isLearnable Boolean @default(false) @map("is_learnable")
+  isUiLocale  Boolean @default(false) @map("is_ui_locale")
+
+  uiProfiles             Profile[]                 @relation("ProfileUiLocale")
+  nativeProfiles         Profile[]                 @relation("ProfileNativeLanguage")
+  courses                Course[]
+  vocabularies           Vocabulary[]
+  courseTranslations     CourseTranslation[]       @relation("CourseTranslationLocale")
+  lessonTranslations     LessonTranslation[]       @relation("LessonTranslationLocale")
+  vocabularyTranslations VocabularyTranslation[]   @relation("VocabularyTranslationLocale")
+  scenarioTranslations   ChatScenarioTranslation[] @relation("ChatScenarioTranslationLocale")
+
+  @@map("languages")
+}
+
+model Profile {
+  id                         String    @id @db.Uuid
+  email                      String    @unique
+  displayName                String?   @map("display_name")
+  avatarUrl                  String?   @map("avatar_url")
+  role                       Role      @default(LEARNER)
+  uiLocale                   String    @default("vi") @map("ui_locale") @db.VarChar(8)
+  nativeLangCode             String    @default("vi") @map("native_lang_code") @db.VarChar(8)
+  dailyGoalMin               Int       @default(15) @map("daily_goal_min")
+  streakCount                Int       @default(0) @map("streak_count")
+  timezone                   String    @default("Asia/Ho_Chi_Minh")
+  lastQualifyingActivityDate DateTime? @map("last_qualifying_activity_date") @db.Date
+  createdAt                  DateTime  @default(now()) @map("created_at")
+
+  uiLanguage     Language       @relation("ProfileUiLocale", fields: [uiLocale], references: [code], onDelete: Restrict, onUpdate: Cascade)
+  nativeLanguage Language       @relation("ProfileNativeLanguage", fields: [nativeLangCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
+  progress       UserProgress[]
+  srsCards       UserVocabSrs[]
+  chatSessions   ChatSession[]
+
+  @@map("profiles")
+}
+
+model Course {
+  id           String   @id @default(uuid()) @db.Uuid
+  languageCode String   @map("language_code") @db.VarChar(8)
+  cefr         Cefr
+  orderIndex   Int      @map("order_index")
+  isPublished  Boolean  @default(false) @map("is_published")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  language     Language            @relation(fields: [languageCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
+  translations CourseTranslation[]
+  lessons      Lesson[]
+
+  @@index([languageCode, orderIndex])
+  @@map("courses")
+}
+
+model CourseTranslation {
+  courseId    String  @map("course_id") @db.Uuid
+  locale      String  @db.VarChar(8)
+  title       String
+  description String?
+
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  language Language @relation("CourseTranslationLocale", fields: [locale], references: [code], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([courseId, locale])
+  @@map("course_translations")
+}
+
+model Lesson {
+  id          String   @id @default(uuid()) @db.Uuid
+  courseId    String   @map("course_id") @db.Uuid
+  orderIndex  Int      @map("order_index")
+  isPublished Boolean  @default(false) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  course       Course              @relation(fields: [courseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  translations LessonTranslation[]
+  vocabulary   LessonVocabulary[]
+  exercises    Exercise[]
+  progress     UserProgress[]
+
+  @@unique([courseId, orderIndex])
+  @@map("lessons")
+}
+
+model LessonTranslation {
+  lessonId    String  @map("lesson_id") @db.Uuid
+  locale      String  @db.VarChar(8)
+  title       String
+  description String?
+
+  lesson   Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  language Language @relation("LessonTranslationLocale", fields: [locale], references: [code], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([lessonId, locale])
+  @@map("lesson_translations")
+}
+
+model Vocabulary {
+  id             String   @id @default(uuid()) @db.Uuid
+  languageCode   String   @map("language_code") @db.VarChar(8)
+  term           String
+  normalizedTerm String   @map("normalized_term")
+  phonetic       String?
+  audioUrl       String?  @map("audio_url")
+  cefr           Cefr?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  language     Language                @relation(fields: [languageCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
+  translations VocabularyTranslation[]
+  lessons      LessonVocabulary[]
+  srsCards     UserVocabSrs[]
+
+  @@unique([languageCode, normalizedTerm])
+  @@map("vocabularies")
+}
+
+model VocabularyTranslation {
+  vocabularyId String  @map("vocabulary_id") @db.Uuid
+  locale       String  @db.VarChar(8)
+  meaning      String
+  example      String?
+
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  language   Language   @relation("VocabularyTranslationLocale", fields: [locale], references: [code], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([vocabularyId, locale])
+  @@map("vocabulary_translations")
+}
+
+model LessonVocabulary {
+  lessonId     String @map("lesson_id") @db.Uuid
+  vocabularyId String @map("vocabulary_id") @db.Uuid
+  orderIndex   Int    @map("order_index")
+
+  lesson     Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([lessonId, vocabularyId])
+  @@unique([lessonId, orderIndex])
+  @@map("lesson_vocabulary")
+}
+
+model Exercise {
+  id         String       @id @default(uuid()) @db.Uuid
+  lessonId   String       @map("lesson_id") @db.Uuid
+  type       ExerciseType
+  payload    Json
+  orderIndex Int          @map("order_index")
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([lessonId, orderIndex])
+  @@map("exercises")
+}
+
+model UserProgress {
+  id          String         @id @default(uuid()) @db.Uuid
+  userId      String         @map("user_id") @db.Uuid
+  lessonId    String         @map("lesson_id") @db.Uuid
+  status      ProgressStatus @default(NOT_STARTED)
+  score       Int?
+  completedAt DateTime?      @map("completed_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  user   Profile @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  lesson Lesson  @relation(fields: [lessonId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([userId, lessonId])
+  @@map("user_progress")
+}
+
+model UserVocabSrs {
+  id                String    @id @default(uuid()) @db.Uuid
+  userId            String    @map("user_id") @db.Uuid
+  vocabularyId      String    @map("vocabulary_id") @db.Uuid
+  easeFactor        Float     @default(2.5) @map("ease_factor")
+  intervalDays      Float     @default(1) @map("interval_days")
+  recallProbability Float?    @map("recall_probability")
+  nextReviewAt      DateTime  @default(now()) @map("next_review_at")
+  lastReviewedAt    DateTime? @map("last_reviewed_at")
+  reviewCount       Int       @default(0) @map("review_count")
+  lapseCount        Int       @default(0) @map("lapse_count")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  user       Profile     @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  vocabulary Vocabulary  @relation(fields: [vocabularyId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  logs       ReviewLog[]
+
+  @@unique([userId, vocabularyId])
+  @@index([userId, nextReviewAt])
+  @@map("user_vocab_srs")
+}
+
+model ReviewLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  srsCardId    String   @map("srs_card_id") @db.Uuid
+  isCorrect    Boolean  @map("is_correct")
+  intervalDays Float    @map("interval_days")
+  reviewedAt   DateTime @default(now()) @map("reviewed_at")
+
+  srsCard UserVocabSrs @relation(fields: [srsCardId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([srsCardId, reviewedAt])
+  @@map("review_logs")
+}
+
+model ChatScenario {
+  id           String   @id @default(uuid()) @db.Uuid
+  code         String   @unique
+  isPublished  Boolean  @default(false) @map("is_published")
+  systemPrompt String   @map("system_prompt")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  translations ChatScenarioTranslation[]
+  sessions     ChatSession[]
+
+  @@map("chat_scenarios")
+}
+
+model ChatScenarioTranslation {
+  scenarioId  String  @map("scenario_id") @db.Uuid
+  uiLocale    String  @map("ui_locale") @db.VarChar(8)
+  title       String
+  description String?
+
+  scenario ChatScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  language Language     @relation("ChatScenarioTranslationLocale", fields: [uiLocale], references: [code], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([scenarioId, uiLocale])
+  @@map("chat_scenario_translations")
+}
+
+model ChatSession {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  scenarioId String    @map("scenario_id") @db.Uuid
+  startedAt  DateTime  @default(now()) @map("started_at")
+  endedAt    DateTime? @map("ended_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  user     Profile       @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  scenario ChatScenario  @relation(fields: [scenarioId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  messages ChatMessage[]
+
+  @@index([userId, updatedAt])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id             String   @id @default(uuid()) @db.Uuid
+  sessionId      String   @map("session_id") @db.Uuid
+  sequenceNumber Int      @map("sequence_number")
+  role           ChatRole
+  content        String
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([sessionId, sequenceNumber])
+  @@map("chat_messages")
+}
