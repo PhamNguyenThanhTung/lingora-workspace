@@ -7,7 +7,12 @@ This repository follows a gated development workflow. These rules apply to every
 Always read before planning or changing anything:
 
 1. `plans/current-task.md` — active task scope and status
-2. `docs/00-master-plan.md` sections 0.1–0.3 — assumptions, principles, priority order
+2. `docs/QUICK-REF.md` — project snapshot: stack, milestones, API, DB, storage, constraints
+
+Read `docs/00-master-plan.md` sections 0.1–0.3 only when the task involves:
+- planning a new milestone or changing a priority tier (P0/P1/P2)
+- verifying or referencing assumptions G1–G6 or principles §0.2
+- the 12-week roadmap (§0.4) or the final delivery checklist (§0.5)
 
 Read only when the task requires it:
 
