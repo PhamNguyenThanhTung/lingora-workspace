@@ -7,17 +7,18 @@
 
 ## Current state
 
-- Last completed task: `canonical-docs-full-scope-alignment` — DONE and archived to
-  `plans/archive/2026-08-15-canonical-docs-full-scope-alignment-DONE.md`. `docs/00`, `docs/02`,
-  `docs/04`, `docs/05` now match approved `ADR-006`; documentation only, no code. Evidence:
-  `DOCS-ALIGN-T-001` … `DOCS-ALIGN-T-008`, all PASS.
+- Last completed task: `m1.4-deterministic-seed` — DONE and archived to
+  `plans/archive/2026-08-15-m1.4-deterministic-seed-DONE.md`. Deterministic bootstrap dataset seeded
+  (2 courses including the draft sentinel, 7 lessons including two draft sentinels, 50 vocabularies,
+  15 exercises, 2 scenarios including the draft sentinel). Approved translation counts are exactly
+  `2/10/2`; anonymous/ADMIN visibility, direct learner mutation denial, learner SRS ownership, observed
+  `record_review` state mutation, non-owner atomic rejection, idempotency, and exact cleanup are verified.
+  Corrective evidence: `M1.4-FIX-T-001` through `M1.4-FIX-T-005` (`34/34 PASS`, `0 FAIL`).
 - Last approved scope decision: `ADR-004 Amendment — Full Scope Restoration` = `ADR-006`, APPROVED
   2026-08-15. Scope approved and documented; **feature code not yet authorized**.
-- Last commit: `46130d5` — docs: add quick project reference for agents *(all current workspace changes uncommitted)*
-- Milestone: M1.3 DONE. Requirements now carry `P1-FR-012`…`P1-FR-015` (grammar · word-level
-  listening · daily study goal · local reminder). Next: plan the first ADR-006 slice, then M2.
-- Public staging snapshot: `staging/lingora-workspace-public/` — verified, no `.git`, but now holds
-  pre-alignment copies of `docs/02`, `docs/04`, `docs/05`
+- Last commit: `86dc80a` — docs: align canonical docs with ADR-006 and update workflow state
+- Milestone: M1.4 DONE; Next: M1.5 (FastAPI Mock Runtime) or M1.6 / M2 planning.
+- Public staging snapshot: `staging/lingora-workspace-public/` — verified, synced.
 
 ---
 

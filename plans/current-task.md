@@ -1,6 +1,6 @@
 # Task
 
-canonical-docs-full-scope-alignment - Align docs/00, 02, 04, 05 With Approved ADR-006
+m1.4-deterministic-seed
 
 ## Status
 
@@ -8,237 +8,370 @@ DONE
 
 Allowed values: `DRAFT / REVIEW / APPROVED / IMPLEMENTING / TESTING / DONE / BLOCKED`
 
-## Parent Milestone
+## Plan Boundary
 
-Documentation / scope alignment. Prerequisite for the four ADR-006 implementation slices in
-weeks 5, 7, and 9. No product behavior, schema, migration, RLS, dependency, or source code change.
-
-## Immutable References
-
-- `ADR-006 — ADR-004 amendment: full assignment-scope restoration by absorption`, `logs/decision-log.md`
-- Approved amendment snapshot: `plans/approved/2026-08-15-adr-004-amendment-full-scope-APPROVED.md`
-- Evidence base: `plans/gap-analysis-de-bai-vs-master-plan.md`
-- Human decision 2026-08-15: full 12-week schedule, **no feature cuts** — the contingency-cut lists
-  in `docs/00` are not activated
-- Git baseline: commit `46130d5`
+This document is **PLAN ONLY**. It authorizes repository inspection and human review, not
+implementation. No product behavior is changed by this planning task. A separate explicit human
+approval must set this task to `APPROVED` before any implementation work begins.
 
 ## Objective
 
-`ADR-006` approved all four assignment-scope items (`GRAMMAR`, `dailyGoalMin` scheduling UI,
-local reminder `3a`, word-level listening `4a`). Four canonical documents currently state in writing
-that these items are **out of scope**. Until they are updated, any implementation makes the project
-self-contradict in the exact documents a reviewer greps first.
+Create a deterministic, reproducible bootstrap dataset for the approved M1.2/M1.3 schema. The
+dataset must make the following later work testable without inventing schema or authorization
+behavior:
 
-This task updates only the contradicting statements in `docs/00`, `docs/02`, `docs/04`, and `docs/05`
-so canonical documentation matches the approved scope. It adds no code and no new entity.
+- the published course -> lesson -> vocabulary -> exercise learning flow;
+- stable vocabulary identifiers for the M1.5 deterministic SRS mock;
+- published hotel roleplay scenario data for the M1.5 chat mock;
+- publication visibility and learner-ownership smoke checks around the existing M1.3 RLS/RPC
+  boundary.
 
-## Files Expected To Change
+M1.4 is a prerequisite for M1.5 and M1.6. It does not implement either milestone and does not
+implement M2, ADR-006 features, Admin UI, Android UI, or AI code.
 
-- `docs/00-master-plan.md` - remove `LISTENING` from the contingency-cut list
-- `docs/02-requirements.md` - replace four exclusion bullets; add four `P1-FR` rows
-- `docs/04-data-model.md` - replace three data-boundary bullets; update the legacy-block note
-- `docs/05-traceability-matrix.md` - replace four Scope Gap Review resolution rows
-- `plans/current-task.md` - lifecycle updates
-- `logs/test-log.md` - verification evidence after implementation
-- `logs/development-log.md` - completed-work record after implementation
-- `HANDOFF.md` - update only when the task reaches DONE or BLOCKED
+## Repository State And Sources
 
-## Explicitly Out Of Scope
+- Verified HEAD: `86dc80a213e008fcd2ca922c6c236b67f1eeb71e`.
+- At planning time, `git status --short --branch` shows only the existing modification to this
+  file; no unrelated parallel-session change is to be overwritten.
+- M1.3 migration/RLS/Storage/`record_review` evidence is recorded in `logs/test-log.md`, including
+  the final corrective run (`M1.3-T-008-HTTP-CORRECTIVE-RERUN`, `M1.3-T-001-TO-T-014-FINAL-AUDIT`).
+  The plan relies on those existing boundaries and does not reopen them.
+- Authoritative requirements: `docs/00-master-plan.md` §0.4 week 2 (1 course, 5 lessons, 50
+  words, 1 chat scenario), `docs/02-requirements.md`, `docs/03-api-contract.md`,
+  `docs/04-data-model.md`, and `docs/05-traceability-matrix.md`.
+- M1.4/M1.5/M1.6 sequencing is also recorded in `plans/srs-integration-plan.md` and
+  `docs/05-traceability-matrix.md`.
+- `docs/01-architecture.md` names a Prisma seed entry but the current `lingora-admin` package has
+  no seed file or seed command. The implementation choice below must resolve this without adding a
+  dependency unless separately approved.
 
-- Editing `lingora-admin/prisma/schema.prisma`
-- Creating the `ALTER TYPE "ExerciseType" ADD VALUE` migration
-- Adding the `androidx.work:work-runtime` dependency
-- Any RLS, policy, grant, RPC, Storage, or database change
-- Any file under `lingora-android/`, `lingora-ai/`, or `lingora-admin/src/`
-- Freezing the `GRAMMAR` or `LISTENING` payload shape - deferred to the implementation task and its
-  acceptance tests per `ADR-006` / §12.4
-- Introducing any new entity, table, or column - `ADR-006` adds zero
-- Restoring `MATCHING` or `WRITING`; they stay superseded
-- Touching `docs/01-architecture.md` or `docs/03-api-contract.md` - no contradiction found there
-- Reactivating any contingency-cut list in `docs/00`
-- Modifying the parallel session's files: `AGENTS.md`, `logs/development-log.md` prior entries,
-  `logs/test-log.md` prior entries, `HANDOFF.md` prior content, `plans/archive/*`, `staging/*`
-- Any commit, tag, branch, or push
+## Files Expected To Change After Approval
 
-## Exact Edits — `docs/00-master-plan.md`
+Only these files may be changed by the later implementation task. This planning task changes only
+`plans/current-task.md`.
 
-**E-00-1 · line 107.** The contingency-cut list ranks `LISTENING` as the 4th feature to drop if the
-project falls behind. `ADR-006` makes word-level listening (`4a`) required scope, so the two conflict.
+- `lingora-admin/prisma/seed.js` — new deterministic content seed, using the existing
+  `@prisma/client` and Node standard library only.
+- `lingora-admin/prisma/m1_4_seed_test.js` — new read-only/isolated verification harness; it must
+  never run automatically as part of a normal seed.
+- `lingora-admin/package.json` — add the Prisma seed command configuration and a named M1.4 test
+  script only; no dependency change is authorized by this plan.
+- `plans/current-task.md` — lifecycle updates after approval/implementation/testing.
+- `logs/test-log.md` — mandatory observed evidence after implementation.
+- `logs/development-log.md` — completed-work and problem/solution record after implementation.
+- `HANDOFF.md` — only when this task reaches `DONE` or `BLOCKED`.
 
-- Current: `4. Bài tập `LISTENING`, `MATCHING` (giữ MCQ + Fill-blank)`
-- New: keep `MATCHING` in the cut list, remove `LISTENING`, and note that `LISTENING` is required
-  scope under `ADR-006` and is not eligible for cutting.
+Explicitly forbidden for M1.4: `lingora-admin/prisma/schema.prisma`, every migration, RLS policy,
+grant, trigger, RPC, Storage configuration, Android source, AI source, Admin UI/source, API
+contract, canonical requirements, dependency lockfile, and database cleanup outside the isolated
+test fixture described below.
 
-No other line in `docs/00` is touched. The contingency lists at `docs/00:81-82` and `docs/00:103`
-remain in the document as conditional plans; they are **not** activated and their `if` wording stays.
+## Implementation Prerequisites And Order
 
-## Exact Edits — `docs/02-requirements.md`
+The implementation must stop and return to `REVIEW` if any prerequisite fails.
 
-**E-02-1 · line 218 (Grammar exclusion).** Currently: *"Grammar curriculum is not part of the current
-Project 1 scope… does not own grammar lessons, grammar progress, or a separate Grammar schema."*
-Replace with wording that admits `GRAMMAR` as an `ExerciseType` value while keeping every structural
-exclusion intact: no `GrammarLesson`, no `UserGrammarProgress`, no separate Grammar schema, progress
-still lesson-level `UserProgress`. The optional NLP-owned P2 `grammatical_acceptability_score` stays
-unchanged and API-only.
+1. Verify the applied migration set is current and that `schema.prisma` matches the approved
+   baseline. Do not repair drift in this task.
+2. Verify the target database/environment is explicitly identified as local/dev or an approved
+   isolated validation database. Production or an unclassified shared database is a hard stop.
+3. Verify the seed namespace manifest does not already contain rows with conflicting values. If a
+   fixed ID exists with a non-seed payload, abort rather than overwrite it.
+4. Run the content seed in a single Prisma transaction, in FK order: languages; published/draft
+   courses; translations; lessons; lesson translations; vocabularies; vocabulary translations;
+   lesson-vocabulary junctions; exercises; chat scenarios; scenario translations.
+5. Verify row counts, stable identifiers, publication state, parent relationships and payload
+   checks before reporting success.
+6. Run the seed a second time and compare the manifest/fingerprint and counts. No learner-owned
+   row may change.
+7. Run the isolated RLS/SRS verification harness. Cleanup is allowed only for IDs created by that
+   harness and only after a pre-cleanup exact-target inventory succeeds.
 
-**E-02-2 · line 219 (Listening exclusion).** Currently vocabulary audio *"is not a scored `LISTENING`
-exercise… remains deferred/P2"*. Replace with: word-level scored `LISTENING` is approved per
-`ADR-006` option `4a`; audio reuses the existing approved `vocabulary/{vocabularyId}/{filename}`
-Storage path; sentence-level listening audio (option `4b`) remains **rejected** and would require a
-SEC-D8 amendment.
+## Deterministic Identity Strategy
 
-**E-02-3 · line 221 (Notification/Reminder exclusion).** Currently *"Notification/Reminder remains
-deferred with no canonical priority."* Replace with: an Android-local reminder is approved per
-`ADR-006` option `3a`, derived from `dailyGoalMin` and `lastQualifyingActivityDate`, with reminder
-time stored client-side. Keep explicit: **no** backend delivery, **no** device token, **no** FCM,
-**no** notification-preference or reminder-schedule entity. State the two honest limitations -
-per-device setting lost on reinstall, and no exact-time guarantee under doze/OEM battery restrictions.
+Use UUIDv5-style SHA-1 names derived from a fixed project namespace; do not call random UUID
+generation for seed rows and do not add a UUID library. The implementation must use exactly:
 
-**E-02-4 · line 216 (Exercise scope).** Currently *"MCQ and FILL_BLANK remain Must. `REORDER` is the
-approved third exercise."* Extend the approved set to five: `MCQ`, `FILL_BLANK`, `REORDER`,
-`GRAMMAR`, `LISTENING`. The REORDER invariant sentence is preserved verbatim. `MATCHING` and
-`WRITING` remain superseded.
+- namespace: `2b8e3b9b-3c04-5b7b-8f67-0d1f6f3d9e4a`;
+- name encoding: lowercase UTF-8 string `lingora:m1.4:<entity>:<stable-key>`;
+- UUID variant/version bits set according to UUIDv5;
+- stable keys are ASCII, lower-case, and immutable once published.
 
-**E-02-5 · `P1-FR-003` line 229.** Extend the requirement to cover `GRAMMAR` and `LISTENING`
-submissions alongside the existing three types, keeping the existing acceptance criteria and the
-"Quiz label implies no Attempt persistence" clause intact.
+Required stable-key families:
 
-**E-02-6 · new requirement rows.** Append four Must rows after `P1-FR-011`, continuing the existing
-ID sequence without renumbering anything:
+`language:vi`, `language:en`, `course:english-a1`, `course:visibility-draft`,
+`lesson:english-a1:01` through `lesson:english-a1:05`, `lesson:english-a1:draft`,
+`lesson:visibility-draft:01`, `vocab:english-a1:<lesson-01..05>:<01..10>`,
+`exercise:english-a1:<lesson-01..05>:<mcq|fill_blank|reorder>`, and
+`scenario:hotel-booking` / `scenario:visibility-draft`.
 
-| New ID | Requirement | Acceptance criteria (summary) |
-|---|---|---|
-| `P1-FR-012` | Learner can complete `GRAMMAR` exercises within an existing lesson | Payload validates; correct/incorrect shown with a rule explanation; progress updates once per submission; no separate grammar entity or grammar-progress record is created |
-| `P1-FR-013` | Learner can complete word-level `LISTENING` exercises | Audio for the referenced vocabulary plays; answer graded; unavailable audio yields a recoverable error state, not a crash; payload references `vocabularyId` and never a free-form URL |
-| `P1-FR-014` | Learner can view and set a daily study goal | `dailyGoalMin` is readable and writable from the profile screen; a negative value is rejected by existing server validation; the value is scoped to the authenticated learner |
-| `P1-FR-015` | Learner can enable a local daily study reminder | Reminder fires within the chosen window when the day has no qualifying activity; `POST_NOTIFICATIONS` denial is handled without a crash; no server-side delivery, device token, or reminder entity exists |
+The harness must print the key-to-UUID manifest (IDs only, never secrets) and compare it across
+runs. The same manifest is the only permitted cleanup target for content fixtures.
 
-`P1-FR-014` acceptance criteria must state that no schema, grant, or policy change is required
-because the M1.3 write path already exists (`202608140002/migration.sql:316`, `:430`, `:36-38`).
-`P1-FR-015` acceptance criteria must state "reminds within the chosen window", never an exact time.
+## Exact Persistent Seed State
 
-## Exact Edits — `docs/04-data-model.md`
+All timestamps use the fixed UTC seed epoch `2026-01-01T00:00:00.000Z`; the seed must pass
+explicit `createdAt`/`updatedAt` values rather than using wall-clock defaults. No audio files are
+created and `Vocabulary.audioUrl` remains `NULL`.
 
-**E-04-1 · line 433 (blocked-entity list).** Currently blocks, among others, *"Grammar curriculum,
-Grammar progress, … notification preference, device-token, or reminder-schedule entity"*. The
-entity-level block must **stay** — `ADR-006` adds zero entities. Rewrite so it is explicit that
-`GRAMMAR` and `LISTENING` are enum values on the existing `Exercise` table, not entities, and that
-the reminder is client-local, so every listed entity remains unapproved. Search/favorite,
-pronunciation-score, separate mastery, standalone flashcard, Quiz, and QuizAttempt stay blocked
-unchanged.
+### Languages
 
-**E-04-2 · line 434 (audioUrl clause).** Currently: *"`Vocabulary.audioUrl` … does not imply a
-scored `LISTENING` exercise or add `LISTENING` to `ExerciseType`."* Replace with: `LISTENING` is
-added to `ExerciseType` by `ADR-006` option `4a`; a `LISTENING` payload references `vocabularyId` so
-that read authorization stays with the existing `lingora_vocabulary_audio_select` policy; no new
-Storage path, bucket, or policy is introduced.
+Exactly two rows:
 
-**E-04-3 · line 436 (`nextReviewAt`).** Currently: *"It is not a notification/reminder delivery record
-and does not authorize notification schema."* Keep both statements — they remain true under `3a` —
-and add that the approved reminder reads `dailyGoalMin` and `lastQualifyingActivityDate` on-device
-and still authorizes no notification schema.
+| Code | `isLearnable` | `isUiLocale` | Purpose |
+|---|---:|---:|---|
+| `vi` | `false` | `true` | Required Auth/Profile default and UI fallback |
+| `en` | `true` | `true` | Initial learned language and UI locale |
 
-**E-04-4 · line 437 (Grammar outside data model).** Replace with: grammar content is an `Exercise`
-row with `type = 'GRAMMAR'` and a JSONB payload; no grammar table or grammar-progress column exists;
-the NLP P2 `grammatical_acceptability_score` remains API-only and unpersisted.
+Do not seed `ja`; it remains P2. Do not seed Auth users or Profiles. The M1.3 signup trigger must
+remain the owner of Profile creation.
 
-**E-04-5 · line 16 (legacy-block note).** Currently: *"The canonical exercise set is only `MCQ`,
-`FILL_BLANK`, and `REORDER`. Vocabulary audio playback remains part of Project 1, but it does not
-restore a scored `LISTENING` exercise type."* Update the canonical set to the five approved values
-and state that `LISTENING` is restored at word level by `ADR-006`, while `MATCHING` and `WRITING`
-remain superseded and the legacy sentence-level `LISTENING` example at `docs/04:347` stays superseded
-(that is option `4b`, rejected).
+### Courses and lessons
 
-**Not edited:** the legacy `schema.prisma` block at `docs/04:31` and the legacy payload examples at
-`docs/04:343-349`. They are explicitly marked preserved legacy source; the note at line 16 is the
-approved mechanism for correcting them.
+Seed two courses:
 
-## Exact Edits — `docs/05-traceability-matrix.md`
+1. `english-a1`: English/A1, order `1`, published. It has `vi` and `en` translations.
+2. `visibility-draft`: English/A1, order `900001`, draft, with no required translation. This is
+   a non-user-visible RLS sentinel, not a second product curriculum.
 
-Update four rows in the `Scope Gap Review approved resolutions` table (lines 65-69). Each row keeps
-its `Concern` cell and gets a rewritten `Canonical resolution` and `Traceability effect`:
+Under the published course, seed five published lessons at order `1..5`, each with both `vi` and
+`en` translations. Also seed one draft lesson `english-a1:draft` at order `900001` under the
+published course with no exercise/vocabulary requirement. Under the draft course, seed one draft
+lesson `visibility-draft:01` at order `1`. These two draft sentinels allow course-level and
+lesson-level visibility checks without changing publication rules.
 
-| Row | New resolution | New traceability effect |
-|---|---|---|
-| `Grammar` (line 65) | `GRAMMAR` is an approved `ExerciseType` per `ADR-006`; no P1 grammar curriculum, schema, or progress entity | Maps to new `P1-FR-012`; `NLP-FR-005` unchanged |
-| `Listening` (line 66) | Word-level scored `LISTENING` approved per `ADR-006` option `4a`; sentence-level `4b` rejected | Maps to new `P1-FR-013`; legacy sentence-level examples stay superseded |
-| `Notification/Reminder` (line 69) | Android-local reminder approved per option `3a`; no backend delivery, token, or entity | Maps to new `P1-FR-015`; no API or data mapping created |
-| `SRS` (line 68) | Add that the daily study goal (`dailyGoalMin`) is now a mapped requirement | Maps to new `P1-FR-014`; `record_review` scope unchanged |
+Lesson themes are fixed and must remain stable: `greetings`, `introductions`, `daily-routine`,
+`food-and-drink`, and `travel-basics`. Translation text may be concise but must be non-empty for
+both locales on every published course/lesson.
 
-The `Vocabulary` and `Quiz` rows are **not** edited — `ADR-006` changes neither.
+Expected course/lesson state after a clean seed: `2 courses` (`1 published`, `1 draft`) and
+`7 lessons` (`5 published`, `2 draft`).
 
-**E-05-5 · closing sentence (line 71).** Currently: *"These resolutions clarify existing scope and do
-not authorize application implementation or change the API contract/database schema."* Must be
-amended, because it is now false in one respect: `ADR-006` **does** authorize a schema change (the
-enum migration). New wording: the resolutions do not by themselves authorize implementation; the
-`ExerciseType` enum addition is authorized by `ADR-006` and requires its own approved task; the API
-contract is unchanged.
+### Vocabulary and junctions
 
-**E-05-6 · requirement coverage.** If the matrix has a per-`P1-FR` coverage section, add rows for
-`P1-FR-012` … `P1-FR-015` with evidence pointers matching the new requirements. Verify during
-implementation; do not invent a section that does not exist.
+Seed exactly `50` English vocabulary rows, ten per published lesson, with both `vi` and `en`
+translations (`100` translation rows total). Use the following stable term groups, in the listed
+order; the terms are the fixture contract, not a request to add vocabulary schema:
 
-## Review
+| Lesson | Terms (10) |
+|---|---|
+| 01 greetings | hello, hi, goodbye, please, thanks, sorry, welcome, morning, evening, name |
+| 02 introductions | introduce, student, teacher, friend, family, country, city, live, work, study |
+| 03 daily-routine | wake, breakfast, commute, office, lunch, exercise, read, dinner, sleep, today |
+| 04 food-and-drink | apple, bread, rice, water, coffee, tea, hungry, thirsty, order, menu |
+| 05 travel-basics | ticket, station, airport, hotel, room, passport, luggage, train, bus, map |
 
-- **Architecture:** no change. Three repository boundaries and their ownership are untouched; no
-  component gains a responsibility. `docs/01-architecture.md` needs no edit because `docs/01:121`
-  already anticipates adding an enum value plus a Fragment.
-- **Requirements:** four new Must rows extend the existing `P1-FR` sequence without renumbering.
-  Every structural exclusion that `ADR-006` did not overturn is preserved verbatim - a deliberate
-  constraint, since the value of these documents is that they say no to things.
-- **Security:** zero security surface change. No new learner-writable field (SEC-D3 intact), no
-  change to trusted write paths or `record_review` (SEC-D5 intact), no new Storage path, bucket, or
-  policy (SEC-D8 intact). Documentation-only.
-- **Data model:** the entity-level block list stays in force. `ADR-006` adds zero tables and zero
-  columns; the edits make clear that `GRAMMAR`/`LISTENING` are enum values on existing `Exercise`.
-- **Traceability:** closing sentence at `docs/05:71` is corrected because it would otherwise remain
-  false once the enum migration is authorized.
-- **Scope:** documentation only. No schema, migration, RLS, dependency, or source file is touched.
-- **Concurrency:** the parallel session's files are untouched; `plans/current-task.md` was archived
-  to `plans/archive/2026-08-15-public-snapshot-staging-DONE.md` before being replaced, per
-  `AGENTS.md` §Documentation lifecycle.
+`normalizedTerm` is the canonical lower-case, trimmed term form for these ASCII fixtures. Every
+vocabulary row is linked exactly once to its lesson at junction order `1..10`; no vocabulary row
+is linked to a draft lesson. Expected state: `50 lesson_vocabulary` rows.
 
-## Test Plan
+### Exercises
 
-1. `git diff --stat` shows changes confined to `docs/00-master-plan.md`, `docs/02-requirements.md`,
-   `docs/04-data-model.md`, `docs/05-traceability-matrix.md`, `plans/current-task.md`, `logs/*`,
-   `HANDOFF.md`. Record the exact output.
-2. `git diff --stat lingora-admin/ lingora-android/ lingora-ai/ docs/01-architecture.md
-   docs/03-api-contract.md` must be **empty**. Record the empty result and exit code.
-3. `git diff --check` exits `0` (no whitespace errors) on all edited files.
-4. Grep the four edited docs for each stale exclusion phrase; each must return zero matches:
-   `Grammar curriculum is not part`, `not a scored .LISTENING. exercise`,
-   `Notification/Reminder remains deferred`, `does not imply a scored .LISTENING.`,
-   `Grammar curriculum is outside`.
-5. Grep confirms every preserved block is still present: `QuizAttempt`, `device-token`,
-   `reminder-schedule`, `standalone flashcard`, `pronunciation`, `MATCHING`, `WRITING`,
-   `grammatical_acceptability_score`. Report counts.
-6. Grep `docs/00-master-plan.md` confirms `LISTENING` no longer appears in the line-107 cut list, and
-   that the `Phương án rút gọn` / `Nếu bị chậm` conditional wording at `:81` and `:103` is unchanged.
-7. Grep confirms `P1-FR-012`, `P1-FR-013`, `P1-FR-014`, `P1-FR-015` each appear in **both**
-   `docs/02-requirements.md` and `docs/05-traceability-matrix.md`, and that `P1-FR-001` … `P1-FR-011`
-   are unrenumbered and still present.
-8. Confirm zero occurrences of any new entity/table/column name across the diff - specifically
-   `GrammarLesson`, `UserGrammarProgress`, `QuizAttempt` as an approved entity, `reminderTime`,
-   `deviceToken`, `notificationPreference`.
-9. Confirm `enum ExerciseType` in `lingora-admin/prisma/schema.prisma` still reads
-   `{ MCQ FILL_BLANK REORDER }` - this task must not change it. Record the observed line.
-10. Confirm no payload JSON schema was frozen: grep the diff for `payloadVersion` and verify any
-    occurrence is descriptive prose, not a normative contract.
-11. Confirm `plans/archive/2026-08-15-public-snapshot-staging-DONE.md` is byte-identical to the
-    previous `plans/current-task.md` content via `cmp`, proving nothing was lost when the active plan
-    was replaced.
-12. Record every command, exit code, output excerpt, `git diff --stat`, and verdict in
-    `logs/test-log.md` using the mandatory evidence format. Verdicts come from observed output only.
-13. Run a post-implementation quality review before marking DONE. No commit is authorized.
+Each of the five published lessons receives exactly three exercises at order `1..3`: one `MCQ`,
+one `FILL_BLANK`, and one `REORDER`, for `15` total. Use only the currently applied enum values;
+do not seed `GRAMMAR`, `LISTENING`, `MATCHING`, or `WRITING`.
+
+Every payload must be a JSON object with `payloadVersion: "1"` plus the existing legacy shape from
+`docs/04-data-model.md` §1.4:
+
+- `MCQ`: `question`, non-empty `options`, `answerIndex`, `explanation`;
+- `FILL_BLANK`: `sentence`, non-empty `answers`, `hint`;
+- `REORDER`: non-empty `tokens`, exact indexed `correctOrder` permutation.
+
+The database only enforces object shape and payload version. The repository has no current
+type-specific exercise validator, so implementation must record the fixture-level validation in
+the harness and must not claim that a nonexistent application validator was tested. If a later
+review requires a different payload contract, this task returns to `REVIEW`; no schema check may
+be weakened to accommodate the seed.
+
+### Chat scenario
+
+Seed two scenarios:
+
+- `hotel_booking`: published, deterministic non-secret system prompt, with `vi` and `en`
+  translations;
+- `visibility-draft`: draft sentinel with no published translation.
+
+The scenario seed supplies lookup data for M1.5 only. It must not create `ChatSession` or
+`ChatMessage`, because both require a real learner Profile and session ownership.
+
+## Deliberately Unseeded Learner-Owned Data
+
+The normal persistent seed must create **zero** rows in `profiles`, `user_progress`,
+`user_vocab_srs`, `review_logs`, `chat_sessions`, and `chat_messages`.
+
+Reason: those rows reference `auth.users`/Profile ownership, are protected by `auth.uid()` RLS,
+and `record_review` is the approved write boundary. A fixed learner ID or direct seed of SRS/review
+history would bypass the M1.3 trust model and make cleanup unsafe. Stable vocabulary IDs are the
+SRS mock input fixture; learner-owned SRS behavior is verified separately.
+
+## Idempotency And Collision Safety
+
+- Upsert only the exact deterministic manifest IDs. Never upsert by `orderIndex`, display text,
+  email pattern, or a broad natural-key query.
+- On an existing manifest ID, compare the expected immutable fields and a canonical content
+  fingerprint before updating. Abort on a mismatch; never overwrite manually changed content.
+- On a missing manifest ID, create the row with the fixed timestamps and expected relationships.
+- The seed must not delete rows, truncate tables, reset sequences, modify non-manifest rows, or
+  modify learner-owned rows.
+- A normal rerun is additive/reconciling only for the manifest. A destructive reset is a separate
+  explicitly named test command, disabled unless `M14_ALLOW_RESET=1` is present and all exact-target
+  preconditions pass.
+- The implementation must use parameterized Prisma operations/queries; no interpolated SQL from
+  environment or user input.
+
+## Cleanup And Reset Safety
+
+Normal `prisma db seed` has no cleanup phase. The isolated harness may clean only its own temporary
+Auth users and learner-owned fixtures, in dependency order: `review_logs` -> `user_vocab_srs` ->
+`user_progress`/chat rows -> Profiles/Auth users, with Storage cleanup only for explicitly recorded
+temporary object paths. It must:
+
+1. record every created UUID/path before assertions;
+2. verify each target belongs to the harness identity or exact seed manifest;
+3. abort if any target is outside that set;
+4. delete by exact UUID/path only;
+5. re-query exact counts and fail if any residue remains.
+
+The harness must never delete by `LIKE`, order range, course code, publication state, whole table,
+or “all test users” discovery. It must never clean the persistent content manifest during an RLS
+test. Running against a shared/production database is forbidden.
+
+## RLS And Security Verification Cases
+
+M1.4 verifies the existing boundary; it does not change policies, grants, RPCs, or Storage.
+
+### Published-content visibility
+
+- Authenticated learner can read the published course, its five published lessons, translations,
+  50 vocabulary rows/translations, 50 junction rows, 15 exercises, and published hotel scenario.
+- The same learner cannot read the draft course, either draft lesson, or draft scenario through
+  the learner context.
+- Anonymous context cannot read authenticated content.
+- Admin context may read the draft sentinels; this is a smoke check of the existing admin policy,
+  not a new Admin feature.
+
+### Learner ownership and trusted writes
+
+Using two isolated Auth users created only for the harness:
+
+- learner A sees only A's `UserProgress`, `UserVocabSrs`, and `ReviewLog` rows;
+- learner B cannot read A's rows and cannot use A's SRS card with `record_review`;
+- direct learner insert/update/delete attempts against `UserProgress`, `UserVocabSrs`, and
+  `ReviewLog` are denied as already specified by M1.3;
+- an owner-valid `record_review` call changes only the owner's card/log/streak in one transaction;
+- invalid/non-owner calls leave exact before/after counts unchanged.
+
+The harness may create the temporary SRS card through the already-approved privileged test setup,
+but it must exercise learner behavior through the authenticated RPC/RLS boundary. It must not
+introduce a new seed API, grant, or persistence rule.
+
+### Storage and API boundaries
+
+- No persistent Storage object is created by M1.4; `audioUrl` remains null.
+- No FastAPI endpoint is added or called as part of M1.4. M1.5 owns API contract tests and mock
+  behavior; M1.4 only guarantees stable IDs and scenario/content lookup data.
+
+## Expected Seed State And Manifest Assertions
+
+The harness must assert the following exact persistent counts after a clean seed:
+
+| Relation | Expected rows |
+|---|---:|
+| `languages` | 2 |
+| `courses` | 2 |
+| `course_translations` | 2 |
+| `lessons` | 7 |
+| `lesson_translations` | 10 |
+| `vocabularies` | 50 |
+| `vocabulary_translations` | 100 |
+| `lesson_vocabulary` | 50 |
+| `exercises` | 15 |
+| `chat_scenarios` | 2 |
+| `chat_scenario_translations` | 2 |
+| `profiles`, `user_progress`, `user_vocab_srs`, `review_logs`, `chat_sessions`, `chat_messages` | 0 from seed |
+
+The counts must be scoped to the exact deterministic IDs where the database may already contain
+unrelated valid content. A clean isolated database additionally reports total counts. The harness
+must compare the UUID manifest, relationship graph, publication flags, payload fingerprints and
+fixed timestamps across two consecutive seed runs.
+
+## Test Commands And Evidence
+
+The approved implementation task must run and record exact commands, exit codes and relevant
+output in `logs/test-log.md` using the mandatory evidence format:
+
+1. `git status --short --branch` and `git diff --check` before/after implementation.
+2. `npm ci --ignore-scripts` in `lingora-admin` using the committed lockfile; do not edit the
+   lockfile.
+3. `npm run prisma:format` and `npm run prisma:validate` with a placeholder/local `DATABASE_URL`
+   that does not expose secrets. Network/download failures are `FAIL` or `BLOCKED`, never inferred
+   `PASS`.
+4. `npm run prisma:seed` against an isolated database, followed by the named M1.4 verification
+   script.
+5. Run `npm run prisma:seed` a second time; compare manifest/count/fingerprint output.
+6. Run `node prisma/m1_4_seed_test.js` (or the exact approved script) with temporary isolated Auth
+   identities and record the published/draft and ownership cases above.
+7. Verify exact-target cleanup and zero temporary Auth/Profile/SRS/ReviewLog/Storage residue.
+8. Run `git diff --stat` and a forbidden-path diff check proving only the approved files changed.
+
+Evidence must redact URLs with credentials, JWTs, service-role keys, passwords, user email secrets,
+and full request headers. Logs may contain deterministic fixture IDs and row counts only.
+
+## Failure, Rollback, And Stop Behavior
+
+- The seed transaction must roll back all content writes on any failed insert, FK, unique, payload,
+  or fingerprint check.
+- A second-run mismatch, unexpected pre-existing manifest row, missing `vi`, stale migration, RLS
+  discrepancy, or residue after cleanup is a `FAIL` and returns the task to `REVIEW`.
+- Do not patch around a schema/RLS/contract mismatch. Create a separate approved scope amendment
+  if the seed cannot satisfy the current documents.
+- If the environment cannot prove isolation, do not run the seed or cleanup. Mark the relevant test
+  `BLOCKED` with the observed reason.
+- Existing M1.3 failures or historical log rows must not be rewritten; M1.4 records its own
+  evidence and references the existing baseline.
+
+## Explicitly OUT OF SCOPE
+
+- Any source implementation beyond the seed/harness files listed above.
+- Any schema, enum, migration, RLS policy, grant, trigger, RPC, Storage bucket/object policy, or
+  API contract change.
+- `GRAMMAR`, word-level `LISTENING`, sentence-level listening, reminders, `dailyGoalMin` UI,
+  `MATCHING`, `WRITING`, Quiz/Attempt persistence, grammar entities, notification entities, or
+  new vocabulary semantics.
+- Auth/Profile lifecycle changes, fixed demo accounts, password/auth token storage, learner data
+  generation in the persistent seed, or account-erasure behavior.
+- M1.5 FastAPI endpoints/mock runtime, M1.6 Android project/Auth/Retrofit/Room, M2 lesson UI,
+  Admin CRUD/UI, ML/NLP training/evaluation, deployment, or report metrics.
+- Destructive reset of shared/project data, broad table truncation, database restore, or cleanup
+  based on non-exact predicates.
+- New dependencies. If a TypeScript seed runner is demanded by review, stop and return to `REVIEW`
+  with a dependency impact decision; do not silently add `tsx`, TypeScript, `pg`, or a UUID package.
+
+## Review Questions / Unresolved Items
+
+1. **Seed runner naming:** `docs/01-architecture.md` and `docs/00-master-plan.md` mention
+   `seed.ts`, but the package has no TypeScript runner or seed configuration. This plan proposes
+   `seed.js` plus a Prisma seed command to avoid a dependency. Human review must confirm this is
+   acceptable or explicitly approve a runner/dependency change.
+2. **Exercise validation:** the database enforces only JSON object and `payloadVersion`; no current
+   type-specific validator exists. The plan uses the documented legacy shapes and harness checks,
+   but M2 must own any stronger runtime validator. Human review must accept this boundary.
+3. **SRS fixture ownership:** persistent learner-owned SRS rows are intentionally excluded because
+   no deterministic Auth identity is approved. Human review must confirm that temporary harness
+   identities satisfy M1.4 SRS/RLS evidence and that no persistent demo learner is desired.
+4. **Existing database contents:** no destructive reset is authorized. The implementation task
+   must identify the target environment and report any manifest collision before writing.
+5. Prisma seeding documentation could not be fetched from the network during planning; the exact
+   command configuration must be validated against the installed Prisma `6.19.3` CLI before
+   implementation. This is an evidence gap, not permission to guess or add dependencies.
 
 ## Approval
 
 Status: APPROVED
+
 Approved by: Pham Nguyen Thanh Tung
 Date: 2026-08-15
 
-Approved scope: documentation alignment only, exactly the edits enumerated in the `Exact Edits`
-sections. Still forbidden by this approval: `schema.prisma`, the `ALTER TYPE` migration, the
-`androidx.work` dependency, and any file under `lingora-android/`, `lingora-ai/`, or
-`lingora-admin/src/`.
+Approval explicitly authorizes the listed files, seed manifest, test fixture strategy, and
+non-destructive cleanup boundaries.

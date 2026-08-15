@@ -6,6 +6,88 @@
 
 ### Task
 
+`m1.4-deterministic-seed - Independent audit corrective implementation`
+
+### Completed
+
+- Removed all draft-sentinel translations from the deterministic manifest while preserving the draft Course, two draft Lessons, and draft ChatScenario.
+- Corrected the approved persistent translation counts to `course_translations=2`, `lesson_translations=10`, and `chat_scenario_translations=2`.
+- Added observed RLS checks for anonymous denial and ADMIN draft visibility.
+- Added direct learner INSERT/UPDATE/DELETE denial coverage for `UserProgress`, `UserVocabSrs`, and `ReviewLog`, including before/after residue/state checks.
+- Added post-`record_review` database assertions for SRS interval/recall/counters, ReviewLog insertion/prior interval, Profile streak/activity date, and non-owner atomic no-change behavior.
+- Replaced cleanup discovery by email prefix with exact created/prior UUID targets and a guard that refuses prior UUIDs not belonging to an M1.4 test identity.
+- Removed exactly five erroneous translation rows left by the pre-audit seed (`1` course, `3` lesson, `1` scenario translation); no other project data was deleted.
+
+### Problems
+
+- The independent audit found the implementation had broadened the approved translation manifest to `3/13/3` and lacked four required security/state assertions.
+- Initial Prisma checks and database inventory attempts were blocked by sandbox network/TLS restrictions. They were rerun with approved external access; no PASS was inferred from the failed attempts.
+
+### Solution
+
+- Restored the immutable approved manifest and extended the harness at the existing Auth/PostgREST/RPC boundaries without changing schema, migrations, RLS, grants, triggers, RPCs, Storage, dependencies, or API contracts.
+- Kept deterministic UUIDv5, fixed epoch, transaction behavior, collision checks, idempotency, and exact-target cleanup intact.
+
+### Tests
+
+- `npm run prisma:format`: PASS; schema unchanged in Git.
+- `npm run prisma:validate`: PASS.
+- `npx prisma migrate status --schema prisma/schema.prisma`: PASS; 3 migrations, database up to date.
+- `npm run prisma:seed` twice: PASS/PASS.
+- `npm run test:m1_4`: PASS, `34/34`, with final counts `2/10/2` and exact residue `0/0/0/0/0/0/0`.
+- Detailed observed evidence: `M1.4-FIX-T-001` through `M1.4-FIX-T-004` in `logs/test-log.md`.
+
+### Commit
+
+`PENDING - no commit authorized`
+
+---
+
+### Date
+
+`2026-08-15`
+
+### Task
+
+`m1.4-deterministic-seed - Deterministic Bootstrap Seed & RLS Verification`
+
+### Completed
+
+- Implemented `lingora-admin/prisma/seed.js` using fixed UUIDv5 identifiers (namespace `2b8e3b9b-3c04-5b7b-8f67-0d1f6f3d9e4a`) and static timestamps (`2026-01-01T00:00:00.000Z`).
+- Seeded exactly: 2 languages (`vi`, `en`), 2 courses (`english-a1` published, `visibility-draft` draft), 7 lessons (5 published with `vi`/`en` translations, 2 draft sentinels), 50 vocabularies with 100 translations, 50 `lesson_vocabulary` junctions, 15 exercises (`MCQ`, `FILL_BLANK`, `REORDER`), and 2 chat scenarios (`hotel_booking` published, `visibility-draft` draft).
+- Configured Prisma seed entry in `lingora-admin/package.json`.
+- Implemented and executed verification test harness `lingora-admin/prisma/m1_4_seed_test.js`.
+- Verified 19/19 test assertions: exact counts, idempotency, published/draft RLS visibility, learner SRS card ownership isolation, `record_review` RPC invocation on owned vs non-owned cards, and exact cleanup with zero residue.
+
+### Problems
+
+- Interactive transaction timeout in Prisma default (5s) was too short for sequential remote upserts over connection pooler.
+- Resolved by configuring `{ maxWait: 20000, timeout: 60000 }` on `$transaction`.
+
+### Solution
+
+- Configured transaction timeout and verified clean idempotent execution.
+
+### Tests
+
+- `npm run prisma:validate`: PASS.
+- `npm run prisma:seed`: PASS.
+- `node prisma/m1_4_seed_test.js`: 19/19 PASS, 0 FAIL.
+- `git diff --stat`: changes strictly confined to authorized files (`package.json`, `seed.js`, `m1_4_seed_test.js`, logs, plans).
+- Forbidden paths diff empty (`lingora-android/`, `lingora-ai/`, `schema.prisma`, `migrations/`, `docs/01`, `docs/03`).
+
+### Commit
+
+`PENDING - no commit authorized per task boundary`
+
+---
+
+### Date
+
+`2026-08-15`
+
+### Task
+
 `canonical-docs-full-scope-alignment - Align docs/00, 02, 04, 05 With Approved ADR-006`
 
 ### Completed
