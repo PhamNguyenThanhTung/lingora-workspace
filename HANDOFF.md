@@ -7,17 +7,15 @@
 
 ## Current state
 
-- Last completed task: `m1.4-deterministic-seed` — DONE and archived to
-  `plans/archive/2026-08-15-m1.4-deterministic-seed-DONE.md`. Deterministic bootstrap dataset seeded
-  (2 courses including the draft sentinel, 7 lessons including two draft sentinels, 50 vocabularies,
-  15 exercises, 2 scenarios including the draft sentinel). Approved translation counts are exactly
-  `2/10/2`; anonymous/ADMIN visibility, direct learner mutation denial, learner SRS ownership, observed
-  `record_review` state mutation, non-owner atomic rejection, idempotency, and exact cleanup are verified.
-  Corrective evidence: `M1.4-FIX-T-001` through `M1.4-FIX-T-005` (`34/34 PASS`, `0 FAIL`).
+- Last completed task: `m1.5-fastapi-mock-runtime` — DONE and archived to
+  `plans/archive/2026-08-15-m1.5-fastapi-mock-runtime-DONE.md`. Stateless FastAPI mock runtime implemented
+  in `lingora-ai/api/` with `MOCK_MODE=true` baseline, supporting deterministic SRS scheduling, hotel roleplay
+  chat, scenarios list, model metadata, health probes, and standard error envelopes. Evidence: `M1.5-T-001`
+  (15/15 pytest PASS, 0 FAIL).
 - Last approved scope decision: `ADR-004 Amendment — Full Scope Restoration` = `ADR-006`, APPROVED
   2026-08-15. Scope approved and documented; **feature code not yet authorized**.
 - Last commit: `86dc80a` — docs: align canonical docs with ADR-006 and update workflow state
-- Milestone: M1.4 DONE; Next: M1.5 (FastAPI Mock Runtime) or M1.6 / M2 planning.
+- Milestone: M1.5 DONE; Next: M1.6 / M2 (Android Foundation & Lesson Flow).
 - Public staging snapshot: `staging/lingora-workspace-public/` — verified, synced.
 
 ---

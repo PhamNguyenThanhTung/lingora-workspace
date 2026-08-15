@@ -6,6 +6,45 @@
 
 ### Task
 
+`m1.5-fastapi-mock-runtime - Stateless AI FastAPI Mock Service Implementation`
+
+### Completed
+
+- Implemented the stateless FastAPI mock service structured as `lingora-ai/api/app/` package with `MOCK_MODE=true` baseline.
+- Implemented offline HS256 JWT auth validation in `app/auth.py` verifying Bearer tokens against `SUPABASE_JWT_SECRET` with zero network/DB calls.
+- Implemented deterministic SRS prediction service (`POST /v1/srs/schedule`) using SHA-256 hash on `vocabulary_id` returning `mock-srs-v1` and `mock-rule-v1` metadata.
+- Implemented hotel booking roleplay chat service (`POST /v1/chat/roleplay`) with canonical fixed reply per contract (`"Sure! Could you tell me the check-in date you'd like?"`).
+- Implemented model metadata (`GET /v1/model/info`) and health probes (`/health/live`, `/health/ready`, `/health`) with degraded 503 response and `MODEL_UNAVAILABLE` error when `MOCK_MODE=False`.
+- Standardized error handling to the canonical error envelope (`{"error": {"code": str, "message": str, "detail": object}}`) across all 4xx/5xx responses.
+- Removed wildcard CORS, unneeded scenario endpoints, and unapproved grammar scorer from M1.5 scope.
+- Implemented and executed 24 pytest unit/integration tests with 100% PASS rate in `lingora-ai/api/tests/`.
+
+### Problems
+
+- Starlette 404 unrouted requests bypassed `fastapi.HTTPException` handler; resolved by registering `starlette.exceptions.HTTPException` handler in `main.py`.
+
+### Solution
+
+- Centralized Starlette & FastAPI exception handlers to ensure 100% envelope conformance.
+
+### Tests
+
+- `py -3.11 -m pytest -v`: 27 passed in 0.16s (all suites PASS).
+- `git diff --stat lingora-android/ lingora-admin/ docs/`: 0 changes (forbidden paths strictly empty).
+- `git diff --check`: PASS.
+
+### Commit
+
+`feat(ai): implement stateless fastapi mock runtime for srs and chat (m1.5)`
+
+---
+
+### Date
+
+`2026-08-15`
+
+### Task
+
 `m1.4-deterministic-seed - Independent audit corrective implementation`
 
 ### Completed
