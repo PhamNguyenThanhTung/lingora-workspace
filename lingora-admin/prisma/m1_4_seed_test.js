@@ -119,21 +119,21 @@ function sameSrsState(left, right) {
 
 async function verifyCounts() {
   console.log('\n--- 1. Verifying Deterministic Seed Counts ---');
-  
+
   const langCount = await db.language.count({ where: { code: { in: ['vi', 'en'] } } });
   const courseCount = await db.course.count({ where: { id: { in: SEED_DATA.courses.map(c => c.id) } } });
   const courseTransCount = await db.courseTranslation.count({ where: { courseId: { in: SEED_DATA.courses.map(c => c.id) } } });
   const lessonCount = await db.lesson.count({ where: { id: { in: SEED_DATA.lessons.map(l => l.id) } } });
   const lessonTransCount = await db.lessonTranslation.count({ where: { lessonId: { in: SEED_DATA.lessons.map(l => l.id) } } });
-  
+
   const vocabIds = SEED_DATA.vocabularies.map(v => uuidv5(`lingora:m1.4:vocab:english-a1:${v.lessonKey}:${String(v.index).padStart(2, '0')}`));
   const vocabCount = await db.vocabulary.count({ where: { id: { in: vocabIds } } });
   const vocabTransCount = await db.vocabularyTranslation.count({ where: { vocabularyId: { in: vocabIds } } });
   const junctionCount = await db.lessonVocabulary.count({ where: { vocabularyId: { in: vocabIds } } });
-  
+
   const exerciseIds = SEED_DATA.exercises.map(e => e.id);
   const exerciseCount = await db.exercise.count({ where: { id: { in: exerciseIds } } });
-  
+
   const scenarioIds = SEED_DATA.scenarios.map(s => s.id);
   const scenarioCount = await db.chatScenario.count({ where: { id: { in: scenarioIds } } });
   const scenarioTransCount = await db.chatScenarioTranslation.count({ where: { scenarioId: { in: scenarioIds } } });
@@ -158,7 +158,7 @@ async function verifyCounts() {
 
 async function verifyIdempotency() {
   console.log('\n--- 2. Verifying Seed Idempotency (Second Execution) ---');
-  
+
   const beforeStats = {
     courses: await db.course.count(),
     lessons: await db.lesson.count(),
@@ -177,7 +177,7 @@ async function verifyIdempotency() {
     scenarios: await db.chatScenario.count()
   };
 
-  const isIdentical = 
+  const isIdentical =
     beforeStats.courses === afterStats.courses &&
     beforeStats.lessons === afterStats.lessons &&
     beforeStats.vocabularies === afterStats.vocabularies &&
@@ -415,7 +415,7 @@ async function main() {
     console.log('\n=== Summary of Test Results ===');
     const allPassed = results.every(r => r.passed);
     console.log(`Total tests: ${results.length}, Passed: ${results.filter(r => r.passed).length}, Failed: ${results.filter(r => !r.passed).length}`);
-    
+
     if (!allPassed) {
       process.exit(1);
     }
