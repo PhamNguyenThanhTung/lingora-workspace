@@ -49,3 +49,15 @@ The database is online and canonical, but M1.2 remains in `REVIEW`: no schema, m
 ## Current startup state
 
 There are no application projects to start after M1.1. Startup commands will be documented by M1.2, M1.5, and M1.6 after their approved implementations exist.
+
+## Git repositories & remote strategy
+
+- **Private Workspace Repository (Full workspace with Agent logs & plans):**
+  - Remote: `origin`
+  - URL: `https://github.com/PhamNguyenThanhTung/lingora-workspace`
+  - Purpose: Preserves the entire development history, code, database migrations, plans, test logs, and agent configurations.
+
+- **Public Submission Repository (Clean submission for instructors):**
+  - Source snapshot: `staging/lingora-workspace-public/`
+  - URL: `https://github.com/PhamNguyenThanhTung/BTL`
+  - Purpose: Contains only clean source code, canonical architecture/requirements docs, and READMEs for academic review, excluding internal agent plumbing and logs.

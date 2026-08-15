@@ -51,6 +51,94 @@ These decisions make the first migration implementable without expanding the app
 
 ### ADR-ID
 
+`REVIEW-2026-08-15-02 - AGENTS routing task closure scope`
+
+### Date
+
+`2026-08-15`
+
+### Category
+
+`scope-ambiguity`
+
+### Context
+
+The approved `agents-task-routing-clarifications` task limits changes to `AGENTS.md` and the active
+plan, while repository rules require test evidence, development logging, and a HANDOFF update before
+the task can reach DONE.
+
+### Decision
+
+Return the task to REVIEW after implementation verification. Preserve the completed `AGENTS.md`
+diff and request a closure-only scope amendment for the mandatory logs and HANDOFF lifecycle update.
+
+### Reason
+
+Marking DONE without evidence/logs would violate the gated workflow; editing excluded files without
+approval would violate the approved scope and Stop Rules.
+
+### Alternatives considered
+
+- Mark DONE without logs: rejected because TEST and LOG are mandatory gates.
+- Update logs silently: rejected because they are explicitly out of scope.
+- Revert the completed AGENTS wording: rejected because the implementation matches the approved scope
+  and passed the observed documentation checks.
+
+### Consequences
+
+- Positive: completed work is preserved and the closure gap is explicit.
+- Negative/trade-off: the task remains REVIEW until the closure-only amendment is approved.
+- Follow-up: approve the narrow amendment, record evidence, update HANDOFF, and close without commit.
+
+---
+
+### ADR-ID
+
+`REVIEW-2026-08-15-01 - Public snapshot private-reference scan boundary`
+
+### Date
+
+`2026-08-15`
+
+### Category
+
+`scope-ambiguity`
+
+### Context
+
+The approved public-snapshot plan requires canonical PUBLIC documents to be copied byte-for-byte,
+while Test Plan item 4 requires the entire snapshot to contain no references to `logs/` or private
+workflow material. The audited canonical documents already contain some historical or traceability
+references to internal logs and workflow files.
+
+### Decision
+
+Return `public-snapshot-staging` to REVIEW before implementation. No staging files are created.
+Request a scope amendment defining whether the zero-reference requirement applies only to the two
+authored public READMEs or also authorizes edits/removal of canonical PUBLIC documents.
+
+### Reason
+
+Both approved requirements cannot be satisfied simultaneously without changing canonical documents,
+which is explicitly outside the approved scope.
+
+### Alternatives considered
+
+- Silently retain the references: rejected because it would fail the approved test.
+- Edit canonical documents in the snapshot: rejected because copied canonical files must remain
+  byte-identical and source documentation edits are out of scope.
+- Exclude affected canonical documents: rejected because they are named in the approved allowlist.
+
+### Consequences
+
+- Positive: the private/public boundary remains explicit and reviewable.
+- Negative/trade-off: snapshot creation pauses until the test boundary is amended and re-approved.
+- Follow-up: amend Test Plan item 4, re-approve the task, then resume snapshot creation.
+
+---
+
+### ADR-ID
+
 `ADR-005 Implementation Addendum — SEC-D8 PA2 bucket boundary realization`
 
 ### Date
@@ -328,5 +416,59 @@ The decisions enforce least privilege and atomic review persistence without reop
 - Positive: M1.3 has an approved security baseline suitable for a separately started implementation phase.
 - Negative/trade-off: Auth signup depends on `vi`; account erasure, learner support access and retry-safe idempotency remain technical debt/backlog.
 - Follow-up: SEC-D8 PA2 is fully approved. Resume implementation only after an explicit IMPLEMENT instruction; any new semantic gap returns the task to REVIEW.
+
+---
+
+### ADR-ID
+
+`ADR-006 — ADR-004 amendment: full assignment-scope restoration by absorption`
+
+### Date
+
+`2026-08-15`
+
+### Category
+
+`scope-ambiguity`
+
+### Amends
+
+`ADR-004 — Project 1 learning capability scope-gap resolutions` (2026-08-14). Does not replace `ADR-002`, `ADR-003`, or `ADR-005`. Full analysis: `plans/adr-004-amendment-full-scope.md`. Evidence base: `plans/gap-analysis-de-bai-vs-master-plan.md`.
+
+### Context
+
+An audit against the original assignment statement — *"Xây dựng ứng dụng học ngoại ngữ trên nền tảng di động — Ứng dụng bao gồm các chức năng học từ vựng, ngữ pháp, nghe, kiểm tra, lên lịch học tập và nhắc nhở người học học tập theo lịch biểu"* — found that canonical `docs/00-05` covered roughly 1.5–2.5 of the 6 required functions. `ADR-004` had deliberately excluded Grammar curriculum, Notification/Reminder, and scored `LISTENING` (`docs/02:218`, `02:221`, `docs/04:433`, `docs/05:65–69`). That exclusion was correct scope control but left the product not covering the assignment. The human chose absorption into the existing architecture over building new subsystems (~3.5–4.5 weeks), and approved the amendment on 2026-08-15.
+
+Three findings from reading the real migration SQL changed the cost model versus the gap analysis: (a) scheduling has zero backend cost because `GRANT UPDATE (… daily_goal_min …)`, policy `profiles_own_safe_update`, and `validate_profile_write()` non-negative validation already exist (`202608140002/migration.sql:316`, `:430`, `:36–38`); (b) adding an enum value still requires a real migration file even though no table changes (`ALTER TYPE`, enum created at `202608140001/migration.sql:11`); (c) the real barrier for listening is Storage RLS, not schema, because policy `lingora_vocabulary_audio_select` permits only `vocabulary/{vocabularyId}/` reachable through published `lesson_vocabulary → lessons → courses` (`202608140002/migration.sql:501–522`).
+
+### Decision
+
+- **Item 1 — Grammar:** add exactly one value `GRAMMAR` to `enum ExerciseType`. Name chosen over `GRAMMAR_MCQ` so `payload.mode` describes the form and a second grammar form needs no further enum value. Grammar does not become a subsystem: no `GrammarLesson`, no `UserGrammarProgress`; grammar content is `Exercise` attached to an existing `Lesson`, progress stays lesson-level `UserProgress` per `P1-FR-004`. Effort 2 days, week 5 + week 7.
+- **Item 2 — Study scheduling:** UI-only work making the existing inert `Profile.dailyGoalMin` (`schema.prisma:68`) readable and writable from the learner profile screen. No migration, no RLS change, no grant, no new table — the write path was already granted in M1.3. Must be described honestly as a daily study goal, not a calendar/timetable. Effort 1 day, week 7.
+- **Item 3 — Reminder:** Android-local only, via `WorkManager` + a local notification derived from `dailyGoalMin` and `lastQualifyingActivityDate`. Reminder time is stored client-side in `SharedPreferences` (**option 3a**); option 3b (`Profile.reminderTime`) is rejected because it would reopen SEC-D3. No backend, no device token, no FCM — the `docs/04:433` block on device-token/reminder-schedule entities stands unchanged. Effort 3 days, week 9.
+- **Item 4 — Listening:** **option 4a**, word-level. Add `LISTENING` to `ExerciseType`; audio reuses the existing approved `vocabulary/{vocabularyId}/{filename}` path, and payload references `vocabularyId` rather than embedding a free-form URL, so read authorization stays with RLS. Option 4b (sentence-level audio) is rejected because it would require a new Storage path convention plus new policies and would force amending SEC-D8. Effort 2.5 days, week 5 + week 7.
+- **Payload shapes are deliberately not frozen.** The final shape of the `GRAMMAR` and `LISTENING` payloads is delegated to the implementation task and its acceptance tests. The only binding constraints are `jsonb_typeof(payload) = 'object'` and `payload->>'payloadVersion' = '1'` (`202608140001/migration.sql:142–143`).
+- **Totals:** 8.5 days · one combined `ALTER TYPE "ExerciseType" ADD VALUE` migration · zero new tables · zero SEC-D amendments. Allocated to weeks 5, 7, and 9; no M2/M3/M4/M4.5/M5 milestone is pushed and the M5 feature freeze at end of week 10 holds.
+- **Security confirmation:** items 1, 2, 3a, and 4a require no amendment to `SEC-D1…SEC-D10`. SEC-D3 is untouched because no new learner-writable field is added; SEC-D5 is untouched because `UserProgress` mutation stays trusted-flow-only and `record_review` is unchanged; SEC-D8 is untouched because no new Storage path or policy is introduced. New `ExerciseType` values inherit correct visibility with no new policy because `exercises_visible_read` filters by `lesson_id`, not by `type` (`202608140002/migration.sql:393`).
+- **This ADR approves scope only, not implementation.** No schema, migration, RLS, dependency, canonical document, or source file is modified by this entry.
+
+### Reason
+
+Absorption reuses `Exercise.payload` JSONB, the already-granted `dailyGoalMin` write path, and the already-approved vocabulary audio Storage path, so the assignment's 6 functions become demonstrable for 8.5 days of work without new entities, without new security boundaries, and without reopening SEC-D8 — where the project already had one real size-enforcement hole found by live HTTP evidence.
+
+### Alternatives considered
+
+- Build Grammar, Reminder, Scheduling, and Listening as proper subsystems (~3.5–4.5 weeks): rejected because it does not fit before the week-10 M5 feature freeze and would add entities the data model explicitly blocks.
+- Do nothing and only document scope limits in report chapter 1: rejected because the assignment names 6 functions and 3 would be gradeable as missing.
+- `GRAMMAR_MCQ` as the enum name: rejected because a second grammar form would then need another irreversible enum value.
+- Option 3b (`Profile.reminderTime`): rejected — persistence convenience is not worth amending the learner-writable security boundary.
+- Option 4b (sentence-level listening audio): rejected — 5.5 days and a mandatory SEC-D8 amendment.
+- Freezing both payload shapes now: rejected by the human; deferred to implementation and acceptance tests.
+
+### Consequences
+
+- Positive: all 6 assignment functions become implementable within the locked roadmap; zero new tables; zero SEC-D amendments; `Profile.dailyGoalMin` stops being an inert field, which was the most exploitable weakness in a defense.
+- Negative/trade-off: the locked v5 baseline is reopened; one irreversible enum migration (Postgres cannot drop enum values); reminder time is per-device and lost on reinstall (3a); `WorkManager` is a new dependency not named in `docs/01:149–176` (change control item 2); `WorkManager` cannot guarantee exact delivery time under doze/OEM battery restrictions, so the feature must be described as "reminds within the chosen window", not "exactly at 20:00"; Android 13+ requires the `POST_NOTIFICATIONS` runtime permission with a denied-state path.
+- Follow-up: implementation requires a **new** `plans/current-task.md` at `APPROVED` — the current one is `public-snapshot-staging` at `DONE`. `docs/02-requirements.md`, `docs/04-data-model.md`, and `docs/05-traceability-matrix.md` currently negate all four items and **must** be updated as part of implementation or the project self-contradicts. The enum migration must not seed data using the new value in the same transaction that adds it, or `prisma migrate deploy` will fail. Recommended order: item 2, then items 1 + 4a sharing one migration, then item 3a.
 
 ---

@@ -13,7 +13,7 @@
 
 #### `schema.prisma` (bản dự kiến v2 — thay khối GEC bằng SRS + Chat)
 
-> **Scope Gap Review clarification (approved 2026-08-14):** the following block is preserved legacy source. Its `MATCHING`, `LISTENING`, and `WRITING` enum/examples are superseded by ADR-002/ADR-003 and the applied M1.2 schema. The canonical exercise set is only `MCQ`, `FILL_BLANK`, and `REORDER`. Vocabulary audio playback remains part of Project 1, but it does not restore a scored `LISTENING` exercise type.
+> **Scope Gap Review clarification (approved 2026-08-14; amended by ADR-006 on 2026-08-15):** the following block is preserved legacy source. Its `MATCHING` and `WRITING` enum/examples remain superseded by ADR-002/ADR-003 and the applied M1.2 schema. The canonical exercise set is `MCQ`, `FILL_BLANK`, `REORDER`, `GRAMMAR`, and word-level `LISTENING`. ADR-006 restores `LISTENING` at **word level only** — audio belongs to a vocabulary row and reuses the existing `vocabulary/{vocabularyId}/` Storage path. The legacy sentence-level `LISTENING` payload example further down this block stays superseded, because sentence-level audio was explicitly rejected.
 
 ```prisma
 generator client {
@@ -430,11 +430,12 @@ The RPC must:
 ### Scope Gap Review data boundaries
 
 - The existing `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary`, and `UserVocabSrs` structures are sufficient for the approved Vocabulary scope: published lesson vocabulary, optional audio playback, approved exercises, and SRS integration.
-- No search/favorite, pronunciation-score, separate mastery, standalone flashcard, Grammar curriculum, Grammar progress, Quiz, QuizAttempt, notification preference, device-token, or reminder-schedule entity is approved by the Scope Gap Review.
-- `Vocabulary.audioUrl` supports vocabulary media playback only. It does not imply a scored `LISTENING` exercise or add `LISTENING` to `ExerciseType`.
+- No search/favorite, pronunciation-score, separate mastery, standalone flashcard, Grammar curriculum, Grammar progress, Quiz, QuizAttempt, notification preference, device-token, or reminder-schedule entity is approved. ADR-006 (2026-08-15) does not weaken this list: it adds **zero** tables and **zero** columns. `GRAMMAR` and `LISTENING` are values of the existing `ExerciseType` enum on the existing `Exercise` table, and the approved reminder is client-local with its setting stored on-device, so every entity named above remains unapproved.
+- `Vocabulary.audioUrl` supports vocabulary media playback. ADR-006 adds word-level `LISTENING` to `ExerciseType`; a `LISTENING` payload references `vocabularyId` so that read authorization stays with the existing vocabulary-audio Storage policy. No new Storage path, bucket, or policy is introduced, and `audioUrl` alone still does not imply a scored exercise for a given row.
 - “Quiz” is presentation/report terminology for the existing lesson exercise sequence only; canonical persistence remains `Exercise` plus lesson-level `UserProgress`, with attempt history deferred under ADR-003.
-- `UserVocabSrs.nextReviewAt` represents due state. It is not a notification/reminder delivery record and does not authorize notification schema.
-- Grammar curriculum is outside the current Project 1 data model. The optional NLP P2 `grammatical_acceptability_score` remains API-only and is not persisted.
+- `UserVocabSrs.nextReviewAt` represents due state. It is not a notification/reminder delivery record and does not authorize notification schema. The reminder approved by ADR-006 reads `Profile.dailyGoalMin` and `Profile.lastQualifyingActivityDate` on-device and still authorizes no notification schema, no device-token column, and no reminder-schedule table.
+- Grammar content is an `Exercise` row with `type = 'GRAMMAR'` and a JSONB payload; no grammar table, grammar-progress column, or separate Grammar schema exists. The optional NLP P2 `grammatical_acceptability_score` remains API-only and is not persisted.
+- `Profile.dailyGoalMin` is the canonical daily study goal field for the scheduling capability approved by ADR-006. It already exists in the applied M1.2/M1.3 schema with a learner write grant and server-side non-negative validation, so that capability adds no column and no policy.
 
 ## M1.2 approved database semantics (ADR-003)
 

@@ -104,11 +104,11 @@ Mốc `M*` là **cửa chặn (gate)**: chưa xong mốc thì không được nh
 1. Bộ chấm `grammatical_acceptability_score` (CoLA) → bỏ, chatbot chỉ trả lời, không chấm điểm
 2. DailyDialog + domain phụ (`restaurant`, `taxi`) → chỉ giữ `hotel_booking`
 3. Ngôn ngữ UI `ja` → chỉ giữ `vi` + `en`
-4. Bài tập `LISTENING`, `MATCHING` (giữ MCQ + Fill-blank)
+4. Bài tập `MATCHING` (giữ MCQ + Fill-blank + REORDER + `GRAMMAR` + `LISTENING`) — **`LISTENING` đã được đưa ra khỏi danh sách cắt**: ADR-006 (2026-08-15) duyệt `LISTENING` mức từ vựng thành phạm vi bắt buộc, nên không còn là mục được phép cắt
 5. Cache offline Room → chỉ cần loading spinner
 6. **DKT-LSTM tự viết** → chỉ dùng Half-Life Regression làm model production (**cảnh báo**: mất điểm phần "kiến trúc mạng neural" của môn ML, cắt gần cuối)
 
-**Tuyệt đối không cắt**: luồng Auth, luồng học 1 bài, **ít nhất 1 trong 2 API AI phải chạy model thật** (API còn lại được phép chạy `MOCK_MODE`), 3 bộ tài liệu báo cáo.
+**Tuyệt đối không cắt**: luồng Auth, luồng học 1 bài, **ít nhất 1 trong 2 API AI phải chạy model thật** (API còn lại được phép chạy `MOCK_MODE`), 3 bộ tài liệu báo cáo, và **4 hạng mục phạm vi đề bài đã duyệt ở ADR-006** (`GRAMMAR`, `LISTENING` mức từ vựng, daily study goal, local reminder).
 
 ---
 

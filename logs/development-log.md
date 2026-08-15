@@ -2,6 +2,56 @@
 
 ### Date
 
+`2026-08-15`
+
+### Task
+
+`canonical-docs-full-scope-alignment - Align docs/00, 02, 04, 05 With Approved ADR-006`
+
+### Completed
+
+- Aligned canonical documents (`docs/00-master-plan.md`, `docs/02-requirements.md`, `docs/04-data-model.md`, `docs/05-traceability-matrix.md`) with approved `ADR-006`.
+- Restored assignment scope: `GRAMMAR` and word-level `LISTENING` added to approved exercise definitions (`P1-FR-012`, `P1-FR-013`), daily study goal mapped (`P1-FR-014`), Android-local reminder mapped (`P1-FR-015`).
+- Preserved all structural exclusions: no separate grammar table, no server-side notification entity, zero new tables or columns added.
+- `schema.prisma`, migrations, RLS, Storage, and application code remained untouched.
+
+### Problems
+
+- Stale exclusion bullets in canonical documents previously contradicted the approved ADR-006 restoration.
+
+### Solution
+
+- Replaced stale exclusion clauses with normative ADR-006 scope descriptions and verified that all requirement mappings and test IDs are consistent.
+
+### Tests
+
+- `DOCS-ALIGN-T-001` … `DOCS-ALIGN-T-008` — all PASS in `logs/test-log.md`.
+- `git diff --numstat -- docs/`: `docs/00` +2/-2, `docs/02` +11/-6, `docs/04` +6/-5, `docs/05` +10/-6.
+- `git diff --stat -- lingora-admin/ lingora-android/ lingora-ai/ docs/01-architecture.md docs/03-api-contract.md`
+  returned empty output with exit `0` — no schema, migration, RLS, dependency, or source change.
+- Stale exclusion phrase scans returned 0 hits for all five retired clauses.
+- Preserved-exclusion scans returned non-zero counts for `QuizAttempt`, `device-token`,
+  `reminder-schedule`, `standalone flashcard`, `pronunciation`, `MATCHING`, `WRITING`, and
+  `grammatical_acceptability_score`.
+- `P1-FR-012` … `P1-FR-015` present in both `docs/02` and `docs/05`; `P1-FR-001` … `P1-FR-011`
+  present and unrenumbered.
+- `enum ExerciseType` in `lingora-admin/prisma/schema.prisma:24-28` verified still
+  `{ MCQ FILL_BLANK REORDER }`.
+- `git diff --check` exit `0` after stripping two trailing EOF blank lines.
+- Closure gate `DOCS-ALIGN-T-008`: final `git diff --stat` is 9 files / 553 insertions / 41 deletions
+  (four canonical docs plus `AGENTS.md`, `logs/*`, `plans/current-task.md`); forbidden-path diff still
+  empty; completed plan archived to
+  `plans/archive/2026-08-15-canonical-docs-full-scope-alignment-DONE.md`, `cmp` byte-identical to the
+  `DONE` plan; no commit created.
+
+### Commit
+
+`PENDING - no commit authorized by the approved plan`
+
+---
+
+### Date
+
 `2026-08-14`
 
 ### Task
@@ -39,6 +89,77 @@
 ### Commit
 
 `PENDING - no commit requested`
+
+---
+
+### Date
+
+`2026-08-15`
+
+### Task
+
+`public-snapshot-staging`
+
+### Completed
+
+- Created the isolated non-Git snapshot at `staging/lingora-workspace-public/` from the approved allowlist.
+- Authored public-safe root/documentation READMEs and a snapshot-specific `.gitignore`.
+- Preserved Prisma schema, three migrations, migration lock, npm lockfile, and M1.3 security test.
+- Verified secrets, private references, file inventory, byte identity, npm install, and Prisma validation.
+
+### Problems
+
+- Initial Prisma validation was blocked by sandbox engine download, then exposed the expected missing
+  `DATABASE_URL` because real credentials are intentionally excluded.
+
+### Solution
+
+- Retried the official engine download with approval and validated using a non-routable localhost
+  placeholder URI. No migration ran and no database connection/state change occurred.
+
+### Tests
+
+- `PUBLIC-SNAPSHOT-T-001` through `PUBLIC-SNAPSHOT-T-004`: PASS.
+- `PUBLIC-SNAPSHOT-T-005`: N/A documentation-only review with observed evidence.
+
+### Commit
+
+`PENDING - user explicitly requested no commit or push`
+
+---
+
+### Date
+
+`2026-08-15`
+
+### Task
+
+`agents-task-routing-clarifications`
+
+### Completed
+
+- Added the approved nine-entry `Task routing` map to `AGENTS.md`.
+- Clarified when `HANDOFF.md` is read and that it is not reread during an uninterrupted task/session.
+- Clarified that canonical documents are opened for task-required detail, not to reconfirm QUICK-REF facts.
+- Corrected master-plan routing wording so §§0.4-0.5 are available when their listed conditions apply.
+
+### Problems
+
+- The initial closure scope excluded mandatory TEST/LOG/HANDOFF files.
+
+### Solution
+
+- Returned the task to REVIEW, obtained a human-approved closure-only amendment, and limited the
+  additional changes to evidence, lifecycle logging, and handoff state.
+
+### Tests
+
+- `AGENT-ROUTING-T-001` PASS in `logs/test-log.md`.
+- `git diff --check -- AGENTS.md` exited `0`; all nine mappings and required wording checks passed.
+
+### Commit
+
+`PENDING - user explicitly requested no commit`
 
 ---
 
