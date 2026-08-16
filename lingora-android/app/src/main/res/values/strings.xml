@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lingora</string>
+    <string name="title_login">Đăng nhập</string>
+    <string name="title_register">Đăng ký tài khoản</string>
+    <string name="title_foundation_status">Trạng thái Kết nối Nền tảng (M1.6)</string>
+    
+    <string name="label_email">Email</string>
+    <string name="label_password">Mật khẩu</string>
+    <string name="btn_login">Đăng nhập</string>
+    <string name="btn_register">Đăng ký</string>
+    <string name="btn_logout">Đăng xuất</string>
+    <string name="btn_to_register">Chưa có tài khoản? Đăng ký ngay</string>
+    <string name="btn_to_login">Đã có tài khoản? Đăng nhập</string>
+    
+    <string name="btn_test_health">Kiểm tra Health Probes (M1.5)</string>
+    <string name="btn_test_srs">Gọi Mock SRS Inference (/v1/srs/schedule)</string>
+    <string name="btn_test_chat">Gọi Mock Chat Roleplay (/v1/chat/roleplay)</string>
+    
+    <string name="status_logged_in_as">Đang đăng nhập: %1$s</string>
+    <string name="status_session_valid">Phiên đăng nhập: Hợp lệ (JWT Bearer sẵn sàng)</string>
+    <string name="status_ready">Sẵn sàng</string>
+    <string name="status_loading">Đang xử lý...</string>
+    <string name="status_success">Thành công</string>
+    <string name="status_error">Lỗi: %1$s</string>
+    
+    <string name="error_empty_fields">Vui lòng điền đầy đủ email và mật khẩu.</string>
+    <string name="error_invalid_email">Địa chỉ email không hợp lệ.</string>
+    <string name="error_password_length">Mật khẩu phải có ít nhất 6 ký tự.</string>
+    <string name="error_auth_failed">Đăng nhập thất bại: %1$s</string>
+    <string name="error_network">Lỗi kết nối mạng hoặc máy chủ không phản hồi.</string>
+</resources>

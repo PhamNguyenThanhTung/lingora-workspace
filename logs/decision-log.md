@@ -49,6 +49,88 @@ These decisions make the first migration implementable without expanding the app
 
 ---
 
+### M1.6 Preflight Stop
+
+- **category:** `missing-dependency`
+- **Date:** `2026-08-15`
+- **Observed:** `java -version` failed because Java is not on `PATH`; `gradle` and `adb` are unavailable;
+  `JAVA_HOME`, `ANDROID_HOME`, and `ANDROID_SDK_ROOT` are unset; standard Android Studio JDK/SDK paths were
+  absent. No project-owned wrapper exists yet.
+- **Decision:** Stop Condition #3 is active. M1.6 remains `REVIEW`; do not create Android source, generated
+  Gradle files, or install/upgrade dependencies as a workaround. Resume only after Java 17, Android SDK 35,
+  ADB/emulator, and the approved wrapper bootstrap prerequisites are available.
+- **Scope evidence:** only `plans/current-task.md` and this decision log changed; no Android implementation
+  or product behavior was created.
+
+---
+
+### ADR-ID
+
+`ADR-007 — M1.6 Android application foundation approval`
+
+### Date
+
+`2026-08-15`
+
+### Category
+
+`contract-gap` — resolved by explicit human approval of M1.6-D1 through M1.6-D6.
+
+### Context
+
+M1.6 requires a Java/Gradle Android foundation, Supabase Auth session handling, and authenticated connectivity
+to the completed M1.5 mock runtime. Canonical documents lock the main architecture and AI contract but did not
+fully specify Android configuration injection, local debug transport, GoTrue signup/logout and email-confirmation
+behavior, Room schema depth, the temporary connectivity proof surface, or a minimal UI baseline while
+`DESIGN.md` remains a skeleton.
+
+### Decision
+
+- **M1.6-D1:** use Groovy Gradle and a project-owned Gradle 8.9 wrapper. Read `SUPABASE_URL`,
+  `SUPABASE_ANON_KEY`, and `AI_API_BASE_URL` from ignored `local.properties` into generated `BuildConfig`;
+  `.env.example` remains documentation-only.
+- **M1.6-D2:** allow configurable emulator access to `http://10.0.2.2:8000/` through a debug-only network
+  security configuration. Release builds deny cleartext and require HTTPS.
+- **M1.6-D3:** signup uses `POST {SUPABASE_URL}/auth/v1/signup` with only `email` and `password`; login and
+  refresh use canonical GoTrue grants; logout uses Supabase Auth sign-out when supported and always clears the
+  local Android session. The human has temporarily disabled email confirmation in the Supabase dashboard for
+  development/testing; the agent will not change that provider setting through code or API. Test learner
+  credentials remain only in ignored local configuration and are never committed.
+- **M1.6-D4:** include Room 2.6.1 and its annotation processor and reserve `data/local/`, but create no
+  `@Entity`, DAO, or `RoomDatabase` until M2 approves a cache schema.
+- **M1.6-D5:** use a temporary authenticated `FoundationStatusFragment` to call and display parsed SRS/chat
+  mock results without learner-history queries or chat/review persistence.
+- **M1.6-D6:** use a functional default Material Views baseline and the temporary route
+  `Auth -> Foundation Status -> Logout`; no custom brand or dark-mode system is approved.
+
+// LINGORA-DEBT: email confirmation is OFF for dev/testing — must be turned back ON in Supabase dashboard before any production/demo deploy — see M1.6-D3
+
+### Reason
+
+These decisions close the implementation gaps without changing the canonical `/v1/` AI contract, database,
+RLS, FastAPI verifier, or later M2/SRS integration scope. The conservative Room boundary avoids inventing a
+local schema, while debug-only cleartext confines local Uvicorn access to development builds.
+
+### Alternatives considered
+
+- Commit environment values or use a tracked `.env`: rejected because local endpoints/keys and test
+  credentials must remain ignored.
+- Enable global cleartext: rejected because it weakens release transport security.
+- Require email confirmation during current development: deferred by the human for faster local testing;
+  restoration before demo/production is mandatory debt.
+- Create placeholder Room entities: rejected because they would freeze speculative M2 behavior.
+- Implement final SRS/chat screens now: rejected because M1.6 is foundation/connectivity only.
+
+### Consequences
+
+- Positive: M1.6 has an explicit, testable build/Auth/network/UI boundary and may enter IMPLEMENTING.
+- Negative/trade-off: development signup currently omits email verification; local FastAPI access requires a
+  debug-only exception; final product navigation and cache schema remain deferred.
+- Stop rule: provider behavior or JWT compatibility that contradicts M1.6-D3/M1.5 returns the task to REVIEW;
+  the implementation must not weaken the security boundary to pass tests.
+
+---
+
 ### ADR-ID
 
 `REVIEW-2026-08-15-02 - AGENTS routing task closure scope`

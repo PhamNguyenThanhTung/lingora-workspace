@@ -7,15 +7,15 @@
 
 ## Current state
 
-- Last completed task: `m1.5-fastapi-mock-runtime` — DONE and archived to
-  `plans/archive/2026-08-15-m1.5-fastapi-mock-runtime-DONE.md`. Stateless FastAPI mock runtime implemented
-  in `lingora-ai/api/` with `MOCK_MODE=true` baseline, supporting deterministic SRS scheduling, hotel roleplay
-  chat, scenarios list, model metadata, health probes, and standard error envelopes. Evidence: `M1.5-T-001`
-  (15/15 pytest PASS, 0 FAIL).
-- Last approved scope decision: `ADR-004 Amendment — Full Scope Restoration` = `ADR-006`, APPROVED
-  2026-08-15. Scope approved and documented; **feature code not yet authorized**.
-- Last commit: `86dc80a` — docs: align canonical docs with ADR-006 and update workflow state
-- Milestone: M1.5 DONE; Next: M1.6 / M2 (Android Foundation & Lesson Flow).
+- Last completed task: `m1.6-android-application-foundation` — DONE and archived to
+  `plans/archive/2026-08-15-m1.6-android-application-foundation-DONE.md`. Native Java 17 Android Views foundation
+  implemented under `lingora-android/` (package `com.pnttung.lingora`, Gradle 8.9, AGP 8.7.0, minSdk 24, targetSdk 35)
+  with Supabase Auth session handling, OkHttp TokenAuthenticator retry/refresh loop guard, DTO serialization matching M1.5,
+  debug network security config allowing cleartext to `10.0.2.2:8000`, Room 2.6.1 compile boundary (`data/local/package-info.java`),
+  and temporary authenticated `FoundationStatusFragment`. Evidence: `M1.6-T-001` .. `M1.6-T-010` (12/12 unit tests PASS, `assembleDebug` APK build PASS, 27/27 M1.5 pytests PASS).
+- Last approved scope decision: `ADR-007 — M1.6 Android application foundation approval`, APPROVED 2026-08-15.
+- Last commit: `153cde5` — feat(ai): implement stateless fastapi mock runtime for srs and chat (m1.5)
+- Milestone: M1.6 DONE; Next: Milestone M2 (Android Core Lesson Flow & Exercise Engine).
 - Public staging snapshot: `staging/lingora-workspace-public/` — verified, synced.
 
 ---

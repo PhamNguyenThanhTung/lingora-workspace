@@ -6,6 +6,55 @@
 
 ### Task
 
+`m1.6-android-application-foundation - Native Android Application Foundation Implementation`
+
+### Completed
+
+- Scaffolded buildable Java 17 native Android project under `lingora-android/` with package `com.pnttung.lingora`, AGP 8.7.0, Gradle 8.9 wrapper, `minSdk 24`, and `targetSdk 35`.
+- Configured secure build injection in `app/build.gradle` reading `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `AI_API_BASE_URL` from ignored `local.properties` into `BuildConfig`.
+- Implemented debug-only network security config in `app/src/debug/res/xml/network_security_config.xml` allowing cleartext to `10.0.2.2:8000` (emulator host), while keeping release cleartext disabled.
+- Implemented domain models and DTOs in `data/remote/dto/` matching exact M1.5 canonical contract schemas for `/health/ready`, `/v1/srs/schedule`, `/v1/chat/roleplay`, and common `{ "error": { "code", "message", "detail" } }` error envelope.
+- Implemented secure token storage in `util/SessionStore.java` using `EncryptedSharedPreferences` (with JVM unit-test fallback).
+- Implemented `util/AuthInterceptor.java` and `util/TokenAuthenticator.java` handling automatic single-refresh and retry on HTTP 401 without infinite loops.
+- Implemented `data/remote/RetrofitProvider.java` creating dedicated OkHttp/Retrofit clients for Supabase Auth and FastAPI AI mock server.
+- Implemented `data/repository/AuthRepository.java` and `data/repository/AiConnectivityRepository.java`.
+- Established Room 2.6.1 compile-time boundary with `data/local/package-info.java` marker (0 speculative entities per Decision M1.6-D4).
+- Implemented UI layer with `MainActivity`, `LoginFragment`, `RegisterFragment`, `FoundationStatusFragment`, `AuthViewModel`, and `FoundationStatusViewModel`.
+- Implemented bilingual UI strings in `values/strings.xml` (Vietnamese default) and `values-en/strings.xml` (English).
+- Created comprehensive unit test suite in `app/src/test/java/com/pnttung/lingora/` covering DTO contracts, AuthRepository, TokenAuthenticator loop guard, and AiConnectivityRepository (12/12 tests PASS).
+- Verified `gradlew assembleDebug` successfully produces `app-debug.apk`.
+- Verified M1.5 FastAPI mock runtime regression suite (27/27 Pytest PASS).
+
+### Problems
+
+- System JDK was early-access Java 25 from Canary Android Studio, which caused Gradle 8.9 ASM bytecode compatibility error (major version 69).
+- PyCharm's bundled JBR was a headless JRE missing `jlink.exe` required by AGP JdkImageTransform for SDK 35.
+
+### Solution
+
+- Installed official OpenJDK 17 LTS (Temurin-17.0.12+7) to `D:\Android\jdk-17` with full standard toolchain. Builds and tests execute cleanly under Java 17.
+
+### Tests
+
+- `M1.6-T-001` .. `M1.6-T-010` — all 10 test cases PASS in `logs/test-log.md`.
+- `gradlew testDebugUnitTest`: 4 suites, 12 test cases executed, 0 failures, 0 skipped (`BUILD SUCCESSFUL in 31s`).
+- `gradlew assembleDebug`: Debug APK generated at `app/build/outputs/apk/debug/app-debug.apk` (`BUILD SUCCESSFUL in 31s`).
+- `py -3.11 -m pytest -v`: 27/27 passed in 0.15s in `lingora-ai/api/` (0 regressions).
+- `git diff --check`: PASS (0 whitespace errors).
+- Secret hygiene scan: `local.properties` and `.gradle/` ignored, 0 credentials tracked.
+
+### Commit
+
+`PENDING - waiting for human verification and commit authorization`
+
+---
+
+### Date
+
+`2026-08-15`
+
+### Task
+
 `m1.5-fastapi-mock-runtime - Stateless AI FastAPI Mock Service Implementation`
 
 ### Completed

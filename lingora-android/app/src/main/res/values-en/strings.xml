@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lingora</string>
+    <string name="title_login">Login</string>
+    <string name="title_register">Sign Up</string>
+    <string name="title_foundation_status">Foundation Connectivity Status (M1.6)</string>
+    
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="btn_login">Log In</string>
+    <string name="btn_register">Sign Up</string>
+    <string name="btn_logout">Log Out</string>
+    <string name="btn_to_register">Don\'t have an account? Sign up</string>
+    <string name="btn_to_login">Already have an account? Log in</string>
+    
+    <string name="btn_test_health">Check Health Probes (M1.5)</string>
+    <string name="btn_test_srs">Call Mock SRS Inference (/v1/srs/schedule)</string>
+    <string name="btn_test_chat">Call Mock Chat Roleplay (/v1/chat/roleplay)</string>
+    
+    <string name="status_logged_in_as">Logged in as: %1$s</string>
+    <string name="status_session_valid">Session: Valid (JWT Bearer ready)</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_loading">Processing...</string>
+    <string name="status_success">Success</string>
+    <string name="status_error">Error: %1$s</string>
+    
+    <string name="error_empty_fields">Please enter both email and password.</string>
+    <string name="error_invalid_email">Invalid email address.</string>
+    <string name="error_password_length">Password must be at least 6 characters.</string>
+    <string name="error_auth_failed">Authentication failed: %1$s</string>
+    <string name="error_network">Network error or server unreachable.</string>
+</resources>
