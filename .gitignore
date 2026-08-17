@@ -42,3 +42,6 @@ checkpoints/
 # Staging public snapshot (managed as separate git repo)
 staging/
 
+# Backup archives
+*.bundle
+
