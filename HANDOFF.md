@@ -15,8 +15,8 @@
   `git diff 585ca6c` empty under `lingora-ai/` and `lingora-admin/prisma/`).
 - Last approved scope decision: `ADR-008 — Project 1 learner platform reset from native Android to Web`,
   APPROVED 2026-08-17.
-- Last commit: `585ca6c` — feat(android): implement native android application foundation and ai client
-  connectivity (m1.6). The M1.7 reset is staged/uncommitted at handoff time unless a commit was made after.
+- Last commit: `253fbf1` — refactor(platform): reset project 1 learner client from android to web (m1.7,
+  adr-008). The previous commit `585ca6c` is the recovery point for the deleted Android code.
 - Milestone: M1.5 is the last DONE implementation milestone. M1.6 Android is **SUPERSEDED**.
   Next: `M1.6W` (Web learner foundation) — **plan required, not yet written**.
 - Public staging snapshot: `staging/lingora-workspace-public/` — now **pre-reset**; it still describes Android.
