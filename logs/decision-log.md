@@ -49,6 +49,56 @@ These decisions make the first migration implementable without expanding the app
 
 ---
 
+### M1.6W REVIEW re-entry — live Supabase ES256 versus M1.5 HS256 verifier
+
+**Date:** 2026-08-17
+**category:** `runtime-boundary`
+
+After the human supplied `SUPABASE_JWT_SECRET`, M1.5 was restarted without code changes and reported ready in
+mock mode. The focused T-006/T-007 run reached both protected endpoints, and both returned `401`. Sanitized
+inspection of a fresh live Supabase access-token header observed `alg=ES256` with a `kid`. M1.5 explicitly
+rejects every algorithm except HS256 and verifies with `SUPABASE_JWT_SECRET`; that secret cannot validate an
+ES256 signature.
+
+The task therefore returned from TESTING to REVIEW. No Web or FastAPI code was changed. Resolution requires a
+new approved runtime-boundary decision: preferably update M1.5 to verify current Supabase asymmetric JWTs via
+JWKS/ES256, or deliberately reconfigure the Supabase project to legacy HS256 if supported and accepted. The
+milestone cannot be marked DONE while T-006/T-007 fail.
+
+---
+
+### M1.6W dependency audit mitigation
+
+**Date:** 2026-08-17
+**category:** `missing-dependency`
+
+`npm audit --json` reports three high-severity advisories through Next 15.5.23's nested PostCSS and Sharp
+packages. The available automatic fix is Next 16.3.1, which is outside approved D1 (Next 15.x) and would be a
+framework change. Reachability review found no user-controlled CSS/source-map build input, no runtime PostCSS
+execution path, no `next/image` import, and no image upload/processing path in M1.6W. The advisories are
+therefore mitigated by the absent vulnerable paths for this foundation; re-evaluate the Next 15 patch line or
+an approved framework upgrade before adding image/content processing. No `npm audit fix --force` was run.
+
+---
+
+### M1.6W REVIEW re-entry — generated Next.js type declaration omitted from allowlist
+
+**Date:** 2026-08-17
+**category:** `scope-ambiguity`
+
+During the approved M1.6W scaffold, `lingora-web/tsconfig.json` referenced the standard
+`next-env.d.ts` declaration, but that generated file was not named in `Files Expected To Change`. Inspection
+of the installed Next.js 15 runtime confirmed that its TypeScript setup invokes `writeAppTypeDeclarations`
+and writes `<project>/next-env.d.ts` before build/type-aware development.
+
+Per the approved stop condition and `AGENTS.md`, implementation was paused and `plans/current-task.md` was
+returned from `IMPLEMENTING` to `REVIEW`. The requested amendment adds only
+`lingora-web/next-env.d.ts` to the allowlist. It does not change D1-D10, dependencies, architecture, routes,
+security boundaries, acceptance criteria, or test scope. Human re-approval is required before implementation
+resumes.
+
+---
+
 ### M1.6 Preflight Stop
 
 - **category:** `missing-dependency`
@@ -636,5 +686,48 @@ The platform switch is cheap because no learner feature screen had been built ye
 - Positive: zero new technology in the canonical baseline; the security boundary is strengthened, since the learner runtime now holds only the anon key and relies on RLS; `lingora-ai/`, the schema, and all migrations are byte-identical, so M1.3–M1.5 evidence stays valid; learner and admin share one stack, component library, and type source; M5 still holds at week 10.
 - Negative/trade-off: the academic title no longer matches the deliverable (accepted risk, recorded above); the locked v5 baseline is reopened a second time; ~115 doc mentions and 19 traceability rows were rewritten; the M1.6 Android implementation (2,433 lines Java) is discarded as sunk cost; `P1-FR-015` delivery is weaker than the approved Android behaviour, since `6d` only reaches a learner who opens the application, and `docs/02` must state that limitation rather than imply background delivery; KNPM sequence diagrams gain one Route Handler hop.
 - Follow-up: `M1.6W` requires a **new** `plans/current-task.md` at `APPROVED` before any file under `lingora-web/` is created. `staging/lingora-workspace-public/` still holds a pre-alignment snapshot and must be regenerated under its own approved task. A future "merge learner into admin" refactor is blocked by the `ENVIRONMENT.md` prohibition and would need to amend it deliberately.
+
+---
+
+### ADR-ID
+
+`ADR-009 — M1.5 JWT verifier amendment: Supabase JWKS / ES256 compatibility`
+
+### Date
+
+`2026-08-17`
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+M1.5 originally verified incoming Supabase JWT tokens via symmetric `HS256` HMAC validation against `SUPABASE_JWT_SECRET`.
+In live testing with Supabase Auth (GoTrue), modern Supabase projects issue asymmetric `ES256` (ECDSA P-256) JWTs containing a key ID (`kid`).
+Because HMAC cannot cryptographically verify an ECDSA signature, protected calls from learner clients (`lingora-web` Next.js Route Handlers) were rejected with HTTP `401 Unauthorized`.
+
+### Decision
+
+1. Extend `lingora-ai/api/app/config.py` to support `SUPABASE_URL` and `SUPABASE_JWKS_URL` (defaulting to `{SUPABASE_URL}/auth/v1/.well-known/jwks.json`).
+2. Update `lingora-ai/api/app/auth.py` to:
+   - Extract unverified header `alg` and `kid`.
+   - Use `jwt.PyJWKClient` (part of existing `PyJWT[crypto]>=2.8.0`) to resolve public keys from the trusted Supabase JWKS endpoint when `alg == "ES256"`.
+   - Retain `HS256` symmetric verification against `SUPABASE_JWT_SECRET` for offline/test backward compatibility.
+   - Strictly verify signature, `exp`, `sub`, and `role == "authenticated"`.
+   - Fail closed (HTTP 401) on invalid signature, expired token, unknown `kid`, unsupported algorithm, malformed token, or JWKS fetch failure.
+   - Never log tokens or Authorization headers.
+3. No dependencies added (PyJWT[crypto] already available).
+4. No changes to Web code, API contract, database schema, Prisma, migrations, or RLS.
+
+### Reason
+
+Enables cryptographic verification of modern Supabase ES256 JWTs using the project's official JWKS endpoint without degrading security, requiring authentication bypass, or altering contract interfaces.
+
+### Consequences
+
+- Positive: Web Route Handler and mobile clients can authenticate against FastAPI M1.5 seamlessly using live Supabase tokens.
+- Negative/trade-off: Verifier depends on reachable JWKS endpoint or JWKS cache for ES256 tokens.
+- Tests: Existing 27/27 M1.5 pytest tests preserved; new JWKS/ES256 security tests added; live `M1.6W-T-006` and `M1.6W-T-007` hops verified.
 
 ---

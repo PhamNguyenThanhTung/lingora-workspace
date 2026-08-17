@@ -65,7 +65,10 @@ If AI Server is down:
 | Final | Production deploy (Vercel + Render), 3 reports, 3 slides | ⬜ week 12 |
 
 **Current baseline:** M1.5 DONE. The M1.6 Android foundation is SUPERSEDED by `ADR-008` (2026-08-17);
-the learner client is Web. Next task: plan `M1.6W` (Web learner foundation), then M2 (Web lesson flow).
+the learner client is Web. M1.6W is the active Web learner foundation: Auth/session, fixed AI proxy,
+SRS/Roleplay mock connectivity, vi/en UI, and responsive/accessibility baseline. Next after M1.6W is M2
+(Web lesson flow); Requirements & System Analysis / Documentation Recovery is a mandatory separate milestone
+immediately after M1.6W, before report-oriented recovery work.
 
 ---
 

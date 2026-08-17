@@ -1,6 +1,6 @@
 # Lingora Local Environment
 
-This file records the M1.1/M1.2 environment boundary only. It does not install dependencies or authorize feature implementation.
+This file records the M1.1/M1.2 environment boundary and the approved M1.6W Web foundation runtime.
 
 ## Required toolchain from the canonical architecture
 
@@ -10,6 +10,10 @@ This file records the M1.1/M1.2 environment boundary only. It does not install d
 | Admin tooling | Node.js/npm; exact project dependencies belong to an approved subtask | Node.js 24.14.0; npm 11.9.0 |
 | AI API | Python 3.11 | Python 3.11 available through `py -3.11`; the `python` command is not currently usable |
 | Web learner | Node.js/npm; exact project dependencies belong to an approved `M1.6W` subtask | Node.js 24.14.0; npm 11.9.0 |
+
+The M1.6W dependency lockfile is `lingora-web/package-lock.json`. Install with `npm ci` from `lingora-web/`.
+Playwright Chromium is installed separately by `npx playwright install chromium` when the local browser cache
+is absent.
 
 Tool versions in `docs/01-architecture.md` remain authoritative. Detected versions are observations, not automatic approvals to upgrade or change the baseline.
 
@@ -48,7 +52,9 @@ The database is online and canonical, but M1.2 remains in `REVIEW`: no schema, m
 
 ## Current startup state
 
-There are no application projects to start after M1.1. Startup commands will be documented by M1.2, M1.5, and M1.6 after their approved implementations exist.
+For the Web learner foundation, copy `lingora-web/.env.example` to an ignored `.env.local`, provide the two
+public Supabase values and fixed server-only `AI_API_BASE_URL`, then run `npm run dev` in `lingora-web/`.
+The M1.5 FastAPI runtime must run separately with `MOCK_MODE=true` for protected SRS/Roleplay checks.
 
 ## Git repositories & remote strategy
 

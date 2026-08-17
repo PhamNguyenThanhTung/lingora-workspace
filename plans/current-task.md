@@ -1,6 +1,6 @@
 # Task
 
-m1.7-web-platform-reset
+m1.6w-web-learner-foundation
 
 ## Status
 
@@ -8,436 +8,356 @@ DONE
 
 Allowed values: `DRAFT / REVIEW / APPROVED / IMPLEMENTING / TESTING / DONE / BLOCKED`
 
-## Supersedes
-
-The previous unapproved draft in this same file (`m1.7-platform-migration-android-to-web`). It was never
-`APPROVED` and produced no other artifact in the repository, so it is replaced, not archived. There is now
-exactly one Web plan.
-
 ## Plan Boundary
 
-This task is **documentation, scope, and reset only**. It creates no file under `lingora-web/`, installs no
-dependency, writes no schema change or migration, and does not touch `lingora-ai/`.
+This plan is **not implementation authorization** while its status is `REVIEW`. No file under
+`lingora-web/` may be created and no dependency may be installed until a human changes this task to
+`APPROVED` and completes the Approval section.
 
-Deletion of `lingora-android/` is **in scope for this task but gated**: it happens only after this file reads
-`APPROVED`, never during REVIEW. Git history is not rewritten — see `M1.7-D3`.
+`M1.6W` is a Web foundation milestone only. Its single purpose is to prove that the learner Web boundary can
+authenticate a learner, maintain the approved server-side session, and call the two protected M1.5 mock
+endpoints through a Next.js Route Handler.
 
-The `lingora-web/` learner foundation is a separate task (`M1.6W`, see `M1.7-D10`), planned only after this
-one is `DONE`.
+Human decisions locked on 2026-08-17:
+
+1. `6b` Web Push + scheduler is **DEFERRED, not cancelled**. It stays on the roadmap, outside `M1.6W`.
+2. `6d` in-app reminder belongs to a later feature milestone, outside `M1.6W`.
+3. Requirements & System Analysis / Documentation Recovery starts only after `M1.6W` is `DONE`.
 
 ## Objective
 
-Reset the platform layer of the canonical baseline from "Project 1 delivers a native Android learner
-application" to "Project 1 delivers a web learner application", delete the superseded Android
-implementation, and leave the database, RLS/security boundary, `/v1/` API contract, and all ML/NLP scope
-unchanged.
+Create a buildable `lingora-web/` foundation using the approved Web stack and demonstrate:
 
-## Human decisions already locked (2026-08-17)
+`register/login -> server-side session -> protected foundation route -> typed repository/service ->`
+`Next.js AI Route Handler -> protected M1.5 MOCK_MODE endpoint -> localized responsive result UI`.
 
-Decided by the human before this plan was written. Recorded, not re-litigated.
+M1.6W establishes only:
 
-| # | Locked decision |
-|---|---|
-| 1 | Web is the primary and only learner platform from now on. |
-| 2 | Backend stays: `lingora-ai/`, `lingora-admin/prisma/` (schema, 3 migrations, seed), Supabase Auth/RLS/RPC/Storage, the `/v1/` contract, and all M1.3–M1.5 evidence. `lingora-ai/` is not modified. |
-| 3 | `lingora-android/` implementation is deleted; a short `SUPERSEDED` record is kept. |
-| 4 | Reminder is **not** foundation work. `6b` (Web Push + subscription table + scheduler) is **DEFERRED, not cancelled**; `6a` (PWA / Add to Home Screen) is deferred to the polish phase. |
-| 5 | Feature and UX depth outrank both notification options. Roadmap order is fixed by `M1.7-D11`. |
-| 6 | One single Web plan. No stacked proposal files. |
-| 7 | No code until this plan reads `APPROVED`. |
+1. Next.js 15 App Router + React 19 + TypeScript 5 + Tailwind 4.
+2. Supabase registration/login, server-side session read/refresh, route protection, and logout via
+   `@supabase/ssr`.
+3. A fixed typed AI client boundary with an 8-second timeout and canonical error mapping.
+4. Narrow SRS and Roleplay mock repositories/services only.
+5. Login, register, and one authenticated foundation status surface; no feature screen.
+6. `vi` default/fallback and `en` switching without an i18n dependency.
+7. Responsive/accessibility verification on mobile, tablet, and desktop.
 
-## Verified repository state at commit `585ca6c`
+## Canonical Basis
 
-| Fact | Verified value |
-|---|---|
-| Top-level `prisma/` or `supabase/` directories | **Do not exist.** Both live under `lingora-admin/prisma/`. |
-| `lingora-admin/` tracked contents | `prisma/schema.prisma` (308 lines), 3 migrations (~950 lines SQL), `seed.js` (527 lines), `m1_3_security_test.js`, `m1_4_seed_test.js`, `package.json`, `.env.example`, `README.md`. **No Next.js, no `src/`.** |
-| `lingora-ai/api` | 964 lines Python, 27/27 pytest PASS (evidence `M1.6-T-010`). |
-| `lingora-android/` tracked files | **61** (the other ~740 on disk are already-ignored `build/`, `.gradle/`, `.idea/`, `local.properties`). |
-| Stale web-proposal files in `plans/` | **None.** Only this file, uncommitted. |
-| M1.6 evidence rows in `logs/test-log.md` | `M1.6-T-001` .. `M1.6-T-010`, lines 150–159, all PASS. |
+- `ADR-008` in `logs/decision-log.md`: Web boundary, Route Handler AI hop, `M1.6W` scope, deferred reminders,
+  and forbidden secrets/runtime coupling.
+- `docs/00-master-plan.md` §0.2, §0.4, §4.1, §5.4-5.5: mock-first delivery, roadmap, environment boundary,
+  and production AI URL.
+- `docs/01-architecture.md` §1.1-1.7 and §3.1-3.2: Web responsibilities, repository shape, Route Handler,
+  stack, timeout, i18n, and security.
+- `docs/02-requirements.md`: `P1-FR-001`; foundation portions of `P1-FR-005`/`P1-FR-007`;
+  `P1-FR-010`; `P1-NFR-001` through `P1-NFR-004`.
+- `docs/03-api-contract.md`: exact SRS/Roleplay/error shapes and compatibility rules. Read-only in M1.6W.
+- `docs/05-traceability-matrix.md`: final SRS fallback, persistence, and Roleplay UX are later work.
+- `DESIGN.md`: `Operate` mode, accessibility, localization, resilient states, responsive verification;
+  full visual identity remains undecided.
+- `HANDOFF.md`: M1.7 is DONE; Android, reminder, DB/API/ML/NLP and staging work remain prohibited.
 
-Two consequences that change the shape of the reset:
+## Verified Official Sources
 
-1. `lingora-admin/` is the **Prisma/migration owner**, not a completed Admin foundation. "Keep `lingora-admin`"
-   and "keep Prisma/RLS/seed" are one decision, not two. The Admin UI is still unbuilt work in weeks 6–7.
-2. The working tree is already clean of superseded Web artifacts. The reset is therefore: rewrite this file,
-   delete 61 Android files, and rewrite the platform layer of the canonical docs. Nothing else to sweep.
+- Next.js 15 App Router: https://nextjs.org/docs/15/app/getting-started/installation
+- Supabase SSR Auth: https://supabase.com/docs/guides/auth/server-side/nextjs
+- Tailwind CSS 4 + Next.js: https://tailwindcss.com/docs/guides/nextjs
+- TanStack Query 5: https://tanstack.com/query/v5/docs/framework/react/overview
+- Playwright: https://playwright.dev/docs/intro
+- Vitest: https://vitest.dev/guide/
 
-## Canonical basis
+Source review found one material detail: `@supabase/ssr` currently defaults to `httpOnly: false`, while
+ADR-008 requires an httpOnly session. Decision D2 therefore uses server-side Auth operations and explicitly
+sets/tests the approved cookie attributes instead of relying on the SDK default.
 
-`ADR-002` (platform clause only), `docs/00-master-plan.md` §0.4/§0.5/§5.4/§5.6 and `:108`/`:111`,
-`docs/01-architecture.md` §1.1/§1.7/§3.1–3.2 and `:135`, `docs/02-requirements.md` (`P1-FR-001`..`P1-FR-015`,
-`P1-NFR-001`..`-004`), `docs/03-api-contract.md`, `docs/04-database-design.md` `:433`,
-`docs/05-traceability-matrix.md`, `docs/QUICK-REF.md`, `DESIGN.md`, `ADR-006` item 3a,
-`plans/gap-analysis-de-bai-vs-master-plan.md` §4.3, `AGENTS.md` change controls 1–8.
+## Preconditions
 
-## Decisions
+1. M1.3 Auth/RLS, M1.4 seed, M1.5 mock runtime, and M1.7 Web reset remain DONE.
+2. Human approval of D1-D10 below.
+3. Node.js 24.14.0 and npm 11.9.0 remain available.
+4. Ignored local configuration supplies Supabase values, fixed AI URL, and dedicated E2E learner credentials.
+5. M1.5 runs with `MOCK_MODE=true`; Playwright Chromium is available.
 
-### M1.7-D1 — Web stack
+## Decisions Submitted For Approval
 
-Next.js 15 App Router + TypeScript 5 + Tailwind 4 + shadcn/ui, deployed on Vercel. This is already the
-approved Admin stack at `docs/01-architecture.md:137–138`, so the switch introduces **zero new technology** to
-the canonical baseline. Rejected: Vite SPA (loses server-side session handling and the shared stack saving).
+### M1.6W-D1 — Dependency boundary
 
-### M1.7-D2 — `lingora-web/` is a separate fourth boundary
+`lingora-web/` is an independent npm project with one committed `package-lock.json`.
 
-`lingora-web/` receives only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. It must never
-hold `SUPABASE_SERVICE_ROLE_KEY`, never import Prisma, and never open a direct database TCP connection.
-Rejected: merging learner + admin into one Next.js app, because that places the service-role key in the same
-runtime as learner-facing routes and reduces `P1-NFR-001` from a boundary to a convention.
+Authorized runtime dependencies: `next` 15.x, `react`/`react-dom` 19.x, `@supabase/supabase-js` 2.x,
+`@supabase/ssr`, `@tanstack/react-query` 5.x, plus only the shadcn support packages needed by the copied
+foundation components: `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`,
+`@radix-ui/react-slot`.
 
-### M1.7-D3 — `lingora-android/` deleted from the working tree, Git history preserved
+Authorized dev dependencies: TypeScript 5.x, Tailwind 4.x and official PostCSS adapter, ESLint/Next config,
+Vitest, jsdom, Testing Library, Playwright, and `@axe-core/playwright`. Exact compatible patches are recorded
+in `package.json`/lockfile during implementation. No other dependency is authorized.
 
-The 61 tracked files under `lingora-android/` are deleted in one commit. Git history is **not** rewritten:
-no `filter-branch`, no `rebase`, no force-push. Commit `585ca6c` remains the recoverable record, and
-`AGENTS.md` forbids history rewriting regardless.
+First install runs with lifecycle scripts disabled; any required script is inspected and recorded before
+allowing it. The lockfile is verified by clean install, audit, and signature/provenance checks where supported.
 
-Evidence is not deleted. `logs/test-log.md` rows `M1.6-T-001`..`M1.6-T-010` stay verbatim — they are cited by
-the report and by `plans/archive/2026-08-15-m1.6-android-application-foundation-DONE.md`. Their `Report Ref`
-column becomes `SUPERSEDED`. A four-line record replaces `lingora-android/README.md` content in
-`logs/development-log.md`:
+### M1.6W-D2 — Auth and httpOnly session
 
-```text
-M1.6 Android — SUPERSEDED (2026-08-17, ADR-008)
-Reason: platform switched to Web before any feature screen was implemented.
-Scope reached: auth + AI connectivity foundation only (Login, Register, FoundationStatus).
-M1.3–M1.5 backend, schema, RLS, and /v1/ contract remained unchanged. Code recoverable at 585ca6c.
-```
+Registration, login, refresh, session read, and logout run through Server Actions/server-only helpers. Tokens
+never enter `localStorage`, `sessionStorage`, IndexedDB, rendered HTML, or a hand-written token store.
 
-### M1.7-D4 — AI calls go through a Next.js Route Handler
+The required runtime sequence is:
+`Browser -> Server Action -> Supabase Auth -> httpOnly cookie -> Middleware/Server Component -> Foundation`.
+The browser does not call Supabase Auth directly and never receives an
+`access_token` for client-side storage.
 
-Browser → `lingora-web` Route Handler → `lingora-ai`. The handler forwards the Supabase JWT verbatim,
-persists nothing, and owns the 8-second `P1-FR-005` timeout. `lingora-ai/api/app/main.py` is **not edited**,
-so its 27 pytest results remain valid evidence. Rejected: direct browser → FastAPI, which would require a
-CORS change to a DONE milestone. Consequence: KNPM sequence diagrams gain one hop and must show it honestly.
+Supabase SSR cookies are explicitly configured/tested as `httpOnly`, `sameSite=lax`, `secure` outside local
+HTTP development, and path `/`. Middleware refreshes via the SDK, updates response cookies, redirects signed-
+out users, and cannot enter a refresh loop.
 
-### M1.7-D5 — TanStack Query persisted cache replaces Room
+M1.6W creates no authenticated browser Supabase client. The later Course/Lesson milestone must separately
+plan browser data access without weakening this server-only session boundary.
 
-Room was P1 and `docs/00-master-plan.md:108` already permits cutting offline cache. Estimated 0.5 day.
+### M1.6W-D3 — AI environment clarification
 
-### M1.7-D6 — Reminder: `6d` at feature level, `6a` at polish, `6b` DEFERRED with a re-entry condition
+`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are the only public values.
+`AI_API_BASE_URL` is a **server-only, non-secret deployment value** used only by fixed Route Handlers. It is
+never request-controlled or exposed with `NEXT_PUBLIC_`.
 
-The human rejected `6b` and `6a` as foundation work on 2026-08-17. Both rejections are accepted. What must not
-follow from them is dropping `P1-FR-015` entirely, for one verified reason:
+Approval confirms ADR-008's “receives only” clause forbids additional credentials/secrets, not the fixed
+non-secret upstream URL already required by `docs/00-master-plan.md` §5.4 and ADR-008's Route Handler. The
+clarification is recorded in the decision log; it adds no endpoint, runtime, or secret.
 
-> The đề bài names six functions: "học từ vựng, ngữ pháp, nghe, kiểm tra, lên lịch học tập và **nhắc nhở
-> người học học tập theo lịch biểu**" (`plans/gap-analysis-de-bai-vs-master-plan.md:20`, `docs/00:7`).
+### M1.6W-D4 — Fixed AI proxy
 
-`ADR-006` created `P1-FR-015` precisely to close that gap. `gap-analysis` §5.1 measured coverage at
-**1.5–2.5 / 6** before `ADR-006` and warned that the shortfall "hiện ngay trên sơ đồ" in the Use Case Diagram
-and "không thể bù bằng chất lượng AI". Demoting `P1-FR-015` to Nice-to-have returns coverage to that state
-and reopens `ADR-004`'s already-resolved deferral — a change control 6 event against
-`docs/00-master-plan.md:111`.
+Only `/api/ai/srs` and `/api/ai/chat` exist. Each verifies the server-side session, validates/bounds the
+corresponding canonical request, forwards the current JWT to a fixed `AI_API_BASE_URL` path, aborts at 8,000
+ms, maps canonical success/error payloads, persists nothing, and logs no token/password/auth header/history.
 
-So this plan splits the requirement from its delivery mechanism, which is where the cost actually lives:
+The request cannot choose URL, host, path, method, or authorization, preventing an open proxy/SSRF surface.
+Model output is escaped text only.
 
-| Option | Mechanism | Cost | Status |
-|---|---|---|---|
-| **6d** | In-app reminder. On app load, if the current local day has no qualifying activity and the current time falls inside the learner's chosen window, show a persistent in-app banner plus a badge on the study entry point. Window stored on `Profile` next to `dailyGoalMin`. No service worker, no table, no cron, no secret, no OS permission. | **~0.5–1 day** | **Chosen as the `P1-FR-015` mechanism.** Feature-level: it belongs to the Progress/Profile milestone. **Not part of `M1.6W`**, and `M1.6W` must not be blocked on it. |
-| 6a | Installable PWA + service worker + Notification API. Adds OS-level delivery while the browser is alive. | ~3 days | **DEFERRED** to the polish phase. Additive on top of `6d`. First thing cut if week 10 is tight. |
-| 6b | Web Push + `push_subscriptions` + RLS + scheduler + VAPID secrets. | ~5–7 days | **DEFERRED — not cancelled.** See the re-entry clause below. |
-| 6c | Demote `P1-FR-015` to Nice-to-have. | 0 days | **Not recommended.** Drops one of the six đề bài functions. Available to the human at approval; would require an explicit `ADR-008` clause amending `docs/00:111`. |
+### M1.6W-D5 — Repository/service scope
 
-`P1-FR-015` therefore stays **Must**, and its `docs/02:242` acceptance criteria are rewritten to describe
-in-app delivery within the chosen window — never an exact time, never a claim of background delivery. That
-wording is honest about `6d` and survives unchanged if `6a` or `6b` is added later.
+Only `AuthService`, `AiRepository`, and canonical TypeScript SRS/Roleplay/error types are created. No course,
+lesson, vocabulary, exercise, progress, profile, storage, review, reminder, or notification repository exists.
+TanStack Query remains because it is an approved `docs/01-architecture.md` stack dependency and future feature
+repositories will use the same boundary. In M1.6W it is only a provider/async-state boundary; no speculative
+domain cache or persistence is populated.
 
-#### `6b` deferral clause — to be recorded verbatim in `ADR-008`
+### M1.6W-D6 — Routes and states
 
-Vietnamese wording fixed by the human on 2026-08-17, to be copied into `ADR-008` unchanged:
+Only `/login`, `/register`, protected `/foundation`, and session-aware `/` exist. Foundation can trigger one
+deterministic SRS request and one `hotel_booking` Roleplay request and render `is_mock`, `model_version`,
+latency, and a small result summary.
 
-```text
-6b — Web Push + scheduler: DEFERRED. Không thuộc M1.6W. Chỉ xem xét lại sau khi core learner
-features và UX hoàn thành, nếu background reminder được chứng minh là cần thiết.
-```
+UI states distinguish validation, invalid credentials, unauthorized/expired session, connectivity, timeout,
+server/model unavailable, malformed response, loading, and success without raw internals.
 
-Supporting detail recorded alongside it, so a later `6b` decision starts from measured facts:
+### M1.6W-D7 — Locale
 
-```text
-Status: DEFERRED, not rejected. Re-entry needs a new plan and a new ADR; it does not require
-reversing ADR-008, because ADR-008 defers 6b rather than cancelling it.
-Known cost at deferral time (2026-08-17): one new table (push_subscriptions), one migration,
-owner-only RLS policies, a server-side sender outside lingora-web, a scheduled trigger, and VAPID
-secrets — which would also amend ADR-006's "zero new tables" clause.
-```
+`vi` is default/fallback; `en` is the only alternate. A typed catalog and server-readable locale cookie are
+sufficient; no i18n dependency. Switching preserves the route. Roleplay `lang=en` remains learned language,
+not UI locale.
 
-`ADR-008` amends `ADR-006` item 3a in exactly one place — the mechanism — and leaves its
-"zero new tables" and "no server-side delivery" clauses true and unamended **for as long as `6b` stays
-deferred**.
+### M1.6W-D8 — Limited UI authority
 
-### M1.7-D7 — Deliverable substitutions
+Approval authorizes only a functional `Operate` baseline for these routes and a narrow `DESIGN.md` update:
 
-`app-release.apk` → production Vercel URL + Lighthouse report. An installable PWA is **not** a required
-deliverable, since `6a` sits in the polish phase and may be cut. APK signing runbook → Vercel deploy runbook.
-Android MVVM class diagram → web data/domain class diagram (route segment → hook/store →
-repository → Supabase client). `docs/00` §0.5/§5.4/§5.6 change accordingly.
+- system font stack with vi/en glyph support; light theme only;
+- restrained neutral UI plus distinct semantic states meeting WCAG AA; no full brand palette/logo;
+- visible focus, keyboard reachability, touch targets, semantic landmarks/labels/live regions, and no
+  color-only meaning;
+- no brandization, marketing hero, illustration, gradients, or motion.
 
-### M1.7-D8 — Test IDs preserved
+Final navigation, brand, feature composition, custom typography, imagery, gamification, and full design
+system remain later decisions.
 
-`P1-T-001`..`P1-T-019` keep their IDs and intent. Espresso → Playwright, JUnit 4 + Mockito → Vitest.
-`docs/05` rows are rewritten in place; no row is deleted and no ID is renumbered.
+### M1.6W-D9 — Responsive targets
 
-### M1.7-D9 — `ADR-008` scope
+No horizontal scroll/overlap at 360x800, 768x1024, and 1440x900 in both locales. Auth stays single-column;
+foundation controls stack on small screens. Text does not scale with viewport width.
 
-`ADR-008` supersedes **only** the platform clauses of `ADR-002` (the academic title, and "Project 1 owns the
-Android/mobile product") and amends `ADR-006` in exactly one place: item 3a's delivery mechanism
-(`WorkManager` + `SharedPreferences` → in-app reminder per `M1.7-D6`). `ADR-006`'s "zero new tables" and
-"no server-side delivery, no device token, no reminder entity" clauses **remain true and unamended**.
-`ADR-001`, `ADR-003`, `ADR-004`, `ADR-005`, `ADR-007` are untouched, as are `ADR-002`'s locale, streak,
-exercise-type, `record_review`, and metadata clauses.
+### M1.6W-D10 — Reminder and documentation boundary
 
-### M1.7-D10 — The new web foundation milestone is `M1.6W`, not a reused `M1.6`
+No reminder code. `6d` stays in Progress/Profile; `6a`/`6b` stay deferred, with `6b` retained on the roadmap.
+Requirements & System Analysis / Documentation Recovery begins only after M1.6W is DONE and is a required
+follow-up milestone, not optional cleanup. That milestone must cover requirements collection/analysis, actors
+and Use Cases, functional/non-functional requirements, ERD/SQL/data model, data dictionary, architecture,
+traceability, maintainers' project documentation, and report-ready evidence. This task updates only lifecycle
+records and the narrow D3/D8 architecture/environment/design clarification.
 
-The human asked for "a new M1.6 Web foundation" rather than a patched Android M1.6. Agreed in substance:
-nothing from the Android M1.6 is edited or reused. But the literal ID `M1.6` is already consumed by
-`logs/test-log.md:150–159` (`M1.6-T-001`..`M1.6-T-010`) and by
-`plans/archive/2026-08-15-m1.6-android-application-foundation-DONE.md`. Reusing it would make
-`M1.6-T-003` ambiguous across two platforms in the same log.
+## Scope Included
 
-The web foundation is therefore `M1.6W` with evidence IDs `M1.6W-T-001`..`n` — same roadmap slot, grep-unique
-against the Android rows. This reset task keeps the ID `M1.7`.
+1. Create `lingora-web/` project/config/lockfile/env template/README.
+2. Implement server-only Supabase Auth, cookie refresh middleware, and route protection.
+3. Implement typed canonical models, fixed AI proxy handlers, timeout/error mapping.
+4. Implement narrow Auth/AI service and repository boundaries plus Query provider.
+5. Implement login/register/foundation/logout and vi/en switching.
+6. Add Vitest, Playwright, accessibility, and responsive tests.
+7. Make only D3/D8 documentation clarifications.
+8. Run/log `M1.6W-T-001`..`T-013`, review quality/security, snapshot/archive, update handoff, then commit.
 
-### M1.7-D11 — Roadmap order
+## Explicitly Out Of Scope
 
-`M1.6W` foundation → Auth → UX/navigation shell → Course/Lesson → Vocabulary/Exercise → SRS →
-Roleplay → Progress/Profile (**`6d` reminder lands here**) → polish (**`6a` PWA / Add to Home Screen
-lands here**). `6b` stays DEFERRED and is not scheduled.
+- Course/Lesson/Vocabulary/audio/Exercise/Progress/Profile/streak/daily-goal/final SRS/final Roleplay screens.
+- `record_review`, `get_due_srs_cards`, final fallback, chat persistence, or domain cache.
+- `6d`; service worker, manifest, PWA, Notification API, push subscription/table/scheduler/VAPID/sender.
+- Requirements analysis, Use Cases, ERD/SQL, data dictionary, report diagrams, documentation recovery.
+- Changes under `lingora-ai/`, `lingora-admin/prisma/`, `staging/`, DB/RLS/RPC/Storage, or API contract.
+- Service-role/JWT secret/database URL/Prisma/direct DB/browser token storage.
+- Android, complete branding, custom font, dark theme, final navigation, marketing page, or deployment.
 
-Add to Home Screen is thereby a distribution and experience layer at the end, not a foundation dependency.
+## Files Expected To Change
 
-### M1.7-D12 — `M1.6W` boundaries are web-only, narrowly scoped
+### Project/config
 
-`M1.6W` is planned and approved in its own task after this one is `DONE`. This decision fixes its shape now so
-the doc rewrite in scope item 2 describes the right thing.
+- `lingora-web/package.json`, `package-lock.json`, `tsconfig.json`, `next.config.ts`, `next-env.d.ts`
+- `lingora-web/eslint.config.mjs`, `postcss.config.mjs`, `vitest.config.ts`, `playwright.config.ts`
+- `lingora-web/components.json`, `.env.example`, `README.md`
 
-**`M1.6W`'s single purpose:** prove the web learner foundation can authenticate a learner and call the two
-protected M1.5 mock endpoints. Nothing else is a foundation acceptance criterion.
+### App/routes
 
-Nine boundaries, and no others:
+- `lingora-web/src/app/globals.css`, `layout.tsx`, `page.tsx`
+- `lingora-web/src/app/(auth)/login/page.tsx`, `register/page.tsx`
+- `lingora-web/src/app/(learner)/foundation/page.tsx`
+- `lingora-web/src/app/api/ai/srs/route.ts`, `api/ai/chat/route.ts`
+- `lingora-web/src/middleware.ts`
 
-| # | Boundary | Contents at `M1.6W` |
+### Components/data boundary
+
+- `lingora-web/src/components/auth/auth-form.tsx`
+- `lingora-web/src/components/foundation/foundation-status.tsx`
+- `lingora-web/src/components/locale-switcher.tsx`, `providers.tsx`
+- `lingora-web/src/components/ui/{alert,button,card,input,label}.tsx`
+- `lingora-web/src/features/auth/actions.ts`, `auth.service.ts`
+- `lingora-web/src/features/ai/ai.repository.ts`, `contracts.ts`
+- `lingora-web/src/lib/api/error.ts`, `proxy.ts`
+- `lingora-web/src/lib/query/client.ts`
+- `lingora-web/src/lib/supabase/server.ts`, `middleware.ts`
+- `lingora-web/src/lib/utils.ts`
+- `lingora-web/src/i18n/config.ts`, `messages/vi.ts`, `messages/en.ts`
+
+### Tests
+
+- `lingora-web/tests/setup.ts`
+- `lingora-web/tests/unit/{auth.service,ai.repository,api.proxy,i18n}.test.ts`
+- `lingora-web/tests/component/{auth-form,foundation-status}.test.tsx`
+- `lingora-web/tests/e2e/{auth,foundation,accessibility-responsive}.spec.ts`
+
+### Lifecycle/narrow docs
+
+- `DESIGN.md`, `ENVIRONMENT.md`, `docs/01-architecture.md`, `docs/QUICK-REF.md`
+- `logs/decision-log.md`, `logs/test-log.md`, `logs/development-log.md`
+- `plans/current-task.md`
+- `plans/approved/2026-08-17-m1.6w-web-learner-foundation-APPROVED.md`
+- `plans/archive/2026-08-17-m1.6w-web-learner-foundation-DONE.md`
+- `HANDOFF.md`
+
+Must not change: `lingora-ai/`, `lingora-admin/prisma/`, `staging/`, `.codex/`, `.agents/`,
+`docs/03-api-contract.md`, `docs/04-data-model.md`, schema/migrations/seed. Any additional implementation
+file returns the task to REVIEW before editing.
+
+## Implementation Order After Approval
+
+1. Snapshot approved plan; status `IMPLEMENTING`.
+2. Resolve/record exact dependencies; inspect lockfile/scripts.
+3. Scaffold Next/Tailwind/shadcn and root layout.
+4. Implement Auth/cookies/middleware/route protection and tests.
+5. Implement AI types/proxy/routes/timeout/error tests.
+6. Implement repositories, Query provider, UI, vi/en.
+7. Apply D8 responsive/accessibility and D3/D8 docs.
+8. Status `TESTING`; run full plan and quality/security review.
+9. Log evidence, update handoff, mark/archive DONE, Conventional Commit.
+
+## Acceptance Criteria
+
+1. Register/login/logout work; invalid input/credentials are localized and recoverable.
+2. Login creates approved cookie attributes; server reload persists session; logout clears it.
+3. Signed-out `/foundation` redirects; signed-in renders; refresh cannot loop.
+4. No auth token in browser storage, HTML, client logs, screenshots, or committed files.
+5. Both internal handlers call protected M1.5 mocks and render `is_mock: true` results.
+6. AI calls abort within 8 seconds and correctly map 401/validation/timeout/connectivity/503/malformed errors.
+7. Client cannot control upstream URL/path/method/auth; input is bounded.
+8. Used fields match `docs/03`; no FastAPI/contract change.
+9. vi default/fallback and en switch cover every visible string.
+10. Keyboard/focus/labels/landmarks/live regions/touch targets/contrast pass.
+11. Both locales pass 360x800, 768x1024, 1440x900 without overlap/clip/horizontal scroll/layout shift.
+12. Only login/register/foundation exists; no feature/reminder/PWA/push code.
+13. Frozen boundaries are unchanged and all required evidence/logs exist before DONE.
+
+## Test Plan
+
+| ID | Command / method | Required evidence |
 |---|---|---|
-| 1 | Web application | Next.js 15 App Router project under `lingora-web/`, TypeScript 5, Tailwind 4 |
-| 2 | Authentication / session | Supabase Auth via `@supabase/ssr`; httpOnly cookie session; server-side read + SDK-managed refresh; middleware route protection |
-| 3 | API client | Typed fetch layer: Supabase client + the AI Route Handler of `M1.7-D4`; owns the 8-second `P1-FR-005` timeout and error-envelope mapping |
-| 4 | Repositories / services | The access pattern, established with only what boundaries 5 and 6 need. **No course, lesson, vocabulary, or profile repository at `M1.6W`** — those arrive with their own feature milestones |
-| 5 | SRS mock connectivity | One call path to `POST /v1/srs/schedule` against `MOCK_MODE=true` |
-| 6 | Roleplay mock connectivity | One call path to `POST /v1/chat/roleplay` against `MOCK_MODE=true` |
-| 7 | UI foundation | shadcn/ui setup, root layout, login + register + one authenticated status route. No feature screen |
-| 8 | i18n vi/en | vi default with vi fallback, per the `ADR-002` locale clause (unamended) |
-| 9 | Responsive / accessibility baseline | Mobile-first breakpoints, keyboard reachability, focus visibility, contrast — the `P1-NFR-002`..`-004` landing point |
+| `M1.6W-T-001` | `npm ci`; build, lint, typecheck | Versions, commands, exit codes, output |
+| `M1.6W-T-002` | Unit/component suite | Auth/cookies/middleware/locale/repository/proxy/timeout/error PASS |
+| `M1.6W-T-003` | Playwright signed-out route | Redirect with no loop |
+| `M1.6W-T-004` | Live Supabase Auth E2E with ignored credentials | Login, reload, logout, invalid credentials; secrets redacted |
+| `M1.6W-T-005` | Registration verification on approved test project | One learner registration; redacted account evidence |
+| `M1.6W-T-006` | SRS via `/api/ai/srs`, M1.5 `MOCK_MODE=true` | Protected deterministic `is_mock: true` result |
+| `M1.6W-T-007` | Roleplay via `/api/ai/chat` | Protected `hotel_booking`, `is_mock: true`, `ai_reply` |
+| `M1.6W-T-008` | Timeout/401/422/503/malformed matrix | Expected localized recoverable states; no raw detail |
+| `M1.6W-T-009` | Playwright 3 viewports x 2 locales | Inspected screenshots; no layout defects |
+| `M1.6W-T-010` | Keyboard + axe | No serious/critical violation; focus/live status verified |
+| `M1.6W-T-011` | Storage/cookie inspection + secret scan | No browser token/secret; cookie attributes observed |
+| `M1.6W-T-012` | npm audit/signatures + dependency review | No unmitigated reachable high/critical issue |
+| `M1.6W-T-013` | Frozen-boundary diff + M1.5 pytest | Named boundaries unchanged; 27/27 PASS |
 
-Forbidden inside `M1.6W`, and to be removed from the canonical docs by this task: Android, Gradle/AGP,
-Retrofit/OkHttp/Gson, Room, Android lifecycle and `ViewModel`-as-Android-component, `SharedPreferences`,
-`TokenAuthenticator`/`AuthInterceptor`/`SessionStore` or any hand-rolled token store, `POST_NOTIFICATIONS`,
-APK, `minSdk`/`targetSdk`, and any Android UI assumption (Fragment, navigation graph, ViewBinding, XML layout).
+All rows require environment, exact command/method, observed output, exit code where applicable, and observed
+`PASS`/`FAIL` in `logs/test-log.md`.
 
-Also forbidden inside `M1.6W` per `M1.7-D6`/`M1.7-D11`: service worker, web manifest, PWA install flow,
-notification permission prompt, push subscription code, scheduler, and the `6d` reminder itself.
+## Testing Status — 2026-08-17
 
-**`M1.6W` non-goals, stated as prohibitions:** it modifies no file under `lingora-ai/`, no `schema.prisma`, no
-migration, no `seed.js`, no Supabase SQL/RLS/RPC/Storage object, and **no line of
-`docs/03-api-contract.md`**. It consumes the existing contract as-is. It introduces no new database table and
-no new backend runtime.
+- PASS: `M1.6W-T-001` through `T-005`, and `T-008` through `T-013`.
+- BLOCKED: `M1.6W-T-006` and `T-007`. Live Supabase Auth is configured and passed, but the workspace does not
+  contain the `SUPABASE_JWT_SECRET` required by the protected M1.5 FastAPI runtime to verify the forwarded
+  learner JWT. Repository/proxy/component contract tests and the independent M1.5 27/27 regression pass, but
+  they do not replace the approved live protected-hop evidence.
+- The task remains `TESTING`; it must not move to `DONE`, archive, update HANDOFF, or commit until T-006/T-007
+  are observed PASS with the matching server-side secret supplied without logging it.
 
-## Requirement impact
+## Review Findings And Controls
 
-| Requirement group | Impact |
+| Risk | Control |
 |---|---|
-| `P1-FR-001`..`P1-FR-014` | Client technology changes; acceptance criteria unchanged. |
-| `P1-FR-015` | Stays **Must**. Mechanism replaced with in-app delivery within the chosen window (`6d`). No new entity, no API, no device token. Lands in the Progress/Profile milestone — **not in `M1.6W`**. |
-| `P1-NFR-001` (security) | Strengthened: the learner runtime holds only the anon key and relies on RLS. No new secret is introduced anywhere. |
-| `P1-NFR-002`..`-004` | Restated in web terms and mapped onto `M1.6W` boundary 9 (responsive/accessibility), not APK size/startup profiling. |
-| `ML-*`, `NLP-*` | **Zero impact.** No model, dataset, metric, or API shape changes. |
-| Database, RLS, `record_review`, Storage buckets | **Completely unchanged.** No new table, no fourth migration, no policy change. |
+| Supabase SSR default conflicts with canonical httpOnly claim | D2 overrides/tests attributes; no browser token client |
+| AI URL wording tension in ADR-008 | D3 requires explicit human approval and decision-log clarification |
+| Open proxy/SSRF | Fixed environment host and fixed paths/methods |
+| XSS/model output | React text rendering; no HTML interpretation/eval |
+| Token/PII leak | Redacted errors/logs, no request-body logging/storage, secret scan |
+| Supply chain | Explicit allowlist, one lockfile, scripts disabled/inspected, audit/signatures |
+| Scope creep | Exact routes/repositories/files and stop conditions |
+| DESIGN skeleton | D8 approves only a narrow functional baseline |
+| Reminder re-entry | D10 plus source/file scan prohibits 6d/6a/6b code |
 
-## Roadmap effect
+## Stop Conditions
 
-| Item | Days |
-|---|---|
-| This documentation reset (M1.7) | +2 to 3 |
-| `M1.6W` web foundation (`M1.7-D12` boundaries, both AI calls on `MOCK_MODE`, vi/en, a11y/responsive) | +3 |
-| `6d` in-app reminder, inside the Progress/Profile milestone — **not in `M1.6W`** | +0.5 to 1 |
-| Redraw KNPM diagrams (Route Handler hop, web class diagram) | +1 to 2 |
-| Saved: Room cut per `M1.7-D5` | −0.5 |
-| Saved: learner + admin share one stack, one component library, one type source | −5 to −8 |
-| **Net** | **≈ +1 to +6 days** |
-| Deferred, not counted | `6a` ~3 days at polish (may be cut); `6b` ~5–7 days DEFERRED, unscheduled |
+Return to `REVIEW`, log the required `category:`, and wait for human resolution if:
 
-**M5 at end of week 10 still holds** under this plan, which is the direct payoff of not putting Web Push in
-the foundation. If `6a` is later added at polish and week 10 is tight, `6a` is the first thing to cut — `6d`
-already satisfies `P1-FR-015`.
+1. A file outside the allowlist is required.
+2. httpOnly cannot work without browser token exposure, a hand-written store, or an unapproved data boundary.
+3. D3 requires a broader ADR-008 amendment.
+4. Any dependency outside D1 is required.
+5. FastAPI/CORS/JWT/API/schema/seed/RLS/migration changes are required.
+6. A test contradicts session, timeout, security, contract, responsive, or accessibility claims.
+7. Testing requires service role inside Web or secret material in evidence.
+8. UI requires final brand/font/dark theme/navigation decisions beyond D8.
+9. Any 6d/6a/6b code becomes necessary.
+10. Requirements & System Analysis / Documentation Recovery must begin before M1.6W is DONE.
 
-## Scope included
+## Review Re-entry — 2026-08-17
 
-1. Append `ADR-008` to `logs/decision-log.md` per `M1.7-D9`.
-2. Rewrite the platform layer of `docs/00`, `docs/01` (incl. §3.1–3.2: the Android library table is replaced
-   by the `M1.7-D12` boundaries), `docs/02` (incl. the `P1-FR-015` acceptance criteria at `:242`), `docs/05`,
-   `docs/QUICK-REF.md`, `DESIGN.md`.
-   `docs/04-data-model.md` needs only its Android-client wording checked — **no schema content changes**.
-   (The plan's earlier drafts called this file `docs/04-database-design.md`; the tracked filename is
-   `docs/04-data-model.md`. Same document, corrected here. `docs/README.md` is also in scope for the same
-   one-line platform wording.)
-3. `docs/03-api-contract.md`: **prose and example strings only.** Its 6 Android mentions are
-   `:29`/`:67` (`"client": "android/1.0.0"` → `"web/1.0.0"`) and `:53`/`:85`/`:150`/`:155` (prose saying
-   "Android" where it means "the learner client"). Verified safe: `lingora-ai/api/app/schemas.py:40,69`
-   declare `client: Optional[str] = None` with no pattern validation, so the example value is not a wire
-   constraint and the 27 pytests are unaffected. **No endpoint, path, field name, type, status code, error
-   envelope, or version rule changes.** `M1.6W` may not touch this file at all.
-4. Update `README.md`, `ENVIRONMENT.md` (boundaries, toolchain; no new secret), `HANDOFF.md`.
-5. Rewrite `docs/00` §0.4 roadmap in the `M1.7-D11` order, keeping the week-10 M5 date.
-6. Delete the 61 tracked files under `lingora-android/`, including `lingora-android/README.md`.
-7. Add the four-line `SUPERSEDED` record to `logs/development-log.md`; set the `Report Ref` column of
-   `M1.6-T-001`..`M1.6-T-010` in `logs/test-log.md` to `SUPERSEDED` without altering their result text.
-   Add a one-line `SUPERSEDED` header to `plans/archive/2026-08-15-m1.6-android-application-foundation-DONE.md`.
-8. Run `M1.7-T-001`..`M1.7-T-009`, log evidence, snapshot to
-   `plans/approved/2026-08-17-m1.7-web-platform-reset-APPROVED.md`.
-
-### On deleting Android-only plans and logs
-
-The human asked to archive or delete plans and logs that only served Android. Splitting that request:
-
-- **Code: deleted.** All 61 tracked files under `lingora-android/`.
-- **Archived plan and test-log rows: kept, marked `SUPERSEDED`.** Two files, ~10 log lines. They are the
-  only record of *why* the platform changed, they are cited by the report, and `AGENTS.md` §Testing and logs
-  makes `logs/` the evidence trail of the gated workflow. Deleting a `DONE` plan and its passing test rows
-  would remove the audit trail this process exists to produce, at zero storage benefit. If a reviewer asks
-  "why does M1.5 jump to Web?", these lines are the answer.
-
-## Explicitly out of scope
-
-- Any file under `lingora-web/` — including `package.json`, config, or `.env.example`. That is `M1.6W`.
-- Any service worker, web manifest, notification permission prompt, or push subscription code. `6a`/`6b`.
-- Any change to `lingora-ai/`, to `schema.prisma`, to the 3 existing migrations, or to `seed.js`.
-- Any ML/NLP scope, dataset, or metric change.
-- Regenerating `staging/lingora-workspace-public/` (still a pre-alignment copy; its own approved task).
-- Git history rewriting, force-push, or amending `d0e4276` / `46130d5` / `585ca6c`.
-- Visual design direction for the web UI.
-
-## Implementation order (this task)
-
-1. `ADR-008` into `logs/decision-log.md`, including the verbatim `6b` deferral clause. Nothing else may be
-   edited before the ADR exists — `AGENTS.md` §Change controls requires the decision recorded first.
-2. `docs/00` → `docs/01` → `docs/02` → `docs/03` (prose only) → `docs/04` (wording check) → `docs/05`.
-   In that order, because `docs/05` traceability rows reference the others.
-3. `docs/QUICK-REF.md`, `DESIGN.md`, `README.md`, `ENVIRONMENT.md`.
-4. Delete `lingora-android/` (61 tracked files) in one commit-sized change.
-5. `logs/development-log.md` `SUPERSEDED` record; `logs/test-log.md` `Report Ref` column; archive header.
-6. Run `M1.7-T-001`..`M1.7-T-009`. Fix and re-run on any FAIL.
-7. `HANDOFF.md` last, so it describes the finished state.
-8. Snapshot to `plans/approved/`, then commit.
-
-## Acceptance criteria (this task)
-
-1. `ADR-008` exists, supersedes only `ADR-002`'s platform clauses, amends only `ADR-006` item 3a's mechanism,
-   and carries the `6b` deferral clause verbatim in Vietnamese.
-2. No canonical document describes the learner client as Android/mobile, and no Android-stack term
-   (`Gradle`, `Retrofit`, `OkHttp`, `Room`, `SharedPreferences`, `minSdk`, `targetSdk`, `POST_NOTIFICATIONS`,
-   Fragment, ViewBinding, navigation graph, APK) survives outside an explicitly historical block.
-3. `docs/01` §3.1–3.2 describes the nine `M1.7-D12` boundaries; `docs/00` §0.4 follows the `M1.7-D11` order
-   with M5 still at week 10; `docs/00` §0.5 deliverable is a URL, not an APK.
-4. `P1-FR-015` is still **Must** and its criteria describe in-app delivery within the chosen window, with the
-   limitation stated and no claim of background delivery.
-5. `git ls-files lingora-android` is empty, while `M1.6-T-001`..`M1.6-T-010` still return 10 rows.
-6. `git diff 585ca6c` shows **zero** changes under `lingora-ai/` and `lingora-admin/prisma/`.
-7. `M1.7-T-001`..`M1.7-T-009` are recorded in `logs/test-log.md` in the mandatory evidence format, with the
-   two runnable regressions showing real output (27/27 pytest, seed test PASS) and the documentary checks
-   marked `N/A — documentation-only`.
-8. No secret value appears in any changed file.
-
-## Stop conditions
-
-Stop and return the task to `REVIEW` or `BLOCKED` — do not work around any of these:
-
-1. `M1.7-T-008` (FastAPI 27/27) or `M1.7-T-009` (seed test) fails. That means the reset damaged something the
-   plan promised not to touch.
-2. Rewriting a canonical document would require changing a database object, an endpoint contract, an RLS
-   policy, or an ML/NLP metric. Those are change controls 1–3 and need their own decision.
-3. `docs/03` needs more than prose and example-string edits.
-4. Any document rewrite implies a new table, dependency, runtime, or secret.
-5. `P1-FR-015` cannot be restated honestly under `6d` without either overclaiming delivery or demoting the
-   requirement. Return to the human with the `6c` question rather than picking one.
-6. Deleting `lingora-android/` would remove a file cited by `logs/test-log.md`, the report, or
-   `plans/archive/`, other than the 61 known source files.
-7. The Android → Web rewrite reveals a canonical claim that was already false before this task. Record it
-   separately; do not silently fix it inside this diff.
-
-## `M1.6W` specification preview — not authorized by this task
-
-Written here so `ADR-008` and the doc rewrite stay consistent. `M1.6W` still needs its own
-`plans/current-task.md` at `APPROVED` before any file under `lingora-web/` exists.
-
-**Implementation order:** project scaffold → Supabase Auth + cookie session + middleware → API client and
-error mapping → login/register/authenticated status routes → i18n vi/en → SRS mock call path → Roleplay mock
-call path → responsive/a11y pass → Vitest + Playwright evidence.
-
-**Acceptance criteria:** a learner can register, log in, stay logged in across a server-side reload, and be
-redirected away from a protected route when signed out; both `POST /v1/srs/schedule` and
-`POST /v1/chat/roleplay` return `is_mock: true` payloads rendered in the UI through the Route Handler, with
-the 8-second timeout and error envelope handled; the UI renders in vi by default and switches to en; keyboard
-navigation reaches every interactive element with a visible focus state; `MOCK_MODE=true` throughout;
-`lingora-ai/`, `lingora-admin/prisma/`, and `docs/03-api-contract.md` are byte-identical before and after.
-
-**Stop conditions:** any need for a new table, migration, RLS policy, endpoint, dependency beyond the
-`M1.7-D1` stack, service worker, manifest, push code, scheduler, or reminder logic; any need to place
-`SUPABASE_SERVICE_ROLE_KEY` in `lingora-web`; any need to edit `lingora-ai/`.
-
-
-
-## Test plan
-
-Documentation and deletion task: most checks are documentary. Two are real, runnable regressions that prove
-the deletion did not damage the backend, and they **must be executed, not reasoned about**.
-
-| ID | Check | Method | Expected |
-|---|---|---|---|
-| M1.7-T-001 | `ADR-008` present and scoped exactly per `M1.7-D9` | Read `logs/decision-log.md` | `N/A — documentation-only` |
-| M1.7-T-002 | No canonical doc still claims an Android/mobile learner client | `grep -ri "android\|di động\|apk" docs/ DESIGN.md README.md` | Only historical/SUPERSEDED references remain |
-| M1.7-T-002b | No Android-stack term survives as current architecture | `grep -rni "gradle\|retrofit\|okhttp\|\broom\b\|sharedpreferences\|minsdk\|targetsdk\|POST_NOTIFICATIONS\|viewbinding\|fragment" docs/ DESIGN.md` | 0 hits outside SUPERSEDED/history blocks |
-| M1.7-T-002c | `ADR-008` contains the Vietnamese `6b` deferral clause verbatim per `M1.7-D6` | `grep -n "6b — Web Push + scheduler: DEFERRED" logs/decision-log.md` | 1 hit |
-| M1.7-T-002d | `docs/01` §3.1–3.2 lists the nine `M1.7-D12` boundaries | Read | `N/A — documentation-only` |
-| M1.7-T-003 | `docs/00` §0.4 roadmap follows the `M1.7-D11` order and still shows M5 at week 10 | Read | `N/A — documentation-only` |
-| M1.7-T-004 | `lingora-android/` fully removed from the index; `M1.6-T-001`..`010` rows still present | `git ls-files lingora-android` → empty; `grep -c "M1.6-T-" logs/test-log.md` → 10 | PASS/FAIL |
-| M1.7-T-005 | No secret introduced | `git diff --check`; grep for key material | 0 findings |
-| M1.7-T-006 | `schema.prisma` and `prisma/migrations/` byte-identical to `585ca6c` | `git diff --stat 585ca6c -- lingora-admin/prisma` | empty |
-| M1.7-T-007 | `lingora-ai/` byte-identical to `585ca6c` | `git diff --stat 585ca6c -- lingora-ai` | empty |
-| M1.7-T-008 | **FastAPI regression** | `cd lingora-ai/api && py -3.11 -m pytest -v` | **27/27 PASS** |
-| M1.7-T-009 | **Seed/data regression** | `node lingora-admin/prisma/m1_4_seed_test.js` | **PASS** |
-
-## Risks
-
-| ID | Risk | Handling |
-|---|---|---|
-| R12 | Assignment title says "nền tảng di động"; a web deliverable may be graded against it | Raised and reaffirmed by the human on 2026-08-17. `ADR-008` records the date and that the risk was accepted knowingly — that record is the defence if challenged. Confirming with the lecturer remains a human action. |
-| R13 | `6d` delivers the reminder only while the learner has the app open — weaker than the Android `WorkManager` behaviour `ADR-006` approved | Accepted per locked decision 4. `docs/02:242` must state the limitation plainly rather than implying background delivery. `6a` at polish upgrades it; `6b` remains the answer if it ever becomes mandatory. |
-| R14 | Reviewer counts function 6 ("nhắc nhở") as missing because delivery is in-app only | `P1-FR-015` stays Must with a use case in the Use Case Diagram, which is what `gap-analysis` §5.1 identified as the visible gap. The mechanism is a stated limitation, not an absence. |
-| R15 | `6a`/`6b` at polish get squeezed and silently dropped without a record | `M1.7-D11` places `6a` in polish explicitly and states it is the first cut. Dropping it needs no amendment because `6d` already satisfies the requirement. |
-| R16 | Deleting `lingora-android/` orphans report citations | `M1.6-T-*` rows and the archived M1.6 plan are preserved; `Report Ref` set to `SUPERSEDED`; code recoverable at `585ca6c`. |
-| R17 | A later "merge learner into admin" refactor would leak the service role into the learner runtime | `M1.7-D2` states the prohibition in `ENVIRONMENT.md`, so a future task must amend it deliberately. |
-| R18 | Reopening the locked v5 baseline a second time weakens the process record | One ADR (`ADR-008`), one plan, one commit. No stacked proposals left in `plans/`. |
-| R19 | Route Handler hop drawn incorrectly in KNPM diagrams | `M1.7-D4` fixes the exact hop sequence for the diagram task. |
-
-## Files expected to change
-
-`logs/decision-log.md`, `logs/development-log.md`, `logs/test-log.md`, `docs/00-master-plan.md`,
-`docs/01-architecture.md`, `docs/02-requirements.md`, `docs/03-api-contract.md` (prose and example strings
-only — no contract change), `docs/04-data-model.md` (wording only), `docs/05-traceability-matrix.md`,
-`docs/QUICK-REF.md`, `docs/README.md`, `DESIGN.md`, `README.md`, `ENVIRONMENT.md`, `HANDOFF.md`,
-`plans/current-task.md`,
-`plans/archive/2026-08-15-m1.6-android-application-foundation-DONE.md` (one-line header), and deletion of all
-61 tracked files under `lingora-android/`.
-
-Files that must **not** appear in this task's diff: anything under `lingora-ai/`, `lingora-admin/prisma/`,
-`lingora-web/`, `staging/`, `.gitignore`, `.codex/`, `.agents/`.
+- `category: scope-ambiguity`
+- During the approved scaffold, `lingora-web/tsconfig.json` correctly referenced `next-env.d.ts`, but the
+  generated declaration file was omitted from `Files Expected To Change`.
+- Verified against the installed Next.js 15 runtime: `verify-typescript-setup` calls
+  `writeAppTypeDeclarations`, which writes `<project>/next-env.d.ts` before type-aware development/build work.
+- Requested amendment: authorize only `lingora-web/next-env.d.ts` as a generated Next.js TypeScript scaffold
+  file. No dependency, architecture, route, behavior, acceptance criterion, or D1-D10 decision changes.
+- Implementation is paused before build/typecheck until a human explicitly approves this amendment.
 
 ## Approval
 
-- Status: **APPROVED**
-- Approved by: Pham Nguyen Thanh Tung (human), explicit instruction "approve"
+- Base plan status: **APPROVED**
+- Approved by: Pham Nguyen Thanh Tung (human), explicit instruction `approve`
 - Date: 2026-08-17
-- `P1-FR-015`: approved **as written** — stays `Must`, mechanism `6d`. The `6c` demotion was offered and not
-  taken, so `ADR-008` carries no `6c` clause and `docs/00-master-plan.md:111` is not amended.
-
-Locked decisions 1–7 are recorded from the human's 2026-08-17 instructions. `M1.7-D1`..`M1.7-D12` are the
-agent's implementation of those decisions and are approved as written.
+- Explicit approval required for `M1.6W-D1` through `M1.6W-D10`, especially D2, D3, and D8.
+- Amendment status: **APPROVED** on 2026-08-17 by Pham Nguyen Thanh Tung: add only
+  `lingora-web/next-env.d.ts` to the file allowlist and resume implementation.

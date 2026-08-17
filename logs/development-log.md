@@ -2,6 +2,40 @@
 
 ### Date
 
+`2026-08-17`
+
+### Task
+
+`m1.5-jwt-verifier-amendment-supabase-jwks-es256 - Supabase JWKS / ES256 Compatibility Amendment`
+
+### Completed
+
+- Extended `lingora-ai/api/app/config.py` with `SUPABASE_URL` and `SUPABASE_JWKS_URL` properties resolving `{SUPABASE_URL}/auth/v1/.well-known/jwks.json`.
+- Updated `lingora-ai/api/app/auth.py` to support modern Supabase `ES256` ECDSA asymmetric JWT verification using `jwt.PyJWKClient` (zero new dependencies).
+- Maintained backward compatibility for `HS256` symmetric JWT verification against `SUPABASE_JWT_SECRET` for offline/test environments.
+- Implemented robust fail-closed handling on unknown `kid`, invalid signature, expired token, unsupported algorithm (`none`, etc.), malformed token, missing `sub`, and invalid `role` / `aud`.
+- Added 10 new security and error condition tests in `tests/test_auth.py` covering ES256 valid token, missing kid, unknown kid, signature mismatch, expiration, missing sub, invalid role, and network failure.
+- Ran full test suite in `lingora-ai/api`: 37/37 Pytest PASS (0 regressions).
+- Ran live end-to-end verification against live Supabase GoTrue Auth token: verified HTTP 200 `is_mock: true` responses for both `/v1/srs/schedule` and `/v1/chat/roleplay`.
+- Confirmed zero changes to `lingora-web/`, database schema, Prisma, migrations, or API contract.
+
+### Tests
+
+- `M1.5-AMEND-T-001`: 37/37 Pytest passed in 0.19s in `lingora-ai/api/tests/`.
+- `M1.5-AMEND-T-002`: Live Supabase ES256 token verification PASS on `/v1/srs/schedule` and `/v1/chat/roleplay`.
+- `M1.6W-T-006-RERUN`: SRS Next Route Handler protected hop PASS (HTTP 200, `is_mock: true`).
+- `M1.6W-T-007-RERUN`: Roleplay Next Route Handler protected hop PASS (HTTP 200, `is_mock: true`).
+- `M1.5-AMEND-T-003`: Secret & log redaction inspection PASS (0 secrets logged).
+- `M1.5-AMEND-T-004`: Scope & boundary check PASS (0 changes in Web, DB, schema, RLS).
+
+### Commit
+
+`PENDING - waiting for human verification and commit authorization`
+
+---
+
+### Date
+
 `2026-08-15`
 
 ### Task
@@ -46,6 +80,63 @@
 ### Commit
 
 `PENDING - waiting for human verification and commit authorization`
+
+---
+
+### Date
+
+`2026-08-17`
+
+### Task
+
+`m1.6w-web-learner-foundation`
+
+### Completed
+
+- Created the independent Next.js 15 learner project under `lingora-web/` with pinned lockfile, Tailwind 4,
+  minimal copied UI components, TanStack Query provider, Vitest and Playwright.
+- Implemented Browser → Server Action → Supabase Auth → explicit httpOnly cookie → middleware/Server Component
+  session flow. No authenticated browser Supabase client or browser token persistence was added.
+- Implemented fixed server-only `/api/ai/srs` and `/api/ai/chat` handlers with 8-second abort, current server
+  session JWT forwarding, bounded canonical input, response structural validation and safe error mapping.
+- Added vi/en catalogs, login/register/foundation UI, responsive layouts, keyboard/focus/live-state semantics,
+  and localized recoverable Auth/AI errors.
+- Added 19 unit/component tests and 12 Playwright cases. Live Supabase Auth/registration passed with temporary
+  exact-ID fixtures and residue `0`.
+
+### Problems
+
+- `next-env.d.ts` was omitted from the initial approved allowlist; implementation returned to REVIEW and the
+  human approved the one-file amendment before Next generated it.
+- jsdom 30 required Node 24.15 while the approved environment is Node 24.14; pinned jsdom 29.0.1.
+- Next 15's `next lint` is deprecated; the project uses the approved ESLint dependency directly.
+- Playwright browser runtime was absent and was installed with `npx playwright install chromium`.
+- `npm audit` reports nested Next 15 PostCSS/Sharp advisories. The only offered fix is Next 16, outside scope;
+  the absent vulnerable paths are documented as a foundation mitigation.
+- The workspace has no configured `SUPABASE_JWT_SECRET`, so the live protected Next → M1.5 SRS/Roleplay hop
+  cannot be observed. T-006 and T-007 remain BLOCKED; the task stays TESTING and is not committed/DONE.
+- Follow-up: after the secret was supplied and M1.5 restarted, both requests reached FastAPI but returned
+  `401`. Sanitized token-header inspection showed live Supabase issues ES256 JWTs with a `kid`, while M1.5
+  permits HS256 only. T-006/T-007 are now FAIL and the task returned to REVIEW.
+
+### Solution
+
+- Kept all auth operations server-side, explicitly set cookie attributes, separated Edge middleware from
+  `next/headers`, fixed the AI host/path, bounded histories/text/UUIDs, and treated upstream JSON as untrusted.
+- Used Admin-boundary service role only for temporary fixture creation/cleanup; it never entered Web code,
+  browser state, screenshots, logs or committed environment files.
+- Kept Requirements & System Analysis / Documentation Recovery outside implementation and documented it as
+  the mandatory milestone after M1.6W.
+
+### Tests
+
+- `M1.6W-T-001` through `M1.6W-T-013` recorded in `logs/test-log.md`.
+- PASS: T-001..T-005 and T-008..T-013.
+- BLOCKED by missing external environment: T-006 and T-007.
+
+### Commit
+
+`PENDING — task returned to REVIEW after live ES256/HS256 runtime-boundary mismatch`
 
 ---
 

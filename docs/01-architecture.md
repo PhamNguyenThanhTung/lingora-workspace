@@ -147,6 +147,12 @@ Không đổi so với bản v1 — điểm khác biệt duy nhất nằm ở m�
 
 ### 3.2. Web Learner — 9 boundary và thư viện (theo `M1.7-D12`)
 
+The approved M1.6W implementation proves the foundation slice of these boundaries: Server Action/server-only
+Supabase Auth with an explicit `httpOnly` cookie policy, middleware refresh/route protection, fixed AI Route
+Handlers with an 8-second timeout, typed repository contracts, and the neutral vi/en responsive UI. No
+authenticated browser Supabase client or browser token store is permitted. `AI_API_BASE_URL` remains a
+server-only fixed deployment value and cannot be supplied by a request.
+
 Learner client gồm đúng 9 boundary sau; không có boundary nào khác được thêm mà không có ADR mới:
 
 | # | Boundary | Nội dung |

@@ -7,19 +7,15 @@
 
 ## Current state
 
-- Last completed task: `m1.7-web-platform-reset` — DONE. The Project 1 learner platform was reset from native
-  Android to **Web** under `ADR-008` (2026-08-17). Canonical docs (`docs/00`–`docs/05`, `docs/QUICK-REF.md`,
-  `docs/README.md`, `DESIGN.md`, `README.md`, `ENVIRONMENT.md`) now describe a Next.js 15 App Router learner
-  client at `lingora-web/`; the 61 tracked files under `lingora-android/` were deleted with Git history preserved.
-  Evidence: `M1.7-T-001` .. `M1.7-T-009` (27/27 M1.5 pytests PASS, 34/34 M1.4 seed/RLS harness PASS,
-  `git diff 585ca6c` empty under `lingora-ai/` and `lingora-admin/prisma/`).
-- Last approved scope decision: `ADR-008 — Project 1 learner platform reset from native Android to Web`,
+- Last completed task: `m1.6w-web-learner-foundation` — DONE. Next.js 15 App Router learner foundation
+  implemented under `lingora-web/` (React 19, TypeScript 5, Tailwind 4, @supabase/ssr, TanStack Query 5)
+  with server-side httpOnly session management, Route Handler proxy to FastAPI M1.5 (`/api/ai/srs` and `/api/ai/chat`),
+  narrow SRS/Roleplay repositories, bilingual vi/en UI foundation, and responsive/accessibility baseline.
+  Evidence: `M1.6W-T-001` .. `M1.6W-T-013` (all 13 tests PASS, including rerun T-006 & T-007 after M1.5 ES256 verifier amendment).
+- Last approved scope decision: `ADR-009 — M1.5 JWT verifier amendment: Supabase JWKS / ES256 compatibility`,
   APPROVED 2026-08-17.
-- Last commit: `253fbf1` — refactor(platform): reset project 1 learner client from android to web (m1.7,
-  adr-008). The previous commit `585ca6c` is the recovery point for the deleted Android code.
-- Milestone: M1.5 is the last DONE implementation milestone. M1.6 Android is **SUPERSEDED**.
-  Next: `M1.6W` (Web learner foundation) — **plan required, not yet written**.
-- Public staging snapshot: `staging/lingora-workspace-public/` — now **pre-reset**; it still describes Android.
+- Milestone: M1.6W is DONE; Next: Milestone M2 (Web Core Lesson Flow & Exercise Engine).
+- Public staging snapshot: `staging/lingora-workspace-public/` — pre-reset; regeneration pending.
 
 ---
 

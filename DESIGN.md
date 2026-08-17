@@ -46,6 +46,14 @@ These mode labels align with Impeccable. Surface-specific briefs may be added la
 - Line height and readable measure: `[TO DEFINE]`
 - Numeric/tabular treatment for scores and analytics: `[TO DEFINE]`
 
+### M1.6W foundation baseline
+
+- The learner foundation uses the system sans stack with Vietnamese/English glyph coverage.
+- M1.6W is light-theme only, neutral, and functional; brand colors, custom fonts, dark theme, imagery, and
+  marketing composition remain undecided.
+- Focus indicators, semantic labels/live regions, keyboard reachability, and 44px minimum interactive targets
+  are required for the foundation routes.
+
 Do not select a font merely because it is a framework default. Font licensing and Vietnamese/English glyph support must be checked before approval.
 
 ## Color system
@@ -148,6 +156,10 @@ Do not assign concrete color values until a design direction is approved.
 - Tables require an approved small-screen strategy.
 - Loading, empty, error, and modal states must be verified at supported sizes.
 
+For M1.6W, verify `/login`, `/register`, and `/foundation` at 360x800, 768x1024, and 1440x900 in `vi` and
+`en`, with no horizontal overflow or overlapping content. Auth remains single-column and foundation controls
+stack on small screens.
+
 ## Approval checklist
 
 - [ ] Product identity approved
@@ -158,4 +170,3 @@ Do not assign concrete color values until a design direction is approved.
 - [ ] Admin navigation/table/form rules approved
 - [ ] Accessibility baseline approved
 - [ ] Responsive targets approved
-
