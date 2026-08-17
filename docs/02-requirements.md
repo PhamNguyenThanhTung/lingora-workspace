@@ -1,6 +1,6 @@
 # 02 - Lingora Requirements and Report Scope
 
-> **Canonical status:** M0 migration baseline. The legacy requirements/report document is reproduced below with only approved product-name and Markdown nesting normalization.
+> **Canonical status:** M0 migration baseline. For the comprehensive Requirements & System Analysis specification, complete Use Case descriptions, and flows, see [`docs/06-system-analysis.md`](06-system-analysis.md). For the implementation-grounded ERD and Data Dictionary, see [`docs/07-data-dictionary.md`](07-data-dictionary.md).
 
 ## 02 — Phân tách Yêu cầu & Trọng tâm Báo cáo (bản v3 — đã siết scope theo review)
 

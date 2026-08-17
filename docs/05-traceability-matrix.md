@@ -1,89 +1,48 @@
 # 05 - Lingora Traceability Matrix
 
-> **Canonical status:** M0.5 approved documentation baseline. This matrix maps approved requirement IDs to architecture, data, API/RPC, tests, and report evidence. `PROPOSED` fields in `docs/04-data-model.md` remain documentation decisions, not implemented schema.
+> **Canonical status:** M1.6W Post-Recovery Baseline. This matrix maps approved requirement IDs to Use Cases (`docs/06-system-analysis.md`), Architecture (`docs/01`), Data Model / Dictionary (`docs/07`), API/RPC (`docs/03`), Tests, and Report Evidence.
 
 ## Matrix
 
-| Requirement ID | Priority | Acceptance criteria summary | Architecture | Data model | API/RPC | Test ID | Report evidence | Status |
+| Requirement ID | Priority | Use Case | Architecture | Data Entity / Dictionary | API / RPC | Test ID / Evidence | Report Evidence | Status |
 |---|---|---|---|---|---|---|---|---|
-| P1-FR-001 | Must | Auth session, refresh once, logout clears session | `docs/01:57–78` Web/Auth | `Profile` `04:45–63` | Supabase Auth; N/A AI | P1-T-001 | SE Auth UC/sequence | CONSISTENT |
-| P1-FR-002 | Must | Published ordered course/lesson/vocab browsing plus available vocabulary audio; no implied extra vocabulary subfeatures | `docs/01:42,46–51,167` | Course/Lesson/Vocabulary/Translation/LessonVocabulary; `Vocabulary.audioUrl` | PostgREST/Storage delivery | P1-T-002 | SE course/lesson/vocabulary flow | CONSISTENT logical baseline; implementation pending |
-| P1-FR-003 | Must | MCQ, Fill-blank, Reorder, GRAMMAR, word-level LISTENING validation and progress; “Quiz” is a label only | `docs/01:121` | `Exercise.payload`; lesson-level `UserProgress`; no Quiz/Attempt entity | N/A | P1-T-003 | SE exercise tests | CONSISTENT; GRAMMAR/LISTENING detail in `P1-FR-012`/`P1-FR-013` |
-| P1-FR-004 | Must | Nullable 0–100 lesson aggregate; trusted calculation; idempotent completion; no attempt table | Web/Supabase boundary | `UserProgress`; ADR-003 | N/A | P1-T-004 | SE progress/ERD | CONSISTENT; implementation pending |
-| P1-FR-005 | Must | AI schedule plus 8s fallback; notification/reminder delivery excluded | `docs/01:42,119` | `UserVocabSrs` due state; no reminder entity | `/v1/srs/schedule`; planned `get_due_srs_cards` | P1-T-005 | SRS sequence/failure flow | CONSISTENT semantics; integration pending |
-| P1-FR-006 | Must | Owner-checked atomic review transaction | `docs/01:48–51` | `ReviewLog/UserVocabSrs` `04:74–109` | `record_review` `04:282–324` | P1-T-006 | SE sequence/RLS | IMPLEMENTED M1.3; DB/RPC tests PASS |
-| P1-FR-007 | Must | Hotel roleplay succeeds; optional scorer failure does not fail chat | `docs/01:32–34,42` | Chat entities `04:112–165` | `/v1/chat/roleplay` `03:55–100` | P1-T-007 | Roleplay sequence | CONSISTENT |
-| P1-FR-008 | Must | ADMIN-only content/scenario writes | `docs/01:46–51` | Content entities and applied M1.3 RLS | PostgREST/Prisma | P1-T-008 | Admin CRUD/RLS | IMPLEMENTED M1.3; DB actor tests PASS |
-| P1-FR-009 | Must | ADMIN-only vocabulary audio plus owner-managed avatar under SEC-D8 PA2 | Supabase Storage `docs/01:18–25,50` | Applied two-private-bucket Storage policies and limits | Direct authenticated Storage API + RLS | P1-T-009 | SE storage test | IMPLEMENTED; full Auth/Storage HTTP boundary and authorization matrix PASS |
-| P1-FR-010 | Must | UI vi/en, default/fallback vi; content requested/native/vi/en; ja P2 | M0.5 locale boundary `docs/01` | M0.5 locale/translation baseline `docs/04` | Chat `lang=en` is learned language, not UI locale | P1-T-010 | UI/locale table | CONSISTENT |
-| P1-FR-011 | Must | Qualifying lesson/review activity; once per local day; stored IANA timezone/date | M0.5 approved scope `docs/01` | M0.5 Profile/streak baseline `docs/04` | N/A | P1-T-011 | Gamification test | CONSISTENT logical baseline |
-| P1-FR-012 | Must | GRAMMAR exercise validates, shows rule explanation, updates progress once; no grammar entity | `docs/01:122` enum + render-component path | `Exercise.payload` `type = 'GRAMMAR'`; lesson-level `UserProgress`; no grammar table | N/A | P1-T-016 | SE exercise tests, ADR-006 | APPROVED scope ADR-006; implementation pending |
-| P1-FR-013 | Must | Word-level LISTENING plays referenced vocabulary audio and grades answer; payload references `vocabularyId`, never a URL | `docs/01:121`; Supabase Storage `docs/01:18–25` | `Exercise.payload` `type = 'LISTENING'`; existing `vocabulary/{vocabularyId}/` path; no new Storage entity | Direct authenticated Storage API + existing RLS | P1-T-017 | SE exercise/storage tests, ADR-006 | APPROVED scope ADR-006 option 4a; implementation pending |
-| P1-FR-014 | Must | Learner views/sets daily study goal; negative rejected; no schema or policy change | Web Profile screen `docs/01:46–51` | Existing `Profile.dailyGoalMin`; applied M1.3 grant and validation | PostgREST safe-field update | P1-T-018 | SE profile tests, ADR-006 | APPROVED scope ADR-006; implementation pending |
-| P1-FR-015 | Must | In-app reminder presented within chosen window when day has no qualifying activity; not delivered while the app is closed; no backend delivery | Web client-local only; no new server component | Reads `Profile.dailyGoalMin` and `lastQualifyingActivityDate`; no notification/reminder entity | N/A — client-local, no API | P1-T-019 | SE reminder tests, ADR-006, ADR-008 | APPROVED scope ADR-006; mechanism amended to option `6d` by ADR-008; implementation pending |
-| P1-NFR-001 | Must | RLS ownership and stateless AI boundary | `docs/01:42,48–51,122–123` | Applied M1.3 RLS/grants/functions | JWT/RPC boundary | P1-T-012 | Security chapter | IMPLEMENTED M1.3; live security audit PASS |
-| P1-NFR-002 | Must | Core flow survives AI failure | `docs/00:61–67,253–263` | Due-card fallback `04:232–247` | AI errors `03:92–100` | P1-T-013 | Failure-mode tests | CONSISTENT |
-| P1-NFR-003 | Must | snake_case, metadata on inference success, optional grammar omission | API rules `03:87–111` | Grammar persistence deferred | `/v1/srs/schedule`, `/v1/chat/roleplay` | P1-T-014 | API contract tests | CONSISTENT after M0.5 |
-| P1-NFR-004 | Must | Loading/empty/error/success on Must screens | Web Learner/Admin responsibilities `docs/01:46–51` | N/A | N/A | P1-T-015 | UI test checklist | DESIGN follow-up |
-| ML-FR-001 | Must | DKT next-interaction probability and reproducibility | `docs/01:227–250` | SRS logs `04:96–109` | `/v1/srs/schedule` `03:11–53` | ML-T-001 | ML DKT chapter | CONSISTENT |
-| ML-FR-002 | Must | Independent HLR baseline/fallback acceptance | `docs/00:75–77,213–215` | SRS entities | `/v1/srs/schedule` | ML-T-002 | ML comparison | CONSISTENT |
-| ML-FR-003 | Must | Scheduler derives priority/interval separately | `docs/01:227–250` | Scheduler boundary `04:247–280` | Response fields `03:35–51` | ML-T-003 | Scheduler diagram | CONSISTENT |
-| ML-FR-004 | Must | AUC/Brier/latency and random/HLR baselines | `docs/00:213–220` | N/A | `/v1/model/info` `03:107` | ML-T-004 | Evaluation tables | CONSISTENT |
-| ML-NFR-001 | Must | Acceptance gates before production replacement | `docs/00:209–223` | Model registry log | `/v1/model/info` | ML-T-005 | Model registry | CONSISTENT |
-| NLP-FR-001 | Must | Hotel multi-turn roleplay | `docs/01:261–276` | Chat scenario/session/message `04:112–165` | `/v1/chat/roleplay` | NLP-T-001 | NLP examples | CONSISTENT |
-| NLP-FR-002 | Must | Tokenization, attention, seq2seq evidence | `docs/01:250–266` | N/A | Chat endpoint | NLP-T-002 | NLP report | CONSISTENT |
-| NLP-FR-003 | Must | T5-small production metadata/evaluation | `docs/01:250–276` | Model registry | `/v1/model/info` | NLP-T-003 | Model card | CONSISTENT |
-| NLP-FR-004 | Must | Separate approved metrics, no combined score | `docs/02:153–154` | N/A | `/v1/model/info` | NLP-T-004 | NLP evaluation | CONSISTENT |
-| NLP-FR-005 | Nice | Optional score in [0,1], omitted if unavailable | `docs/00:77,102` | Persistence deferred | `/v1/chat/roleplay` `03:71–85` | NLP-T-005 | Optional CoLA appendix | CONSISTENT after M0.5 |
-| NLP-NFR-001 | Must | snake_case, lang=en, errors, CPU latency | `docs/00:216–220` | N/A | `/v1/chat/roleplay` | NLP-T-006 | NLP deployment | CONSISTENT |
+| **P1-FR-001** | Must | `UC-01` | `docs/01` §3.1–3.2 Web SSR Auth | `Profile` (`docs/07` §2.2) | Supabase Auth (GoTrue ES256) | `M1.6W-T-003/004/005` (PASS) | P1 Report §3.1 (Auth UC) | `IMPLEMENTED (M1.6W)` |
+| **P1-FR-002** | Must | `UC-02` | `docs/01` §1.2, §3.2 | `Course`, `Lesson`, `Vocabulary`, `Language` (`docs/07` §2.3–2.5) | PostgREST / Storage (`course-media`) | `M1.4-T-001` (Seed PASS), `P1-T-002` | P1 Report §3.2 (Curriculum Flow) | `CONFIRMED (Pending M2 UI)` |
+| **P1-FR-003** | Must | `UC-03` | `docs/01` §1.2, §3.2 | `Exercise.payload` (`docs/07` §2.6), `UserProgress` | Server Actions / Client Engine | `P1-T-003`, `M1.6W-T-002` | P1 Report §3.3 (Exercise Engine) | `CONFIRMED (Pending M2 Engine)` |
+| **P1-FR-004** | Must | `UC-03`, `UC-07` | `docs/01` §1.3 (ADR-003) | `UserProgress` (`docs/07` §2.7) | Server Action (Score aggregate 0–100%) | `P1-T-004`, `M1.4-T-001` | P1 Report §3.4 (Progress Model) | `CONFIRMED (Pending M2 UI)` |
+| **P1-FR-005** | Must | `UC-05` | `docs/01` §1.3, §3.2 | `UserVocabSrs` (`docs/07` §2.8) | `/api/ai/srs` ➔ `/v1/srs/schedule` | `M1.6W-T-006-RERUN` (PASS), `M1.5-AMEND-T-002` | P1/ML Report §3.5 (SRS Sequence) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
+| **P1-FR-006** | Must | `UC-05` | `docs/01` §1.3 (ADR-003) | `UserVocabSrs`, `ReviewLog` (`docs/07` §2.8) | RPC `record_review` (`docs/04` §4.2) | `M1.3-T-001` (PASS), `M1.4-T-001` | P1 Report §3.5 (RPC Transaction) | `IMPLEMENTED (M1.3)` |
+| **P1-FR-007** | Must | `UC-06` | `docs/01` §1.4, §3.2 | `ChatScenario`, `ChatSession`, `ChatMessage` (`docs/07` §2.9) | `/api/ai/chat` ➔ `/v1/chat/roleplay` | `M1.6W-T-007-RERUN` (PASS), `M1.5-AMEND-T-002` | P1/NLP Report §3.6 (Roleplay Hop) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
+| **P1-FR-008** | Must | `UC-04` | `docs/01` §1.2 (Admin) | Content entities (`Course`, `Lesson`, etc.) | Admin Client / PostgREST RLS | `M1.3-T-001` (Admin RLS PASS) | P1 Report §3.7 (Admin CRUD) | `IMPLEMENTED_DB (M1.3; UI Pending M3)` |
+| **P1-FR-009** | Must | `UC-04` | `docs/01` §1.6 Storage | `course-media`, `chat-audio` (`docs/07` §3) | Supabase Storage API + RLS policies | `M1.3-T-002` (Storage RLS PASS) | P1 Report §3.8 (Storage Audit) | `IMPLEMENTED (M1.3)` |
+| **P1-FR-010** | Must | `UC-01`..`07` | `docs/01` §3.2 (i18n) | `Language`, `*Translation` (`docs/07` §2.1–2.9) | Next.js Locale Catalog (`vi` / `en`) | `M1.6W-T-002` (Vitest i18n PASS) | P1 Report §3.9 (Localization) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
+| **P1-FR-011** | Must | `UC-07` | `docs/01` §1.5 (Gamification)| `Profile.streakCount`, `lastQualifyingActivityDate` | Server Action (Timezone-aware check) | `M1.4-T-001` (PASS), `P1-T-011` | P1 Report §3.10 (Streak Engine) | `CONFIRMED (Pending M2 UI)` |
+| **P1-FR-012** | Must | `UC-03` | `docs/01` §1.2 (ADR-006) | `Exercise.payload` (`type='GRAMMAR'`) | Client render component & validation | `P1-T-016` | P1 Report §3.3 (Grammar Exercise) | `ADR-006 LOCKED (Pending M2)` |
+| **P1-FR-013** | Must | `UC-03` | `docs/01` §1.2, §1.6 | `Exercise.payload` (`type='LISTENING'`), `course-media` | Audio element + Storage playback | `P1-T-017` | P1 Report §3.3 (Listening Exercise)| `ADR-006 LOCKED (Pending M2)` |
+| **P1-FR-014** | Must | `UC-07` | `docs/01` §1.5 (ADR-006) | `Profile.dailyGoalMin` (`docs/07` §2.2) | Profile Update Action (5–120 min) | `P1-T-018` | P1 Report §3.10 (Daily Goal) | `ADR-006 LOCKED (Pending M2)` |
+| **P1-FR-015** | Must | `UC-08` | `docs/01` §1.5 (ADR-008) | Client-local state (No reminder entity) | N/A — In-App Banner/Toast | `P1-T-019` | P1 Report §3.11 (In-App Reminder) | `ADR-008 LOCKED (Option 6d; Later M2+)` |
+| **P1-NFR-001**| Must | All | `docs/01` §1.7 Security | RLS on all 17 tables (`docs/07` §2) | JWT ES256 / RLS enforced at DB | `M1.3-T-001`, `M1.5-AMEND-T-001` | P1 Report §4.1 (Security Architecture) | `IMPLEMENTED (M1.3/M1.5/M1.6W)` |
+| **P1-NFR-002**| Must | `UC-05` | `docs/01` §1.3 Resilience | `UserVocabSrs` fallback state | 8.0s Route Handler Timeout + Deterministic Rule | `M1.6W-T-002`, `M1.6W-T-008` (PASS) | P1/ML Report §4.2 (Resilience) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
+| **P1-NFR-003**| Must | `UC-05/06` | `docs/01` §1.3–1.4 API | N/A | snake_case, `ApiErrorEnvelope`, latency_ms | `M1.5-AMEND-T-001` (37/37 Pytest PASS) | AI Reports (API Contract) | `IMPLEMENTED (M1.5/M1.6W)` |
+| **P1-NFR-004**| Must | All Web UI | `docs/01` §3.2 UX | N/A | Resilient UI States (Loading/Empty/Error) | `M1.6W-T-002/008/009/010` (PASS) | P1 Report §4.3 (UI Baseline) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
+| **ML-FR-001** | Must | `UC-05` | `docs/01` §2.1 ML SRS | `UserVocabSrs`, `ReviewLog` | `/v1/srs/schedule` | `M1.5-AMEND-T-001` (Mock PASS) | ML Report §2 (DKT Model) | `MOCK_IMPLEMENTED (M1.5; Train M4)` |
+| **ML-FR-002** | Must | `UC-05` | `docs/01` §2.1 Baseline | N/A | `/v1/srs/schedule` | `M1.5-AMEND-T-001` (PASS) | ML Report §3 (HLR Baseline) | `MOCK_IMPLEMENTED (M1.5; Train M4)` |
+| **ML-FR-003** | Must | `UC-05` | `docs/01` §2.1 Scheduler | N/A | Response fields: `recall_probability`, `priority` | `M1.5-AMEND-T-001` (PASS) | ML Report §4 (Scheduler) | `MOCK_IMPLEMENTED (M1.5; M4)` |
+| **ML-FR-004** | Must | `UC-05` | `docs/01` §2.1 Evaluation | `logs/model-registry.csv` | `/v1/model/info` | `M1.5-AMEND-T-001` (PASS) | ML Report §5 (Evaluation) | `MOCK_IMPLEMENTED (M1.5; Eval M4)` |
+| **ML-NFR-001**| Must | `UC-05` | `docs/01` §2.1 Acceptance | `logs/model-registry.csv` | `/v1/model/info` | `M1.5-AMEND-T-001` (PASS) | ML Report §6 (Model Registry) | `MOCK_IMPLEMENTED (M1.5; M4)` |
+| **NLP-FR-001**| Must | `UC-06` | `docs/01` §2.2 NLP Chat | `ChatScenario`, `ChatMessage` | `/v1/chat/roleplay` | `M1.5-AMEND-T-001`, `M1.6W-T-007-RERUN` | NLP Report §2 (Multi-turn Roleplay) | `MOCK_IMPLEMENTED (M1.5; Train M4)` |
+| **NLP-FR-002**| Must | `UC-06` | `docs/01` §2.2 Pipeline | N/A | Chat endpoint tokenizer/generation | `M1.5-AMEND-T-001` (PASS) | NLP Report §3 (Seq2Seq Architecture) | `MOCK_IMPLEMENTED (M1.5; Train M4)` |
+| **NLP-FR-003**| Must | `UC-06` | `docs/01` §2.2 Model | `logs/model-registry.csv` | `/v1/model/info` | `M1.5-AMEND-T-001` (PASS) | NLP Report §4 (T5-small Deployment) | `MOCK_IMPLEMENTED (M1.5; M4)` |
+| **NLP-FR-004**| Must | `UC-06` | `docs/01` §2.2 Metrics | N/A | Separate BLEU/ROUGE/Perplexity metrics | `M1.5-AMEND-T-001` (PASS) | NLP Report §5 (Evaluation Metrics) | `MOCK_IMPLEMENTED (M1.5; Eval M4)` |
+| **NLP-FR-005**| Nice | `UC-06` | `docs/01` §2.2 Grammar | N/A (Persistence deferred) | Optional `grammatical_acceptability_score` | `M1.5-AMEND-T-001` (PASS) | NLP Report Appendix (Optional CoLA) | `NICE / OPTIONAL (M1.5 Mock)` |
+| **NLP-NFR-001**| Must| `UC-06` | `docs/01` §2.2 Deploy | N/A | CPU inference latency < 2000ms | `M1.5-AMEND-T-001` (PASS) | NLP Report §6 (Deployment Latency) | `MOCK_IMPLEMENTED (M1.5; M4)` |
 
-## Cross-check rules
+---
 
-### M0.5 approved row corrections
+## Ghi chú Vòng đời & Trạng thái Ranh giới (Boundary Status Notes)
 
-The `P1-FR-010` and `P1-FR-011` rows above are superseded where their compact summaries conflict with the approved canonical baseline:
-
-- `P1-FR-010`: UI supports `vi` and `en`, defaults and falls back to `vi`, and keeps `ja` as P2. Content lookup is requested locale → supported learner native locale → `vi` → `en` → explicit unavailable state.
-- `P1-FR-011`: only a completed lesson exercise session or recorded vocabulary review qualifies; it increments at most once per local day using stored IANA timezone and `lastQualifyingActivityDate`. Points/rewards are P2; leaderboard is P3/out of scope.
-
-These rows map to the normative M0.5 sections in `docs/01-architecture.md`, `docs/02-requirements.md`, and `docs/04-data-model.md`.
-
-The following review-era status labels in the compact matrix are also superseded:
-
-| Requirement | Canonical M0.5 status |
-|---|---|
-| `P1-FR-002` | `CONSISTENT logical baseline; implementation pending` — Course/Lesson/Vocabulary definitions are approved in `docs/04`. |
-| `P1-FR-004` | `CONSISTENT; implementation pending` — ADR-003 defines the nullable 0–100 lesson aggregate, trusted calculation boundary, idempotent completion and no attempt table. |
-| `P1-FR-006` | `IMPLEMENTED M1.3` — owner-checked, row-locked atomic RPC is applied and its DB tests pass. |
-| `P1-FR-008` | `IMPLEMENTED M1.3` — ADMIN content/scenario policies are applied; learner mutation and ADMIN learner-data isolation tests pass. |
-| `P1-FR-009` | `VERIFIED` — PA2 two-private-bucket path/type/size/ownership/visibility semantics pass live Auth/Storage HTTP tests, including exact 5 MB avatar and 10 MB audio boundaries. |
-| `P1-NFR-001` | `IMPLEMENTED M1.3` — all 17 application tables have RLS and live grants/function audits pass. |
-
-These implementation-pending labels are not semantic conflicts and do not reopen M0.5.
-
-### Scope Gap Review approved resolutions
-
-| Concern | Canonical resolution | Traceability effect |
-|---|---|---|
-| Vocabulary | Current Project 1 scope is published lesson vocabulary browsing, available audio playback, approved exercises, and SRS integration. Extra search/favorite/pronunciation/mastery/standalone-flashcard behavior is not implied. | Covered by existing `P1-FR-002`, `P1-FR-003`, and `P1-FR-005`; no new requirement ID or entity. |
-| Grammar | Amended by ADR-006 (2026-08-15): `GRAMMAR` is an approved `ExerciseType` value delivered as `Exercise` rows on existing lessons. No Project 1 grammar curriculum, grammar schema, or grammar-progress entity. Optional `grammatical_acceptability_score` remains NLP-owned Nice/P2 and API-only. | Maps to new `P1-FR-012`; progress stays under `P1-FR-004`; `NLP-FR-005` unchanged; no persistence row added. |
-| Listening | Amended by ADR-006 (2026-08-15): word-level scored `LISTENING` is approved and reuses the existing `vocabulary/{vocabularyId}/` Storage path. Sentence-level listening audio is rejected because it would require a new Storage path and a SEC-D8 amendment. | Maps to new `P1-FR-013`; vocabulary audio playback stays under `P1-FR-002`; legacy sentence-level examples remain superseded. |
-| Quiz | “Quiz” may label the existing MCQ/FILL_BLANK/REORDER sequence but does not introduce Quiz/Attempt persistence. | Remains under `P1-FR-003`/`P1-FR-004`; attempt history stays deferred. |
-| SRS | Scope is already approved; remaining gaps are implementation sequencing. Project 1 owns integration/persistence and ML owns model/Scheduler/evaluation. ADR-006 additionally makes the daily study goal (`Profile.dailyGoalMin`) a mapped requirement rather than an unreferenced field. | `record_review` remains in M1.3; deterministic seed in M1.4; mock API foundation in M1.5; the Android foundation delivered at M1.6 is SUPERSEDED by ADR-008 and replaced by the `M1.6W` Web foundation (planned separately); due fallback and smart-review E2E require a later approved SRS integration task. Daily study goal maps to new `P1-FR-014`; `record_review` scope is unchanged. |
-| Notification/Reminder | Amended by ADR-006 (2026-08-15) and ADR-008 (2026-08-17): a client-local reminder is approved, derived in the Web client from `dailyGoalMin` and `lastQualifyingActivityDate`, using in-app presentation (option `6d`). No server-side delivery, device token, push subscription, FCM/Web Push, scheduler, notification-preference entity, or reminder-schedule entity is approved. Options `6a` and `6b` are deferred, not rejected. `nextReviewAt` remains due state only. | Maps to new `P1-FR-015`; no API or data mapping is created; the reminder is presented within a chosen window, never as an exact time, and is not delivered while the application is closed. |
-
-These resolutions clarify existing scope. They do not by themselves authorize application implementation. The `ExerciseType` enum addition for `GRAMMAR` and `LISTENING` is authorized by ADR-006 and still requires its own separately approved implementation task; the API contract is unchanged, and no new table or column is authorized.
-
-1. Every Must requirement has an architecture reference and a planned test.
-2. Requirements involving persistence have a data-model mapping; rows marked `MISSING`, `PROPOSED`, or `DEFERRED` cannot authorize implementation until resolved by an approved task.
-3. Requirements involving HTTP/RPC have an API/RPC reference.
-4. Every core endpoint, RPC and architecture boundary must map to at least one requirement; otherwise classify it as `N/A`, `MISSING`, `CONFLICT`, or `DEFERRED` rather than leaving a blank.
-5. The AI boundary is unchanged: AI Server is stateless, receives learner history through requests, and does not own primary Supabase data.
-
-## Planned test-ID groups
-
-The IDs above are planning identifiers only. Test implementation and evidence belong to later approved implementation tasks:
-
-- `P1-T-*`: Web, Supabase, Admin, RLS, Storage, locale, gamification and fallback checks.
-- `ML-T-*`: model sanity, evaluation, acceptance and latency checks.
-- `NLP-T-*`: contract, roleplay, metrics, optional scorer and latency checks.
+1. **Nền tảng Học viên Web (`lingora-web`):** Toàn bộ các yêu cầu người học (`P1-FR-001`..`015`) được hiện thực trên nền tảng Web theo quyết định `ADR-008`. Mã nguồn Android trước đây tại commit `585ca6c` đã được đánh dấu `SUPERSEDED` và loại bỏ khỏi cây mã nguồn hoạt động.
+2. **Cơ chế Nhắc nhở Học tập:**
+   - `6d (In-app reminder)`: Là phương án chính thức được phê duyệt theo `ADR-006` và `ADR-008`.
+   - `6b (Web Push + scheduler)`: Được đánh dấu **`DEFERRED` (Tạm hoãn)**, bảo toàn trên lộ trình mở rộng sau này, không triển khai ở M1/M2.
+3. **Mở rộng Dạng bài tập:** `GRAMMAR` (`P1-FR-012`) và `LISTENING` (`P1-FR-013`) đã được phê duyệt ở `ADR-006` và sẽ được bổ sung vào schema/migration ở Milestone M2.

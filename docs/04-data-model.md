@@ -1,6 +1,6 @@
 # 04 - Lingora Data Model
 
-> **Canonical status:** M0 migration of the proposed legacy schema, SQL, RLS, RPC, Scheduler boundary and exercise payloads. Source wording/code is preserved. No migration or schema implementation is created.
+> **Canonical status:** M0 migration of the proposed legacy schema, SQL, RLS, RPC, Scheduler boundary and exercise payloads. Source wording/code is preserved. For the authoritative implementation-grounded ERD, schema dictionary, attribute constraints, and applied database baseline, see [`docs/07-data-dictionary.md`](07-data-dictionary.md).
 
 ### 1.3. Thiết kế Database
 

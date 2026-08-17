@@ -31,7 +31,7 @@ Web Learner ──(1) Auth JWT──►  Supabase (GoTrue · Postgres 15 · RLS 
              ──(2) Data RPC──►       ▲  data flows via PostgREST / RPC
 Web Admin    ──(Prisma TCP)──►       │
              ──(Storage)───►         │
-                                     │ (3) verify HS256 JWT
+                                     │ (3) verify ES256 (JWKS) / HS256 JWT
 AI Server (FastAPI) ◄────────────────┘
   POST /v1/srs/schedule    → DKT-LSTM / HLR
   POST /v1/chat/roleplay   → Transformer seq2seq / T5-small
@@ -42,14 +42,14 @@ AI Server (FastAPI) ◄────────────────┘
 AI Server is stateless; it never reads/writes Supabase directly. Learner AI calls go through a
 Next.js Route Handler proxy in `lingora-web` that forwards the JWT and owns the 8s timeout.
 If AI Server is down:
-- SRS falls back to `get_due_srs_cards` RPC (SM-2 schedule).
+- SRS falls back to `get_due_srs_cards` RPC / local deterministic rule.
 - Chatbot shows a temporary error.
 
 ---
 
 ## 3. Milestone Status
 
-*Source: [`docs/00-master-plan.md`](00-master-plan.md) §0.4*
+*Source: [`docs/00-master-plan.md`](00-master-plan.md) §0.4, [`docs/06-system-analysis.md`](06-system-analysis.md)*
 
 | Milestone | Title | Status |
 |---|---|---|
@@ -58,17 +58,19 @@ If AI Server is down:
 | M1.1 | Repository & environment setup | ✅ DONE |
 | M1.2 | Database: Prisma + Supabase schema | ✅ DONE |
 | M1.3 | Auth + RLS + Storage (two-bucket) + `record_review` | ✅ DONE — commit `d0e4276` |
-| M2 | Learn one lesson end-to-end | ⬜ upcoming |
+| M1.4 | Deterministic database seed & RLS test harness | ✅ DONE |
+| M1.5 | FastAPI mock runtime & test suite | ✅ DONE (JWKS/ES256 verifier amended) |
+| M1.6W | Web Learner Foundation (Next.js 15, SSR Auth, AI Route Handlers) | ✅ DONE — commit `f13521a` |
+| RSA-DOC | Requirements & System Analysis Documentation Recovery (`docs/06`, `docs/07`) | ✅ DONE |
+| M2 | Learn one lesson end-to-end (Web core lesson flow) | ⬜ upcoming / next |
 | M3 | Web Admin functional | ⬜ upcoming |
 | M4 / M4.5 | ≥1 AI API live / both live | ⬜ upcoming |
 | M5 | Feature freeze | ⬜ upcoming |
 | Final | Production deploy (Vercel + Render), 3 reports, 3 slides | ⬜ week 12 |
 
-**Current baseline:** M1.5 DONE. The M1.6 Android foundation is SUPERSEDED by `ADR-008` (2026-08-17);
-the learner client is Web. M1.6W is the active Web learner foundation: Auth/session, fixed AI proxy,
-SRS/Roleplay mock connectivity, vi/en UI, and responsive/accessibility baseline. Next after M1.6W is M2
-(Web lesson flow); Requirements & System Analysis / Documentation Recovery is a mandatory separate milestone
-immediately after M1.6W, before report-oriented recovery work.
+**Current baseline:** M1.6W and System Analysis Documentation Recovery (`docs/06-system-analysis.md`, `docs/07-data-dictionary.md`) are DONE.
+Next active milestone: **M2 (Web Core Lesson Flow & Exercise Engine)**.
+
 
 ---
 

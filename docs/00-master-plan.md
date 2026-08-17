@@ -39,11 +39,13 @@ Tài liệu này là **mục lục + lộ trình** cho bộ kế hoạch chi ti�
 
 | File | Nội dung |
 |---|---|
-| [01-kien-truc-he-thong.md](01-architecture.md) | Sơ đồ hệ thống, ERD + Prisma schema (SRS + Chat), RLS, API contract 2 tính năng AI, luồng Auth, cấu trúc các boundary code |
+| [01-kien-truc-he-thong.md](01-architecture.md) | Sơ đồ hệ thống, phân tách trách nhiệm các boundary, cấu trúc thư mục và bảo mật |
 | [02-phan-tach-yeu-cau-bao-cao.md](02-requirements.md) | Ma trận sản phẩm bàn giao, dàn ý 3 báo cáo (SE / ML / NLP), danh sách hình vẽ & bảng số liệu cần có |
-| [03-tech-stack.md](01-architecture.md) | Phiên bản cụ thể, thư viện, dataset, phương án thay thế, lệnh khởi tạo project |
-| [04 — Phương pháp triển khai](00-master-plan.md) | API-First từng bước, Dual-Track Agile, Git flow, Definition of Done, chiến lược test |
-| [05 — Rủi ro và triển khai](00-master-plan.md) | Bảng rủi ro + phương án giảm thiểu, Mock API, runbook deploy, quản lý secret, kịch bản demo |
+| [03-api-contract.md](03-api-contract.md) | Hợp đồng giao tiếp API `/v1/`, cấu trúc JSON request/response và error envelope |
+| [04-data-model.md](04-data-model.md) | Mô hình dữ liệu logic, nguyên tắc đa ngôn ngữ và phân quyền RLS |
+| [05-traceability-matrix.md](05-traceability-matrix.md) | Ma trận truy vết yêu cầu sang Use Case, Component, Data Entity và Test Evidence |
+| [06-system-analysis.md](06-system-analysis.md) | Đặc tả phân tích hệ thống toàn diện, danh mục 6 năng lực, 8 Use Case và biểu đồ luồng |
+| [07-data-dictionary.md](07-data-dictionary.md) | Sơ đồ ERD 17 thực thể hiện thực, từ điển thuộc tính chi tiết, storage buckets và bảng đối chiếu |
 
 ---
 

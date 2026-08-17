@@ -25,7 +25,7 @@
 │  Lưu: review_logs, user_vocab_srs, chat_sessions/messages     │
 └───────────────────────────────────────────────────────────────┘
          ▲                                        ▲
-    (4) verify JWT (HS256)              (5) ghi log request
+    (4) verify JWT (ES256 JWKS / HS256) (5) ghi log request
          │                                        │
 ┌────────┴────────────────────────────────────────┴─────────────┐
 │                   AI Server (FastAPI · Python)                │
@@ -34,12 +34,12 @@
 │  MOCK_MODE=true  →  trả kết quả hardcode (phương án dự phòng) │
 └───────────────────────────────────────────────────────────────┘
          ▲
-    (6) HTTPS + Bearer JWT
+    (6) HTTPS + Bearer JWT (qua Next.js Route Handler Proxy, timeout 8s)
          │
    Web Learner (màn "Ôn tập thông minh" · màn "Luyện hội thoại")
 ```
 
-**Điểm cần nhớ:** Web Learner **không** đi qua AI Server để lấy dữ liệu bài học/từ vựng gốc — dữ liệu đó luôn lấy trực tiếp từ Supabase. AI Server chỉ được gọi cho 2 việc: (a) tính lịch ôn tập gợi ý, (b) sinh phản hồi + chấm điểm hội thoại. Nhờ vậy AI Server chết cũng không làm sập luồng học chính, chỉ mất phần "gợi ý" (SRS rơi về lịch mặc định kiểu SM-2, chatbot báo lỗi tạm thời).
+**Điểm cần nhớ:** Web Learner **không** đi qua AI Server để lấy dữ liệu bài học/từ vựng gốc — dữ liệu đó luôn lấy trực tiếp từ Supabase. AI Server chỉ được gọi cho 2 việc: (a) tính lịch ôn tập gợi ý, (b) sinh phản hồi + chấm điểm hội thoại (qua Route Handler proxy ở `lingora-web`). Nhờ vậy AI Server chết cũng không làm sập luồng học chính, chỉ mất phần "gợi ý" (SRS rơi về lịch mặc định kiểu SM-2 / deterministic fallback, chatbot báo lỗi tạm thời). Chi tiết luồng và đặc tả use case xem tại [`docs/06-system-analysis.md`](06-system-analysis.md).
 
 ### 1.2. Trách nhiệm từng thành phần
 

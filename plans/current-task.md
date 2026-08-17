@@ -1,6 +1,6 @@
 # Task
 
-m1.6w-web-learner-foundation
+requirements-system-analysis-documentation-recovery
 
 ## Status
 
@@ -10,354 +10,184 @@ Allowed values: `DRAFT / REVIEW / APPROVED / IMPLEMENTING / TESTING / DONE / BLO
 
 ## Plan Boundary
 
-This plan is **not implementation authorization** while its status is `REVIEW`. No file under
-`lingora-web/` may be created and no dependency may be installed until a human changes this task to
-`APPROVED` and completes the Approval section.
+This is a documentation-recovery and requirements/system-analysis task. It is not an implementation milestone and does not authorize any product feature, Web screen, API, database, schema, migration, RLS, dependency, PWA, Web Push, scheduler, ML, NLP or reminder implementation. No file outside the approved allowlist below may be changed. Human approval is required before the task can move to `IMPLEMENTING`.
 
-`M1.6W` is a Web foundation milestone only. Its single purpose is to prove that the learner Web boundary can
-authenticate a learner, maintain the approved server-side session, and call the two protected M1.5 mock
-endpoints through a Next.js Route Handler.
-
-Human decisions locked on 2026-08-17:
-
-1. `6b` Web Push + scheduler is **DEFERRED, not cancelled**. It stays on the roadmap, outside `M1.6W`.
-2. `6d` in-app reminder belongs to a later feature milestone, outside `M1.6W`.
-3. Requirements & System Analysis / Documentation Recovery starts only after `M1.6W` is `DONE`.
+The task must end in `REVIEW` and wait for explicit human approval. It must not be marked `APPROVED` by an agent.
 
 ## Objective
 
-Create a buildable `lingora-web/` foundation using the approved Web stack and demonstrate:
+Recover and complete the Requirements & System Analysis package after `M1.6W` DONE and before `M2` Web implementation, using repository evidence rather than retroactively normalizing history. The result must be usable by the team and report-ready, while preserving the distinction between:
 
-`register/login -> server-side session -> protected foundation route -> typed repository/service ->`
-`Next.js AI Route Handler -> protected M1.5 MOCK_MODE endpoint -> localized responsive result UI`.
+1. confirmed requirements and acceptance criteria;
+2. architecture/technical decisions locked by ADR;
+3. implementation evidence observed in code, migrations, tests and commits;
+4. missing, inferred, stale or contradictory material requiring human confirmation.
 
-M1.6W establishes only:
+The six original assignment capabilities must be traced end to end:
 
-1. Next.js 15 App Router + React 19 + TypeScript 5 + Tailwind 4.
-2. Supabase registration/login, server-side session read/refresh, route protection, and logout via
-   `@supabase/ssr`.
-3. A fixed typed AI client boundary with an 8-second timeout and canonical error mapping.
-4. Narrow SRS and Roleplay mock repositories/services only.
-5. Login, register, and one authenticated foundation status surface; no feature screen.
-6. `vi` default/fallback and `en` switching without an i18n dependency.
-7. Responsive/accessibility verification on mobile, tablet, and desktop.
+| Capability | Required trace target |
+|---|---|
+| Foreign-language learning | Course/Lesson/Vocabulary, exercises, audio, `P1-FR-002/003/012/013` |
+| Content/learning management | Admin content/media/scenario management, `P1-FR-008/009` |
+| SRS/personalization | `P1-FR-005/006`, `UserVocabSrs`, `ReviewLog`, `record_review`, AI API and fallback |
+| Chatbot roleplay | `P1-FR-007`, Chat entities, `/v1/chat/roleplay`, Web Route Handler hop |
+| Progress/streak/daily goal | `P1-FR-004/011/014`, `UserProgress`, `Profile` fields and trusted write boundary |
+| Scheduled reminder | `P1-FR-015`, client-local in-app `6d` only; no implementation in this task |
 
-## Canonical Basis
+Reminder decisions remain locked exactly as follows: `6b` Web Push + scheduler is **DEFERRED, not rejected**; `6d` in-app reminder is a later feature milestone; no reminder is implemented or documented as background delivery in this task.
 
-- `ADR-008` in `logs/decision-log.md`: Web boundary, Route Handler AI hop, `M1.6W` scope, deferred reminders,
-  and forbidden secrets/runtime coupling.
-- `docs/00-master-plan.md` §0.2, §0.4, §4.1, §5.4-5.5: mock-first delivery, roadmap, environment boundary,
-  and production AI URL.
-- `docs/01-architecture.md` §1.1-1.7 and §3.1-3.2: Web responsibilities, repository shape, Route Handler,
-  stack, timeout, i18n, and security.
-- `docs/02-requirements.md`: `P1-FR-001`; foundation portions of `P1-FR-005`/`P1-FR-007`;
-  `P1-FR-010`; `P1-NFR-001` through `P1-NFR-004`.
-- `docs/03-api-contract.md`: exact SRS/Roleplay/error shapes and compatibility rules. Read-only in M1.6W.
-- `docs/05-traceability-matrix.md`: final SRS fallback, persistence, and Roleplay UX are later work.
-- `DESIGN.md`: `Operate` mode, accessibility, localization, resilient states, responsive verification;
-  full visual identity remains undecided.
-- `HANDOFF.md`: M1.7 is DONE; Android, reminder, DB/API/ML/NLP and staging work remain prohibited.
+## Audit Evidence Already Inspected
 
-## Verified Official Sources
+The planning audit covered the requested canonical and historical sources plus implementation evidence:
 
-- Next.js 15 App Router: https://nextjs.org/docs/15/app/getting-started/installation
-- Supabase SSR Auth: https://supabase.com/docs/guides/auth/server-side/nextjs
-- Tailwind CSS 4 + Next.js: https://tailwindcss.com/docs/guides/nextjs
-- TanStack Query 5: https://tanstack.com/query/v5/docs/framework/react/overview
-- Playwright: https://playwright.dev/docs/intro
-- Vitest: https://vitest.dev/guide/
+- `docs/00-master-plan.md` through `docs/05-traceability-matrix.md`
+- `DESIGN.md`, `HANDOFF.md`, `logs/decision-log.md`
+- related archives: M0/M0.5/M0.6, scope-gap review, canonical scope alignment, M1.2, M1.5, M1.6 Android, M1.6W, M1.7 Web reset and ADR-009 amendment snapshots
+- `lingora-admin/prisma/schema.prisma`
+- all three existing Prisma migrations under `lingora-admin/prisma/migrations/`
+- current `lingora-web/` foundation, `lingora-ai/api` runtime/tests and lifecycle logs
+- current Git baseline: `f13521a` (`feat(web): implement next.js 15 learner foundation with route handler ai proxy (m1.6w)`), clean and tracking `origin/main`
 
-Source review found one material detail: `@supabase/ssr` currently defaults to `httpOnly: false`, while
-ADR-008 requires an httpOnly session. Decision D2 therefore uses server-side Auth operations and explicitly
-sets/tests the approved cookie attributes instead of relying on the SDK default.
+### Confirmed / locked
 
-## Preconditions
+- `ADR-001` makes `docs/` canonical and preserves legacy material as history/reference.
+- `ADR-002`, `ADR-003`, `ADR-004`, `ADR-005`, `ADR-006`, `ADR-008` and `ADR-009` lock ownership, scope, data/RLS/security boundaries, the Web learner platform, the Route Handler AI hop, ES256/HS256 verifier compatibility, and reminder deferrals.
+- `docs/02` contains the canonical P1/ML/NLP requirement IDs and acceptance criteria, including `P1-FR-001` through `P1-FR-015` and the NFRs.
+- `docs/05` contains a requirement-to-architecture/data/API/test/report matrix and explicit implementation status vocabulary.
+- Current Prisma implementation contains 17 application models, 3 migrations, RLS/RPC/storage evidence and only `MCQ`, `FILL_BLANK`, `REORDER` in the applied `ExerciseType` enum. No schema change is authorized here.
+- `lingora-web` implements only the M1.6W foundation routes and fixed AI proxy; current M1.6W evidence is in `logs/test-log.md` rows `M1.6W-T-*` and the DONE archive.
+- `lingora-ai/api` has protected SRS/roleplay routes, health/model-info routes and 37-test post-ADR-009 evidence; it is frozen for this task.
 
-1. M1.3 Auth/RLS, M1.4 seed, M1.5 mock runtime, and M1.7 Web reset remain DONE.
-2. Human approval of D1-D10 below.
-3. Node.js 24.14.0 and npm 11.9.0 remain available.
-4. Ignored local configuration supplies Supabase values, fixed AI URL, and dedicated E2E learner credentials.
-5. M1.5 runs with `MOCK_MODE=true`; Playwright Chromium is available.
+### Missing or incomplete analysis artifacts
 
-## Decisions Submitted For Approval
+- No authoritative stakeholder/actor catalog with goals, permissions and ownership.
+- No complete use-case catalog and no actual use-case descriptions for all six assignment capabilities. `docs/02` lists report deliverables and four important UC topics, but does not provide the descriptions.
+- No report/team-readable set of business/system flows covering Auth, lesson learning, content administration, SRS fallback/review write, roleplay, progress/streak/daily goal and the in-app reminder limitation.
+- No dedicated implementation-grounded ERD artifact and no complete data dictionary with field ownership, lifecycle, cardinality, RLS/write path and evidence status.
+- Existing traceability does not consistently include the required intermediate Use Case and concrete component/API/data links for all six capabilities.
+- Assumptions, constraints, dependencies and deferred scope are spread across documents rather than captured in one analysis register.
 
-### M1.6W-D1 — Dependency boundary
+### Findings and contradictions to preserve as findings
 
-`lingora-web/` is an independent npm project with one committed `package-lock.json`.
+1. `HANDOFF.md` has a current-state paragraph saying M1.6W is DONE, but its “Do NOT do next” and “Suggested next step” sections still describe the pre-Web-foundation state. This is stale lifecycle documentation.
+2. `docs/QUICK-REF.md` still says M1.6W is active/next and is dated before the DONE commit. It is inconsistent with `HANDOFF.md` current state, `plans/archive/2026-08-17-m1.6w-web-learner-foundation-DONE.md`, logs and Git `f13521a`.
+3. `docs/05-traceability-matrix.md` still describes the M1.6W Web foundation as planned in a historical resolution note, although implementation and test evidence now exists. The note must be classified as historical or updated only with evidence; history must not be rewritten.
+4. `docs/01-architecture.md` contains migrated legacy statements that conflict with current evidence: the overview/auth flow says HS256 as the only verifier, the repository tree describes unbuilt future routes, the learner storage text says public URLs while migrations implement two private buckets, and the top diagram includes a direct-looking AI path. ADR-008/ADR-009 and implementation evidence govern the current boundary.
+5. `docs/04-data-model.md` explicitly preserves a legacy proposed schema block and marks it as superseded, but the normative data-model sections and the applied Prisma/migrations are not presented as one side-by-side “logical approved vs implemented” view. `GRAMMAR` and word-level `LISTENING` are approved by ADR-006 but are not in the current Prisma enum; this is an implementation gap, not permission to edit schema in this task.
+6. The M1.5 archive describes `GET /v1/chat/scenarios` and optional chat score/feedback behavior, while the current `lingora-ai/api/app/main.py` exposes no `/v1/chat/scenarios` route and its response model omits the optional score/feedback fields. The optional fields are contract-compatible when omitted; the route/archive discrepancy must be recorded and escalated without changing `docs/03-api-contract.md` here.
+7. The API contract is not to be silently “fixed”: `docs/03-api-contract.md` remains frozen. Any finding that requires a contract field/path/status decision is a human decision or a later approved task.
 
-Authorized runtime dependencies: `next` 15.x, `react`/`react-dom` 19.x, `@supabase/supabase-js` 2.x,
-`@supabase/ssr`, `@tanstack/react-query` 5.x, plus only the shadcn support packages needed by the copied
-foundation components: `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`,
-`@radix-ui/react-slot`.
+## Proposed Analysis Package
 
-Authorized dev dependencies: TypeScript 5.x, Tailwind 4.x and official PostCSS adapter, ESLint/Next config,
-Vitest, jsdom, Testing Library, Playwright, and `@axe-core/playwright`. Exact compatible patches are recorded
-in `package.json`/lockfile during implementation. No other dependency is authorized.
+The following structure is proposed for team and report use. It is a proposal for approval, not an implicit authorization to create the files:
 
-First install runs with lifecycle scripts disabled; any required script is inspected and recorded before
-allowing it. The lockfile is verified by clean install, audit, and signature/provenance checks where supported.
+1. `docs/06-system-analysis.md`: problem statement and scope; stakeholders/actors; system boundaries; functional and non-functional requirement interpretation; use-case catalog and descriptions; business and system flows; architecture overview; assumptions, constraints, dependencies and deferred scope; finding register with evidence classification.
+2. `docs/07-data-dictionary.md`: implementation-grounded ERD (Mermaid plus stable entity relationship text), entity/field dictionary, cardinality, lifecycle, ownership/RLS/write path, storage buckets and a logical-model-versus-Prisma mismatch table. It must distinguish approved logical fields from implemented fields.
+3. `docs/05-traceability-matrix.md`: extend the existing matrix only where the audit proves the mapping, adding explicit `requirement -> use case -> component/service/API/RPC -> data -> test/report evidence` links and statuses such as `CONFIRMED`, `ADR-LOCKED`, `IMPLEMENTED`, `INFERRED`, `MISSING`, `CONFLICT` and `DEFERRED`.
+4. `docs/01-architecture.md`, `docs/02-requirements.md`, `docs/04-data-model.md`, `docs/00-master-plan.md`: make only evidence-backed cross-reference/status corrections approved by this task. Do not delete migrated history; retain superseded blocks with explicit labels.
+5. `docs/project-1/README.md`: report/team reading order linking the canonical docs, system-analysis package, report scaffold and evidence/log locations. Existing DOCX report files remain unchanged in this task.
 
-### M1.6W-D2 — Auth and httpOnly session
+`DESIGN.md` is audited but remains a UI-only skeleton and is frozen unless a human explicitly approves a narrow cross-reference that does not select brand, typography, navigation or visual tokens.
 
-Registration, login, refresh, session read, and logout run through Server Actions/server-only helpers. Tokens
-never enter `localStorage`, `sessionStorage`, IndexedDB, rendered HTML, or a hand-written token store.
+## Scope After Approval
 
-The required runtime sequence is:
-`Browser -> Server Action -> Supabase Auth -> httpOnly cookie -> Middleware/Server Component -> Foundation`.
-The browser does not call Supabase Auth directly and never receives an
-`access_token` for client-side storage.
+### Files expected to change
 
-Supabase SSR cookies are explicitly configured/tested as `httpOnly`, `sameSite=lax`, `secure` outside local
-HTTP development, and path `/`. Middleware refreshes via the SDK, updates response cookies, redirects signed-
-out users, and cannot enter a refresh loop.
-
-M1.6W creates no authenticated browser Supabase client. The later Course/Lesson milestone must separately
-plan browser data access without weakening this server-only session boundary.
-
-### M1.6W-D3 — AI environment clarification
-
-`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are the only public values.
-`AI_API_BASE_URL` is a **server-only, non-secret deployment value** used only by fixed Route Handlers. It is
-never request-controlled or exposed with `NEXT_PUBLIC_`.
-
-Approval confirms ADR-008's “receives only” clause forbids additional credentials/secrets, not the fixed
-non-secret upstream URL already required by `docs/00-master-plan.md` §5.4 and ADR-008's Route Handler. The
-clarification is recorded in the decision log; it adds no endpoint, runtime, or secret.
-
-### M1.6W-D4 — Fixed AI proxy
-
-Only `/api/ai/srs` and `/api/ai/chat` exist. Each verifies the server-side session, validates/bounds the
-corresponding canonical request, forwards the current JWT to a fixed `AI_API_BASE_URL` path, aborts at 8,000
-ms, maps canonical success/error payloads, persists nothing, and logs no token/password/auth header/history.
-
-The request cannot choose URL, host, path, method, or authorization, preventing an open proxy/SSRF surface.
-Model output is escaped text only.
-
-### M1.6W-D5 — Repository/service scope
-
-Only `AuthService`, `AiRepository`, and canonical TypeScript SRS/Roleplay/error types are created. No course,
-lesson, vocabulary, exercise, progress, profile, storage, review, reminder, or notification repository exists.
-TanStack Query remains because it is an approved `docs/01-architecture.md` stack dependency and future feature
-repositories will use the same boundary. In M1.6W it is only a provider/async-state boundary; no speculative
-domain cache or persistence is populated.
-
-### M1.6W-D6 — Routes and states
-
-Only `/login`, `/register`, protected `/foundation`, and session-aware `/` exist. Foundation can trigger one
-deterministic SRS request and one `hotel_booking` Roleplay request and render `is_mock`, `model_version`,
-latency, and a small result summary.
-
-UI states distinguish validation, invalid credentials, unauthorized/expired session, connectivity, timeout,
-server/model unavailable, malformed response, loading, and success without raw internals.
-
-### M1.6W-D7 — Locale
-
-`vi` is default/fallback; `en` is the only alternate. A typed catalog and server-readable locale cookie are
-sufficient; no i18n dependency. Switching preserves the route. Roleplay `lang=en` remains learned language,
-not UI locale.
-
-### M1.6W-D8 — Limited UI authority
-
-Approval authorizes only a functional `Operate` baseline for these routes and a narrow `DESIGN.md` update:
-
-- system font stack with vi/en glyph support; light theme only;
-- restrained neutral UI plus distinct semantic states meeting WCAG AA; no full brand palette/logo;
-- visible focus, keyboard reachability, touch targets, semantic landmarks/labels/live regions, and no
-  color-only meaning;
-- no brandization, marketing hero, illustration, gradients, or motion.
-
-Final navigation, brand, feature composition, custom typography, imagery, gamification, and full design
-system remain later decisions.
-
-### M1.6W-D9 — Responsive targets
-
-No horizontal scroll/overlap at 360x800, 768x1024, and 1440x900 in both locales. Auth stays single-column;
-foundation controls stack on small screens. Text does not scale with viewport width.
-
-### M1.6W-D10 — Reminder and documentation boundary
-
-No reminder code. `6d` stays in Progress/Profile; `6a`/`6b` stay deferred, with `6b` retained on the roadmap.
-Requirements & System Analysis / Documentation Recovery begins only after M1.6W is DONE and is a required
-follow-up milestone, not optional cleanup. That milestone must cover requirements collection/analysis, actors
-and Use Cases, functional/non-functional requirements, ERD/SQL/data model, data dictionary, architecture,
-traceability, maintainers' project documentation, and report-ready evidence. This task updates only lifecycle
-records and the narrow D3/D8 architecture/environment/design clarification.
-
-## Scope Included
-
-1. Create `lingora-web/` project/config/lockfile/env template/README.
-2. Implement server-only Supabase Auth, cookie refresh middleware, and route protection.
-3. Implement typed canonical models, fixed AI proxy handlers, timeout/error mapping.
-4. Implement narrow Auth/AI service and repository boundaries plus Query provider.
-5. Implement login/register/foundation/logout and vi/en switching.
-6. Add Vitest, Playwright, accessibility, and responsive tests.
-7. Make only D3/D8 documentation clarifications.
-8. Run/log `M1.6W-T-001`..`T-013`, review quality/security, snapshot/archive, update handoff, then commit.
-
-## Explicitly Out Of Scope
-
-- Course/Lesson/Vocabulary/audio/Exercise/Progress/Profile/streak/daily-goal/final SRS/final Roleplay screens.
-- `record_review`, `get_due_srs_cards`, final fallback, chat persistence, or domain cache.
-- `6d`; service worker, manifest, PWA, Notification API, push subscription/table/scheduler/VAPID/sender.
-- Requirements analysis, Use Cases, ERD/SQL, data dictionary, report diagrams, documentation recovery.
-- Changes under `lingora-ai/`, `lingora-admin/prisma/`, `staging/`, DB/RLS/RPC/Storage, or API contract.
-- Service-role/JWT secret/database URL/Prisma/direct DB/browser token storage.
-- Android, complete branding, custom font, dark theme, final navigation, marketing page, or deployment.
-
-## Files Expected To Change
-
-### Project/config
-
-- `lingora-web/package.json`, `package-lock.json`, `tsconfig.json`, `next.config.ts`, `next-env.d.ts`
-- `lingora-web/eslint.config.mjs`, `postcss.config.mjs`, `vitest.config.ts`, `playwright.config.ts`
-- `lingora-web/components.json`, `.env.example`, `README.md`
-
-### App/routes
-
-- `lingora-web/src/app/globals.css`, `layout.tsx`, `page.tsx`
-- `lingora-web/src/app/(auth)/login/page.tsx`, `register/page.tsx`
-- `lingora-web/src/app/(learner)/foundation/page.tsx`
-- `lingora-web/src/app/api/ai/srs/route.ts`, `api/ai/chat/route.ts`
-- `lingora-web/src/middleware.ts`
-
-### Components/data boundary
-
-- `lingora-web/src/components/auth/auth-form.tsx`
-- `lingora-web/src/components/foundation/foundation-status.tsx`
-- `lingora-web/src/components/locale-switcher.tsx`, `providers.tsx`
-- `lingora-web/src/components/ui/{alert,button,card,input,label}.tsx`
-- `lingora-web/src/features/auth/actions.ts`, `auth.service.ts`
-- `lingora-web/src/features/ai/ai.repository.ts`, `contracts.ts`
-- `lingora-web/src/lib/api/error.ts`, `proxy.ts`
-- `lingora-web/src/lib/query/client.ts`
-- `lingora-web/src/lib/supabase/server.ts`, `middleware.ts`
-- `lingora-web/src/lib/utils.ts`
-- `lingora-web/src/i18n/config.ts`, `messages/vi.ts`, `messages/en.ts`
-
-### Tests
-
-- `lingora-web/tests/setup.ts`
-- `lingora-web/tests/unit/{auth.service,ai.repository,api.proxy,i18n}.test.ts`
-- `lingora-web/tests/component/{auth-form,foundation-status}.test.tsx`
-- `lingora-web/tests/e2e/{auth,foundation,accessibility-responsive}.spec.ts`
-
-### Lifecycle/narrow docs
-
-- `DESIGN.md`, `ENVIRONMENT.md`, `docs/01-architecture.md`, `docs/QUICK-REF.md`
-- `logs/decision-log.md`, `logs/test-log.md`, `logs/development-log.md`
 - `plans/current-task.md`
-- `plans/approved/2026-08-17-m1.6w-web-learner-foundation-APPROVED.md`
-- `plans/archive/2026-08-17-m1.6w-web-learner-foundation-DONE.md`
-- `HANDOFF.md`
+- `docs/06-system-analysis.md` (new)
+- `docs/07-data-dictionary.md` (new)
+- `docs/05-traceability-matrix.md`
+- `docs/00-master-plan.md` (status/ordering/reference corrections only)
+- `docs/01-architecture.md` (current-boundary clarifications only)
+- `docs/02-requirements.md` (analysis references/status clarifications only)
+- `docs/04-data-model.md` (logical-vs-applied evidence clarifications only)
+- `docs/project-1/README.md` (new or existing reading-order index)
+- `logs/test-log.md`
+- `logs/development-log.md`
+- `logs/decision-log.md` only for decisions explicitly made by the human during review of this task
+- `HANDOFF.md` only when the task reaches `DONE` or `BLOCKED`
 
-Must not change: `lingora-ai/`, `lingora-admin/prisma/`, `staging/`, `.codex/`, `.agents/`,
-`docs/03-api-contract.md`, `docs/04-data-model.md`, schema/migrations/seed. Any additional implementation
-file returns the task to REVIEW before editing.
+### Frozen files and boundaries
 
-## Implementation Order After Approval
+- `docs/03-api-contract.md`
+- `DESIGN.md` visual decisions and component guidance
+- `lingora-web/` source, tests, package manifests and lockfile
+- `lingora-ai/` source, tests, requirements and runtime configuration
+- `lingora-admin/prisma/schema.prisma`
+- `lingora-admin/prisma/migrations/**`, `seed.js`, RLS, RPC and Storage configuration
+- all feature code, Web pages, Course/Lesson/Exercise UI, M2 work, Android artifacts/history and staging
+- all dependencies, model/training/evaluation files and Word report binaries
 
-1. Snapshot approved plan; status `IMPLEMENTING`.
-2. Resolve/record exact dependencies; inspect lockfile/scripts.
-3. Scaffold Next/Tailwind/shadcn and root layout.
-4. Implement Auth/cookies/middleware/route protection and tests.
-5. Implement AI types/proxy/routes/timeout/error tests.
-6. Implement repositories, Query provider, UI, vi/en.
-7. Apply D8 responsive/accessibility and D3/D8 docs.
-8. Status `TESTING`; run full plan and quality/security review.
-9. Log evidence, update handoff, mark/archive DONE, Conventional Commit.
+Any necessary change outside the allowlist is a stop condition and returns the task to `REVIEW`.
+
+## Ordered Work After Approval
+
+1. Snapshot the approved plan and enter `IMPLEMENTING`; record any human decisions in `logs/decision-log.md`.
+2. Re-run read-only inventory and hashes for the canonical docs, Prisma schema/migrations, current Web/AI boundaries and relevant archive snapshots.
+3. Build the evidence register: confirmed requirement, ADR decision, implementation evidence, inference, missing item, conflict, owner and proposed resolution. Do not upgrade an inference to a requirement.
+4. Draft `docs/06-system-analysis.md` with the six-capability scope and Web-only learner boundary. Include external actors (Learner, Admin, AI Service, Supabase/Auth/Storage as supporting systems) without restoring Android as a learner platform and without inventing a reminder scheduler actor.
+5. Draft `docs/07-data-dictionary.md` from the actual Prisma schema and migration SQL; include the legacy-proposed block only as historical context and flag every logical/applied mismatch.
+6. Expand traceability and correct only the canonical status/prose contradictions supported by evidence. Keep `docs/03-api-contract.md` and all implementation boundaries unchanged.
+7. Update the team/report reading-order index and, only if required, the narrow lifecycle handoff.
+8. Enter `TESTING`; run static validation, link/heading checks, entity/enum/migration consistency checks, six-capability trace checks, Web-vs-Android boundary scans, frozen-file diff checks and secret/whitespace scans.
+9. Run `code-review-and-quality` as a documentation quality review before `DONE`; record findings and residual risks.
 
 ## Acceptance Criteria
 
-1. Register/login/logout work; invalid input/credentials are localized and recoverable.
-2. Login creates approved cookie attributes; server reload persists session; logout clears it.
-3. Signed-out `/foundation` redirects; signed-in renders; refresh cannot loop.
-4. No auth token in browser storage, HTML, client logs, screenshots, or committed files.
-5. Both internal handlers call protected M1.5 mocks and render `is_mock: true` results.
-6. AI calls abort within 8 seconds and correctly map 401/validation/timeout/connectivity/503/malformed errors.
-7. Client cannot control upstream URL/path/method/auth; input is bounded.
-8. Used fields match `docs/03`; no FastAPI/contract change.
-9. vi default/fallback and en switch cover every visible string.
-10. Keyboard/focus/labels/landmarks/live regions/touch targets/contrast pass.
-11. Both locales pass 360x800, 768x1024, 1440x900 without overlap/clip/horizontal scroll/layout shift.
-12. Only login/register/foundation exists; no feature/reminder/PWA/push code.
-13. Frozen boundaries are unchanged and all required evidence/logs exist before DONE.
+1. Every requested audit source is listed with observed status and evidence pointers; no historical claim is silently rewritten.
+2. The final analysis package contains all required sections: problem/scope, stakeholders/actors, functional/non-functional requirements, system boundaries, use-case list and descriptions, flows, architecture overview, ERD, data dictionary, API/service boundaries, full traceability, assumptions, constraints, dependencies and deferred scope.
+3. All six original capabilities have at least one requirement, use case, owning component/API/data mapping, implementation status and validation/report evidence or an explicit `MISSING/DEFERRED/CONFLICT` status.
+4. The learner platform is Web (`lingora-web`) after ADR-008. Android may appear only as superseded history; no current use case, boundary or architecture diagram presents Android as the learner platform.
+5. Reminder wording preserves `6b` as deferred and `6d` as a later in-app feature; no task documentation claims background delivery, scheduler execution or Web Push implementation.
+6. The data dictionary and ERD match the actual Prisma model/migration inventory as evidence, while clearly flagging approved-but-not-applied `GRAMMAR/LISTENING` scope and any other mismatch. No schema is changed.
+7. The API review records implementation/contract/archive discrepancies without changing `docs/03-api-contract.md` or inventing compatibility decisions.
+8. All new links resolve, terminology and requirement IDs are stable, and status labels distinguish confirmed, ADR-locked, implemented, inferred, missing, conflict and deferred material.
+9. Frozen-boundary diff is empty; no feature, dependency, DB, RLS, API implementation or reminder code is added.
+10. Required lifecycle logs contain observed validation output before any `DONE` status; `HANDOFF.md` is updated only at completion.
 
-## Test Plan
+## Test / Validation Plan
 
-| ID | Command / method | Required evidence |
+| ID | Validation | Required evidence |
 |---|---|---|
-| `M1.6W-T-001` | `npm ci`; build, lint, typecheck | Versions, commands, exit codes, output |
-| `M1.6W-T-002` | Unit/component suite | Auth/cookies/middleware/locale/repository/proxy/timeout/error PASS |
-| `M1.6W-T-003` | Playwright signed-out route | Redirect with no loop |
-| `M1.6W-T-004` | Live Supabase Auth E2E with ignored credentials | Login, reload, logout, invalid credentials; secrets redacted |
-| `M1.6W-T-005` | Registration verification on approved test project | One learner registration; redacted account evidence |
-| `M1.6W-T-006` | SRS via `/api/ai/srs`, M1.5 `MOCK_MODE=true` | Protected deterministic `is_mock: true` result |
-| `M1.6W-T-007` | Roleplay via `/api/ai/chat` | Protected `hotel_booking`, `is_mock: true`, `ai_reply` |
-| `M1.6W-T-008` | Timeout/401/422/503/malformed matrix | Expected localized recoverable states; no raw detail |
-| `M1.6W-T-009` | Playwright 3 viewports x 2 locales | Inspected screenshots; no layout defects |
-| `M1.6W-T-010` | Keyboard + axe | No serious/critical violation; focus/live status verified |
-| `M1.6W-T-011` | Storage/cookie inspection + secret scan | No browser token/secret; cookie attributes observed |
-| `M1.6W-T-012` | npm audit/signatures + dependency review | No unmitigated reachable high/critical issue |
-| `M1.6W-T-013` | Frozen-boundary diff + M1.5 pytest | Named boundaries unchanged; 27/27 PASS |
+| RSA-T-001 | Read-only source inventory and file/hash capture | Commands, file list, commit SHA, clean/frozen boundary status |
+| RSA-T-002 | Requirement/UC/architecture/API/data/test/report ID coverage | No missing six-capability trace rows; explicit unresolved statuses |
+| RSA-T-003 | Prisma/migration/schema comparison | Entity/enum/FK/index/RLS/storage inventory; mismatch table; no schema diff |
+| RSA-T-004 | API implementation comparison | Route/schema/status/error comparison; contract file unchanged; archive discrepancies recorded |
+| RSA-T-005 | Web boundary and Android-history scan | Current Web-only references; Android only labeled superseded/history |
+| RSA-T-006 | Reminder/deferred-scope scan | Exact `6b` deferred wording; `6d` later in-app limitation; no push/scheduler code |
+| RSA-T-007 | Markdown links/headings/terminology and whitespace | Link checker, heading check, `git diff --check`, no secret findings |
+| RSA-T-008 | Frozen-path diff and no-implementation scan | Empty diff for frozen files; no new source/dependency/schema/API files |
+| RSA-T-009 | Documentation quality review | Review findings and residual risks recorded before DONE |
 
-All rows require environment, exact command/method, observed output, exit code where applicable, and observed
-`PASS`/`FAIL` in `logs/test-log.md`.
-
-## Testing Status — 2026-08-17
-
-- PASS: `M1.6W-T-001` through `T-005`, and `T-008` through `T-013`.
-- BLOCKED: `M1.6W-T-006` and `T-007`. Live Supabase Auth is configured and passed, but the workspace does not
-  contain the `SUPABASE_JWT_SECRET` required by the protected M1.5 FastAPI runtime to verify the forwarded
-  learner JWT. Repository/proxy/component contract tests and the independent M1.5 27/27 regression pass, but
-  they do not replace the approved live protected-hop evidence.
-- The task remains `TESTING`; it must not move to `DONE`, archive, update HANDOFF, or commit until T-006/T-007
-  are observed PASS with the matching server-side secret supplied without logging it.
-
-## Review Findings And Controls
-
-| Risk | Control |
-|---|---|
-| Supabase SSR default conflicts with canonical httpOnly claim | D2 overrides/tests attributes; no browser token client |
-| AI URL wording tension in ADR-008 | D3 requires explicit human approval and decision-log clarification |
-| Open proxy/SSRF | Fixed environment host and fixed paths/methods |
-| XSS/model output | React text rendering; no HTML interpretation/eval |
-| Token/PII leak | Redacted errors/logs, no request-body logging/storage, secret scan |
-| Supply chain | Explicit allowlist, one lockfile, scripts disabled/inspected, audit/signatures |
-| Scope creep | Exact routes/repositories/files and stop conditions |
-| DESIGN skeleton | D8 approves only a narrow functional baseline |
-| Reminder re-entry | D10 plus source/file scan prohibits 6d/6a/6b code |
+All test-log entries must use the mandatory Environment/Command/Output/Verdict format. A static/documentation test may be `N/A` only when no runnable command exists, with `git diff --stat` and line-count evidence still attached.
 
 ## Stop Conditions
 
-Return to `REVIEW`, log the required `category:`, and wait for human resolution if:
+Return to `REVIEW`, add a categorized decision-log finding and wait for human resolution if:
 
-1. A file outside the allowlist is required.
-2. httpOnly cannot work without browser token exposure, a hand-written store, or an unapproved data boundary.
-3. D3 requires a broader ADR-008 amendment.
-4. Any dependency outside D1 is required.
-5. FastAPI/CORS/JWT/API/schema/seed/RLS/migration changes are required.
-6. A test contradicts session, timeout, security, contract, responsive, or accessibility claims.
-7. Testing requires service role inside Web or secret material in evidence.
-8. UI requires final brand/font/dark theme/navigation decisions beyond D8.
-9. Any 6d/6a/6b code becomes necessary.
-10. Requirements & System Analysis / Documentation Recovery must begin before M1.6W is DONE.
+1. A required analysis claim cannot be supported by canonical text, ADR, implementation, migration, test or explicit human decision.
+2. Resolving a mismatch requires changing `docs/03-api-contract.md`, schema/migration/RLS/RPC/Storage, FastAPI, Web code, a dependency, or an architecture boundary.
+3. A proposed ERD/data dictionary would require adding an entity/column/enum value rather than documenting the observed gap.
+4. The evidence contradicts an approved acceptance criterion or requires reopening an ADR.
+5. Any document would reintroduce Android as the current learner platform, or describe `6b`/background reminder delivery as implemented.
+6. A file outside the approved allowlist is needed, or a report binary/legacy archive would be overwritten.
+7. Human clarification is required for a contract route/field/status, milestone ordering/priority, or the final canonical status of an unresolved finding.
 
-## Review Re-entry — 2026-08-17
+## Risks
 
-- `category: scope-ambiguity`
-- During the approved scaffold, `lingora-web/tsconfig.json` correctly referenced `next-env.d.ts`, but the
-  generated declaration file was omitted from `Files Expected To Change`.
-- Verified against the installed Next.js 15 runtime: `verify-typescript-setup` calls
-  `writeAppTypeDeclarations`, which writes `<project>/next-env.d.ts` before type-aware development/build work.
-- Requested amendment: authorize only `lingora-web/next-env.d.ts` as a generated Next.js TypeScript scaffold
-  file. No dependency, architecture, route, behavior, acceptance criterion, or D1-D10 decision changes.
-- Implementation is paused before build/typecheck until a human explicitly approves this amendment.
+| Risk | Mitigation |
+|---|---|
+| Historical migrated prose is mistaken for current truth | Keep source/ADR/implementation labels and preserve superseded blocks |
+| Documentation corrections accidentally authorize M2 | Explicit allowlist, frozen boundaries and no implementation claims |
+| Prisma logical baseline is confused with applied schema | Side-by-side dictionary and mismatch register |
+| Contract/archive mismatch is silently normalized | Freeze `docs/03`; record finding and decision owner |
+| Stale handoff/quick-ref misleads team | Correct only through approved lifecycle/documentation scope and log evidence |
+| Report package diverges from engineering docs | Single reading-order index and stable requirement/UC IDs |
+| Reminder scope creeps into PWA/Web Push | Exact `6b`/`6d` wording and source/file scans |
 
 ## Approval
 
-- Base plan status: **APPROVED**
-- Approved by: Pham Nguyen Thanh Tung (human), explicit instruction `approve`
+- Status: **APPROVED**
+- Approved by: Pham Nguyen Thanh Tung (human)
+- Explicit approval text: `APPROVE requirements-system-analysis-documentation-recovery. I approve the proposed docs/06-system-analysis.md and docs/07-data-dictionary.md structure, the stated allowlist and frozen boundaries, and the evidence-based handling of all listed findings. No product feature, M2 implementation, Web/API/AI/database/schema/RLS/RPC/Storage/dependency/reminder/PWA/Web Push changes are authorized. 6b remains DEFERRED and 6d remains a later feature milestone. Proceed only within the approved documentation-recovery scope and return to REVIEW on any stop condition.`
 - Date: 2026-08-17
-- Explicit approval required for `M1.6W-D1` through `M1.6W-D10`, especially D2, D3, and D8.
-- Amendment status: **APPROVED** on 2026-08-17 by Pham Nguyen Thanh Tung: add only
-  `lingora-web/next-env.d.ts` to the file allowlist and resume implementation.

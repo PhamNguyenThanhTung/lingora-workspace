@@ -7,30 +7,33 @@
 
 ## Current state
 
-- Last completed task: `m1.6w-web-learner-foundation` — DONE. Next.js 15 App Router learner foundation
-  implemented under `lingora-web/` (React 19, TypeScript 5, Tailwind 4, @supabase/ssr, TanStack Query 5)
-  with server-side httpOnly session management, Route Handler proxy to FastAPI M1.5 (`/api/ai/srs` and `/api/ai/chat`),
-  narrow SRS/Roleplay repositories, bilingual vi/en UI foundation, and responsive/accessibility baseline.
-  Evidence: `M1.6W-T-001` .. `M1.6W-T-013` (all 13 tests PASS, including rerun T-006 & T-007 after M1.5 ES256 verifier amendment).
-- Last approved scope decision: `ADR-009 — M1.5 JWT verifier amendment: Supabase JWKS / ES256 compatibility`,
-  APPROVED 2026-08-17.
-- Milestone: M1.6W is DONE; Next: Milestone M2 (Web Core Lesson Flow & Exercise Engine).
+- Last completed task: `requirements-system-analysis-documentation-recovery` — DONE. Created authoritative
+  [`docs/06-system-analysis.md`](docs/06-system-analysis.md) (problem statement, 6 capabilities, stakeholder/actor
+  catalog, boundaries, 8 Use Cases, sequence flows, assumptions/constraints, audit findings register) and
+  [`docs/07-data-dictionary.md`](docs/07-data-dictionary.md) (implementation-grounded ERD with 17 models, 24 FKs,
+  attribute constraints, private storage buckets, schema mismatch table). Updated [`docs/05-traceability-matrix.md`](docs/05-traceability-matrix.md)
+  and reading order in [`docs/project-1/README.md`](docs/project-1/README.md).
+  Evidence: `RSA-T-001` .. `RSA-T-009` (all 9 checks PASS).
+- Previous implementation milestones:
+  - `M1.6W` Web learner foundation DONE (Next.js 15, SSR Auth, Route Handler proxy to AI, 19/19 Vitest unit tests, Playwright e2e).
+  - `M1.5` JWT verifier amendment DONE (Supabase JWKS / ES256 & HS256 compatibility, 37/37 Pytest PASS).
+  - `M1.4` Seed & RLS test harness DONE (34/34 tests PASS).
+  - `M1.3` Auth + RLS + Storage (two-bucket) + `record_review` DONE.
+  - `M1.2` Prisma + Supabase schema DONE (17 models, 3 migrations).
+- Last approved scope decision: `ADR-009 — M1.5 JWT verifier amendment: Supabase JWKS / ES256 compatibility`.
+- Next active milestone: **Milestone M2 (Web Core Lesson Flow & Exercise Engine)**.
 - Public staging snapshot: `staging/lingora-workspace-public/` — pre-reset; regeneration pending.
 
 ---
 
 ## Pending decisions / open questions
 
-- `M1.6W` is specified only as a **preview** inside `plans/archive/2026-08-17-m1.7-web-platform-reset-DONE.md`
-  (§`M1.6W` specification preview). That preview is **not** an authorization. A new `plans/current-task.md` at
-  `APPROVED` is required before any file under `lingora-web/` is created.
 - `ADR-006` scope remains **approved and documented, not implemented**: enum `GRAMMAR`, listening option `4a`
-  (word-level audio), `dailyGoalMin` UI. Its reminder mechanism was amended by `ADR-008` from the Android
-  `SharedPreferences`/`WorkManager` approach to option `6d` (in-app reminder). Payload shapes for `GRAMMAR` and
-  `LISTENING` are still deliberately deferred to the implementation task.
+  (word-level audio), `dailyGoalMin` UI. Payload shapes for `GRAMMAR` and `LISTENING` belong to the M2 implementation task.
 - Reminder options `6a` (PWA/service worker notification) and `6b` (Web Push + `push_subscriptions` + scheduler,
   VAPID, a sender outside `lingora-web`) are **DEFERRED, not rejected**. Re-entry needs a new plan and a new ADR;
   it does not require reversing `ADR-008`.
+- Option `6d` (in-app reminder) is approved for later feature milestone (M2+).
 - `staging/lingora-workspace-public/` must be regenerated under its own approved task before any public
   publication — it now contradicts the canonical docs on platform.
 - `.codex/` and `.agents/` cleanup deferred; safe checkpoint is commit `d0e4276`.
@@ -39,68 +42,31 @@
 
 ## Do NOT do next
 
-- Do not create anything under `lingora-web/` yet. No `package.json`, no `next.config`, no dependency install,
-  no route, no component. `M1.6W` must be planned and approved first.
-- Do not implement the ADR-006 feature slices yet. Still blocked: `lingora-admin/prisma/schema.prisma`, the
-  `ALTER TYPE "ExerciseType" ADD VALUE` migration, and any file under `lingora-web/`, `lingora-ai/`, or
-  `lingora-admin/src/`.
-- Do not reintroduce Android, Gradle/AGP, Retrofit/OkHttp/Gson, Room, Android lifecycle, `SharedPreferences`,
-  any hand-rolled token store, `POST_NOTIFICATIONS`, APK, `minSdk`/`targetSdk`, Fragment/ViewBinding/XML layout,
-  or `androidx.work` anywhere in the docs or code.
-- Do not add a service worker, web app manifest, PWA install flow, notification permission prompt, push code, or
-  scheduler — `6a`/`6b` are deferred, and `6d` itself is a later feature milestone, not part of `M1.6W`.
-- Do not freeze the `GRAMMAR` or `LISTENING` payload shape in canonical docs — `ADR-006` §12.4 leaves it to the
-  implementation task and its acceptance tests.
-- Do not restore `MATCHING` or `WRITING`, and do not implement sentence-level listening audio (option `4b`).
-- Do not touch `lingora-ai/`, `lingora-admin/prisma/`, Supabase SQL/RLS/RPC/Storage, or `docs/03-api-contract.md`
-  endpoint/field/status/error semantics — all four are frozen by `ADR-008` and verified byte-identical at
-  `585ca6c` (except `docs/03` prose and the `"client": "web/1.0.0"` example strings).
-- Do not touch `.gitignore`, `.codex/`, `.agents/` without a dedicated cleanup task approved first.
-- Do not amend or rebase commits `d0e4276`, `46130d5`, or `585ca6c`, and do not rewrite Git history or force-push.
+- Do not implement M2 feature code without an approved `plans/current-task.md` for Milestone M2.
+- Do not modify database schema, migrations, RLS, or RPC without an approved plan and ADR.
+- Do not reintroduce Android, Gradle/AGP, Retrofit, Room, or APK into active codebase.
+- Do not add a service worker, web app manifest, PWA install flow, push code, or scheduler — `6a`/`6b` are deferred.
+- Do not touch `lingora-ai/api/` runtime without an approved task; current verifier supports both ES256 and HS256.
+- Do not place secrets in code, logs, screenshots, fixtures, or commits.
+- Do not amend or rebase historical commits, and do not rewrite Git history or force-push.
 
 ---
 
 ## Suggested next step
 
-Write `plans/current-task.md` for `M1.6W — Web learner foundation` and submit it for approval. Keep it narrowly
-scoped to proving the Web learner foundation can **authenticate and call the two protected M1.5 mock endpoints**:
-Next.js 15 App Router scaffold, `@supabase/ssr` httpOnly-cookie session with middleware route protection, a typed
-API client plus the AI Route Handler proxy (8-second `P1-FR-005` timeout, `docs/03` error-envelope mapping),
-`POST /v1/srs/schedule` and `POST /v1/chat/roleplay` connectivity, login/register plus one authenticated status
-route, i18n `vi`/`en` with `vi` fallback, and the responsive/accessibility baseline. Use evidence IDs
-`M1.6W-T-001..n` — the `M1.6-T-*` IDs are taken and now marked `SUPERSEDED`.
-
-Explicitly out of `M1.6W`: any feature screen, any course/lesson/vocabulary/profile repository, the `6d` reminder,
-any DB/FastAPI/API-contract change, and any PWA/push/scheduler work.
-
-Three traps to carry into that plan:
-- The enum migration for `GRAMMAR`/`LISTENING` must not seed data using the new value in the same transaction
-  that adds it — PostgreSQL forbids it and Prisma wraps each migration in one transaction, so it must be split
-  into two migrations or `prisma migrate deploy` fails.
-- `P1-FR-015` must be described as an in-app reminder presented *within the chosen window*, never at an exact
-  time, and never as delivered while the application is closed.
-- `lingora-web/` receives only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. It must never hold
-  `SUPABASE_SERVICE_ROLE_KEY`, never import Prisma, and never open a direct database TCP connection.
-
-Separately: a human still reviews `staging/lingora-workspace-public/`, which is now pre-reset and must be
-regenerated under its own approved task before any public publication. Create public Git history only under a
-new, separately approved task.
+Draft `plans/current-task.md` for **`m2-web-core-lesson-flow`** (Milestone M2):
+- Implement Course/Lesson navigation and lesson player in `lingora-web/`.
+- Implement interactive exercise engine supporting `MCQ`, `FILL_BLANK`, `REORDER` (plus `GRAMMAR` and `LISTENING` per ADR-006).
+- Implement lesson progress scoring (0–100%) and atomic completion update to `UserProgress`.
+- Verify responsive layouts and accessibility.
 
 ---
 
 ## Context not in code
 
 - The platform switch was a human decision made on 2026-08-17 with the assignment-title risk raised and
-  knowingly accepted (risk `R12` in `docs/00-master-plan.md`, recorded in `ADR-008`). It is not a naming change.
-- No Android feature screen ever existed — only Login, Register, and `FoundationStatusFragment` — which is why
-  the reset cost almost nothing. Roughly 95% of realized investment (schema, migrations, seed, RLS/RPC, FastAPI,
-  the `/v1/` contract, all ML/NLP scope) is platform-neutral and was kept unchanged.
-- Learner AI calls go through a Next.js Route Handler proxy rather than browser-to-FastAPI directly, so the DONE
-  M1.5 runtime needs no CORS or code change and its 27 tests stay valid.
-- Storage two-bucket split (`lingora-avatars` / `lingora-media`) was forced by live T-008 HTTP evidence: a
-  5,242,881-byte avatar returned HTTP 200 on the single-bucket implementation. See:
-  - `logs/decision-log.md` → `ADR-005 Amendment — SEC-D8 PA2 two-bucket size enforcement`
-  - `logs/decision-log.md` → `ADR-005 Implementation Addendum — SEC-D8 PA2 bucket boundary realization`
-  - `plans/approved/2026-08-14-m1.3-t-008-two-bucket-size-enforcement-APPROVED.md`
+  knowingly accepted (risk `R12` in `docs/00-master-plan.md`, recorded in `ADR-008`).
+- Learner AI calls go through Next.js Route Handler proxy (`/api/ai/srs`, `/api/ai/chat`) rather than browser-to-FastAPI directly.
+- Storage two-bucket split (`lingora-avatars` / `lingora-media`) is strictly enforced at database/storage level.
 - AI Server is stateless by design; it never reads/writes Supabase directly.
-- `MOCK_MODE=true` is mandatory — every Web screen must work on mock before real AI is connected.
+- `MOCK_MODE=true` is supported for mock inference during development.

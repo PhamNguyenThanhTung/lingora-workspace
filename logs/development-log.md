@@ -6,6 +6,34 @@
 
 ### Task
 
+`requirements-system-analysis-documentation-recovery - Requirements & System Analysis Documentation Recovery`
+
+### Completed
+
+- Created [`docs/06-system-analysis.md`](file:///d:/btl/docs/06-system-analysis.md) covering problem statement, 6 core capabilities, stakeholder/actor catalog, system boundaries (Web learner client `lingora-web`, Next.js Route Handler BFF AI proxy, Supabase BaaS, stateless FastAPI microservice), full use-case catalog, detailed specifications for 8 Use Cases (`UC-01` .. `UC-08`), sequence flows, assumptions/constraints, and audit findings register.
+- Created [`docs/07-data-dictionary.md`](file:///d:/btl/docs/07-data-dictionary.md) containing implementation-grounded ERD (17 models, 24 FKs), attribute constraints dictionary, private storage buckets (`course-media`, `chat-audio`), and logical-vs-applied schema mismatch table.
+- Updated [`docs/05-traceability-matrix.md`](file:///d:/btl/docs/05-traceability-matrix.md) mapping all 26 requirements (Must/Nice) to Use Cases, components, database entities, and test evidence.
+- Updated canonical cross-references in `docs/00-master-plan.md`, `docs/01-architecture.md`, `docs/02-requirements.md`, `docs/04-data-model.md`, `docs/QUICK-REF.md`, and [`docs/project-1/README.md`](file:///d:/btl/docs/project-1/README.md).
+- Preserved locked decisions: Option `6b` (Web Push + scheduler) is explicitly `DEFERRED`; Option `6d` (In-app reminder) is a later milestone feature; 0 changes to database schema, Prisma, migrations, or API contracts.
+
+### Tests
+
+- `RSA-T-001` .. `RSA-T-009`: All 9 test and validation cases PASS in `logs/test-log.md`.
+- `git diff --check`: Clean (0 whitespace/conflict errors).
+- `git diff --stat HEAD -- lingora-web lingora-ai lingora-admin/prisma docs/03-api-contract.md`: Empty (0 changes in frozen paths).
+
+### Commit
+
+`docs: recover requirements and system analysis specifications (rsa-doc)`
+
+---
+
+### Date
+
+`2026-08-17`
+
+### Task
+
 `m1.5-jwt-verifier-amendment-supabase-jwks-es256 - Supabase JWKS / ES256 Compatibility Amendment`
 
 ### Completed
