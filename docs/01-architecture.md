@@ -10,8 +10,8 @@
 
 ```
 ┌─────────────────────────┐        ┌──────────────────────────┐
-│  Mobile App (Android)   │        │  Web Admin (Next.js)     │
-│  Java · MVVM · Retrofit │        │  TS · Tailwind · Prisma  │
+│  Web Learner (Next.js)  │        │  Web Admin (Next.js)     │
+│  TS · Tailwind · shadcn │        │  TS · Tailwind · Prisma  │
 │  Người dùng cuối        │        │  Quản trị nội dung       │
 └────────┬───────┬────────┘        └───────┬──────────┬───────┘
          │       │                         │          │
@@ -36,16 +36,16 @@
          ▲
     (6) HTTPS + Bearer JWT
          │
-   Mobile App (màn "Ôn tập thông minh" · màn "Luyện hội thoại")
+   Web Learner (màn "Ôn tập thông minh" · màn "Luyện hội thoại")
 ```
 
-**Điểm cần nhớ:** Android **không** đi qua AI Server để lấy dữ liệu bài học/từ vựng gốc — dữ liệu đó luôn lấy trực tiếp từ Supabase. AI Server chỉ được gọi cho 2 việc: (a) tính lịch ôn tập gợi ý, (b) sinh phản hồi + chấm điểm hội thoại. Nhờ vậy AI Server chết cũng không làm sập luồng học chính, chỉ mất phần "gợi ý" (SRS rơi về lịch mặc định kiểu SM-2, chatbot báo lỗi tạm thời).
+**Điểm cần nhớ:** Web Learner **không** đi qua AI Server để lấy dữ liệu bài học/từ vựng gốc — dữ liệu đó luôn lấy trực tiếp từ Supabase. AI Server chỉ được gọi cho 2 việc: (a) tính lịch ôn tập gợi ý, (b) sinh phản hồi + chấm điểm hội thoại. Nhờ vậy AI Server chết cũng không làm sập luồng học chính, chỉ mất phần "gợi ý" (SRS rơi về lịch mặc định kiểu SM-2, chatbot báo lỗi tạm thời).
 
 ### 1.2. Trách nhiệm từng thành phần
 
 | Thành phần | Chịu trách nhiệm | KHÔNG chịu trách nhiệm |
 |---|---|---|
-| Android App | Hiển thị, cache offline, chấm bài tập phía client, gọi API, gửi review log lên Supabase | Không chứa business rule quan trọng, không giữ `service_role` key |
+| Web Learner (`lingora-web`) | Hiển thị, cache dữ liệu phía client, chấm bài tập phía client, gọi API, gửi review log lên Supabase | Không chứa business rule quan trọng, không giữ `service_role` key, không mở kết nối DB trực tiếp, không import Prisma |
 | Web Admin | CRUD nội dung (Course/Lesson/Vocabulary/Exercise/Chat Scenario), xem thống kê, quản lý user, migrate DB (Prisma) | Không phục vụ user cuối |
 | Supabase | Lưu dữ liệu (kể cả `review_logs`, `chat_messages`), xác thực, phân quyền (RLS), lưu file audio/ảnh | Không chạy suy luận AI |
 | AI Server | Suy luận DKT/HLR (SRS), suy luận seq2seq (Chatbot), log request, chế độ mock | Không phải nơi lưu dữ liệu chính (chỉ nhận history trong request, không cần đọc/ghi DB Supabase trực tiếp) |
@@ -59,39 +59,40 @@
 Giữ nguyên bản gốc:
 
 ```
-Android                    Supabase GoTrue              FastAPI
+Web Learner                Supabase GoTrue              FastAPI
    │  POST /auth/v1/token?grant_type=password
    ├──────────────────────────►│
    │  {access_token(JWT,1h), refresh_token}
    │◄──────────────────────────┤
-   │  lưu vào EncryptedSharedPreferences
+   │  lưu trong httpOnly cookie do @supabase/ssr quản lý (SDK tự refresh)
    │
    │  GET /rest/v1/rpc/get_lessons   Authorization: Bearer <JWT>
    ├──────────────────────────►│  (RLS đọc auth.uid() từ JWT)
    │
    │  POST /v1/srs/schedule | /v1/chat/roleplay   Authorization: Bearer <JWT>
+   │  (đi qua Next.js Route Handler proxy của lingora-web, timeout 8s)
    ├───────────────────────────────────────────────────►│
    │                                 verify HS256 bằng SUPABASE_JWT_SECRET
    │◄───────────────────────────────────────────────────┤
    │
-   │  401 → POST /auth/v1/token?grant_type=refresh_token → retry 1 lần
+   │  401 → @supabase/ssr tự refresh session → retry 1 lần
 ```
 
 ---
 
 ---
 
-### 1.7. Cấu trúc 3 repository
+### 1.7. Cấu trúc repository
 
 ```
-lingora-android/
-├─ app/src/main/java/com/pnttung/lingora/
-│  ├─ data/            remote/ (Retrofit service, DTO) · local/ (Room) · repository/
-│  ├─ domain/model/     entity thuần Java
-│  ├─ ui/               auth/ · home/ · lesson/ · exercise/ · srs/ · chat/ · profile/
-│  ├─ util/             AuthInterceptor, TokenAuthenticator
-│  └─ LingoraApp.java
-└─ app/src/main/res/values{,-vi,-ja}/strings.xml
+lingora-web/
+├─ src/app/            (auth)/login|register · (learner)/home|lesson|exercise|srs|chat|profile
+│                      api/ai/{srs,chat}/route.ts  # Route Handler proxy tới AI Server (timeout 8s)
+├─ src/components/ui/  shadcn/ui
+├─ src/lib/            supabase/{client,server,middleware}.ts (@supabase/ssr) · api/ (typed client)
+│                      query/ (TanStack Query + persisted cache)
+├─ src/i18n/           vi/ · en/   (vi là fallback)
+└─ middleware.ts       bảo vệ route cần đăng nhập
 
 lingora-admin/
 ├─ src/app/            (auth)/login · (dashboard)/courses|lessons|vocab|exercises|scenarios|users|analytics
@@ -114,12 +115,12 @@ lingora-ai/
 
 | Câu hỏi | Trả lời dựa trên thiết kế nào |
 |---|---|
-| "Thêm tiếng Nhật thì sao?" | Chỉ `INSERT` vào `languages` + `*_translations`, thêm `values-ja/strings.xml`. Không sửa schema, không sửa code. |
-| "1000 user cùng lúc?" | Supabase connection pooling (pgBouncer 6543); Android cache Room; AI Server stateless (không giữ session) → scale ngang; đã có index trên `(user_id, next_review_at)`. |
+| "Thêm tiếng Nhật thì sao?" | Chỉ `INSERT` vào `languages` + `*_translations`, thêm 1 bộ message catalog `ja` cho i18n. Không sửa schema, không sửa code. |
+| "1000 user cùng lúc?" | Supabase connection pooling (pgBouncer 6543); client cache bằng TanStack Query persisted cache; AI Server stateless (không giữ session) → scale ngang; đã có index trên `(user_id, next_review_at)`. |
 | "AI Server sập?" | Client timeout 8s → **SRS** rơi về `get_due_srs_cards` (lịch mặc định kiểu SM-2 dựa trên `ease_factor`); **Chatbot** hiển thị "thử lại sau". Có `MOCK_MODE`. |
 | "Thêm kịch bản roleplay mới?" | Chỉ thêm 1 dòng `chat_scenarios` + bản dịch qua Admin, không cần deploy lại AI Server (prompt/scenario nạp động). |
-| "Thêm loại bài tập mới?" | `Exercise.payload` là JSONB + enum `ExerciseType` → thêm 1 giá trị enum + 1 Fragment, không migrate bảng. |
-| "Bảo mật dữ liệu user?" | RLS ở tầng DB (không tin client), JWT hết hạn 1h, token mã hoá trên máy, `service_role` key chỉ nằm ở server (Admin), AI Server không cần `service_role` vì nhận history qua request body. |
+| "Thêm loại bài tập mới?" | `Exercise.payload` là JSONB + enum `ExerciseType` → thêm 1 giá trị enum + 1 component render, không migrate bảng. |
+| "Bảo mật dữ liệu user?" | RLS ở tầng DB (không tin client), JWT hết hạn 1h, session giữ trong httpOnly cookie do `@supabase/ssr` quản lý, `service_role` key chỉ nằm ở server (Admin), AI Server không cần `service_role` vì nhận history qua request body. |
 | "Vì sao AI Server không tự đọc DB để tính SRS?" | Giữ AI Server **stateless & không có quyền ghi dữ liệu người dùng** → giảm bề mặt tấn công, dễ scale ngang, dễ demo local (không cần kết nối Supabase khi test model). |
 
 ## Migrated source: technology stack
@@ -132,55 +133,50 @@ lingora-ai/
 
 | Tầng | Công nghệ | Phiên bản đề xuất | Vì sao chọn |
 |---|---|---|---|
-| Mobile | Android Studio + **Java 17** | AGP 8.7, Gradle 8.9, `minSdk 24`, `targetSdk 35` | Đúng yêu cầu môn học; `minSdk 24` phủ ~97% máy |
-| Mobile arch | MVVM (ViewModel + LiveData) | androidx.lifecycle 2.8.x | Có Class Diagram đẹp cho báo cáo KNPM |
+| Web Learner | **Next.js** App Router + TypeScript | Next 15, TS 5.x | Cùng stack với Admin → không thêm công nghệ mới; deploy Vercel 1 click |
+| Web Learner arch | React Server/Client Components + TanStack Query | TanStack Query 5.x | Tách rõ data layer, có Class/Component Diagram cho báo cáo KNPM |
 | Web Admin | **Next.js** App Router + TypeScript | Next 15, TS 5.x | Deploy Vercel 1 click, có server-side để giữ secret |
 | CSS | **Tailwind CSS** + shadcn/ui | Tailwind 4 | Dựng bảng/form quản trị rất nhanh |
 | Backend/DB | **Supabase** | Postgres 15 + GoTrue + Storage | Có sẵn Auth + REST + RLS → tiết kiệm ~2 tuần viết backend |
 | ORM/Migration | **Prisma** | 6.x | Schema-as-code, sinh ERD tự động, migration có version |
 | AI core | **Python + PyTorch** | Python 3.11, PyTorch 2.4+ | Chuẩn nghiên cứu; tự viết được kiến trúc mạng (DKT-LSTM, Transformer) |
 | AI API | **FastAPI** | 0.115+, Pydantic v2, Uvicorn | Tự sinh Swagger `/docs`, validate schema chặt |
-| Hosting | Vercel (web) · Render/HF Spaces (AI) · APK (mobile) | free tier | Miễn phí, đủ demo |
+| Hosting | Vercel (web learner + web admin) · Render/HF Spaces (AI) | free tier | Miễn phí, đủ demo |
 
 Không đổi so với bản v1 — điểm khác biệt duy nhất nằm ở mục **3.4 (AI Server & ML)**.
 
-### 3.2. Android — thư viện & lý do
+### 3.2. Web Learner — 9 boundary và thư viện (theo `M1.7-D12`)
 
-```gradle
-// Networking
-implementation 'com.squareup.retrofit2:retrofit:2.11.0'
-implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
-implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+Learner client gồm đúng 9 boundary sau; không có boundary nào khác được thêm mà không có ADR mới:
 
-// Kiến trúc
-implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.7'
-implementation 'androidx.lifecycle:lifecycle-livedata:2.8.7'
-implementation 'androidx.navigation:navigation-fragment:2.8.5'
+| # | Boundary | Nội dung |
+|---|---|---|
+| 1 | Web application | Next.js 15 App Router dưới `lingora-web/`, TypeScript 5 |
+| 2 | Authentication / session | `@supabase/ssr`, session trong httpOnly cookie, `middleware.ts` bảo vệ route |
+| 3 | API client | typed `fetch` client + Route Handler proxy tới AI Server, timeout 8s, map error envelope của `docs/03` |
+| 4 | Repositories / services | lớp truy cập dữ liệu theo feature (course, lesson, vocabulary, progress, profile) |
+| 5 | SRS connectivity | gọi `POST /v1/srs/schedule` + ghi review qua RPC `record_review` |
+| 6 | Roleplay connectivity | gọi `POST /v1/chat/roleplay` |
+| 7 | UI foundation | shadcn/ui + Tailwind 4, layout learner, trạng thái loading/rỗng/lỗi |
+| 8 | i18n | `vi` / `en`, `vi` là fallback; `ja` là tuỳ chọn |
+| 9 | Responsive / accessibility | breakpoint mobile→desktop, đáp ứng `P1-NFR-002`…`P1-NFR-004` |
 
-// Cache offline
-implementation 'androidx.room:room-runtime:2.6.1'
-annotationProcessor 'androidx.room:room-compiler:2.6.1'
-
-// UI / media
-implementation 'com.google.android.material:material:1.12.0'
-implementation 'com.github.bumptech.glide:glide:4.16.0'
-implementation 'androidx.media3:media3-exoplayer:1.4.1'   // phát audio từ vựng
-
-// Bảo mật token
-implementation 'androidx.security:security-crypto:1.1.0-alpha06'
-
+```jsonc
+// package.json (dependency chính, phiên bản pin tại task triển khai)
+"next", "react", "react-dom", "typescript",
+"@supabase/supabase-js", "@supabase/ssr",   // auth + session cookie
+"@tanstack/react-query",                     // data layer + persisted cache
+"tailwindcss",                               // + shadcn/ui components (copy-in, không phải dependency)
 // Test
-testImplementation 'junit:junit:4.13.2'
-testImplementation 'org.mockito:mockito-core:5.14.2'
-androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+"vitest", "@testing-library/react", "@playwright/test"
 ```
 
-**Lưu ý quan trọng (giữ nguyên bản gốc):** Supabase **không có SDK Java chính thức** — dùng Retrofit gọi thẳng REST API:
+**Lưu ý quan trọng:** learner client chỉ nhận `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Nó **không** được giữ `SUPABASE_SERVICE_ROLE_KEY`, **không** import Prisma, và **không** mở kết nối TCP trực tiếp tới database. Truy cập dữ liệu đi qua PostgREST/RPC với RLS:
 - Auth: `POST {SUPABASE_URL}/auth/v1/token?grant_type=password`, header `apikey: <anon_key>`
 - Data: `POST {SUPABASE_URL}/rest/v1/rpc/get_lessons`, header `apikey` + `Authorization: Bearer <jwt>`
 - Storage: tải file qua URL public
 
-Màn hình mới cần thêm Fragment/ViewModel: `SrsReviewFragment` (gọi `/v1/srs/schedule` qua `AiService` Retrofit riêng), `RoleplayChatFragment` (UI dạng bong bóng chat, gọi `/v1/chat/roleplay`).
+Màn hình AI cần thêm: route `srs/` (gọi `/v1/srs/schedule` qua Route Handler proxy `api/ai/srs`), route `chat/` (UI dạng bong bóng chat, gọi `/v1/chat/roleplay` qua `api/ai/chat`).
 
 ### 3.3. Web Admin — thư viện
 
@@ -321,9 +317,10 @@ cd lingora-admin && npx prisma init
 npx prisma migrate dev --name init
 npx prisma db seed
 
-## --- Android ---
-## Android Studio → New Project → Empty Views Activity (Java)
-## package: com.pnttung.lingora · minSdk 24
+## --- Web Learner ---
+npx create-next-app@latest lingora-web --ts --tailwind --app --eslint
+cd lingora-web && npm i @supabase/supabase-js @supabase/ssr @tanstack/react-query
+## npx shadcn@latest init
 
 ## --- Tải dataset (tuần 1, chạy trong notebook/Colab) ---
 ## ASSISTments: tải file skill_builder_data.csv (đăng ký trên trang ASSISTments hoặc mirror Kaggle)
@@ -341,7 +338,7 @@ python -c "from datasets import load_dataset; load_dataset('multi_woz_v22')"
 The following M0 decision overrides only the legacy repository/directory naming block; it does not alter component responsibilities:
 
 `	ext
-lingora-android/
+lingora-web/
 lingora-admin/
 lingora-ai/
 â”œâ”€â”€ api/
@@ -358,10 +355,10 @@ This section supersedes conflicting or incomplete migrated wording under `ADR-00
 ### Academic ownership and integration
 
 - Product: **Lingora**.
-- Project 1: **Xây dựng ứng dụng học ngoại ngữ trên nền tảng di động**. It owns Android learner flows, authentication, content consumption, exercises, progress, approved streak behavior, AI integration/fallback, mobile testing and APK deployment.
+- Project 1: originally titled **Xây dựng ứng dụng học ngoại ngữ trên nền tảng di động**; `ADR-008` (2026-08-17) supersedes that platform clause and Project 1 now owns **Web** learner flows, authentication, content consumption, exercises, progress, approved streak behavior, AI integration/fallback, web testing and Vercel deployment.
 - ML owns DKT-LSTM, HLR, Scheduler, datasets, training, evaluation and SRS model selection.
 - NLP owns preprocessing, tokenization/embedding, Transformer, T5-small, `hotel_booking`, evaluation and qualitative examples.
-- A feature may trace across namespaces without transferring ownership. Android smart review calls the ML API; Android roleplay calls the NLP API.
+- A feature may trace across namespaces without transferring ownership. Web smart review calls the ML API; Web roleplay calls the NLP API.
 - The AI Server remains stateless for primary learner data and must not directly own/write course, progress, review, chat-history, locale, gamification or exercise-result data.
 
 ### Locale boundary
@@ -371,7 +368,7 @@ This section supersedes conflicting or incomplete migrated wording under `ADR-00
 - Initial learned language: `en`.
 - UI fallback: requested supported locale, otherwise `vi`.
 - Content fallback: requested locale → supported learner native locale → `vi` → `en` → explicit unavailable state.
-- Android UI strings remain in resources; translated learning content remains in `*_translations` tables.
+- Web UI strings remain in i18n message catalogs (`vi`/`en`); translated learning content remains in `*_translations` tables.
 
 ### Security and Storage boundary
 
@@ -391,7 +388,7 @@ This section supersedes conflicting or incomplete migrated wording under `ADR-00
 ### Repository boundary
 
 ```text
-lingora-android/
+lingora-web/
 lingora-admin/
 lingora-ai/
 ├── api/

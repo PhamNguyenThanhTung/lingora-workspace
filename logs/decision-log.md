@@ -554,3 +554,87 @@ Absorption reuses `Exercise.payload` JSONB, the already-granted `dailyGoalMin` w
 - Follow-up: implementation requires a **new** `plans/current-task.md` at `APPROVED` — the current one is `public-snapshot-staging` at `DONE`. `docs/02-requirements.md`, `docs/04-data-model.md`, and `docs/05-traceability-matrix.md` currently negate all four items and **must** be updated as part of implementation or the project self-contradicts. The enum migration must not seed data using the new value in the same transaction that adds it, or `prisma migrate deploy` will fail. Recommended order: item 2, then items 1 + 4a sharing one migration, then item 3a.
 
 ---
+
+### ADR-ID
+
+`ADR-008 — Project 1 learner platform reset from native Android to Web`
+
+### Date
+
+`2026-08-17`
+
+### Category
+
+`runtime-boundary`
+
+### Supersedes / Amends
+
+Supersedes **only the platform clauses** of `ADR-002` — the academic title *"Xây dựng ứng dụng học ngoại ngữ trên nền tảng di động"* as a binding platform constraint, and "Project 1 owns the Android/mobile product". `ADR-002`'s locale, streak, exercise-type, `record_review`, and metadata clauses are untouched. Amends `ADR-006` **item 3 only**, and only its delivery mechanism. `ADR-001`, `ADR-003`, `ADR-004`, `ADR-005`, `ADR-007` are untouched. `ADR-007` (M1.6 Android application foundation approval) is not reversed; its implementation is marked `SUPERSEDED`. Approved plan: `plans/approved/2026-08-17-m1.7-web-platform-reset-APPROVED.md`.
+
+### Context
+
+M1.6 delivered a native Android foundation (61 tracked files, 2,433 lines Java, 12/12 unit tests PASS, `assembleDebug` PASS — evidence `M1.6-T-001`..`M1.6-T-010`) covering authentication and AI connectivity only: Login, Register, and `FoundationStatusFragment`. No learner feature screen existed yet.
+
+On 2026-08-17 the human decided to deliver the learner client as a web application instead. Verified state at commit `585ca6c` at the time of the decision:
+
+- ~95% of realized investment is platform-neutral: `lingora-admin/prisma/` (308-line `schema.prisma`, 3 migrations ≈ 950 lines SQL, 527-line `seed.js`), `lingora-ai/api` (964 lines Python, 27/27 pytest PASS), the entire `/v1/` contract, Supabase Auth/RLS/RPC/Storage, and all ML/NLP scope.
+- `lingora-admin/` is the Prisma/migration owner, **not** a completed Admin foundation: no Next.js, no `src/`.
+- The approved Admin stack at `docs/01-architecture.md:137–138` is already Next.js 15 + TypeScript 5 + Tailwind 4 + shadcn/ui, so a web learner client introduces **zero new technology** to the canonical baseline.
+- The only requirement that degrades on web is `P1-FR-015` (daily study reminder), because `ADR-006` item 3a specified `WorkManager` + `SharedPreferences`, which has no web equivalent with the same guarantee.
+
+### Decision
+
+- **Platform.** Project 1 delivers a **web** learner application at `lingora-web/`: Next.js 15 App Router, TypeScript 5, Tailwind 4, shadcn/ui, deployed on Vercel. The academic title is treated as a description of the original brief, not a binding platform constraint; the risk of being graded against it was raised, reaffirmed, and knowingly accepted by the human on 2026-08-17.
+- **Boundary.** `lingora-web/` is a **fourth** repository boundary alongside `lingora-admin/`, `lingora-ai/`, and the Supabase project. It receives only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. It must never hold `SUPABASE_SERVICE_ROLE_KEY`, never import Prisma, and never open a direct database TCP connection. Merging the learner and admin apps into one Next.js runtime is rejected, because it would place the service-role key in the same runtime as learner-facing routes.
+- **AI path.** Browser → `lingora-web` Route Handler → `lingora-ai`. The handler forwards the Supabase JWT verbatim, persists nothing, and owns the 8-second `P1-FR-005` timeout. `lingora-ai/` is **not modified**, so its 27 pytest results remain valid evidence. Direct browser → FastAPI is rejected because it would require a CORS change to a `DONE` milestone. KNPM sequence diagrams must show this extra hop honestly.
+- **Offline cache.** Room is replaced by a TanStack Query persisted cache. `docs/00-master-plan.md:108` already permits cutting offline cache.
+- **Android.** The 61 tracked files under `lingora-android/` are deleted from the working tree. **Git history is not rewritten** — no `filter-branch`, no `rebase`, no force-push; the code remains recoverable at `585ca6c`. Evidence is preserved: `logs/test-log.md` rows `M1.6-T-001`..`M1.6-T-010` keep their text and results, with `Report Ref` set to `SUPERSEDED`.
+- **Reminder — `P1-FR-015` stays `Must`.** `ADR-006` item 3a's mechanism is replaced by an **in-app reminder** (option `6d`): on application load, if the current local day has no qualifying activity and the current time falls inside the learner-chosen window, a persistent in-app banner and a badge on the study entry point are shown. Window stored alongside `Profile.dailyGoalMin`. No service worker, no new table, no scheduler, no secret, no OS permission. Delivery is **within the chosen window, never at an exact time**, and must never be described as background delivery. This is a **feature-level** item in the Progress/Profile milestone; it is explicitly **not** part of the web foundation milestone.
+- **Deferred notification options**, recorded verbatim as decided by the human:
+
+```text
+6b — Web Push + scheduler: DEFERRED. Không thuộc M1.6W. Chỉ xem xét lại sau khi core learner
+features và UX hoàn thành, nếu background reminder được chứng minh là cần thiết.
+```
+
+```text
+Status: DEFERRED, not rejected. Re-entry needs a new plan and a new ADR; it does not require
+reversing ADR-008, because ADR-008 defers 6b rather than cancelling it.
+Known cost at deferral time (2026-08-17): one new table (push_subscriptions), one migration,
+owner-only RLS policies, a server-side sender outside lingora-web, a scheduled trigger, and VAPID
+secrets — which would also amend ADR-006's "zero new tables" clause.
+```
+
+  Option `6a` (installable PWA + service worker + Notification API, ~3 days) is **deferred to the polish phase** and is the first item cut if the schedule tightens, because `6d` already satisfies `P1-FR-015`. Option `6c` (demote `P1-FR-015` to Nice-to-have) was offered to the human and **not taken**, so `docs/00-master-plan.md:111` is **not** amended.
+- **`ADR-006` clauses that remain true and unamended** for as long as `6b` stays deferred: zero new tables, no server-side delivery, no device token, no notification-preference entity, no reminder-schedule entity, and the `docs/04` block on those entities.
+- **Deliverables.** `app-release.apk` → production Vercel URL + Lighthouse report. APK signing runbook → Vercel deploy runbook. Android MVVM class diagram → web data/domain class diagram. An installable PWA is **not** a required deliverable, since `6a` may be cut.
+- **Tests.** `P1-T-001`..`P1-T-019` keep their IDs and intent. Espresso → Playwright; JUnit 4 + Mockito → Vitest.
+- **Milestone identity.** The web foundation is **`M1.6W`** with evidence IDs `M1.6W-T-001`..`n`, not a reused `M1.6`, because `M1.6-T-001`..`M1.6-T-010` already exist in `logs/test-log.md` for Android. `M1.6W` is narrowly scoped to proving the web foundation can authenticate a learner and call the two protected M1.5 mock endpoints, across nine boundaries: web application, authentication/session, API client, repositories/services, SRS mock connectivity, Roleplay mock connectivity, UI foundation, vi/en i18n with `vi` fallback, and a responsive/accessibility baseline. `M1.6W` requires its own `APPROVED` plan and must not modify the database, Prisma schema or migrations, Supabase SQL/RLS/RPC/Storage, `lingora-ai/`, or `docs/03-api-contract.md`.
+- **Roadmap order.** `M1.6W` → Auth → UX/navigation shell → Course/Lesson → Vocabulary/Exercise → SRS → Roleplay → Progress/Profile (`6d` lands here) → polish (`6a` lands here). M5 feature freeze at end of week 10 **holds**.
+- **Unchanged by this ADR.** Database schema, the 3 existing migrations, `seed.js`, every RLS policy, `record_review`, both Storage buckets, the `/v1/` contract's endpoints, fields, types, status codes, error envelope and version rules, and all `ML-*` / `NLP-*` scope, datasets, and metrics.
+
+### Reason
+
+The platform switch is cheap because no learner feature screen had been built yet, while the expensive assets — schema, RLS, seed, the FastAPI runtime and its 27 tests, the API contract, and both AI research scopes — are platform-neutral. Sharing one stack between the learner and admin applications saves an estimated 5–8 days in weeks 6–7, offsetting most of the switch cost; net effect is ≈ +1 to +6 days with M5 still at week 10. Keeping `P1-FR-015` at `Must` with the cheap `6d` mechanism preserves one of the six functions named in the assignment statement — `plans/gap-analysis-de-bai-vs-master-plan.md` §5.1 measured coverage at 1.5–2.5/6 before `ADR-006` and warned the shortfall "hiện ngay trên sơ đồ" in the Use Case Diagram and "không thể bù bằng chất lượng AI" — while keeping the expensive Web Push infrastructure out of the foundation.
+
+### Alternatives considered
+
+- Keep Android and add web later: rejected; two clients cannot be built inside the remaining roadmap.
+- Keep Android for the reminder alone: rejected; one requirement's delivery mechanism does not justify maintaining an entire second platform.
+- Vite SPA instead of Next.js: rejected; loses server-side session handling and the shared-stack saving.
+- Merge learner + admin into one Next.js app: rejected; would put `SUPABASE_SERVICE_ROLE_KEY` in a learner-facing runtime and reduce `P1-NFR-001` from a boundary to a convention.
+- Direct browser → FastAPI with CORS: rejected; would modify a `DONE` milestone and invalidate its evidence.
+- `6b` Web Push in the foundation (~5–7 days): rejected as foundation work; deferred with its cost recorded.
+- `6a` PWA notifications in the foundation (~3 days): rejected as foundation work; deferred to polish.
+- `6c` demote `P1-FR-015` to Nice-to-have: offered to the human and not taken; would return assignment coverage to the pre-`ADR-006` state and reopen `ADR-004`'s resolved deferral.
+- Reuse the milestone ID `M1.6` for the web foundation: rejected; would make `M1.6-T-003` ambiguous across two platforms in one log.
+- Rewrite Git history to remove Android: rejected; `AGENTS.md` forbids it and it would destroy the recoverable record.
+- Delete the archived M1.6 plan and its test-log rows: rejected; they are the only record of why the platform changed and are cited by the report.
+
+### Consequences
+
+- Positive: zero new technology in the canonical baseline; the security boundary is strengthened, since the learner runtime now holds only the anon key and relies on RLS; `lingora-ai/`, the schema, and all migrations are byte-identical, so M1.3–M1.5 evidence stays valid; learner and admin share one stack, component library, and type source; M5 still holds at week 10.
+- Negative/trade-off: the academic title no longer matches the deliverable (accepted risk, recorded above); the locked v5 baseline is reopened a second time; ~115 doc mentions and 19 traceability rows were rewritten; the M1.6 Android implementation (2,433 lines Java) is discarded as sunk cost; `P1-FR-015` delivery is weaker than the approved Android behaviour, since `6d` only reaches a learner who opens the application, and `docs/02` must state that limitation rather than imply background delivery; KNPM sequence diagrams gain one Route Handler hop.
+- Follow-up: `M1.6W` requires a **new** `plans/current-task.md` at `APPROVED` before any file under `lingora-web/` is created. `staging/lingora-workspace-public/` still holds a pre-alignment snapshot and must be regenerated under its own approved task. A future "merge learner into admin" refactor is blocked by the `ENVIRONMENT.md` prohibition and would need to amend it deliberately.
+
+---

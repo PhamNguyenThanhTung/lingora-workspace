@@ -4,7 +4,7 @@
 
 - Status: SKELETON — design direction not approved
 - Product: Lingora
-- Applies to: Android learner app and Web Admin where relevant
+- Applies to: Web learner app and Web Admin where relevant
 - Impeccable compatibility: this file is the durable visual authority once design decisions are approved
 
 This document controls UI/UX decisions only. It does not define backend, database, API, ML, or NLP architecture.
@@ -30,7 +30,7 @@ No logo, palette, typeface, imagery style, or visual motif is approved yet.
 
 ## Surface modes
 
-- Android learner experience: `Operate`
+- Web learner experience: `Operate`
 - Web Admin: `Operate`
 - Future marketing/landing surface: `Persuade` only if separately approved
 
@@ -40,7 +40,7 @@ These mode labels align with Impeccable. Surface-specific briefs may be added la
 
 - Primary typeface: `[UNDECIDED]`
 - Secondary/display typeface: `[UNDECIDED / NOT REQUIRED]`
-- Android fallback stack: `[TO DEFINE]`
+- Learner web fallback stack: `[TO DEFINE]`
 - Web fallback stack: `[TO DEFINE]`
 - Type scale: `[TO DEFINE]`
 - Line height and readable measure: `[TO DEFINE]`
@@ -77,7 +77,7 @@ Do not assign concrete color values until a design direction is approved.
 - Design token source: `[TO DEFINE]`
 - Component ownership and naming: `[TO DEFINE]`
 - Variants must represent real states, not decorative duplication.
-- Android and Web components may differ in implementation while sharing intent and tokens where practical.
+- Learner and Admin web components may differ in implementation while sharing intent and tokens where practical.
 
 ## Buttons
 
@@ -102,7 +102,7 @@ Do not assign concrete color values until a design direction is approved.
 
 ## Navigation
 
-- Android information architecture: `[TO DEFINE]`
+- Learner information architecture: `[TO DEFINE]`
 - Admin information architecture: `[TO DEFINE]`
 - Back/up behavior: `[TO DEFINE PER PLATFORM]`
 - Current location and primary next action must remain clear.
@@ -136,14 +136,14 @@ Do not assign concrete color values until a design direction is approved.
 - WCAG AA contrast where applicable
 - Keyboard and visible focus support for Web Admin
 - Screen-reader labels and semantic structure
-- Android touch targets and accessibility semantics
+- Touch-target sizing and accessibility semantics at mobile breakpoints
 - Do not rely on color alone
 - Support text scaling and localization expansion
 - Motion reduction behavior if motion is introduced
 
 ## Responsive behavior
 
-- Android: define supported device classes, orientation policy, and adaptive layout rules before UI implementation.
+- Web learner: define supported breakpoints and adaptive layout rules before UI implementation.
 - Web Admin: define breakpoints from content needs, not framework defaults.
 - Tables require an approved small-screen strategy.
 - Loading, empty, error, and modal states must be verified at supported sizes.
@@ -154,7 +154,7 @@ Do not assign concrete color values until a design direction is approved.
 - [ ] Typography approved and licensed
 - [ ] Color system approved and contrast-checked
 - [ ] Spacing/radius tokens approved
-- [ ] Android navigation and core component rules approved
+- [ ] Learner navigation and core component rules approved
 - [ ] Admin navigation/table/form rules approved
 - [ ] Accessibility baseline approved
 - [ ] Responsive targets approved

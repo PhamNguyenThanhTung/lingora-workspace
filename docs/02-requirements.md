@@ -26,7 +26,7 @@ Quy tắc chống trùng lặp:
 ### 2.1. Đồ án Kỹ nghệ Phần mềm
 
 #### Phạm vi công việc
-1. Mobile App: Auth, danh sách khoá/bài học, học từ vựng, 3+ loại bài tập, màn **"Ôn tập thông minh"**, màn **"Luyện hội thoại"**, profile, tiến độ.
+1. Web Learner App: Auth, danh sách khoá/bài học, học từ vựng, 3+ loại bài tập, màn **"Ôn tập thông minh"**, màn **"Luyện hội thoại"**, profile, tiến độ.
 2. Web Admin: Auth phân quyền, CRUD Course/Lesson/Vocabulary/Exercise/**Chat Scenario**, upload media, xem thống kê.
 3. Database: schema đa ngôn ngữ, RLS, migration bằng Prisma, seed data.
 4. Tích hợp: Supabase Auth + PostgREST + Storage; API contract với AI Server (2 endpoint AI).
@@ -39,9 +39,9 @@ Quy tắc chống trùng lặp:
 | 2 | **Use Case Diagram** | Actor: `Học viên`, `Quản trị viên`, `AI Service` (actor phụ). 12–15 use case, có `<<include>>` cho "Đăng nhập". |
 | 3 | **Đặc tả Use Case** (bảng) | Làm chi tiết 4 UC quan trọng: Đăng nhập, Học 1 bài, **Ôn tập từ vựng theo gợi ý AI**, **Luyện hội thoại (Roleplay)**. Có luồng chính + luồng ngoại lệ (AI Server không phản hồi). |
 | 4 | **Activity Diagram** | 3 cái: đăng ký/đăng nhập, hoàn thành 1 bài học, luồng ôn tập thông minh (có nhánh AI lỗi → dùng lịch mặc định). |
-| 5 | **Sequence Diagram** | 3 cái: `Login`, `SRS Recommendation` (Android → PostgREST đọc log → FastAPI `/v1/srs/schedule` → **RPC `record_review`** ghi lại Supabase trong 1 transaction), `Roleplay Chat` (Android → FastAPI `/v1/chat/roleplay` → Model → lưu `chat_messages`). Đây là 3 sơ đồ "ăn điểm" nhất vì thể hiện tích hợp nhiều hệ thống. |
+| 5 | **Sequence Diagram** | 3 cái: `Login`, `SRS Recommendation` (Web Learner → PostgREST đọc log → FastAPI `/v1/srs/schedule` → **RPC `record_review`** ghi lại Supabase trong 1 transaction), `Roleplay Chat` (Web Learner → FastAPI `/v1/chat/roleplay` → Model → lưu `chat_messages`). Đây là 3 sơ đồ "ăn điểm" nhất vì thể hiện tích hợp nhiều hệ thống. |
 | 6 | **ERD** | Xuất từ `schema.prisma` bằng `prisma-erd-generator` → có thật, khớp code, gồm cả khối `user_vocab_srs/review_logs/chat_*`. |
-| 7 | **Class Diagram** | Tầng data/domain của Android (Repository, Model, ViewModel) — thể hiện MVVM. |
+| 7 | **Class Diagram** | Tầng data/domain của Web Learner (Repository, Model, service/hook) — thể hiện tách lớp presentation / data. |
 | 8 | **Kiến trúc & UI/UX** | Sơ đồ mục 1.1, wireframe Figma (đặc biệt màn "Ôn tập thông minh" và màn chat), bảng màu, design decision. |
 | 9 | **Test case + kết quả** | Bảng ≥ 25 test case, gồm cả trường hợp AI Server timeout / trả `MOCK_MODE`. Kèm ảnh chụp. |
 | 10 | **Chương Scalability** | Dùng nguyên bảng 1.8 trong [01-kien-truc-he-thong.md](01-architecture.md#18-bàn-về-khả-năng-mở-rộng-để-trả-lời-hội-đồng-knpm). |
@@ -49,7 +49,7 @@ Quy tắc chống trùng lặp:
 #### Dàn ý báo cáo KNPM
 ```
 Ch1. Tổng quan       — bối cảnh, bài toán, mục tiêu, phạm vi, so sánh app tương tự (Duolingo, Memrise)
-Ch2. Cơ sở lý thuyết — Android/MVVM, BaaS & Supabase, REST, ORM, RLS
+Ch2. Cơ sở lý thuyết — Web/Next.js App Router, kiến trúc component + data layer, BaaS & Supabase, REST, ORM, RLS
 Ch3. Phân tích       — SRS (đặc tả yêu cầu), Use Case + đặc tả, Activity Diagram
 Ch4. Thiết kế        — kiến trúc 3 tầng, ERD, Class Diagram, Sequence Diagram, thiết kế UI/UX
 Ch5. Cài đặt         — tech stack, cấu trúc project, giải thích module chính (kèm đoạn code tiêu biểu)
@@ -176,7 +176,7 @@ Ch8. Kết luận
 |---|:---:|:---:|:---:|
 | `schema.prisma` + ERD | ✅ chính | – | – |
 | Use Case / Activity / Sequence | ✅ chính | – | – |
-| UI Android + Admin | ✅ chính | – | – |
+| UI Web Learner + Admin | ✅ chính | – | – |
 | API contract & tích hợp | ✅ chính | ▫ nhắc qua | ▫ nhắc qua |
 | Script làm sạch dữ liệu hội thoại | – | – | ✅ chính |
 | Train tokenizer (dialogue) | – | – | ✅ chính |
@@ -206,7 +206,7 @@ This section is the approved M0.5 normalization layer. The migrated material abo
 
 ### M0.5 semantic decisions
 
-- Project 1 mobile ownership: Android owns presentation, local validation/cache, and API orchestration; Supabase owns persistent data, RLS, and transactional review writes. AI Server remains stateless and does not own primary learner data.
+- Project 1 client ownership (amended by ADR-008, 2026-08-17): the Web learner client owns presentation, local validation/cache, and API orchestration; Supabase owns persistent data, RLS, and transactional review writes. AI Server remains stateless and does not own primary learner data.
 - Core model: the required entity inventory is `Language`, `Profile`, `Course`, `CourseTranslation`, `Lesson`, `LessonTranslation`, `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary`, `Exercise`, `UserProgress`, `UserVocabSrs`, `ReviewLog`, `ChatScenario`, `ChatScenarioTranslation`, `ChatSession`, and `ChatMessage`. Field-level definitions absent from the migrated source remain explicitly `PROPOSED` in the traceability matrix and require schema review before migration.
 - RLS and review ownership: learner operations are restricted to owned records; admin operations cover content/media management. `record_review` must verify `auth.uid() = user_vocab_srs.user_id` before its transaction proceeds and must not trust a client-supplied user id.
 - Locale: learned language is English (`en`). UI `vi` and `en` are Must/P1, default UI locale is `vi`, unsupported UI locales fall back to `vi`, and `ja` remains Nice/P2. Content translation lookup uses requested locale → supported learner native locale → `vi` → `en` → explicit unavailable state.
@@ -219,14 +219,14 @@ This section is the approved M0.5 normalization layer. The migrated material abo
 - Listening scope (amended by ADR-006, 2026-08-15): word-level scored `LISTENING` is approved. A `LISTENING` exercise plays the audio of a referenced vocabulary item and grades the learner's answer. Audio reuses the existing approved Storage path `vocabulary/{vocabularyId}/{filename}`, and the payload references `vocabularyId` rather than embedding a free-form URL, so read authorization stays with the existing RLS policy. Sentence-level listening audio not tied to a vocabulary row is rejected; it would require a new Storage path and a SEC-D8 amendment.
 - “Quiz” may be used only as a user-facing/report label for the existing lesson exercise sequence. It does not introduce a separate Quiz entity, attempt/session history, timer, pass threshold, or result model; those semantics remain unapproved/deferred.
 - Study scheduling scope (amended by ADR-006, 2026-08-15): the learner can view and set a daily study goal backed by the existing `Profile.dailyGoalMin` field. This requires no schema, grant, or policy change, because the M1.3 write path already grants and validates it. It is a daily minute goal, not a calendar or timetable feature; no lesson-scheduling entity is approved.
-- Reminder scope (amended by ADR-006, 2026-08-15): an Android-local daily study reminder is approved, derived on-device from `dailyGoalMin` and `lastQualifyingActivityDate`, with reminder time stored client-side. There is no server-side delivery, no device token, no FCM, and no notification-preference or reminder-schedule entity. Two limitations are explicit: the setting is per-device and lost on reinstall, and delivery is guaranteed only within the chosen window, never at an exact time, because of doze and OEM battery restrictions. SRS due state and reminder delivery remain separate concerns; `nextReviewAt` is still not a delivery record.
+- Reminder scope (amended by ADR-006, 2026-08-15; mechanism amended by ADR-008, 2026-08-17): a client-local daily study reminder is approved, derived in the client from `dailyGoalMin` and `lastQualifyingActivityDate`, with the reminder window stored client-side. There is no server-side delivery, no device token, no push subscription, no FCM/Web Push, no scheduler, and no notification-preference or reminder-schedule entity. The approved mechanism is an **in-app reminder** (`6d`): it is surfaced inside the web application when the learner opens it during the chosen window. Three limitations are explicit: the setting is per-browser and lost when site data is cleared; the reminder is **not** delivered while the application is closed, because no background delivery mechanism is approved; and it is presented within the chosen window, never as an exact time. Options `6a` (PWA/service worker notification) and `6b` (Web Push + scheduler) are deferred, not rejected — see `ADR-008`. SRS due state and reminder delivery remain separate concerns; `nextReviewAt` is still not a delivery record.
 
 ### Project 1 — Software Engineering requirements
 
 | ID | Priority | Requirement | Acceptance criteria | Evidence |
 |---|---|---|---|---|
-| P1-FR-001 | Must | Learner can register, log in, refresh an expired access token, and log out through Supabase Auth. | Valid credentials create an authenticated session; invalid credentials show an error; one expired-token refresh retries once; logout clears the local session. | Auth use case, Android E2E |
-| P1-FR-002 | Must | Learner can browse published courses, lessons, and vocabulary and play available vocabulary audio. | Only published content is shown; lesson/vocabulary ordering is stable; available audio can be played; unavailable content/audio produces a recoverable empty/error state without a crash. This does not imply search, favorites, pronunciation scoring, separate mastery state, or an additional standalone flashcard mode. | Supabase query test, Android E2E |
+| P1-FR-001 | Must | Learner can register, log in, refresh an expired access token, and log out through Supabase Auth. | Valid credentials create an authenticated session; invalid credentials show an error; one expired-token refresh retries once; logout clears the local session. | Auth use case, Web E2E |
+| P1-FR-002 | Must | Learner can browse published courses, lessons, and vocabulary and play available vocabulary audio. | Only published content is shown; lesson/vocabulary ordering is stable; available audio can be played; unavailable content/audio produces a recoverable empty/error state without a crash. This does not imply search, favorites, pronunciation scoring, separate mastery state, or an additional standalone flashcard mode. | Supabase query test, Web E2E |
 | P1-FR-003 | Must | Learner can complete MCQ, FILL_BLANK, REORDER, GRAMMAR, and word-level LISTENING exercises. | Each type validates its approved payload; correct/incorrect result is shown; progress is updated once per submission. A “Quiz” label, if used, refers to this sequence and does not imply separate Quiz/Attempt persistence. GRAMMAR and LISTENING detail is specified in `P1-FR-012` and `P1-FR-013`. | Exercise unit/E2E tests |
 | P1-FR-004 | Must | Learner can view and update lesson progress. | Status transitions are `NOT_STARTED → IN_PROGRESS → COMPLETED`; repeated completion is idempotent; progress is scoped to the authenticated learner. | Data/RLS tests |
 | P1-FR-005 | Must | Learner can use intelligent review with AI and the documented fallback. | A successful schedule response renders priority and interval; an AI timeout/error within 8 seconds falls back to the due-card/default schedule path. Reminder/notification delivery is not part of this requirement. | SRS integration/E2E |
@@ -239,11 +239,11 @@ This section is the approved M0.5 normalization layer. The migrated material abo
 | P1-FR-012 | Must | Learner can complete `GRAMMAR` exercises inside an existing published lesson. | The payload validates against the approved `GRAMMAR` shape and satisfies `payloadVersion = '1'`; a correct/incorrect result is shown together with a rule explanation; progress is updated once per submission through lesson-level `UserProgress`. No grammar entity, grammar-progress record, or separate Grammar schema is created. | Exercise unit/E2E tests |
 | P1-FR-013 | Must | Learner can complete word-level `LISTENING` exercises. | Audio for the referenced vocabulary plays and the submitted answer is graded; the payload references `vocabularyId` and never a free-form URL, so read authorization remains with the existing Storage RLS policy; unavailable or unauthorized audio produces a recoverable empty/error state without a crash. | Exercise unit/E2E tests, Storage policy test |
 | P1-FR-014 | Must | Learner can view and set a daily study goal. | `Profile.dailyGoalMin` is readable and writable from the profile screen and scoped to the authenticated learner; a negative value is rejected by existing server-side validation; no schema, grant, or policy change is required because the M1.3 write path already grants and validates this field. | Profile E2E, Data/RLS tests |
-| P1-FR-015 | Must | Learner can enable a local daily study reminder. | When the current local day has no qualifying activity, a reminder is delivered within the learner-chosen window — never claimed as an exact time — derived on-device from `dailyGoalMin` and `lastQualifyingActivityDate`; a denied `POST_NOTIFICATIONS` permission is handled without a crash and with a recoverable state; no server-side delivery, device token, or reminder entity exists. | Android instrumentation test, manual verification |
+| P1-FR-015 | Must | Learner can enable a local daily study reminder. | When the current local day has no qualifying activity, an in-app reminder is presented within the learner-chosen window — never claimed as an exact time — derived client-side from `dailyGoalMin` and `lastQualifyingActivityDate`; the reminder appears when the learner opens the application inside that window and is not delivered while the application is closed; no server-side delivery, push subscription, device token, or reminder entity exists. | Web unit test, manual verification |
 | P1-NFR-001 | Must | API and data access preserve the documented security boundary. | Learners can access only own learner data; AI Server receives history but does not directly own/write primary Supabase data; ADMIN-only operations are enforced server-side. | RLS/security checklist |
 | P1-NFR-002 | Must | The primary learning flow remains usable when AI is unavailable. | Course/lesson/progress flows remain available; SRS uses fallback; chatbot shows a recoverable error; no crash or indefinite spinner occurs. | Failure-mode E2E |
 | P1-NFR-003 | Must | The contract remains backward-compatible after M0.5. | JSON fields remain snake_case; inference success responses include `model_version` and `is_mock`; optional grammar score may be omitted; no required field is silently renamed. | Contract test |
-| P1-NFR-004 | Must | Android and Admin provide approved responsive/loading/empty/error states. | Each Must screen has loading, empty, error, and success behavior documented and manually verified. | UI checklist |
+| P1-NFR-004 | Must | Web Learner and Admin provide approved responsive/loading/empty/error states. | Each Must screen has loading, empty, error, and success behavior documented and manually verified, and remains usable from mobile to desktop breakpoints. | UI checklist |
 
 ### ML — Personalized Vocabulary SRS requirements
 

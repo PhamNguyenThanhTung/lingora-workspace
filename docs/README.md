@@ -9,7 +9,7 @@
 The final product name is **Lingora**. Approved repository boundaries are:
 
 ```text
-lingora-android/
+lingora-web/
 lingora-admin/
 lingora-ai/
 ├── api/

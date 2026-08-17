@@ -8,7 +8,7 @@
 
 | Loại | Là gì | Giải pháp |
 |---|---|---|
-| **UI i18n** | Nhãn nút, thông báo lỗi | Android `res/values-*/strings.xml`, Next.js `next-intl` — **không** nằm trong DB |
+| **UI i18n** | Nhãn nút, thông báo lỗi | Next.js i18n message catalogs (`vi`/`en`) — **không** nằm trong DB |
 | **Content i18n** | Tiêu đề bài học, nghĩa của từ, tiêu đề kịch bản chat | Bảng `*_translations` riêng, khoá `(entity_id, locale)` |
 
 #### `schema.prisma` (bản dự kiến v2 — thay khối GEC bằng SRS + Chat)
@@ -245,7 +245,7 @@ language sql stable as $$
 $$;
 ```
 
-Android gọi: `POST /rest/v1/rpc/get_due_srs_cards` với body `{"p_user_id":"...","p_limit":20}` — dùng làm nguồn dữ liệu **fallback** khi AI Server không phản hồi kịp (xem `05`).
+Web Learner gọi: `POST /rest/v1/rpc/get_due_srs_cards` với body `{"p_user_id":"...","p_limit":20}` — dùng làm nguồn dữ liệu **fallback** khi AI Server không phản hồi kịp (xem `05`).
 
 #### 1.3b. Tách rõ DKT/HLR khỏi Scheduler
 
@@ -282,14 +282,14 @@ Trong báo cáo ML, đây là ranh giới rõ ràng: **Ch3–Ch6 nói về DKT/H
 
 #### 1.3c. RPC `record_review` — tránh lệch dữ liệu giữa client và DB
 
-**Vấn đề cần tránh:** nếu Android tự tính `nextReviewAt`/`intervalDays` mới rồi gọi 2 lệnh ghi rời rạc (`INSERT review_logs`, `UPDATE user_vocab_srs`) qua PostgREST, có rủi ro 1 trong 2 lệnh thất bại giữa chừng (mất mạng, app bị kill) → dữ liệu lệch nhau. Giải pháp: gộp thành **1 RPC transaction** ở tầng Postgres:
+**Vấn đề cần tránh:** nếu client tự tính `nextReviewAt`/`intervalDays` mới rồi gọi 2 lệnh ghi rời rạc (`INSERT review_logs`, `UPDATE user_vocab_srs`) qua PostgREST, có rủi ro 1 trong 2 lệnh thất bại giữa chừng (mất mạng, app bị kill) → dữ liệu lệch nhau. Giải pháp: gộp thành **1 RPC transaction** ở tầng Postgres:
 
 ```sql
 create or replace function public.record_review(
   p_srs_card_id uuid,
   p_is_correct boolean,
   p_response_ms int,
-  p_recall_probability float,      -- do AI Server trả về, Android chỉ chuyển tiếp
+  p_recall_probability float,      -- do AI Server trả về, client chỉ chuyển tiếp
   p_recommended_interval_days float
 ) returns void
 language plpgsql security definer as $$
@@ -314,7 +314,7 @@ end; $$;
 
 Luồng đúng:
 ```
-Android trả lời 1 thẻ
+Người học trả lời 1 thẻ
    │
    ├─ gọi FastAPI /v1/srs/schedule (nếu chưa có prediction mới cho thẻ này hôm nay)
    │      → nhận recall_probability + recommended_interval_days
@@ -322,7 +322,7 @@ Android trả lời 1 thẻ
    └─ gọi POST /rest/v1/rpc/record_review  (Authorization: Bearer JWT, RLS tự giới hạn theo owner)
           → ghi review_logs + cập nhật user_vocab_srs trong CÙNG 1 transaction
 ```
-Android **không** tự ý ghi trực tiếp vào `user_vocab_srs`/`review_logs` bằng `INSERT`/`UPDATE` PostgREST thô nữa — chỉ được gọi qua RPC này, giữ đúng nguyên tắc "không tin business logic ở client".
+Client **không** tự ý ghi trực tiếp vào `user_vocab_srs`/`review_logs` bằng `INSERT`/`UPDATE` PostgREST thô nữa — chỉ được gọi qua RPC này, giữ đúng nguyên tắc "không tin business logic ở client".
 
 ---
 

@@ -12,7 +12,7 @@
 
 | Repo | Language / Framework | Deployment |
 |---|---|---|
-| `lingora-android/` | Java 17, MVVM, Retrofit 2.11, Room 2.6, minSdk 24 / targetSdk 35 | APK release at each `M*` gate |
+| `lingora-web/` | Next.js 15 + TypeScript 5, Tailwind 4, shadcn/ui, `@supabase/ssr`, TanStack Query 5 | Vercel (free tier) |
 | `lingora-admin/` | Next.js 15 + TypeScript 5, Tailwind 4, shadcn/ui, Prisma 6, Zod | Vercel (free tier) |
 | `lingora-ai/` | Python 3.11, FastAPI 0.115+, PyTorch 2.4+, Pydantic v2 | Render / HF Spaces (free tier) |
 
@@ -27,7 +27,7 @@
 *Source: [`docs/01-architecture.md`](01-architecture.md) §1.1*
 
 ```
-Android App  ──(1) Auth JWT──►  Supabase (GoTrue · Postgres 15 · RLS · Storage)
+Web Learner ──(1) Auth JWT──►  Supabase (GoTrue · Postgres 15 · RLS · Storage)
              ──(2) Data RPC──►       ▲  data flows via PostgREST / RPC
 Web Admin    ──(Prisma TCP)──►       │
              ──(Storage)───►         │
@@ -38,8 +38,10 @@ AI Server (FastAPI) ◄────────────────┘
   MOCK_MODE=true           → deterministic hardcoded response (same schema)
 ```
 
-**Key invariant:** Android does NOT call Supabase for AI inference — only for core data.
-AI Server is stateless; it never reads/writes Supabase directly. If AI Server is down:
+**Key invariant:** Web Learner does NOT call Supabase for AI inference — only for core data.
+AI Server is stateless; it never reads/writes Supabase directly. Learner AI calls go through a
+Next.js Route Handler proxy in `lingora-web` that forwards the JWT and owns the 8s timeout.
+If AI Server is down:
 - SRS falls back to `get_due_srs_cards` RPC (SM-2 schedule).
 - Chatbot shows a temporary error.
 
@@ -60,9 +62,10 @@ AI Server is stateless; it never reads/writes Supabase directly. If AI Server is
 | M3 | Web Admin functional | ⬜ upcoming |
 | M4 / M4.5 | ≥1 AI API live / both live | ⬜ upcoming |
 | M5 | Feature freeze | ⬜ upcoming |
-| Final | APK release, deploy, 3 reports, 3 slides | ⬜ week 12 |
+| Final | Production deploy (Vercel + Render), 3 reports, 3 slides | ⬜ week 12 |
 
-**Current baseline:** M1.3 DONE. Next task: plan M2 (Android lesson flow).
+**Current baseline:** M1.5 DONE. The M1.6 Android foundation is SUPERSEDED by `ADR-008` (2026-08-17);
+the learner client is Web. Next task: plan `M1.6W` (Web learner foundation), then M2 (Web lesson flow).
 
 ---
 
@@ -72,8 +75,8 @@ AI Server is stateless; it never reads/writes Supabase directly. If AI Server is
 
 | Tier | Contents |
 |---|---|
-| **P0 — must have** | Auth, Lesson, Vocabulary, MCQ + Fill-blank, Admin CRUD, SRS (≥1 model live), Roleplay (hotel), APK, 3 reports |
-| **P1 — should have** | DKT-LSTM + HLR both, T5-small production, full RLS, Room cache, vi/en UI, tests, production deploy |
+| **P0 — must have** | Auth, Lesson, Vocabulary, MCQ + Fill-blank, Admin CRUD, SRS (≥1 model live), Roleplay (hotel), Web production build, 3 reports |
+| **P1 — should have** | DKT-LSTM + HLR both, T5-small production, full RLS, client-side persisted cache (TanStack Query), vi/en UI, tests, production deploy |
 | **P2 — only if time** | `grammatical_acceptability_score` scorer, DailyDialog, ja UI, ONNX/quantize, advanced Admin analytics |
 
 **Never cut:** Auth flow, core lesson flow, ≥1 AI API with a real model, 3 report documents.
@@ -88,7 +91,7 @@ AI Server is stateless; it never reads/writes Supabase directly. If AI Server is
 - **Input:** `{ now, items[{vocabulary_id, ease_factor, history[…]}], client }`
 - **Output:** `{ predictions[{vocabulary_id, recall_probability, priority, recommended_interval_days}], model_version, scheduler_version, is_mock, latency_ms }`
 - `priority` ∈ `{REVIEW_NOW, REVIEW_TODAY, REVIEW_LATER}` — produced by the **Scheduler** (rule-based, not ML).
-- AI Server does not write to Supabase; Android calls `record_review` RPC separately.
+- AI Server does not write to Supabase; the Web client calls `record_review` RPC separately.
 
 ### `POST /v1/chat/roleplay`
 - **Input:** `{ scenario_code, lang, history[…], user_message, client }`
@@ -158,8 +161,8 @@ Anonymous access denied on both buckets. No signed-URL runtime. No overwrite per
 - G6: No real interaction data yet — use public datasets (ASSISTments, MultiWOZ).
 
 **Non-negotiable principles:**
-1. Working system state every week (not necessarily APK).
-2. Mock first, real later — Android must run on mock before real AI is connected.
+1. Working system state every week (not necessarily a production deploy).
+2. Mock first, real later — every Web screen must run on mock before real AI is connected.
 3. AI is an additive feature, not a blocker — app must demo without AI.
 4. Write reports in parallel, not at the end.
 5. SRS and Chatbot are independent — one late does not block the other.

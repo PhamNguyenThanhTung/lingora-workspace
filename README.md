@@ -8,7 +8,7 @@ Lingora is one English-learning product evaluated through three academic perspec
 
 The development framework, documentation normalization, and report scaffolding are complete. M1 foundation work is in progress; no application feature has been implemented yet.
 
-Approved repository boundaries are `lingora-android`, `lingora-admin`, and `lingora-ai` with `api/`, `ml_srs/`, and `nlp_chatbot/`. M1.1 establishes these boundaries without adding feature code.
+Approved repository boundaries are `lingora-web`, `lingora-admin`, and `lingora-ai` with `api/`, `ml_srs/`, and `nlp_chatbot/`. M1.1 establishes these boundaries without adding feature code.
 
 ## Start here
 

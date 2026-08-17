@@ -26,7 +26,7 @@ Request:
       ]
     }
   ],
-  "client": "android/1.0.0"
+  "client": "web/1.0.0"
 }
 ```
 
@@ -50,7 +50,7 @@ Response `200`:
 
 `recall_probability` là output **duy nhất** của model DKT/HLR. `priority` và `recommended_interval_days` do module **Scheduler** (rule-based, không phải ML — xem mục 1.3b) suy ra từ `recall_probability`; vì vậy response tách riêng `model_version` (của DKT/HLR) và `scheduler_version` (của policy) để báo cáo/kiểm thử không nhầm hai thứ là một. `priority` ∈ `{REVIEW_NOW, REVIEW_TODAY, REVIEW_LATER}`.
 
-Sau khi Android nhận response này và user trả lời xong 1 thẻ, gọi tiếp `POST /rest/v1/rpc/record_review` (mục 1.3c) để ghi log + cập nhật lịch — **AI Server không tự ghi Supabase**.
+Sau khi Web Learner nhận response này và user trả lời xong 1 thẻ, gọi tiếp `POST /rest/v1/rpc/record_review` (mục 1.3c) để ghi log + cập nhật lịch — **AI Server không tự ghi Supabase**.
 
 #### `POST /v1/chat/roleplay`
 
@@ -64,7 +64,7 @@ Request:
     { "role": "user", "content": "I want book a room for two night." }
   ],
   "user_message": "I want book a room for two night.",
-  "client": "android/1.0.0"
+  "client": "web/1.0.0"
 }
 ```
 
@@ -82,7 +82,7 @@ Response `200`:
 }
 ```
 
-> `feedback` là **tuỳ chọn** (P2, có thể bỏ nếu thiếu thời gian — xem `00` mục 0.3), tối đa 1–2 gợi ý. Field đổi tên từ `naturalness_score` → **`grammatical_acceptability_score`** vì bộ chấm dùng CoLA (Corpus of Linguistic Acceptability) đo *độ chấp nhận được về ngữ pháp*, không phải "độ tự nhiên" theo nghĩa rộng (ngữ điệu, phong cách...) — tránh bị hội đồng bắt bẻ tên gọi sai bản chất. UI Android có thể hiển thị nhãn thân thiện "Grammar score" cho người dùng cuối, nhưng báo cáo NLP phải dùng đúng thuật ngữ này. Mục tiêu chính vẫn là `ai_reply` (giữ hội thoại trôi chảy).
+> `feedback` là **tuỳ chọn** (P2, có thể bỏ nếu thiếu thời gian — xem `00` mục 0.3), tối đa 1–2 gợi ý. Field đổi tên từ `naturalness_score` → **`grammatical_acceptability_score`** vì bộ chấm dùng CoLA (Corpus of Linguistic Acceptability) đo *độ chấp nhận được về ngữ pháp*, không phải "độ tự nhiên" theo nghĩa rộng (ngữ điệu, phong cách...) — tránh bị hội đồng bắt bẻ tên gọi sai bản chất. UI Web có thể hiển thị nhãn thân thiện "Grammar score" cho người dùng cuối, nhưng báo cáo NLP phải dùng đúng thuật ngữ này. Mục tiêu chính vẫn là `ai_reply` (giữ hội thoại trôi chảy).
 
 #### Envelope lỗi (dùng chung mọi endpoint)
 ```json
@@ -147,12 +147,12 @@ def mock_chat_reply(scenario_code: str, user_message: str) -> dict:
     }
 ```
 
-Response khi mock **vẫn giữ đúng schema** như model thật, chỉ khác `"is_mock": true` — đảm bảo Android không cần biết đang chạy mock hay thật. Giá trị SRS phải deterministic theo `vocabulary_id` để screenshot, test case và demo lặp lại được.
+Response khi mock **vẫn giữ đúng schema** như model thật, chỉ khác `"is_mock": true` — đảm bảo client không cần biết đang chạy mock hay thật. Giá trị SRS phải deterministic theo `vocabulary_id` để screenshot, test case và demo lặp lại được.
 
 ### 5.3. Chuẩn hoá API Contract
 
 Đã chốt ở file `01`, mục 1.6. Nguyên tắc bổ sung:
-- Mọi thay đổi contract sau `M0` phải bump version path (`/v1/` → `/v2/`) hoặc thêm field optional, **không sửa field cũ** (tránh vỡ Android đang chạy).
+- Mọi thay đổi contract sau `M0` phải bump version path (`/v1/` → `/v2/`) hoặc thêm field optional, **không sửa field cũ** (tránh vỡ client đang chạy).
 - `docs/03-api-contract.md` là nguồn chân lý duy nhất và là bản duy nhất được sửa trực tiếp. Nếu tạo bản sao trong các repository Lingora, chạy script đồng bộ và kiểm tra checksum trước mỗi mốc `M*`; không copy hoặc sửa tay các bản phụ.
 
 ## M0.5 approved contract overrides

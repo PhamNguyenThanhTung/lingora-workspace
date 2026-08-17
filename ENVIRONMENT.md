@@ -9,13 +9,13 @@ This file records the M1.1/M1.2 environment boundary only. It does not install d
 | Version control | Git | Git 2.53.0 |
 | Admin tooling | Node.js/npm; exact project dependencies belong to an approved subtask | Node.js 24.14.0; npm 11.9.0 |
 | AI API | Python 3.11 | Python 3.11 available through `py -3.11`; the `python` command is not currently usable |
-| Android | Java 17; project-owned Gradle wrapper will be created by M1.6 | Java is not currently available in `PATH`; system Gradle is not installed |
+| Web learner | Node.js/npm; exact project dependencies belong to an approved `M1.6W` subtask | Node.js 24.14.0; npm 11.9.0 |
 
 Tool versions in `docs/01-architecture.md` remain authoritative. Detected versions are observations, not automatic approvals to upgrade or change the baseline.
 
 ## Repository boundaries
 
-- `lingora-android/`: Project 1 native Android application.
+- `lingora-web/`: Project 1 Web learner application (Next.js App Router).
 - `lingora-admin/`: Project 1 administration boundary and future Prisma owner.
 - `lingora-ai/api/`: FastAPI integration surface.
 - `lingora-ai/ml_srs/`: ML-owned SRS research code boundary.
@@ -26,10 +26,10 @@ M1.1 creates boundaries and non-secret configuration templates only. Later gated
 ## Secret handling
 
 1. Copy the relevant `.env.example` to a local ignored `.env` file only when its implementation subtask begins.
-2. Never commit real Supabase URLs, keys, JWT secrets, database credentials, model paths, access tokens, or Android `local.properties`.
-3. `SUPABASE_SERVICE_ROLE_KEY` is server/Admin-only and must never be placed in Android.
+2. Never commit real Supabase URLs, keys, JWT secrets, database credentials, model paths, access tokens, or local environment files.
+3. `SUPABASE_SERVICE_ROLE_KEY` is server/Admin-only and must never be placed in `lingora-web` or any client-side code.
 4. `SUPABASE_JWT_SECRET` is server-only and must not be logged.
-5. `MOCK_MODE` belongs to the FastAPI runtime, not to the Android application.
+5. `MOCK_MODE` belongs to the FastAPI runtime, not to the Web application.
 
 ## Supabase database connection strategy (M1.2)
 

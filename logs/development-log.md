@@ -1090,3 +1090,60 @@ Append one entry after each implemented task. Do not rewrite historical entries.
 `PENDING — no commit requested`
 
 ---
+
+### Date
+
+`2026-08-17`
+
+### Task
+
+`m1.7-web-platform-reset`
+
+### Completed
+
+- Recorded `ADR-008 — Project 1 learner platform reset from native Android to Web` in `logs/decision-log.md`.
+- Rewrote the platform layer of the canonical docs to Web: `docs/00-master-plan.md`, `docs/01-architecture.md`,
+  `docs/02-requirements.md`, `docs/03-api-contract.md` (prose and example strings only), `docs/04-data-model.md`,
+  `docs/05-traceability-matrix.md`, `docs/QUICK-REF.md`, `docs/README.md`, `DESIGN.md`, `README.md`, `ENVIRONMENT.md`.
+- Added `docs/01-architecture.md` §3.2 listing the nine `M1.7-D12` Web learner boundaries.
+- Amended `P1-FR-015` mechanism to option `6d` (in-app reminder). The requirement stays `Must`; `6a` and `6b`
+  remain deferred, not rejected.
+- Added risk `R12` (assignment title says "nền tảng di động"; knowingly accepted).
+- Removed the 61 tracked files under `lingora-android/` plus its ignored local build artifacts. Git history preserved;
+  no rebase, amend, or force-push.
+- Marked the M1.6 Android evidence `SUPERSEDED` in `logs/test-log.md` and its archived plan.
+
+### M1.6 Android — SUPERSEDED (2026-08-17, ADR-008)
+
+```text
+M1.6 Android — SUPERSEDED (2026-08-17, ADR-008)
+Reason: platform switched to Web before any feature screen was implemented.
+Scope reached: auth + AI connectivity foundation only (Login, Register, FoundationStatus).
+M1.3–M1.5 backend, schema, RLS, and /v1/ contract remained unchanged. Code recoverable at 585ca6c.
+```
+
+### Problems
+
+- The original brief names a mobile platform, so the switch could not be presented as naming-only; it needed an ADR
+  and an explicit accepted-risk record rather than a silent rewrite.
+- `docs/03-api-contract.md` mentioned Android inside request examples. Changing `"client": "android/1.0.0"` risked
+  invalidating the DONE M1.5 runtime, so the field declaration was verified first
+  (`lingora-ai/api/app/schemas.py:40,69` — `client: Optional[str] = None`, no pattern validation).
+
+### Solution
+
+- Superseded only ADR-002's platform clauses and only ADR-006 item 3's mechanism; every other ADR stays in force.
+- Kept the M1.6 plan and `M1.6-T-001`..`M1.6-T-010` rows in place and annotated them, because they are the only
+  record of why the platform changed.
+- Learner AI calls go through a Next.js Route Handler proxy that forwards the JWT and owns the 8-second
+  `P1-FR-005` timeout, so `lingora-ai` needed no CORS or code change.
+
+### Tests
+
+- `M1.7-T-001` through `M1.7-T-009` — recorded in `logs/test-log.md`.
+
+### Commit
+
+`refactor(platform): reset project 1 learner client from android to web (m1.7, adr-008)`
+
+---
