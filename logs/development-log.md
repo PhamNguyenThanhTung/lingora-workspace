@@ -1305,4 +1305,4 @@ M1.3–M1.5 backend, schema, RLS, and /v1/ contract remained unchanged. Code rec
 
 ### Commit
 
-`PENDING — commit after final verification; no implementation code included`
+`f5a5a49 — docs(scope): consolidate lingora into se and transformer gec tracks`
