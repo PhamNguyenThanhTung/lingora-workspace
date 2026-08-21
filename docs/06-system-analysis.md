@@ -2,9 +2,9 @@
 
 > **Mã tài liệu:** `docs/06-system-analysis.md`  
 > **Trạng thái:** `CANONICAL / AUTHORITATIVE`  
-> **Phiên bản:** `1.0.0` (Khôi phục & Chuẩn hóa sau Milestone `M1.6W`)  
-> **Ngày phê duyệt:** `2026-08-17`  
-> **Căn cứ pháp lý & kỹ thuật:** `docs/00`–`docs/05`, `ADR-001`–`ADR-009`, mã nguồn hiện thực tại `lingora-web/`, `lingora-admin/prisma/`, `lingora-ai/api/`.
+> **Phiên bản:** `1.1.0` (ADR-010 two-track amendment)
+> **Ngày hiệu lực:** `2026-08-21`
+> **Căn cứ pháp lý & kỹ thuật:** `docs/00`–`docs/05`, `ADR-001`–`ADR-010`, mã nguồn hiện thực tại `lingora-web/`, `lingora-admin/prisma/`, `lingora-ai/api/`.
 
 ---
 
@@ -13,8 +13,8 @@
 ### 1.1 Bối cảnh & Mục tiêu
 Lingora là nền tảng học ngoại ngữ số tích hợp trí tuệ nhân tạo, giải quyết bài toán tiếp thu và ghi nhớ kiến trúc tri thức ngôn ngữ thông qua:
 1. **Lộ trình học tập có cấu trúc (Structured Curriculum):** Khóa học, bài học, từ vựng và các dạng bài tập tương tác (`MCQ`, `FILL_BLANK`, `REORDER`, và mở rộng `GRAMMAR`/`LISTENING` theo `ADR-006`).
-2. **Hệ thống Lặp lại Ngắt quãng thích ứng (Adaptive Spaced Repetition System - SRS):** Dự đoán xác suất suy giảm trí nhớ (forgetting curve / recall probability) và tính toán khoảng thời gian ôn tập tối ưu cho từng từ vựng dựa trên lịch sử tương tác của người học.
-3. **Trợ lý Hội thoại Tình huống AI (Contextual AI Roleplay Chatbot):** Môi trường thực hành giao tiếp tương tác ngữ cảnh hai chiều với phản hồi ngữ pháp và tự nhiên.
+2. **Hệ thống Lặp lại Ngắt quãng xác định (Deterministic SRS):** Chọn từ đến hạn và cập nhật lịch ôn dựa trên trạng thái/lịch sử của người học qua trusted RPC; tên SM-2 chỉ dùng sau khi audit công thức hiện thực.
+3. **Luyện viết Tình huống có GEC:** Môi trường thực hành câu tiếng Anh theo prompt có thứ tự; Transformer sửa lỗi ngữ pháp, còn application logic quản lý tiến trình tình huống.
 4. **Động lực học tập & Game hóa (Gamification & Retention):** Theo dõi tiến độ bài học, tính điểm tích lũy, duy trì chuỗi ngày học liên tục (streak) và mục tiêu học tập hàng ngày.
 
 ### 1.2 Phạm vi 6 Năng lực Cốt lõi (Six Core Capabilities)
@@ -24,8 +24,8 @@ Theo yêu cầu đồ án chuẩn, hệ thống đáp ứng trọn vẹn 6 nhóm
 |---|---|---|---|
 | **C1** | **Học ngoại ngữ & Luyện tập** | Khóa học (`Course`), Bài học (`Lesson`), Từ vựng (`Vocabulary`), Bài tập tương tác (`Exercise`), Audio từ vựng (`Vocabulary.audioUrl`). | Learner Web Client (`lingora-web`) kết nối Supabase qua RLS chỉ đọc dữ liệu `isPublished=true`. |
 | **C2** | **Quản trị Nội dung & Học liệu** | Quản lý Course, Lesson, Exercise, Vocabulary, Media Audio/Image, ChatScenario, duyệt xuất bản (`isPublished`). | Web Admin (`lingora-admin`) có quyền vai trò `ADMIN`, tải media lên Supabase Storage bucket (`course-media`). |
-| **C3** | **SRS & Cá nhân hóa Lộ trình** | Trạng thái ghi nhớ từ vựng (`UserVocabSrs`), Lịch sử ôn tập (`ReviewLog`), gợi ý danh sách từ đến hạn ôn (`/v1/srs/schedule`). | Ghi log bất biến qua RPC bảo mật `record_review`; AI microservice tính toán khoảng cách ôn tập, có fallback offline deterministic khi AI gián đoạn. |
-| **C4** | **Trợ lý Trò chuyện Tình huống (Roleplay)** | Kịch bản hội thoại (`ChatScenario`), Phiên chat (`ChatSession`), Tin nhắn (`ChatMessage`), sinh câu thoại gợi ý qua AI (`/v1/chat/roleplay`). | Next.js Route Handler proxy an toàn (`/api/ai/chat`), xác thực JWT ES256/HS256 qua JWKS, không gọi trực tiếp AI từ trình duyệt. |
+| **C3** | **SRS Từ vựng** | Trạng thái ôn (`UserVocabSrs`), lịch sử (`ReviewLog`), due-card query và cập nhật nguyên tử. | RPC `record_review` dẫn xuất user từ `auth.uid()`; deterministic policy không phụ thuộc GEC service. |
+| **C4** | **Luyện viết Tình huống & GEC** | `ChatScenario` cung cấp ngữ cảnh/prompt; input learner nhận corrected text và diff transient. | Next.js fixed Route Handler `/api/ai/gec` tới stateless FastAPI `/v1/gec/correct`; JWT fail-closed; không gọi trực tiếp từ browser. |
 | **C5** | **Tiến độ, Streak & Mục tiêu Ngày** | Tiến độ bài học (`UserProgress`), Streak hiện tại/kỷ lục (`Profile.currentStreak`, `longestStreak`), Mục tiêu ngày (`dailyGoalMin`, `dailyGoalExpiry`). | Tính điểm tập trung và cập nhật tiến độ qua trusted server action / RPC; kiểm soát gian lận điểm số từ client. |
 | **C6** | **Nhắc nhở Học tập (Reminders)** | Thông báo nhắc nhở học viên duy trì mục tiêu và chuỗi học tập hàng ngày. | **Cơ chế 6d (In-app reminder)** trong phiên học Web; **Cơ chế 6b (Web Push + scheduler) DEFERRED** (tạm hoãn cho giai đoạn mở rộng, không loại bỏ khỏi roadmap). |
 
@@ -70,7 +70,7 @@ flowchart TD
 |---|---|---|---|
 | **Learner (Học viên)** | Con người (End-user) | Role: `LEARNER`. Truy cập ứng dụng qua trình duyệt Web (`lingora-web`). Thao tác dữ liệu qua RLS và Server Actions. | Đăng ký, đăng nhập, duyệt khóa học, làm bài tập, nhận phản hồi AI, ôn tập từ vựng SRS, theo dõi streak. |
 | **Admin (Quản trị viên / Giáo viên)** | Con người (Staff) | Role: `ADMIN`. Truy cập bảng điều khiển `lingora-admin`. Quản trị toàn quyền dữ liệu nghiệp vụ và xuất bản nội dung. | Tạo/sửa khóa học, bài học, ngân hàng câu hỏi, tải audio/hình ảnh, tạo kịch bản roleplay, kích hoạt `isPublished`. |
-| **AI Microservice (Lingora AI)** | Dịch vụ nội bộ (FastAPI) | Nhận request từ Route Handler kèm Bearer JWT. Xác thực chữ ký qua JWKS public key. Không lưu session người dùng. | Dự đoán xác suất suy giảm trí nhớ (SRS), xếp lịch ôn tập, sinh phản hồi thoại ngữ cảnh và feedback ngữ pháp. |
+| **AI Microservice (Lingora AI)** | Dịch vụ nội bộ (FastAPI) | Nhận request GEC từ fixed Route Handler kèm Bearer JWT. Xác thực chữ ký qua JWKS/compatibility boundary. Không lưu session hoặc dữ liệu chính. | Chạy mock/real T5-small GEC, validate corrected text, tạo metadata; diff/classification thuộc module xác định riêng. |
 | **Supabase Auth (GoTrue)** | Dịch vụ nền tảng (PaaS) | Cấp phát token JWT `ES256` có `kid`, quản lý session, refresh token, cung cấp endpoint JWKS công khai. | Xác thực danh tính học viên và quản trị viên, bảo mật phiên làm việc qua httpOnly Cookie. |
 | **Supabase PostgreSQL** | Cơ sở dữ liệu hạt nhân | Thực thi RLS policies, Check constraints, Triggers, RPC functions (`record_review`). | Đảm bảo tính toàn vẹn dữ liệu, cô lập dữ liệu người dùng ở tầng engine cơ sở dữ liệu. |
 | **Supabase Storage** | Dịch vụ lưu trữ tệp | Lưu trữ nhị phân cho media (`course-media`, `chat-audio`). Giới hạn dung lượng 10MB/tệp, quản lý bởi RLS. | Phục vụ file âm thanh phát âm từ vựng, hình ảnh minh họa bài học và audio đoạn thoại. |
@@ -102,8 +102,8 @@ flowchart TD
 | **UC-02** | Khám phá & Học Bài học Ngôn ngữ | Learner | C1 (Learning) | `CONFIRMED / PENDING_M2` |
 | **UC-03** | Thực hiện Bài tập Tương tác & Đánh giá | Learner | C1 (Exercises) | `CONFIRMED / PENDING_M2` |
 | **UC-04** | Quản trị Khóa học, Bài học & Xuất bản | Admin | C2 (Content Management)| `CONFIRMED / PENDING_M3` |
-| **UC-05** | Ôn tập Từ vựng SRS & Dự đoán Trí nhớ | Learner, AI Service | C3 (SRS / Spaced Repetition) | `IMPLEMENTED_FOUNDATION` (M1.6W) |
-| **UC-06** | Hội thoại Nhập vai Tình huống AI | Learner, AI Service | C4 (Roleplay Chatbot) | `IMPLEMENTED_FOUNDATION` (M1.6W) |
+| **UC-05** | Ôn tập Từ vựng bằng SRS Xác định | Learner, Supabase RPC | C3 (SRS / Spaced Repetition) | `TARGET_AMENDED / POLICY_AUDIT_PENDING` |
+| **UC-06** | Luyện viết Tình huống với GEC | Learner, AI Service | C4 (Scenario Writing / GEC) | `TARGET_AMENDED / IMPLEMENTATION_PENDING` |
 | **UC-07** | Theo dõi Tiến độ, Streak & Mục tiêu Ngày | Learner | C5 (Gamification) | `CONFIRMED / PENDING_M2` |
 | **UC-08** | Nhắc nhở Học tập Trong phiên (In-App) | Learner | C6 (Reminders) | `ADR-008 LOCKED (Option 6d)` |
 
@@ -146,35 +146,31 @@ flowchart TD
 
 ---
 
-#### 📌 UC-05: Ôn tập Từ vựng SRS Thích ứng & Dự đoán Trí nhớ
-* **Mục tiêu:** Xếp lịch ôn tập các từ vựng đã học dựa trên thuật toán dự đoán xác suất nhớ và ghi nhận kết quả ôn tập.
-* **Tác nhân:** Học viên (`Learner`), AI Microservice (`lingora-ai/api`), Supabase PostgreSQL.
+#### 📌 UC-05: Ôn tập Từ vựng bằng SRS Xác định
+* **Mục tiêu:** Chọn thẻ đến hạn theo trạng thái learner-owned và ghi nhận kết quả ôn tập nguyên tử.
+* **Tác nhân:** Học viên (`Learner`), Supabase PostgreSQL/RPC.
 * **Tiền điều kiện:** Học viên có từ vựng đã học trong bảng `UserVocabSrs`.
 * **Luồng chính:**
   1. Client yêu cầu danh sách từ vựng cần ôn tập.
-  2. Next.js Route Handler (`POST /api/ai/srs`) tiếp nhận yêu cầu, forward Bearer JWT tới FastAPI endpoint `/v1/srs/schedule`.
-  3. FastAPI xác thực JWT qua JWKS, trích xuất danh sách `items: [{vocabulary_id}]`.
-  4. Mô hình AI (hoặc mock engine M1.5) tính toán `recall_probability`, mức ưu tiên `priority` (`REVIEW_NOW`, `REVIEW_SOON`, `STABLE`) và khoảng thời gian khuyến nghị `recommended_interval_days`.
-  5. FastAPI trả về danh sách dự đoán kèm `model_version` và `is_mock: true/false`.
-  6. Học viên thực hiện ôn tập từ vựng trên giao diện.
-  7. Sau khi trả lời, client gọi hàm RPC `record_review(vocab_id, score, response_time_ms)` để cập nhật đồng thời `UserVocabSrs` (tăng interval, cập nhật `nextReviewAt`) và thêm bản ghi bất biến vào `ReviewLog`.
+  2. Web query lấy learner-owned due cards với `nextReviewAt <= now` qua RLS/index boundary.
+  3. Học viên thực hiện ôn tập từ vựng trên giao diện.
+  4. Sau khi trả lời, client gọi RPC `record_review` để cập nhật đồng thời `UserVocabSrs` và thêm bản ghi bất biến vào `ReviewLog`.
 * **Luồng ngoại lệ (Offline / Fallback Flow):**
-  - Nếu AI service không phản hồi (timeout > 8s hoặc HTTP 503), Route Handler kích hoạt cơ chế **Deterministic SRS Fallback Rule (ADR-004)** cục bộ để tiếp tục phục vụ người học mà không làm gián đoạn bài học.
+  - SRS không phụ thuộc GEC service; model-unavailable của GEC không làm gián đoạn review.
 
 ---
 
-#### 📌 UC-06: Trò chuyện Nhập vai Tình huống AI (Contextual Roleplay)
-* **Mục tiêu:** Học viên thực hành đàm thoại tiếng Anh theo kịch bản thực tế (vd: `hotel_booking`, `restaurant_order`) và nhận phản hồi tức thì.
+#### 📌 UC-06: Luyện viết Tình huống với GEC
+* **Mục tiêu:** Học viên thực hành viết tiếng Anh theo prompt có thứ tự và nhận câu sửa lỗi.
 * **Tác nhân:** Học viên (`Learner`), AI Microservice (`lingora-ai/api`).
 * **Tiền điều kiện:** Học viên chọn một kịch bản giao tiếp đang hoạt động (`ChatScenario.isActive=true`).
 * **Luồng chính:**
-  1. Học viên mở phiên hội thoại mới (`ChatSession`).
-  2. Học viên nhập câu thoại hoặc chọn câu trả lời gợi ý và nhấn Gửi.
-  3. Client lưu tin nhắn học viên vào bảng `ChatMessage` (role `USER`).
-  4. Next.js Route Handler (`POST /api/ai/chat`) forward yêu cầu kèm ngữ cảnh lịch sử hội thoại tới FastAPI `/v1/chat/roleplay`.
-  5. FastAPI xác thực JWT, đưa dữ liệu qua mô hình sinh ngôn ngữ tự nhiên (T5-small / NLP Engine).
-  6. FastAPI trả về câu phản hồi `ai_reply` (và feedback ngữ pháp tùy chọn).
-  7. Client hiển thị tin nhắn AI trên giao diện chat và lưu tin nhắn vào bảng `ChatMessage` (role `ASSISTANT`).
+  1. Học viên chọn `ChatScenario` và nhận prompt kế tiếp do state machine xác định.
+  2. Học viên nhập câu tiếng Anh và nhấn Gửi.
+  3. Next.js Route Handler `/api/ai/gec` forward request tới `/v1/gec/correct`.
+  4. FastAPI xác thực JWT và T5-small sinh `corrected_text`.
+  5. Alignment/diff và classifier tạo corrections/error_type; suggestion/explanation có thể bỏ qua.
+  6. Client hiển thị original/corrected dưới dạng text đã escape; kết quả transient trong MVP.
 
 ---
 
@@ -187,29 +183,28 @@ sequenceDiagram
     autonumber
     actor Learner as Học viên (Browser)
     participant NextWeb as Next.js Web App (lingora-web)
-    participant RouteHandler as Route Handler (/api/ai/chat)
+    participant RouteHandler as Route Handler (/api/ai/gec)
     participant SupaAuth as Supabase Auth (JWKS)
     participant FastAPI as AI Service (lingora-ai/api)
     participant SupaDB as Supabase PostgreSQL
 
-    Learner->>NextWeb: Nhập tin nhắn hội thoại
-    NextWeb->>RouteHandler: POST /api/ai/chat (kèm Session Cookie)
+    Learner->>NextWeb: Nhập câu tiếng Anh theo prompt
+    NextWeb->>RouteHandler: POST /api/ai/gec (kèm Session Cookie)
     Note over RouteHandler: Đọc access_token từ Server Session
-    RouteHandler->>FastAPI: POST /v1/chat/roleplay (Authorization: Bearer JWT)
+    RouteHandler->>FastAPI: POST /v1/gec/correct (Authorization: Bearer JWT)
     FastAPI->>SupaAuth: Lấy public key qua kid từ .well-known/jwks.json (Cached)
     FastAPI->>FastAPI: Cryptographic Verification (ES256/ECDSA, exp, role)
     alt Token Hợp lệ
-        FastAPI-->>RouteHandler: HTTP 200 { ai_reply: "...", is_mock: true }
+        FastAPI-->>RouteHandler: HTTP 200 { corrected_text: "...", is_mock: true }
         RouteHandler-->>NextWeb: HTTP 200 Response
-        NextWeb->>SupaDB: Lưu ChatMessage (USER & ASSISTANT) qua RLS
-        NextWeb-->>Learner: Hiển thị phản hồi hội thoại
+        NextWeb-->>Learner: Hiển thị original/corrected diff an toàn
     else Token Hết hạn / Không hợp lệ
         FastAPI-->>RouteHandler: HTTP 401 Unauthorized
         RouteHandler-->>NextWeb: HTTP 401 Session Expired
         NextWeb-->>Learner: Chuyển hướng /login hoặc yêu cầu làm mới phiên
     else Timeout > 8.0s hoặc AI Down
         RouteHandler-->>NextWeb: HTTP 504 / 503 (ApiErrorEnvelope)
-        NextWeb-->>Learner: Thông báo lỗi thân thiện / Chuyển sang Fallback mode
+        NextWeb-->>Learner: Thông báo lỗi thân thiện / cho phép thử lại
     end
 ```
 

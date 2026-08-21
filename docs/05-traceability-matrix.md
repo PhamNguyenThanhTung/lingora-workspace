@@ -1,6 +1,6 @@
 # 05 - Lingora Traceability Matrix
 
-> **Canonical status:** M1.6W Post-Recovery Baseline. This matrix maps approved requirement IDs to Use Cases (`docs/06-system-analysis.md`), Architecture (`docs/01`), Data Model / Dictionary (`docs/07`), API/RPC (`docs/03`), Tests, and Report Evidence.
+> **Canonical status:** ADR-010 two-track baseline (2026-08-21). Historical M1.5/M1.6W evidence remains linked, but learned-SRS and generative-chat requirements are superseded as future targets.
 
 ## Matrix
 
@@ -10,9 +10,9 @@
 | **P1-FR-002** | Must | `UC-02` | `docs/01` §1.2, §3.2 | `Course`, `Lesson`, `Vocabulary`, `Language` (`docs/07` §2.3–2.5) | PostgREST / Storage (`course-media`) | `M1.4-T-001` (Seed PASS), `P1-T-002` | P1 Report §3.2 (Curriculum Flow) | `CONFIRMED (Pending M2 UI)` |
 | **P1-FR-003** | Must | `UC-03` | `docs/01` §1.2, §3.2 | `Exercise.payload` (`docs/07` §2.6), `UserProgress` | Server Actions / Client Engine | `P1-T-003`, `M1.6W-T-002` | P1 Report §3.3 (Exercise Engine) | `CONFIRMED (Pending M2 Engine)` |
 | **P1-FR-004** | Must | `UC-03`, `UC-07` | `docs/01` §1.3 (ADR-003) | `UserProgress` (`docs/07` §2.7) | Server Action (Score aggregate 0–100%) | `P1-T-004`, `M1.4-T-001` | P1 Report §3.4 (Progress Model) | `CONFIRMED (Pending M2 UI)` |
-| **P1-FR-005** | Must | `UC-05` | `docs/01` §1.3, §3.2 | `UserVocabSrs` (`docs/07` §2.8) | `/api/ai/srs` ➔ `/v1/srs/schedule` | `M1.6W-T-006-RERUN` (PASS), `M1.5-AMEND-T-002` | P1/ML Report §3.5 (SRS Sequence) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
+| **P1-FR-005** | Must | `UC-05` | `docs/01` ADR-010 SRS boundary | `UserVocabSrs`, `ReviewLog` (`docs/07` §2.8) | `record_review` + due-card query | Historical AI proxy evidence: `M1.6W-T-006-RERUN`; target policy test pending | P1 Report (Deterministic SRS) | `TARGET_AMENDED (Audit Pending)` |
 | **P1-FR-006** | Must | `UC-05` | `docs/01` §1.3 (ADR-003) | `UserVocabSrs`, `ReviewLog` (`docs/07` §2.8) | RPC `record_review` (`docs/04` §4.2) | `M1.3-T-001` (PASS), `M1.4-T-001` | P1 Report §3.5 (RPC Transaction) | `IMPLEMENTED (M1.3)` |
-| **P1-FR-007** | Must | `UC-06` | `docs/01` §1.4, §3.2 | `ChatScenario`, `ChatSession`, `ChatMessage` (`docs/07` §2.9) | `/api/ai/chat` ➔ `/v1/chat/roleplay` | `M1.6W-T-007-RERUN` (PASS), `M1.5-AMEND-T-002` | P1/NLP Report §3.6 (Roleplay Hop) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
+| **P1-FR-007** | Must | `UC-06` | `docs/01` ADR-010 GEC boundary | `ChatScenario`; GEC result transient | Proposed `/api/ai/gec` ➔ `/v1/gec/correct` | Historical chat proxy evidence: `M1.6W-T-007-RERUN`; GEC tests pending | P1 + ML/GEC Reports | `TARGET_AMENDED (Implementation Pending)` |
 | **P1-FR-008** | Must | `UC-04` | `docs/01` §1.2 (Admin) | Content entities (`Course`, `Lesson`, etc.) | Admin Client / PostgREST RLS | `M1.3-T-001` (Admin RLS PASS) | P1 Report §3.7 (Admin CRUD) | `IMPLEMENTED_DB (M1.3; UI Pending M3)` |
 | **P1-FR-009** | Must | `UC-04` | `docs/01` §1.6 Storage | `course-media`, `chat-audio` (`docs/07` §3) | Supabase Storage API + RLS policies | `M1.3-T-002` (Storage RLS PASS) | P1 Report §3.8 (Storage Audit) | `IMPLEMENTED (M1.3)` |
 | **P1-FR-010** | Must | `UC-01`..`07` | `docs/01` §3.2 (i18n) | `Language`, `*Translation` (`docs/07` §2.1–2.9) | Next.js Locale Catalog (`vi` / `en`) | `M1.6W-T-002` (Vitest i18n PASS) | P1 Report §3.9 (Localization) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
@@ -22,20 +22,16 @@
 | **P1-FR-014** | Must | `UC-07` | `docs/01` §1.5 (ADR-006) | `Profile.dailyGoalMin` (`docs/07` §2.2) | Profile Update Action (5–120 min) | `P1-T-018` | P1 Report §3.10 (Daily Goal) | `ADR-006 LOCKED (Pending M2)` |
 | **P1-FR-015** | Must | `UC-08` | `docs/01` §1.5 (ADR-008) | Client-local state (No reminder entity) | N/A — In-App Banner/Toast | `P1-T-019` | P1 Report §3.11 (In-App Reminder) | `ADR-008 LOCKED (Option 6d; Later M2+)` |
 | **P1-NFR-001**| Must | All | `docs/01` §1.7 Security | RLS on all 17 tables (`docs/07` §2) | JWT ES256 / RLS enforced at DB | `M1.3-T-001`, `M1.5-AMEND-T-001` | P1 Report §4.1 (Security Architecture) | `IMPLEMENTED (M1.3/M1.5/M1.6W)` |
-| **P1-NFR-002**| Must | `UC-05` | `docs/01` §1.3 Resilience | `UserVocabSrs` fallback state | 8.0s Route Handler Timeout + Deterministic Rule | `M1.6W-T-002`, `M1.6W-T-008` (PASS) | P1/ML Report §4.2 (Resilience) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
-| **P1-NFR-003**| Must | `UC-05/06` | `docs/01` §1.3–1.4 API | N/A | snake_case, `ApiErrorEnvelope`, latency_ms | `M1.5-AMEND-T-001` (37/37 Pytest PASS) | AI Reports (API Contract) | `IMPLEMENTED (M1.5/M1.6W)` |
+| **P1-NFR-002**| Must | `UC-05/06` | `docs/01` ADR-010 resilience | SRS state remains usable without GEC | 8s GEC timeout + recoverable UI; SRS independent | M1.6W resilience evidence + future GEC failure-mode tests | P1 Report §4.2 | `FOUNDATION_IMPLEMENTED; GEC PENDING` |
+| **P1-NFR-003**| Must | `UC-06` | `docs/01` ADR-010 API migration | N/A | snake_case, error envelope, metadata, compatibility | Historical 37-test suite + future GEC contract tests | P1 + ML/GEC Reports | `CONTRACT_AMENDMENT PENDING IMPLEMENTATION` |
 | **P1-NFR-004**| Must | All Web UI | `docs/01` §3.2 UX | N/A | Resilient UI States (Loading/Empty/Error) | `M1.6W-T-002/008/009/010` (PASS) | P1 Report §4.3 (UI Baseline) | `IMPLEMENTED_FOUNDATION (M1.6W)` |
-| **ML-FR-001** | Must | `UC-05` | `docs/01` §2.1 ML SRS | `UserVocabSrs`, `ReviewLog` | `/v1/srs/schedule` | `M1.5-AMEND-T-001` (Mock PASS) | ML Report §2 (DKT Model) | `MOCK_IMPLEMENTED (M1.5; Train M4)` |
-| **ML-FR-002** | Must | `UC-05` | `docs/01` §2.1 Baseline | N/A | `/v1/srs/schedule` | `M1.5-AMEND-T-001` (PASS) | ML Report §3 (HLR Baseline) | `MOCK_IMPLEMENTED (M1.5; Train M4)` |
-| **ML-FR-003** | Must | `UC-05` | `docs/01` §2.1 Scheduler | N/A | Response fields: `recall_probability`, `priority` | `M1.5-AMEND-T-001` (PASS) | ML Report §4 (Scheduler) | `MOCK_IMPLEMENTED (M1.5; M4)` |
-| **ML-FR-004** | Must | `UC-05` | `docs/01` §2.1 Evaluation | `logs/model-registry.csv` | `/v1/model/info` | `M1.5-AMEND-T-001` (PASS) | ML Report §5 (Evaluation) | `MOCK_IMPLEMENTED (M1.5; Eval M4)` |
-| **ML-NFR-001**| Must | `UC-05` | `docs/01` §2.1 Acceptance | `logs/model-registry.csv` | `/v1/model/info` | `M1.5-AMEND-T-001` (PASS) | ML Report §6 (Model Registry) | `MOCK_IMPLEMENTED (M1.5; M4)` |
-| **NLP-FR-001**| Must | `UC-06` | `docs/01` §2.2 NLP Chat | `ChatScenario`, `ChatMessage` | `/v1/chat/roleplay` | `M1.5-AMEND-T-001`, `M1.6W-T-007-RERUN` | NLP Report §2 (Multi-turn Roleplay) | `MOCK_IMPLEMENTED (M1.5; Train M4)` |
-| **NLP-FR-002**| Must | `UC-06` | `docs/01` §2.2 Pipeline | N/A | Chat endpoint tokenizer/generation | `M1.5-AMEND-T-001` (PASS) | NLP Report §3 (Seq2Seq Architecture) | `MOCK_IMPLEMENTED (M1.5; Train M4)` |
-| **NLP-FR-003**| Must | `UC-06` | `docs/01` §2.2 Model | `logs/model-registry.csv` | `/v1/model/info` | `M1.5-AMEND-T-001` (PASS) | NLP Report §4 (T5-small Deployment) | `MOCK_IMPLEMENTED (M1.5; M4)` |
-| **NLP-FR-004**| Must | `UC-06` | `docs/01` §2.2 Metrics | N/A | Separate BLEU/ROUGE/Perplexity metrics | `M1.5-AMEND-T-001` (PASS) | NLP Report §5 (Evaluation Metrics) | `MOCK_IMPLEMENTED (M1.5; Eval M4)` |
-| **NLP-FR-005**| Nice | `UC-06` | `docs/01` §2.2 Grammar | N/A (Persistence deferred) | Optional `grammatical_acceptability_score` | `M1.5-AMEND-T-001` (PASS) | NLP Report Appendix (Optional CoLA) | `NICE / OPTIONAL (M1.5 Mock)` |
-| **NLP-NFR-001**| Must| `UC-06` | `docs/01` §2.2 Deploy | N/A | CPU inference latency < 2000ms | `M1.5-AMEND-T-001` (PASS) | NLP Report §6 (Deployment Latency) | `MOCK_IMPLEMENTED (M1.5; M4)` |
+| **ML-GEC-FR-001** | Must | `UC-06` | `docs/01` ADR-010 ML boundary | Dataset artifacts outside DB | Preprocessing pipeline | Future dataset/license/split tests | ML/GEC Report §2 | `APPROVED / PENDING` |
+| **ML-GEC-FR-002** | Must | `UC-06` | `docs/01` T5-small responsibility | `logs/model-registry.csv` | `/v1/gec/correct`, `/v1/model/info` | Future training/reproducibility evidence | ML/GEC Report §3–4 | `APPROVED / PENDING` |
+| **ML-GEC-FR-003** | Must | `UC-06` | `docs/01` derived-output boundary | None; transient response | GEC corrections/error_type fields | Future diff/classifier tests | ML/GEC Report §5 | `APPROVED / PENDING` |
+| **ML-GEC-FR-004** | Must | `UC-06` | `docs/01` evaluation boundary | `logs/model-registry.csv` | `/v1/model/info` | Future Precision/Recall/F0.5/ERRANT evidence | ML/GEC Report §6 | `APPROVED / PENDING` |
+| **ML-GEC-FR-005** | Should | `UC-06` | Optional derived modules | None; transient response | Optional suggestion/explanation | Future optional-module tests | ML/GEC Report Appendix | `APPROVED OPTIONAL / PENDING` |
+| **ML-GEC-NFR-001** | Must | `UC-06` | Stateless/JWT/input boundary | None | GEC endpoint + standard errors | Future security/contract tests | ML/GEC Report §7 | `APPROVED / PENDING` |
+| **ML-GEC-NFR-002** | Must | `UC-06` | CPU deployment boundary | `logs/model-registry.csv` | latency_ms + 8s Web timeout | Future warm/cold benchmark | ML/GEC Report §7 | `APPROVED / PENDING` |
 
 ---
 

@@ -7,7 +7,9 @@
 
 ## Current state
 
-- Last completed task: `requirements-system-analysis-documentation-recovery` — DONE. Created authoritative
+- Last completed task: `two-track-se-ml-gec-scope-amendment` — DONE. ADR-010 consolidates the future target into Software Engineering plus T5-small GEC. The documentation amendment did not change Web/FastAPI/model/database implementation.
+
+- Previous completed task: `requirements-system-analysis-documentation-recovery` — DONE. Created authoritative
   [`docs/06-system-analysis.md`](docs/06-system-analysis.md) (problem statement, 6 capabilities, stakeholder/actor
   catalog, boundaries, 8 Use Cases, sequence flows, assumptions/constraints, audit findings register) and
   [`docs/07-data-dictionary.md`](docs/07-data-dictionary.md) (implementation-grounded ERD with 17 models, 24 FKs,
@@ -20,13 +22,17 @@
   - `M1.4` Seed & RLS test harness DONE (34/34 tests PASS).
   - `M1.3` Auth + RLS + Storage (two-bucket) + `record_review` DONE.
   - `M1.2` Prisma + Supabase schema DONE (17 models, 3 migrations).
-- Last approved scope decision: `ADR-009 — M1.5 JWT verifier amendment: Supabase JWKS / ES256 compatibility`.
-- Next active milestone: **Milestone M2 (Web Core Lesson Flow & Exercise Engine)**.
+- Last approved scope decision: `ADR-010 — Two-track consolidation: Software Engineering + Transformer GEC`.
+- Next implementation tasks remain separately gated: M2 Web core flow, deterministic SRS audit, GEC API foundation, scenario-writing UI and model training/evaluation.
 - Public staging snapshot: `staging/lingora-workspace-public/` — pre-reset; regeneration pending.
 
 ---
 
 ## Pending decisions / open questions
+
+- Exact SRS policy name remains pending a read-only audit of `record_review`; do not call it SM-2 without evidence.
+- GEC offset units, input limit, dataset/license and benchmark protocol must be locked in their implementation plans.
+- Legacy `/v1/srs/schedule` and `/v1/chat/roleplay` remain implemented compatibility endpoints until consumers migrate.
 
 - `ADR-006` scope remains **approved and documented, not implemented**: enum `GRAMMAR`, listening option `4a`
   (word-level audio), `dailyGoalMin` UI. Payload shapes for `GRAMMAR` and `LISTENING` belong to the M2 implementation task.
@@ -47,6 +53,7 @@
 - Do not reintroduce Android, Gradle/AGP, Retrofit, Room, or APK into active codebase.
 - Do not add a service worker, web app manifest, PWA install flow, push code, or scheduler — `6a`/`6b` are deferred.
 - Do not touch `lingora-ai/api/` runtime without an approved task; current verifier supports both ES256 and HS256.
+- Do not implement `/v1/gec/correct`, scenario UI, model training, endpoint deprecation or cleanup without their own approved follow-up task.
 - Do not place secrets in code, logs, screenshots, fixtures, or commits.
 - Do not amend or rebase historical commits, and do not rewrite Git history or force-push.
 

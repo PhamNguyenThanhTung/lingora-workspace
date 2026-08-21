@@ -1,5 +1,41 @@
 # 00 - Lingora Master Plan
 
+> **Current normative baseline (ADR-010, effective 2026-08-21):** LINGORA now has two academic tracks: **Project 1 / Software Engineering** and **Machine Learning / Deep Learning with Transformer GEC**. DKT-LSTM, HLR, DQN and MultiWOZ dialogue generation are SUPERSEDED as future targets. The migrated v1-v5 material below is retained as historical planning evidence and does not override this section.
+
+## ADR-010 current scope and roadmap
+
+| Area | Current target |
+|---|---|
+| Product | Web English-learning platform covering the six assignment capabilities |
+| Learned model | T5-small fine-tuned for English grammatical error correction |
+| SRS | Deterministic rule-based scheduling; exact SM-2 naming requires RPC audit |
+| Practice | Ordered scenario writing prompts; no generative dialogue target |
+| Data | Existing 17 Prisma models; GEC feedback transient in MVP |
+| Reports | Software Engineering report and ML/GEC report |
+
+### Current priority
+
+| Tier | Contents |
+|---|---|
+| P0 | Auth, Course/Lesson/Vocabulary, five approved exercise types, progress, deterministic SRS, scenario writing, Admin CRUD, GEC API/mock, Web build, SE report and ML/GEC report |
+| P1 | Real T5-small checkpoint, ERRANT-compatible evaluation, accessible diff UI, vi/en, tests and production deployment |
+| P2 | Natural phrasing module, extended template explanations, ja UI, quantization and advanced analytics |
+
+### Forward roadmap
+
+| Order | Milestone/task | Outcome |
+|---|---|---|
+| 1 | Scope amendment | Canonical docs, ADR-010 and two-track traceability |
+| 2 | M2 Web core lesson flow | One lesson end-to-end and approved exercises |
+| 3 | Deterministic SRS audit | Lock RPC policy and due-card behavior |
+| 4 | GEC API foundation | New GEC endpoint, mock, typed proxy and contract tests |
+| 5 | Scenario writing UI | Ordered prompts and safe original/corrected diff display |
+| 6 | ML training/evaluation | Licensed dataset, T5-small, F0.5/ERRANT and latency evidence |
+| 7 | Compatibility cleanup | Deprecate, then later remove unused legacy AI endpoints |
+| 8 | Final | Web/Admin/AI deployment, SE report, ML/GEC report and presentation |
+
+Current delivery rules: preserve the fixed Next.js proxy and stateless FastAPI boundary; T5-small produces corrected text only; keep the current SRS data/RPC boundary; preserve all historical evidence; migrate consumers before endpoint deprecation; and report cold start separately from the warm CPU p95 target of 2,000 ms.
+
 > **Canonical status:** M0 migration baseline. The blocks below preserve the legacy source wording and scope. Only product/repository naming and Markdown nesting were normalized under the approved M0 decision.
 >
 > **Source coverage:** legacy 0 in full; legacy 4 in full; legacy 5 sections 5.1/5.1b and 5.4â€“5.7. Contract-specific 5.2â€“5.3 are canonical in 3-api-contract.md.

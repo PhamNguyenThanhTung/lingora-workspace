@@ -1,5 +1,26 @@
 # 01 - Lingora System Architecture
 
+> **Current normative architecture (ADR-010, effective 2026-08-21):** the active target is a two-track system with deterministic SRS and one learned service, Transformer GEC. Migrated sections below remain historical evidence where they describe DKT/HLR or generative chat.
+
+## ADR-010 target architecture
+
+```text
+Web Learner -> Supabase Auth/PostgreSQL/RLS/RPC/Storage
+Web Learner -> fixed Next.js /api/ai/gec -> FastAPI /v1/gec/correct
+FastAPI -> JWT verification + T5-small GEC + deterministic diff
+Web Admin -> Prisma/PostgreSQL and Storage
+```
+
+| Component | Current responsibility | Explicit non-responsibility |
+|---|---|---|
+| Web Learner | Course/lesson/exercise UI, deterministic SRS UI, ordered scenario writing and safe diff rendering | No service-role key, Prisma TCP, browser token store or request-selected AI upstream |
+| Web Admin | Content, scenario and media management under ADMIN boundary | No learner-facing runtime |
+| Supabase | Persistent data, Auth, RLS, RPC and Storage | No AI inference |
+| FastAPI GEC | JWT verification, mock/real GEC inference and validated metadata | No primary learner-data persistence or dialogue-state ownership |
+| T5-small | Generate corrected_text | No guaranteed structured edits, explanation or dialogue generation |
+
+The 17-model Prisma baseline remains unchanged. ChatScenario may supply ordered practice context; reuse of ChatSession/ChatMessage for writing history is not assumed until a later semantics review. SRS remains inside the trusted Supabase/RPC boundary and is described as deterministic rule-based until record_review is audited.
+
 > **Canonical status:** M0 migration baseline. Source wording is preserved; product/repository naming and Markdown nesting were normalized only where explicitly approved.
 >
 > **Source coverage:** legacy architecture sections 1.1â€“1.2, 1.5, 1.7â€“1.8 and legacy tech stack 3.1â€“3.7. Data-model sections are in 4-data-model.md; API section is in 3-api-contract.md.

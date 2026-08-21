@@ -1266,3 +1266,43 @@ M1.3–M1.5 backend, schema, RLS, and /v1/ contract remained unchanged. Code rec
 `refactor(platform): reset project 1 learner client from android to web (m1.7, adr-008)`
 
 ---
+---
+
+### Date
+
+`2026-08-21`
+
+### Task
+
+`two-track-se-ml-gec-scope-amendment`
+
+### Completed
+
+- Snapshot approved plan to `plans/approved/2026-08-21-two-track-se-ml-gec-scope-amendment-APPROVED.md`.
+- Added `ADR-010` for the two-track consolidation: Software Engineering plus Transformer GEC.
+- Updated current normative sections in master plan, architecture, requirements, API contract, data/status
+  docs, traceability, system analysis, Quick Reference, report reading order and handoff.
+- Preserved legacy DKT/HLR/DQN and MultiWOZ material as historical/superseded evidence.
+- Kept implementation boundaries frozen: no Web/FastAPI/schema/migration/RLS/RPC/Storage/dependency/model
+  code changes.
+
+### Problems
+
+- Existing canonical documents still described two learned AI capabilities and three report tracks after
+  the approved scope amendment.
+- SRS policy had been described as AI-assisted/SM-2 without a fresh RPC implementation audit.
+
+### Solution
+
+- Added an ADR-010 normative override and changed effective requirements to deterministic SRS plus
+  ML-GEC IDs.
+- Added compatibility-first GEC contract wording; legacy endpoints remain until separately migrated.
+- Explicitly separated T5-small output from deterministic diff, error classification and optional templates.
+
+### Tests
+
+- `SCOPE2-T-001` through `SCOPE2-T-010` recorded in `logs/test-log.md`.
+
+### Commit
+
+`PENDING — commit after final verification; no implementation code included`

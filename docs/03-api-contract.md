@@ -1,5 +1,45 @@
 # 03 - Lingora AI API Contract
 
+> **Current normative amendment (ADR-010, effective 2026-08-21):** the target inference contract is `POST /v1/gec/correct`. Existing SRS and roleplay contracts below remain implemented compatibility surfaces until consumers migrate; they are not removed or marked as already deprecated by this documentation task.
+
+## `POST /v1/gec/correct` — proposed canonical target
+
+Request:
+
+```json
+{
+  "text": "I want book a room.",
+  "scenario_code": "hotel_booking",
+  "lang": "en",
+  "client": "web/1.0.0"
+}
+```
+
+Successful response:
+
+```json
+{
+  "original_text": "I want book a room.",
+  "corrected_text": "I want to book a room.",
+  "corrections": [],
+  "suggested_text": null,
+  "explanation": null,
+  "model_version": "t5-small-gec-v1",
+  "is_mock": false,
+  "latency_ms": 380
+}
+```
+
+Normative rules: T5-small owns only `corrected_text`; alignment owns edits and offsets; the classifier owns `error_type` and unsupported classifications use `UNKNOWN`. Offset units must be locked before implementation. `corrected_text`, `model_version`, `is_mock` and `latency_ms` are required on success; extended fields are optional. Input is non-empty, bounded and English-only. Errors use the existing envelope and include `INVALID_INPUT`, `TEXT_TOO_LONG`, `LANG_NOT_SUPPORTED`, `SCENARIO_NOT_FOUND`, `UNAUTHORIZED`, `RATE_LIMITED` and `MODEL_UNAVAILABLE`. Browser calls use a fixed Next.js Route Handler; direct browser-to-FastAPI is not approved. Warm CPU p95 target is 2,000 ms and cold start is reported separately; the Web hard timeout remains 8 seconds.
+
+## Compatibility sequence
+
+1. Implement and test GEC without removing existing endpoints.
+2. Migrate the Web proxy, typed client and scenario-writing consumer.
+3. Audit deterministic SRS and remove its AI dependency only if separately approved.
+4. Run repository-wide reference and regression checks.
+5. Deprecation and removal occur in later approved tasks.
+
 > **Canonical status:** M0 migration of the locked legacy API contract. The source wording and examples are preserved. No endpoint implementation or semantic correction is included.
 >
 > This file is the only editable API-contract source. Future repository copies must be generated/synchronized from it.

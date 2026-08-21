@@ -1,5 +1,7 @@
 # 04 - Lingora Data Model
 
+> **ADR-010 current data decision (2026-08-21):** retain the applied 17-model Prisma baseline, migrations, RLS, RPC and Storage unchanged. GEC output is transient in MVP; no writing_submissions, exercise_options or vocabulary-notebook entity is approved. Keep UserVocabSrs, ReviewLog and record_review; call the scheduling policy SM-2 only after an implementation audit proves compatibility. recallProbability remains for schema compatibility and is not evidence that a learned SRS remains in the future target.
+
 > **Canonical status:** M0 migration of the proposed legacy schema, SQL, RLS, RPC, Scheduler boundary and exercise payloads. Source wording/code is preserved. For the authoritative implementation-grounded ERD, schema dictionary, attribute constraints, and applied database baseline, see [`docs/07-data-dictionary.md`](07-data-dictionary.md).
 
 ### 1.3. Thiết kế Database

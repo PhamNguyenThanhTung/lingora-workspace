@@ -1,5 +1,85 @@
 # Decision Log
 
+## ADR-010 — Two-track consolidation: Software Engineering + Transformer GEC
+
+### Date
+
+`2026-08-21`
+
+### Category
+
+`scope-ambiguity`
+
+### Context
+
+LINGORA's previous baseline split academic ownership across Project 1, an ML SRS track
+(DKT-LSTM/HLR), and an NLP roleplay track (Transformer/T5-small on MultiWOZ). The human approved a
+narrower two-track delivery: Software Engineering plus one learned capability, English Grammatical
+Error Correction (GEC) with T5-small. The product still must cover the six assignment capabilities,
+but the SRS scheduling policy no longer needs a learned model and scenario practice no longer claims
+open-domain or generative dialogue.
+
+The completed M1.2-M1.6W implementation remains valid evidence: 17 Prisma models, RLS/RPC/Storage,
+FastAPI JWT verification, mock SRS/roleplay endpoints, and fixed Next.js AI proxies. This decision
+changes the target baseline and future roadmap; it does not rewrite or invalidate the historical fact
+that those endpoints and tests were implemented.
+
+### Decision
+
+1. Consolidate the current target into two academic tracks:
+   - Project 1 / Software Engineering: Web learning platform and deterministic rule-based SRS.
+   - Machine Learning / Deep Learning: T5-small fine-tuned for English GEC.
+2. Supersede DKT-LSTM, HLR, DQN and MultiWOZ dialogue generation as future target scope. DKT/HLR are
+   learned SRS approaches, not reinforcement learning; DQN is the rejected RL proposal.
+3. Replace generative roleplay as a target with scenario-based writing practice driven by ordered
+   prompts/state transitions. The model corrects learner text; it does not own dialogue progression.
+4. Keep all 17 Prisma models and existing schema, migrations, RLS, RPC and Storage unchanged for MVP.
+   GEC results are transient. Reuse of ChatSession/ChatMessage for writing history requires a later
+   semantics decision and is not implied by this ADR.
+5. Retain UserVocabSrs, ReviewLog and record_review. Describe the policy as deterministic rule-based
+   SRS until an implementation audit proves exact SM-2 compatibility.
+6. Adopt a proposed authenticated `POST /v1/gec/correct` contract. T5-small owns only
+   `corrected_text`; deterministic alignment owns edits; ERRANT-compatible/rule mapping owns error
+   types; suggestions/explanations are optional derived modules.
+7. Preserve Browser -> fixed Next.js Route Handler -> stateless FastAPI and existing httpOnly/JWT/RLS
+   boundaries. FastAPI performs no primary learner-data operations.
+8. Migrate consumers before deprecating `/v1/chat/roleplay` or `/v1/srs/schedule`. Removal requires a
+   later approved cleanup task.
+9. Use warm CPU p95 <= 2,000 ms as an evaluation target, with cold start reported separately and the
+   existing 8-second Route Handler timeout retained. No target is marked PASS without observed output.
+10. Preserve all previous ADRs/plans/logs as historical evidence. Where this ADR conflicts with the
+    future target scope of ADR-002/003/004/006/008, ADR-010 is the effective scope override; their
+    security, platform, data ownership and reminder decisions otherwise remain in force.
+
+### Reason
+
+The previous plan required two unrelated learned systems, separate datasets and evaluation protocols,
+and three reports from one developer. A single GEC research track creates a coherent product flow,
+uses the already-proven Web/FastAPI boundary, and removes the unsupported claim that a new application
+can personalize SRS using models trained on mismatched public interaction data.
+
+### Alternatives considered
+
+- Keep all three tracks: rejected due to scope and evaluation risk.
+- Replace SRS with DQN: rejected because no real long-term learner interaction data or defensible reward
+  model exists.
+- Keep generative chatbot and add GEC: rejected because it retains two NLP behaviors and ambiguous
+  evaluation ownership.
+- Add writing_submissions immediately: rejected for MVP because transient feedback satisfies the new
+  flow without a schema/RLS migration.
+- Delete legacy endpoints immediately: rejected because Web/FastAPI code and tests still consume them.
+
+### Consequences
+
+- Positive: one learned model, one dataset/evaluation family, clearer report ownership and smaller
+  deployment risk.
+- Negative/trade-off: the canonical documentation and roadmap require broad amendment; existing mock
+  endpoints become compatibility surfaces until later migration.
+- Follow-up: documentation amendment first, followed by separately approved GEC API, SRS audit,
+  scenario UI, training/evaluation, deprecation and cleanup tasks.
+
+---
+
 Use this append-only log for architecture, dependency, schema, API, model, scope, or other durable technical decisions. Routine implementation details do not require an ADR.
 
 ### ADR-ID

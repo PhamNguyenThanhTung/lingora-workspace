@@ -1,5 +1,7 @@
 # 02 - Lingora Requirements and Report Scope
 
+> **Current normative scope (ADR-010, effective 2026-08-21):** delivery is consolidated into two tracks: Software Engineering and Machine Learning/Deep Learning with Transformer GEC. The migrated ML-SRS and NLP-chatbot material below is historical and SUPERSEDED as future target scope. The canonical requirement tables at the end contain the effective requirements.
+
 > **Canonical status:** M0 migration baseline. For the comprehensive Requirements & System Analysis specification, complete Use Case descriptions, and flows, see [`docs/06-system-analysis.md`](06-system-analysis.md). For the implementation-grounded ERD and Data Dictionary, see [`docs/07-data-dictionary.md`](07-data-dictionary.md).
 
 ## 02 — Phân tách Yêu cầu & Trọng tâm Báo cáo (bản v3 — đã siết scope theo review)
@@ -229,9 +231,9 @@ This section is the approved M0.5 normalization layer. The migrated material abo
 | P1-FR-002 | Must | Learner can browse published courses, lessons, and vocabulary and play available vocabulary audio. | Only published content is shown; lesson/vocabulary ordering is stable; available audio can be played; unavailable content/audio produces a recoverable empty/error state without a crash. This does not imply search, favorites, pronunciation scoring, separate mastery state, or an additional standalone flashcard mode. | Supabase query test, Web E2E |
 | P1-FR-003 | Must | Learner can complete MCQ, FILL_BLANK, REORDER, GRAMMAR, and word-level LISTENING exercises. | Each type validates its approved payload; correct/incorrect result is shown; progress is updated once per submission. A “Quiz” label, if used, refers to this sequence and does not imply separate Quiz/Attempt persistence. GRAMMAR and LISTENING detail is specified in `P1-FR-012` and `P1-FR-013`. | Exercise unit/E2E tests |
 | P1-FR-004 | Must | Learner can view and update lesson progress. | Status transitions are `NOT_STARTED → IN_PROGRESS → COMPLETED`; repeated completion is idempotent; progress is scoped to the authenticated learner. | Data/RLS tests |
-| P1-FR-005 | Must | Learner can use intelligent review with AI and the documented fallback. | A successful schedule response renders priority and interval; an AI timeout/error within 8 seconds falls back to the due-card/default schedule path. Reminder/notification delivery is not part of this requirement. | SRS integration/E2E |
+| P1-FR-005 | Must | Learner can review vocabulary using the approved deterministic SRS policy. | Due cards are selected from learner-owned state using `nextReviewAt <= now`; a completed review updates one SRS card and one immutable review log through the trusted RPC boundary. The policy is not called SM-2 until the RPC audit proves compatibility. | SRS/RPC integration and policy tests |
 | P1-FR-006 | Must | Review submission is recorded atomically. | `record_review` rejects a card not owned by `auth.uid()`; valid calls insert one review log and update one SRS card in one transaction. | RPC/RLS integration test |
-| P1-FR-007 | Must | Learner can run `hotel_booking` roleplay. | A valid turn returns `ai_reply`; unavailable optional grammar scoring does not fail the turn; scenario-not-found and unauthorized cases map to the documented errors. | Chat API/E2E |
+| P1-FR-007 | Must | Learner can complete scenario-based English writing practice and receive GEC feedback. | The application presents an ordered scenario prompt; valid English input returns `corrected_text`; unavailable optional suggestions/explanations do not fail correction; scenario-not-found, invalid-input, unauthorized and model-unavailable cases use documented errors. Dialogue generation is not implied. | GEC API and scenario-writing E2E |
 | P1-FR-008 | Must | Admin can authenticate with ADMIN role and manage published learning content and chat scenarios. | STUDENT cannot write content; ADMIN can create/update/publish/unpublish approved entities; unauthorized writes are rejected. | Admin checklist, RLS tests |
 | P1-FR-009 | Must | Admin can upload approved media through Supabase Storage. | Only ADMIN can write media; stored paths are associated with the owning content record; invalid type/size is rejected. | Storage policy test |
 | P1-FR-010 | Must | The product supports approved UI/content locale behavior. | UI supports `vi` and `en`, defaults/falls back to `vi`; `ja` is P2; content follows requested locale → supported native locale → `vi` → `en` → explicit unavailable state. | Locale checklist |
@@ -241,29 +243,24 @@ This section is the approved M0.5 normalization layer. The migrated material abo
 | P1-FR-014 | Must | Learner can view and set a daily study goal. | `Profile.dailyGoalMin` is readable and writable from the profile screen and scoped to the authenticated learner; a negative value is rejected by existing server-side validation; no schema, grant, or policy change is required because the M1.3 write path already grants and validates this field. | Profile E2E, Data/RLS tests |
 | P1-FR-015 | Must | Learner can enable a local daily study reminder. | When the current local day has no qualifying activity, an in-app reminder is presented within the learner-chosen window — never claimed as an exact time — derived client-side from `dailyGoalMin` and `lastQualifyingActivityDate`; the reminder appears when the learner opens the application inside that window and is not delivered while the application is closed; no server-side delivery, push subscription, device token, or reminder entity exists. | Web unit test, manual verification |
 | P1-NFR-001 | Must | API and data access preserve the documented security boundary. | Learners can access only own learner data; AI Server receives history but does not directly own/write primary Supabase data; ADMIN-only operations are enforced server-side. | RLS/security checklist |
-| P1-NFR-002 | Must | The primary learning flow remains usable when AI is unavailable. | Course/lesson/progress flows remain available; SRS uses fallback; chatbot shows a recoverable error; no crash or indefinite spinner occurs. | Failure-mode E2E |
-| P1-NFR-003 | Must | The contract remains backward-compatible after M0.5. | JSON fields remain snake_case; inference success responses include `model_version` and `is_mock`; optional grammar score may be omitted; no required field is silently renamed. | Contract test |
+| P1-NFR-002 | Must | The primary learning flow and deterministic SRS remain usable when GEC is unavailable. | Course, lesson, progress and vocabulary review remain available; scenario writing shows a recoverable model-unavailable state; no crash or indefinite spinner occurs. | Failure-mode E2E |
+| P1-NFR-003 | Must | AI contract migration is explicit and backward-compatible until consumers move. | JSON remains snake_case; successful GEC responses include `model_version` and `is_mock`; legacy endpoints remain compatibility surfaces until reference scans and regression tests prove no consumer remains. | Contract and compatibility tests |
 | P1-NFR-004 | Must | Web Learner and Admin provide approved responsive/loading/empty/error states. | Each Must screen has loading, empty, error, and success behavior documented and manually verified, and remains usable from mobile to desktop breakpoints. | UI checklist |
 
-### ML — Personalized Vocabulary SRS requirements
+### ML/GEC — Transformer grammatical error correction requirements
 
 | ID | Priority | Requirement | Acceptance criteria | Evidence |
 |---|---|---|---|---|
-| ML-FR-001 | Must | Train and evaluate DKT-LSTM as the research model. | The model produces next-interaction probability; training/evaluation runs reproduce recorded configuration and metrics. | Model report, registry |
-| ML-FR-002 | Must | Implement HLR as baseline and production fallback. | HLR is evaluated independently; it can serve production fallback only after its own acceptance criteria pass. | Comparison table, registry |
-| ML-FR-003 | Must | Keep Scheduler separate from DKT/HLR. | DKT/HLR output only `recall_probability`; Scheduler alone derives priority and interval. | Architecture diagram, API test |
-| ML-FR-004 | Must | Evaluate SRS models against approved metrics and baselines. | AUC, Brier, latency and random/HLR baselines are recorded; CPU p50/p95 protocol is followed. | Evaluation tables |
-| ML-NFR-001 | Must | Apply model acceptance criteria before production replacement. | A candidate is not production unless the approved AUC, Brier and latency conditions pass for its model family. | Model registry |
+| ML-GEC-FR-001 | Must | Build a reproducible English GEC dataset pipeline. | Dataset source/license, version/hash, cleaning, deduplication and leakage-safe train/validation/test split are recorded; raw data is not redistributed when license forbids it. | Dataset card, preprocessing tests |
+| ML-GEC-FR-002 | Must | Fine-tune T5-small to generate corrected English text. | Given bounded English input, the model returns `corrected_text`; checkpoint, seed, configuration, commit, hardware and runtime are recorded. | Training run, model card, registry |
+| ML-GEC-FR-003 | Must | Derive structured corrections outside the model. | Deterministic alignment produces bounded edit spans; ERRANT-compatible or rule mapping assigns a known type or `UNKNOWN`; malformed model output fails safely. | Diff/classifier unit tests |
+| ML-GEC-FR-004 | Must | Evaluate GEC against approved baselines and metrics. | Identity/no-change and an approved baseline are compared using Precision, Recall, F0.5, ERRANT-compatible scores and qualitative error analysis. | Evaluation tables |
+| ML-GEC-FR-005 | Should | Provide optional natural phrasing and template explanations. | These fields are omitted when unavailable; they never replace required corrected text and are evaluated separately from core GEC. | Optional module tests/evaluation |
+| ML-GEC-NFR-001 | Must | Preserve stateless, authenticated and bounded inference. | FastAPI performs no primary DB access; JWT verification fails closed; input/output lengths are bounded; successful responses include model metadata. | Security and contract tests |
+| ML-GEC-NFR-002 | Must | Measure deployable CPU latency. | Warm p95 is measured against the 2,000 ms target; cold start/model download is reported separately; the Web hard timeout remains 8 seconds. | Benchmark log and registry |
 
-### NLP — English roleplay requirements
+### Superseded research requirements
 
-| ID | Priority | Requirement | Acceptance criteria | Evidence |
-|---|---|---|---|---|
-| NLP-FR-001 | Must | Support the `hotel_booking` domain. | The required scenario completes a multi-turn roleplay using the approved domain data. | Qualitative examples, E2E |
-| NLP-FR-002 | Must | Implement and explain tokenization, attention, and seq2seq behavior. | The report includes tokenization evidence, attention explanation/heatmap, teacher-forcing versus autoregressive inference, and a working self-written Transformer path. | NLP report |
-| NLP-FR-003 | Must | Use T5-small as the production chatbot model. | Production metadata identifies T5-small; its evaluation follows the approved protocol. | Model registry, API `/v1/model/info` |
-| NLP-FR-004 | Must | Evaluate chatbot quality with approved separate metrics. | Loss/perplexity/Distinct-n and Inform/Success are reported without an invented combined score; qualitative examples are included. | NLP evaluation |
-| NLP-FR-005 | Nice | Provide optional grammar acceptability scoring. | When available, API returns a score in `[0,1]` using `grammatical_acceptability_score`; when unavailable, the field is omitted and chat still succeeds. | Optional API tests |
-| NLP-NFR-001 | Must | Preserve API/domain isolation and latency policy. | Chat requests use `snake_case`, `lang=en`, approved error envelope, and production-like CPU latency measurement. | Contract/latency tests |
+`ML-FR-001`..`ML-NFR-001` (DKT/HLR/SRS) and `NLP-FR-001`..`NLP-NFR-001` (MultiWOZ roleplay/chatbot) remain historical requirement IDs and evidence references, but are SUPERSEDED by ADR-010 and are not future delivery targets.
 
 Requirement-to-architecture/data/API/test traceability is maintained in [05-traceability-matrix.md](05-traceability-matrix.md).
