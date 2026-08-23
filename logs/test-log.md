@@ -304,3 +304,33 @@ Append test evidence after implementation. Failed tests remain recorded; add a l
 - **Command:** `git diff --check`
 - **Output:** exit code `0` after active-plan and handoff EOF cleanup; no whitespace errors.
 - **Verdict:** `PASS` — `PLANTUML-COV-009` documentation hygiene.
+
+# PLANTUML-VI — Việt hóa 22 sơ đồ PlantUML (2026-08-23)
+
+- **Environment:** Windows PowerShell; Java OpenJDK; PlantUML 1.2026.6; repository `D:\btl`; base commit `ec88ee7`.
+- **Command:** `java -jar $env:TEMP\lingora-plantuml\plantuml.jar -checkonly docs/plantuml/*.puml`
+- **Output:** exit code `0`; 22/22 nguồn PlantUML biên dịch thành công với nhãn Unicode tiếng Việt.
+- **Verdict:** `PASS` — `PLANTUML-VI-001` kiểm tra cú pháp và Unicode.
+
+- **Command:** `java -jar $env:TEMP\lingora-plantuml\plantuml.jar -tpng -o D:/btl/tmp/plantuml-render-vi docs/plantuml/*.puml`
+- **Output:** exit code `0`; tạo đủ 22 PNG không rỗng. Kiểm tra trực quan Use Case tổng quan, Activity GEC, DFD mức 0 và ERD cho thấy dấu tiếng Việt hiển thị đúng, không mất nhãn hoặc vỡ sơ đồ.
+- **Verdict:** `PASS` — `PLANTUML-VI-002` render và visual QA.
+
+- **Command:** static scan trên `docs/plantuml/*.puml` và review năm trục.
+- **Output:** không còn actor `AI Service`, mã cũ UC-11 hoặc nhãn trạng thái tiếng Anh `PROPOSED / NOT IMPLEMENTED`; giữ nguyên UC-01..UC-10, API/RPC, model/entity/field và định danh kỹ thuật. Không có thay đổi runtime, schema hoặc dependency.
+- **Verdict:** `PASS` — `PLANTUML-VI-003` bảo toàn ngữ nghĩa và boundary.
+
+- **Command:** `git diff --check`
+- **Output:** exit code `0` sau khi chuẩn hóa EOF; không có lỗi whitespace.
+- **Verdict:** `PASS` — `PLANTUML-VI-004` vệ sinh diff.
+
+# PPT-SYNC-UC10 — Slide deck synchronization with UC-10, 2-actor boundary and 22 PlantUML coverage (2026-08-23)
+
+- **Environment:** Windows PowerShell, Node.js 24.19.0 runtime, `@oai/artifact-tool`.
+- **Command:** `node D:\btl\tmp\timhieupaper-template-audit\build_revised_deck.mjs`
+- **Output:** exit code 0; exported updated presentation with all 19 slides; rendered 19 PNGs to `D:\btl\tmp\timhieupaper-template-audit\revised-render`.
+- **Verdict:** PASS — exported with 2 external actors (Learner, Admin), GEC internal processing, UC-10 Badges, and 22 PlantUML diagram references.
+
+- **Command:** `node D:\btl\tmp\timhieupaper-template-audit\check_layout.mjs`
+- **Output:** exit code 0; all 19 slide layout boundaries checked and verified without clipping.
+- **Verdict:** PASS — layout bounds verified.

@@ -1,24 +1,24 @@
 @startuml
-title LINGORA - Learner Use Cases
+title LINGORA - Ca sử dụng phía Học viên
 left to right direction
 skinparam shadowing false
 
-actor Learner
+actor "Học viên" as Learner
 
-rectangle "LINGORA Web Learning System" {
-  usecase "UC-01\nAuthentication & Session" as UC01
-  usecase "UC-02\nBrowse & Learn Lessons" as UC02
-  usecase "UC-03\nExercises & Assessment" as UC03
-  usecase "UC-05\nDeterministic SRS Review" as UC05
-  usecase "UC-06\nScenario Writing with GEC\n(internal T5-small processing)" as UC06
-  usecase "UC-07\nProgress, Streak & Daily Goal" as UC07
-  usecase "UC-08\nIn-App Reminder" as UC08
-  usecase "UC-09\nPlacement Test\n[PROPOSED / NOT IMPLEMENTED]" as UC09
-  usecase "UC-10\nPrivate Achievements\n[PROPOSED / NOT IMPLEMENTED]" as UC10
+rectangle "Hệ thống học tập Web LINGORA" {
+  usecase "UC-01\nXác thực và phiên" as UC01
+  usecase "UC-02\nDuyệt và học bài" as UC02
+  usecase "UC-03\nBài tập và đánh giá" as UC03
+  usecase "UC-05\nÔn SRS xác định" as UC05
+  usecase "UC-06\nLuyện viết tình huống với GEC\n(xử lý T5-small nội bộ)" as UC06
+  usecase "UC-07\nTiến độ, chuỗi ngày học và mục tiêu ngày" as UC07
+  usecase "UC-08\nNhắc nhở trong ứng dụng" as UC08
+  usecase "UC-09\nKiểm tra trình độ đầu vào\n[ĐỀ XUẤT / CHƯA TRIỂN KHAI]" as UC09
+  usecase "UC-10\nThành tích riêng tư\n[ĐỀ XUẤT / CHƯA TRIỂN KHAI]" as UC10
 
-  usecase "Learn vocabulary and audio" as LearnVocabulary
-  usecase "Optional browser speech input" as SpeechInput
-  usecase "Optional browser speech playback" as SpeechPlayback
+  usecase "Học từ vựng và nghe âm thanh" as LearnVocabulary
+  usecase "Nhập giọng nói tùy chọn trên trình duyệt" as SpeechInput
+  usecase "Phát câu sửa tùy chọn trên trình duyệt" as SpeechPlayback
 }
 
 Learner -- UC01
@@ -36,11 +36,11 @@ UC03 ..> UC07 : <<include>>
 UC05 ..> UC07 : <<include>>
 UC06 ..> SpeechInput : <<extend>>
 UC06 ..> SpeechPlayback : <<extend>>
-UC09 ..> UC03 : <<include>> reuse engine
-UC10 ..> UC07 : <<include>> progress events
+UC09 ..> UC03 : <<include>> dùng lại engine
+UC10 ..> UC07 : <<include>> sự kiện tiến độ
 
 note bottom of UC06
-  GEC/T5-small remains inside the Lingora boundary.
-  Speech features are optional browser conveniences.
+  GEC/T5-small nằm trong boundary Lingora.
+  Tính năng giọng nói là tiện ích tùy chọn của trình duyệt.
 end note
 @enduml

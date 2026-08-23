@@ -1,31 +1,31 @@
 @startuml
-title Sequence - UC-09 Placement Test [PROPOSED / NOT IMPLEMENTED]
+title Biểu đồ tuần tự - UC-09 Kiểm tra trình độ đầu vào [ĐỀ XUẤT / CHƯA TRIỂN KHAI]
 skinparam shadowing false
-actor Learner
-participant "Learner Web" as Web
-participant "Placement Service/Action\n[PROPOSED]" as Placement
-database "Published Exercises/Courses" as DB
+actor "Học viên" as Learner
+participant "Web Học viên" as Web
+participant "Dịch vụ/Action kiểm tra đầu vào\n[ĐỀ XUẤT]" as Placement
+database "Bài tập / Khóa học đã xuất bản" as DB
 
-Learner -> Web: Start placement test
-Web -> Placement: Request versioned test
-Placement -> DB: Load approved questions
-DB --> Placement: Ordered exercise payloads
-Placement --> Web: Test definition
-loop each question
-  Learner -> Web: Submit answer
-  Web -> Placement: Validated answer
+Learner -> Web: Bắt đầu kiểm tra đầu vào
+Web -> Placement: Yêu cầu bài test có version
+Placement -> DB: Tải câu hỏi đã duyệt
+DB --> Placement: Payload bài tập theo thứ tự
+Placement --> Web: Định nghĩa bài test
+loop từng câu hỏi
+  Learner -> Web: Gửi câu trả lời
+  Web -> Placement: Câu trả lời đã kiểm tra
 end
-Placement -> Placement: Score + CEFR mapping + tie-break
-Placement -> DB: Find published Course by CEFR
-DB --> Placement: Recommended course or none
-alt sufficient result
-  Placement --> Web: Level + recommendation
-else insufficient/error
-  Placement --> Web: Default course / skip path
+Placement -> Placement: Tính điểm + ánh xạ CEFR + xử lý đồng điểm
+Placement -> DB: Tìm Course đã xuất bản theo CEFR
+DB --> Placement: Khóa học gợi ý hoặc không có
+alt kết quả đủ tin cậy
+  Placement --> Web: Trình độ + gợi ý
+else không đủ dữ liệu/lỗi
+  Placement --> Web: Khóa mặc định / cho phép bỏ qua
 end
-Web --> Learner: Show outcome
+Web --> Learner: Hiển thị kết quả
 note over Placement,DB
-  API, persistence and RLS are not locked.
-  Separate implementation approval required.
+  API, cơ chế lưu trữ và RLS chưa được khóa.
+  Cần phê duyệt triển khai riêng.
 end note
 @enduml

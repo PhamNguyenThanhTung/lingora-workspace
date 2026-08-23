@@ -1,20 +1,20 @@
 @startuml
-title LINGORA - Context Data Flow Diagram
+title LINGORA - Sơ đồ luồng dữ liệu mức ngữ cảnh
 left to right direction
 skinparam shadowing false
 
-rectangle Learner
-rectangle Admin
+rectangle "Học viên" as Learner
+rectangle "Quản trị viên" as Admin
 
-rectangle "LINGORA Web Learning System\n(includes internal GEC/T5-small processing)" as Lingora
+rectangle "Hệ thống học tập Web LINGORA\n(bao gồm xử lý GEC/T5-small nội bộ)" as Lingora
 
-Learner --> Lingora : credentials, answers, reviews, writing text
-Lingora --> Learner : lessons, feedback, schedule, corrected text, progress
-Admin --> Lingora : content, media, publish actions
-Lingora --> Admin : validation and publication state
+Learner --> Lingora : thông tin xác thực, câu trả lời, kết quả ôn, câu viết
+Lingora --> Learner : bài học, phản hồi, lịch ôn, câu sửa, tiến độ
+Admin --> Lingora : nội dung, media, thao tác xuất bản
+Lingora --> Admin : kết quả kiểm tra và trạng thái xuất bản
 
 note bottom of Lingora
-  Learner and Admin are the only external actors.
-  GEC is internal processing, not an external actor.
+  Học viên và Quản trị viên là hai actor bên ngoài duy nhất.
+  GEC là xử lý nội bộ, không phải actor bên ngoài.
 end note
 @enduml

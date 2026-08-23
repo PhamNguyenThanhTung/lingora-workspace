@@ -7,6 +7,8 @@
 
 ## Current state
 
+- Latest task: `vietnamize-all-plantuml-diagrams` — DONE. Toàn bộ 22 sơ đồ PlantUML đã được Việt hóa phần chữ hiển thị; mã UC, API/RPC, model/entity/field và cú pháp kỹ thuật được giữ nguyên. Compile 22/22 PASS và render Unicode tiếng Việt 22/22 PASS.
+
 - Latest task: `complete-plantuml-coverage-and-integrate-reports` — DONE. Current documentation now uses the contiguous `UC-01`..`UC-10` catalog; UC-09 Placement and UC-10 Private Achievements remain `PROPOSED / NOT IMPLEMENTED`. Learner and Admin are the only external Use Case actors, both outside the Lingora boundary with solid non-arrow associations. GEC/T5-small is documented as internal processing. The PlantUML catalog contains 22 compiling sources, including Level 0 and detailed Lesson/Exercise, SRS and GEC DFDs. The ERD reports 15 active + 2 legacy/deprecated physical models and excludes proposed entities. Markdown reports retain six original interviews plus three supplementary records without combining frequencies. Final audit: 22/22 PlantUML compile PASS; actor/UC/ERD/catalog/interview scans PASS.
 
 - Latest task: `redesign-requirements-presentation-deck-with-visual-cards-and-image-placeholders` — DONE. Redesigned all 19 slides of `docs/report/Lingora-Project-1-Requirements-Presentation.pptx` using modern card layouts, typography (Segoe UI), status badges, single-line dynamic titles, and dedicated image placeholders with guidance text on key slides (Slides 1, 4, 7, 8, 10, 11, 14, 16, 17). 100% template fidelity preserved (UTC logo, header banner, footer graphics). All 19 slides rendered, visual checks and boundary layout validation passed.

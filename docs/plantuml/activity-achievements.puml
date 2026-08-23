@@ -1,23 +1,23 @@
 @startuml
-title Activity - UC-10 Private Achievements [PROPOSED / NOT IMPLEMENTED]
+title Biểu đồ hoạt động - UC-10 Thành tích riêng tư [ĐỀ XUẤT / CHƯA TRIỂN KHAI]
 skinparam shadowing false
 start
-:Receive qualifying learning event;
-:Load active badge rules;
-while (Rule remains?) is (yes)
-  :Evaluate learner-owned progress;
-  if (Condition met?) then (yes)
-    if (Badge already awarded?) then (yes)
-      :No-op (idempotent);
-    else (no)
-      :Award private badge;
+:Nhận sự kiện học tập hợp lệ;
+:Tải các quy tắc huy hiệu đang hoạt động;
+while (Còn quy tắc?) is (có)
+  :Đánh giá tiến độ thuộc học viên;
+  if (Đạt điều kiện?) then (có)
+    if (Đã cấp huy hiệu?) then (có)
+      :Không thao tác để tránh cấp lặp (idempotent);
+    else (không)
+      :Cấp huy hiệu riêng tư;
     endif
   endif
-endwhile (no)
-:Show learner-owned badge collection;
+endwhile (không)
+:Hiển thị bộ huy hiệu của học viên;
 note right
-  No leaderboard or social feed.
-  Data model and award mechanism are proposed.
+  Không có bảng xếp hạng hoặc bảng tin xã hội.
+  Mô hình dữ liệu và cơ chế cấp huy hiệu đang được đề xuất.
 end note
 stop
 @enduml

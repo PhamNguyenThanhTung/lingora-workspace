@@ -1,25 +1,25 @@
 @startuml
-title Activity - UC-04 Admin Content and Publishing
+title Biểu đồ hoạt động - UC-04 Quản trị nội dung và xuất bản
 skinparam shadowing false
 start
-:Authenticate as ADMIN;
-:Select course, lesson, vocabulary, exercise or scenario;
-:Create or edit content and translations;
-if (Media required?) then (yes)
-  :Validate MIME type, size and destination path;
-  :Upload approved media;
+:Xác thực với role ADMIN;
+:Chọn khóa học, bài học, từ vựng, bài tập hoặc kịch bản;
+:Tạo hoặc sửa nội dung và bản dịch;
+if (Cần tệp đa phương tiện?) then (có)
+  :Kiểm tra MIME, kích thước và đường dẫn đích;
+  :Tải tệp đa phương tiện đã duyệt;
 endif
-:Validate content and exercise payload;
-if (Ready to publish?) then (yes)
-  :Verify required translations and ordered children;
-  if (Publication checks pass?) then (yes)
-    :Publish content;
-  else (no)
-    :Show actionable validation errors;
+:Kiểm tra nội dung và payload bài tập;
+if (Sẵn sàng xuất bản?) then (có)
+  :Kiểm tra bản dịch bắt buộc và thứ tự thành phần con;
+  if (Kiểm tra xuất bản đạt?) then (có)
+    :Xuất bản nội dung;
+  else (không)
+    :Hiển thị lỗi kiểm tra có hướng xử lý;
   endif
-else (no)
-  :Save as unpublished content;
+else (không)
+  :Lưu nội dung ở trạng thái chưa xuất bản;
 endif
-:Record updated state;
+:Ghi nhận trạng thái đã cập nhật;
 stop
 @enduml

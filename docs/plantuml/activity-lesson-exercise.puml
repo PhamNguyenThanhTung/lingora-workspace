@@ -1,23 +1,23 @@
 @startuml
-title Activity - UC-02/UC-03 Lesson and Exercise Flow
+title Biểu đồ hoạt động - UC-02/UC-03 Luồng học bài và làm bài tập
 skinparam shadowing false
 start
-:Authenticate learner;
-:Load published course and lesson;
-if (Lesson available?) then (yes)
-  :Show vocabulary and audio;
-  :Load exercises by orderIndex;
-  while (Exercise remains?) is (yes)
-    :Render by approved type;
-    :Collect and validate answer;
-    :Show correct/incorrect feedback;
-  endwhile (no)
-  :Calculate score 0-100;
-  :Update UserProgress idempotently;
-  :Evaluate qualifying streak event;
-  :Show completion state;
-else (no)
-  :Show recoverable empty/error state;
+:Xác thực học viên;
+:Tải khóa học và bài học đã xuất bản;
+if (Có bài học?) then (có)
+  :Hiển thị từ vựng và âm thanh;
+  :Tải bài tập theo orderIndex;
+  while (Còn bài tập?) is (có)
+    :Hiển thị theo loại đã duyệt;
+    :Thu thập và kiểm tra câu trả lời;
+    :Hiển thị phản hồi đúng/sai;
+  endwhile (không)
+  :Tính điểm 0-100;
+  :Cập nhật UserProgress không lặp tác dụng (idempotent);
+  :Đánh giá sự kiện chuỗi ngày học hợp lệ;
+  :Hiển thị trạng thái hoàn thành;
+else (không)
+  :Hiển thị trạng thái trống/lỗi có thể phục hồi;
 endif
 stop
 @enduml

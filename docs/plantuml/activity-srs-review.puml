@@ -1,28 +1,28 @@
 @startuml
-title Activity - UC-05 Deterministic SRS Review
+title Biểu đồ hoạt động - UC-05 Ôn tập SRS xác định
 skinparam shadowing false
 start
-:Authenticate learner;
-:Query learner-owned cards\nwhere nextReviewAt <= now;
-if (Due cards exist?) then (yes)
-  while (Card remains?) is (yes)
-    :Show vocabulary card;
-    :Collect recall result;
-    :Call record_review RPC;
-    if (RPC succeeds?) then (yes)
-      :Insert immutable ReviewLog;
-      :Update one UserVocabSrs card;
-    else (no)
-      :Show retryable error;
+:Xác thực học viên;
+:Truy vấn thẻ thuộc học viên\nvới nextReviewAt <= now;
+if (Có thẻ đến hạn?) then (có)
+  while (Còn thẻ?) is (có)
+    :Hiển thị thẻ từ vựng;
+    :Thu thập kết quả ghi nhớ;
+    :Gọi RPC record_review;
+    if (RPC thành công?) then (có)
+      :Thêm ReviewLog bất biến;
+      :Cập nhật một thẻ UserVocabSrs;
+    else (không)
+      :Hiển thị lỗi có thể thử lại;
     endif
-  endwhile (no)
-  :Evaluate progress/streak event;
-else (no)
-  :Show no cards due state;
+  endwhile (không)
+  :Đánh giá sự kiện tiến độ/streak;
+else (không)
+  :Hiển thị trạng thái không có thẻ đến hạn;
 endif
 note right
-  Policy name remains deterministic
-  until RPC audit proves SM-2 compatibility.
+  Tên policy giữ là xác định cho đến khi
+  audit RPC chứng minh tương thích SM-2.
 end note
 stop
 @enduml

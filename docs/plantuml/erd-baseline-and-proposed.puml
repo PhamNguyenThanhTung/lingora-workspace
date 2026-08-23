@@ -1,11 +1,11 @@
 @startuml
-title LINGORA - ERD: 17 Physical Models and Proposed Scope
+title LINGORA - ERD: 17 model vật lý và phạm vi đề xuất
 hide methods
 hide stereotypes
 skinparam linetype ortho
 skinparam shadowing false
 
-package "PHYSICAL BASELINE - 15 ACTIVE BUSINESS-FLOW MODELS" {
+package "BASELINE VẬT LÝ - 15 MODEL THUỘC LUỒNG NGHIỆP VỤ" {
   entity Language {
     * code : varchar(8)
     --
@@ -100,14 +100,14 @@ package "PHYSICAL BASELINE - 15 ACTIVE BUSINESS-FLOW MODELS" {
   }
 }
 
-package "PHYSICAL BASELINE - 2 LEGACY / DEPRECATED MODELS" {
-  entity "ChatSession\n[LEGACY / DEPRECATED]" as ChatSession {
+package "BASELINE VẬT LÝ - 2 MODEL LEGACY / DEPRECATED" {
+  entity "ChatSession\n[LEGACY / SẮP LOẠI BỎ]" as ChatSession {
     * id : uuid
     --
     user_id : uuid
     scenario_id : uuid
   }
-  entity "ChatMessage\n[LEGACY / DEPRECATED]" as ChatMessage {
+  entity "ChatMessage\n[LEGACY / SẮP LOẠI BỎ]" as ChatMessage {
     * id : uuid
     --
     session_id : uuid
@@ -115,14 +115,14 @@ package "PHYSICAL BASELINE - 2 LEGACY / DEPRECATED MODELS" {
   }
 }
 
-package "PROPOSED / NOT IMPLEMENTED - EXCLUDED FROM 17" {
-  entity "PlacementResult\n[UC-09 PROPOSED]" as PlacementResult {
+package "ĐỀ XUẤT / CHƯA TRIỂN KHAI - KHÔNG TÍNH VÀO 17" {
+  entity "PlacementResult\n[UC-09 ĐỀ XUẤT]" as PlacementResult {
     * id : uuid
     --
     user_id : uuid
     cefr : enum
   }
-  entity "BadgeAward\n[UC-10 PROPOSED]" as BadgeAward {
+  entity "BadgeAward\n[UC-10 ĐỀ XUẤT]" as BadgeAward {
     * id : uuid
     --
     user_id : uuid
@@ -153,12 +153,12 @@ Language ||--o{ ChatScenarioTranslation : locale
 Profile ||--o{ ChatSession : legacy
 ChatScenario ||--o{ ChatSession : legacy
 ChatSession ||--o{ ChatMessage : legacy
-Profile ||--o{ PlacementResult : proposed
-Profile ||--o{ BadgeAward : proposed
+Profile ||--o{ PlacementResult : đề xuất
+Profile ||--o{ BadgeAward : đề xuất
 
 note bottom
-  Physical baseline count = 17 models:
-  15 active business-flow + 2 legacy/deprecated.
-  UC-09 and UC-10 proposed entities are excluded.
+  Baseline vật lý gồm 17 model:
+  15 model thuộc luồng nghiệp vụ + 2 model legacy/deprecated.
+  Entity đề xuất của UC-09 và UC-10 không được tính vào.
 end note
 @enduml

@@ -1,29 +1,29 @@
 @startuml
-title Sequence - UC-10 Private Achievements [PROPOSED / NOT IMPLEMENTED]
+title Biểu đồ tuần tự - UC-10 Thành tích riêng tư [ĐỀ XUẤT / CHƯA TRIỂN KHAI]
 skinparam shadowing false
-actor Learner
-participant "Lesson/SRS Flow" as Flow
-participant "Achievement Evaluator\n[PROPOSED]" as Eval
-database "Learner Progress" as Progress
-database "Badge Store\n[PROPOSED]" as Badges
+actor "Học viên" as Learner
+participant "Luồng Bài học / SRS" as Flow
+participant "Bộ đánh giá thành tích\n[ĐỀ XUẤT]" as Eval
+database "Tiến độ học viên" as Progress
+database "Kho huy hiệu\n[ĐỀ XUẤT]" as Badges
 
-Learner -> Flow: Complete qualifying activity
-Flow -> Progress: Commit progress/review event
-Progress --> Flow: Success
-Flow -> Eval: Evaluate learner event
-Eval -> Progress: Read learner-owned counters
-Progress --> Eval: Progress snapshot
-Eval -> Badges: Check active rules and existing awards
-alt new condition met
-  Badges -> Badges: Insert award idempotently
-  Badges --> Eval: New badge
-else already awarded/not met
-  Badges --> Eval: No-op
+Learner -> Flow: Hoàn thành hoạt động hợp lệ
+Flow -> Progress: Commit sự kiện tiến độ/ôn tập
+Progress --> Flow: Thành công
+Flow -> Eval: Đánh giá sự kiện học viên
+Eval -> Progress: Đọc bộ đếm thuộc học viên
+Progress --> Eval: Ảnh chụp trạng thái tiến độ
+Eval -> Badges: Kiểm tra quy tắc và huy hiệu đã cấp
+alt đạt điều kiện mới
+  Badges -> Badges: Thêm huy hiệu không lặp tác dụng (idempotent)
+  Badges --> Eval: Huy hiệu mới
+else đã cấp/chưa đạt
+  Badges --> Eval: Không thao tác
 end
-Eval --> Flow: Award summary
-Flow --> Learner: Show private badge/progress
+Eval --> Flow: Tóm tắt huy hiệu
+Flow --> Learner: Hiển thị huy hiệu/tiến độ riêng tư
 note over Eval,Badges
-  No leaderboard. Data model and mechanism
-  require separate approval.
+  Không có bảng xếp hạng. Mô hình dữ liệu và cơ chế
+  cần phê duyệt riêng.
 end note
 @enduml

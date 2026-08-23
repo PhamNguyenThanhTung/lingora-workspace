@@ -1,24 +1,24 @@
 @startuml
-title Activity - UC-07/UC-08 Progress, Goal and In-App Reminder
+title Biểu đồ hoạt động - UC-07/UC-08 Tiến độ, mục tiêu và nhắc nhở trong ứng dụng
 skinparam shadowing false
 start
-:Load learner-owned progress, streak and daily goal;
-if (Qualifying learning event?) then (yes)
-  :Update progress and streak idempotently;
+:Tải tiến độ, chuỗi ngày học và mục tiêu ngày của học viên;
+if (Có sự kiện học hợp lệ?) then (có)
+  :Cập nhật tiến độ và chuỗi ngày học không lặp tác dụng;
 endif
-:Compare today's activity with daily goal;
-if (Goal met?) then (yes)
-  :Show completion state;
-else (no)
-  if (App open in reminder window?) then (yes)
-    :Show in-app reminder;
-    if (Learner starts activity?) then (yes)
-      :Navigate to due review or lesson;
-    else (dismiss)
-      :Dismiss locally;
+:So sánh hoạt động hôm nay với mục tiêu ngày;
+if (Đã đạt mục tiêu?) then (có)
+  :Hiển thị trạng thái hoàn thành;
+else (không)
+  if (Ứng dụng mở trong khung giờ nhắc?) then (có)
+    :Hiển thị nhắc nhở trong ứng dụng;
+    if (Học viên bắt đầu học?) then (có)
+      :Đi tới bài ôn đến hạn hoặc bài học;
+    else (đóng)
+      :Đóng nhắc nhở cục bộ;
     endif
-  else (no)
-    :Show progress without notification;
+  else (không)
+    :Hiển thị tiến độ mà không thông báo;
   endif
 endif
 stop

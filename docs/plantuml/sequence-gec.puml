@@ -1,29 +1,29 @@
 @startuml
-title Sequence - UC-06 Scenario Writing with Internal GEC
+title Biểu đồ tuần tự - UC-06 Luyện viết tình huống với GEC nội bộ
 skinparam shadowing false
-actor Learner
-participant Browser
+actor "Học viên" as Learner
+participant "Trình duyệt" as Browser
 participant "Next.js Route Handler\n/api/ai/gec" as BFF
-participant "Internal GEC API\nFastAPI /v1/gec/correct" as API
+participant "API GEC nội bộ\nFastAPI /v1/gec/correct" as API
 participant "T5-small GEC" as Model
-participant "Deterministic Diff" as Diff
+participant "Diff xác định" as Diff
 
-Learner -> Browser: Submit scenario text
+Learner -> Browser: Gửi câu viết theo tình huống
 Browser -> BFF: POST text + scenario_code
-BFF -> BFF: Read server session and apply 8s timeout
-BFF -> API: Bearer JWT + bounded request
-API -> API: Verify JWT and validate input
-alt request valid and model ready
-  API -> Model: Generate corrected_text
+BFF -> BFF: Đọc phiên server và áp dụng timeout 8 giây
+BFF -> API: Bearer JWT + yêu cầu có giới hạn
+API -> API: Xác minh JWT và kiểm tra đầu vào
+alt yêu cầu hợp lệ và model sẵn sàng
+  API -> Model: Sinh corrected_text
   Model --> API: corrected_text
-  API -> Diff: Align original and corrected text
+  API -> Diff: Căn chỉnh câu gốc và câu sửa
   Diff --> API: corrections/error_type
-  API --> BFF: Success + metadata
-  BFF --> Browser: Validated response
-  Browser --> Learner: Safe original/corrected diff
-else invalid/auth/model error
-  API --> BFF: Standard error envelope
-  BFF --> Browser: Mapped recoverable error
-  Browser --> Learner: Retry/validation state
+  API --> BFF: Thành công + siêu dữ liệu (metadata)
+  BFF --> Browser: Phản hồi đã kiểm tra
+  Browser --> Learner: Diff câu gốc/câu sửa an toàn
+else lỗi đầu vào/xác thực/model
+  API --> BFF: Cấu trúc lỗi chuẩn
+  BFF --> Browser: Lỗi có thể phục hồi đã ánh xạ
+  Browser --> Learner: Trạng thái thử lại/kiểm tra đầu vào
 end
 @enduml

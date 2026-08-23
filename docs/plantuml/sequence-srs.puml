@@ -1,25 +1,25 @@
 @startuml
-title Sequence - UC-05 Deterministic SRS and record_review
+title Biểu đồ tuần tự - UC-05 SRS xác định và record_review
 skinparam shadowing false
-actor Learner
-participant "Learner Web" as Web
+actor "Học viên" as Learner
+participant "Web Học viên" as Web
 database "Supabase Postgres + RLS" as DB
 participant "record_review RPC" as RPC
 
-Learner -> Web: Open review
-Web -> DB: Select own cards where nextReviewAt <= now
-DB --> Web: Due cards
-Learner -> Web: Submit recall result
+Learner -> Web: Mở phiên ôn tập
+Web -> DB: Chọn thẻ của mình với nextReviewAt <= now
+DB --> Web: Danh sách thẻ đến hạn
+Learner -> Web: Gửi kết quả ghi nhớ
 Web -> RPC: record_review(vocab/card, result)
-RPC -> RPC: Derive user from auth.uid()
-RPC -> DB: Insert ReviewLog + update UserVocabSrs
-alt ownership and input valid
-  DB --> RPC: Commit transaction
-  RPC --> Web: Updated schedule state
-  Web --> Learner: Show next card/result
-else invalid or not owner
-  DB --> RPC: Reject and rollback
-  RPC --> Web: Error
-  Web --> Learner: Retryable/safe error
+RPC -> RPC: Suy ra user từ auth.uid()
+RPC -> DB: Thêm ReviewLog + cập nhật UserVocabSrs
+alt đúng ownership và đầu vào hợp lệ
+  DB --> RPC: Xác nhận giao dịch (commit)
+  RPC --> Web: Trạng thái lịch đã cập nhật
+  Web --> Learner: Hiển thị thẻ/kết quả tiếp theo
+else không hợp lệ hoặc không sở hữu
+  DB --> RPC: Từ chối và hoàn tác giao dịch (rollback)
+  RPC --> Web: Lỗi
+  Web --> Learner: Lỗi an toàn có thể thử lại
 end
 @enduml

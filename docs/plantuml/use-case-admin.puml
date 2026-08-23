@@ -1,20 +1,20 @@
 @startuml
-title LINGORA - Admin Use Cases
+title LINGORA - Ca sử dụng phía Quản trị viên
 left to right direction
 skinparam shadowing false
 
-rectangle "LINGORA Web Learning System" {
-  usecase "UC-01\nAuthentication & Session" as UC01
-  usecase "UC-04\nContent Administration" as UC04
+rectangle "Hệ thống học tập Web LINGORA" {
+  usecase "UC-01\nXác thực và phiên" as UC01
+  usecase "UC-04\nQuản trị nội dung" as UC04
 
-  usecase "Manage courses and lessons" as ManageLessons
-  usecase "Manage vocabulary and exercises" as ManageExercises
-  usecase "Manage scenarios" as ManageScenarios
-  usecase "Upload approved media" as UploadMedia
-  usecase "Publish / unpublish content" as Publish
+  usecase "Quản lý khóa học và bài học" as ManageLessons
+  usecase "Quản lý từ vựng và bài tập" as ManageExercises
+  usecase "Quản lý kịch bản" as ManageScenarios
+  usecase "Tải tệp đa phương tiện đã duyệt" as UploadMedia
+  usecase "Xuất bản / hủy xuất bản nội dung" as Publish
 }
 
-actor Admin
+actor "Quản trị viên" as Admin
 
 UC01 -- Admin
 UC04 -- Admin
@@ -26,6 +26,6 @@ UC04 ..> UploadMedia : <<include>>
 UC04 ..> Publish : <<include>>
 
 note left of UploadMedia
-  MIME, size and RLS validation
+  Kiểm tra MIME, kích thước và RLS
 end note
 @enduml

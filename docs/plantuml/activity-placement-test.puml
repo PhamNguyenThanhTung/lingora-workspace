@@ -1,24 +1,24 @@
 @startuml
-title Activity - UC-09 Placement Test [PROPOSED / NOT IMPLEMENTED]
+title Biểu đồ hoạt động - UC-09 Kiểm tra trình độ đầu vào [ĐỀ XUẤT / CHƯA TRIỂN KHAI]
 skinparam shadowing false
 start
-:Authenticate new learner;
-:Load versioned placement questions;
-while (Question remains?) is (yes)
-  :Render using exercise engine;
-  :Validate and record answer in test state;
-endwhile (no)
-if (Enough valid answers?) then (yes)
-  :Calculate deterministic score;
-  :Map score to CEFR with tie-breaking policy;
-  :Find published Course.cefr match;
-  :Show level and course recommendation;
-else (no)
-  :Offer default course / skip path;
+:Xác thực học viên mới;
+:Tải bộ câu hỏi đầu vào có phiên bản;
+while (Còn câu hỏi?) is (có)
+  :Hiển thị bằng bộ máy bài tập (exercise engine);
+  :Kiểm tra và ghi câu trả lời vào trạng thái bài test;
+endwhile (không)
+if (Đủ câu trả lời hợp lệ?) then (có)
+  :Tính điểm theo quy tắc xác định;
+  :Ánh xạ điểm sang CEFR với quy tắc xử lý đồng điểm;
+  :Tìm Course.cefr đã xuất bản phù hợp;
+  :Hiển thị trình độ và khóa học gợi ý;
+else (không)
+  :Đề xuất khóa mặc định hoặc cho phép bỏ qua;
 endif
 note right
-  Persistence, API and RLS are not locked.
-  Implementation requires a separate plan.
+  Persistence, API và RLS chưa được khóa.
+  Việc triển khai cần một plan riêng.
 end note
 stop
 @enduml

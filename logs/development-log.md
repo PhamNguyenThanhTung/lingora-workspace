@@ -1534,3 +1534,25 @@ Pending user/repository commit gate.
 ### Commit
 
 Final COMMIT gate uses Conventional Commit message: `docs: complete PlantUML coverage and internalize GEC boundary`.
+
+# 2026-08-23 — Việt hóa toàn bộ PlantUML
+
+### Completed
+
+- Việt hóa phần chữ hiển thị trong toàn bộ 22 sơ đồ Use Case, Activity, Sequence, DFD và ERD.
+- Dùng nhãn `Học viên`, `Quản trị viên`, `ĐỀ XUẤT / CHƯA TRIỂN KHAI` và thuật ngữ tiếng Việt nhất quán với các báo cáo.
+- Giữ nguyên cú pháp PlantUML, mã UC, API/RPC, model/entity/field và định danh kỹ thuật để bảo toàn traceability.
+
+### Tests
+
+- `PLANTUML-VI-001`..`PLANTUML-VI-004`: 22/22 compile PASS, 22 PNG render PASS, visual Unicode QA PASS, semantic/static scan PASS và diff hygiene PASS.
+
+### Review
+
+- Correctness/readability: nội dung hiển thị đã Việt hóa, thuật ngữ kỹ thuật được giữ khi cần đối chiếu code/contract.
+- Architecture/security/performance: documentation-only; không thay đổi runtime, trust boundary, schema, dependency hoặc hiệu năng.
+- Verdict: **APPROVE**, không có finding bắt buộc.
+
+### Commit
+
+Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML diagrams`.
