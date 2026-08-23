@@ -6,6 +6,63 @@
 
 ### Task
 
+`integrate-survey-dataset-metrics - Integrate Quantitative Survey Metrics into Presentation Slides`
+
+### Completed
+
+- Extracted and analyzed survey responses across 24 questions from `D:\btl\Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx`.
+- Integrated high-impact quantitative survey percentages into Slides 4, 7, and 8:
+  - Slide 4: 100% người học hay quên từ vựng; 86.7% từng đứt gãy thói quen học tập sau 1-2 tuần; 66.7% thiếu công cụ sửa lỗi ngữ pháp.
+  - Slide 7: Thống kê chi tiết khảo sát diện rộng (100% quên từ, 93.3% cần đề xuất bài ôn tự động, 86.7% từng nản chí, 80% cấp thiết ôn SRS 4.13/5, 66.7% sửa lỗi ngữ pháp) đối chiếu song song với 9 phỏng vấn chuyên sâu.
+  - Slide 8: 3 thẻ chỉ số định lượng nổi bật (80% Công việc, 73.3% Bài tập điền từ, 66.7% Theo dõi điểm số) và 5 nhóm nhu cầu trọng tâm làm cơ sở thiết kế Use Case.
+- Re-rendered all 19 slides to PNG and synchronized across PPTX deliverables.
+
+### Tests
+
+- `SURVEY-ANALYTICS-001`, `PPT-SURVEY-INTEGRATION-001`: PASS in `logs/test-log.md`.
+
+### Commit
+
+`PENDING - waiting for human verification and commit authorization`
+
+---
+
+### Date
+
+`2026-08-23`
+
+### Task
+
+`strip-proposed-and-redesign-presentation - Strip Proposed Disclaimers & Redesign Presentation Deck`
+
+### Completed
+
+- Stripped all `[PROPOSED]` tags, `[PROPOSED / NOT IMPLEMENTED]` markers, and yellow "not implemented" note boxes across all 22 PlantUML files (`use-case-overview.puml`, `use-case-learner.puml`, `activity-placement-test.puml`, `activity-achievements.puml`, `sequence-placement-test.puml`, `sequence-achievements.puml`, `erd-baseline-and-proposed.puml`).
+- Recompiled and rendered all 22 PlantUML diagrams (22/22 PASS).
+- Rebuilt 19-slide presentation deck (`docs/report/Lingora-Project-1-Requirements-Presentation-V2.pptx`):
+  1. Removed orange highlight and footer disclaimers from UC-09 and UC-10 (styled identically to UC-01..UC-08).
+  2. Deleted all top-right "Slide XX" badges across all 19 slides.
+  3. Removed bottom warning/disclaimer banners from content slides.
+  4. Simplified Section Divider slides (Slides 3, 6, 12, 16) to keep ONLY prominent Section Title.
+  5. Redesigned Slide 19 to a single clean centered closing card.
+- Rendered all 19 slides to PNG in `D:/btl/tmp/timhieupaper-template-audit/revised-render` and verified visual appeal.
+
+### Tests
+
+- `PLANTUML-STRIP-001`, `PLANTUML-STRIP-002`, `PPT-REDESIGN-CLEANUP-001`, `GIT-HYGIENE-001`: PASS in `logs/test-log.md`.
+
+### Commit
+
+`PENDING - waiting for human verification and commit authorization`
+
+---
+
+### Date
+
+`2026-08-23`
+
+### Task
+
 `standardize-plantuml-english-technical-terminology - Standardize PlantUML English Technical Terminology`
 
 ### Completed
@@ -1590,3 +1647,11 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 - **Solution:** Reframed scope as official while retaining accurate implementation/evidence status and preserving the existing 17-model physical baseline.
 - **Tests:** Scope scan PASS; `git diff --check` PASS.
 - **Commit:** Pending commit of the approved documentation change.
+## 2026-08-23 — integrate-survey-and-format-final-report
+
+- **Completed:** Added quantitative survey evidence from the 15-response XLSX as `SRC-REQ-018`; inserted percentage-first findings with auditable counts into the Markdown reports and evidence register.
+- **Completed:** Created `docs/report/Lingora-Project-1-Lecturer-Format-Final.docx` using the provided warehouse-management DOCX as a presentation reference only. The final uses A4, Times New Roman, academic cover, TOC field, numbered heading hierarchy, tables, header/footer and page fields while retaining Lingora content.
+- **Problems:** Existing reports said no traceable quantitative survey existed; the old lecturer report conclusion repeated that contradiction. Reference rendering was blocked by missing LibreOffice.
+- **Solution:** Replaced the obsolete limitation with the actual N=15 survey scope and explicitly kept survey/interview samples separate.
+- **Tests:** Survey reconciliation PASS; structural DOCX audit PASS; `git diff --check` PASS; render QA unavailable due to missing `soffice`.
+- **Commit:** Pending commit after final status update.

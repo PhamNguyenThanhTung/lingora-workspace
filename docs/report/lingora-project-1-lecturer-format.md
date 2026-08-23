@@ -36,9 +36,9 @@ Nhóm thực hiện 6 cuộc phỏng vấn, mỗi cuộc gồm 15 câu hỏi v�
 
 Duolingo, Memrise, Busuu và Anki được khảo sát như các sản phẩm tham khảo về bài học ngắn, streak, flashcard, lịch ôn, cấu trúc CEFR và trải nghiệm người dùng. Benchmark được dùng để rút ra bài học thiết kế, không thay thế nghiên cứu người dùng và không chứng minh hiệu quả của Lingora.
 
-### 1.2.4. Giới hạn bằng chứng khảo sát định lượng
+### 1.2.4. Khảo sát định lượng bổ sung
 
-Workspace hiện chưa có file xuất Google Forms, CSV/XLSX hoặc ảnh thống kê có thể truy nguyên. Vì vậy, các claim `N=30`, tỷ lệ phần trăm và mã câu hỏi Q7-Q24 trong bản nội dung tham khảo được phân loại `EVIDENCE-PENDING` và không được trình bày như kết quả khảo sát chính thức.
+File `D:/btl/Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` ghi nhận 15 phản hồi trên 24 câu hỏi. Kết quả nổi bật: **100,0% (15/15)** từng quên từ đã học; **86,7% (13/15)** học không đều hoặc từng bỏ học; **80,0% (12/15)** đánh giá tự động xác định từ và thời điểm ôn ở mức 4-5/5; **93,3% (14/15)** muốn hoặc có thể thử đề xuất nội dung học/ôn; **66,7% (10/15)** đánh giá bài tập sau bài học ở mức 4-5/5. Câu hỏi nhiều lựa chọn được tính theo số người chọn từng phương án trên 15 người, nên tổng tỷ lệ có thể vượt 100%. Khảo sát này là nguồn định lượng bổ sung, được giữ tách biệt với 6 cuộc phỏng vấn định tính.
 
 ## 1.3. Kết quả nghiên cứu người dùng
 
@@ -47,12 +47,12 @@ Workspace hiện chưa có file xuất Google Forms, CSV/XLSX hoặc ảnh thố
 | Quên từ vựng | 6/6 | Cần học từ theo bài và ôn lại có cấu trúc |
 | Không biết lúc nào nên ôn | 5/6 | Cần SRS xác định và card đến hạn |
 | Học không đều hoặc quên lịch | 4/6 | Cần mục tiêu ngày, streak và reminder trong ứng dụng |
-| Không biết nên học gì | 4/6 | Cần lộ trình; placement vẫn là đề xuất |
+| Không biết nên học gì | 4/6 phỏng vấn; 93,3% (14/15) muốn/có thể thử đề xuất nội dung trong khảo sát | Cần lộ trình và placement |
 | Khó theo dõi tiến bộ | 5/6 | Cần điểm bài tập và trạng thái tiến độ |
 | Thiếu môi trường luyện nói | 6/6 | Là khoảng trống tương lai, không chứng minh chatbot hai chiều |
 | Muốn được sửa lỗi | 6/6 | Hỗ trợ scenario writing và T5-small GEC |
 
-Các kết quả được phân biệt theo ba mức: `OBSERVED` khi có bằng chứng trực tiếp; `INFERRED` khi nhóm suy luận nhu cầu thiết kế từ bằng chứng; và `APPROVED` khi yêu cầu đã được phê duyệt nhưng có thể chưa triển khai. Cách phân loại này ngăn việc biến một mong muốn của người tham gia thành claim về tính năng đã hoàn thành.
+Các kết quả được phân biệt theo ba mức: `OBSERVED` khi có bằng chứng trực tiếp; `INFERRED` khi nhóm suy luận nhu cầu thiết kế từ bằng chứng; và `APPROVED` khi yêu cầu đã được phê duyệt nhưng có thể chưa triển khai. Khảo sát N=15 và phỏng vấn N=6 là hai nguồn riêng, không gộp mẫu. Cách phân loại này ngăn việc biến một mong muốn của người tham gia thành claim về tính năng đã hoàn thành.
 
 ## 1.4. Phân tích sản phẩm cạnh tranh
 
@@ -258,7 +258,7 @@ Báo cáo đã xây dựng một chuỗi logic từ evidence đến requirement,
 
 Physical baseline được báo cáo là 17 model theo quyết định phê duyệt, trong đó 15 model thuộc luồng nghiệp vụ hiện hành và `ChatSession`/`ChatMessage` là legacy/deprecated chờ migration cleanup chính thức. Cách trình bày này tách rõ lịch sử vật lý, phạm vi hoạt động và thiết kế đề xuất.
 
-Giới hạn lớn nhất của nghiên cứu hiện tại là chưa có dữ liệu khảo sát định lượng gốc và chưa có benchmark model GEC hoàn chỉnh. Hướng tiếp theo là hoàn thiện M2 learner flow, audit policy SRS, triển khai GEC foundation, thu thập evidence khảo sát có thể truy nguyên và lập task riêng cho mọi thay đổi schema/API/RLS.
+Giới hạn của nghiên cứu hiện tại là khảo sát định lượng mới có N=15, mẫu thuận tiện chưa đại diện cho toàn bộ người học, và chưa có benchmark model GEC hoàn chỉnh. Hướng tiếp theo là mở rộng cỡ mẫu, hoàn thiện M2 learner flow, audit policy SRS, triển khai GEC foundation và lập task riêng cho mọi thay đổi schema/API/RLS.
 
 # PHỤ LỤC A. BIÊN BẢN PHỎNG VẤN
 

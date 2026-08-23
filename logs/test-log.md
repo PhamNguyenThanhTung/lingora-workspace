@@ -389,3 +389,48 @@ All 19 slides rendered to PNG in `D:/btl/tmp/timhieupaper-template-audit/revised
 **Output:** exit code 0; clean whitespace across all modified files.
 **Verdict:** PASS — `GIT-HYGIENE-001`.
 
+## 2026-08-23 — integrate-survey-dataset-metrics
+
+**Environment:** Windows, PowerShell, Node.js `@oai/artifact-tool`, Excel survey dataset (`Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx`).
+
+**Command:** `node scratch/parse_survey.mjs`
+**Output:** exit code 0; successfully parsed all 24 questions across survey responses (N=15):
+- 100% người học thừa nhận quên từ vựng (53.3% rất thường xuyên)
+- 93.3% mong muốn hệ thống tự đề xuất nội dung ôn tập
+- 86.7% từng bỏ học do nản / thiếu phương pháp
+- 80.0% đánh giá cấp thiết ôn tập ngắt quãng (SRS 4.13/5.0)
+- 66.7% yêu cầu sửa lỗi ngữ pháp câu viết & giải thích chi tiết
+- 80.0% mục tiêu học vì công việc, 73.3% ưu tiên bài tập điền từ
+**Verdict:** PASS — `SURVEY-ANALYTICS-001`.
+
+**Command:** `node D:\btl\tmp\timhieupaper-template-audit\build_revised_deck.mjs`
+**Output:** exit code 0; updated Slides 4, 7, and 8 with high-impact quantitative survey percentages, rating scores, and 5 core user needs. All 19 slides rendered to PNG in `D:/btl/tmp/timhieupaper-template-audit/revised-render`.
+**Verdict:** PASS — `PPT-SURVEY-INTEGRATION-001`.
+
+## 2026-08-23 — integrate-survey-and-format-final-report
+
+**Environment:** Windows, bundled Python runtime, repository working tree.
+
+**Command:** Survey workbook analysis with bundled Python/pandas against `D:/btl/Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx`.
+
+**Output:** 1 worksheet, 15 rows, 25 columns (timestamp + 24 questions). Reconciled inserted findings: 15/15 = 100.0%; 13/15 = 86.7%; 12/15 = 80.0%; 14/15 = 93.3%; 10/15 = 66.7%; 9/15 = 60.0%. Multi-select counts were computed per option against N=15.
+
+**Verdict:** PASS
+
+**Command:** Structural DOCX audit using `section_audit.py` and `python-docx` checks on `Lingora-Project-1-Lecturer-Format-Final.docx`.
+
+**Output:** A4 portrait, one section, 1.00 in margins, different first page, 154 paragraphs, 4 tables, 40 heading paragraphs, survey text present, Times New Roman runs present.
+
+**Verdict:** PASS — structural format checks.
+
+**Command:** `render_docx.py` on reference and final DOCX.
+
+**Output:** FAIL — LibreOffice/soffice executable unavailable (`WinError 2`); PNG visual QA could not run in this environment.
+
+**Verdict:** FAIL — visual render unavailable; final document remains structurally verified and this limitation is disclosed.
+
+**Command:** `git diff --check`
+
+**Output:** Exit code 0; no whitespace errors.
+
+**Verdict:** PASS

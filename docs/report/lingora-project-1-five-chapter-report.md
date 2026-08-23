@@ -12,7 +12,7 @@
 
 ## LỜI MỞ ĐẦU
 
-Lingora là nền tảng Web hỗ trợ người học tiếng Anh học theo bài, luyện tập, ôn từ vựng và theo dõi tiến độ. Báo cáo trình bày quy trình phát triển, phân tích bài toán, thiết kế hệ thống, kết quả xây dựng và kế hoạch kiểm thử/triển khai. Các nội dung được đối chiếu với tài liệu yêu cầu, kiến trúc, API, dữ liệu và biên bản phỏng vấn của dự án.
+Lingora là nền tảng Web hỗ trợ người học tiếng Anh học theo bài, luyện tập, ôn từ vựng và theo dõi tiến độ. Báo cáo trình bày quy trình phát triển, phân tích bài toán, thiết kế hệ thống, kết quả xây dựng và kế hoạch kiểm thử/triển khai. Các nội dung được đối chiếu với tài liệu yêu cầu, kiến trúc, API, dữ liệu, biên bản phỏng vấn và khảo sát định lượng N=15 của dự án.
 
 ## LỜI CẢM ƠN
 
@@ -117,15 +117,19 @@ Phỏng vấn bán cấu trúc gồm 6 người, 15 câu hỏi/người. P1-P4 v
 | Thiếu người luyện nói | 6/6 | Gap tương lai của UC-06 |
 | Muốn được sửa lỗi | 6/6 | UC-06 scenario writing/GEC |
 
-### 2.3.1. Phạm vi Use Case
+### 2.3.1. Khảo sát định lượng bổ sung (N=15)
+
+File khảo sát bổ sung có **15 phản hồi**. Các kết quả nổi bật: **100,0% (15/15)** từng quên từ đã học; **86,7% (13/15)** từng học không đều hoặc bỏ học; **80,0% (12/15)** đánh giá tự động xác định từ và thời điểm ôn ở mức 4-5/5; **93,3% (14/15)** muốn hoặc có thể thử hệ thống tự đề xuất nội dung học/ôn; **66,7% (10/15)** đánh giá bài tập sau bài học ở mức 4-5/5. Với câu hỏi nhiều lựa chọn, tỷ lệ tính trên từng phương án và cùng mẫu 15 người nên tổng có thể vượt 100%. Khảo sát được giữ riêng với 6 cuộc phỏng vấn định tính, dùng để củng cố ưu tiên yêu cầu chứ không suy rộng cho toàn bộ người học.
+
+### 2.3.2. Phạm vi Use Case
 
 UC-01 đến UC-10 là baseline phạm vi chính thức. UC-09 Placement Test và UC-10 Private Badges đang chờ implementation evidence. Không thêm chatbot nói hai chiều vào baseline.
 
-### 2.3.2. Yêu cầu chức năng
+### 2.3.3. Yêu cầu chức năng
 
 `P1-FR-001..017` là baseline về auth, lesson, exercise, progress, SRS, GEC, admin, reminder, placement và badges. P1-FR-016/017 là active/in-scope requirements với implementation evidence pending.
 
-### 2.3.3. Yêu cầu phi chức năng
+### 2.3.4. Yêu cầu phi chức năng
 
 Bảo mật: RLS theo ownership, cookie httpOnly và AI qua Route Handler. Hiệu năng: Web timeout GEC 8 giây; p95 warm CPU <= 2.000 ms là mục tiêu cần benchmark. Độ tin cậy: lesson/SRS không phụ thuộc GEC. Tính riêng tư: badge private-by-default, không leaderboard.
 

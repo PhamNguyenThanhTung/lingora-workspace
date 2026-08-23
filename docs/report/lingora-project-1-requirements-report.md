@@ -6,7 +6,7 @@
 
 ## Tóm tắt
 
-Lingora là nền tảng Web hỗ trợ học tiếng Anh qua khóa học, bài học, từ vựng, bài tập, ôn tập lặp lại có cấu trúc, theo dõi tiến độ và luyện viết theo tình huống. Báo cáo này tổng hợp yêu cầu từ tài liệu giảng viên, tài liệu canonical của dự án và sáu cuộc phỏng vấn bán cấu trúc. Báo cáo phân biệt rõ năng lực baseline, mục tiêu đã được phê duyệt nhưng chưa triển khai, và các nhu cầu còn nằm ngoài phạm vi.
+Lingora là nền tảng Web hỗ trợ học tiếng Anh qua khóa học, bài học, từ vựng, bài tập, ôn tập lặp lại có cấu trúc, theo dõi tiến độ và luyện viết theo tình huống. Báo cáo này tổng hợp yêu cầu từ tài liệu giảng viên, tài liệu canonical, sáu cuộc phỏng vấn bán cấu trúc và khảo sát định lượng bổ sung N=15. Hai nhóm dữ liệu người dùng được phân tích riêng. Báo cáo phân biệt rõ năng lực baseline, mục tiêu đã được phê duyệt nhưng chưa triển khai, và các nhu cầu còn nằm ngoài phạm vi.
 
 ## 1. Giới thiệu
 
@@ -27,9 +27,15 @@ Phạm vi hiện hành gồm Software Engineering Web và ML/Deep Learning với
 
 ## 2. Nguồn và phương pháp thu thập yêu cầu
 
-Nguồn chính gồm tài liệu giảng viên `D:/ml/Bai 2 - Phân tích yêu cầu.pdf`, `docs/01`-`docs/07`, `DESIGN.md`, kế hoạch được phê duyệt và `docs/phỏng_vấn.docx`. Phỏng vấn là bán cấu trúc, gồm 6 người và 15 câu hỏi về cách học, quên từ, lịch ôn, tính đều đặn, bài tập, tiến độ, luyện nói, feedback và ứng dụng đang dùng. P1-P4 và P6 học tiếng Anh; P5 học tiếng Nhật.
+Nguồn chính gồm tài liệu giảng viên `D:/ml/Bai 2 - Phân tích yêu cầu.pdf`, `docs/01`-`docs/07`, `DESIGN.md`, kế hoạch được phê duyệt, `docs/phỏng_vấn.docx` và file khảo sát `SRC-REQ-018`. Phỏng vấn là bán cấu trúc, gồm 6 người; khảo sát định lượng bổ sung có 15 câu trả lời trên 24 câu hỏi. Hai nguồn được phân tích riêng, không gộp thành một mẫu.
 
 Các số 6/6, 5/6, 4/6 trong bảng nguồn là tần suất chủ đề của mẫu phỏng vấn nhỏ, không phải tỷ lệ thống kê đại diện. Ý kiến P5 được xem là quan sát bổ sung liên ngôn ngữ; kết luận riêng cho sản phẩm tiếng Anh ưu tiên 5 người học tiếng Anh.
+
+### 2.2 Khảo sát định lượng bổ sung (N=15)
+
+Khảo sát bổ sung ghi nhận **15 phản hồi**. Các tỷ lệ nổi bật được trình bày trước, kèm số đếm để kiểm tra: **100,0% (15/15)** từng quên từ đã học; **86,7% (13/15)** từng học không đều hoặc bỏ học; **80,0% (12/15)** đánh giá việc tự động xác định từ và thời điểm ôn ở mức cần thiết 4-5/5; **93,3% (14/15)** muốn hoặc có thể thử hệ thống tự đề xuất nội dung học/ôn. Ngoài ra, **66,7% (10/15)** đánh giá bài tập sau bài học ở mức 4-5/5 và **60,0% (9/15)** đánh giá theo dõi tiến độ ở mức 4-5/5.
+
+Trong câu hỏi nhiều lựa chọn, các nhu cầu nổi bật gồm: điền từ **73,3% (11/15)**, trắc nghiệm **60,0% (9/15)**, nghe **53,3% (8/15)**, sửa lỗi ngữ pháp/từ vựng **66,7% (10/15)** và gợi ý cách nói tự nhiên hơn **60,0% (9/15)**. Các tỷ lệ nhiều lựa chọn tính trên cùng mẫu 15 người nên tổng có thể vượt 100%. Đây là bằng chứng định hướng yêu cầu từ một mẫu khảo sát bổ sung, không phải kết quả đại diện cho toàn bộ người học.
 
 ### 2.1 Kết quả phỏng vấn
 
@@ -44,7 +50,7 @@ Các số 6/6, 5/6, 4/6 trong bảng nguồn là tần suất chủ đề của 
 | Muốn được sửa lỗi | 6/6 | UC-06 | Phù hợp scenario writing + GEC |
 | Muốn nội dung cá nhân hóa | 4/6 | UC-09 | Nhu cầu cần policy và validation riêng |
 
-### 2.2 Đánh giá mức phù hợp với Use Case
+### 2.3 Đánh giá mức phù hợp với Use Case
 
 Phỏng vấn phù hợp trực tiếp với UC-02, UC-03, UC-05, UC-07 và UC-08; phù hợp với UC-06 ở chức năng viết/sửa câu và hỗ trợ tiện ích nói ở phía browser. UC-09 dùng nhu cầu “không biết nên học gì” làm động lực trong phạm vi chính thức. UC-10 là yêu cầu động lực đã được phê duyệt; bằng chứng phỏng vấn trực tiếp chưa có. Không thêm UC hội thoại nói hai chiều vào baseline.
 

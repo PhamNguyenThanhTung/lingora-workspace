@@ -29,6 +29,7 @@ Sổ đăng ký này ghi nguồn dùng để xây dựng báo cáo phân tích y
 | SRC-REQ-015 | `D:/TimHieuPaper_Nhom16.pptx` | Presentation visual reference | University logo, purple/yellow header and gray footer background used for the teacher-facing deck | `OBSERVED` |
 | SRC-REQ-016 | User attachment `4826819f-27da-4af2-a3d3-571d6faf7d62/pasted-text.txt`, 2026-08-23 | Three supplementary interview records | Named 30-minute records for a high-school learner, university learner and working learner; used as qualitative supporting evidence on slides 7-8 | `OBSERVED / SUPPLEMENTARY` |
 | SRC-REQ-017 | User approval, 2026-08-23 | Actor/boundary and UC numbering decision | Learner/Admin are the only external actors; GEC/T5-small is internal processing; achievements use UC-10; complete PlantUML and synchronize current Markdown reports | `APPROVED` |
+| SRC-REQ-018 | `D:/btl/Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` | Quantitative survey export | 15 responses across 24 questions; percentage summary is reported separately from interview frequencies | `OBSERVED / SURVEY N=15` |
 
 ## 3. Kết quả phân tích tài liệu giảng viên
 
@@ -47,14 +48,32 @@ PDF `SRC-REQ-001` yêu cầu nhóm thực hiện tối thiểu:
 
 | Hạng mục | Bằng chứng hiện có | Cách sử dụng trong báo cáo |
 |---|---|---|
-| File kết quả khảo sát | Chưa tìm thấy CSV/XLSX/Google Forms export | `EVIDENCE-PENDING`; không ghi tỷ lệ phần trăm |
+| File kết quả khảo sát | `SRC-REQ-018`, XLSX export, 15 responses | `OBSERVED`; use count and percentage pairs with denominator `N=15` |
 | Biên bản phỏng vấn | `docs/phỏng_vấn.docx`, 6 người tham gia, 15 câu hỏi/người | `OBSERVED`; dùng làm bằng chứng định tính và phải nêu giới hạn mẫu |
-| Ảnh thống kê khảo sát | Chưa tìm thấy | Không tạo biểu đồ giả |
-| Số lượng người tham gia | Có bảng tổng hợp ghi 6 người | Ghi là mẫu phỏng vấn định tính; người 5 học tiếng Nhật nên không gộp vào kết luận tiếng Anh |
+| Ảnh thống kê khảo sát | Không cần; tỷ lệ được tính trực tiếp từ XLSX | Không tạo biểu đồ giả; retain auditable count/percentage pairs |
+| Số lượng người tham gia | 6 interview participants + 15 survey responses | Keep qualitative interviews and quantitative survey separate; do not combine into one sample |
 | Pain points người học | Câu trả lời chi tiết của P1-P6 và bảng tổng hợp trong DOCX | `OBSERVED`; không suy rộng ra toàn bộ người học |
 | Ba phiếu bổ sung | Nguyễn Hải Dương, Trần Văn Đài, Cao Thị Ngân trong `SRC-REQ-016` | Dùng vai trò ẩn danh trên slide; chưa gộp vào tần suất `6/6`, `5/6`, `4/6` nếu chưa mã hóa lại toàn bộ 9 phiếu |
 
-### 4.1 Kết quả phỏng vấn và cách diễn giải
+### 4.1 Kết quả khảo sát định lượng bổ sung (N=15)
+
+Tỷ lệ dưới đây được tính trên 15 câu trả lời trong `SRC-REQ-018`. Với câu hỏi cho phép chọn nhiều phương án, mỗi tỷ lệ là số người chọn phương án đó trên 15 người; vì vậy tổng các tỷ lệ có thể vượt 100%. Đây là mẫu khảo sát bổ sung có quy mô nhỏ, dùng để củng cố hướng yêu cầu chứ không đại diện cho toàn bộ người học.
+
+| Phát hiện | Tỷ lệ | Mapping |
+|---|---:|---|
+| Đã từng quên từ đã học (thường xuyên hoặc thỉnh thoảng) | **100,0% (15/15)** | UC-02, UC-05 |
+| Học không đều hoặc từng bỏ học | **86,7% (13/15)** | UC-07, UC-08 |
+| Đánh giá tự động xác định từ và thời điểm ôn ở mức 4-5/5 | **80,0% (12/15)** | UC-05 |
+| Muốn hoặc có thể thử hệ thống tự đề xuất nội dung học/ôn | **93,3% (14/15)** | UC-02, UC-09 |
+| Đánh giá bài tập sau bài học ở mức 4-5/5 | **66,7% (10/15)** | UC-03 |
+| Đánh giá theo dõi tiến độ ở mức 4-5/5 | **60,0% (9/15)** | UC-07 |
+| Chọn học từ vựng trong ba chức năng quan trọng nhất | **60,0% (9/15)** | UC-02 |
+| Chọn AI hội thoại trong ba chức năng quan trọng nhất | **53,3% (8/15)** | UC-06 |
+| Chọn SRS tự động trong ba chức năng quan trọng nhất | **33,3% (5/15)** | UC-05 |
+
+Các lựa chọn nhiều đáp án nổi bật khác: điền từ `73,3% (11/15)`, trắc nghiệm `60,0% (9/15)`, nghe `53,3% (8/15)`, sửa lỗi ngữ pháp/từ vựng `66,7% (10/15)` và gợi ý cách nói tự nhiên hơn `60,0% (9/15)`. Các tỷ lệ này được dùng như bằng chứng ưu tiên tính năng, không phải bằng chứng hiệu quả sản phẩm.
+
+### 4.2 Kết quả phỏng vấn và cách diễn giải
 
 File `docs/phỏng_vấn.docx` ghi nhận 6 cuộc phỏng vấn bán cấu trúc. P1-P4 và P6 học tiếng Anh; P5 học tiếng Nhật. Vì vậy, các chủ đề chung về SRS, bài tập, tiến độ và môi trường luyện nói được dùng như insight thiết kế; khi nói riêng về sản phẩm học tiếng Anh, cần ưu tiên 5 người học tiếng Anh. Các dòng `6/6`, `5/6`... là số người đề cập trong mẫu, không phải tỷ lệ đại diện.
 
@@ -69,15 +88,15 @@ File `docs/phỏng_vấn.docx` ghi nhận 6 cuộc phỏng vấn bán cấu trú
 | Muốn được sửa lỗi | 6/6 | UC-06 | Phù hợp scenario writing + T5-small GEC |
 | Muốn nội dung cá nhân hóa | 4/6 | UC-09 | Nhu cầu trong phạm vi; cần scoring/policy riêng trước khi triển khai |
 
-### 4.2 Các quyết định sau rà soát
+### 4.3 Các quyết định sau rà soát
 
 - Không thêm use case “AI conversation” độc lập. Nhu cầu này được ghi ở phần deferred/future scope vì baseline hiện tại không có generative chatbot hoặc speech service.
 - Không coi personalization là chức năng đã triển khai. UC-09 là chức năng trong phạm vi, implementation pending.
 - Không dùng phỏng vấn để chứng minh UC-10. Badge là yêu cầu trong phạm vi dựa trên giả thuyết động lực, cần validation riêng.
 
-Các con số `N=30`, `N=45`, `84.4%`, `77.8%`, `88.9%`, `66.7%`, `86.7%`, `93.3%` và các tỷ lệ tương tự không có nguồn dữ liệu gốc trong workspace và không được sử dụng như số liệu chính thức.
+Các claim `N=30`, `N=45` và mọi tỷ lệ không truy ngược được về `SRC-REQ-018` hoặc một nguồn dữ liệu gốc khác vẫn bị loại. Các tỷ lệ của khảo sát N=15 chỉ được sử dụng khi kèm số đếm và mẫu số.
 
-## 4.3 Quyết định đếm model cho ERD và slide
+## 4.4 Quyết định đếm model cho ERD và slide
 
 - Physical schema baseline trong báo cáo: **17 models**.
 - Active business flow: **15 models**.

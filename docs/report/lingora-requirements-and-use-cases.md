@@ -48,7 +48,7 @@ Nguồn dự án: `docs/00`-`docs/07`, `DESIGN.md` và `plans/current-task.md`. 
 
 ### 2.3 Phương pháp và giới hạn
 
-Áp dụng document analysis, User Story, Use Case, phỏng vấn và questionnaire. Workspace có 6 biên bản phỏng vấn gốc và 3 bản ghi bổ sung; tần suất của hai nhóm được giữ riêng và không được diễn giải như thống kê đại diện.
+Áp dụng document analysis, User Story, Use Case, phỏng vấn và questionnaire. Workspace có 6 biên bản phỏng vấn gốc, 3 bản ghi bổ sung và khảo sát định lượng N=15. Ba nhóm bằng chứng được giữ riêng; không cộng chúng thành một mẫu duy nhất hoặc diễn giải như thống kê đại diện.
 
 ### 2.4 Câu hỏi khảo sát/phỏng vấn
 
@@ -61,6 +61,10 @@ Nguồn dự án: `docs/00`-`docs/07`, `DESIGN.md` và `plans/current-task.md`. 
 7. Bạn có muốn leaderboard công khai không?
 8. Lo ngại về dữ liệu cá nhân và AI correction?
 9. Tính năng quan trọng nhất bạn muốn?
+
+### 2.5 Khảo sát định lượng bổ sung (N=15)
+
+File khảo sát `D:/btl/Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` có 15 phản hồi trên 24 câu hỏi. Kết quả nổi bật: **100,0% (15/15)** từng quên từ đã học; **86,7% (13/15)** từng học không đều hoặc bỏ học; **80,0% (12/15)** đánh giá tự động xác định từ và thời điểm ôn ở mức 4-5/5; **93,3% (14/15)** muốn hoặc có thể thử hệ thống tự đề xuất nội dung học/ôn; **66,7% (10/15)** đánh giá bài tập sau bài học ở mức 4-5/5. Ở câu hỏi nhiều lựa chọn, tỷ lệ được tính trên 15 người cho từng phương án nên tổng có thể vượt 100%. Đây là nguồn định lượng bổ sung, được giữ tách biệt với 6 phỏng vấn và 3 bản ghi bổ sung.
 
 ## 3. User Story và Acceptance Criteria
 
