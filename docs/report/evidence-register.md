@@ -63,17 +63,17 @@ File `docs/phỏng_vấn.docx` ghi nhận 6 cuộc phỏng vấn bán cấu trú
 | Quên từ vựng | 6/6 | UC-02, UC-05 | Bằng chứng cho nhu cầu ôn lại có cấu trúc |
 | Không biết lúc nào nên ôn | 5/6 | UC-05 | Hỗ trợ SRS; chưa khẳng định policy đã là SM-2 |
 | Học không đều/quên lịch | 4/6 | UC-07, UC-08 | Hỗ trợ streak, goal và reminder trong app |
-| Không biết nên học gì | 4/6 | UC-02, UC-09 | Hỗ trợ placement/proposed recommendation; chưa có adaptive engine |
+| Không biết nên học gì | 4/6 | UC-02, UC-09 | Hỗ trợ placement recommendation trong phạm vi; chưa có adaptive engine |
 | Khó theo dõi tiến bộ | 5/6 | UC-03, UC-07 | Hỗ trợ progress và feedback |
 | Thiếu người luyện nói | 6/6 | UC-06 (một phần) | Hỗ trợ tiện ích nhập giọng nói và nghe câu sửa trong browser; không biến UC-06 thành chatbot hội thoại hai chiều |
 | Muốn được sửa lỗi | 6/6 | UC-06 | Phù hợp scenario writing + T5-small GEC |
-| Muốn nội dung cá nhân hóa | 4/6 | UC-09 | Nhu cầu đề xuất; cần scoring/policy riêng trước khi triển khai |
+| Muốn nội dung cá nhân hóa | 4/6 | UC-09 | Nhu cầu trong phạm vi; cần scoring/policy riêng trước khi triển khai |
 
 ### 4.2 Các quyết định sau rà soát
 
 - Không thêm use case “AI conversation” độc lập. Nhu cầu này được ghi ở phần deferred/future scope vì baseline hiện tại không có generative chatbot hoặc speech service.
-- Không coi personalization là chức năng đã triển khai. UC-09 chỉ là mục tiêu được phê duyệt, implementation pending.
-- Không dùng phỏng vấn để chứng minh UC-10. Badge vẫn là yêu cầu đề xuất dựa trên giả thuyết động lực, cần validation riêng.
+- Không coi personalization là chức năng đã triển khai. UC-09 là chức năng trong phạm vi, implementation pending.
+- Không dùng phỏng vấn để chứng minh UC-10. Badge là yêu cầu trong phạm vi dựa trên giả thuyết động lực, cần validation riêng.
 
 Các con số `N=30`, `N=45`, `84.4%`, `77.8%`, `88.9%`, `66.7%`, `86.7%`, `93.3%` và các tỷ lệ tương tự không có nguồn dữ liệu gốc trong workspace và không được sử dụng như số liệu chính thức.
 
@@ -82,7 +82,7 @@ Các con số `N=30`, `N=45`, `84.4%`, `77.8%`, `88.9%`, `66.7%`, `86.7%`, `93.3
 - Physical schema baseline trong báo cáo: **17 models**.
 - Active business flow: **15 models**.
 - `ChatSession` và `ChatMessage`: **deprecated/legacy, pending formal migration cleanup**.
-- Entity liên quan UC-09 Placement và UC-10 Badges: **PROPOSED / NOT IMPLEMENTED**, không cộng vào physical hoặc active count.
+- Entity liên quan UC-09 Placement và UC-10 Badges chưa thuộc physical hoặc active count; model design sẽ được ghi nhận khi implementation task được phê duyệt.
 - Quyết định này là reporting resolution được người dùng phê duyệt ngày 2026-08-23; speaker notes của slide kiến trúc/ERD phải nêu đủ ba lớp trên.
 
 ## 5. Bằng chứng hiện trạng tính năng
@@ -97,8 +97,8 @@ Các con số `N=30`, `N=45`, `84.4%`, `77.8%`, `88.9%`, `66.7%`, `86.7%`, `93.3
 | UC-06 | `APPROVED / IMPLEMENTATION_PENDING` | GEC contract target và client speech convenience đã duyệt; endpoint/UI/model chưa hoàn chỉnh; audio không qua backend |
 | UC-07 | `PARTIAL / PENDING_M2` | Các field nền tảng có; UI/behavior hoàn chỉnh pending |
 | UC-08 | `APPROVED / LATER_M2+` | Chỉ in-app reminder, không Web Push |
-| UC-09 | `APPROVED / PROPOSED` | Chưa có canonical FR, scoring policy, persistence hoặc UI |
-| UC-10 | `APPROVED / PROPOSED` | Chưa có canonical FR, badge catalog, persistence hoặc UI |
+| UC-09 | `ACTIVE / IN SCOPE` | Canonical FR đã có; scoring policy, persistence và UI implementation pending |
+| UC-10 | `ACTIVE / IN SCOPE` | Canonical FR đã có; badge catalog, persistence và UI implementation pending |
 
 ## 6. Mẫu biểu thu thập yêu cầu đề xuất
 

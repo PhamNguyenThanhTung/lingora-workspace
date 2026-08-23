@@ -1,6 +1,6 @@
 # Lingora — Quick Reference
 
-> **ADR-010 current baseline (2026-08-21):** two tracks only — Software Engineering and ML/Deep Learning with T5-small GEC. Learner and Admin are the only external Use Case actors; GEC/T5-small is internal Lingora processing even when deployed as FastAPI. The approved Use Case catalog is UC-01..UC-10, with UC-09/UC-10 proposed. Deterministic SRS remains in Project 1; DKT/HLR/DQN and MultiWOZ dialogue generation are superseded future targets. Historical implementation evidence for the old mock endpoints remains valid.
+> **Current baseline (scope aligned 2026-08-23):** two tracks only — Software Engineering and ML/Deep Learning with T5-small GEC. Learner and Admin are the only external Use Case actors; GEC/T5-small is internal Lingora processing even when deployed as FastAPI. The official in-scope Use Case catalog is UC-01..UC-10, including UC-09 Placement Test and UC-10 Private Achievements. Deterministic SRS remains in Project 1; DKT/HLR/DQN and MultiWOZ dialogue generation are superseded future targets. Historical implementation evidence for the old mock endpoints remains valid.
 
 > **Purpose:** Concise project snapshot for agents. Read this first.
 > For authoritative detail, follow the pointers in each section to the canonical source.

@@ -108,8 +108,8 @@ Chỉ `Learner` và `Admin` là actor của hệ thống. GEC/T5-small, Supabase
 | **UC-06** | Luyện viết Tình huống với GEC | Learner | C4 (Scenario Writing / GEC) | `TARGET_AMENDED / IMPLEMENTATION_PENDING` |
 | **UC-07** | Theo dõi Tiến độ, Streak & Mục tiêu Ngày | Learner | C5 (Gamification) | `CONFIRMED / PENDING_M2` |
 | **UC-08** | Nhắc nhở Học tập Trong phiên (In-App) | Learner | C6 (Reminders) | `ADR-008 LOCKED (Option 6d)` |
-| **UC-09** | Kiểm tra Trình độ Đầu vào | Learner | Placement | `PROPOSED / NOT IMPLEMENTED` |
-| **UC-10** | Thành tích và Huy hiệu Riêng tư | Learner | Private Achievements | `PROPOSED / NOT IMPLEMENTED` |
+| **UC-09** | Kiểm tra Trình độ Đầu vào | Learner | Placement | `ACTIVE / IN SCOPE` |
+| **UC-10** | Thành tích và Huy hiệu Riêng tư | Learner | Private Achievements | `ACTIVE / IN SCOPE` |
 
 ---
 

@@ -38,7 +38,7 @@ Các số 6/6, 5/6, 4/6 trong bảng nguồn là tần suất chủ đề của 
 | Quên từ vựng | 6/6 | UC-02, UC-05 | Nhu cầu ôn lại có lịch |
 | Không biết lúc nào ôn | 5/6 | UC-05 | Cần SRS xác định |
 | Học không đều | 4/6 | UC-07, UC-08 | Cần mục tiêu và reminder trong app |
-| Không biết nên học gì | 4/6 | UC-02, UC-09 | Hỗ trợ placement đề xuất, chưa phải adaptive learning |
+| Không biết nên học gì | 4/6 | UC-02, UC-09 | Hỗ trợ placement trong phạm vi; chưa phải adaptive learning |
 | Khó theo dõi tiến bộ | 5/6 | UC-03, UC-07 | Cần điểm và progress rõ ràng |
 | Thiếu người luyện nói | 6/6 | UC-06 một phần | Tiện ích nhập giọng nói và nghe câu sửa trong browser; không phải chatbot hội thoại hai chiều |
 | Muốn được sửa lỗi | 6/6 | UC-06 | Phù hợp scenario writing + GEC |
@@ -46,7 +46,7 @@ Các số 6/6, 5/6, 4/6 trong bảng nguồn là tần suất chủ đề của 
 
 ### 2.2 Đánh giá mức phù hợp với Use Case
 
-Phỏng vấn phù hợp trực tiếp với UC-02, UC-03, UC-05, UC-07 và UC-08; phù hợp với UC-06 ở chức năng viết/sửa câu và hỗ trợ tiện ích nói ở phía browser. UC-09 có thể dùng nhu cầu “không biết nên học gì” làm động lực, nhưng vẫn là proposed. UC-10 không có bằng chứng trực tiếp và chỉ giữ như giả thuyết thiết kế được phê duyệt. Không thêm UC hội thoại nói hai chiều vào baseline.
+Phỏng vấn phù hợp trực tiếp với UC-02, UC-03, UC-05, UC-07 và UC-08; phù hợp với UC-06 ở chức năng viết/sửa câu và hỗ trợ tiện ích nói ở phía browser. UC-09 dùng nhu cầu “không biết nên học gì” làm động lực trong phạm vi chính thức. UC-10 là yêu cầu động lực đã được phê duyệt; bằng chứng phỏng vấn trực tiếp chưa có. Không thêm UC hội thoại nói hai chiều vào baseline.
 
 ## 3. Stakeholder và actor
 
@@ -92,19 +92,19 @@ Là learner, tôi muốn xem tiến độ và mục tiêu ngày. **AC:** trạng
 
 Là learner, tôi muốn thấy reminder khi chưa học trong ngày. **AC:** chỉ hiển thị khi app mở; không Web Push; dismiss không crash. Trace: UC-08, P1-FR-015.
 
-### US-09 - Placement test (PROPOSED)
+### US-09 - Placement test
 
-Là learner mới, tôi muốn làm test đầu vào để nhận gợi ý CEFR/course. **AC đề xuất:** đề có version; scoring, ngưỡng, tie-breaking và fallback xác định; map theo `Course.cefr`; learner không sửa kết quả. Trace: UC-09, P1-FR-016 proposed.
+Là learner mới, tôi muốn làm test đầu vào để nhận gợi ý CEFR/course. **Acceptance Criteria:** đề có version; scoring, ngưỡng, tie-breaking và fallback xác định; map theo `Course.cefr`; learner không sửa kết quả. Trace: UC-09, P1-FR-016.
 
-### US-10 - Private badges (PROPOSED)
+### US-10 - Private badges
 
-Là learner, tôi muốn nhận badge riêng tư cho mốc học tập. **AC đề xuất:** catalog và điều kiện ổn định; cấp idempotent; chỉ chủ tài khoản xem; không leaderboard; lỗi badge không chặn học. Trace: UC-10, P1-FR-017 proposed.
+Là learner, tôi muốn nhận badge riêng tư cho mốc học tập. **Acceptance Criteria:** catalog và điều kiện ổn định; cấp idempotent; chỉ chủ tài khoản xem; không leaderboard; lỗi badge không chặn học. Trace: UC-10, P1-FR-017.
 
 ## 5. Đặc tả yêu cầu
 
 ### 5.1 Functional requirements
 
-Baseline `P1-FR-001..015` bao phủ auth, learning, exercises, progress, SRS, GEC, admin và reminder. `P1-FR-016` và `P1-FR-017` là requirement proposed cho placement và badges; chưa phải API/schema contract.
+Baseline `P1-FR-001..017` bao phủ auth, learning, exercises, progress, SRS, GEC, admin, reminder, placement và private badges. `P1-FR-016` và `P1-FR-017` là yêu cầu active/in-scope; API/schema contract chi tiết sẽ được khóa trong implementation tasks.
 
 ### 5.2 Non-functional requirements
 
@@ -126,10 +126,10 @@ Giữ 17 Prisma models hiện tại. Không tự thêm persistence writing, spee
 | UC-06 | Luyện viết theo tình huống với GEC, nhập text hoặc giọng nói | Learner | Internal GEC processing pending; client speech convenience approved |
 | UC-07 | Tiến độ, streak và mục tiêu ngày | Learner | Pending M2 |
 | UC-08 | Nhắc nhở học tập trong ứng dụng | Learner | Later M2+ |
-| UC-09 | Placement test và gợi ý cấp độ | Learner | Proposed |
-| UC-10 | Thành tích và huy hiệu riêng tư | Learner | Proposed |
+| UC-09 | Placement test và gợi ý cấp độ | Learner | Active / in scope |
+| UC-10 | Thành tích và huy hiệu riêng tư | Learner | Active / in scope |
 
-Luồng chung: actor đáp ứng precondition, khởi tạo trigger, hệ thống xác thực và kiểm tra dữ liệu, thực hiện main flow, ghi trạng thái qua boundary phù hợp, rồi trả kết quả hoặc fallback. UC-09/UC-10 chỉ là target; các policy dữ liệu/API/RLS cần task riêng.
+Luồng chung: actor đáp ứng precondition, khởi tạo trigger, hệ thống xác thực và kiểm tra dữ liệu, thực hiện main flow, ghi trạng thái qua boundary phù hợp, rồi trả kết quả hoặc fallback. UC-09/UC-10 là active target; các policy dữ liệu/API/RLS cần task riêng.
 
 ## 7. Mô hình hóa yêu cầu - vị trí chèn hình
 
@@ -162,10 +162,10 @@ Các file PlantUML tương ứng nằm trong `docs/plantuml/`. Người dùng ch
 **Hình 9. Activity progress/reminder**
 `[CHÈN ẢNH: docs/plantuml/activity-progress-reminder.puml]`
 
-**Hình 10. Activity placement test [PROPOSED]**
+**Hình 10. Activity placement test**
 `[CHÈN ẢNH: docs/plantuml/activity-placement-test.puml]`
 
-**Hình 11. Activity achievements [PROPOSED]**
+**Hình 11. Activity achievements**
 `[CHÈN ẢNH: docs/plantuml/activity-achievements.puml]`
 
 **Hình 12. Sequence authentication/proxy**
@@ -177,10 +177,10 @@ Các file PlantUML tương ứng nằm trong `docs/plantuml/`. Người dùng ch
 **Hình 14. Sequence GEC**
 `[CHÈN ẢNH: docs/plantuml/sequence-gec.puml]`
 
-**Hình 15. Sequence placement test [PROPOSED]**
+**Hình 15. Sequence placement test**
 `[CHÈN ẢNH: docs/plantuml/sequence-placement-test.puml]`
 
-**Hình 16. Sequence achievements [PROPOSED]**
+**Hình 16. Sequence achievements**
 `[CHÈN ẢNH: docs/plantuml/sequence-achievements.puml]`
 
 **Hình 17. DFD mức ngữ cảnh**
@@ -201,7 +201,7 @@ Các file PlantUML tương ứng nằm trong `docs/plantuml/`. Người dùng ch
 **Hình 22. ERD baseline và phần đề xuất**
 `[CHÈN ẢNH: docs/plantuml/erd-baseline-and-proposed.puml]`
 
-ERD baseline dùng 17 model hiện hành. Entity placement/badge nếu được đề xuất trong hình phải ghi rõ `PROPOSED / NOT IMPLEMENTED`.
+ERD baseline dùng 17 model hiện hành. Placement/badge là các capability in-scope; persistence design được tách thành implementation task và chưa được cộng vào physical baseline.
 
 ## 8. Validation và traceability
 

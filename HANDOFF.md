@@ -7,7 +7,11 @@
 
 ## Current state
 
-- Latest task: `vietnamize-all-plantuml-diagrams` — DONE. Toàn bộ 22 sơ đồ PlantUML đã được Việt hóa phần chữ hiển thị; mã UC, API/RPC, model/entity/field và cú pháp kỹ thuật được giữ nguyên. Compile 22/22 PASS và render Unicode tiếng Việt 22/22 PASS.
+- Latest task: `align-uc-scope-and-report-status` — DONE. UC-01..UC-10 are official in-scope features in active canonical docs and Markdown reports; UC-09/UC-10 have canonical `P1-FR-016/017` entries and traceability rows. Runtime/schema/API implementation remains separately gated and is not claimed as complete. Scope scan and `git diff --check` pass.
+
+- Latest task: `standardize-plantuml-english-technical-terminology` — DONE. Standardized all 22 PlantUML files across `docs/plantuml/`: actors (`Learner`, `Admin`), Use Cases (`UC-01`..`UC-10`), system boundary (`Lingora Web Learning System`), lifelines, DFD processes/stores, and ERD packages use standard English technical terminology without internal model branding in UC bubbles. Kept natural Vietnamese action steps in Activity diagrams and clear Vietnamese message labels on Sequence arrows. PlantUML compiler validation (22/22 PASS), PNG rendering (22/22 PASS), and `git diff --check` (PASS).
+
+- Latest task: `vietnamize-all-plantuml-diagrams` — SUPERSEDED by `standardize-plantuml-english-technical-terminology`.
 
 - Latest task: `complete-plantuml-coverage-and-integrate-reports` — DONE. Current documentation now uses the contiguous `UC-01`..`UC-10` catalog; UC-09 Placement and UC-10 Private Achievements remain `PROPOSED / NOT IMPLEMENTED`. Learner and Admin are the only external Use Case actors, both outside the Lingora boundary with solid non-arrow associations. GEC/T5-small is documented as internal processing. The PlantUML catalog contains 22 compiling sources, including Level 0 and detailed Lesson/Exercise, SRS and GEC DFDs. The ERD reports 15 active + 2 legacy/deprecated physical models and excludes proposed entities. Markdown reports retain six original interviews plus three supplementary records without combining frequencies. Final audit: 22/22 PlantUML compile PASS; actor/UC/ERD/catalog/interview scans PASS.
 

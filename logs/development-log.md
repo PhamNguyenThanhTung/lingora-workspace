@@ -6,6 +6,32 @@
 
 ### Task
 
+`standardize-plantuml-english-technical-terminology - Standardize PlantUML English Technical Terminology`
+
+### Completed
+
+- Standardized actors across all 22 PlantUML files to English technical names (`Learner`, `Admin`).
+- Standardized Use Case titles across all diagrams to English (`UC-01 Authenticate & Manage Session` through `UC-10 Earn Achievements & Badges`), without model branding inside UC bubbles.
+- Standardized lifelines, components, packages, entities and data stores to English technical terms (`Lingora Web Learning System`, `PostgreSQL DB`, `Grammar Correction Module`, `PHYSICAL BASELINE - 15 ACTIVE BUSINESS MODELS`, `PROPOSED / NOT IMPLEMENTED`).
+- Maintained natural, clear Vietnamese action steps in Activity diagrams and Vietnamese message flow text on Sequence arrows for presentation readability.
+- Verified compilation and rendered all 22 diagrams (22/22 PASS).
+
+### Tests
+
+- `PLANTUML-STD-001` .. `PLANTUML-STD-003`: All test cases PASS in `logs/test-log.md`.
+
+### Commit
+
+`PENDING - waiting for human verification and commit authorization`
+
+---
+
+### Date
+
+`2026-08-23`
+
+### Task
+
 `redesign-requirements-presentation-deck-with-visual-cards-and-image-placeholders - Presentation Deck Redesign with Cards & Image Placeholders`
 
 ### Completed
@@ -1556,3 +1582,11 @@ Final COMMIT gate uses Conventional Commit message: `docs: complete PlantUML cov
 ### Commit
 
 Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML diagrams`.
+## 2026-08-23 — align-uc-scope-and-report-status
+
+- **Completed:** Promoted UC-09 Placement Test and UC-10 Private Achievements to official active/in-scope requirements across active canonical documentation and synchronized the requested Markdown reports plus the five-chapter report.
+- **Changed:** Added canonical `P1-FR-016` and `P1-FR-017` entries and traceability rows; removed proposed-only labels from report tables, user stories, model notes, diagram captions and conclusions; preserved implementation-pending evidence wording.
+- **Problems:** Existing reports and canonical docs contradicted the user-approved UC-01..UC-10 scope.
+- **Solution:** Reframed scope as official while retaining accurate implementation/evidence status and preserving the existing 17-model physical baseline.
+- **Tests:** Scope scan PASS; `git diff --check` PASS.
+- **Commit:** Pending commit of the approved documentation change.

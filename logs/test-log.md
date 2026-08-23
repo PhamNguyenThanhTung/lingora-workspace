@@ -334,3 +334,58 @@ Append test evidence after implementation. Failed tests remain recorded; add a l
 - **Command:** `node D:\btl\tmp\timhieupaper-template-audit\check_layout.mjs`
 - **Output:** exit code 0; all 19 slide layout boundaries checked and verified without clipping.
 - **Verdict:** PASS — layout bounds verified.
+
+# PLANTUML-STD-EN — Standardize PlantUML English technical terminology (2026-08-23)
+
+- **Environment:** Windows PowerShell, Java OpenJDK, PlantUML 1.2026.6.
+- **Command:** `java -jar $env:TEMP\lingora-plantuml\plantuml.jar -checkonly docs/plantuml/*.puml`
+- **Output:** exit code 0; all 22/22 PlantUML sources compiled successfully.
+- **Verdict:** PASS — `PLANTUML-STD-001` compiler syntax validation.
+
+- **Command:** `java -jar $env:TEMP\lingora-plantuml\plantuml.jar -tpng -o D:/btl/tmp/plantuml-render docs/plantuml/*.puml`
+- **Output:** exit code 0; rendered all 22 PNG diagrams. Visual inspection of `use-case-overview.png`, `use-case-learner.png`, `sequence-gec.png`, `dfd-level-0.png`, `erd-baseline-and-proposed.png` verifies English actors (`Learner`, `Admin`), English Use Cases (`UC-01`..`UC-10`), English technical entities/packages, and clear Vietnamese action flows and message arrows.
+- **Verdict:** PASS — `PLANTUML-STD-002` render & visual QA.
+
+- **Command:** `git diff --check`
+- **Output:** exit code 0; clean whitespace across all modified `.puml` files.
+- **Verdict:** PASS — `PLANTUML-STD-003` git hygiene.
+## 2026-08-23 — align-uc-scope-and-report-status
+
+**Environment:** Windows, PowerShell, repository working tree (commit not created yet).
+
+**Command:** `rg -n -i "\\[PROPOSED\\]|PROPOSED / NOT IMPLEMENTED|Approved target; not implemented|proposed-only|UC-09.*proposed|UC-10.*proposed|proposed.*UC-09|proposed.*UC-10" docs --glob "*.md" --glob "*.puml"`
+
+**Output:** Exit code 0; no forbidden UC-09/UC-10 status labels in active Markdown/canonical/PlantUML sources. Remaining matches are presentation inspection artifacts outside this Markdown task scope.
+
+**Command:** `git diff --check`
+
+**Output:** Exit code 0; no whitespace errors.
+
+**Verdict:** PASS
+
+## 2026-08-23 — strip-proposed-and-redesign-presentation
+
+**Environment:** Windows, PowerShell, Java OpenJDK, PlantUML 1.2026.6, Node.js `@oai/artifact-tool`.
+
+**Command:** `java -jar $env:TEMP\lingora-plantuml\plantuml.jar -checkonly docs/plantuml/*.puml`
+**Output:** exit code 0; 22/22 PlantUML source files compiled without errors. All `[PROPOSED]` tags and "not implemented" yellow note boxes stripped cleanly.
+**Verdict:** PASS — `PLANTUML-STRIP-001` compiler syntax validation.
+
+**Command:** `java -jar $env:TEMP\lingora-plantuml\plantuml.jar -tpng -o D:/btl/tmp/plantuml-render docs/plantuml/*.puml`
+**Output:** exit code 0; rendered all 22 PNG diagrams. Visual inspection of `use-case-overview.png`, `use-case-learner.png`, `activity-placement-test.png`, `activity-achievements.png`, `sequence-placement-test.png`, `sequence-achievements.png`, and `erd-baseline-and-proposed.png` confirms clean UC-01..UC-10 without `[PROPOSED]` disclaimers.
+**Verdict:** PASS — `PLANTUML-STRIP-002` render & visual QA.
+
+**Command:** `node D:\btl\tmp\timhieupaper-template-audit\build_revised_deck.mjs`
+**Output:** exit code 0; rebuilt 19-slide presentation:
+1. UC-09 and UC-10 cards styled identically without orange highlight or footer disclaimers.
+2. Top-right "Slide XX" badges removed from all 19 slides.
+3. Bottom warning/disclaimer banners removed from content slides.
+4. Section divider slides (Slides 3, 6, 12, 16) simplified to only prominent section title.
+5. Slide 19 redesigned to a single clean centered card.
+All 19 slides rendered to PNG in `D:/btl/tmp/timhieupaper-template-audit/revised-render` and verified.
+**Verdict:** PASS — `PPT-REDESIGN-CLEANUP-001`.
+
+**Command:** `git diff --check`
+**Output:** exit code 0; clean whitespace across all modified files.
+**Verdict:** PASS — `GIT-HYGIENE-001`.
+

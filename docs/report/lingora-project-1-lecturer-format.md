@@ -12,7 +12,7 @@
 
 Lingora là nền tảng Web hỗ trợ học tiếng Anh qua khóa học, bài học, từ vựng, bài tập, ôn tập lặp lại có cấu trúc, theo dõi tiến độ và luyện viết theo tình huống. Báo cáo này tập trung vào yêu cầu đề tài, phân tích chức năng, luồng dữ liệu và thiết kế cơ sở dữ liệu theo format của giảng viên.
 
-Hệ thống có hai phạm vi kỹ thuật được phê duyệt: Software Engineering cho nền tảng Web và Machine Learning với T5-small Grammatical Error Correction. DKT/HLR/DQN và chatbot MultiWOZ là hướng lịch sử đã superseded. UC-09 Placement Test và UC-10 Private Badges là đề xuất, chưa triển khai.
+Hệ thống có hai phạm vi kỹ thuật được phê duyệt: Software Engineering cho nền tảng Web và Machine Learning với T5-small Grammatical Error Correction. DKT/HLR/DQN và chatbot MultiWOZ là hướng lịch sử đã superseded. UC-01 đến UC-10 đều là chức năng chính thức trong phạm vi; UC-09 và UC-10 đang chờ hoàn thiện implementation evidence.
 
 # PHẦN I. YÊU CẦU ĐỀ TÀI
 
@@ -65,7 +65,7 @@ Các kết quả được phân biệt theo ba mức: `OBSERVED` khi có bằng 
 
 ## 1.5. Phạm vi, stakeholder và actor
 
-Phạm vi mục tiêu gồm UC-01 đến UC-08 cùng UC-09 Placement Test và UC-10 Private Badges. UC-09 và UC-10 luôn được gắn `PROPOSED / NOT IMPLEMENTED`. Ngoài phạm vi hiện tại: chatbot hội thoại sinh mở, backend speech model, Web Push, leaderboard, social feed và persistence mới cho lịch sử writing/GEC. UC-06 chỉ cho phép nhập giọng nói và phát câu sửa như tiện ích trình duyệt; backend vẫn text-in/text-out.
+Phạm vi mục tiêu gồm đầy đủ UC-01 đến UC-10. UC-09 và UC-10 là active/in-scope; trạng thái triển khai được theo dõi riêng bằng evidence. Ngoài phạm vi hiện tại: chatbot hội thoại sinh mở, backend speech model, Web Push, leaderboard, social feed và persistence mới cho lịch sử writing/GEC. UC-06 chỉ cho phép nhập giọng nói và phát câu sửa như tiện ích trình duyệt; backend vẫn text-in/text-out.
 
 | Đối tượng | Vai trò và mục tiêu |
 |---|---|
@@ -87,8 +87,8 @@ Phạm vi mục tiêu gồm UC-01 đến UC-08 cùng UC-09 Placement Test và UC
 | Scenario writing và GEC | P1-FR-007, ML-GEC-FR-001..005 / UC-06 | Approved target; implementation pending |
 | Progress, streak, daily goal | P1-FR-004, 011, 014 / UC-07 | Data foundation có; flow pending M2 |
 | Reminder trong ứng dụng | P1-FR-015 / UC-08 | Later M2+; không Web Push |
-| Placement Test | P1-FR-016 / UC-09 | `PROPOSED / NOT IMPLEMENTED` |
-| Private Badges | P1-FR-017 / UC-10 | `PROPOSED / NOT IMPLEMENTED` |
+| Placement Test | P1-FR-016 / UC-09 | Active / in scope; implementation pending |
+| Private Badges | P1-FR-017 / UC-10 | Active / in scope; implementation pending |
 
 ## 1.7. Yêu cầu phi chức năng
 
@@ -138,9 +138,9 @@ Hệ thống được phân rã thành bảy nhóm chức năng:
 
 Physical schema baseline được phê duyệt gồm 17 Prisma models. Trong đó, `ChatSession` và `ChatMessage` là hai model legacy/deprecated đang chờ một migration cleanup chính thức; 15 model còn lại phục vụ các luồng nghiệp vụ đang hoạt động. Các nhóm chính gồm Language/Profile; Course/Lesson/Vocabulary/Exercise; UserProgress; UserVocabSrs/ReviewLog; ChatScenario và các bảng translation/liên kết.
 
-Những entity cho Placement Test hoặc Private Badges chỉ xuất hiện trong vùng `PROPOSED / NOT IMPLEMENTED` của ERD, không được cộng vào physical baseline hoặc active-flow count.
+Placement Test và Private Badges thuộc phạm vi chính thức; các entity persistence tương ứng chưa được cộng vào physical baseline hoặc active-flow count và phải đi qua implementation task riêng.
 
-**[CHÈN HÌNH: ERD baseline và phần proposed]**
+**[CHÈN HÌNH: ERD baseline và phần mở rộng in-scope]**
 
 ## 2.3. Sơ đồ mức ngữ cảnh
 
@@ -194,7 +194,7 @@ Yêu cầu được review theo năm tiêu chí của tài liệu giảng viên:
 
 1. **Đúng:** phản ánh nhu cầu quan sát và quyết định phạm vi đã phê duyệt.
 2. **Đầy đủ:** mỗi mục tiêu chính có FR/NFR, Use Case, luồng, data/API boundary và acceptance criteria.
-3. **Nhất quán:** SRS không bị mô tả đồng thời là deterministic và ML; GEC không bị mô tả như chatbot; proposed không bị gọi là implemented.
+3. **Nhất quán:** SRS không bị mô tả đồng thời là deterministic và ML; GEC không bị mô tả như chatbot; phạm vi và trạng thái implementation được phân biệt rõ.
 4. **Khả thi:** công nghệ phù hợp với Next.js, Supabase, FastAPI và T5-small; các mục chưa khóa policy được giữ ở trạng thái pending.
 5. **Có thể kiểm thử:** requirement có điều kiện đầu vào, kết quả, lỗi và test/evidence ID rõ ràng.
 
@@ -222,7 +222,7 @@ ERD trình bày ba lớp rõ ràng:
 
 - **Physical baseline - 17 models:** gồm 15 model active-flow và hai model legacy/deprecated `ChatSession`, `ChatMessage` đang chờ migration cleanup chính thức.
 - **Active business flow - 15 models:** Language/Profile; course/lesson/vocabulary/exercise; progress; SRS/review; scenario và translation/link tables.
-- **Proposed extension:** entity Placement/Badge nếu được thiết kế sau này, luôn gắn `PROPOSED / NOT IMPLEMENTED` và không cộng vào baseline.
+- **In-scope extension:** entity Placement/Badge khi được thiết kế phải đi qua task schema/API/RLS được phê duyệt và cập nhật model-count evidence.
 
 `user_vocab_srs` liên kết với `review_logs`; `lessons` liên kết với `exercises`, `vocabularies` qua bảng nối và `user_progress`. `ChatScenario` giữ nội dung tình huống cho UC-06, trong khi GEC output vẫn transient.
 
@@ -254,7 +254,7 @@ Thiết kế xử lý tập trung vào contract, transaction, authorization và 
 
 # PHẦN IV. KẾT LUẬN
 
-Báo cáo đã xây dựng một chuỗi logic từ evidence đến requirement, Use Case, mô hình xử lý, dữ liệu và kiểm thử. UC-01 có foundation triển khai; UC-02/03/04/05/07 có mức độ nền tảng khác nhau; UC-06 là mục tiêu GEC đang chờ triển khai đầy đủ; UC-08 thuộc later M2+; UC-09 và UC-10 vẫn `PROPOSED / NOT IMPLEMENTED`.
+Báo cáo đã xây dựng một chuỗi logic từ evidence đến requirement, Use Case, mô hình xử lý, dữ liệu và kiểm thử. UC-01 có foundation triển khai; UC-02/03/04/05/07 có mức độ nền tảng khác nhau; UC-06 là mục tiêu GEC đang chờ triển khai đầy đủ; UC-08 thuộc later M2+; UC-09 và UC-10 là chức năng active/in-scope đang chờ implementation evidence.
 
 Physical baseline được báo cáo là 17 model theo quyết định phê duyệt, trong đó 15 model thuộc luồng nghiệp vụ hiện hành và `ChatSession`/`ChatMessage` là legacy/deprecated chờ migration cleanup chính thức. Cách trình bày này tách rõ lịch sử vật lý, phạm vi hoạt động và thiết kế đề xuất.
 

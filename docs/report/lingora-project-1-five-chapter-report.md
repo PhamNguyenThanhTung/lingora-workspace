@@ -113,17 +113,17 @@ Phỏng vấn bán cấu trúc gồm 6 người, 15 câu hỏi/người. P1-P4 v
 | Quên từ vựng | 6/6 | UC-02, UC-05 |
 | Không biết lúc nào ôn | 5/6 | UC-05 |
 | Học không đều | 4/6 | UC-07, UC-08 |
-| Không biết nên học gì | 4/6 | UC-02, UC-09 proposed |
+| Không biết nên học gì | 4/6 | UC-02, UC-09 |
 | Thiếu người luyện nói | 6/6 | Gap tương lai của UC-06 |
 | Muốn được sửa lỗi | 6/6 | UC-06 scenario writing/GEC |
 
 ### 2.3.1. Phạm vi Use Case
 
-UC-01 đến UC-08 là baseline. UC-09 Placement Test và UC-10 Private Badges là `PROPOSED`, implementation pending. Không thêm chatbot nói hai chiều vào baseline.
+UC-01 đến UC-10 là baseline phạm vi chính thức. UC-09 Placement Test và UC-10 Private Badges đang chờ implementation evidence. Không thêm chatbot nói hai chiều vào baseline.
 
 ### 2.3.2. Yêu cầu chức năng
 
-`P1-FR-001..015` là baseline về auth, lesson, exercise, progress, SRS, GEC, admin và reminder. `P1-FR-016` là placement proposed; `P1-FR-017` là badges proposed.
+`P1-FR-001..017` là baseline về auth, lesson, exercise, progress, SRS, GEC, admin, reminder, placement và badges. P1-FR-016/017 là active/in-scope requirements với implementation evidence pending.
 
 ### 2.3.3. Yêu cầu phi chức năng
 
@@ -144,7 +144,7 @@ Bảo mật: RLS theo ownership, cookie httpOnly và AI qua Route Handler. Hiệ
 
 ## 3.1. User Story và Acceptance Criteria
 
-US-01 xác thực; US-02 học bài/từ vựng; US-03 bài tập; US-04 admin content; US-05 SRS; US-06 scenario writing GEC; US-07 progress/streak/goal; US-08 reminder; US-09 placement proposed; US-10 badges proposed. Mỗi story được truy nguyên tới UC và P1-FR trong báo cáo yêu cầu nguồn.
+US-01 xác thực; US-02 học bài/từ vựng; US-03 bài tập; US-04 admin content; US-05 SRS; US-06 scenario writing GEC; US-07 progress/streak/goal; US-08 reminder; US-09 placement; US-10 badges. Mỗi story được truy nguyên tới UC và P1-FR trong báo cáo yêu cầu nguồn.
 
 ## 3.2. Phân tích hướng cấu trúc
 
@@ -168,8 +168,8 @@ Các luồng chính gồm Auth/session, học bài/exercise, SRS qua `record_rev
 
 ### 3.2.4. ERD
 
-Baseline có 17 Prisma models. ERD đề xuất cho placement/badges phải gắn nhãn `PROPOSED / NOT IMPLEMENTED`, không tự hiểu là schema đã thay đổi.
-**Hình 15. ERD baseline và phần đề xuất - [CHÈN ẢNH từ `erd-baseline-and-proposed.puml`]**
+Baseline có 17 Prisma models. Placement/badges là capability in-scope; persistence design chưa được cộng vào physical baseline cho đến khi có task schema được phê duyệt.
+**Hình 15. ERD baseline và phần mở rộng in-scope - [CHÈN ẢNH từ `erd-baseline-and-proposed.puml`]**
 
 ## 3.3. Phân tích hướng đối tượng
 
@@ -228,7 +228,7 @@ Kiểm thử gồm unit test, integration/contract test, RLS isolation, proxy er
 
 ### 5.1.2. Evidence hiện có
 
-Các milestone trước đã có evidence Auth/RLS/Storage, deterministic seed, FastAPI mock, JWT verifier, Web foundation, Playwright và PlantUML. GEC thật, M2 lesson flow, placement scoring và badge catalog vẫn pending hoặc proposed.
+Các milestone trước đã có evidence Auth/RLS/Storage, deterministic seed, FastAPI mock, JWT verifier, Web foundation, Playwright và PlantUML. GEC thật, M2 lesson flow, placement scoring và badge catalog vẫn pending implementation evidence.
 
 ### 5.1.3. Ma trận truy vết rút gọn
 
@@ -238,8 +238,8 @@ Các milestone trước đã có evidence Auth/RLS/Storage, deterministic seed, 
 | P1-FR-002/003 | UC-02/03 | Lesson/exercise engine | M2 tests |
 | P1-FR-005/006 | UC-05 | `record_review`/RLS | SRS/RLS tests |
 | P1-FR-007 | UC-06 | Proxy/FastAPI/T5-small | GEC contract tests |
-| P1-FR-016 | UC-09 | Proposed policy | Implementation plan |
-| P1-FR-017 | UC-10 | Proposed catalog | Implementation plan |
+| P1-FR-016 | UC-09 | Active placement policy | Implementation plan |
+| P1-FR-017 | UC-10 | Active badge catalog | Implementation plan |
 
 ## 5.2. Triển khai sản phẩm
 
@@ -247,7 +247,7 @@ Môi trường mục tiêu gồm Vercel cho Web/Admin, Supabase Cloud cho Auth/P
 
 # KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
 
-Lingora đã có baseline rõ cho nền tảng Web, Auth, dữ liệu/RLS, SRS xác định và kiến trúc GEC T5-small. Báo cáo đã truy nguyên yêu cầu từ tài liệu giảng viên, phỏng vấn và canonical docs. UC-09 Placement Test và UC-10 Private Badges được giữ ở trạng thái proposed. Hướng phát triển gồm GEC thật, adaptive learning sau khi có policy, speech-to-text và spoken dialogue; các hướng này không được xem là chức năng đã hoàn thành.
+Lingora đã có baseline rõ cho nền tảng Web, Auth, dữ liệu/RLS, SRS xác định và kiến trúc GEC T5-small. Báo cáo đã truy nguyên yêu cầu từ tài liệu giảng viên, phỏng vấn và canonical docs. UC-09 Placement Test và UC-10 Private Badges thuộc phạm vi chính thức và cần implementation task để hoàn thiện bằng chứng. Hướng phát triển gồm GEC thật, adaptive learning sau khi có policy, speech-to-text và spoken dialogue; các hướng này không được xem là chức năng đã hoàn thành.
 
 # TÀI LIỆU THAM KHẢO
 

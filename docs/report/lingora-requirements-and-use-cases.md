@@ -22,10 +22,10 @@ LINGORA là nền tảng Web học tiếng Anh gồm khóa học, bài học, t�
 | UC-06 | Luyện viết theo tình huống với GEC, nhập text hoặc giọng nói | Learner | Contract approved; internal GEC processing pending; client speech convenience approved |
 | UC-07 | Theo dõi tiến độ, streak và mục tiêu ngày | Learner | Pending M2 |
 | UC-08 | Nhắc nhở học tập trong ứng dụng | Learner | Later M2+ |
-| UC-09 | Kiểm tra trình độ đầu vào và gợi ý cấp độ | Learner | Proposed; implementation pending |
-| UC-10 | Thành tích và huy hiệu học tập | Learner | Proposed; implementation pending |
+| UC-09 | Kiểm tra trình độ đầu vào và gợi ý cấp độ | Learner | Active / in scope; implementation pending |
+| UC-10 | Thành tích và huy hiệu học tập | Learner | Active / in scope; implementation pending |
 
-UC-09/UC-10 không được trình bày như chức năng đã có trong sản phẩm. Danh mục hiện hành dùng mã liên tục `UC-01`..`UC-10`.
+UC-09/UC-10 là chức năng chính thức trong phạm vi hệ thống. Trạng thái triển khai được ghi riêng để phân biệt phạm vi với bằng chứng runtime. Danh mục hiện hành dùng mã liên tục `UC-01`..`UC-10`.
 
 ## 2. Thu thập yêu cầu
 
@@ -128,21 +128,21 @@ Nguồn dự án: `docs/00`-`docs/07`, `DESIGN.md` và `plans/current-task.md`. 
 
 **Trace:** `UC-08`, `P1-FR-015`.
 
-### US-09 - Placement test (PROPOSED)
+### US-09 - Placement test
 
 **Story:** Với tư cách learner mới, tôi muốn làm bài test đầu vào ngắn để nhận gợi ý course/level.
 
 **Acceptance criteria đề xuất:** Dùng exercise engine với bộ câu hỏi có version; policy xác định score, ngưỡng CEFR, tie-breaking và fallback; kết quả map theo `Course.cefr`; learner không tự sửa result; lỗi cho phép bỏ qua; persistence/API/RLS chỉ quyết định ở task implementation riêng.
 
-**Trace mục tiêu:** `UC-09`, `P1-FR-016 (proposed)`.
+**Trace mục tiêu:** `UC-09`, `P1-FR-016`.
 
-### US-10 - Achievements và badges (PROPOSED)
+### US-10 - Achievements và badges
 
 **Story:** Với tư cách learner, tôi muốn nhận badge riêng tư cho mốc học tập.
 
 **Acceptance criteria đề xuất:** Catalog có mã ổn định và điều kiện; điều kiện dựa trên progress/event; không cấp trùng; learner chỉ xem badge của mình; không leaderboard/social feed; lỗi badge không chặn lesson/SRS; entity/API/RPC/RLS chỉ quyết định ở task riêng.
 
-**Trace mục tiêu:** `UC-10`, `P1-FR-017 (proposed)`.
+**Trace mục tiêu:** `UC-10`, `P1-FR-017`.
 
 ## 4. Đặc tả yêu cầu phần mềm
 
@@ -158,10 +158,10 @@ Nguồn dự án: `docs/00`-`docs/07`, `DESIGN.md` và `plans/current-task.md`. 
 | UC-06 | Published scenario exists | Prompt -> choose typing/speech -> edit text -> proxy -> FastAPI -> correction -> diff -> optional speech synthesis | Unsupported/denied microphone, input/scenario/auth/model error | Safe transient correction, audio playback or retry state |
 | UC-07 | Learner has profile/activity | Read progress -> update goal -> qualify activity | Invalid goal or duplicate day | Progress/streak/goal state updated |
 | UC-08 | App is open in reminder window | Check daily activity -> show in-app reminder | No qualifying activity or dismissed reminder | Reminder shown/dismissed locally |
-| UC-09 | New learner and test policy exists | Load versioned test -> answer -> score -> CEFR mapping | Insufficient answers -> default/skip | Proposed placement recommendation |
-| UC-10 | Qualifying progress event exists | Evaluate badge rules -> idempotent award -> display private badge | Rule/data failure -> no-op | Proposed private award state |
+| UC-09 | New learner and test policy exists | Load versioned test -> answer -> score -> CEFR mapping | Insufficient answers -> default/skip | Placement recommendation |
+| UC-10 | Qualifying progress event exists | Evaluate badge rules -> idempotent award -> display private badge | Rule/data failure -> no-op | Private award state |
 
-UC-09 and UC-10 rows are approved targets, not implementation evidence.
+UC-09 and UC-10 rows are active functional requirements; implementation evidence remains pending until their approved delivery tasks produce test output.
 
 ### 4.1 Functional requirements mở rộng
 
@@ -169,8 +169,8 @@ Baseline là `P1-FR-001..015` trong `docs/02-requirements.md`.
 
 | ID | Requirement | Trạng thái |
 |---|---|---|
-| P1-FR-016 | Learner làm placement test và nhận gợi ý CEFR/course theo policy xác định. | Approved plan; implementation pending |
-| P1-FR-017 | Learner xem badge riêng tư được cấp idempotent theo mốc học tập. | Approved plan; implementation pending |
+| P1-FR-016 | Learner làm placement test và nhận gợi ý CEFR/course theo policy xác định. | Active / in scope; implementation pending |
+| P1-FR-017 | Learner xem badge riêng tư được cấp idempotent theo mốc học tập. | Active / in scope; implementation pending |
 
 Hai ID này chưa phải schema/API contract. Nếu cần entity, API, RPC hoặc RLS phải tạo implementation plan và impact review.
 
@@ -222,14 +222,14 @@ Learner cung cấp credentials, answers, review result và writing input; nhận
 
 ### 5.2 ERD
 
-ERD baseline dùng 17 models trong `docs/07-data-dictionary.md`. UC-09 có thể cần placement result hoặc tái sử dụng `UserProgress`; UC-10 có thể cần badge catalog/award. Hai quyết định chưa khóa; entity đề xuất phải ghi `PROPOSED / NOT IMPLEMENTED`.
+ERD baseline dùng 17 models trong `docs/07-data-dictionary.md`. UC-09 cần placement result hoặc tái sử dụng `UserProgress`; UC-10 cần badge catalog/award. Hai thiết kế persistence chưa khóa và phải đi qua implementation task, nhưng đều thuộc phạm vi chính thức.
 
 ## 6. Xác minh và quản lý
 
 - Đúng: requirement có actor, goal và evidence.
 - Đầy đủ: 10 UC được cover.
 - Nhất quán: proxy, RPC, RLS và persistence boundary không mâu thuẫn.
-- Khả thi: UC-09/UC-10 chưa hứa triển khai trước impact review.
+- Khả thi: UC-09/UC-10 thuộc phạm vi; chi tiết impact/schema/API/RLS và kế hoạch triển khai phải được khóa trước khi coding.
 - Kiểm thử được: criteria có success và error/fallback.
 - Truy vết được: UC -> FR/NFR -> component/data/API -> test/report.
 
@@ -237,4 +237,4 @@ Mọi thay đổi UC-09/UC-10 phải cập nhật plan, requirement IDs, traceab
 
 ## 7. Kết luận
 
-8 UC baseline phản ánh hệ thống hiện có; UC-09 và UC-10 là mục tiêu approved nhưng implementation pending. Bước tiếp theo là khóa placement scoring policy và badge catalog/rules trong các implementation plan riêng.
+Danh mục chính thức gồm đủ UC-01..UC-10. Bước tiếp theo là khóa placement scoring policy và badge catalog/rules trong các implementation plan riêng, sau đó bổ sung bằng chứng runtime.
