@@ -7,7 +7,7 @@
 
 ## Current state
 
-- Current task: `integrate-survey-and-format-final-report` — TESTING. Added `SRC-REQ-018` for the 15-response survey, integrated auditable percentage/count findings into active Markdown reports, and created `docs/report/Lingora-Project-1-Lecturer-Format-Final.docx` in the provided academic report style. Structural checks pass. Visual DOCX rendering is blocked because LibreOffice/soffice is unavailable.
+- Latest task: `integrate-survey-and-format-final-report` — DONE. Added `SRC-REQ-018` for the 15-response survey, integrated auditable percentage/count findings into active Markdown reports, and created `docs/report/Lingora-Project-1-Lecturer-Format-Final.docx` in the provided academic report style. Structural checks pass. Visual DOCX rendering remains blocked because LibreOffice/soffice is unavailable.
 
 - Latest task: `integrate-survey-dataset-metrics` — DONE. Extracted and analyzed survey responses across 24 questions from `D:\btl\Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx`. Integrated high-impact quantitative survey percentages into Slides 4, 7, and 8 (100% forgetting vocab, 93.3% adaptive review, 86.7% habit drop, 80% SRS urgency 4.13/5, 66.7% grammar feedback, 80% career motivation, 73.3% fill-in-the-blank preference). Re-rendered all 19 slides to PNG and synchronized PPTX deliverables.
 

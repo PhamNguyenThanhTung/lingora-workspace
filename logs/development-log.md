@@ -1654,4 +1654,4 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 - **Problems:** Existing reports said no traceable quantitative survey existed; the old lecturer report conclusion repeated that contradiction. Reference rendering was blocked by missing LibreOffice.
 - **Solution:** Replaced the obsolete limitation with the actual N=15 survey scope and explicitly kept survey/interview samples separate.
 - **Tests:** Survey reconciliation PASS; structural DOCX audit PASS; `git diff --check` PASS; render QA unavailable due to missing `soffice`.
-- **Commit:** Pending commit after final status update.
+- **Commit:** `6e990cc` plus final status update commit.
