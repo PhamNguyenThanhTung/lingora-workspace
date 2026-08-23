@@ -1,6 +1,6 @@
 # 03 - Lingora AI API Contract
 
-> **Current normative amendment (ADR-010, effective 2026-08-21):** the target inference contract is `POST /v1/gec/correct`. Existing SRS and roleplay contracts below remain implemented compatibility surfaces until consumers migrate; they are not removed or marked as already deprecated by this documentation task.
+> **Current normative amendment (ADR-010, effective 2026-08-21):** the target inference contract is `POST /v1/gec/correct`. This HTTP boundary is an internal Lingora component contract, not an interaction with an external `AI Service` actor. Existing SRS and roleplay contracts below remain implemented compatibility surfaces until consumers migrate; they are not removed or marked as already deprecated by this documentation task.
 
 ## `POST /v1/gec/correct` — proposed canonical target
 

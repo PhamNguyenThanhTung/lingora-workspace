@@ -1,0 +1,25 @@
+@startuml
+title Activity - UC-04 Admin Content and Publishing
+skinparam shadowing false
+start
+:Authenticate as ADMIN;
+:Select course, lesson, vocabulary, exercise or scenario;
+:Create or edit content and translations;
+if (Media required?) then (yes)
+  :Validate MIME type, size and destination path;
+  :Upload approved media;
+endif
+:Validate content and exercise payload;
+if (Ready to publish?) then (yes)
+  :Verify required translations and ordered children;
+  if (Publication checks pass?) then (yes)
+    :Publish content;
+  else (no)
+    :Show actionable validation errors;
+  endif
+else (no)
+  :Save as unpublished content;
+endif
+:Record updated state;
+stop
+@enduml

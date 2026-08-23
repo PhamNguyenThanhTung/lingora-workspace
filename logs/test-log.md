@@ -207,3 +207,100 @@ Append test evidence after implementation. Failed tests remain recorded; add a l
 | SCOPE2-T-008 | 2026-08-21 | ML evaluation completeness | GEC dataset/license, split, baseline, metrics, latency and registry requirements are specified without fabricated metrics | **Command:** inspect ML-GEC requirements and trace rows. **Output:** seven ML-GEC IDs cover dataset, T5-small, diff/classifier, Precision/Recall/F0.5/ERRANT, optional modules, security and warm/cold latency; all are pending evidence. | PASS | Windows / Markdown inspection | PENDING |
 | SCOPE2-T-009 | 2026-08-21 | Links, IDs, whitespace and secret hygiene | Documentation patch has no whitespace errors or secret additions | **Command:** `git diff --check`; ID inventory; changed-path inspection. **Output:** `git diff --check` exit `0`; stable ID counts match; no secrets or implementation files added. | PASS | Windows / Git / PowerShell | PENDING |
 | SCOPE2-T-010 | 2026-08-21 | Documentation quality and security review | Final review records residual risks before completion | **Command:** manual five-axis review against code-review-and-quality and security-and-hardening checklists. **Output:** no implementation boundary, auth, RLS, output-handling or unbounded-consumption issue introduced; residual risks are recorded in plan/ADR. | PASS | Windows / Documentation review | PENDING |
+| RPT-UC-001 | 2026-08-21 | Report source and evidence audit | Report identifies regulation source, canonical sources and missing survey evidence without fabricated metrics | **Environment:** Windows PowerShell; repository `D:\btl`; Python bundled runtime 3.11; Git worktree at current HEAD. **Command:** `pdfplumber` extraction of `D:\ml\Bai 2 - Phân tích yêu cầu.pdf`; static inspection of `docs/report/evidence-register.md`. **Output:** 22 PDF pages extracted; source register contains `SRC-REQ-001`..`009`; missing CSV/XLSX/interview evidence marked `EVIDENCE-PENDING`; unsupported percentages excluded. | PASS | Windows / Python 3.11 / pdfplumber | PENDING |
+| RPT-UC-002 | 2026-08-21 | 10-Use-Case trace and report completeness | Report contains UC-01..08 baseline, UC-09/UC-11 proposed, User Stories, Acceptance Criteria, P1-FR-016/017 and model inventory | **Command:** static ID/section scan over `docs/report/lingora-requirements-and-use-cases.md`. **Output:** `REPORT_MISSING=0` for required IDs/sections; report 231 lines; evidence register 98 lines. | PASS | Windows / PowerShell | PENDING |
+| RPT-UC-003 | 2026-08-21 | PlantUML compiler validation | All diagram source files compile | **Command:** `java -jar %TEMP%\lingora-plantuml\plantuml.jar -checkonly docs/plantuml/*.puml`. **Output:** 15/15 files PASS; initial DFD multiline-label error fixed and rerun green. | PASS | Windows / Java OpenJDK / PlantUML 1.2026.6 / GraphViz 2.44.1 | PENDING |
+| RPT-UC-004 | 2026-08-21 | Security and boundary review | Documentation preserves httpOnly, Route Handler proxy, JWT, RLS, stateless AI and safe model-output handling | **Command:** manual review against `security-and-hardening` and `code-review-and-quality`; static inspection of report and PlantUML. **Output:** no production boundary changed; report states browser does not call FastAPI directly, GEC is transient, T5-small owns only `corrected_text`, proposed UC-09/UC-11 changes require separate implementation plans. | PASS | Windows / Documentation review | PENDING |
+| RPT-UC-005 | 2026-08-21 | Scope/frozen-path check | Only approved report, PlantUML, plan snapshot and logs changed; no runtime/schema/dependency change | **Command:** `git status --short`; `git diff --name-only -- lingora-web lingora-ai lingora-admin`; `git diff --name-only -- lingora-admin/prisma/schema.prisma lingora-admin/prisma/migrations`. **Output:** runtime and Prisma paths empty; changes confined to documentation/plan/log paths. | PASS | Windows / Git | PENDING |
+| RPT-DOCX-001 | 2026-08-21 | Google Docs-targeted DOCX structure and title audit | DOCX contains the complete report source, 11 figure placeholders, headings, lists and tables; title sanitizer finds no Word title border residue | **Environment:** Windows PowerShell; bundled Python 3.11; repository `D:\btl`. **Command:** `build_requirements_report.py`; `google_docs_title_sanitize.py --check`; python-docx structural audit. **Output:** DOCX written; sanitizer `[OK] no Google Docs title border/rule residue detected`; 88 paragraphs, 3 tables, 11 placeholders; title starts with `LINGORA`. | PASS | Windows / Python 3.11 / python-docx | PENDING |
+| RPT-DOCX-002 | 2026-08-21 | DOCX render QA | Render final DOCX into page PNGs for visual inspection | **Environment:** Windows PowerShell; bundled Python 3.11. **Command:** `render_docx.py docs/report/Lingora-Bao-cao-Phan-tich-Yeu-cau.docx --output_dir .docx-render --emit_pdf`. **Output:** FAIL before conversion: `FileNotFoundError [WinError 2]` because LibreOffice/soffice is unavailable in the environment. No PNG/PDF generated. | N/A — renderer prerequisite unavailable | Windows / Python 3.11 / documents skill | PENDING |
+| RPT-DOCX-003 | 2026-08-21 | Report source hygiene | New report source has no whitespace errors and contains explicit interview limitations and scope boundaries | **Command:** `git diff --check`; line-count and `rg` scan over `docs/report/lingora-project-1-requirements-report.md`. **Output:** `git diff --check` produced no whitespace error; 117 source lines; 6/6 and 5/6 claims are labeled as sample frequencies; spoken AI and adaptive learning are marked outside/currently unimplemented. | PASS | Windows / Git / ripgrep | PENDING |
+| RPT-5CH-001 | 2026-08-21 | Five-chapter report structure and academic cleanliness | Report contains front matter, five chapter headings, conclusion, references and interview appendix; local absolute paths and unsupported survey percentages are absent | **Command:** python-docx structural audit; `git diff --check`; `rg -n "D:/|C:/|N=30|93.3%|86.7%" docs/report/lingora-project-1-five-chapter-report.md`. **Output:** 114 paragraphs, 7 tables, 5 chapter headings; forbidden local paths/unsupported numeric claims returned no hits. | PASS | Windows / Python 3.11 / Git / ripgrep | PENDING |
+| RPT-5CH-002 | 2026-08-21 | Five-chapter DOCX title and structure | DOCX generated for Google Docs import and title border residue removed | **Command:** `build_five_chapter_report.py`; `google_docs_title_sanitize.py --check`. **Output:** DOCX written; sanitizer `[OK] no Google Docs title border/rule residue detected`. | PASS | Windows / Python 3.11 / python-docx | PENDING |
+| RPT-5CH-003 | 2026-08-21 | Five-chapter DOCX visual render | Render DOCX to PNG/PDF for visual inspection | **Command:** `render_docx.py docs/report/Lingora-Project-1-Five-Chapter-Report.docx --output_dir .five-report-render --emit_pdf`. **Output:** `FAIL FileNotFoundError [WinError 2]`; LibreOffice/soffice unavailable. | N/A — renderer prerequisite unavailable | Windows / documents skill | PENDING |
+| RPT-FMT-001 | 2026-08-21 | Lecturer PDF structure alignment | Report follows Lời giới thiệu, Phần I yêu cầu, Phần II phân tích, Phần III thiết kế, Phần IV kết luận; survey/interview is in Part I and Chapter 1 SDLC is absent | **Command:** python-docx structural audit; `rg` scan. **Output:** 88 paragraphs, 3 tables, 4 part headings, `CHƯƠNG 1` count 0; interview heading under Part I. | PASS | Windows / Python 3.11 / ripgrep | PENDING |
+| RPT-FMT-002 | 2026-08-21 | UI/UX deferral check | UI/UX sections and interface design content are removed from the report revision and represented only as deferred scope | **Command:** `rg -n "thiết kế giao diện|UI/UX" docs/report/lingora-project-1-lecturer-format.md`. **Output:** only two explicit deferral notes; no UI screen specification or interface deliverable section. | PASS | Windows / ripgrep | PENDING |
+| RPT-FMT-003 | 2026-08-21 | Lecturer-format DOCX title audit | DOCX generated and title border residue removed for Google Docs import | **Command:** `build_lecturer_format_report.py`; `google_docs_title_sanitize.py --check`. **Output:** DOCX written; sanitizer reports no title border/rule residue. | PASS | Windows / Python 3.11 / python-docx | PENDING |
+| UC06-SPEECH-001 | 2026-08-22 | Dual-input UC-06 documentation and PlantUML validation | Approved client-side SpeechRecognition/Speech Synthesis convenience is reflected without changing the text-only backend contract | **Environment:** Windows PowerShell; repository `D:\btl`; Java/PlantUML 1.2026.6; bundled Python 3.11. **Command:** `java -jar C:\Users\tungt\AppData\Local\Temp\lingora-plantuml\plantuml.jar -checkonly docs/plantuml/*.puml`; `rg` scan over approved report/evidence/diagram files. **Output:** PlantUML command exit `0`; all 15 sources compile; canonical `original_text` and `scenario_code`, browser fallback, no backend audio/persistence claims present. | PASS | Windows / Java / PlantUML / Markdown scan | PENDING |
+| UC06-SPEECH-002 | 2026-08-22 | Report DOCX rebuild and Google Docs title hygiene | Markdown source and approved DOCX are synchronized and title border residue is removed | **Environment:** Windows PowerShell; bundled Python 3.11; python-docx. **Command:** `tools/build_requirements_report.py`; `google_docs_title_sanitize.py docs/report/Lingora-Bao-cao-Phan-tich-Yeu-cau.docx --check`. **Output:** DOCX rebuilt; sanitizer `[OK] no Google Docs title border/rule residue detected`. | PASS | Windows / Python 3.11 / python-docx | PENDING |
+| UC06-SPEECH-003 | 2026-08-22 | DOCX visual render | Render DOCX to PNG/PDF for visual inspection | **Environment:** Windows PowerShell. **Command:** `render_docx.py docs/report/Lingora-Bao-cao-Phan-tich-Yeu-cau.docx --output_dir .docx-render-uc06 --emit_pdf`. **Output:** `FAIL FileNotFoundError [WinError 2]`; LibreOffice/soffice unavailable. | N/A — renderer prerequisite unavailable | Windows / documents skill | PENDING |
+| RPT-ADD-001 | 2026-08-23 | Lecturer-format report structure | Report contains elicitation, findings, benchmark, FR/NFR, validation and requirement-management sections | **Environment:** Windows PowerShell; repository `D:\btl`; bundled Python 3.11. **Command:** structural audit of `docs/report/lingora-project-1-lecturer-format.md` and DOCX. **Output:** DOCX has 130 paragraphs, 4 tables and 36 heading paragraphs; required report section scans pass. | PASS | Windows / Python 3.11 / python-docx | PENDING |
+| RPT-ADD-002 | 2026-08-23 | Unsupported-claim scan | No unqualified unsupported survey, validation or latency claims | **Command:** `rg` scan over report/evidence source for `N=30`, percentages, `99.9%`, `<2.5s`, focus-group/advisor claims and invented entities. **Output:** only explicit evidence-limit statements remain; no unsupported claim presented as observed. | PASS | Windows / PowerShell / ripgrep | PENDING |
+| RPT-ADD-003 | 2026-08-23 | Baseline consistency | SRS/GEC responsibility, model-count resolution and UC-09/UC-11 statuses remain explicit | **Command:** `rg` scan over report/evidence. **Output:** 17 physical baseline, 15 active flow, 2 legacy/deprecated, `corrected_text`, T5-small, deterministic SRS and `PROPOSED / NOT IMPLEMENTED` all present. | PASS | Windows / PowerShell / ripgrep | PENDING |
+| RPT-ADD-004 | 2026-08-23 | DOCX build and title sanitizer | DOCX builds and Google Docs title residue is absent | **Command:** `tools/build_lecturer_format_report.py`; `google_docs_title_sanitize.py --check`. **Output:** DOCX written; sanitizer `[OK] no Google Docs title border/rule residue detected`. | PASS | Windows / Python 3.11 / python-docx | PENDING |
+| RPT-ADD-005 | 2026-08-23 | DOCX structural audit | Expected report content is represented in the generated DOCX | **Command:** python-docx paragraph/table/heading audit. **Output:** 130 paragraphs, 4 tables and 36 headings; report source and output are synchronized. | PASS | Windows / Python 3.11 / python-docx | PENDING |
+| RPT-ADD-006 | 2026-08-23 | DOCX visual QA | Render DOCX pages and inspect | **Command:** documents renderer attempted with bundled `render_docx.py`. **Output:** LibreOffice/soffice unavailable (`WinError 2`), so no PNG/PDF render was produced. | N/A — renderer prerequisite unavailable | Windows / Python 3.11 / documents skill | PENDING |
+| RPT-ADD-007 | 2026-08-23 | Scope and hygiene | Only approved documentation/lifecycle paths changed; no whitespace errors | **Command:** `git diff --check`; changed-path inspection. **Output:** no whitespace errors; runtime/API/schema/migration/dependency paths were not edited by this task. | PASS | Windows / Git / PowerShell | PENDING |
+| RPT-ADD-008 | 2026-08-23 | Template fidelity | All 14 slides preserve source background and institutional identity | **Command:** `check_template_fidelity.mjs` with source slide map. **Output:** `status: pass`, `issueCount: 0`; source slide 1 mapped to all 14 output slides. | PASS | Windows / Node 24 / artifact-tool | PENDING |
+| RPT-ADD-009 | 2026-08-23 | Slide visual QA and overflow | Every slide renders cleanly without overlap, clipping or overflow | **Command:** artifact-tool render of all 14 slides; `slides_test.py`. **Output:** 14 PNGs inspected individually; `Test passed. No overflow detected.` | PASS | Windows / Node 24 / Python 3.11 / artifact-tool | PENDING |
+| RPT-ADD-010 | 2026-08-23 | Slide narrative and evidence audit | Outline is coherent; unsupported metrics absent; speaker notes contain source blocks | **Command:** final deck inspect plus notes scan; full-slide visual review. **Output:** 14 slides and 14 notes records; source notes present; no unsupported percentages used; final montage and individual slide review complete. | PASS | Windows / artifact-tool / PowerShell | PENDING |
+# PPT-19 — 19-slide Lingora requirements presentation (2026-08-23)
+
+- **Environment:** Windows, Node.js 24.19.0 bundled runtime, `@oai/artifact-tool`; working tree contains pre-existing unrelated changes.
+- **Command:** `node D:\btl\tmp\timhieupaper-template-audit\build_deck.mjs`
+- **Output:** exit code 0; exported `docs/report/Lingora-Project-1-Requirements-Presentation.pptx`; artifact-tool re-import reports 19 slides and rendered 19 slide PNGs.
+- **Verdict:** PASS — `PPT-19-003` build/export.
+
+- **Command:** `python ...\container_tools\slides_test.py D:\btl\docs\report\Lingora-Project-1-Requirements-Presentation.pptx`
+- **Output:** exit code 0; `Test passed. No overflow detected.`
+- **Verdict:** PASS — `PPT-19-004` overflow check.
+
+- **Command:** render 19 slides and inspect `D:\btl\tmp\timhieupaper-template-audit\final-render\montage19.png`.
+- **Output:** all 19 slides visible; university logo/header/footer retained; inherited cover text removed from slides 2, 4, 5, 16 and 19; no visible clipping or overlap.
+- **Verdict:** PASS — `PPT-19-004` visual QA and `PPT-19-005` template fidelity.
+
+- **Command:** content/notes review through artifact-tool inspection and builder source.
+- **Output:** qualitative frequencies only; UC-09/UC-11 labeled proposed; 17/15/2 model wording retained; Slide 18 contains verification/status only; non-trivial slides contain `[Sources]` speaker-note blocks.
+- **Verdict:** PASS — `PPT-19-002` and `PPT-19-006`.
+# PPT-REV-19 — Revised structure and supplementary interview evidence (2026-08-23)
+
+- **Environment:** Windows; bundled Node.js 24.19.0 and `@oai/artifact-tool`.
+- **Command:** `node D:\btl\tmp\timhieupaper-template-audit\build_revised_deck.mjs`
+- **Output:** exit code 0; final PPTX exported with 19 slides; 19 PNG renders created.
+- **Verdict:** PASS — revised 19-slide structure generated.
+
+- **Command:** `python ...\slides_test.py D:\btl\docs\report\Lingora-Project-1-Requirements-Presentation.pptx`
+- **Output:** exit code 0; `Test passed. No overflow detected.`
+- **Verdict:** PASS — no slide-canvas overflow.
+
+- **Command:** inspect montage plus slides 7, 8, 10 and 11 at original size.
+- **Output:** template branding retained; interview evidence readable; questionnaire limitation visible; Use Case actor label corrected; no visible overlap/clipping.
+- **Verdict:** PASS — visual QA and template fidelity.
+
+- **Command:** source/evidence audit.
+- **Output:** three new interview records labeled supplementary and not combined into the original six-record frequencies; no fabricated survey percentages; UC-09/UC-11 remain proposed.
+- **Verdict:** PASS — evidence integrity.
+
+# PPT-REDESIGN-19 — Redesigned 19-slide presentation with modern card layout & image placeholders (2026-08-23)
+
+- **Environment:** Windows PowerShell, Node.js 24.19.0 runtime, `@oai/artifact-tool`.
+- **Command:** `node D:\btl\tmp\timhieupaper-template-audit\build_revised_deck.mjs`
+- **Output:** exit code 0; exported `docs/report/Lingora-Project-1-Requirements-Presentation.pptx`; 19 slide PNGs and 19 layout JSONs rendered to `D:\btl\tmp\timhieupaper-template-audit\revised-render`.
+- **Verdict:** PASS — `PPT-REDESIGN-004` build & export.
+
+- **Command:** `node D:\btl\tmp\timhieupaper-template-audit\check_layout.mjs`
+- **Output:** exit code 0; `All 19 slide layout boundaries checked.` No out-of-bounds or clipping detected.
+- **Verdict:** PASS — `PPT-REDESIGN-002` typography, alignment and boundary checks.
+
+- **Command:** Visual inspection of all 19 rendered slide PNGs (`slide-01.png` to `slide-19.png`).
+- **Output:** 100% template fidelity: UTC university logo, purple-yellow header banner, and gray wave footer preserved. Clean modern cards, pill badges, single-line titles, and dedicated image placeholder frames with guiding text on key slides (Slides 1, 4, 7, 8, 10, 11, 14, 16, 17).
+- **Verdict:** PASS — `PPT-REDESIGN-001`, `PPT-REDESIGN-003`, and `PPT-REDESIGN-005`.
+
+# PLANTUML-COVERAGE — Actor boundary, UC-10 and report synchronization (2026-08-23)
+
+- **Environment:** Windows PowerShell; Java OpenJDK; PlantUML 1.2026.6; repository `D:\btl`; commit SHA `aa4635c`.
+- **Command:** `java -jar $env:TEMP\lingora-plantuml\plantuml.jar -checkonly docs/plantuml/*.puml`
+- **Output:** exit code `0`; all 22 PlantUML sources compiled successfully.
+- **Verdict:** `PASS` — `PLANTUML-COV-001` compiler validation.
+
+- **Command:** PowerShell static audit over current canonical docs, Markdown reports and `docs/plantuml/*.puml` for UC numbering, actor associations, ERD counts, required files, diagram catalogs and interview wording.
+- **Output:** exit code `0`; obsolete current UC code references `0`; overview contains `UC-01..UC-10`; no AI actor or arrowed actor associations in Use Case sources; ERD baseline entity count `17`, proposed count `2`; all required diagrams exist; all 22 diagrams are catalogued in Markdown reports; six-interview evidence retained and outdated missing-interview wording absent.
+- **Verdict:** `PASS` — `PLANTUML-COV-002` through `PLANTUML-COV-007`.
+
+- **Command:** `java -jar $env:TEMP\lingora-plantuml\plantuml.jar -tpng -o D:/btl/tmp/plantuml-render docs/plantuml/*.puml`; visual inspection of overview, learner, DFD level 0 and ERD PNGs.
+- **Output:** exit code `0`; 22 non-empty PNG renders generated; Learner/Admin are outside the Use Case boundary, GEC is internal, UC-10 is visible, DFD flows render, and ERD separates 15 active + 2 legacy from proposed entities.
+- **Verdict:** `PASS` — `PLANTUML-COV-008` render/visual QA.
+
+- **Command:** `git diff --check`
+- **Output:** exit code `0` after active-plan and handoff EOF cleanup; no whitespace errors.
+- **Verdict:** `PASS` — `PLANTUML-COV-009` documentation hygiene.

@@ -1,0 +1,164 @@
+@startuml
+title LINGORA - ERD: 17 Physical Models and Proposed Scope
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam shadowing false
+
+package "PHYSICAL BASELINE - 15 ACTIVE BUSINESS-FLOW MODELS" {
+  entity Language {
+    * code : varchar(8)
+    --
+    name : text
+  }
+  entity Profile {
+    * id : uuid
+    --
+    ui_locale : varchar(8)
+    native_lang_code : varchar(8)
+  }
+  entity Course {
+    * id : uuid
+    --
+    language_code : varchar(8)
+    cefr : enum
+  }
+  entity CourseTranslation {
+    * course_id : uuid
+    * locale : varchar(8)
+    --
+    title : text
+  }
+  entity Lesson {
+    * id : uuid
+    --
+    course_id : uuid
+    order_index : int
+  }
+  entity LessonTranslation {
+    * lesson_id : uuid
+    * locale : varchar(8)
+    --
+    title : text
+  }
+  entity Vocabulary {
+    * id : uuid
+    --
+    language_code : varchar(8)
+    normalized_term : text
+  }
+  entity VocabularyTranslation {
+    * vocabulary_id : uuid
+    * locale : varchar(8)
+    --
+    meaning : text
+  }
+  entity LessonVocabulary {
+    * lesson_id : uuid
+    * vocabulary_id : uuid
+    --
+    order_index : int
+  }
+  entity Exercise {
+    * id : uuid
+    --
+    lesson_id : uuid
+    type : enum
+    payload : jsonb
+  }
+  entity UserProgress {
+    * id : uuid
+    --
+    user_id : uuid
+    lesson_id : uuid
+    score : int?
+  }
+  entity UserVocabSrs {
+    * id : uuid
+    --
+    user_id : uuid
+    vocabulary_id : uuid
+    next_review_at : timestamp
+  }
+  entity ReviewLog {
+    * id : uuid
+    --
+    srs_card_id : uuid
+    reviewed_at : timestamp
+  }
+  entity ChatScenario {
+    * id : uuid
+    --
+    code : text
+    is_published : bool
+  }
+  entity ChatScenarioTranslation {
+    * scenario_id : uuid
+    * ui_locale : varchar(8)
+    --
+    title : text
+  }
+}
+
+package "PHYSICAL BASELINE - 2 LEGACY / DEPRECATED MODELS" {
+  entity "ChatSession\n[LEGACY / DEPRECATED]" as ChatSession {
+    * id : uuid
+    --
+    user_id : uuid
+    scenario_id : uuid
+  }
+  entity "ChatMessage\n[LEGACY / DEPRECATED]" as ChatMessage {
+    * id : uuid
+    --
+    session_id : uuid
+    sequence_number : int
+  }
+}
+
+package "PROPOSED / NOT IMPLEMENTED - EXCLUDED FROM 17" {
+  entity "PlacementResult\n[UC-09 PROPOSED]" as PlacementResult {
+    * id : uuid
+    --
+    user_id : uuid
+    cefr : enum
+  }
+  entity "BadgeAward\n[UC-10 PROPOSED]" as BadgeAward {
+    * id : uuid
+    --
+    user_id : uuid
+    badge_code : text
+  }
+}
+
+Language ||--o{ Profile : locale
+Language ||--o{ Course
+Language ||--o{ Vocabulary
+Course ||--o{ CourseTranslation
+Language ||--o{ CourseTranslation : locale
+Course ||--o{ Lesson
+Lesson ||--o{ LessonTranslation
+Language ||--o{ LessonTranslation : locale
+Vocabulary ||--o{ VocabularyTranslation
+Language ||--o{ VocabularyTranslation : locale
+Lesson ||--o{ LessonVocabulary
+Vocabulary ||--o{ LessonVocabulary
+Lesson ||--o{ Exercise
+Profile ||--o{ UserProgress
+Lesson ||--o{ UserProgress
+Profile ||--o{ UserVocabSrs
+Vocabulary ||--o{ UserVocabSrs
+UserVocabSrs ||--o{ ReviewLog
+ChatScenario ||--o{ ChatScenarioTranslation
+Language ||--o{ ChatScenarioTranslation : locale
+Profile ||--o{ ChatSession : legacy
+ChatScenario ||--o{ ChatSession : legacy
+ChatSession ||--o{ ChatMessage : legacy
+Profile ||--o{ PlacementResult : proposed
+Profile ||--o{ BadgeAward : proposed
+
+note bottom
+  Physical baseline count = 17 models:
+  15 active business-flow + 2 legacy/deprecated.
+  UC-09 and UC-10 proposed entities are excluded.
+end note
+@enduml

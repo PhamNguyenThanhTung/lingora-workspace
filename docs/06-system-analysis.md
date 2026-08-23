@@ -43,8 +43,8 @@ flowchart TD
     subgraph LingoraSystem[Hệ thống Lingora]
         WebClient[Web Learner Client: lingora-web]
         AdminClient[Web Admin Client: lingora-admin]
-        RouteHandler[Next.js Server / AI Proxy]
-        FastAPIService[AI Microservice: lingora-ai/api]
+        RouteHandler[Next.js Server / Internal GEC Route Handler]
+        FastAPIService[Internal GEC Processing: FastAPI/T5-small]
     end
 
     subgraph SupportingServices[Dịch vụ Hỗ trợ]
@@ -58,22 +58,24 @@ flowchart TD
     WebClient -->|SSR Auth / httpOnly Cookie| SupaAuth
     WebClient -->|Prisma Client / PostgREST RLS| SupaDB
     WebClient -->|Bff Proxy: /api/ai/*| RouteHandler
-    RouteHandler -->|Bearer JWT ES256| FastAPIService
+    RouteHandler -->|bounded internal request| FastAPIService
     AdminClient -->|Prisma Admin Role| SupaDB
     AdminClient -->|Tải Media| SupaStorage
     FastAPIService -->|Verify JWKS| SupaAuth
 ```
 
-### 2.1 Bảng Phân loại Tác nhân Hệ thống
+### 2.1 Bảng Phân loại Actor và Thành phần Hỗ trợ
 
-| Tác nhân (Actor) | Bản chất | Quyền hạn & Ranh giới | Mục tiêu chính |
+| Actor / Thành phần | Bản chất | Quyền hạn & Ranh giới | Mục tiêu chính |
 |---|---|---|---|
 | **Learner (Học viên)** | Con người (End-user) | Role: `LEARNER`. Truy cập ứng dụng qua trình duyệt Web (`lingora-web`). Thao tác dữ liệu qua RLS và Server Actions. | Đăng ký, đăng nhập, duyệt khóa học, làm bài tập, nhận phản hồi AI, ôn tập từ vựng SRS, theo dõi streak. |
 | **Admin (Quản trị viên / Giáo viên)** | Con người (Staff) | Role: `ADMIN`. Truy cập bảng điều khiển `lingora-admin`. Quản trị toàn quyền dữ liệu nghiệp vụ và xuất bản nội dung. | Tạo/sửa khóa học, bài học, ngân hàng câu hỏi, tải audio/hình ảnh, tạo kịch bản roleplay, kích hoạt `isPublished`. |
-| **AI Microservice (Lingora AI)** | Dịch vụ nội bộ (FastAPI) | Nhận request GEC từ fixed Route Handler kèm Bearer JWT. Xác thực chữ ký qua JWKS/compatibility boundary. Không lưu session hoặc dữ liệu chính. | Chạy mock/real T5-small GEC, validate corrected text, tạo metadata; diff/classification thuộc module xác định riêng. |
+| **GEC/T5-small internal processing** | Thành phần xử lý nội bộ trong boundary Lingora | Được gọi bởi Route Handler nội bộ với request bounded; không phải system actor và không có mục tiêu nghiệp vụ độc lập. Không lưu session hoặc dữ liệu chính. | Chạy mock/real T5-small GEC, validate corrected text, tạo metadata; diff/classification thuộc module xác định riêng. |
 | **Supabase Auth (GoTrue)** | Dịch vụ nền tảng (PaaS) | Cấp phát token JWT `ES256` có `kid`, quản lý session, refresh token, cung cấp endpoint JWKS công khai. | Xác thực danh tính học viên và quản trị viên, bảo mật phiên làm việc qua httpOnly Cookie. |
 | **Supabase PostgreSQL** | Cơ sở dữ liệu hạt nhân | Thực thi RLS policies, Check constraints, Triggers, RPC functions (`record_review`). | Đảm bảo tính toàn vẹn dữ liệu, cô lập dữ liệu người dùng ở tầng engine cơ sở dữ liệu. |
 | **Supabase Storage** | Dịch vụ lưu trữ tệp | Lưu trữ nhị phân cho media (`course-media`, `chat-audio`). Giới hạn dung lượng 10MB/tệp, quản lý bởi RLS. | Phục vụ file âm thanh phát âm từ vựng, hình ảnh minh họa bài học và audio đoạn thoại. |
+
+Chỉ `Learner` và `Admin` là actor của hệ thống. GEC/T5-small, Supabase Auth, PostgreSQL và Storage là các thành phần xử lý/hỗ trợ, không được vẽ như actor trong Use Case diagram.
 
 ---
 
@@ -102,10 +104,12 @@ flowchart TD
 | **UC-02** | Khám phá & Học Bài học Ngôn ngữ | Learner | C1 (Learning) | `CONFIRMED / PENDING_M2` |
 | **UC-03** | Thực hiện Bài tập Tương tác & Đánh giá | Learner | C1 (Exercises) | `CONFIRMED / PENDING_M2` |
 | **UC-04** | Quản trị Khóa học, Bài học & Xuất bản | Admin | C2 (Content Management)| `CONFIRMED / PENDING_M3` |
-| **UC-05** | Ôn tập Từ vựng bằng SRS Xác định | Learner, Supabase RPC | C3 (SRS / Spaced Repetition) | `TARGET_AMENDED / POLICY_AUDIT_PENDING` |
-| **UC-06** | Luyện viết Tình huống với GEC | Learner, AI Service | C4 (Scenario Writing / GEC) | `TARGET_AMENDED / IMPLEMENTATION_PENDING` |
+| **UC-05** | Ôn tập Từ vựng bằng SRS Xác định | Learner | C3 (SRS / Spaced Repetition) | `TARGET_AMENDED / POLICY_AUDIT_PENDING` |
+| **UC-06** | Luyện viết Tình huống với GEC | Learner | C4 (Scenario Writing / GEC) | `TARGET_AMENDED / IMPLEMENTATION_PENDING` |
 | **UC-07** | Theo dõi Tiến độ, Streak & Mục tiêu Ngày | Learner | C5 (Gamification) | `CONFIRMED / PENDING_M2` |
 | **UC-08** | Nhắc nhở Học tập Trong phiên (In-App) | Learner | C6 (Reminders) | `ADR-008 LOCKED (Option 6d)` |
+| **UC-09** | Kiểm tra Trình độ Đầu vào | Learner | Placement | `PROPOSED / NOT IMPLEMENTED` |
+| **UC-10** | Thành tích và Huy hiệu Riêng tư | Learner | Private Achievements | `PROPOSED / NOT IMPLEMENTED` |
 
 ---
 
@@ -113,7 +117,7 @@ flowchart TD
 
 #### 📌 UC-01: Đăng ký, Đăng nhập & Quản lý Phiên học viên
 * **Mục tiêu:** Xác thực danh tính học viên, khởi tạo hồ sơ cá nhân và thiết lập phiên làm việc bảo mật `httpOnly`.
-* **Tác nhân:** Học viên (`Learner`), Supabase Auth.
+* **Tác nhân:** Học viên (`Learner`). Supabase Auth là thành phần hỗ trợ xác thực.
 * **Tiền điều kiện:** Học viên truy cập trang `/login` hoặc `/register`.
 * **Luồng chính (Main Flow):**
   1. Học viên nhập email và mật khẩu hợp lệ (tối thiểu 6 ký tự), nhấn Submit.
@@ -148,7 +152,7 @@ flowchart TD
 
 #### 📌 UC-05: Ôn tập Từ vựng bằng SRS Xác định
 * **Mục tiêu:** Chọn thẻ đến hạn theo trạng thái learner-owned và ghi nhận kết quả ôn tập nguyên tử.
-* **Tác nhân:** Học viên (`Learner`), Supabase PostgreSQL/RPC.
+* **Tác nhân:** Học viên (`Learner`). Supabase PostgreSQL/RPC là thành phần hỗ trợ dữ liệu.
 * **Tiền điều kiện:** Học viên có từ vựng đã học trong bảng `UserVocabSrs`.
 * **Luồng chính:**
   1. Client yêu cầu danh sách từ vựng cần ôn tập.
@@ -162,7 +166,7 @@ flowchart TD
 
 #### 📌 UC-06: Luyện viết Tình huống với GEC
 * **Mục tiêu:** Học viên thực hành viết tiếng Anh theo prompt có thứ tự và nhận câu sửa lỗi.
-* **Tác nhân:** Học viên (`Learner`), AI Microservice (`lingora-ai/api`).
+* **Tác nhân:** Học viên (`Learner`). GEC/T5-small là xử lý nội bộ của Lingora.
 * **Tiền điều kiện:** Học viên chọn một kịch bản giao tiếp đang hoạt động (`ChatScenario.isActive=true`).
 * **Luồng chính:**
   1. Học viên chọn `ChatScenario` và nhận prompt kế tiếp do state machine xác định.
@@ -185,7 +189,7 @@ sequenceDiagram
     participant NextWeb as Next.js Web App (lingora-web)
     participant RouteHandler as Route Handler (/api/ai/gec)
     participant SupaAuth as Supabase Auth (JWKS)
-    participant FastAPI as AI Service (lingora-ai/api)
+    participant FastAPI as Internal GEC Processing (lingora-ai/api)
     participant SupaDB as Supabase PostgreSQL
 
     Learner->>NextWeb: Nhập câu tiếng Anh theo prompt
@@ -239,7 +243,7 @@ sequenceDiagram
 ### 6.2 Ràng buộc Kiến trúc & Kỹ thuật (Constraints)
 - **C1 (Công nghệ Nền tảng):** Web Client viết bằng Next.js 15 App Router + React 19 + TypeScript + Tailwind CSS 4.
 - **C2 (Bảo mật Phiên):** Tuyệt đối không lưu trữ Token nhạy cảm tại `localStorage`/`sessionStorage` của trình duyệt; bắt buộc sử dụng `httpOnly` Cookie.
-- **C3 (Độc lập AI Microservice):** AI service (`lingora-ai/api`) là một stateless service, giao tiếp qua giao thức REST JSON chuẩn và xác thực chữ ký token bằng JWKS.
+- **C3 (GEC nội bộ):** `lingora-ai/api` là thành phần xử lý stateless nằm trong ranh giới Lingora; giao tiếp nội bộ bằng REST JSON và xác thực request bằng JWKS.
 - **C4 (Toàn vẹn Dữ liệu):** RLS policies tại cơ sở dữ liệu là phòng tuyến bảo mật dữ liệu cuối cùng; mọi thao tác ghi nhật ký SRS bắt buộc qua RPC `record_review`.
 
 ### 6.3 Danh mục Phạm vi Tạm hoãn (Deferred Scope Register)
@@ -256,4 +260,4 @@ sequenceDiagram
 | **F-01** | Trạng thái chuyển đổi nền tảng từ Android sang Web | `ADR-008` phê duyệt ngày 2026-08-17; 61 file Android đã được xóa sạch; commit `585ca6c` là recovery point. | `ADR-LOCKED` | Toàn bộ tài liệu chuẩn hóa chỉ mô tả `lingora-web`; Android chỉ xuất hiện trong mục lịch sử/superseded. |
 | **F-02** | Xung đột thuật toán JWT (ES256 vs HS256) | `ADR-009` sửa đổi verifier của FastAPI; hỗ trợ `ES256` qua JWKS và `HS256` fallback; 37/37 Pytest PASS. | `IMPLEMENTED` | Đã giải quyết triệt để trong `lingora-ai/api/app/auth.py`; test `M1.6W-T-006/007` đã PASS sau rerun. |
 | **F-03** | Enum `ExerciseType` trong Prisma hiện tại | Prisma schema và migration hiện tại có `MCQ`, `FILL_BLANK`, `REORDER`. Chưa có `GRAMMAR`, `LISTENING`. | `EVIDENCE-GAP` | Ghi nhận rõ trong Từ điển Dữ liệu: `GRAMMAR`/`LISTENING` đã duyệt theo `ADR-006` nhưng chờ migration M2. |
-| **F-04** | Route `/v1/chat/scenarios` trong AI Service | AI FastAPI hiện chỉ expose `/v1/chat/roleplay`, `/v1/srs/schedule`, `/health/ready`, `/model/info`. | `CONTRACT-FINDING`| Kịch bản `ChatScenario` được lưu và quản lý trực tiếp trong PostgreSQL/Prisma; AI chỉ xử lý logic sinh câu thoại. |
+| **F-04** | Route `/v1/chat/scenarios` trong internal processing | FastAPI hiện chỉ expose các compatibility/health/model routes đã ghi trong API contract. | `CONTRACT-FINDING`| Kịch bản `ChatScenario` được lưu và quản lý trực tiếp trong PostgreSQL/Prisma; internal processing không phải actor và không sở hữu dữ liệu chính. |

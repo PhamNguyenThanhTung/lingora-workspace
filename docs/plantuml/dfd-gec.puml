@@ -1,0 +1,31 @@
+@startuml
+title LINGORA - DFD Detail: UC-06 Scenario Writing and Internal GEC
+left to right direction
+skinparam shadowing false
+
+rectangle Learner
+rectangle "5.1 Load Published Scenario" as P51
+rectangle "5.2 Validate Bounded English Text" as P52
+rectangle "5.3 Internal T5-small Correction" as P53
+rectangle "5.4 Deterministic Alignment & Classification" as P54
+rectangle "5.5 Render Safe Feedback" as P55
+database "D1 ChatScenario + Translation" as Scenarios
+database "D2 Model Artifact / Metadata" as Model
+
+Learner --> P51 : scenario selection
+P51 --> Scenarios : published scenario query
+Scenarios --> P51 : ordered prompt and context
+P51 --> Learner : prompt
+Learner --> P52 : typed or browser-transcribed text
+P52 --> P53 : validated text + scenario code
+P53 --> Model : load/use approved checkpoint
+Model --> P53 : corrected_text + model metadata
+P53 --> P54 : original_text + corrected_text
+P54 --> P55 : bounded edits and error types
+P55 --> Learner : safe original/corrected diff
+
+note bottom of P53
+  Internal Lingora processing component.
+  No external AI actor and no primary-data persistence.
+end note
+@enduml

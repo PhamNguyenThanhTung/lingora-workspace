@@ -1,0 +1,40 @@
+@startuml
+title Activity - UC-06 Scenario Writing with Internal GEC
+skinparam shadowing false
+start
+:Select published scenario;
+:Show next ordered prompt;
+:Choose input mode;
+if (Type text?) then (typing)
+  :Enter bounded English text in editor;
+else (speak)
+  :Enable microphone and SpeechRecognition;
+  if (Browser API and permission available?) then (yes)
+    :Transcribe speech into editor;
+    :Review or edit transcript;
+  else (no)
+    :Show non-blocking warning;
+    :Fall back to text input;
+  endif
+endif
+if (Input valid?) then (yes)
+  :POST original_text + scenario_code to Next.js /api/ai/gec;
+  :Invoke internal FastAPI /v1/gec/correct component;
+  if (Model available?) then (yes)
+    :T5-small produces corrected_text;
+    :Deterministic alignment creates diff;
+    :Render original/corrected as safe text;
+    :Optionally play corrected text with speechSynthesis;
+    if (More prompts?) then (yes)
+      :Advance scenario state;
+    else (no)
+      :Complete practice;
+    endif
+  else (no)
+    :Show recoverable MODEL_UNAVAILABLE state;
+  endif
+else (no)
+  :Show validation error;
+endif
+stop
+@enduml

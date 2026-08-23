@@ -1,0 +1,24 @@
+@startuml
+title Activity - UC-09 Placement Test [PROPOSED / NOT IMPLEMENTED]
+skinparam shadowing false
+start
+:Authenticate new learner;
+:Load versioned placement questions;
+while (Question remains?) is (yes)
+  :Render using exercise engine;
+  :Validate and record answer in test state;
+endwhile (no)
+if (Enough valid answers?) then (yes)
+  :Calculate deterministic score;
+  :Map score to CEFR with tie-breaking policy;
+  :Find published Course.cefr match;
+  :Show level and course recommendation;
+else (no)
+  :Offer default course / skip path;
+endif
+note right
+  Persistence, API and RLS are not locked.
+  Implementation requires a separate plan.
+end note
+stop
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+title Sequence - UC-10 Private Achievements [PROPOSED / NOT IMPLEMENTED]
+skinparam shadowing false
+actor Learner
+participant "Lesson/SRS Flow" as Flow
+participant "Achievement Evaluator\n[PROPOSED]" as Eval
+database "Learner Progress" as Progress
+database "Badge Store\n[PROPOSED]" as Badges
+
+Learner -> Flow: Complete qualifying activity
+Flow -> Progress: Commit progress/review event
+Progress --> Flow: Success
+Flow -> Eval: Evaluate learner event
+Eval -> Progress: Read learner-owned counters
+Progress --> Eval: Progress snapshot
+Eval -> Badges: Check active rules and existing awards
+alt new condition met
+  Badges -> Badges: Insert award idempotently
+  Badges --> Eval: New badge
+else already awarded/not met
+  Badges --> Eval: No-op
+end
+Eval --> Flow: Award summary
+Flow --> Learner: Show private badge/progress
+note over Eval,Badges
+  No leaderboard. Data model and mechanism
+  require separate approval.
+end note
+@enduml

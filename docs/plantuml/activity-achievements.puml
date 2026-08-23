@@ -1,0 +1,23 @@
+@startuml
+title Activity - UC-10 Private Achievements [PROPOSED / NOT IMPLEMENTED]
+skinparam shadowing false
+start
+:Receive qualifying learning event;
+:Load active badge rules;
+while (Rule remains?) is (yes)
+  :Evaluate learner-owned progress;
+  if (Condition met?) then (yes)
+    if (Badge already awarded?) then (yes)
+      :No-op (idempotent);
+    else (no)
+      :Award private badge;
+    endif
+  endif
+endwhile (no)
+:Show learner-owned badge collection;
+note right
+  No leaderboard or social feed.
+  Data model and award mechanism are proposed.
+end note
+stop
+@enduml

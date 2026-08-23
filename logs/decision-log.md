@@ -811,3 +811,72 @@ Enables cryptographic verification of modern Supabase ES256 JWTs using the proje
 - Tests: Existing 27/27 M1.5 pytest tests preserved; new JWKS/ES256 security tests added; live `M1.6W-T-006` and `M1.6W-T-007` hops verified.
 
 ---
+### UC-06 dual-input modality review re-entry — 2026-08-22
+
+### Category
+
+`scope-ambiguity`
+
+### Context
+
+The requested amendment adds client-side Web Speech API speech-to-text and
+Speech Synthesis playback to UC-06. The current approved report scope and
+evidence register explicitly treat speech recognition/spoken dialogue as
+deferred, and the current GEC contract uses `original_text` plus
+`scenario_code`, not the proposed `text`-only payload.
+
+### Decision
+
+Return the task to `REVIEW`. Do not modify UC-06 report text, PlantUML, API,
+UI, schema, migration, model, or DOCX artifacts until the user explicitly
+approves the scope expansion and resolves the canonical contract shape.
+
+### Consequences
+
+The requested dual-input behavior remains proposed only. Existing baseline
+documentation and runtime boundaries are preserved.
+# REVIEW Re-entry: Lecturer report ERD model-count gap (2026-08-23)
+
+- **category:** `contract-gap`
+- **Task:** `integrate-requirements-research-sections-into-lecturer-report`
+- **Observed gap:** the approved report/slide plan says the ERD baseline has 17 Prisma models, while the active `lingora-admin/prisma/schema.prisma` currently contains 15 models after legacy `ChatSession` and `ChatMessage` removal.
+- **Risk:** publishing the approved wording would misrepresent the current implementation and contradict the completed cleanup state recorded in `HANDOFF.md` and `plans/current-task.md`.
+- **Proposed resolution:** use 15 models for the current implementation, identify 17 only as the historical pre-cleanup baseline, and state that GEC output is transient. Do not modify canonical `docs/00`..`docs/07` in this task.
+- **Status:** returned to `REVIEW`; awaiting human approval of the amendment before report/PPTX implementation.
+
+## Resolution (2026-08-23)
+
+- **Human decision:** retain 17 as the approved physical schema baseline; mark `ChatSession` and `ChatMessage` as deprecated/legacy awaiting formal migration cleanup.
+- **Active-flow count:** 15 models.
+- **Proposed entities:** UC-09 Placement and UC-11 Badges remain `PROPOSED / NOT IMPLEMENTED` and are excluded from the active baseline count.
+- **Authorization:** report/DOCX and 14-slide PPTX generation approved; execute `RPT-ADD-001` through `RPT-ADD-010`.
+- **Boundary:** no runtime, schema, migration, RLS, RPC, API, dependency, UI or model implementation change is authorized.
+
+# ADR-011 — Use Case actor boundary and contiguous UC catalog
+
+### Date
+
+`2026-08-23`
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+Current Use Case diagrams and reports represented `AI Service` as an external actor and used `UC-11` for private achievements, leaving a numbering gap. The user explicitly approved a documentation-wide correction before completing the outstanding PlantUML coverage task.
+
+### Decision
+
+1. Learner and Admin are the only external Use Case actors and remain outside the Lingora system boundary.
+2. Actor-to-Use-Case associations are solid lines without arrowheads.
+3. GEC/T5-small, including the Route Handler/FastAPI deployment components, is internal Lingora processing and is not a Use Case actor.
+4. The current Use Case catalog is contiguous `UC-01`..`UC-10`; private achievements use `UC-10` and remain `PROPOSED / NOT IMPLEMENTED`.
+5. The ERD reporting view contains 17 physical models: 15 active business-flow models plus 2 legacy/deprecated models (`ChatSession`, `ChatMessage`). Proposed UC-09/UC-10 entities remain outside that count.
+6. Historical approved/archive plan snapshots and historical test/development log entries are not rewritten.
+
+### Consequences
+
+- Current canonical documentation, PlantUML and Markdown reports use one actor/boundary interpretation and one UC numbering scheme.
+- No runtime, API behavior, schema, migration, RLS, RPC, dependency or model artifact changes are authorized or performed.
+- Existing FastAPI architecture/API terminology may remain where it describes an internal deployable component rather than an external actor.

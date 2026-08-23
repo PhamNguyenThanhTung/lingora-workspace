@@ -1,0 +1,27 @@
+@startuml
+title LINGORA - DFD Detail: UC-05 Deterministic SRS
+left to right direction
+skinparam shadowing false
+
+rectangle Learner
+rectangle "4.1 Query Due Cards" as P41
+rectangle "4.2 Present Review Card" as P42
+rectangle "4.3 Validate Recall Result" as P43
+rectangle "4.4 record_review Atomic Update" as P44
+database "D1 Vocabulary" as Vocabulary
+database "D2 UserVocabSrs" as Srs
+database "D3 ReviewLog" as Logs
+
+Learner --> P41 : open review
+P41 --> Srs : own cards where nextReviewAt <= now
+Srs --> P41 : due-card state
+P41 --> Vocabulary : vocabulary lookup
+Vocabulary --> P42 : term, meaning and media reference
+P42 --> Learner : review card
+Learner --> P43 : recall result
+P43 --> P44 : validated result and authenticated identity
+P44 --> Logs : insert immutable event
+P44 --> Srs : update interval/ease/next review
+Srs --> P44 : committed card state
+P44 --> Learner : next schedule or retryable error
+@enduml

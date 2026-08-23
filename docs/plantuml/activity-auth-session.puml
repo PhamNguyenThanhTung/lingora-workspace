@@ -1,0 +1,25 @@
+@startuml
+title Activity - UC-01 Authentication and Session
+skinparam shadowing false
+start
+:Open Lingora;
+if (Existing valid session?) then (yes)
+  :Load role and locale;
+else (no)
+  :Submit login or registration form;
+  :Validate credentials;
+  if (Credentials valid?) then (yes)
+    :Create secure session;
+    :Create Profile for new registration;
+  else (no)
+    :Show safe localized error;
+    stop
+  endif
+endif
+if (Role is ADMIN?) then (yes)
+  :Open Admin application;
+else (no)
+  :Open Learner application;
+endif
+stop
+@enduml

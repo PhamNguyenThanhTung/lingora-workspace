@@ -1,0 +1,32 @@
+@startuml
+title LINGORA - DFD Detail: UC-02/UC-03 Lesson and Exercise
+left to right direction
+skinparam shadowing false
+
+rectangle Learner
+rectangle "2.1 Load Published Lesson" as P21
+rectangle "2.2 Present Vocabulary & Media" as P22
+rectangle "2.3 Validate Exercise Answer" as P23
+rectangle "2.4 Calculate Score & Completion" as P24
+database "D2 Courses/Lessons/Translations" as Content
+database "D3 Exercises" as Exercises
+database "D4 UserProgress" as Progress
+database "D5 Approved Media" as Media
+
+Learner --> P21 : course/lesson selection
+P21 --> Content : published-content query
+Content --> P21 : ordered lesson and translations
+P21 --> P22 : lesson vocabulary
+P22 --> Media : authorized audio request
+Media --> P22 : audio asset
+P22 --> Learner : vocabulary and lesson content
+P21 --> P23 : ordered exercise definitions
+P23 --> Exercises : exercise payload query
+Exercises --> P23 : approved payload
+Learner --> P23 : answer
+P23 --> Learner : correct/incorrect feedback
+P23 --> P24 : validated outcomes
+P24 --> Progress : idempotent score/status update
+Progress --> P24 : saved progress
+P24 --> Learner : score and completion state
+@enduml

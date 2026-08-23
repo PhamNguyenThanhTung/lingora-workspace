@@ -1,6 +1,6 @@
 # 02 - Lingora Requirements and Report Scope
 
-> **Current normative scope (ADR-010, effective 2026-08-21):** delivery is consolidated into two tracks: Software Engineering and Machine Learning/Deep Learning with Transformer GEC. The migrated ML-SRS and NLP-chatbot material below is historical and SUPERSEDED as future target scope. The canonical requirement tables at the end contain the effective requirements.
+> **Current normative scope (ADR-010, effective 2026-08-21):** delivery is consolidated into two tracks: Software Engineering and Machine Learning/Deep Learning with Transformer GEC. GEC/T5-small is an internal Lingora processing component, not a Use Case actor; the external actors are Learner and Admin. The migrated ML-SRS and NLP-chatbot material below is historical and SUPERSEDED as future target scope. The canonical requirement tables at the end contain the effective requirements.
 
 > **Canonical status:** M0 migration baseline. For the comprehensive Requirements & System Analysis specification, complete Use Case descriptions, and flows, see [`docs/06-system-analysis.md`](06-system-analysis.md). For the implementation-grounded ERD and Data Dictionary, see [`docs/07-data-dictionary.md`](07-data-dictionary.md).
 
@@ -38,7 +38,7 @@ Quy tắc chống trùng lặp:
 | # | Sản phẩm | Ghi chú làm cho đúng |
 |---|---|---|
 | 1 | **SRS** *(Software Requirements Specification — không nhầm với "Spaced Repetition System")* | Tách rõ Functional (FR-01…) và Non-functional. Đánh mã để truy vết được sang test case. |
-| 2 | **Use Case Diagram** | Actor: `Học viên`, `Quản trị viên`, `AI Service` (actor phụ). 12–15 use case, có `<<include>>` cho "Đăng nhập". |
+| 2 | **Use Case Diagram** | Actor ngoài hệ thống: `Học viên`, `Quản trị viên`. GEC/T5-small là xử lý nội bộ trong boundary; có `<<include>>` cho "Đăng nhập". |
 | 3 | **Đặc tả Use Case** (bảng) | Làm chi tiết 4 UC quan trọng: Đăng nhập, Học 1 bài, **Ôn tập từ vựng theo gợi ý AI**, **Luyện hội thoại (Roleplay)**. Có luồng chính + luồng ngoại lệ (AI Server không phản hồi). |
 | 4 | **Activity Diagram** | 3 cái: đăng ký/đăng nhập, hoàn thành 1 bài học, luồng ôn tập thông minh (có nhánh AI lỗi → dùng lịch mặc định). |
 | 5 | **Sequence Diagram** | 3 cái: `Login`, `SRS Recommendation` (Web Learner → PostgREST đọc log → FastAPI `/v1/srs/schedule` → **RPC `record_review`** ghi lại Supabase trong 1 transaction), `Roleplay Chat` (Web Learner → FastAPI `/v1/chat/roleplay` → Model → lưu `chat_messages`). Đây là 3 sơ đồ "ăn điểm" nhất vì thể hiện tích hợp nhiều hệ thống. |

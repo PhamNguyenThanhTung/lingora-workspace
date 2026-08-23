@@ -1,0 +1,31 @@
+@startuml
+title Sequence - UC-09 Placement Test [PROPOSED / NOT IMPLEMENTED]
+skinparam shadowing false
+actor Learner
+participant "Learner Web" as Web
+participant "Placement Service/Action\n[PROPOSED]" as Placement
+database "Published Exercises/Courses" as DB
+
+Learner -> Web: Start placement test
+Web -> Placement: Request versioned test
+Placement -> DB: Load approved questions
+DB --> Placement: Ordered exercise payloads
+Placement --> Web: Test definition
+loop each question
+  Learner -> Web: Submit answer
+  Web -> Placement: Validated answer
+end
+Placement -> Placement: Score + CEFR mapping + tie-break
+Placement -> DB: Find published Course by CEFR
+DB --> Placement: Recommended course or none
+alt sufficient result
+  Placement --> Web: Level + recommendation
+else insufficient/error
+  Placement --> Web: Default course / skip path
+end
+Web --> Learner: Show outcome
+note over Placement,DB
+  API, persistence and RLS are not locked.
+  Separate implementation approval required.
+end note
+@enduml

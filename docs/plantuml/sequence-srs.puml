@@ -1,0 +1,25 @@
+@startuml
+title Sequence - UC-05 Deterministic SRS and record_review
+skinparam shadowing false
+actor Learner
+participant "Learner Web" as Web
+database "Supabase Postgres + RLS" as DB
+participant "record_review RPC" as RPC
+
+Learner -> Web: Open review
+Web -> DB: Select own cards where nextReviewAt <= now
+DB --> Web: Due cards
+Learner -> Web: Submit recall result
+Web -> RPC: record_review(vocab/card, result)
+RPC -> RPC: Derive user from auth.uid()
+RPC -> DB: Insert ReviewLog + update UserVocabSrs
+alt ownership and input valid
+  DB --> RPC: Commit transaction
+  RPC --> Web: Updated schedule state
+  Web --> Learner: Show next card/result
+else invalid or not owner
+  DB --> RPC: Reject and rollback
+  RPC --> Web: Error
+  Web --> Learner: Retryable/safe error
+end
+@enduml

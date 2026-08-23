@@ -1,0 +1,25 @@
+@startuml
+title Activity - UC-07/UC-08 Progress, Goal and In-App Reminder
+skinparam shadowing false
+start
+:Load learner-owned progress, streak and daily goal;
+if (Qualifying learning event?) then (yes)
+  :Update progress and streak idempotently;
+endif
+:Compare today's activity with daily goal;
+if (Goal met?) then (yes)
+  :Show completion state;
+else (no)
+  if (App open in reminder window?) then (yes)
+    :Show in-app reminder;
+    if (Learner starts activity?) then (yes)
+      :Navigate to due review or lesson;
+    else (dismiss)
+      :Dismiss locally;
+    endif
+  else (no)
+    :Show progress without notification;
+  endif
+endif
+stop
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+title LINGORA - Use Case Overview
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor Learner
+
+rectangle "LINGORA Web Learning System" {
+  usecase "UC-01\nAuthentication & Session" as UC01
+  usecase "UC-02\nBrowse & Learn Lessons" as UC02
+  usecase "UC-03\nExercises & Assessment" as UC03
+  usecase "UC-04\nContent Administration" as UC04
+  usecase "UC-05\nDeterministic SRS" as UC05
+  usecase "UC-06\nScenario Practice with GEC\n(internal T5-small processing)" as UC06
+  usecase "UC-07\nProgress, Streak & Daily Goal" as UC07
+  usecase "UC-08\nIn-App Reminder" as UC08
+  usecase "UC-09\nPlacement Test\n[PROPOSED / NOT IMPLEMENTED]" as UC09
+  usecase "UC-10\nPrivate Achievements\n[PROPOSED / NOT IMPLEMENTED]" as UC10
+}
+
+actor Admin
+
+Learner -- UC01
+Learner -- UC02
+Learner -- UC03
+Learner -- UC05
+Learner -- UC06
+Learner -- UC07
+Learner -- UC08
+Learner -- UC09
+Learner -- UC10
+UC01 -- Admin
+UC04 -- Admin
+
+UC03 ..> UC07 : <<include>>
+UC05 ..> UC07 : <<include>>
+UC09 ..> UC03 : <<include>> reuse engine
+UC10 ..> UC07 : <<include>> progress events
+
+note bottom of UC06
+  GEC/T5-small is internal Lingora processing,
+  not an external actor.
+end note
+note bottom of UC09
+  Approved target; not implemented.
+end note
+note bottom of UC10
+  Private only; no leaderboard.
+end note
+@enduml

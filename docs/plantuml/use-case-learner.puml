@@ -1,0 +1,46 @@
+@startuml
+title LINGORA - Learner Use Cases
+left to right direction
+skinparam shadowing false
+
+actor Learner
+
+rectangle "LINGORA Web Learning System" {
+  usecase "UC-01\nAuthentication & Session" as UC01
+  usecase "UC-02\nBrowse & Learn Lessons" as UC02
+  usecase "UC-03\nExercises & Assessment" as UC03
+  usecase "UC-05\nDeterministic SRS Review" as UC05
+  usecase "UC-06\nScenario Writing with GEC\n(internal T5-small processing)" as UC06
+  usecase "UC-07\nProgress, Streak & Daily Goal" as UC07
+  usecase "UC-08\nIn-App Reminder" as UC08
+  usecase "UC-09\nPlacement Test\n[PROPOSED / NOT IMPLEMENTED]" as UC09
+  usecase "UC-10\nPrivate Achievements\n[PROPOSED / NOT IMPLEMENTED]" as UC10
+
+  usecase "Learn vocabulary and audio" as LearnVocabulary
+  usecase "Optional browser speech input" as SpeechInput
+  usecase "Optional browser speech playback" as SpeechPlayback
+}
+
+Learner -- UC01
+Learner -- UC02
+Learner -- UC03
+Learner -- UC05
+Learner -- UC06
+Learner -- UC07
+Learner -- UC08
+Learner -- UC09
+Learner -- UC10
+
+UC02 ..> LearnVocabulary : <<include>>
+UC03 ..> UC07 : <<include>>
+UC05 ..> UC07 : <<include>>
+UC06 ..> SpeechInput : <<extend>>
+UC06 ..> SpeechPlayback : <<extend>>
+UC09 ..> UC03 : <<include>> reuse engine
+UC10 ..> UC07 : <<include>> progress events
+
+note bottom of UC06
+  GEC/T5-small remains inside the Lingora boundary.
+  Speech features are optional browser conveniences.
+end note
+@enduml

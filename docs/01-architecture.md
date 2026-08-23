@@ -1,6 +1,6 @@
 # 01 - Lingora System Architecture
 
-> **Current normative architecture (ADR-010, effective 2026-08-21):** the active target is a two-track system with deterministic SRS and one learned service, Transformer GEC. Migrated sections below remain historical evidence where they describe DKT/HLR or generative chat.
+> **Current normative architecture (ADR-010, effective 2026-08-21):** the active target is a two-track system with deterministic SRS and one learned internal processing component, Transformer GEC. `lingora-ai`/FastAPI may remain a deployable component, but it is inside the Lingora system boundary and is not a Use Case actor. The only external system actors are Learner and Admin. Migrated sections below remain historical evidence where they describe DKT/HLR or generative chat.
 
 ## ADR-010 target architecture
 

@@ -1,0 +1,20 @@
+@startuml
+title LINGORA - Context Data Flow Diagram
+left to right direction
+skinparam shadowing false
+
+rectangle Learner
+rectangle Admin
+
+rectangle "LINGORA Web Learning System\n(includes internal GEC/T5-small processing)" as Lingora
+
+Learner --> Lingora : credentials, answers, reviews, writing text
+Lingora --> Learner : lessons, feedback, schedule, corrected text, progress
+Admin --> Lingora : content, media, publish actions
+Lingora --> Admin : validation and publication state
+
+note bottom of Lingora
+  Learner and Admin are the only external actors.
+  GEC is internal processing, not an external actor.
+end note
+@enduml

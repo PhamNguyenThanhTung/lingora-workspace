@@ -6,7 +6,7 @@
 > **Ngày phê duyệt:** `2026-08-17`  
 > **Căn cứ pháp lý & kỹ thuật:** `docs/04-data-model.md`, `ADR-003`, `lingora-admin/prisma/schema.prisma`, và các migration SQL thực tế (`20260814000000_init`, `20260814000001_rls_and_rpc`, `20260814000002_storage_setup`).
 >
-> **ADR-010 amendment (2026-08-21):** toàn bộ 17 thực thể và 24 khóa ngoại bên dưới được giữ nguyên. GEC không tạo persistence mới trong MVP. ChatScenario tiếp tục quản lý ngữ cảnh tình huống; việc dùng ChatSession/ChatMessage cho lịch sử luyện viết cần quyết định semantics/RLS riêng. UserVocabSrs.recallProbability được giữ vì compatibility, không còn là bằng chứng về learned-SRS target.
+> **ADR-010 amendment (2026-08-21):** toàn bộ 17 thực thể và 24 khóa ngoại bên dưới được giữ nguyên. Báo cáo phân loại 15 model phục vụ active business flow và 2 model `ChatSession`/`ChatMessage` là legacy/deprecated pending cleanup. GEC là xử lý nội bộ và không tạo persistence mới trong MVP. Entity đề xuất cho UC-09/UC-10 nằm ngoài physical baseline. ChatScenario tiếp tục quản lý ngữ cảnh tình huống; việc dùng ChatSession/ChatMessage cho lịch sử luyện viết cần quyết định semantics/RLS riêng. UserVocabSrs.recallProbability được giữ vì compatibility, không còn là bằng chứng về learned-SRS target.
 
 ---
 

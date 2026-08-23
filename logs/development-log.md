@@ -2,6 +2,33 @@
 
 ### Date
 
+`2026-08-23`
+
+### Task
+
+`redesign-requirements-presentation-deck-with-visual-cards-and-image-placeholders - Presentation Deck Redesign with Cards & Image Placeholders`
+
+### Completed
+
+- Reviewed `docs/report/Lingora-Project-1-Requirements-Presentation.pptx` for academic and visual adequacy.
+- Preserved 100% template fidelity: UTC university logo, purple-yellow header banner, and gray wave footer preserved across all 19 slides.
+- Upgraded typography to modern Segoe UI with responsive single-line header calculations.
+- Replaced plain, heavy rectangular blocks with clean modern card layouts, pill badges, and structured grids.
+- Added dedicated image placeholder zones with dashed-style borders, camera/image icons, and explicit guidance labels on key slides (Slides 1, 4, 7, 8, 10, 11, 14, 16, 17).
+- Rebuilt PPTX deliverable using `@oai/artifact-tool` and verified layout bounds across all 19 slides (19/19 checks PASS).
+
+### Tests
+
+- `PPT-REDESIGN-001` .. `PPT-REDESIGN-006`: All test cases PASS in `logs/test-log.md`.
+
+### Commit
+
+`PENDING - waiting for human verification and commit authorization`
+
+---
+
+### Date
+
 `2026-08-17`
 
 ### Task
@@ -1274,6 +1301,90 @@ M1.3–M1.5 backend, schema, RLS, and /v1/ contract remained unchanged. Code rec
 
 ### Task
 
+`project-1-requirements-report-docx`
+
+### Task
+
+`complete-project-1-five-chapter-report`
+
+### Task
+
+`restructure-project-report-to-lecturer-format`
+
+### Completed
+
+- Replaced the five-chapter SDLC structure with the lecturer PDF structure: introduction, Part I requirements, Part II system analysis, Part III system design, Part IV conclusion.
+- Moved interview/survey evidence into Part I.
+- Removed UI/UX presentation sections from the report revision and kept only an explicit deferral note.
+- Generated and sanitized the lecturer-format DOCX.
+
+### Tests
+
+- `RPT-FMT-001` through `RPT-FMT-003` recorded in `logs/test-log.md`.
+
+### Completed
+
+- Reframed the report into the requested Vietnamese five-chapter university structure.
+- Added front matter, Chapter 1 SDLC, Chapter 2 problem/technology, Chapter 3 analysis/design, Chapter 4 build, Chapter 5 testing/deployment, conclusion, references and interview appendix.
+- Created Google Docs-targeted DOCX and sanitized title formatting.
+
+### Problems
+
+- Visual DOCX rendering is unavailable because LibreOffice/soffice is missing.
+
+### Solution
+
+- Completed structural and content audits and recorded render limitation as N/A.
+
+### Completed
+
+- Read and reviewed `docs/phỏng_vấn.docx` and mapped the six interview participants to the current Use Cases.
+- Corrected interpretation of the Japanese participant, thematic frequencies, spoken-dialogue requests, personalization, UC-09 and UC-11.
+- Added `docs/report/lingora-project-1-requirements-report.md` as the complete report source with lecturer-aligned sections and figure placeholders.
+- Added `docs/report/Lingora-Bao-cao-Phan-tich-Yeu-cau.docx`, generated with the Google Docs default preset and title sanitation.
+
+### Problems
+
+- The bundled renderer could not run because LibreOffice/soffice is not installed (`WinError 2`).
+
+### Solution
+
+- Completed structural DOCX audit and title sanitizer check; recorded render limitation explicitly instead of claiming visual PASS.
+
+### Tests
+
+- `RPT-DOCX-001` through `RPT-DOCX-003` recorded in `logs/test-log.md`.
+
+### Commit
+
+Pending user/repository commit gate.
+
+### 2026-08-22 — UC-06 dual-input documentation sync
+
+#### Completed
+
+- Updated UC-06 User Story, acceptance criteria, flow summary and constraints
+  for optional typing or browser speech transcription plus browser speech
+  synthesis playback.
+- Preserved the canonical `original_text`/`scenario_code` contract and the
+  Browser -> Next.js -> FastAPI -> T5-small boundary.
+- Added approved scope and MDN Web Speech API evidence entries.
+- Updated the three approved PlantUML diagrams and validated all 15 sources.
+- Rebuilt and sanitized the requirements DOCX.
+
+#### Boundary
+
+No backend speech model, audio persistence, schema, migration, API runtime or
+UI implementation was changed. Browser support/permission fallback is required;
+SpeechRecognition is not described as offline/on-device by default.
+
+#### Verification
+
+`UC06-SPEECH-001` and `UC06-SPEECH-002` PASS. `UC06-SPEECH-003` is N/A because
+LibreOffice/soffice is unavailable.
+
+### Task
+
 `two-track-se-ml-gec-scope-amendment`
 
 ### Completed
@@ -1306,3 +1417,120 @@ M1.3–M1.5 backend, schema, RLS, and /v1/ contract remained unchanged. Code rec
 ### Commit
 
 `f5a5a49 — docs(scope): consolidate lingora into se and transformer gec tracks`
+
+---
+
+### Date
+
+`2026-08-21`
+
+### Task
+
+`report-requirements-use-case-realignment`
+
+### Completed
+
+- Read the lecturer requirement-analysis PDF and registered it as `SRC-REQ-001`.
+- Created a report source covering stakeholder analysis, elicitation questions, evidence limits, ten User Stories, Acceptance Criteria, FR/NFR, Use Case specification summary, DFD, ERD boundary and validation/change management.
+- Added UC-09 Placement Test and UC-11 private Achievements/Badges as approved proposed targets with `P1-FR-016` and `P1-FR-017`; no implementation claim was made.
+- Created 15 PlantUML sources for Use Case, Activity, DFD, ERD and Sequence diagrams.
+- Created an evidence register that explicitly prevents fabricated survey metrics and records missing source artifacts.
+
+### Problems
+
+- The first PDF extraction command hit a Windows `cp1252` stdout encoding error for Vietnamese text. The failure was reproduced and resolved by setting `PYTHONIOENCODING=utf-8`.
+- The first DFD PlantUML source used physical line breaks inside edge labels, causing a compiler error. Labels were normalized to single-line strings and all diagrams were rechecked.
+
+### Solution
+
+- Used the bundled Python/pdfplumber runtime with UTF-8 output.
+- Used PlantUML 1.2026.6 with the available Java runtime to validate all diagram sources.
+- Kept proposed data entities visibly marked `PROPOSED / NOT IMPLEMENTED`; no schema or runtime files were touched.
+
+### Tests
+
+- `RPT-UC-001` through `RPT-UC-005` recorded in `logs/test-log.md`.
+
+### Commit
+
+Pending user/repository commit gate.
+### Date
+
+`2026-08-23`
+
+### Task
+
+`integrate-requirements-research-sections-into-lecturer-report`
+
+### Completed
+
+- Integrated the user-provided requirements-analysis material into the Vietnamese lecturer-format report.
+- Added methodology, interview findings, benchmark comparison, functional/non-functional requirements, User Story/Acceptance Criteria, validation, change management and traceability sections.
+- Recorded unsupported quantitative survey claims as `EVIDENCE-PENDING` and preserved the two-track SE + T5-small GEC boundary.
+- Applied the approved ERD count resolution: 17 physical baseline models, 15 active-flow models, 2 legacy/deprecated chat models; proposed UC-09/UC-11 entities excluded.
+- Created the 14-slide teacher-facing presentation from the supplied university background without modifying the source PPTX.
+
+### Problems
+
+- Presentation template inspection initially lacked an `unzip` command; a local read-only ZIP shim was used in the temporary audit workspace.
+- Starter-deck contact-sheet helper initially invoked the unavailable `python3` alias; the optional contact sheet was regenerated with the bundled Python runtime.
+- LibreOffice/soffice is unavailable, so DOCX raster render QA could not run.
+
+### Solution
+
+- Used the bundled artifact-tool runtime for PPTX import, duplication, editing, rendering, notes and export.
+- Used the bundled Python runtime for DOCX build, title sanitization, structural checks and presentation montage generation.
+- Preserved the supplied deck master/background and mapped all 14 output slides to source slide 1.
+
+### Tests
+
+- `RPT-ADD-001` through `RPT-ADD-010` recorded in `logs/test-log.md`.
+
+### Commit
+
+Pending user/repository commit gate.
+# 2026-08-23 — Generate 19-slide Lingora requirements presentation
+
+- Expanded the existing validated 14-slide university-template deck to 19 slides with agenda, two-track solution boundary, stakeholder/trust-boundary analysis, activity-flow overview and Q&A.
+- Corrected unsupported performance wording: route timeout remains documented; latency benchmark is explicitly evidence-pending.
+- Replaced roadmap language on Slide 18 with a current-status and verification conclusion, per the approved scope.
+- Preserved qualitative interview frequencies, proposed UC labels and the approved 17 physical / 15 active / 2 legacy model description.
+- Rendered and visually inspected all 19 slides; automated overflow test passed.
+# 2026-08-23 — Restructure presentation and add supplementary interview evidence
+
+- Rebuilt the deck around the revised 19-slide defense narrative supplied by the user.
+- Added team/topic ownership and a visual four-part agenda.
+- Added three supplementary interview records as anonymized role-level evidence; preserved the original six-record thematic frequencies without recalculating a combined sample.
+- Added standardized questionnaire evidence, benchmark analysis, a large Use Case overview, highlighted UC-05/UC-06 Acceptance Criteria, requirement analysis, FR/NFR, modeling, verification and status-only conclusion.
+- Preserved university branding and verified all 19 slides visually and with the automated overflow test.
+
+# 2026-08-23 — Complete PlantUML coverage and internalize GEC actor boundary
+
+### Completed
+
+- Merged the outstanding PlantUML/report task with the user-approved actor/boundary amendment.
+- Renumbered current private-achievement documentation from the obsolete gap to `UC-10`, producing a contiguous `UC-01..UC-10` catalog.
+- Removed `AI Service` from Use Case actors; only Learner and Admin remain outside the system boundary with solid non-arrow associations.
+- Documented GEC/T5-small as internal Lingora processing while preserving FastAPI/Route Handler as implementation components.
+- Expanded the PlantUML set to 22 sources with Auth, Admin content, Progress/Reminder activities and Context, Level 0, Lesson/Exercise, SRS and GEC DFDs.
+- Rebuilt the ERD reporting view with 15 active physical models, 2 legacy/deprecated physical models and separate UC-09/UC-10 proposed entities.
+- Synchronized canonical docs, four Markdown reports and the evidence register; retained the six original interviews and three supplementary records without combining frequencies.
+
+### Problems
+
+- The worktree contained unrelated and pre-existing changes, including a modified Prisma schema and prior report/lifecycle outputs. Those changes were preserved and not reverted.
+- Current documentation mixed system actors with internal/supporting components and contained stale missing-interview wording.
+
+### Solution
+
+- Recorded ADR-011 and an approved task snapshot, then limited implementation to documentation/diagram/lifecycle paths.
+- Used the 17-model canonical baseline and the approved 15-active/2-legacy reporting classification without modifying runtime schema or migrations.
+- Added static audits for numbering, actor syntax, ERD counts, diagram catalog completeness and interview evidence boundaries.
+
+### Tests
+
+- `PLANTUML-COV-001` through `PLANTUML-COV-009` recorded in `logs/test-log.md`; compiler, static audits and render inspection pass.
+
+### Commit
+
+Final COMMIT gate uses Conventional Commit message: `docs: complete PlantUML coverage and internalize GEC boundary`.

@@ -1,0 +1,25 @@
+@startuml
+title Sequence - UC-01 Authentication and Session
+skinparam shadowing false
+actor "Learner / Admin" as User
+participant Browser
+participant "Next.js Server Action" as Next
+participant "Supabase Auth" as Auth
+database "PostgreSQL Trigger/Profile" as DB
+
+User -> Browser: Submit credentials
+Browser -> Next: Login/Register form
+Next -> Auth: Authenticate
+alt valid credentials
+  Auth --> Next: Access + refresh session
+  Next -> Browser: Set httpOnly session cookie
+  opt new registration
+    Auth -> DB: auth.users insert event
+    DB -> DB: Create Profile
+  end
+  Next --> Browser: Redirect to learner/admin area
+else invalid credentials
+  Auth --> Next: Authentication error
+  Next --> Browser: Safe localized error
+end
+@enduml

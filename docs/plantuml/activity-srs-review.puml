@@ -1,0 +1,28 @@
+@startuml
+title Activity - UC-05 Deterministic SRS Review
+skinparam shadowing false
+start
+:Authenticate learner;
+:Query learner-owned cards\nwhere nextReviewAt <= now;
+if (Due cards exist?) then (yes)
+  while (Card remains?) is (yes)
+    :Show vocabulary card;
+    :Collect recall result;
+    :Call record_review RPC;
+    if (RPC succeeds?) then (yes)
+      :Insert immutable ReviewLog;
+      :Update one UserVocabSrs card;
+    else (no)
+      :Show retryable error;
+    endif
+  endwhile (no)
+  :Evaluate progress/streak event;
+else (no)
+  :Show no cards due state;
+endif
+note right
+  Policy name remains deterministic
+  until RPC audit proves SM-2 compatibility.
+end note
+stop
+@enduml

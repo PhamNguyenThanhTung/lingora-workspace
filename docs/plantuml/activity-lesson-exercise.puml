@@ -1,0 +1,23 @@
+@startuml
+title Activity - UC-02/UC-03 Lesson and Exercise Flow
+skinparam shadowing false
+start
+:Authenticate learner;
+:Load published course and lesson;
+if (Lesson available?) then (yes)
+  :Show vocabulary and audio;
+  :Load exercises by orderIndex;
+  while (Exercise remains?) is (yes)
+    :Render by approved type;
+    :Collect and validate answer;
+    :Show correct/incorrect feedback;
+  endwhile (no)
+  :Calculate score 0-100;
+  :Update UserProgress idempotently;
+  :Evaluate qualifying streak event;
+  :Show completion state;
+else (no)
+  :Show recoverable empty/error state;
+endif
+stop
+@enduml
