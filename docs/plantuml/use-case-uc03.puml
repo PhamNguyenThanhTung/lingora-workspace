@@ -1,0 +1,20 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title LINGORA - UC-03 Complete Interactive Exercises
+left to right direction
+actor Learner
+rectangle "Lingora Web Learning System" {
+  usecase "UC-03\nComplete Interactive Exercises" as UC03
+  usecase "Submit Answer" as Answer
+  usecase "Receive Result" as Result
+  usecase "Update Progress" as Progress
+}
+Learner -- UC03
+UC03 ..> Answer : <<include>>
+UC03 ..> Result : <<include>>
+UC03 ..> Progress : <<include>>
+@enduml

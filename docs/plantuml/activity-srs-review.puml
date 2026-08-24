@@ -1,0 +1,38 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Activity Diagram - UC-05 Spaced Repetition Review (SRS)
+
+start
+:Xác thực người dùng (Learner);
+:Truy vấn danh sách thẻ đến hạn\n(next_review_at <= now);
+if (Có thẻ từ vựng đến hạn?) then (có)
+  while (Còn thẻ cần ôn tập?) is (có)
+    :Hiển thị thẻ từ vựng (mặt trước);
+    :Thu thập đánh giá ghi nhớ (rating);
+    repeat
+      :Gọi RPC record_review(vocab_id, rating);
+      if (RPC thành công?) then (có)
+        :Thêm bản ghi ReviewLog;
+        :Cập nhật trạng thái thẻ UserVocabSrs;
+        break
+      else (không)
+        :Hiển thị thông báo lỗi giao dịch;
+        if (Người dùng chọn Thử lại và Retry <= 3 lần?) then (có)
+          ' Quay lại gọi lại RPC
+        else (không / bỏ qua)
+          :Hoãn thẻ sang phiên ôn tập sau;
+          break
+        endif
+      endif
+    repeat while (Thử lại)
+  endwhile (không)
+  :Cập nhật tiến độ và streak hàng ngày;
+else (không)
+  :Hiển thị thông báo không có thẻ đến hạn;
+endif
+stop
+@enduml

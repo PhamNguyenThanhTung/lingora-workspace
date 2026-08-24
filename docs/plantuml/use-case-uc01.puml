@@ -1,0 +1,24 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title LINGORA - UC-01 Authenticate and Manage Session
+left to right direction
+actor Learner
+actor Admin
+rectangle "Lingora Web Learning System" {
+  usecase "UC-01\nAuthenticate and Manage Session" as UC01
+  usecase "Register" as Register
+  usecase "Login" as Login
+  usecase "Refresh Session" as Refresh
+  usecase "Logout" as Logout
+}
+Learner -- UC01
+Admin -- UC01
+UC01 ..> Register : <<include>>
+UC01 ..> Login : <<include>>
+UC01 ..> Refresh : <<include>>
+UC01 ..> Logout : <<include>>
+@enduml

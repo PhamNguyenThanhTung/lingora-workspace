@@ -1,0 +1,43 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Sơ đồ Luồng Dữ liệu Mức 1 (DFD Level 1) - Tiến trình 5.0: Luyện viết theo tình huống & Kiểm tra ngữ pháp
+skinparam roundCorner 10
+skinparam defaultFontName Arial
+
+' ==========================================
+' TÁC NHÂN NGOÀI (EXTERNAL ENTITY)
+' ==========================================
+rectangle "Học viên\n(Learner)" as Learner #EEF2FF
+
+' ==========================================
+' CÁC TIẾN TRÌNH CON (SUB-PROCESSES)
+' ==========================================
+usecase "5.1\nTruy xuất gợi ý\nKịch bản (Prompts)" as P51 #FAF5FF
+usecase "5.2\nTiếp nhận &\nTiền xử lý câu văn" as P52 #FAF5FF
+usecase "5.3\nKiểm tra ngữ pháp\n& Sinh câu sửa" as P53 #FAF5FF
+usecase "5.4\nTính toán Diff &\nPhần sai khác" as P54 #FAF5FF
+usecase "5.5\nLưu lịch sử &\nHiển thị phản hồi" as P55 #FAF5FF
+
+' ==========================================
+' KHO DỮ LIỆU LIÊN QUAN (DATA STORES)
+' ==========================================
+database "D5.1: Kho Kịch bản\n(Scenarios, Prompts)" as D51 #F8FAFC
+database "D5.2: Lịch sử Bài viết\n(WritingSubmissions)" as D52 #F8FAFC
+
+' ==========================================
+' LUỒNG DỮ LIỆU (DATA FLOWS)
+' ==========================================
+Learner --> P51 : [DF-51] Chọn kịch bản luyện viết
+D51 --> P51 : [DF-52] Danh sách câu gợi ý tình huống
+P51 --> Learner : [DF-53] Hiển thị prompt theo thứ tự
+Learner --> P52 : [DF-54] Nhập câu tiếng Anh (gõ/nói)
+P52 --> P53 : [DF-55] Câu gốc đã chuẩn hóa & mã kịch bản
+P53 --> P54 : [DF-56] Câu gốc + Câu sửa chuẩn xác (corrected_text)
+P54 --> P55 : [DF-57] Vị trí lỗi sai & chuỗi diff sai khác
+P55 --> D52 : [DF-58] Lưu bài làm & kết quả phân tích ngữ pháp
+P55 --> Learner : [DF-59] Câu sửa, gạch chân lỗi & giải thích chi tiết
+@enduml

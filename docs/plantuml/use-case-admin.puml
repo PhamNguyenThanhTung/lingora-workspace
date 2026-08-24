@@ -1,0 +1,30 @@
+@startuml
+title LINGORA - Admin Use Cases
+left to right direction
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam roundCorner 8
+skinparam dpi 200
+
+rectangle "Lingora Web Learning System" {
+  usecase "UC-01\nAuthenticate & Manage Session" as UC01
+  usecase "UC-04\nManage Educational Content" as UC04
+
+  usecase "Manage Courses & Lessons" as ManageLessons
+  usecase "Manage Vocabulary & Exercises" as ManageExercises
+  usecase "Manage Scenarios" as ManageScenarios
+  usecase "Upload Validated Media" as UploadMedia
+  usecase "Publish / Unpublish Content" as Publish
+}
+
+actor Admin
+
+UC01 -- Admin
+UC04 -- Admin
+
+UC04 ..> ManageLessons : <<include>>
+UC04 ..> ManageExercises : <<include>>
+UC04 ..> ManageScenarios : <<include>>
+UC04 ..> UploadMedia : <<include>>
+UC04 ..> Publish : <<include>>
+@enduml

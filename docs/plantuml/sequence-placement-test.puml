@@ -1,0 +1,32 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Sequence Diagram - UC-09 Take Placement Test
+
+actor Learner
+participant "Lingora Web Client" as Web
+participant "Placement Test Engine" as Placement
+database "PostgreSQL DB" as DB
+
+Learner -> Web: Bắt đầu bài kiểm tra đầu vào
+Web -> Placement: Yêu cầu tải bộ câu hỏi kiểm tra
+Placement -> DB: Truy vấn bài tập kiểm tra đã duyệt
+DB --> Placement: Trả về danh sách câu hỏi theo thứ tự
+Placement --> Web: Khởi tạo phiên làm bài kiểm tra
+loop Từng câu hỏi
+  Learner -> Web: Chọn đáp án và gửi câu trả lời
+  Web -> Placement: Ghi nhận câu trả lời vào trạng thái bài test
+end
+Placement -> Placement: Tính tổng điểm và ánh xạ sang cấp độ CEFR
+Placement -> DB: Tìm khóa học tương ứng với trình độ CEFR
+DB --> Placement: Trả về thông tin khóa học phù hợp
+alt Đủ điều kiện đánh giá
+  Placement --> Web: Trả về cấp độ CEFR và khóa học gợi ý
+else Không đủ dữ liệu / bài làm dở dang
+  Placement --> Web: Gợi ý khóa học khởi đầu hoặc cho phép làm lại
+end
+Web --> Learner: Hiển thị kết quả trình độ và lộ trình gợi ý
+@enduml

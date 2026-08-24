@@ -1,0 +1,31 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Sơ đồ Luồng Dữ liệu Mức Ngữ cảnh (DFD Context Diagram) - Hệ thống Lingora
+
+' ==========================================
+' TÁC NHÂN NGOÀI (EXTERNAL ENTITIES)
+' ==========================================
+rectangle "Học viên\n(Learner)" as Learner #EEF2FF
+rectangle "Quản trị viên\n(Admin)" as Admin #E0F2FE
+
+' ==========================================
+' TIẾN TRÌNH HỆ THỐNG CỐT LÕI (SYSTEM PROCESS 0)
+' ==========================================
+usecase "0.0\n**Hệ thống Học Ngoại ngữ**\n**Trực tuyến Lingora**" as P0 #FAF5FF
+
+' ==========================================
+' LUỒNG DỮ LIỆU VỚI HỌC VIÊN (LEARNER)
+' ==========================================
+Learner -down-> P0 : Thông tin đăng nhập, Đáp án bài tập,\nĐánh giá ghi nhớ SRS, Câu viết kịch bản
+P0 -up-> Learner : Token phiên, Bài học & Flashcard,\nLịch ôn tập SRS, Câu sửa & Diff trực quan,\nTiến độ học tập & Huy hiệu
+
+' ==========================================
+' LUỒNG DỮ LIỆU VỚI QUẢN TRỊ VIÊN (ADMIN)
+' ==========================================
+Admin -down-> P0 : Khóa học, Bài học, Từ vựng, Bài tập,\nKịch bản luyện viết, File media âm thanh
+P0 -up-> Admin : Kết quả kiểm tra dữ liệu,\nTrạng thái xuất bản & Thống kê hệ thống
+@enduml

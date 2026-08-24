@@ -1,0 +1,51 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+title Sơ đồ Điều hướng Màn hình (UI Navigation & Sitemap) - Hệ thống Lingora
+
+package "Phân hệ Xác thực (Authentication)" #EEF2FF {
+  [Màn hình Đăng nhập] as Login
+  [Màn hình Đăng ký] as Register
+  [Màn hình Quên mật khẩu] as ForgotPwd
+}
+
+package "Phân hệ Học viên (Learner Portal)" #E0F2FE {
+  [Trang chủ & Bảng điều khiển] as Dashboard
+  [Bài kiểm tra Xếp lớp Đầu vào] as Placement
+  [Danh mục Khóa học theo CEFR] as Courses
+  [Chi tiết Bài học & Từ vựng] as LessonView
+  [Luyện tập Bài tập Tương tác] as ExerciseView
+  [Phiên Ôn tập Flashcard SRS] as SrsView
+  [Luyện viết Tình huống & Nhận Diff] as WritingView
+  [Hồ sơ Cá nhân, Streak & Huy hiệu] as ProfileView
+}
+
+package "Phân hệ Quản trị (Admin CMS)" #DCFCE7 {
+  [Admin Dashboard & Thống kê] as AdminDash
+  [Quản lý Khóa học & Bài học] as AdminCourse
+  [Quản lý Ngân hàng Bài tập] as AdminExercise
+  [Quản lý Kịch bản Luyện viết] as AdminScenario
+  [Thư viện Media & Tải lên Âm thanh] as AdminMedia
+}
+
+Login --> Dashboard : Đăng nhập vai trò Learner
+Login --> AdminDash : Đăng nhập vai trò Admin
+Register --> Placement : Tạo tài khoản & Làm test xếp lớp
+Placement --> Dashboard : Gợi ý khóa học phù hợp năng lực
+
+Dashboard --> Courses : Chọn khóa học
+Courses --> LessonView : Chọn bài học
+LessonView --> ExerciseView : Bắt đầu làm bài tập tương tác
+Dashboard --> SrsView : Mở phiên ôn tập thẻ đến hạn
+Dashboard --> WritingView : Thực hành luyện viết theo tình huống
+Dashboard --> ProfileView : Xem tiến độ học tập & huy hiệu
+
+AdminDash --> AdminCourse : Soạn thảo & xuất bản bài học
+AdminDash --> AdminExercise : Cấu hình ngân hàng câu hỏi
+AdminDash --> AdminScenario : Soạn thảo kịch bản hội thoại
+AdminDash --> AdminMedia : Quản lý & kiểm duyệt file audio
+@enduml

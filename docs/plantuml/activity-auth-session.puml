@@ -1,0 +1,29 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Activity Diagram - UC-01 Authenticate & Manage Session
+start
+:Mở ứng dụng Lingora;
+if (Đã có phiên hợp lệ?) then (có)
+  :Tải vai trò (role) và ngôn ngữ (locale);
+else (không)
+  :Gửi biểu mẫu đăng nhập hoặc đăng ký;
+  :Kiểm tra thông tin xác thực;
+  if (Thông tin xác thực hợp lệ?) then (có)
+    :Tạo phiên bảo mật;
+    :Tạo Profile khi đăng ký mới;
+  else (không)
+    :Hiển thị thông báo lỗi;
+    stop
+  endif
+endif
+if (Role là ADMIN?) then (có)
+  :Mở giao diện Admin;
+else (không)
+  :Mở giao diện Learner;
+endif
+stop
+@enduml

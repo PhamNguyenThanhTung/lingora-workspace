@@ -1,0 +1,77 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Sơ đồ Luồng Dữ liệu Mức 0 (DFD Level 0 - Toàn hệ thống) - Hệ thống Lingora
+skinparam nodesep 28
+skinparam ranksep 28
+
+' ==========================================
+' TẦNG 1: TÁC NHÂN NGOÀI (EXTERNAL ENTITIES)
+' ==========================================
+rectangle "Học viên\n(Learner)" as Learner #EEF2FF
+rectangle "Quản trị viên\n(Admin)" as Admin #E0F2FE
+
+' ==========================================
+' TẦNG 2: CÁC TIẾN TRÌNH XỬ LÝ (PROCESSES)
+' ==========================================
+together {
+  usecase "3.0\nHọc bài học &\nBài tập tương tác" as P3 #FAF5FF
+  usecase "4.0\nÔn tập từ vựng\nSpaced Repetition" as P4 #FAF5FF
+  usecase "5.0\nLuyện viết tình huống\n& Sửa lỗi ngữ pháp" as P5 #FAF5FF
+  usecase "6.0\nTheo dõi tiến độ,\nStreak & Huy hiệu" as P6 #FAF5FF
+  usecase "1.0\nXác thực &\nQuản lý phiên" as P1 #FAF5FF
+  usecase "2.0\nQuản trị Học liệu\n& Xuất bản CMS" as P2 #FAF5FF
+}
+
+' ==========================================
+' TẦNG 3: CÁC KHO DỮ LIỆU (DATA STORES)
+' ==========================================
+together {
+  database "D2: Học liệu & Bài tập\n(Courses, Lessons)" as D2 #F8FAFC
+  database "D3: Thẻ SRS & D4: Log\n(UserVocabSrs, Logs)" as D3 #F8FAFC
+  database "D5: Kịch bản tình huống\n(Scenarios, Submissions)" as D5 #F8FAFC
+  database "D6: Tiến độ & Thành tích\n(UserProgress, Badges)" as D6 #F8FAFC
+  database "D1: Người dùng & Hồ sơ\n(Profiles, Settings, Goals)" as D1 #F8FAFC
+}
+
+' Khóa vị trí hàng ngang
+Learner -[hidden]right- Admin
+
+P3 -[hidden]right- P4
+P4 -[hidden]right- P5
+P5 -[hidden]right- P6
+P6 -[hidden]right- P1
+P1 -[hidden]right- P2
+
+D2 -[hidden]right- D3
+D3 -[hidden]right- D5
+D5 -[hidden]right- D6
+D6 -[hidden]right- D1
+
+' ==========================================
+' LUỒNG DỮ LIỆU TẦNG 1 -> TẦNG 2 (TÁC NHÂN <-> TIẾN TRÌNH)
+' ==========================================
+Learner --> P3 : [DF-07/08] Làm bài & Nhận điểm
+Learner --> P4 : [DF-09/10] Ôn thẻ & Lịch SRS
+Learner --> P5 : [DF-11/12] Nộp bài viết & Sửa lỗi
+Learner --> P6 : [DF-13/14] Xem Streak & Huy hiệu
+Learner --> P1 : [DF-05/06] Đăng nhập & Quyền
+
+Admin --> P1 : [DF-01/02] Đăng nhập Admin
+Admin --> P2 : [DF-03/04] Soạn học liệu & Xuất bản
+
+' ==========================================
+' LUỒNG DỮ LIỆU TẦNG 2 -> TẦNG 3 (TIẾN TRÌNH <-> KHO DỮ LIỆU)
+' ==========================================
+P3 <--> D2 : [DF-18/19] Đọc bài học / Ghi tiến độ
+P4 <--> D3 : [DF-20..22] Đọc thẻ / Ghi SM-2 & Log
+P5 <--> D5 : [DF-23/24] Đọc kịch bản / Ghi bài viết
+P6 <--> D6 : [DF-25/26] Đọc / Ghi Streak & Huy hiệu
+P1 <--> D1 : [DF-15] Tra cứu / Ghi Profile
+
+P2 --> D2 : [DF-16] Ghi học liệu
+P2 --> D5 : [DF-17] Ghi kịch bản
+@enduml

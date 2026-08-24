@@ -1,0 +1,29 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Activity Diagram - UC-07 Track Progress & UC-08 trong ứng dụng Study Reminders
+start
+:Tải tiến độ, chuỗi ngày học (Streak) và mục tiêu ngày của Learner;
+if (Có sự kiện hoàn thành bài học/bài tập/SRS?) then (có)
+  :Cập nhật tiến độ và tính toán chuỗi ngày học liên tục;
+endif
+:So sánh thời lượng/hoạt động thực tế với mục tiêu ngày;
+if (Đã đạt mục tiêu ngày?) then (có)
+  :Hiển thị trạng thái hoàn thành mục tiêu;
+else (không)
+  if (Ứng dụng mở trong khung giờ nhắc nhở?) then (có)
+    :Hiển thị thông báo nhắc nhở ôn tập trong app;
+    if (Người dùng bấm tham gia học?) then (có)
+      :Chuyển hướng tới phiên ôn tập hoặc bài học;
+    else (đóng)
+      :Tắt thông báo nhắc nhở;
+    endif
+  else (không)
+    :Hiển thị widget tiến độ tĩnh trên giao diện;
+  endif
+endif
+stop
+@enduml

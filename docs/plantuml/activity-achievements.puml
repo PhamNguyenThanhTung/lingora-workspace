@@ -1,0 +1,23 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Activity Diagram - UC-10 Earn Achievements & Badges
+start
+:Nhận sự kiện hoàn thành hoạt động học tập;
+:Tải danh sách điều kiện cấp huy hiệu;
+while (Còn điều kiện cần kiểm tra?) is (có)
+  :Đánh giá tiến độ và thành tích của Learner;
+  if (Đủ điều kiện nhận huy hiệu?) then (có)
+    if (Đã được cấp trước đó?) then (có)
+      :Bỏ qua (tránh cấp trùng lặp);
+    else (không)
+      :Cấp huy hiệu thành tích cá nhân;
+    endif
+  endif
+endwhile (không)
+:Hiển thị bộ sưu tập huy hiệu của Learner;
+stop
+@enduml

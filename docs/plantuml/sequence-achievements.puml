@@ -1,0 +1,30 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Sequence Diagram - UC-10 Earn Achievements & Badges
+
+actor Learner
+participant "Lesson / SRS Engine" as Flow
+participant "Achievement Evaluator" as Eval
+database "PostgreSQL DB" as DB
+database "Badge Store" as Badges
+
+Learner -> Flow: Hoàn thành hoạt động học tập (bài học/bài tập/SRS)
+Flow -> DB: Ghi nhận sự kiện tiến độ và cập nhật Streak
+DB --> Flow: Xác nhận lưu tiến độ thành công
+Flow -> Eval: Kích hoạt sự kiện đánh giá thành tích người học
+Eval -> DB: Đọc dữ liệu tiến độ và bộ đếm học tập
+DB --> Eval: Trả về trạng thái tiến độ hiện tại
+Eval -> Badges: Kiểm tra điều kiện mở khóa huy hiệu
+alt Đạt điều kiện mở khóa mới
+  Badges -> Badges: Cấp huy hiệu cá nhân (đảm bảo không cấp trùng)
+  Badges --> Eval: Trả về thông tin huy hiệu mới nhận
+else Chưa đạt điều kiện hoặc đã nhận trước đó
+  Badges --> Eval: Không thao tác
+end
+Eval --> Flow: Trả về kết quả đánh giá huy hiệu
+Flow --> Learner: Hiển thị thông báo huy hiệu mới nhận (nếu có)
+@enduml

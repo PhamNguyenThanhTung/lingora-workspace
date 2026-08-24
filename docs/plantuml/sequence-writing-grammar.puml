@@ -1,0 +1,28 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Sequence Diagram - UC-06 Practice luyện viết theo tình huống & Grammar Check
+
+actor Learner
+participant Browser
+participant "Next.js Route Handler" as BFF
+participant "Internal Grammar Module" as GrammarModule
+
+Learner -> Browser: Nhập câu tiếng Anh theo kịch bản tình huống
+Browser -> BFF: Gửi yêu cầu kiểm tra (original_text, scenario_code)
+BFF -> BFF: Kiểm tra phiên đăng nhập và áp dụng timeout
+BFF -> GrammarModule: Chuyển tiếp câu viết tới mô-đun kiểm tra ngữ pháp nội bộ
+GrammarModule -> GrammarModule: Phân tích cú pháp, đối chiếu quy tắc và sinh câu sửa
+alt Kiểm tra thành công
+  GrammarModule --> BFF: Trả về câu sửa (corrected_text) và vị trí sai khác (diff)
+  BFF --> Browser: Trả về kết quả phân tích
+  Browser --> Learner: Hiển thị câu gốc, câu sửa và phần gạch chân sai khác
+else Lỗi kiểm tra hoặc dữ liệu không hợp lệ
+  GrammarModule --> BFF: Trả về mã lỗi chuẩn
+  BFF --> Browser: Chuyển đổi mã lỗi thân thiện
+  Browser --> Learner: Hiển thị thông báo lỗi và cho phép thử lại
+end
+@enduml

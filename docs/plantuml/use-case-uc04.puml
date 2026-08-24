@@ -1,0 +1,22 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title LINGORA - UC-04 Manage Educational Content
+left to right direction
+actor Admin
+rectangle "Lingora Web Learning System" {
+  usecase "UC-04\nManage Educational Content" as UC04
+  usecase "Manage Courses and Lessons" as Courses
+  usecase "Manage Vocabulary and Exercises" as Content
+  usecase "Upload Validated Media" as Media
+  usecase "Publish Content" as Publish
+}
+Admin -- UC04
+UC04 ..> Courses : <<include>>
+UC04 ..> Content : <<include>>
+UC04 ..> Media : <<include>>
+UC04 ..> Publish : <<include>>
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title Sequence Diagram - UC-05 Spaced Repetition Review (SRS)
+
+actor Learner
+participant "Lingora Web Client" as Web
+participant "PostgreSQL Database" as DB
+participant "record_review RPC" as RPC
+
+Learner -> Web: Mở phiên ôn tập từ vựng
+Web -> DB: Truy vấn thẻ đến hạn (next_review_at <= now)
+DB --> Web: Trả về danh sách thẻ từ vựng đến hạn
+Learner -> Web: Gửi đánh giá ghi nhớ (rating)
+Web -> RPC: Gọi hàm record_review(vocab_id, rating)
+RPC -> RPC: Xác thực quyền người dùng qua auth.uid()
+RPC -> DB: Thêm ReviewLog và cập nhật UserVocabSrs nguyên tử
+alt Giao dịch thành công
+  DB --> RPC: Xác nhận commit giao dịch
+  RPC --> Web: Trả về kết quả và thời gian ôn tập tiếp theo
+  Web --> Learner: Hiển thị thẻ tiếp theo / hoàn thành phiên
+else Lỗi hoặc không có quyền truy cập
+  DB --> RPC: Rollback giao dịch
+  RPC --> Web: Báo lỗi xử lý
+  Web --> Learner: Hiển thị thông báo lỗi và cho phép thử lại
+end
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title LINGORA - UC-07 Track Progress, Streak and Goals
+left to right direction
+actor Learner
+rectangle "Lingora Web Learning System" {
+  usecase "UC-07\nTrack Progress, Streak and Goals" as UC07
+  usecase "View Progress" as ViewProgress
+  usecase "Update Streak" as Streak
+  usecase "Set Daily Goal" as Goal
+}
+Learner -- UC07
+UC07 ..> ViewProgress : <<include>>
+UC07 ..> Streak : <<include>>
+UC07 ..> Goal : <<include>>
+@enduml

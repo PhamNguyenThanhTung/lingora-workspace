@@ -1,0 +1,20 @@
+@startuml
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+title LINGORA - UC-02 Browse and Learn Lessons
+left to right direction
+actor Learner
+rectangle "Lingora Web Learning System" {
+  usecase "UC-02\nBrowse and Learn Lessons" as UC02
+  usecase "Browse Courses" as Courses
+  usecase "Open Lesson" as Lesson
+  usecase "Learn Vocabulary" as Vocabulary
+}
+Learner -- UC02
+UC02 ..> Courses : <<include>>
+UC02 ..> Lesson : <<include>>
+UC02 ..> Vocabulary : <<include>>
+@enduml
