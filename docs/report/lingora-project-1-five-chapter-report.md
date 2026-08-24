@@ -22,7 +22,7 @@ Lingora là nền tảng Web hỗ trợ người học tiếng Anh học theo b�
 
 | Thành viên | Phạm vi phụ trách |
 |---|---|
-| Phạm Nguyễn Thanh Tùng | Kiến trúc Web, tích hợp T5-small GEC, quản lý báo cáo và traceability |
+| Phạm Nguyễn Thanh Tùng | Kiến trúc Web, tích hợp mô-đun kiểm tra văn bản tiện ích kiểm tra văn bản, quản lý báo cáo và traceability |
 | Thành viên 2 | Phỏng vấn người dùng, dữ liệu/Prisma, nội dung bài học và exercise |
 | Thành viên 3 | Use Case, giao diện người học, SRS và kiểm thử trải nghiệm |
 | Cả nhóm | Review chéo, kiểm thử, hoàn thiện báo cáo và thuyết trình |
@@ -40,7 +40,7 @@ Lingora là nền tảng Web hỗ trợ người học tiếng Anh học theo b�
 
 ## DANH MỤC HÌNH VẼ
 
-Hình 1. Use Case tổng quan; Hình 2. Use Case Learner; Hình 3. Use Case Admin; Hình 4. Activity học và làm bài; Hình 5. Activity SRS; Hình 6. Activity GEC; Hình 7. Sequence Auth; Hình 8. Sequence SRS; Hình 9. Sequence GEC; Hình 10. DFD ngữ cảnh; Hình 11. ERD baseline và phần đề xuất.
+Hình 1. Use Case tổng quan; Hình 2. Use Case Learner; Hình 3. Use Case Admin; Hình 4. Activity học và làm bài; Hình 5. Activity SRS; Hình 6. Activity tiện ích kiểm tra văn bản; Hình 7. Sequence Auth; Hình 8. Sequence SRS; Hình 9. Sequence tiện ích kiểm tra văn bản; Hình 10. DFD ngữ cảnh; Hình 11. ERD baseline và phần đề xuất.
 
 ## DANH MỤC BẢNG BIỂU
 
@@ -50,13 +50,13 @@ Bảng 1. So sánh mô hình SDLC; Bảng 2. Stakeholder; Bảng 3. Kết quả 
 
 ## 1.1. Tổng quan SDLC
 
-SDLC mô tả các hoạt động từ xác định vấn đề, thu thập yêu cầu, phân tích, thiết kế, xây dựng, kiểm thử, triển khai đến bảo trì. Với sản phẩm học ngoại ngữ có phần Web và ML/GEC, yêu cầu cần được kiểm chứng lặp lại giữa trải nghiệm người dùng, hợp đồng API và khả năng mô hình.
+SDLC mô tả các hoạt động từ xác định vấn đề, thu thập yêu cầu, phân tích, thiết kế, xây dựng, kiểm thử, triển khai đến bảo trì. Với sản phẩm học ngoại ngữ có phần Web và xử lý văn bản, yêu cầu cần được kiểm chứng lặp lại giữa trải nghiệm người dùng, hợp đồng API và khả năng mô hình.
 
 ## 1.2. Các mô hình phổ biến
 
 ### 1.2.1. Waterfall
 
-Waterfall tuần tự, dễ quản lý tài liệu nhưng phản hồi muộn và khó thích nghi khi yêu cầu AI/UI thay đổi.
+Waterfall tuần tự, dễ quản lý tài liệu nhưng phản hồi muộn và khó thích nghi khi yêu cầu phần mềm/UI thay đổi.
 
 ### 1.2.2. Agile/Scrum
 
@@ -68,7 +68,7 @@ Spiral lặp theo đánh giá rủi ro, phù hợp dự án có rủi ro kỹ th
 
 ### 1.2.4. V-Model
 
-V-Model liên kết từng pha phát triển với pha kiểm thử tương ứng, phù hợp hệ thống cần kiểm soát chặt nhưng kém linh hoạt với UI/AI.
+V-Model liên kết từng pha phát triển với pha kiểm thử tương ứng, phù hợp hệ thống cần kiểm soát chặt nhưng kém linh hoạt với UI/phần mềm.
 
 ### 1.2.5. Prototype
 
@@ -90,7 +90,7 @@ Lingora chọn Agile/Scrum, kết hợp prototype và kiểm thử theo từng i
 
 ## 2.1. Giới thiệu bài toán
 
-Người học thường quên từ, không biết thời điểm ôn, học không đều, khó xác định nội dung tiếp theo, khó theo dõi tiến bộ và thiếu môi trường luyện tập. Lingora giải quyết bằng bài học ngắn, bài tập, SRS xác định, tiến độ/streak/daily goal, in-app reminder và scenario writing với GEC.
+Người học thường quên từ, không biết thời điểm ôn, học không đều, khó xác định nội dung tiếp theo, khó theo dõi tiến bộ và thiếu môi trường luyện tập. Lingora giải quyết bằng bài học ngắn, bài tập, SRS xác định, tiến độ/streak/daily goal, trong ứng dụng reminder và luyện viết theo tình huống với tiện ích kiểm tra văn bản.
 
 ## 2.2. Hiện trạng và benchmark
 
@@ -115,7 +115,7 @@ Phỏng vấn bán cấu trúc gồm 6 người, 15 câu hỏi/người. P1-P4 v
 | Học không đều | 4/6 | UC-07, UC-08 |
 | Không biết nên học gì | 4/6 | UC-02, UC-09 |
 | Thiếu người luyện nói | 6/6 | Gap tương lai của UC-06 |
-| Muốn được sửa lỗi | 6/6 | UC-06 scenario writing/GEC |
+| Muốn được sửa lỗi | 6/6 | UC-06 luyện viết theo tình huống/tiện ích kiểm tra văn bản |
 
 ### 2.3.1. Khảo sát định lượng bổ sung (N=15)
 
@@ -123,15 +123,15 @@ File khảo sát bổ sung có **15 phản hồi**. Các kết quả nổi bật
 
 ### 2.3.2. Phạm vi Use Case
 
-UC-01 đến UC-10 là baseline phạm vi chính thức. UC-09 Placement Test và UC-10 Private Badges đang chờ implementation evidence. Không thêm chatbot nói hai chiều vào baseline.
+UC-01 đến UC-10 là baseline phạm vi chính thức. UC-09 Placement Test và UC-10 Private Badges đang chờ implementation evidence. Không thêm chức năng hội thoại hai chiều vào baseline.
 
 ### 2.3.3. Yêu cầu chức năng
 
-`P1-FR-001..017` là baseline về auth, lesson, exercise, progress, SRS, GEC, admin, reminder, placement và badges. P1-FR-016/017 là active/in-scope requirements với implementation evidence pending.
+`P1-FR-001..017` là baseline về auth, lesson, exercise, progress, SRS, tiện ích kiểm tra văn bản, admin, reminder, placement và badges. P1-FR-016/017 là active/in-scope requirements với implementation evidence pending.
 
 ### 2.3.4. Yêu cầu phi chức năng
 
-Bảo mật: RLS theo ownership, cookie httpOnly và AI qua Route Handler. Hiệu năng: Web timeout GEC 8 giây; p95 warm CPU <= 2.000 ms là mục tiêu cần benchmark. Độ tin cậy: lesson/SRS không phụ thuộc GEC. Tính riêng tư: badge private-by-default, không leaderboard.
+Bảo mật: RLS theo ownership, cookie httpOnly và phần mềm qua Route Handler. Hiệu năng: Web timeout tiện ích kiểm tra văn bản 8 giây; p95 warm CPU <= 2.000 ms là mục tiêu cần benchmark. Độ tin cậy: lesson/SRS không phụ thuộc tiện ích kiểm tra văn bản. Tính riêng tư: badge private-by-default, không leaderboard.
 
 ## 2.4. Công nghệ và công cụ
 
@@ -140,7 +140,7 @@ Bảo mật: RLS theo ownership, cookie httpOnly và AI qua Route Handler. Hiệ
 | Learner Web | Next.js 15 App Router, TypeScript, Tailwind/shadcn |
 | Auth và dữ liệu | Supabase Auth, PostgreSQL, RLS, Storage |
 | ORM/Admin | Prisma 6, Next.js Admin |
-| AI/GEC | FastAPI, PyTorch, Transformers, T5-small |
+| phần mềm/tiện ích kiểm tra văn bản | FastAPI, PyTorch, Transformers, mô-đun kiểm tra văn bản |
 | Mô hình hóa | PlantUML, Draw.io |
 | Quản lý mã | Git/GitHub |
 
@@ -148,31 +148,31 @@ Bảo mật: RLS theo ownership, cookie httpOnly và AI qua Route Handler. Hiệ
 
 ## 3.1. User Story và Acceptance Criteria
 
-US-01 xác thực; US-02 học bài/từ vựng; US-03 bài tập; US-04 admin content; US-05 SRS; US-06 scenario writing GEC; US-07 progress/streak/goal; US-08 reminder; US-09 placement; US-10 badges. Mỗi story được truy nguyên tới UC và P1-FR trong báo cáo yêu cầu nguồn.
+US-01 xác thực; US-02 học bài/từ vựng; US-03 bài tập; US-04 admin content; US-05 SRS; US-06 luyện viết theo tình huống tiện ích kiểm tra văn bản; US-07 progress/streak/goal; US-08 reminder; US-09 placement; US-10 badges. Mỗi story được truy nguyên tới UC và P1-FR trong báo cáo yêu cầu nguồn.
 
 ## 3.2. Phân tích hướng cấu trúc
 
 ### 3.2.1. Biểu đồ phân rã chức năng
 
-Lingora được phân rã thành bảy nhóm: xác thực; học course/lesson; exercise; vocabulary/SRS; progress/reminder; scenario writing/GEC; admin content.
+Lingora được phân rã thành bảy nhóm: xác thực; học course/lesson; exercise; vocabulary/SRS; progress/reminder; luyện viết theo tình huống/tiện ích kiểm tra văn bản; admin content.
 **[CHÈN HÌNH BFD - bổ sung sau]**
 
 ### 3.2.2. DFD mức ngữ cảnh
 
-Learner gửi credentials, answer, review result và writing input; nhận lesson, score, schedule, progress và corrected text. Admin gửi content/media và nhận trạng thái publish. GEC/T5-small là xử lý nội bộ; Supabase cung cấp Auth/Postgres/RLS/Storage.
+Learner gửi credentials, answer, review result và writing input; nhận lesson, score, schedule, progress và corrected text. Admin gửi content/media và nhận trạng thái publish. tiện ích kiểm tra văn bản/mô-đun kiểm tra văn bản là xử lý nội bộ; Supabase cung cấp Auth/Postgres/RLS/Storage.
 **Hình 10. DFD mức ngữ cảnh - [CHÈN ẢNH từ `dfd-context.puml`]**
 
 ### 3.2.3. DFD mức 1
 
-Các luồng chính gồm Auth/session, học bài/exercise, SRS qua `record_review`, và GEC nội bộ.
+Các luồng chính gồm Auth/session, học bài/exercise, SRS qua `record_review`, và tiện ích kiểm tra văn bản.
 **Hình 11. DFD mức 0 - [CHÈN ẢNH từ `dfd-level-0.puml`]**
 **Hình 12. DFD Lesson/Exercise - [CHÈN ẢNH từ `dfd-lesson-exercise.puml`]**
 **Hình 13. DFD SRS - [CHÈN ẢNH từ `dfd-srs.puml`]**
-**Hình 14. DFD GEC - [CHÈN ẢNH từ `dfd-gec.puml`]**
+**Hình 14. DFD tiện ích kiểm tra văn bản - [CHÈN ẢNH từ `dfd-tiện ích phần mềm.puml`]**
 
 ### 3.2.4. ERD
 
-Baseline có 17 Prisma models. Placement/badges là capability in-scope; persistence design chưa được cộng vào physical baseline cho đến khi có task schema được phê duyệt.
+Baseline hiện có 15 mô hình dữ liệu hoạt động. Placement/badges là capability in-scope; persistence design chưa được cộng vào physical baseline cho đến khi có task schema được phê duyệt.
 **Hình 15. ERD baseline và phần mở rộng in-scope - [CHÈN ẢNH từ `erd-baseline-and-proposed.puml`]**
 
 ## 3.3. Phân tích hướng đối tượng
@@ -187,13 +187,13 @@ Baseline có 17 Prisma models. Placement/badges là capability in-scope; persist
 
 **Hình 4. Activity học và làm bài - [CHÈN ẢNH từ `activity-lesson-exercise.puml`]**
 **Hình 5. Activity SRS - [CHÈN ẢNH từ `activity-srs-review.puml`]**
-**Hình 6. Activity GEC - [CHÈN ẢNH từ `activity-gec-practice.puml`]**
+**Hình 6. Activity tiện ích kiểm tra văn bản - [CHÈN ẢNH từ `activity-tiện ích phần mềm-practice.puml`]**
 
 ### 3.3.3. Sequence
 
 **Hình 7. Sequence Auth - [CHÈN ẢNH từ `sequence-auth.puml`]**
 **Hình 8. Sequence SRS `record_review` - [CHÈN ẢNH từ `sequence-srs.puml`]**
-**Hình 9. Sequence GEC `Browser -> Next.js -> FastAPI -> T5-small` - [CHÈN ẢNH từ `sequence-gec.puml`]**
+**Hình 9. Sequence tiện ích kiểm tra văn bản `Browser -> Next.js -> FastAPI -> mô-đun kiểm tra văn bản` - [CHÈN ẢNH từ `sequence-tiện ích phần mềm.puml`]**
 
 ### 3.3.4. Class Diagram
 
@@ -203,15 +203,15 @@ Baseline có 17 Prisma models. Placement/badges là capability in-scope; persist
 
 ## 4.1. Kiến trúc hệ thống
 
-Learner Web dùng Next.js App Router. Auth/session được xử lý server-side với Supabase. Dữ liệu core đi qua Supabase/PostgREST/RPC. AI call không đi trực tiếp từ browser đến FastAPI mà qua Next.js Route Handler; FastAPI stateless và T5-small sở hữu `corrected_text`.
+Learner Web dùng Next.js App Router. Auth/session được xử lý server-side với Supabase. Dữ liệu core đi qua Supabase/PostgREST/RPC. phần mềm call không đi trực tiếp từ browser đến FastAPI mà qua Next.js Route Handler; FastAPI stateless và mô-đun kiểm tra văn bản sở hữu `corrected_text`.
 
 ## 4.2. Triển khai xây dựng
 
-Nhóm áp dụng mock-first, giữ API contract và kiểm thử theo milestone. Track Software Engineering xây nền tảng Web, DB/RLS, Auth và các luồng học. Track ML xây GEC T5-small độc lập để không làm lesson/SRS phụ thuộc model.
+Nhóm áp dụng mock-first, giữ API contract và kiểm thử theo milestone. Track Software Engineering xây nền tảng Web, DB/RLS, Auth và các luồng học. Track tiện ích phần mềm xây tiện ích kiểm tra văn bản mô-đun kiểm tra văn bản độc lập để không làm lesson/SRS phụ thuộc model.
 
 ## 4.3. Kết quả và giao diện
 
-Các khu vực cần mô tả/chèn ảnh gồm: màn hình Auth; course/lesson; exercise MCQ/FILL_BLANK/REORDER; flashcard SRS; scenario writing và diff correction; Admin CMS. Ảnh giao diện hiện để placeholder vì chưa có ảnh chụp được cung cấp.
+Các khu vực cần mô tả/chèn ảnh gồm: màn hình Auth; course/lesson; exercise MCQ/FILL_BLANK/REORDER; flashcard SRS; luyện viết theo tình huống và diff correction; Admin CMS. Ảnh giao diện hiện để placeholder vì chưa có ảnh chụp được cung cấp.
 
 | Khu vực | Trạng thái tài liệu |
 |---|---|
@@ -219,10 +219,10 @@ Các khu vực cần mô tả/chèn ảnh gồm: màn hình Auth; course/lesson;
 | Course/lesson/exercise | Pending M2 |
 | Admin CMS | DB/RLS có, UI pending |
 | SRS | RPC có, policy audit pending |
-| Scenario GEC | Contract approved, implementation pending |
+| Scenario tiện ích kiểm tra văn bản | Contract approved, implementation pending |
 | Placement/badges | Proposed |
 
-# CHƯƠNG 5. KIỂM THỬ VÀ TRIỂN KHAI SẢN PHẨM
+# CHƯƠNG 5. KIỂM THỬ VÀ TRIỂN KHphần mềm SẢN PHẨM
 
 ## 5.1. Kiểm thử hệ thống
 
@@ -232,7 +232,7 @@ Kiểm thử gồm unit test, integration/contract test, RLS isolation, proxy er
 
 ### 5.1.2. Evidence hiện có
 
-Các milestone trước đã có evidence Auth/RLS/Storage, deterministic seed, FastAPI mock, JWT verifier, Web foundation, Playwright và PlantUML. GEC thật, M2 lesson flow, placement scoring và badge catalog vẫn pending implementation evidence.
+Các milestone trước đã có evidence Auth/RLS/Storage, deterministic seed, FastAPI mock, JWT verifier, Web foundation, Playwright và PlantUML. tiện ích kiểm tra văn bản thật, M2 lesson flow, placement scoring và badge catalog vẫn pending implementation evidence.
 
 ### 5.1.3. Ma trận truy vết rút gọn
 
@@ -241,7 +241,7 @@ Các milestone trước đã có evidence Auth/RLS/Storage, deterministic seed, 
 | P1-FR-001 | UC-01 | Supabase Auth/Next.js | Auth tests |
 | P1-FR-002/003 | UC-02/03 | Lesson/exercise engine | M2 tests |
 | P1-FR-005/006 | UC-05 | `record_review`/RLS | SRS/RLS tests |
-| P1-FR-007 | UC-06 | Proxy/FastAPI/T5-small | GEC contract tests |
+| P1-FR-007 | UC-06 | Proxy/FastAPI/mô-đun kiểm tra văn bản | tiện ích kiểm tra văn bản contract tests |
 | P1-FR-016 | UC-09 | Active placement policy | Implementation plan |
 | P1-FR-017 | UC-10 | Active badge catalog | Implementation plan |
 
@@ -249,9 +249,7 @@ Các milestone trước đã có evidence Auth/RLS/Storage, deterministic seed, 
 
 Môi trường mục tiêu gồm Vercel cho Web/Admin, Supabase Cloud cho Auth/PostgreSQL/Storage và Render hoặc HF Spaces cho FastAPI. CI/CD, biến môi trường, health checks và rollback phải được khóa trong kế hoạch triển khai riêng. Bản báo cáo này không khẳng định production deployment khi chưa có log triển khai tương ứng.
 
-# KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
-
-Lingora đã có baseline rõ cho nền tảng Web, Auth, dữ liệu/RLS, SRS xác định và kiến trúc GEC T5-small. Báo cáo đã truy nguyên yêu cầu từ tài liệu giảng viên, phỏng vấn và canonical docs. UC-09 Placement Test và UC-10 Private Badges thuộc phạm vi chính thức và cần implementation task để hoàn thiện bằng chứng. Hướng phát triển gồm GEC thật, adaptive learning sau khi có policy, speech-to-text và spoken dialogue; các hướng này không được xem là chức năng đã hoàn thành.
+# KẾT LUẬN
 
 # TÀI LIỆU THAM KHẢO
 

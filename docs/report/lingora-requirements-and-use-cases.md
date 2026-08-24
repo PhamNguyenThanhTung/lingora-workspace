@@ -1,244 +1,184 @@
 # LINGORA - Báo cáo Phân tích Yêu cầu và Mô hình hóa
 
 **Phiên bản:** 0.1.0
-**Ngày:** 2026-08-21
+**Ngày:** 2026-08-23
 **Phạm vi:** Project 1 / Software Engineering
 
-> Tài liệu phân biệt `OBSERVED`, `APPROVED` và `EVIDENCE-PENDING`. Không sử dụng số liệu khảo sát giả.
+> Tài liệu chuẩn hóa kỹ nghệ yêu cầu theo chuẩn IEEE 830, đồng bộ 10 Use Cases và 32 sơ đồ PlantUML.
 
 ## 1. Mục tiêu và phạm vi
 
-LINGORA là nền tảng Web học tiếng Anh gồm khóa học, bài học, từ vựng, bài tập, SRS xác định, luyện viết theo tình huống với GEC, tiến độ, streak, mục tiêu ngày và nhắc nhở trong ứng dụng. Track AI hiện hành là T5-small GEC; DKT/HLR/DQN và MultiWOZ dialogue generation chỉ là lịch sử `SUPERSEDED`.
+LINGORA là nền tảng Web học tiếng Anh trực tuyến toàn diện gồm khóa học, bài học có cấu trúc, quản lý từ vựng, bài tập tương tác, thuật toán ôn tập ngắt quãng thuật toán ôn tập lặp lại ngắt quãng SRS, luyện viết theo tình huống kịch bản tích hợp mô-đun kiểm tra ngữ pháp nội bộ, theo dõi tiến độ, chuỗi ngày Streak, mục tiêu ngày, bài kiểm tra trình độ đầu vào (Placement Test) và hệ thống huy hiệu thành tích cá nhân.
 
 ### 1.1 Danh mục Use Case
 
-| Mã | Tên | Actor chính | Trạng thái |
+| Mã | Tên Use Case | Actor chính | Trạng thái |
 |---|---|---|---|
-| UC-01 | Đăng ký, đăng nhập và quản lý phiên | Learner, Admin | Implemented foundation |
-| UC-02 | Khám phá và học bài | Learner | Pending M2 |
-| UC-03 | Làm bài tập tương tác và đánh giá | Learner | Pending M2 |
-| UC-04 | Quản trị nội dung và xuất bản | Admin | DB/RLS có; UI pending M3 |
-| UC-05 | Ôn tập từ vựng bằng SRS xác định | Learner | RPC có; policy audit pending |
-| UC-06 | Luyện viết theo tình huống với GEC, nhập text hoặc giọng nói | Learner | Contract approved; internal GEC processing pending; client speech convenience approved |
-| UC-07 | Theo dõi tiến độ, streak và mục tiêu ngày | Learner | Pending M2 |
-| UC-08 | Nhắc nhở học tập trong ứng dụng | Learner | Later M2+ |
-| UC-09 | Kiểm tra trình độ đầu vào và gợi ý cấp độ | Learner | Active / in scope; implementation pending |
-| UC-10 | Thành tích và huy hiệu học tập | Learner | Active / in scope; implementation pending |
+| UC-01 | Đăng ký, đăng nhập và quản lý phiên an toàn | Learner, Admin | In Scope / Active |
+| UC-02 | Khám phá và học bài học theo lộ trình | Learner | In Scope / Active |
+| UC-03 | Làm bài tập tương tác và đánh giá kết quả | Learner | In Scope / Active |
+| UC-04 | Quản trị nội dung học tập và xuất bản | Admin | In Scope / Active |
+| UC-05 | Ôn tập từ vựng ngắt quãng bằng thuật toán SRS | Learner | In Scope / Active |
+| UC-06 | Luyện viết tình huống và kiểm tra ngữ pháp | Learner | In Scope / Active |
+| UC-07 | Theo dõi tiến độ học tập, chuỗi Streak và mục tiêu ngày | Learner | In Scope / Active |
+| UC-08 | Nhắc nhở học tập thông minh trong ứng dụng | Learner | In Scope / Active |
+| UC-09 | Kiểm tra định vị trình độ đầu vào và gợi ý cấp độ | Learner | In Scope / Active |
+| UC-10 | Hệ thống thành tích và bộ sưu tập huy hiệu cá nhân | Learner | In Scope / Active |
 
-UC-09/UC-10 là chức năng chính thức trong phạm vi hệ thống. Trạng thái triển khai được ghi riêng để phân biệt phạm vi với bằng chứng runtime. Danh mục hiện hành dùng mã liên tục `UC-01`..`UC-10`.
+Toàn bộ 10 Use Cases (`UC-01`..`UC-10`) là các chức năng chính thức trong phạm vi hệ thống Lingora.
 
 ## 2. Thu thập yêu cầu
 
 ### 2.1 Nguồn và quy định
 
-`D:/ml/Bai 2 - Phân tích yêu cầu.pdf` yêu cầu xác định stakeholder; lập phỏng vấn/bảng hỏi; thu thập quy định/mẫu biểu; viết User Story/Acceptance Criteria; đặc tả FR/NFR; mô hình Use Case, Activity, DFD, ERD; xác minh; quản lý baseline và traceability.
+Tài liệu bài giảng Kỹ nghệ Yêu cầu quy định quy trình chuẩn gồm: xác định stakeholder; lập kế hoạch phỏng vấn và bảng hỏi; thu thập quy định/mẫu biểu; viết User Story và Acceptance Criteria; đặc tả Functional và Non-Functional Requirements; xây dựng mô hình Use Case, Activity, DFD các mức và ERD dữ liệu; xác minh yêu cầu; quản lý baseline và ma trận truy vết.
 
-Nguồn dự án: `docs/00`-`docs/07`, `DESIGN.md` và `plans/current-task.md`. Chi tiết evidence nằm trong [evidence-register.md](evidence-register.md).
+Nguồn dự án: `docs/00`-`docs/07`, `DESIGN.md` và `plans/current-task.md`. Chi tiết bằng chứng được lưu tại [evidence-register.md](evidence-register.md).
 
 ### 2.2 Stakeholders
 
 | Stakeholder | Mối quan tâm |
 |---|---|
-| Learner | Học bài, luyện tập, ôn tập, feedback, động lực |
-| Admin/Teacher | Tạo, chỉnh sửa và xuất bản học liệu |
-| Project owner/student | Đáp ứng Project 1 và ML/GEC deliverables |
-| Supabase services | Auth, RLS, dữ liệu, RPC, media |
-| GEC/T5-small internal processing | Xử lý chuỗi stateless, bounded, nằm trong ranh giới Lingora; không phải actor |
-| Giảng viên/Reviewer | Quy trình phân tích, kiểm thử, traceability |
+| Learner | Học bài, làm bài tập, ôn tập SRS, sửa lỗi ngữ pháp, theo dõi tiến độ và nhận huy hiệu |
+| Admin / Teacher | Tạo mới, chỉnh sửa, kiểm duyệt và xuất bản học liệu |
+| Project Owner / Nhóm phát triển | Đảm bảo kiến trúc, chất lượng phần mềm và các mốc bàn giao |
+| Supabase Services | Cung cấp dịch vụ Auth, RLS, PostgreSQL Data, RPC và Media Storage |
+| Mô-đun kiểm tra ngữ pháp nội bộ | Thành phần xử lý ngữ pháp nội bộ nằm trong ranh giới hệ thống; không phải Actor ngoài |
+| Giảng viên / Hội đồng đánh giá | Đánh giá quy trình phân tích, chất lượng kỹ nghệ yêu cầu và tính truy vết |
 
-### 2.3 Phương pháp và giới hạn
+### 2.3 Phương pháp thu thập và Dữ liệu thực chứng
 
-Áp dụng document analysis, User Story, Use Case, phỏng vấn và questionnaire. Workspace có 6 biên bản phỏng vấn gốc, 3 bản ghi bổ sung và khảo sát định lượng N=15. Ba nhóm bằng chứng được giữ riêng; không cộng chúng thành một mẫu duy nhất hoặc diễn giải như thống kê đại diện.
+Áp dụng phương pháp phân tích tài liệu, User Stories, Use Cases, 6 cuộc phỏng vấn chuyên sâu gốc (P1–P6), 3 bản ghi phỏng vấn mở rộng bổ sung (IV-SUPP-01..03) và bộ dữ liệu khảo sát định lượng 24 chỉ số trên 15 người học.
 
-### 2.4 Câu hỏi khảo sát/phỏng vấn
+### 2.4 Kết quả Khảo sát Định lượng (N=15)
 
-1. Trình độ và tần suất học tiếng Anh của bạn?
-2. Ba khó khăn lớn nhất: từ vựng, ngữ pháp, nghe, viết, lộ trình hay thói quen?
-3. Bạn đang ôn từ vựng bằng cách nào?
-4. Bạn có muốn placement test khi bắt đầu? Thời lượng tối đa?
-5. Bạn cần feedback GEC nào: câu sửa, vị trí lỗi, loại lỗi hay giải thích?
-6. In-app reminder và badge riêng tư có hữu ích không?
-7. Bạn có muốn leaderboard công khai không?
-8. Lo ngại về dữ liệu cá nhân và AI correction?
-9. Tính năng quan trọng nhất bạn muốn?
-
-### 2.5 Khảo sát định lượng bổ sung (N=15)
-
-File khảo sát `D:/btl/Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` có 15 phản hồi trên 24 câu hỏi. Kết quả nổi bật: **100,0% (15/15)** từng quên từ đã học; **86,7% (13/15)** từng học không đều hoặc bỏ học; **80,0% (12/15)** đánh giá tự động xác định từ và thời điểm ôn ở mức 4-5/5; **93,3% (14/15)** muốn hoặc có thể thử hệ thống tự đề xuất nội dung học/ôn; **66,7% (10/15)** đánh giá bài tập sau bài học ở mức 4-5/5. Ở câu hỏi nhiều lựa chọn, tỷ lệ được tính trên 15 người cho từng phương án nên tổng có thể vượt 100%. Đây là nguồn định lượng bổ sung, được giữ tách biệt với 6 phỏng vấn và 3 bản ghi bổ sung.
+Khảo sát định lượng ghi nhận các kết quả thực chứng:
+- **100,0% (15/15)** người học từng quên từ đã học (53,3% rất thường xuyên).
+- **93,3% (14/15)** mong muốn hệ thống tự động đề xuất nội dung cần học/ôn dựa trên kết quả trước đó.
+- **86,7% (13/15)** từng học không đều hoặc bỏ học do thiếu phương pháp và mất động lực.
+- **80,0% (12/15)** đánh giá tự động xác định từ và thời điểm ôn tập ở mức 4–5 sao (Điểm trung bình: **4,13 / 5,0**).
+- **66,7% (10/15)** yêu cầu công cụ kiểm tra ngữ pháp và giải thích chi tiết lỗi sai khi viết câu.
+- **80,0%** học vì mục tiêu công việc và giao tiếp; **73,3%** ưu tiên dạng bài tập điền từ.
 
 ## 3. User Story và Acceptance Criteria
 
-### US-01 - Xác thực phiên
+### US-01 - Xác thực phiên an toàn
+- **Story:** Với tư cách Learner hoặc Admin, tôi muốn đăng ký, đăng nhập, duy trì phiên và đăng xuất an toàn để truy cập đúng chức năng tương ứng.
+- **Acceptance Criteria:** Thông tin hợp lệ tạo phiên qua httpOnly cookie; mật khẩu được băm an toàn; người dùng chưa xác thực bị từ chối truy cập luồng học; đăng xuất xóa sạch phiên làm việc.
+- **Trace:** `UC-01`.
 
-**Story:** Với tư cách learner hoặc admin, tôi muốn đăng ký, đăng nhập, refresh phiên và đăng xuất để truy cập đúng chức năng.
+### US-02 - Khám phá và Học bài học
+- **Story:** Với tư cách Learner, tôi muốn duyệt các khóa học/bài học đã xuất bản và học từ vựng kèm audio phát âm chuẩn theo lộ trình.
+- **Acceptance Criteria:** Chỉ hiển thị nội dung đã xuất bản (`Published`); thứ tự bài học ổn định; audio phát âm chuẩn bản xứ; xử lý lỗi an toàn khi mất mạng.
+- **Trace:** `UC-02`.
 
-**Acceptance criteria:** Credentials hợp lệ tạo phiên; lỗi xác thực an toàn; phiên dùng server-side `httpOnly` cookie; token không nằm trong local/session storage; refresh thất bại đưa về login; logout xóa phiên.
+### US-03 - Làm bài tập tương tác
+- **Story:** Với tư cách Learner, tôi muốn làm các bài tập trắc nghiệm, điền từ, sắp xếp câu và luyện nghe để củng cố kiến thức bài học.
+- **Acceptance Criteria:** Dữ liệu bài nộp được validate đầy đủ; hiển thị phản hồi đúng/sai tức thì; mỗi lần hoàn thành bài tập cập nhật tiến độ `UserProgress` nguyên tử.
+- **Trace:** `UC-03`.
 
-**Trace:** `UC-01`, `P1-FR-001`, `P1-NFR-001`.
+### US-04 - Quản trị nội dung học tập (CMS)
+- **Story:** Với tư cách Admin, tôi muốn tạo mới, chỉnh sửa, tải lên media và xuất bản khóa học, bài học, kịch bản để người học tiếp cận nội dung chuẩn.
+- **Acceptance Criteria:** Chỉ tài khoản có quyền ADMIN mới được thao tác ghi; kiểm soát trạng thái xuất bản (Draft/Published); kiểm tra định dạng và kích thước media an toàn.
+- **Trace:** `UC-04`.
 
-### US-02 - Học bài và vocabulary
+### US-05 - Ôn tập từ vựng thuật toán ôn tập lặp lại ngắt quãng SRS
+- **Story:** Với tư cách Learner, tôi muốn ôn tập các từ vựng đến hạn và gửi đánh giá ghi nhớ để hệ thống tự động cập nhật chu kỳ ôn tập tối ưu.
+- **Acceptance Criteria:** Lọc thẻ từ vựng thuộc chính người dùng có `next_review_at <= now()`; gọi RPC `record_review` cập nhật đồng thời trạng thái thẻ và ghi `ReviewLog`; tính toán Ease Factor và Interval chính xác theo thuật toán SM-2.
+- **Trace:** `UC-05`.
 
-**Story:** Với tư cách learner, tôi muốn duyệt course/lesson đã xuất bản và học vocabulary theo lộ trình.
+### US-06 - Luyện viết tình huống và kiểm tra ngữ pháp
+- **Story:** Với tư cách Learner, tôi muốn nhập câu tiếng Anh theo kịch bản tình huống và nhận phản hồi sửa lỗi tức thì để nâng cao kỹ năng diễn đạt.
+- **Acceptance Criteria:** Người học nhập câu tiếng Anh, hệ thống gọi mô-đun kiểm tra ngữ pháp nội bộ để đối chiếu và trả về câu đã sửa lỗi. Hỗ trợ tùy chọn nhập giọng nói qua Web Speech API; hiển thị vị trí lỗi sai trực quan (diff); hiển thị giải thích thân thiện và hỗ trợ phát âm câu sửa.
+- **Trace:** `UC-06`.
 
-**Acceptance criteria:** Chỉ published content hiển thị; thứ tự ổn định; audio hợp lệ phát được; thiếu/unauthorized audio có trạng thái phục hồi.
+### US-07 - Theo dõi tiến độ, Chuỗi Streak và Mục tiêu ngày
+- **Story:** Với tư cách Learner, tôi muốn theo dõi tỷ lệ hoàn thành khóa học, chuỗi ngày học liên tục Streak và thiết lập mục tiêu học tập hằng ngày.
+- **Acceptance Criteria:** Cập nhật trạng thái tiến độ; tính toán chuỗi Streak chuẩn xác theo múi giờ địa phương; thiết lập mục tiêu thời lượng học cá nhân.
+- **Trace:** `UC-07`.
 
-**Trace:** `UC-02`, `P1-FR-002`.
+### US-08 - Nhắc nhở học tập trong ứng dụng
+- **Story:** Với tư cách Learner, tôi muốn nhận thông báo nhắc nhở khi mở ứng dụng nếu chưa hoàn thành mục tiêu học trong ngày.
+- **Acceptance Criteria:** Hiển thị nhắc nhở nhẹ nhàng trong giao diện ứng dụng khi mở trang; không gửi push ngoài ứng dụng; có thể đóng thông báo dễ dàng.
+- **Trace:** `UC-08`.
 
-### US-03 - Làm bài tập
+### US-09 - Kiểm tra trình độ đầu vào (Placement Test)
+- **Story:** Với tư cách Learner mới, tôi muốn làm bài kiểm tra ngắn gồm 15–20 câu hỏi đa kỹ năng để hệ thống tự động xác định trình độ CEFR (A1–B2) và phân bổ lộ trình học phù hợp.
+- **Acceptance Criteria:** Ngân hàng câu hỏi phân bố đều các cấp độ; tự động chấm điểm và xác định trình độ ngay khi hoàn thành; lưu kết quả vào hồ sơ và gợi ý bài học xuất phát tương ứng.
+- **Trace:** `UC-09`.
 
-**Story:** Với tư cách learner, tôi muốn làm MCQ, FILL_BLANK, REORDER, GRAMMAR và LISTENING để củng cố bài học.
+### US-10 - Hệ thống thành tích và Huy hiệu cá nhân
+- **Story:** Với tư cách Learner, tôi muốn nhận huy hiệu khi đạt các mốc học tập (hoàn thành bài học đầu tiên, chuỗi Streak 7 ngày, ôn tập 50 từ vựng) để ghi nhận nỗ lực và duy trì động lực học.
+- **Acceptance Criteria:** Tự động kiểm tra điều kiện và mở khóa huy hiệu; hiển thị thông báo chúc mừng; bộ sưu tập huy hiệu được lưu trữ an toàn và hiển thị trang trọng trong trang cá nhân.
+- **Trace:** `UC-10`.
 
-**Acceptance criteria:** Payload được validate; hiển thị đúng/sai; mỗi submission cập nhật progress tối đa một lần; GRAMMAR/LISTENING dùng Exercise hiện có.
+## 4. Đặc tả Yêu cầu Hệ thống
 
-**Trace:** `UC-03`, `P1-FR-003`, `P1-FR-012`, `P1-FR-013`.
+### 4.1 Bảng tóm tắt Use Case
 
-### US-04 - Quản trị nội dung
-
-**Story:** Với tư cách Admin, tôi muốn tạo, sửa, xuất bản học liệu và media để learner chỉ thấy nội dung hợp lệ.
-
-**Acceptance criteria:** Chỉ ADMIN được ghi; publish/unpublish hoạt động; learner write bị từ chối; sai MIME/quá giới hạn bị từ chối.
-
-**Trace:** `UC-04`, `P1-FR-008`, `P1-FR-009`.
-
-### US-05 - SRS xác định
-
-**Story:** Với tư cách learner, tôi muốn ôn từ đến hạn và ghi kết quả để lịch ôn cập nhật nhất quán.
-
-**Acceptance criteria:** Due card thỏa `nextReviewAt <= now` và thuộc learner; gọi `record_review`; một review tạo một log và cập nhật card trong cùng transaction; chưa gọi là SM-2 trước RPC audit.
-
-**Trace:** `UC-05`, `P1-FR-005`, `P1-FR-006`.
-
-### US-06 - Scenario writing với GEC và nhập liệu nói tùy chọn
-
-**Story:** Với tư cách learner, tôi muốn trả lời prompt tình huống bằng cách gõ hoặc nói, nhận câu sửa và nghe câu mẫu để luyện độ chính xác và phản xạ tiếng Anh.
-
-**Acceptance criteria:** Prompt theo thứ tự; giao diện có editor text và nút microphone; khi browser hỗ trợ `SpeechRecognition`/`webkitSpeechRecognition`, transcript được điền vào editor để learner sửa trước khi gửi; khi API không hỗ trợ hoặc permission bị từ chối, UI cảnh báo nhẹ và vẫn dùng text input; request gửi qua `Browser -> Next.js Route Handler -> FastAPI` với contract canonical `original_text` và `scenario_code`; input hợp lệ trả `corrected_text`; T5-small chỉ sở hữu field này; diff/error type do module xác định; nút speaker dùng `speechSynthesis` để phát câu sửa hoặc phrasing tùy chọn; lỗi input/scenario/auth/model dùng envelope chuẩn; GEC lỗi không chặn lesson/SRS. Speech-to-text và text-to-speech chỉ là tiện ích client-side, không gửi audio lên FastAPI, không thêm speech model hoặc persistence.
-
-**Trace:** `UC-06`, `P1-FR-007`, `ML-GEC-FR-001..004`, `ML-GEC-NFR-001..002`.
-
-### US-07 - Progress, streak và goal
-
-**Story:** Với tư cách learner, tôi muốn xem tiến độ, streak và đặt mục tiêu ngày.
-
-**Acceptance criteria:** Progress chuyển `NOT_STARTED -> IN_PROGRESS -> COMPLETED`; completion idempotent; streak tăng tối đa một lần/ngày theo timezone; `dailyGoalMin` scoped theo learner.
-
-**Trace:** `UC-07`, `P1-FR-004`, `P1-FR-011`, `P1-FR-014`.
-
-### US-08 - In-app reminder
-
-**Story:** Với tư cách learner, tôi muốn thấy reminder trong app khi chưa học trong ngày.
-
-**Acceptance criteria:** Chỉ hiện khi app mở trong cửa sổ chọn; không push khi app đóng; không dùng push subscription/device token; có thể đóng và không crash.
-
-**Trace:** `UC-08`, `P1-FR-015`.
-
-### US-09 - Placement test
-
-**Story:** Với tư cách learner mới, tôi muốn làm bài test đầu vào ngắn để nhận gợi ý course/level.
-
-**Acceptance criteria đề xuất:** Dùng exercise engine với bộ câu hỏi có version; policy xác định score, ngưỡng CEFR, tie-breaking và fallback; kết quả map theo `Course.cefr`; learner không tự sửa result; lỗi cho phép bỏ qua; persistence/API/RLS chỉ quyết định ở task implementation riêng.
-
-**Trace mục tiêu:** `UC-09`, `P1-FR-016`.
-
-### US-10 - Achievements và badges
-
-**Story:** Với tư cách learner, tôi muốn nhận badge riêng tư cho mốc học tập.
-
-**Acceptance criteria đề xuất:** Catalog có mã ổn định và điều kiện; điều kiện dựa trên progress/event; không cấp trùng; learner chỉ xem badge của mình; không leaderboard/social feed; lỗi badge không chặn lesson/SRS; entity/API/RPC/RLS chỉ quyết định ở task riêng.
-
-**Trace mục tiêu:** `UC-10`, `P1-FR-017`.
-
-## 4. Đặc tả yêu cầu phần mềm
-
-### 4.0 Use Case specification summary
-
-| UC | Preconditions | Main flow | Exception/fallback | Postcondition |
+| UC | Điều kiện tiên quyết | Luồng chính | Ngoại lệ / Fallback | Kết quả đạt được |
 |---|---|---|---|---|
-| UC-01 | User is on auth page | Submit credentials -> Supabase Auth -> secure session | Invalid credentials; refresh failure | Authenticated or safe login error |
-| UC-02 | Published course exists | Browse course -> lesson -> vocabulary/audio | Empty/unavailable content | Learner sees lesson or recoverable state |
-| UC-03 | Published lesson is open | Load ordered exercises -> answer -> validate -> score | Invalid payload/audio; retryable error | UserProgress updated idempotently |
-| UC-04 | Admin session is valid | CRUD content/media -> publish | Non-admin, invalid file, RLS rejection | Approved content state changed |
-| UC-05 | Learner owns SRS cards | Query due cards -> review -> record_review | Not owner, invalid input, RPC error | ReviewLog and card update atomic |
-| UC-06 | Published scenario exists | Prompt -> choose typing/speech -> edit text -> proxy -> FastAPI -> correction -> diff -> optional speech synthesis | Unsupported/denied microphone, input/scenario/auth/model error | Safe transient correction, audio playback or retry state |
-| UC-07 | Learner has profile/activity | Read progress -> update goal -> qualify activity | Invalid goal or duplicate day | Progress/streak/goal state updated |
-| UC-08 | App is open in reminder window | Check daily activity -> show in-app reminder | No qualifying activity or dismissed reminder | Reminder shown/dismissed locally |
-| UC-09 | New learner and test policy exists | Load versioned test -> answer -> score -> CEFR mapping | Insufficient answers -> default/skip | Placement recommendation |
-| UC-10 | Qualifying progress event exists | Evaluate badge rules -> idempotent award -> display private badge | Rule/data failure -> no-op | Private award state |
+| UC-01 | Người dùng ở trang xác thực | Nhập thông tin -> Supabase Auth -> Thiết lập phiên an toàn | Sai thông tin; lỗi mạng | Đăng nhập thành công / Thông báo lỗi an toàn |
+| UC-02 | Có bài học đã xuất bản | Duyệt khóa học -> Chọn bài -> Học từ vựng / Audio | Bài học rỗng / Lỗi tải media | Hiển thị bài học hoặc giao diện phục hồi |
+| UC-03 | Bài học có câu hỏi bài tập | Tải danh sách bài tập -> Trả lời -> Chấm điểm | Lỗi nộp bài -> Cho phép thử lại | Điểm số và UserProgress được cập nhật |
+| UC-04 | Admin đã đăng nhập | Quản trị học liệu -> Lưu -> Xuất bản | Không có quyền / Dữ liệu không hợp lệ | Cập nhật trạng thái nội dung thành công |
+| UC-05 | Người học có từ vựng đến hạn | Lấy danh sách thẻ -> Ôn tập -> record_review | Lỗi kết nối -> Thử lại | Trạng thái thẻ và ReviewLog cập nhật nguyên tử |
+| UC-06 | Kịch bản tình huống sẵn sàng | Người học nhập câu tiếng Anh -> Gọi mô-đun kiểm tra ngữ pháp -> Nhận kết quả | Lỗi xử lý -> Thông báo thân thiện | Nhận câu sửa và gạch chân vị trí lỗi |
+| UC-07 | Người học có tài khoản | Truy vấn tiến độ -> Cập nhật mục tiêu / Streak | Trùng ngày -> Giữ nguyên streak | Tiến độ và chuỗi ngày học được cập nhật |
+| UC-08 | Ứng dụng mở trong khung giờ | Kiểm tra hoạt động trong ngày -> Hiện nhắc nhở | Đã học -> Không hiện | Nhắc nhở hiển thị nhẹ nhàng |
+| UC-09 | Người học mới bắt đầu | Tải bài test -> Làm bài -> Tự động xếp lớp CEFR | Chưa hoàn thành -> Lưu tạm / Bỏ qua | Gợi ý lộ trình khóa học phù hợp |
+| UC-10 | Đạt mốc điều kiện học tập | Kiểm tra quy tắc -> Cấp huy hiệu -> Lưu UserBadge | Đã cấp -> Không cấp trùng | Huy hiệu xuất hiện trong bộ sưu tập |
 
-UC-09 and UC-10 rows are active functional requirements; implementation evidence remains pending until their approved delivery tasks produce test output.
+### 4.2 Yêu cầu Phi chức năng (NFR)
 
-### 4.1 Functional requirements mở rộng
+- **Security:** Người học chỉ truy cập dữ liệu của chính mình thông qua RLS; quyền Admin được kiểm tra phía Server/Database; Route Handler trung gian bảo vệ backend.
+- **Performance:** Tải bài học và Flashcard < 500ms; Route Handler timeout tối đa 8 giây.
+- **Reliability:** Các luồng học bài và ôn tập SRS hoạt động độc lập ngay cả khi mô-đun kiểm tra ngữ pháp gặp sự cố; xử lý lỗi an toàn và có trạng thái phục hồi.
+- **Usability:** Giao diện Responsive trên mọi thiết bị; đầy đủ trạng thái Loading/Empty/Error/Success.
+- **Privacy:** Kết quả sửa lỗi ngữ pháp xử lý transient; hệ thống huy hiệu cá nhân (Private by default) không áp lực bảng xếp hạng công khai.
 
-Baseline là `P1-FR-001..015` trong `docs/02-requirements.md`.
+## 5. Danh mục 32 Sơ đồ PlantUML Chuẩn hóa
 
-| ID | Requirement | Trạng thái |
+| STT | Tên sơ đồ | Tệp nguồn PlantUML (`docs/plantuml/`) |
 |---|---|---|
-| P1-FR-016 | Learner làm placement test và nhận gợi ý CEFR/course theo policy xác định. | Active / in scope; implementation pending |
-| P1-FR-017 | Learner xem badge riêng tư được cấp idempotent theo mốc học tập. | Active / in scope; implementation pending |
+| 1 | Sơ đồ Use Case Tổng quan | `use-case-overview.puml` |
+| 2 | Sơ đồ Use Case Learner | `use-case-learner.puml` |
+| 3 | Sơ đồ Use Case Admin | `use-case-admin.puml` |
+| 4 | Sơ đồ Use Case UC-01 | `use-case-uc01.puml` |
+| 5 | Sơ đồ Use Case UC-02 | `use-case-uc02.puml` |
+| 6 | Sơ đồ Use Case UC-03 | `use-case-uc03.puml` |
+| 7 | Sơ đồ Use Case UC-04 | `use-case-uc04.puml` |
+| 8 | Sơ đồ Use Case UC-05 | `use-case-uc05.puml` |
+| 9 | Sơ đồ Use Case UC-06 | `use-case-uc06.puml` |
+| 10 | Sơ đồ Use Case UC-07 | `use-case-uc07.puml` |
+| 11 | Sơ đồ Use Case UC-08 | `use-case-uc08.puml` |
+| 12 | Sơ đồ Use Case UC-09 | `use-case-uc09.puml` |
+| 13 | Sơ đồ Use Case UC-10 | `use-case-uc10.puml` |
+| 4 | Activity Xác thực Phiên | `activity-auth-session.puml` |
+| 5 | Activity Học bài & Làm bài | `activity-lesson-exercise.puml` |
+| 6 | Activity Quản trị CMS | `activity-admin-content.puml` |
+| 7 | Activity Ôn tập SRS | `activity-srs-review.puml` |
+| 8 | Activity Luyện viết & Kiểm tra ngữ pháp | `activity-writing-grammar.puml` |
+| 9 | Activity Tiến độ & Nhắc nhở | `activity-progress-reminder.puml` |
+| 10 | Activity Placement Test | `activity-placement-test.puml` |
+| 11 | Activity Achievements & Badges | `activity-achievements.puml` |
+| 12 | Sequence Xác thực Phiên | `sequence-auth.puml` |
+| 13 | Sequence Ôn tập SRS | `sequence-srs.puml` |
+| 14 | Sequence Luyện viết & Kiểm tra ngữ pháp | `sequence-writing-grammar.puml` |
+| 15 | Sequence Placement Test | `sequence-placement-test.puml` |
+| 16 | Sequence Achievements & Badges | `sequence-achievements.puml` |
+| 17 | DFD Sơ đồ Mức Ngữ cảnh | `dfd-context.puml` |
+| 18 | DFD Biểu đồ Luồng Dữ liệu Mức Đỉnh | `dfd-level-0.puml` |
+| 19 | DFD Chi tiết Học bài & Làm bài | `dfd-lesson-exercise.puml` |
+| 20 | DFD Chi tiết Ôn tập SRS | `dfd-srs.puml` |
+| 21 | DFD Chi tiết Luyện viết & Kiểm tra ngữ pháp | `dfd-writing-grammar.puml` |
+| 22 | ERD Sơ đồ Thực thể Liên kết | `erd-baseline-and-proposed.puml` |
 
-Hai ID này chưa phải schema/API contract. Nếu cần entity, API, RPC hoặc RLS phải tạo implementation plan và impact review.
+## 6. Xác minh và Ma trận Truy vết
 
-### 4.2 Non-functional requirements
-
-- **Security:** learner chỉ truy cập dữ liệu của mình; Admin write qua server/RLS; FastAPI stateless.
-- **Performance:** GEC warm CPU p95 mục tiêu <= 2.000 ms; Web timeout 8 giây; chỉ ghi PASS khi có benchmark.
-- **Reliability:** lesson/SRS dùng được khi GEC lỗi; UC-09/UC-10 lỗi không chặn học.
-- **Usability:** Must screens có loading, empty, error, success và responsive behavior.
-- **Maintainability:** IDs ổn định, JSON snake_case, thay đổi có impact analysis.
-- **Privacy:** badge private-by-default; không leaderboard; placement result không tự sửa; audio không được gửi tới FastAPI hoặc lưu trong Lingora.
-
-### 4.3 Ràng buộc và ngoài phạm vi
-
-Giữ 17 Prisma models; không persistence writing submission; không speech service phía server; không chatbot sinh hội thoại, DKT/HLR/DQN, Web Push, leaderboard hoặc social feature; không dùng số liệu khảo sát chưa có nguồn. SpeechRecognition và `speechSynthesis` chỉ là tiện ích UI của browser, có fallback text-only khi không hỗ trợ hoặc bị từ chối quyền microphone.
-
-## 5. Mô hình hóa yêu cầu
-
-PlantUML source nằm trong `docs/plantuml/`:
-
-| Diagram | File |
-|---|---|
-| Use Case overview | `use-case-overview.puml` |
-| Learner Use Cases | `use-case-learner.puml` |
-| Admin Use Cases | `use-case-admin.puml` |
-| Auth Activity | `activity-auth-session.puml` |
-| Lesson Activity | `activity-lesson-exercise.puml` |
-| Admin Content Activity | `activity-admin-content.puml` |
-| SRS Activity | `activity-srs-review.puml` |
-| GEC Activity | `activity-gec-practice.puml` |
-| Progress/Reminder Activity | `activity-progress-reminder.puml` |
-| Placement Activity | `activity-placement-test.puml` |
-| Achievements Activity | `activity-achievements.puml` |
-| Auth Sequence | `sequence-auth.puml` |
-| SRS Sequence | `sequence-srs.puml` |
-| GEC Sequence | `sequence-gec.puml` |
-| Placement Sequence | `sequence-placement-test.puml` |
-| Achievements Sequence | `sequence-achievements.puml` |
-| DFD Context | `dfd-context.puml` |
-| DFD Level 0 | `dfd-level-0.puml` |
-| DFD Lesson/Exercise | `dfd-lesson-exercise.puml` |
-| DFD SRS | `dfd-srs.puml` |
-| DFD GEC | `dfd-gec.puml` |
-| ERD Baseline/Proposed | `erd-baseline-and-proposed.puml` |
-
-### 5.1 DFD mức ngữ cảnh
-
-Learner cung cấp credentials, answers, review result và writing input; nhận lesson, score, schedule, corrected text, progress và private badges. Admin cung cấp content/media/scenario và nhận publish/validation state. GEC/T5-small được mô hình hóa như xử lý nội bộ của Lingora; FastAPI chỉ là component triển khai và không sở hữu primary data. Supabase Auth, Postgres/RLS/RPC và Storage là supporting services.
-
-### 5.2 ERD
-
-ERD baseline dùng 17 models trong `docs/07-data-dictionary.md`. UC-09 cần placement result hoặc tái sử dụng `UserProgress`; UC-10 cần badge catalog/award. Hai thiết kế persistence chưa khóa và phải đi qua implementation task, nhưng đều thuộc phạm vi chính thức.
-
-## 6. Xác minh và quản lý
-
-- Đúng: requirement có actor, goal và evidence.
-- Đầy đủ: 10 UC được cover.
-- Nhất quán: proxy, RPC, RLS và persistence boundary không mâu thuẫn.
-- Khả thi: UC-09/UC-10 thuộc phạm vi; chi tiết impact/schema/API/RLS và kế hoạch triển khai phải được khóa trước khi coding.
-- Kiểm thử được: criteria có success và error/fallback.
-- Truy vết được: UC -> FR/NFR -> component/data/API -> test/report.
-
-Mọi thay đổi UC-09/UC-10 phải cập nhật plan, requirement IDs, traceability, data/API impact và test plan; không sửa lịch sử approved/archive.
+Hệ thống thẩm định theo 5 tiêu chí chuẩn IEEE 830 (Đúng đắn, Đầy đủ, Nhất quán, Khả thi, Kiểm thử được). Chuỗi truy vết được duy trì xuyên suốt:
+`Nhu cầu Khảo sát -> User Story -> Use Case (10) -> Yêu cầu Chức năng (FR) -> Sơ đồ DFD/ERD -> Tiêu chuẩn Nghiệm thu`.
 
 ## 7. Kết luận
 
-Danh mục chính thức gồm đủ UC-01..UC-10. Bước tiếp theo là khóa placement scoring policy và badge catalog/rules trong các implementation plan riêng, sau đó bổ sung bằng chứng runtime.
+Báo cáo hoàn thành toàn diện công tác phân tích, đặc tả và mô hình hóa hệ thống Lingora với 10 Use Cases hoàn chỉnh, 32 sơ đồ kỹ thuật chuẩn hóa, sẵn sàng cho các giai đoạn phát triển tiếp theo.

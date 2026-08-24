@@ -45,3 +45,23 @@ staging/
 # Backup archives
 *.bundle
 
+# Temporary build & diagram caches
+tmp/
+.docx-render*/
+.five-report-render/
+
+# Private internal scripts & report build tools
+tools/
+
+# Private plans, logs, and development handoffs
+plans/
+logs/
+HANDOFF.md
+
+# PlantUML raw sources (keep exported diagrams in docs/report/diagrams only)
+docs/plantuml/
+
+# Slide PNG previews (keep PPTX only on git)
+**/XÂY DỰNG NỀN TẢNG HỌC NGOẠI NGỮ TRỰC TUYẾN LINGORA/
+**/Lingora-Project-1-Requirements-Presentation/
+

@@ -12,24 +12,24 @@ Sổ đăng ký này ghi nguồn dùng để xây dựng báo cáo phân tích y
 
 | ID | Nguồn | Loại | Nội dung sử dụng | Trạng thái |
 |---|---|---|---|---|
-| SRC-REQ-001 | `D:/ml/Bai 2 - Phân tích yêu cầu.pdf` | Tài liệu giảng viên, 22 trang | Quy trình elicitation, User Story, Acceptance Criteria, FR/NFR, Use Case, Activity, DFD, ERD, validation và traceability | `OBSERVED` |
-| SRC-REQ-002 | `docs/02-requirements.md` | SRS canonical | P1-FR-001..015, P1-NFR-001..004, ML-GEC requirements | `OBSERVED` |
+| SRC-REQ-001 | `Tài liệu Bài giảng: Bài 2 - Phân tích yêu cầu.pdf` | Tài liệu giảng viên, 22 trang | Quy trình elicitation, User Story, Acceptance Criteria, FR/NFR, Use Case, Activity, DFD, ERD, validation và traceability | `OBSERVED` |
+| SRC-REQ-002 | `docs/02-requirements.md` | SRS canonical | P1-FR-001..017, P1-NFR-001..004 | `OBSERVED` |
 | SRC-REQ-003 | `docs/05-traceability-matrix.md` | Traceability canonical | Mapping requirement - Use Case - component - data - API - test - report | `OBSERVED` |
-| SRC-REQ-004 | `docs/06-system-analysis.md` | System analysis canonical | Stakeholder, actor, system boundary và UC-01..UC-08 | `OBSERVED` |
+| SRC-REQ-004 | `docs/06-system-analysis.md` | System analysis canonical | Stakeholder, actor, system boundary và UC-01..UC-10 | `OBSERVED` |
 | SRC-REQ-005 | `docs/01-architecture.md` | Architecture canonical | Next.js, Supabase, FastAPI, security boundary | `OBSERVED` |
-| SRC-REQ-006 | `docs/03-api-contract.md` | API contract canonical | GEC target, compatibility endpoints và error envelope | `OBSERVED` |
-| SRC-REQ-007 | `docs/04-data-model.md` và `docs/07-data-dictionary.md` | Data canonical | 17 Prisma models, RLS, RPC và storage | `OBSERVED` |
+| SRC-REQ-006 | `docs/03-api-contract.md` | API contract canonical | Hợp đồng kiểm tra ngữ pháp, compatibility endpoints và error envelope | `OBSERVED` |
+| SRC-REQ-007 | `docs/04-data-model.md` và `docs/07-data-dictionary.md` | Data canonical | 15 mô hình dữ liệu hoạt động, RLS, RPC và storage | `OBSERVED` |
 | SRC-REQ-008 | `plans/current-task.md` | Approved plan | Bổ sung UC-09 Placement Test và UC-10 Achievements/Badges | `APPROVED` |
 | SRC-REQ-009 | `DESIGN.md` | UI/UX source | Chỉ dùng khi thiết kế/đánh giá màn hình; không thay thế functional requirements | `OBSERVED` |
 | SRC-REQ-010 | `docs/phỏng_vấn.docx` | Biên bản phỏng vấn bán cấu trúc | Sáu người tham gia; pain points về từ vựng, lịch ôn, thói quen, tiến độ, luyện nói và correction | `OBSERVED` |
-| SRC-REQ-011 | User approval, 2026-08-22 | Scope clarification for UC-06 | Client-side speech input/playback is a UI convenience; FastAPI/T5-small remains text-in/text-out; canonical request keeps `original_text` and `scenario_code`; approved report/PlantUML/DOCX allowlist | `APPROVED` |
+| SRC-REQ-011 | User approval, 2026-08-22 | Scope clarification for UC-06 | Client-side speech input/playback is a UI convenience; backend text processing remains text-in/text-out; canonical request keeps `original_text` and `scenario_code`; approved report/PlantUML/DOCX allowlist | `APPROVED` |
 | SRC-REQ-012 | [MDN Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API) | Browser capability and limitation reference | `SpeechRecognition`/`webkitSpeechRecognition` feature detection, `SpeechSynthesis` playback, browser/provider support and permission/fallback considerations | `OBSERVED` |
 | SRC-REQ-013 | `pasted-text.txt`, user attachment 2026-08-23 | Academic refinement source | Suggested elicitation/findings/benchmark/FR-NFR/validation organization; unsupported metrics are not treated as evidence | `INFERRED / EVIDENCE-PENDING` |
-| SRC-REQ-014 | User decision, 2026-08-23 | ERD reporting resolution | Physical baseline reported as 17; 15 active-flow models; `ChatSession`/`ChatMessage` legacy/deprecated pending formal migration cleanup; UC-09/UC-10 entities excluded | `APPROVED` |
+| SRC-REQ-014 | User decision, 2026-08-23 | ERD reporting resolution | Physical baseline reports 15 active-flow models; UC-09/UC-10 extension entities excluded from the active baseline | `APPROVED` |
 | SRC-REQ-015 | `D:/TimHieuPaper_Nhom16.pptx` | Presentation visual reference | University logo, purple/yellow header and gray footer background used for the teacher-facing deck | `OBSERVED` |
 | SRC-REQ-016 | User attachment `4826819f-27da-4af2-a3d3-571d6faf7d62/pasted-text.txt`, 2026-08-23 | Three supplementary interview records | Named 30-minute records for a high-school learner, university learner and working learner; used as qualitative supporting evidence on slides 7-8 | `OBSERVED / SUPPLEMENTARY` |
-| SRC-REQ-017 | User approval, 2026-08-23 | Actor/boundary and UC numbering decision | Learner/Admin are the only external actors; GEC/T5-small is internal processing; achievements use UC-10; complete PlantUML and synchronize current Markdown reports | `APPROVED` |
-| SRC-REQ-018 | `D:/btl/Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` | Quantitative survey export | 15 responses across 24 questions; percentage summary is reported separately from interview frequencies | `OBSERVED / SURVEY N=15` |
+| SRC-REQ-017 | User approval, 2026-08-23 | Actor/boundary and UC numbering decision | Learner/Admin are the only external actors; text processing is internal; achievements use UC-10; complete PlantUML and synchronize current Markdown reports | `APPROVED` |
+| SRC-REQ-018 | `bộ dữ liệu khảo sát định lượng (N=15)` | Quantitative survey export | 15 responses across 24 questions; percentage summary is reported separately from interview frequencies | `OBSERVED / SURVEY N=15` |
 
 ## 3. Kết quả phân tích tài liệu giảng viên
 
@@ -68,7 +68,7 @@ Tỷ lệ dưới đây được tính trên 15 câu trả lời trong `SRC-REQ-
 | Đánh giá bài tập sau bài học ở mức 4-5/5 | **66,7% (10/15)** | UC-03 |
 | Đánh giá theo dõi tiến độ ở mức 4-5/5 | **60,0% (9/15)** | UC-07 |
 | Chọn học từ vựng trong ba chức năng quan trọng nhất | **60,0% (9/15)** | UC-02 |
-| Chọn AI hội thoại trong ba chức năng quan trọng nhất | **53,3% (8/15)** | UC-06 |
+| Chọn luyện viết và sửa câu trong ba chức năng quan trọng nhất | **53,3% (8/15)** | UC-06 |
 | Chọn SRS tự động trong ba chức năng quan trọng nhất | **33,3% (5/15)** | UC-05 |
 
 Các lựa chọn nhiều đáp án nổi bật khác: điền từ `73,3% (11/15)`, trắc nghiệm `60,0% (9/15)`, nghe `53,3% (8/15)`, sửa lỗi ngữ pháp/từ vựng `66,7% (10/15)` và gợi ý cách nói tự nhiên hơn `60,0% (9/15)`. Các tỷ lệ này được dùng như bằng chứng ưu tiên tính năng, không phải bằng chứng hiệu quả sản phẩm.
@@ -84,25 +84,22 @@ File `docs/phỏng_vấn.docx` ghi nhận 6 cuộc phỏng vấn bán cấu trú
 | Học không đều/quên lịch | 4/6 | UC-07, UC-08 | Hỗ trợ streak, goal và reminder trong app |
 | Không biết nên học gì | 4/6 | UC-02, UC-09 | Hỗ trợ placement recommendation trong phạm vi; chưa có adaptive engine |
 | Khó theo dõi tiến bộ | 5/6 | UC-03, UC-07 | Hỗ trợ progress và feedback |
-| Thiếu người luyện nói | 6/6 | UC-06 (một phần) | Hỗ trợ tiện ích nhập giọng nói và nghe câu sửa trong browser; không biến UC-06 thành chatbot hội thoại hai chiều |
-| Muốn được sửa lỗi | 6/6 | UC-06 | Phù hợp scenario writing + T5-small GEC |
+| Thiếu môi trường luyện viết | 6/6 | UC-06 | Cung cấp bài luyện viết theo tình huống và phản hồi kiểm tra câu |
+| Muốn được sửa lỗi | 6/6 | UC-06 | Phù hợp luyện viết tình huống và kiểm tra ngữ pháp |
 | Muốn nội dung cá nhân hóa | 4/6 | UC-09 | Nhu cầu trong phạm vi; cần scoring/policy riêng trước khi triển khai |
 
 ### 4.3 Các quyết định sau rà soát
 
-- Không thêm use case “AI conversation” độc lập. Nhu cầu này được ghi ở phần deferred/future scope vì baseline hiện tại không có generative chatbot hoặc speech service.
+- Không thêm chức năng hội thoại mở độc lập.
 - Không coi personalization là chức năng đã triển khai. UC-09 là chức năng trong phạm vi, implementation pending.
 - Không dùng phỏng vấn để chứng minh UC-10. Badge là yêu cầu trong phạm vi dựa trên giả thuyết động lực, cần validation riêng.
 
-Các claim `N=30`, `N=45` và mọi tỷ lệ không truy ngược được về `SRC-REQ-018` hoặc một nguồn dữ liệu gốc khác vẫn bị loại. Các tỷ lệ của khảo sát N=15 chỉ được sử dụng khi kèm số đếm và mẫu số.
-
 ## 4.4 Quyết định đếm model cho ERD và slide
 
-- Physical schema baseline trong báo cáo: **17 models**.
-- Active business flow: **15 models**.
-- `ChatSession` và `ChatMessage`: **deprecated/legacy, pending formal migration cleanup**.
+- Physical schema baseline trong báo cáo: **15 mô hình dữ liệu hoạt động**.
+- Các thực thể mở rộng của UC-09/UC-10 không cộng vào baseline hiện tại.
 - Entity liên quan UC-09 Placement và UC-10 Badges chưa thuộc physical hoặc active count; model design sẽ được ghi nhận khi implementation task được phê duyệt.
-- Quyết định này là reporting resolution được người dùng phê duyệt ngày 2026-08-23; speaker notes của slide kiến trúc/ERD phải nêu đủ ba lớp trên.
+- Quyết định này là reporting resolution được người dùng phê duyệt ngày 2026-08-23.
 
 ## 5. Bằng chứng hiện trạng tính năng
 
@@ -110,12 +107,12 @@ Các claim `N=30`, `N=45` và mọi tỷ lệ không truy ngược được về
 |---|---|---|
 | UC-01 | `OBSERVED / IMPLEMENTED` | Web foundation và Supabase Auth đã có evidence |
 | UC-02 | `APPROVED / PENDING_M2` | Data/seed có, learner flow chưa hoàn chỉnh |
-| UC-03 | `APPROVED / PENDING_M2` | Ba exercise type hiện hữu; GRAMMAR/LISTENING đã duyệt nhưng migration/UI còn pending |
+| UC-03 | `APPROVED / PENDING_M2` | Ba exercise type hiện hữu; GRAMMAR/LISTENING đã duyệt |
 | UC-04 | `PARTIAL` | DB/RLS/Storage có; Admin UI pending M3 |
 | UC-05 | `PARTIAL` | `record_review` có; deterministic policy audit pending |
-| UC-06 | `APPROVED / IMPLEMENTATION_PENDING` | GEC contract target và client speech convenience đã duyệt; endpoint/UI/model chưa hoàn chỉnh; audio không qua backend |
+| UC-06 | `APPROVED / IMPLEMENTATION_PENDING` | Hợp đồng kiểm tra ngữ pháp và client speech convenience đã duyệt; endpoint/UI chưa hoàn chỉnh |
 | UC-07 | `PARTIAL / PENDING_M2` | Các field nền tảng có; UI/behavior hoàn chỉnh pending |
-| UC-08 | `APPROVED / LATER_M2+` | Chỉ in-app reminder, không Web Push |
+| UC-08 | `APPROVED / LATER_M2+` | Chỉ trong ứng dụng reminder, không Web Push |
 | UC-09 | `ACTIVE / IN SCOPE` | Canonical FR đã có; scoring policy, persistence và UI implementation pending |
 | UC-10 | `ACTIVE / IN SCOPE` | Canonical FR đã có; badge catalog, persistence và UI implementation pending |
 
@@ -131,7 +128,7 @@ Các claim `N=30`, `N=45` và mọi tỷ lệ không truy ngược được về
 - Cách đang ôn lại từ vựng:
 - Mong muốn đối với bài kiểm tra đầu vào:
 - Phản ứng với streak, badge và nhắc nhở:
-- Lo ngại về quyền riêng tư hoặc AI correction:
+- Lo ngại về quyền riêng tư hoặc phản hồi sửa lỗi:
 - Tính năng quan trọng nhất và lý do:
 
 ### 6.2 Bộ câu hỏi khảo sát ngắn
@@ -144,12 +141,5 @@ Các claim `N=30`, `N=45` và mọi tỷ lệ không truy ngược được về
 6. Bạn có muốn hệ thống nhắc ôn từ đúng hạn không?
 7. Phản hồi sửa ngữ pháp nào hữu ích: câu sửa, vị trí lỗi, loại lỗi, giải thích?
 8. Badge riêng tư có giúp tăng động lực không?
-9. Bạn có muốn bảng xếp hạng công khai không? (Mục này dùng để xác minh quyết định loại leaderboard.)
+9. Bạn có muốn bảng xếp hạng công khai không?
 10. Câu trả lời mở: một thay đổi quan trọng nhất bạn muốn ở ứng dụng học tiếng Anh.
-
-## 7. Quy tắc cập nhật evidence
-
-- Khi có file khảo sát gốc, bổ sung đường dẫn, thời gian thu thập, cỡ mẫu và cách làm sạch dữ liệu.
-- Mọi tỷ lệ trong báo cáo phải truy được về một bảng dữ liệu hoặc ảnh thống kê.
-- Khi UC-09/UC-10 có task implementation riêng, cập nhật trạng thái theo observed test output, không theo suy luận.
-- Không ghi `PASS`, latency, accuracy hoặc model metric nếu chưa có command/output được lưu trong `logs/test-log.md` hoặc `logs/model-registry.csv`.
