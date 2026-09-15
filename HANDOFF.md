@@ -170,6 +170,15 @@ Draft `plans/current-task.md` for **`m2-web-core-lesson-flow`** (Milestone M2):
 
 ---
 
+## Git remotes — PUBLIC vs PRIVATE (human-confirmed 2026-09-15, never confuse)
+
+- PRIVATE workspace (full work, agent logs/plans, all audits): `origin` →
+  `https://github.com/PhamNguyenThanhTung/lingora-workspace` (default push target; commit `ea1a2f3` pushed here).
+- PUBLIC repo (external sharing): `https://github.com/PhamNguyenThanhTung/BTL` (not configured as a
+  remote in this clone; do NOT push here unless explicitly asked, and never push secrets/logs to it).
+
+---
+
 ## Context not in code
 
 - The platform switch was a human decision made on 2026-08-17 with the assignment-title risk raised and
