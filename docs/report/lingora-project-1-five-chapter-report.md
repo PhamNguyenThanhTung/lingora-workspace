@@ -1,3 +1,7 @@
+> [!WARNING]
+> **[HISTORICAL / SUPERSEDED — LEGACY 10-UC CATALOG]**
+> Tài liệu này thuộc tập báo cáo học thuật đợt 1 (legacy 10 Use Cases, 2 vai trò Learner/Admin). Toàn bộ danh mục Use Case chuẩn mực của dự án Lingora hiện đã được nâng cấp thành **14 Use Cases Cốt lõi (Core MVP UC-01..UC-14) & 1 Phân hệ Mở rộng Tùy chọn (Optional B2B Module UC-15)** phủ 6 vai trò canonical tại [06-system-analysis.md](../06-system-analysis.md) và [05-traceability-matrix.md](../05-traceability-matrix.md). Giữ tài liệu này chỉ với mục đích tham khảo lịch sử đồ án.
+
 # TRƯỜNG ĐẠI HỌC [BỔ SUNG TÊN TRƯỜNG]
 ## KHOA [BỔ SUNG TÊN KHOA]
 

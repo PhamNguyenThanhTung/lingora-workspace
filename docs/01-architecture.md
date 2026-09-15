@@ -1,83 +1,83 @@
 # 01 - Lingora System Architecture
 
-> **Current normative architecture (ADR-010, effective 2026-08-21):** the active target is a two-track system with deterministic SRS and one learned internal processing component, Transformer GEC. `lingora-ai`/FastAPI may remain a deployable component, but it is inside the Lingora system boundary and is not a Use Case actor. The only external system actors are Learner and Admin. Migrated sections below remain historical evidence where they describe DKT/HLR or generative chat.
+> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
+> LINGORA is structured as a **Software Engineering CORE** platform with a lightweight **AI SUPPORTING CAPABILITY** (GEC), adhering to [`docs/plantuml/system-architecture-mvp.puml`](plantuml/system-architecture-mvp.puml):
+> - **Human Actors:** 6 canonical roles — `Learner`, `Lesson Creator`, `Moderator`, `Administrator`, `Operations Staff`, and `Organizational Manager`.
+> - **Client Applications:** `Learner Web` (`lingora-web`) for learners; `Admin Web` (`lingora-admin`) for content creators, moderators, operations staff, and administrators.
+> - **Application Services:** `Learner API`, `Admin API`, and `Auth & RBAC` (Supabase GoTrue, SSR session handling, and database-level RLS).
+> - **Backend Services (Supabase):** PostgreSQL 15 with RLS + RPC, and Supabase Storage (`lingora-avatars`, `lingora-media`).
+> - **Supporting AI Service:** Stateless FastAPI service (`lingora-ai/api`) providing GEC (`/v1/gec/correct`) via pretrained model or external API provider; `/v1/srs/schedule` and `/v1/chat/roleplay` remain compatibility surfaces.
 
-## ADR-010 target architecture
+
+## Phase 0 Target Architecture
 
 ```text
-Web Learner -> Supabase Auth/PostgreSQL/RLS/RPC/Storage
-Web Learner -> fixed Next.js /api/ai/gec -> FastAPI /v1/gec/correct
-FastAPI -> JWT verification + T5-small GEC + deterministic diff
-Web Admin -> Prisma/PostgreSQL and Storage
+Learner (Web) ──(HTTPS/UI)──► Next.js App Router (lingora-web) ──(SSR Auth)──► Supabase (GoTrue)
+Staff/Admin   ──(HTTPS/UI)──► Next.js App Router (lingora-admin) ──(Prisma TCP)──► Supabase (Postgres 15 + RLS)
+Learner Web   ──(Route Handler Proxy /api/ai/gec)──► FastAPI /v1/gec/correct (Internal T5-small GEC)
+FastAPI       ──(Verify ES256 JWKS / HS256)──► Supabase GoTrue Public Keys
 ```
 
-| Component | Current responsibility | Explicit non-responsibility |
+| Component | Responsibility | Non-Responsibility |
 |---|---|---|
-| Web Learner | Course/lesson/exercise UI, deterministic SRS UI, ordered scenario writing and safe diff rendering | No service-role key, Prisma TCP, browser token store or request-selected AI upstream |
-| Web Admin | Content, scenario and media management under ADMIN boundary | No learner-facing runtime |
-| Supabase | Persistent data, Auth, RLS, RPC and Storage | No AI inference |
-| FastAPI GEC | JWT verification, mock/real GEC inference and validated metadata | No primary learner-data persistence or dialogue-state ownership |
-| T5-small | Generate corrected_text | No guaranteed structured edits, explanation or dialogue generation |
+| **Learner Web** (`lingora-web`) | Course/lesson navigation, interactive exercises (MCQ, FILL_BLANK, REORDER), deterministic SRS review, scenario writing UI, streak/goal tracking, student profile | No service-role key, no direct DB TCP, no client-side secret storage, no direct browser-to-FastAPI calls |
+| **Admin Web** (`lingora-admin`) | Content management (Course/Lesson/Vocabulary/Exercise drafts), moderation queue (Review, Approve, Changes Requested), user/role management, operations support, Prisma migrations | No learner-facing runtime, no client-side bypass of authorization rules |
+| **Supabase (BaaS)** | Persistent storage (PostgreSQL 15), GoTrue Auth, Row Level Security (RLS) enforcement, atomic RPC (`record_review`), Storage buckets (`lingora-avatars`, `lingora-media`) | No AI model inference |
+| **FastAPI (Internal AI)** | Stateless inference, JWT verification (ES256 JWKS + HS256 fallback), target GEC (`/v1/gec/correct`), compatibility endpoints (`/v1/srs/schedule`, `/v1/chat/roleplay`) | No primary data persistence, no direct database read/write |
 
-The 17-model Prisma baseline remains unchanged. ChatScenario may supply ordered practice context; reuse of ChatSession/ChatMessage for writing history is not assumed until a later semantics review. SRS remains inside the trusted Supabase/RPC boundary and is described as deterministic rule-based until record_review is audited.
+> **Canonical status:** Phase 0 reconciled architecture baseline. The sections below preserve legacy architecture documentation as historical engineering evidence.
 
-> **Canonical status:** M0 migration baseline. Source wording is preserved; product/repository naming and Markdown nesting were normalized only where explicitly approved.
->
-> **Source coverage:** legacy architecture sections 1.1â€“1.2, 1.5, 1.7â€“1.8 and legacy tech stack 3.1â€“3.7. Data-model sections are in 4-data-model.md; API section is in 3-api-contract.md.
+---
 
-## Migrated source: system architecture
+## [SUPERSEDED / HISTORICAL REFERENCE] Migrated source: system architecture
 
-### 1.1. Sơ đồ tổng thể
+### 1.1. Sơ đồ tổng thể (Historical Context)
 
 ```
 ┌─────────────────────────┐        ┌──────────────────────────┐
 │  Web Learner (Next.js)  │        │  Web Admin (Next.js)     │
 │  TS · Tailwind · shadcn │        │  TS · Tailwind · Prisma  │
-│  Người dùng cuối        │        │  Quản trị nội dung       │
+│  Người dùng cuối        │        │  Quản trị & Soạn thảo    │
 └────────┬───────┬────────┘        └───────┬──────────┬───────┘
          │       │                         │          │
     (1) Auth  (2) Data              (2') Data    (3) Storage
-    JWT       PostgREST/RPC         Prisma+TCP   upload audio
+    JWT       PostgREST/RPC         Prisma+TCP   upload audio/media
          │       │                         │          │
          ▼       ▼                         ▼          ▼
 ┌───────────────────────────────────────────────────────────────┐
 │                      SUPABASE (BaaS)                          │
 │  Auth (GoTrue) · PostgreSQL 15 + RLS · Storage · REST         │
-│  Lưu: review_logs, user_vocab_srs, chat_sessions/messages     │
+│  Lưu: profiles, courses, lessons, vocabularies, srs, progress │
 └───────────────────────────────────────────────────────────────┘
          ▲                                        ▲
     (4) verify JWT (ES256 JWKS / HS256) (5) ghi log request
          │                                        │
 ┌────────┴────────────────────────────────────────┴─────────────┐
-│                   AI Server (FastAPI · Python)                │
-│  POST /v1/srs/schedule   → DKT-LSTM / Half-Life Regression    │
-│  POST /v1/chat/roleplay  → Transformer seq2seq / T5-small     │
-│  MOCK_MODE=true  →  trả kết quả hardcode (phương án dự phòng) │
+│                 AI Server (FastAPI · Python)                  │
+│  TARGET: POST /v1/gec/correct → T5-small grammatical error    │
+│  COMPATIBILITY: /v1/srs/schedule, /v1/chat/roleplay           │
+│  MOCK_MODE=true → deterministic fallback                      │
 └───────────────────────────────────────────────────────────────┘
          ▲
     (6) HTTPS + Bearer JWT (qua Next.js Route Handler Proxy, timeout 8s)
          │
-   Web Learner (màn "Ôn tập thông minh" · màn "Luyện hội thoại")
+   Web Learner (màn "Luyện viết tình huống" / "Ôn tập SRS")
 ```
 
-**Điểm cần nhớ:** Web Learner **không** đi qua AI Server để lấy dữ liệu bài học/từ vựng gốc — dữ liệu đó luôn lấy trực tiếp từ Supabase. AI Server chỉ được gọi cho 2 việc: (a) tính lịch ôn tập gợi ý, (b) sinh phản hồi + chấm điểm hội thoại (qua Route Handler proxy ở `lingora-web`). Nhờ vậy AI Server chết cũng không làm sập luồng học chính, chỉ mất phần "gợi ý" (SRS rơi về lịch mặc định kiểu SM-2 / deterministic fallback, chatbot báo lỗi tạm thời). Chi tiết luồng và đặc tả use case xem tại [`docs/06-system-analysis.md`](06-system-analysis.md).
+**Điểm bất biến:** Web Learner **không** đi qua AI Server để lấy dữ liệu bài học/từ vựng gốc — dữ liệu đó luôn lấy trực tiếp từ Supabase. AI Server chỉ xử lý logic suy luận không trạng thái qua proxy. Nếu AI Server tạm thời gián đoạn, luồng học cốt lõi (Lesson, Exercise, deterministic SRS) vẫn hoạt động hoàn toàn bình thường.
 
-### 1.2. Trách nhiệm từng thành phần
+### 1.2. Phân chia trách nhiệm
 
 | Thành phần | Chịu trách nhiệm | KHÔNG chịu trách nhiệm |
 |---|---|---|
-| Web Learner (`lingora-web`) | Hiển thị, cache dữ liệu phía client, chấm bài tập phía client, gọi API, gửi review log lên Supabase | Không chứa business rule quan trọng, không giữ `service_role` key, không mở kết nối DB trực tiếp, không import Prisma |
-| Web Admin | CRUD nội dung (Course/Lesson/Vocabulary/Exercise/Chat Scenario), xem thống kê, quản lý user, migrate DB (Prisma) | Không phục vụ user cuối |
-| Supabase | Lưu dữ liệu (kể cả `review_logs`, `chat_messages`), xác thực, phân quyền (RLS), lưu file audio/ảnh | Không chạy suy luận AI |
-| AI Server | Suy luận DKT/HLR (SRS), suy luận seq2seq (Chatbot), log request, chế độ mock | Không phải nơi lưu dữ liệu chính (chỉ nhận history trong request, không cần đọc/ghi DB Supabase trực tiếp) |
-
----
+| Web Learner (`lingora-web`) | UI học tập, cache phía client, chấm bài tập phía client, gọi API qua route handler, ghi nhận tiến độ | Không giữ `service_role` key, không kết nối DB trực tiếp |
+| Web Admin (`lingora-admin`) | Dashboard quản trị 6 vai trò, quy trình duyệt nội dung (Draft → Review → Publish), quản lý media | Không phục vụ trực tiếp luồng học sinh viên |
+| Supabase | Lưu trữ dữ liệu chuẩn, GoTrue Auth, RLS database-level, RPC nguyên tử `record_review`, Storage | Không chạy suy luận AI nặng |
+| AI Server (`lingora-ai/api`) | Suy luận T5-small GEC, compatibility endpoints, xác thực JWT (ES256 JWKS / HS256) | Không lưu trữ state chính, không đọc/ghi trực tiếp DB |
 
 ---
 
 ### 1.5. Luồng xác thực (Auth)
-
-Giữ nguyên bản gốc:
 
 ```
 Web Learner                Supabase GoTrue              FastAPI
@@ -87,14 +87,17 @@ Web Learner                Supabase GoTrue              FastAPI
    │◄──────────────────────────┤
    │  lưu trong httpOnly cookie do @supabase/ssr quản lý (SDK tự refresh)
    │
-   │  GET /rest/v1/rpc/get_lessons   Authorization: Bearer <JWT>
+   │  GET /rest/v1/...               Authorization: Bearer <JWT>
    ├──────────────────────────►│  (RLS đọc auth.uid() từ JWT)
    │
-   │  POST /v1/srs/schedule | /v1/chat/roleplay   Authorization: Bearer <JWT>
-   │  (đi qua Next.js Route Handler proxy của lingora-web, timeout 8s)
-   ├───────────────────────────────────────────────────►│
-   │                                 verify HS256 bằng SUPABASE_JWT_SECRET
-   │◄───────────────────────────────────────────────────┤
+   │  POST /api/ai/gec (Route Handler proxy, timeout 8s)
+   │  ────────────────────────►│  Authorization: Bearer <JWT>
+   │                           │  POST /v1/gec/correct
+   │                           ├────────────────────────►│
+   │                           │                         │ verify ES256 (JWKS)
+   │                           │                         │ fallback HS256
+   │                           │◄────────────────────────┤
+   │◄──────────────────────────┤
    │
    │  401 → @supabase/ssr tự refresh session → retry 1 lần
 ```
@@ -364,14 +367,12 @@ python -c "from datasets import load_dataset; load_dataset('multi_woz_v22')"
 
 The following M0 decision overrides only the legacy repository/directory naming block; it does not alter component responsibilities:
 
-`	ext
+```text
 lingora-web/
 lingora-admin/
 lingora-ai/
-â”œâ”€â”€ api/
-â”œâ”€â”€ ml_srs/
-â””â”€â”€ nlp_chatbot/
-`
+└── api/
+```
 
 No repository is scaffolded by M0.
 
@@ -418,9 +419,7 @@ This section supersedes conflicting or incomplete migrated wording under `ADR-00
 lingora-web/
 lingora-admin/
 lingora-ai/
-├── api/
-├── ml_srs/
-└── nlp_chatbot/
+└── api/
 ```
 
 Legacy `app + ml/srs + ml/chatbot` and `values-ja`-as-Must wording is superseded.

@@ -24,8 +24,9 @@
 ---
 
 ## 2. Tài liệu Báo cáo Đồ án (.docx)
-- **Báo cáo Kỹ nghệ Phần mềm:** [`docs/project-1/Lingora-Project-1.docx`](Lingora-Project-1.docx)
-- **Báo cáo Học máy / Deep Learning (Transformer GEC):** [`docs/ml/Lingora-ML.docx`](../ml/Lingora-ML.docx)
-- **Báo cáo NLP cũ:** [`docs/nlp/Lingora-NLP.docx`](../nlp/Lingora-NLP.docx) — historical scaffold, SUPERSEDED by ADR-010; binary không bị xóa trong task tài liệu này.
+- **Báo cáo Kỹ nghệ Phần mềm (Giảng viên định dạng chuẩn):** [`docs/report/Lingora-Project-1-Lecturer-Format-Final.docx`](../report/Lingora-Project-1-Lecturer-Format-Final.docx)
+- **Tài liệu Báo cáo Markdown:** [`docs/report/lingora-project-1-lecturer-format.md`](../report/lingora-project-1-lecturer-format.md)
+- **Sơ đồ Báo cáo Học thuật:** [`docs/report/diagrams/`](../report/diagrams/)
+- *Ghi chú:* Các báo cáo ML/NLP cũ phân tán trước đây (`docs/ml/`, `docs/nlp/`) đã được dọn dẹp và hợp nhất vào hai báo cáo chính thức theo quyết định ADR-010 (Software Engineering + Transformer GEC).
 
 *Vòng đời các phần trong báo cáo:* `PLANNED → DRAFT → EVIDENCE-READY → VERIFIED`.

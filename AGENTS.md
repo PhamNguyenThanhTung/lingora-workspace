@@ -74,43 +74,34 @@ Pause implementation and return the task to `REVIEW` status immediately if any o
 - A security boundary, RLS policy, or trust model must be altered to make the approved change work.
 - A test result contradicts a claim made in the approved plan.
 
-## Supporting Agent Skills
+## AI Coding Agents & Responsibilities
 
-Project-local Agent Skills are advisory tools used only within the applicable phase. They never override this `AGENTS.md`, canonical documentation, an approved task, or a human approval gate. A skill cannot approve a task, change the mandatory workflow, broaden scope, or authorize implementation.
+The project standardizes on two coding agents with distinct responsibilities:
 
-- `source-driven-development`: use during `PLAN`/`REVIEW` and for evidence-backed implementation.
-- `security-and-hardening`: use during `REVIEW`/`IMPLEMENT`/`TEST` for security-sensitive work.
-- `debugging-and-error-recovery`: use during `TEST` and diagnostic failure recovery.
-- `code-review-and-quality`: use during `TEST` for post-implementation quality review and before `COMMIT`.
+- **Codex**:
+  - Discovery & Architecture
+  - Specification & Planning
+  - Review & Verification
+  - Acceptance & Gatekeeping
+- **Antigravity**:
+  - Implementation & Coding
+  - Test Execution & Verification
+  - Fix implementation issues according to plan and review
 
-If skill guidance conflicts with the approved scope or Lingora rules, stop and follow the Lingora source of truth and approval process.
+## Agent Workflow & Methodology: Superpowers
 
-Configuration in `.agents/` and `.codex/` is tool-specific plumbing for individual agent runtimes. It must not restate or override the rules in this file. If a conflict exists between `.agents/` or `.codex/` configuration and `AGENTS.md`, this file wins.
+The repository uses **Superpowers** ([https://github.com/obra/superpowers](https://github.com/obra/superpowers)) as the single canonical skill and workflow framework shared by both Codex and Antigravity. No competing or parallel workflow framework (such as Impeccable or legacy local skill trees) is maintained.
 
-## Change controls
+All agents follow Superpowers methodology:
+- Disciplined planning, specification teasing, and design signoff before code changes.
+- True test-driven development (TDD) and systematic debugging.
+- Comprehensive verification before completion.
+- Consistent code review and finish-the-branch procedures.
 
-Do not make any of the following changes without an approved task that names the change explicitly:
+Skills are shared across `.agents/skills/` and `.codex/skills/`:
+`brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `finishing-a-development-branch`, `subagent-driven-development`, `dispatching-parallel-agents`, `using-git-worktrees`, `using-superpowers`, `writing-skills`.
 
-1. Change the system architecture or repository boundaries.
-2. Add, remove, or upgrade a dependency without a recorded reason and impact review.
-3. Change the database schema, migration history, RLS policy, trigger, or RPC.
-4. Change an API path, request/response field, error envelope, or compatibility rule.
-5. Change DKT-LSTM, HLR, Scheduler, Transformer, T5-small, tokenization, training, or evaluation architecture.
-6. Move work between Must and Nice scope.
-7. Delete or alter existing behavior merely to make code cleaner when the approved task does not require it.
-8. Refactor unrelated code, rename unrelated files, or expand scope opportunistically.
-
-When an approved task requires one of these changes, record the decision in `logs/decision-log.md` before or alongside implementation.
-
-## Implementation rules
-
-- Change only files listed in `Files Expected To Change`. If another file becomes necessary, return the task to `REVIEW` unless the change is purely generated output already covered by the plan.
-- When a known limitation or approved technical debt is traceable to a specific line of code, insert a structured comment at that location: `// LINGORA-DEBT: <one-line description> — see <ADR-NNN> or <doc>§<section>`. Example: `// LINGORA-DEBT: size enforcement at RLS only, not bucket boundary — see ADR-005 §SEC-D8`. Use only when the limitation is recorded in an approved ADR or plan; do not add speculative debt comments.
-- Preserve backward compatibility unless the approved acceptance criteria explicitly allow a breaking change.
-- Do not place secrets in code, logs, screenshots, fixtures, or commits.
-- Do not create feature code, migrations, endpoints, UI, training jobs, or dependencies during planning/framework tasks.
-- Keep Project 1, ML, and NLP as three evaluation views of one product, not three unrelated products.
-- Impeccable may guide frontend design work and `DESIGN.md`; it must not decide backend, database, API, ML, or NLP architecture.
+Configuration in `.agents/` and `.codex/` provides tool-specific plumbing for agent runtimes. It must not restate or override canonical rules. If any conflict arises, canonical documentation and this file win.
 
 ## Testing and logs
 

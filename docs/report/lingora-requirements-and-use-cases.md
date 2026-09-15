@@ -1,3 +1,7 @@
+> [!WARNING]
+> **[HISTORICAL / SUPERSEDED — LEGACY 10-UC CATALOG]**
+> Tài liệu này thuộc tập báo cáo học thuật đợt 1 (legacy 10 Use Cases, 2 vai trò Learner/Admin). Toàn bộ danh mục Use Case chuẩn mực của dự án Lingora hiện đã được nâng cấp thành **14 Use Cases Cốt lõi (Core MVP UC-01..UC-14) & 1 Phân hệ Mở rộng Tùy chọn (Optional B2B Module UC-15)** phủ 6 vai trò canonical tại [06-system-analysis.md](../06-system-analysis.md) và [05-traceability-matrix.md](../05-traceability-matrix.md). Giữ tài liệu này chỉ với mục đích tham khảo lịch sử đồ án.
+
 # LINGORA - Báo cáo Phân tích Yêu cầu và Mô hình hóa
 
 **Phiên bản:** 0.1.0
@@ -58,7 +62,7 @@ Khảo sát định lượng ghi nhận các kết quả thực chứng:
 - **86,7% (13/15)** từng học không đều hoặc bỏ học do thiếu phương pháp và mất động lực.
 - **80,0% (12/15)** đánh giá tự động xác định từ và thời điểm ôn tập ở mức 4–5 sao (Điểm trung bình: **4,13 / 5,0**).
 - **66,7% (10/15)** yêu cầu công cụ kiểm tra ngữ pháp và giải thích chi tiết lỗi sai khi viết câu.
-- **80,0%** học vì mục tiêu công việc và giao tiếp; **73,3%** ưu tiên dạng bài tập điền từ.
+- **80,0% (12/15)** học vì mục tiêu công việc và giao tiếp; **73,3% (11/15)** ưu tiên dạng bài tập điền từ.
 
 ## 3. User Story và Acceptance Criteria
 

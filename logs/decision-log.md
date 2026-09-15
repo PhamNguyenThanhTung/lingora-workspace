@@ -1,5 +1,67 @@
 # Decision Log
 
+## ADR-014 — Software Engineering Core & AI Supporting Capability Architecture (Superseding ADR-010 Two-Track Delivery)
+
+### Date
+
+`2026-09-14`
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+ADR-010 previously consolidated project scope into "two academic tracks": Software Engineering and a Machine Learning track focused on T5-small GEC fine-tuning. However, maintaining ML as a parallel research track created architectural friction, ambiguity in system boundaries, and unnecessary complexity (e.g. pressure to self-train models, manage research pipelines, or treat GEC as equal in scope to the entire learning platform).
+
+Under the Phase 0 Rebuild, the product architecture is formally clarified: **Software Engineering is the CORE system**, while **AI is a SUPPORTING CAPABILITY**.
+
+### Decision
+
+1. **Software Engineering is Primary / Core:**
+   - The core deliverable of Lingora is a complete, reliable, modern language learning web application: Auth, RBAC (6 canonical roles), Courses, Units, Lessons, Exercises (MCQ, Fill-in-the-blank, Reorder), Learning Progress tracking, Spaced Repetition System (SRS), Content Management & Review Workflow (6 lifecycle states: Draft → In Review → Changes Requested → Approved → Published → Archived), Content Publishing, Account Management, Operations/Support, Security, and Deployment.
+2. **AI is a Supporting Capability:**
+   - AI/ML is not a parallel, independent research track.
+   - Grammatical Error Correction (GEC) is a supporting feature/service that assists learners with sentence-level feedback during scenario writing exercises.
+3. **Flexible AI Model / Provider Abstraction:**
+   - GEC does NOT require training from scratch or fine-tuning models locally (e.g. no mandatory self-trained T5-small pipeline).
+   - GEC can be fulfilled via a pretrained model, a containerized open-source checkpoint, or an external API provider.
+   - The underlying model or inference provider may be swapped at any time behind the service abstraction without impacting the core web application or database architecture.
+4. **Historical Preservation:**
+   - ADR-010, ADR-002, ADR-003, ADR-004, ADR-006, and all earlier plans and logs remain preserved in repository history for academic auditability.
+   - Obsolete research tracks (DKT-LSTM, HLR, DQN, MultiWOZ generative dialogue) remain explicitly superseded and archived.
+5. **Architectural Decoupling:**
+   - The core learning platform functions 100% independently of the AI service. If the AI service is unreachable or degraded, core learning (courses, units, lessons, exercises, progress, and deterministic SRS) continues without interruption.
+
+### Consequences
+
+- Developers and agents will focus on delivering the core Software Engineering platform first.
+- The AI API in `lingora-ai/api/` is maintained as a lightweight, stateless supporting service implementing standard contracts (`/health/*`, `/v1/model/info`, and target `/v1/gec/correct`).
+- Complex ML training pipelines, model artifacts, and datasets are removed from active runtime scope.
+
+---
+
+## ADR-012 — Phase 0 product-design reset
+
+### Date
+
+`2026-09-07`
+
+### Category
+
+`scope-ambiguity`
+
+### Decision
+
+1. Pause feature implementation and return the active task to Phase 0 survey and requirements finalization.
+2. Use `docs/phase-0-survey-requirements.md` as the new draft product-design baseline.
+3. Treat earlier implementation-first plans as superseded instructions, while preserving approved/archive records and Git history.
+4. Do not update PPTX deliverables until Phase 0 is approved.
+
+### Consequences
+
+Existing code is not deleted or expanded by this decision. Each early-built feature must be classified against the new MVP before implementation resumes.
+
 ## ADR-011 — Global Terminology Replacement for Pure Software Engineering Deliverables
 
 ### Date
@@ -916,3 +978,92 @@ Current Use Case diagrams and reports represented `AI Service` as an external ac
 - Current canonical documentation, PlantUML and Markdown reports use one actor/boundary interpretation and one UC numbering scheme.
 - No runtime, API behavior, schema, migration, RLS, RPC, dependency or model artifact changes are authorized or performed.
 - Existing FastAPI architecture/API terminology may remain where it describes an internal deployable component rather than an external actor.
+
+---
+
+# ADR-012 — Phase 0 Repository Cleanup and Superpowers Workflow Standardization
+
+### Date
+
+`2026-09-14`
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+Following the Phase 0 Rebuild reset, the repository contained obsolete agent frameworks (Impeccable, old local skill trees), deprecated ML/NLP artifacts (DKT-LSTM, HLR, MultiWOZ), duplicate/unapproved plans, and superseded PlantUML diagrams conflicting with the Phase 0 baseline (6 final roles, 19 MVP functions, authorization matrix, 6-step review process). A single, standardized development workflow was required for both coding agents (Codex and Antigravity).
+
+### Decision
+
+1. **AI Workflow Standardization**:
+   - Establish a 2-agent division of responsibility:
+     - **Codex**: Discovery, Architecture, Specification, Planning, Review, Verification, Acceptance.
+     - **Antigravity**: Implementation, Coding, Test execution, Fix implementation issues according to plan/review.
+   - Establish **Superpowers** (`https://github.com/obra/superpowers`) as the single canonical skill and workflow methodology shared by Codex and Antigravity.
+   - Completely remove the legacy Impeccable framework and obsolete project skills (`source-driven-development`, `security-and-hardening`, `debugging-and-error-recovery`, `code-review-and-quality`). Remove broken `.codex/hooks.json`.
+2. **Phase 0 PlantUML Baseline**:
+   - Retain only the 9 canonical Phase 0 MVP diagrams in `docs/plantuml/`: `use-case-mvp-overview.puml`, `role-permission-matrix.puml`, `activity-learner-journey.puml`, `activity-content-approval.puml`, `sequence-lesson-completion.puml`, `sequence-content-publishing.puml`, `system-architecture-mvp.puml`, `erd-mvp-learning.puml`, `sitemap-mvp.puml`.
+   - Remove 36 superseded/duplicate `.puml` and `.png` files from `docs/plantuml/`.
+   - Preserve all generated PNGs in `docs/report/diagrams/` for academic report traceability (DOCX, PPTX).
+3. **Repository Cleanups**:
+   - Remove obsolete research workspaces `docs/ml/`, `docs/nlp/`, `lingora-ai/ml_srs/`, `lingora-ai/nlp_chatbot/`.
+   - Remove duplicate/obsolete root plans: `plans/adr-004-amendment-full-scope.md` (duplicate), `plans/srs-integration-plan.md` (obsolete draft), and archive `plans/gap-analysis-de-bai-vs-master-plan.md`.
+4. **Runtime Invariant**:
+   - Preserve all runtime code (`lingora-web/`, `lingora-admin/`, `lingora-ai/api/`) and database schemas intact.
+
+### Consequences
+
+- Repository is clean, compliant with Phase 0 baseline, and unified under Superpowers.
+- Broken references and competing agent frameworks are eliminated.
+
+---
+
+# ADR-013 — Phase 0 Rebuild 11-Layer Reconciliation and Canonical Foundation Establishment
+
+### Date
+
+`2026-09-14`
+
+### Category
+
+`scope-ambiguity`
+
+### Context
+
+Following forensic discovery and repository cleanup, the repository remained in a `MIXED OLD/NEW` state with discrepancies across 11 architectural layers:
+- Documentation in `docs/00`–`docs/07` still described superseded ML/NLP architectures (DKT-LSTM, HLR, MultiWOZ chat), older 2-actor models (Learner/Admin), and conflicting role enums (`STUDENT` vs `LEARNER`).
+- Canonical Phase 0 baseline (`docs/phase-0-roles-and-mvp-final.md`) established 6 roles (`Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager`), 19 MVP functions (`MVP-01`..`MVP-19`), and 15 Use Cases (`UC-01`..`UC-15`).
+- The database schema (`lingora-admin/prisma/schema.prisma`) implemented 17 models with `enum Role { LEARNER ADMIN }`.
+- AI API runtime (`lingora-ai/api`) implemented health, info, and compatibility endpoints (`/v1/srs/schedule`, `/v1/chat/roleplay`), while target GEC (`/v1/gec/correct`) was pending.
+Reconciliation was required to unify all 11 layers into a single source of truth without creating parallel architectures or executing destructive schema changes.
+
+### Decision
+
+1. **Documentation Source-of-Truth Reconciliation (`docs/00`–`docs/07` & `QUICK-REF.md`)**:
+   - Explicitly establish `docs/phase-0-roles-and-mvp-final.md`, `docs/phase-0-survey-requirements.md`, and 9 canonical Phase 0 PlantUML diagrams as controlling baseline.
+   - Demarcate migrated legacy v1–v5 planning text in `docs/00`–`docs/04` under explicit `[SUPERSEDED / HISTORICAL REFERENCE]` headings.
+   - Reconcile `docs/01-architecture.md` with `system-architecture-mvp.puml` (Client Apps, Application Services, Supabase Backend, internal stateless AI).
+   - Reconcile `docs/02-requirements.md` to incorporate the 19 MVP functions (`MVP-01`..`MVP-19`) with owner and acceptance criteria.
+   - Reconcile `docs/03-api-contract.md` into 3 explicit tiers: `CURRENT` (/health/*, /v1/model/info), `COMPATIBILITY` (/v1/srs/schedule, /v1/chat/roleplay, /v1/chat/scenarios), and `TARGET` (/v1/gec/correct).
+   - Reconcile `docs/04-data-model.md` and `docs/07-data-dictionary.md` to reflect runtime `enum Role { LEARNER ADMIN }`, exact storage buckets (`lingora-avatars`, `lingora-media`), and define the Target Phase 0 Schema evolution strategy.
+2. **MVP Function (MVP-01..19) ➔ Use Case (UC-01..15) Traceability Matrix**:
+   - Update `docs/05-traceability-matrix.md` with complete bidirectional mapping connecting all 19 MVP functions to 15 canonical Use Cases, requirements, runtime surfaces, and tests.
+   - Flag gaps (`MVP-16` SupportTicket, `MVP-17` Cohort) and future/non-MVP items clearly.
+3. **Role Reconciliation**:
+   - Classify the 6 canonical roles transparently: `Learner` (IMPLEMENTED / Foundation), `Administrator` (PARTIAL / DB enum exists), `Lesson Creator`, `Moderator`, `Operations Staff`, `Organizational Manager` (DESIGN / Target Phase 0 model).
+4. **Database Reconciliation & Migration Invariant**:
+   - Categorize 17 models: 12 models to keep, 1 model to extend (`Profile`), 2 models to extend for content workflow (`Course`, `Lesson`), 2 legacy compatibility models (`ChatScenario`, `ChatScenarioTranslation`), 2 deprecated models (`ChatSession`, `ChatMessage`), and future models (`Cohort`, `CohortMember`, `SupportTicket`, `AuditLog`).
+   - 100% preservation of migration history (`202608140001_init`, `202608140002_auth_rls_storage_record_review`, `202608140003_storage_two_bucket_size_enforcement`). No destructive migrations in Phase 0 Reconciliation.
+5. **Web & AI Foundation Reconciliation**:
+   - Audit and classify all components in `lingora-web` (reusable, legacy compatibility, needs refactor, not implemented). Retain Next.js 15, SSR Auth, i18n, UI primitives.
+   - Audit AI API endpoints; retain compatibility endpoints while consumers exist.
+6. **Security Findings Tracking**:
+   - Document security findings (`MOCK_MODE` default True, fallback JWT secret, error leakage) as controlled TODOs without introducing unsafe defaults.
+
+### Consequences
+
+- All 11 layers share a unified, verifiable Phase 0 canonical baseline.
+- Zero broken references across the repository.
+- The project is fully reconciled and ready for Milestone M2 (Web Core Lesson Flow).

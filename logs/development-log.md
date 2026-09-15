@@ -1,5 +1,200 @@
 # Development Log
 
+## 2026-09-15 — phase-0-user-research-analysis-and-requirements-authoring
+
+- **Context & Directive:** Executed full authoring of the 6 Core Report Sections in `docs/phase-0-user-research-analysis-and-requirements.md` following user command "bắt đầu làm đi" and approved writing plan `plans/phase-0-user-research-analysis-and-requirements-writing-plan.md`. Strict technical and integrity boundaries enforced: 0 application code, 0 schema/migration changes, M2.1 preserved, M2.2 NOT started.
+- **Key Accomplishments & Structural Synthesis:**
+  1. *Academic Integrity & Anti-Patterns Repudiation:*
+     - Formally repudiated and banned Anti-Pattern 1 (no copying $N=500$ foreign TOEIC survey data from external sample report `D:\PROJECTONE2_updated_with_conclusion_v2 (1).docx`).
+     - Formally repudiated and banned Anti-Pattern 2 (no falsifying simulated 20 Personas as surveyed real people).
+     - Standardized on 4 canonical evidence labels: `[PRIMARY — REAL PROJECT DATA]`, `[SECONDARY — REAL EXTERNAL SOURCE]`, `[SYNTHETIC / SIMULATED — DISCOVERY ONLY]`, `[PRODUCT DECISION — NON-EMPIRICAL POLICY]`.
+  2. *Section A (User Research & Empirical Learner Survey N=15):*
+     - Extracted, aggregated and verified 100% of the 24 questions from `Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` ($N=15$).
+     - Adapted professional table structures from sample report: Table 1.1 Khó khăn ($N=15$), Table 1.2 Kỹ năng ($N=15$), Table 1.3 Tính năng ($N=15$), Table 1.4 Tổng hợp 24 câu hỏi. Every single percentage formatted with explicit fraction $(k/15, \text{XX.X}\%)$.
+     - Connected findings to S1 (Hwang 2024 attrition $\sim 43.16\%$), S4 (Cepeda 2006 spacing effect), S5 (Settles 2016 HLR).
+  3. *Section B (Application Survey & Benchmark):*
+     - Evaluated Duolingo, Quizlet, and ELSA Speak across 17 comprehensive technical/pedagogical criteria.
+     - Rejected TOEIC exam-prep platforms per Invariant D4 (Unified Exercise model, zero Exam/QuestionBank entities).
+     - Standardized 4-field output: `[Observed Feature] → [Source Evidence (URL / DOI + Access Date 2026-09-15)] → [Implication for Lingora] → [Technical Decision: ADOPT / ADAPT / REJECT + Architectural Rationale]`.
+  4. *Section C (Qualitative Interviews & Triangulation):*
+     - Summarized qualitative interviews of 6 real learners ($P1$–$P6$) without hallucinating verbatim quotes (resolving Gap G1).
+     - Strictly segregated 20 synthetic internal stakeholder personas into Section 3.3 under explicit `[SYNTHETIC SCENARIO]` warning banner.
+     - Constructed 3-Way Triangulation Matrix: Primary Survey ($N=15$) $\longleftrightarrow$ Qualitative Interviews ($P1$–$P6$) $\longleftrightarrow$ Secondary Research ($S1$–$S6$).
+  5. *Section D (User Pain Points & Root Cause Matrix):*
+     - Built comprehensive 7-column matrix for 8 core pain points ($PP-01$ to $PP-08$) linking problem to root cause, product response ($D1$–$D9$), and requirement traces.
+  6. *Section E (Canonical Roles & Separation of Duties):*
+     - Expanded 2 basic actors from sample report into 6 canonical roles (`Learner`, `Lesson Creator`, `Moderator`, `Organizational Manager`, `Operations Staff`, `Administrator`).
+     - Established SoD Matrix for 7 content lifecycle actions enforcing 5 technical invariants (D1 planning, D2 no self-approval, D3 clone-to-draft, Moderator approve only, Admin emergency audit trail DD-03).
+     - Segregated Core Boundary (15 active tables) from Extension Boundary (`Cohort`, `SupportTicket`).
+  7. *Section F (Requirements Engineering: FRs & Deep NFRs):*
+     - Detailed 17 Functional Requirements (`P1-FR-001` through `P1-FR-017`) using 10-attribute specification with `Given-When-Then` Acceptance Criteria and evidence citations.
+     - Detailed 11 NFR taxonomies with strict metric discipline: tagged unverified latency as `TBD / PROPOSED TARGET` with test conditions; eliminated ungrounded `<500ms` claims.
+     - Verified end-to-end traceability: 100% requirements traced to evidence, 0 orphan requirements.
+  8. *Verification & Validation Gates (T-P0-REQ-001):*
+     - All 6 Validation Gates (G1 Evidence, G2 Numbers, G3 Synthetic Isolation, G4 Sample Rejection, G5 NFR Rigor, G6 Traceability) verified PASS via automated test harness `scratch/verify_gates.py`.
+- **Deliverables:**
+  - `docs/phase-0-user-research-analysis-and-requirements.md` (127,955 chars, 911 lines)
+  - `plans/current-task.md` updated to `DONE`
+  - `logs/test-log.md` updated with `T-P0-REQ-001`
+  - `logs/development-log.md` updated
+- **Status:** `DONE`. Ready for independent review. M2.1 preserved, M2.2 NOT started.
+
+## 2026-09-15 — phase-1-m2-1-targeted-fix-p1-01-p2-01
+
+- **Context & Directive:** Executed targeted fix for Milestone M2.1 resolving exactly the two findings from the Independent Re-Review (`docs/phase-1-m2-1-independent-re-review.md`): P1-01 (false CURRENT_APPLIED field claims) and P2-01 (non-canonical scope label `LEGACY_APPLIED`). Strict boundaries enforced: 0 application code, 0 schema changes in `prisma/schema.prisma`, 0 migrations created/run, 0 database writes, M2.2+ NOT started.
+- **Fixes Applied:**
+  1. *P1-01 (False CURRENT_APPLIED Field Claims on SRS Tables):*
+     - Inspected actual applied migration evidence (`lingora-admin/prisma/migrations/202608140001_init/migration.sql` and `202608140002_auth_rls_storage_record_review/migration.sql`).
+     - Verified `review_logs` contains 5 physical columns (`id`, `srs_card_id`, `is_correct`, `interval_days`, `reviewed_at`) and NO `score` column. Removed the false `score` row from `ReviewLog` in `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` §8.15.
+     - Verified `user_vocab_srs` contains `recall_probability DOUBLE PRECISION` and NO `recall_score Integer`. In `docs/plantuml/domain-model-core.puml`, replaced `+ recall_score: Integer [Applied]` with `+ recall_probability: Float [Applied]` and aligned missing applied fields (`last_reviewed_at`, `lapse_count`).
+     - In `docs/plantuml/domain-model-core.puml`, removed false `+ score: Integer [Applied]` from `ReviewLog`. Preserved `+ score: Integer [Applied]` in `UserProgress` (authentic applied column per migration line 152).
+  2. *P2-01 (Canonicalize Scope Label to EXCLUDED):*
+     - Inspected `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` §7.1 rows 22–23.
+     - Replaced non-canonical hybrid label `LEGACY_APPLIED` on `chat_sessions` and `chat_messages` with canonical Scope value `EXCLUDED`.
+     - Preserved Implementation Status as `CURRENT_APPLIED_DATABASE`. Added concise explanatory note clarifying the orthogonal 2-axis model (Scope: `CORE`, `EXTENSION`, `EXCLUDED`; Status: `CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`).
+  3. *T-M21-FIX-002 Verification:* Verified 0 occurrences of `LEGACY_APPLIED`, 0 false applied claims for `recall_score` and `review_logs.score`, semantic consistency between Markdown and PlantUML, clean `git diff --check`, and unchanged code/schema/database.
+- **Deliverables & Reports:**
+  - Updated `docs/phase-1-m2-1-domain-and-logical-data-foundation.md`
+  - Updated `docs/plantuml/domain-model-core.puml`
+  - Created `docs/phase-1-m2-1-targeted-fix-p1-01-p2-01.md`
+  - Updated `plans/current-task.md` (`REVISED — READY FOR TARGETED RE-REVIEW`)
+- **Status:** `M2.1 = REVISED — READY FOR TARGETED RE-REVIEW`. Milestone M2.2 NOT started.
+
+## 2026-09-15 — phase-1-m2-1-final-verification-only
+
+- **Context & Directive:** Executed final verification only for Milestone M2.1 (`docs/phase-1-m2-1-domain-and-logical-data-foundation.md`) under user strict boundaries: 0 code, 0 schema changes, 0 migrations, 0 database writes, M2.2+ not started.
+- **Verification & Refinements Completed:**
+  1. *Enforcement Boundary Clarification:* Replaced any absolute claims of current database enforcement with "Business & Design Invariants" and "Enforcement Requirements" for subsequent implementation milestones (M2.4 / Implementation). Explicitly noted that current Applied DB (2 roles: `LEARNER`, `ADMIN`) does not yet enforce 6-role lifecycle constraints at the DB level.
+  2. *DD-07 & DD-08 Applied Database Verification:* Verified physical evidence from actual applied migrations (`lingora-admin/prisma/migrations/202608140001_init/migration.sql` and `202608140002_auth_rls_storage_record_review/migration.sql`):
+     - `user_progress` exists in applied DB (`id`, `user_id`, `lesson_id`, `status: ProgressStatus`, `score: INT`, `completed_at`, `updated_at`, `UNIQUE(user_id, lesson_id)`) storing aggregate completion and score; dynamic retry calculation ($N$, allowance, 70% credit) executed at application layer; transient retry session state is an Open Design representation.
+     - `user_vocab_srs` and `review_logs` exist in applied DB along with RPC `record_review(p_srs_card_id, p_is_correct, p_recall_probability, p_recommended_interval_days)`. Deterministic Policy B schedule $[1, 3, 7, 14, 30]$ is computed by the application layer and passed into the RPC.
+  3. *Table Inventory & Section 8 Restructuring:*
+     - Formulated exact Inventory Table in §7.1: `# | Table | Scope | Current Applied DB | Target Schema | Future Migration | Dictionary Section | Ghi chú Ranh giới Kỹ thuật & Bằng chứng`.
+     - Counted exactly 18 Core Scope tables and eliminated the subsection count discrepancy by splitting grouped tables into individual numbered subsections: §8.1 (`languages`) to §8.18 (`chat_scenario_translations`), followed by §8.19 (5 JSONB Payloads ADR-006). 100% Core Scope coverage verified.
+  4. *Preserved Locked Policies:* Maintained D1–D9, Curriculum 08 (6 Units, 24 Lessons), Placement Mapping A (0–7 $\rightarrow$ U1, 8–12 $\rightarrow$ U2, 13–17 $\rightarrow$ U3, 18–22 $\rightarrow$ U4, 23–26 $\rightarrow$ U5, 27–30 $\rightarrow$ U6; no CEFR certification; no student confirmation step), Unified Exercise Model (0 Exam/QuestionBank), Manager normal publisher, Administrator no emergency publish, D3 clone-to-draft, D7 generalized $N$ formula, Applied ExerciseType only MCQ/FILL_BLANK/REORDER (zero MATCHING).
+  5. *DD-05 Confirmed:* Assessment is conceptual mode/context of Exercise; `lesson_type` and `isAssessmentMode` confirmed as candidates in Open Design Representation.
+  6. *PlantUML ERD Synchronized:* Updated `docs/plantuml/erd-logical-status-mapping.puml` to include `vocabulary_translations`, `chat_scenarios`, and `chat_scenario_translations` so all 18 Core Scope tables are represented. Verified syntax balance.
+  7. *Section 12 Concluding Sections:* Added Sections A to E (§12.3 to §12.7): Evidence used, Remaining Open Design Decisions, Applied vs Target vs Future inventory, M2.1 Exit Gate status (D-G1 PASS, D-G2 PASS), and Explicit Statement: "M2.2 NOT STARTED".
+- **Final Status:** `REVISED — READY FOR RE-REVIEW` (pending human approval). Milestone M2.2 NOT started.
+
+## 2026-09-15 — phase-1-m2-1-revision-after-design-audit
+
+- **Context & Directive:** Received design audit verdict `D — REQUIREMENTS DRIFT / DESIGN BOUNDARY VIOLATION` on Milestone M2.1. Executed comprehensive revision strictly addressing all 12 findings without modifying Requirements Baseline, Product Policies D1–D9, Curriculum, or Placement Mapping A. Halted before M2.2+.
+- **Key Findings Resolved across M2.1 Artifacts & PlantUML:**
+  - **F-01 (Admin Override Purged):** Removed ungrounded "Administrator emergency publish/archive" from content lifecycle; confirmed Administrator is strictly for security/RBAC/audit.
+  - **F-02 (Creator Bypass Barred):** Formally enforced Manager-driven planning & assignment; Creator cannot author/submit unassigned work.
+  - **F-03 (Exercise Types Corrected):** Reflected actual applied DB enum (`MCQ`, `FILL_BLANK`, `REORDER`); designated `LISTENING` and `GRAMMAR` as Target Additions requiring migration; completely purged `MATCHING`.
+  - **F-04 (DD-05 Open Design):** Downgraded `lesson_type` to candidate representation; reinforced hard invariant D4 (Assessment = conceptual mode of Exercise; 0 Exam/QuestionBank).
+  - **F-05 (D7 Generalized Formula):** Decoupled Controlled Retry formula from hard-coded 5 items: $\text{allowance} = \max(1, \lfloor N \cdot 0.10 \rfloor)$; fixed completion rule to handling first-pass and mandatory retry items (no 80% threshold).
+  - **F-06 (D6 Placement Refined):** Removed extraneous "confirm before updating profile" requirement from locked behavior; labeled UX confirmations as `FUTURE UX OPTION / OPEN DESIGN`.
+  - **F-07 (DD-02 Open Design):** Classified physical revision fields (`supersedes_id`, `lesson_revisions`) as Open Design Candidates, not resolved schema.
+  - **F-08 (DD-03 Truthful Status):** Replaced "activate AuditLog" with truthful status: Target Model exists in `schema.prisma`, table is ABSENT in applied DB, migration is required.
+  - **F-09 (DD-06 Persistence Candidate):** Classified `placement_history JSONB + starting_unit cache` as Target Design Candidate, not resolved runtime persistence.
+  - **F-10 (Complete Data Dictionary):** Documented exhaustive field-level specifications across all 18 Core Scope tables with 8 attributes per field.
+  - **F-11 (2-Axis ERD Model):** Restructured ERD and tables into 2 independent dimensions: Scope (`CORE`, `EXTENSION`, `EXCLUDED`) and Status (`CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`).
+  - **F-12 (PlantUML Validation Disclaimer):** Documented static syntax balance verification; acknowledged renderer is unavailable in local environment.
+- **Verification:** Recorded tests `T-M21-REV-001`..`004` in `logs/test-log.md`. Updated `plans/current-task.md` to `READY FOR RE-REVIEW`.
+- **Change Control:** 0 code files, 0 schema changes, 0 migrations created/executed, 0 database writes, M2.2+ not started.
+
+## 2026-09-15 — phase-1-m2-1-domain-and-logical-data-foundation
+
+- **Context & Directive:** Executed Milestone M2.1 (Domain + Logical Data Foundation) in strict accordance with `docs/phase-1-system-design-plan.md` following user command: "Execute M2.1 only according to docs/phase-1-system-design-plan.md. Do not start M2.2+".
+- **Completed Artifacts 1–5 in `docs/phase-1-m2-1-domain-and-logical-data-foundation.md`:**
+  - **Artifact 1 (Domain Model):** Formulated shared business vocabulary and core aggregates (Learning, Vocabulary & SRS, Learner Progress, Governance & Audit). Isolated `Cohort`, `CohortMember`, and `SupportTicket` to the Extension Boundary. Formulated complete bidirectional traceability table across 13 core entities to P1-FR, UC, and BF. Generated `docs/plantuml/domain-model-core.puml`.
+  - **Artifact 2 (Content Lifecycle State Model):** Detailed 6-state lifecycle (`DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`). Formulated exhaustive State Transition Matrix (with pre-conditions and audit triggers) and Forbidden Transitions Matrix (barring Creator self-approval, Creator publish, Moderator publish, Manager bypass, and in-place editing of published content). Resolved DD-02 (Clone-to-Draft via `supersedes_id`), DD-04 (assignment brief on Lesson without separate entity), and DD-03 (AuditLog triggers). Generated `docs/plantuml/content-lifecycle-state.puml`.
+  - **Artifact 3 (Learning Progression Model):** Formulated English A1 linear progression (6 Units, 24 Lessons). Specified Placement Test (~30 items, Skip to U1, Retake from Profile, Starting Unit output) with approved Placement Mapping A (0–7: U1, 8–12: U2, 13–17: U3, 18–22: U4, 23–26: U5, 27–30: U6; no CEFR claims). Specified Conditional Jump (D5: 20q for 1 unit, 25–30q for 2–3 units, 40q for >3 units; pass >= 95%, fail 24h cooldown). Specified Controlled Retry (D7: allowance max(1, floor(5*0.1)) = 1, 70% credit, completion = finishing retry work). Resolved DD-05 (Exercise payload mode / LessonType; 0 Exam/QuestionBank entities) and DD-06 (placement history array in Profile + startingUnit cache). Generated `docs/plantuml/learning-progression-model.puml`.
+  - **Artifact 4 (ERD 3-Status Mapping):** Formulated 3-status schema classification table (`CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`) for all 18 tables. Explicitly categorized `units`, `unit_translations`, and `audit_logs` as Target Schema (not runtime-ready). Generated `docs/plantuml/erd-logical-status-mapping.puml`.
+  - **Artifact 5 (Data Dictionary Final):** Documented field-level specifications for core entities with 3-status labeling, physical types, nullability, defaults, ownership, and FR/UC trace. Formulated JSONB payload contracts for 5 Exercise types conforming to ADR-006 with mandatory `payloadVersion: 1`.
+  - **Workstream A Outputs:** Standardized Alias Table bridging P1-FR-001..016 to legacy FR-/BR-* IDs; established Core vs Extension Boundary Register.
+- **Verification & Gates:**
+  - Evaluated and recorded Gate D-G1 (Domain & Lifecycle Traceability): PASS (100% trace, 0 orphan concepts, 0 self-action loopholes).
+  - Evaluated and recorded Gate D-G2 (Data Model & Boundary Integrity): PASS (3-column labeling, 0 target/applied conflation, payloadVersion: 1 across all 5 types, 0 ghost entities).
+  - Confirmed M2.1 Exit Criteria 100% met.
+  - Halted at M2.1 boundary without starting M2.2+.
+- **Change Control:** 0 code files modified, 0 Prisma schema changes, 0 SQL migrations created/executed, 0 database writes.
+
+## 2026-09-14 — phase-0-full-reset-and-rebuild
+
+- **Context & Objective:** Performed an intentional, complete Phase 0 Reset / Rebuild, shifting Lingora from `MIXED OLD/NEW M1 IMPLEMENTATION` to a `CLEAN PHASE 0 FOUNDATION`. Re-established Software Engineering as the primary/core platform scope and AI as a supporting capability (GEC).
+- **Completed ADR-014:** Created `ADR-014` in `logs/decision-log.md` formally superseding ADR-010's "two academic tracks" model. Software Engineering is core; AI/GEC is a supporting capability via pretrained model or external API without local research pipelines. ADR-010 remains in history.
+- **Completed Documentation Alignment:** Updated `docs/QUICK-REF.md`, `README.md`, `docs/README.md`, `docs/00-master-plan.md`, `docs/01-architecture.md`, `docs/02-requirements.md`, `docs/03-api-contract.md`, `docs/04-data-model.md`, `docs/05-traceability-matrix.md`, `docs/06-system-analysis.md`, and `docs/07-data-dictionary.md`. Aligned 6 canonical roles, 19 MVP functions, 15 Use Cases, 6-state content lifecycle (`Draft` → `In Review` → `Changes Requested` → `Approved` → `Published` → `Archived`), and 5 target languages.
+- **Completed Database Schema Redesign:** Redesigned `lingora-admin/prisma/schema.prisma` with Phase 0 Target Data Model:
+  - 6 canonical roles enum: `ADMINISTRATOR`, `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `LEARNER`, `ORGANIZATIONAL_MANAGER`.
+  - Content lifecycle enum: `DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED` on `Course` and `Lesson` with audit timestamps (`submittedAt`, `reviewedAt`, `publishedAt`) and creator/reviewer relations.
+  - Added `Unit` and `UnitTranslation` entities establishing the canonical `Course -> Unit -> Lesson` hierarchy per `erd-mvp-learning.puml`.
+  - Added `AuditLog` entity for system/content auditability (MVP-19).
+  - Purged obsolete ML chatbot models (`ChatSession`, `ChatMessage`) from active learning schema; kept `ChatScenario` for scenario writing.
+  - Successfully validated with `npx prisma validate` and generated Prisma Client with `npx prisma generate`.
+  - Strictly preserved all 3 historical migrations (`202608140001_init`, `202608140002_auth_rls_storage_record_review`, `202608140003_storage_two_bucket_size_enforcement`) and migration history for audit.
+- **Completed Web UI Reset (`lingora-web`):**
+  - Deleted obsolete business UI and demo components: `src/app/(learner)/foundation/`, `src/components/foundation/`, `src/features/ai/ai.repository.ts`.
+  - Deleted obsolete UI tests: `tests/component/foundation-status.test.tsx`, `tests/e2e/foundation.spec.ts`, `tests/unit/ai.repository.test.ts`.
+  - Preserved and verified reusable infrastructure: Next.js 15 App Router, TypeScript 5, Tailwind CSS, shadcn/ui generic primitives (`button`, `card`, `input`, `label`, `alert`), Supabase SSR auth client/server (`client.ts`, `server.ts`, `middleware.ts`), i18n infrastructure (`vi`/`en`).
+  - Implemented clean minimal application shell at `src/app/page.tsx` with user greeting, locale switching, sign-out, session status, and placeholder for M2 core learning modules.
+  - Updated auth actions and middleware to redirect to `/` instead of `/foundation`.
+- **Completed API Realignment (`lingora-ai/api`):**
+  - Confirmed supporting AI service boundary: `/health/*`, `/v1/model/info` (CURRENT); `/v1/srs/schedule`, `/v1/chat/roleplay` (COMPATIBILITY); `/v1/gec/correct` (TARGET contract).
+  - Verified 37/37 Pytest tests passing.
+- **Tests & Verification:**
+  - `lingora-web`: `npm run typecheck` (PASS), `npm run lint` (PASS), `npm run test:unit` (14/14 PASS), `npm run build` (PASS).
+  - `lingora-admin`: `npx prisma validate` (PASS), `npx prisma generate` (PASS).
+  - `lingora-ai/api`: `py -3.11 -m pytest` (37/37 PASS).
+  - Reference scan: 0 broken references to deleted paths.
+  - Git diff check: `git diff --check` (PASS).
+
+
+- **Completed:** Replaced the active implementation sprint with a Phase 0 survey and requirements plan.
+- **Completed:** Added `docs/phase-0-survey-requirements.md` covering target groups, survey questions, proposed language/level, MVP, roles, permissions, and pilot success metrics.
+- **Completed:** Added evidence from the 15-response survey workbook without treating it as market-representative.
+- **Completed:** Added a clearly labeled mock survey report using online benchmark references and the five-language initial scope.
+- **Completed:** Clarified `Organizational Manager` as an optional organization/cohort role with restricted scope.
+- **Completed:** Reworked the mock survey method to identify 14 independent factors before generating synthetic responses; each factor now has its own questions, mock findings and design implication.
+- **Completed:** Finalized role-permission matrix for Administrator, Lesson Creator, Moderator, Operations Staff, Learner and optional Organizational Manager.
+- **Completed:** Finalized 19 MVP functions with owners, acceptance criteria, phased release order and explicit out-of-scope list.
+
+## 2026-09-08 — phase-0-puml-reset-and-mvp-design-diagrams
+
+- **Completed:** Removed the old 36-file PlantUML set from `docs/plantuml/` after user approval.
+- **Completed:** Created 9 new MVP diagrams covering use cases, role boundaries, learner journey, content approval, lesson completion, publishing, architecture, data model and sitemap.
+- **Completed:** Fixed PlantUML syntax in `erd-mvp-learning.puml` (multiline entity format, hide circle, Lesson-Vocabulary link) and logical workflow loop in `activity-content-approval.puml`.
+- **Completed:** Refined `use-case-mvp-overview.puml` associations and `sitemap-mvp.puml` portal navigation hierarchy.
+- **Completed:** Downloaded `plantuml.jar` and verified all 9 diagrams with exit code 0 (`-checkonly`).
+- **Completed:** Rendered all 9 MVP diagrams to PNG in both `docs/plantuml/` and `docs/report/diagrams/`.
+- **Tests:** PlantUML compiler validation 9/9 PASS; PNG visual inspection PASS; `git diff --check` PASS.
+
+## 2026-09-08 — phase-0-use-case-overview-refinement-15-uc
+
+- **Completed:** Addressed all 5 points of user review on the Use Case Overview diagram:
+  1. Decoupled Administrator (UC-10, UC-11, UC-12, UC-13) and Operations Staff (UC-14 exclusively) into distinct Use Cases, strictly maintaining permission boundaries.
+  2. Fixed all line-crossing tangles: Operations Staff connects horizontally to UC-14, Organizational Manager connects horizontally to UC-15 (Cohort Management), Administrator connects upwards to UC-10 without intersecting other actor lines.
+  3. Added missing MVP use cases: `UC-03 Take Placement Test` (MVP-03), `UC-10 Publish Approved Content` (Approved -> Published), and `UC-13 View & Audit Security Logs` (MVP-19).
+  4. Formulated Principle 4 constraint ("Soạn giả không tự duyệt bài của mình {creator != moderator}") using clean, non-yellow neutral note formatting (`#F8FAFC`, dark slate text).
+  5. Formulated Principle 7 optional module ("Phân hệ tùy chọn: Cohort Management") using a dedicated package container and clean neutral note.
+- **Completed:** Recompiled `use-case-mvp-overview.puml` to high-resolution PNG (200 DPI) and synchronized to `docs/report/diagrams/`.
+- **Completed:** Rebuilt final report Word document `Lingora-Project-1-Lecturer-Format-Final.docx` via `tools/build_lingora_final_report.py`.
+- **Tests:** PlantUML compiler exit code 0; visual inspection PASS; docx generation PASS; `git diff --check` PASS.
+
+## 2026-09-08 — phase-0-diagram-note-elimination-and-vietnamese-arrow-localization
+
+- **Completed:** Removed all yellow note blocks (`note ... end note`) across the entire diagram suite (specifically removed from `role-permission-matrix.puml`).
+- **Completed:** Standardized Use Case overview diagram (`use-case-mvp-overview.puml`) to canonical `UC-01` to `UC-11` naming without `MVP-XX` prefixes in usecase bubbles, mapping directly to the 6 finalized roles.
+- **Completed:** Translated all directional arrow labels, sequence messages, and activity action steps to natural Vietnamese, while strictly retaining technical entity/actor names in English (`Learner`, `Lesson Creator`, `Moderator`, `Administrator`, `Operations Staff`, `Organizational Manager`).
+- **Completed:** Refined `system-architecture-mvp.puml` to a clean left-to-right flow (`Learner/Staff` -> `Client Applications` -> `Application Services` -> `Backend Services (Supabase)`), removing tangled lines and replacing yellow tint with slate.
+- **Completed:** Re-rendered all diagrams to high-resolution PNGs (200 DPI) in `docs/plantuml/` and synchronized to `docs/report/diagrams/`.
+- **Completed:** Rebuilt final report DOCX (`docs/report/Lingora-Project-1-Lecturer-Format-Final.docx`) using `tools/build_lingora_final_report.py`.
+- **Tests:** PlantUML compiler exit code 0; visual inspection of all 9 PNG diagrams confirmed clean aesthetics with zero yellow notes; docx generator PASS; `git diff --check` PASS.
+
+## 2026-09-08 — full-uc-ac-completion-and-diagram-aesthetic-polish
+
+- **Completed:** Restored full 36-diagram Software Engineering suite alongside 9 Phase 0 MVP diagrams (45 diagrams total).
+- **Completed:** Optimized diagram layout aesthetics ("dễ nhìn"): eliminated looping spline paths in `use-case-overview.puml` and `use-case-learner.puml`, removed cross-boundary associations, aligned columns, enforced 200 DPI, Segoe UI typography, roundCorner 8, and soft academic pastel colors.
+- **Completed:** Added full detailed specifications and acceptance criteria for all 10 Use Cases (`UC-01` to `UC-10`) in `docs/06-system-analysis.md` (Section 4.2), covering Objective, Actor, Preconditions, Main Flow, Alternative Flows, and Acceptance Criteria.
+- **Completed:** Harmonized and verified full contiguous 10 User Stories and Acceptance Criteria (`US-01` to `US-10`) in `docs/report/lingora-project-1-lecturer-format.md` (Section 1.8) and `docs/report/lingora-requirements-and-use-cases.md`.
+- **Completed:** Compiled and validated 45/45 PlantUML diagrams with exit code 0 (`-checkonly`).
+- **Completed:** Rendered 45 high-resolution PNGs (200 DPI) in `docs/plantuml/` and synchronized to `docs/report/diagrams/`.
+- **Completed:** Rebuilt final report Word document `docs/report/Lingora-Project-1-Lecturer-Format-Final.docx` via `tools/build_lingora_final_report.py`.
+- **Tests:** PlantUML compiler check 45/45 PASS; PNG rendering 45/45 PASS; docx builder PASS; `git diff --check` PASS.
+
 ### Date
 
 `2026-08-23`
@@ -1762,3 +1957,65 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
   - Outputted and organized the images into `docs/report/diagrams/`, `tmp/plantuml-all-final/`, and `tmp/plantuml-render/`.
 - **Tests:** `PLANTUML-32-A4-RENDER-ALL-008` PASS.
 - **Commit:** Pending.
+
+## 2026-09-14 — phase-0-repository-cleanup-and-superpowers-standardization
+
+- **Completed:**
+  - Standardized AI development workflow on 2 agents: Codex (Discovery/Plan/Review) and Antigravity (Implementation/Test/Fix).
+  - Established Superpowers (`obra/superpowers`) as the single shared methodology and skill set for both Codex and Antigravity.
+  - Removed obsolete Impeccable framework and legacy project skills (`source-driven-development`, `security-and-hardening`, `debugging-and-error-recovery`, `code-review-and-quality`). Removed broken `.codex/hooks.json`.
+  - Installed all 14 Superpowers skills into `.agents/skills/` and `.codex/skills/`, and configured `.agents/plugins/marketplace.json` and `.codex-plugin/plugin.json`.
+  - Cleaned obsolete research workspaces `docs/ml/`, `docs/nlp/`, `lingora-ai/ml_srs/`, `lingora-ai/nlp_chatbot/`.
+  - Cleaned unapproved/duplicate root plans: deleted `plans/adr-004-amendment-full-scope.md` (duplicate) and `plans/srs-integration-plan.md` (obsolete draft), archived `plans/gap-analysis-de-bai-vs-master-plan.md`.
+  - Cleaned `docs/plantuml/`: retained only the 9 canonical Phase 0 MVP diagrams; removed 36 superseded/duplicate `.puml` and `.png` files. Preserved `docs/report/diagrams/` for academic report integrity.
+  - Updated canonical project documentation: `AGENTS.md`, `DESIGN.md`, `ENVIRONMENT.md`, `README.md`, `docs/01-architecture.md`, `docs/README.md`.
+  - Preserved runtime code in `lingora-web/`, `lingora-admin/`, and `lingora-ai/api/`.
+- **Tests:**
+  - `lingora-web`: TypeScript typecheck PASS, ESLint PASS, Vitest unit tests (19/19) PASS, Next.js production build PASS.
+  - `lingora-ai/api`: Pytest suite (37/37) PASS.
+  - `lingora-admin`: Prisma validate PASS.
+  - `git diff --check`: PASS.
+  - Database integration harness: BLOCKED — environment/configuration issue (Supabase connection credentials).
+- **Commit:** Pending.
+
+## 2026-09-14 — phase-0-rebuild-reconciliation-implementation
+
+- **Completed:**
+  - Reconciled all 11 architectural layers into a single source of truth under Phase 0 Canonical Baseline.
+  - Updated canonical documentation (`docs/00-master-plan.md`, `docs/01-architecture.md`, `docs/02-requirements.md`, `docs/03-api-contract.md`, `docs/04-data-model.md`, `docs/05-traceability-matrix.md`, `docs/06-system-analysis.md`, `docs/07-data-dictionary.md`, `docs/QUICK-REF.md`):
+    - Demarcated legacy v1-v5 planning text under explicit `[SUPERSEDED / HISTORICAL REFERENCE]` sections.
+    - Embedded 19 MVP functions (`MVP-01`..`MVP-19`), 6 canonical roles (`Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager`), and 15 Use Cases (`UC-01`..`UC-15`).
+    - Aligned system architecture with `docs/plantuml/system-architecture-mvp.puml`.
+    - Categorized AI API endpoints into `CURRENT` (health, model info), `COMPATIBILITY` (srs, chat), and `TARGET` (`/v1/gec/correct`).
+    - Reconciled database schema models: 12 to keep, 1 to extend (`Profile`), 2 to extend for content workflow (`Course`, `Lesson`), 2 legacy compatibility (`ChatScenario`, `ChatScenarioTranslation`), 2 deprecated (`ChatSession`, `ChatMessage`), and future models (`Cohort`, `CohortMember`, `SupportTicket`, `AuditLog`).
+    - Strictly preserved 100% of migration history without executing destructive schema changes.
+    - Updated storage bucket references to canonical `lingora-avatars` (5MB) and `lingora-media` (10MB).
+  - Built comprehensive bidirectional Traceability Matrix in `docs/05-traceability-matrix.md` linking `MVP-01..19` ➔ `UC-01..15` ➔ Requirements ➔ Runtime surface ➔ Test evidence.
+  - Audited and classified `lingora-web` foundation components (reusable, legacy compatibility, needs refactor, not implemented).
+  - Fixed stale skill reference in `.agents/references/security-checklist.md` and broken report links in `docs/project-1/README.md`.
+  - Maintained `docs/phase-0-survey-requirements.md` in `DRAFT` status pending human review.
+- **Tests:**
+  - `lingora-web`: `npm run typecheck` PASS, `npm run lint` PASS, `npm run test:unit` (19/19) PASS, `npm run build` PASS.
+  - `lingora-ai/api`: `py -3.11 -m pytest` (37/37) PASS.
+  - `lingora-admin`: `npx prisma validate` PASS.
+  - Database integration harness: BLOCKED — environment/configuration issue (Supabase connection credentials).
+  - Repo-wide stale reference scan: PASS (0 broken links in active codebase).
+  - `git diff --check`: PASS.
+- **Commit:** Pending.
+
+## 2026-09-15 — phase-1-m2-1-fix-after-independent-audit
+
+- **Completed:**
+  - Resolved all 7 findings from the independent audit on Milestone M2.1 (`docs/phase-1-m2-1-domain-and-logical-data-foundation.md`), bringing M2.1 to `REVISED — READY FOR RE-REVIEW`.
+  - **P0-01 (Restore Administrator Emergency Authority):** Restored Administrator Emergency Publish (`IN_REVIEW -> PUBLISHED`) and Emergency Archive (`PUBLISHED -> ARCHIVED`) as dashed red transitions (`#DC2626`) in `docs/plantuml/content-lifecycle-state.puml` and updated §5.1, §5.2, §5.3, §11.1 in M2.1 specification. Imposed strict constraints: emergency only, mandatory justification/reason, mandatory `AuditLog` entry. Preserved normal review workflow (Manager plans/assigns -> Creator authors -> Moderator reviews/approves -> Manager publishes) and prohibitions: no Creator self-approval/publish, no Moderator publish, no Manager assignment bypass, no in-place edit of published content.
+  - **P1-02 (Remove ARCHIVED -> DRAFT from Core):** Completely removed `ARCHIVED --> DRAFT` from Core state machine in `docs/plantuml/content-lifecycle-state.puml` and Core transition matrix (§5.2). Relegated content restoration strictly to `[FUTURE / OPEN DESIGN]`.
+  - **P1-03 (Eliminate TARGET_EXT / 2-Axis Model):** Eliminated `TARGET_EXT` repository-wide. Decoupled Dimension A Scope (`CORE`, `EXTENSION`, `EXCLUDED`) from Dimension B Implementation Status (`CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`). Labeled all 23 tables in §7.1 and 18 Core Scope tables in §8.1–§8.18 with explicit values on both axes.
+  - **P1-04 (ExerciseType Enum Field-Level Status Breakdown):** Added value-level breakdown table in §8.8: `CURRENT_APPLIED_DATABASE` (`MCQ`, `FILL_BLANK`, `REORDER` in migration `202608140001_init`), `TARGET_SCHEMA / FUTURE_MIGRATION` (`LISTENING`, `GRAMMAR` in target `schema.prisma`), and confirmed 0 occurrences of `MATCHING`.
+  - **P1-05 & P1-06 (Re-evaluate Gates D-G1 & D-G2):** Re-evaluated Gate D-G1 (PASS based on verified actor/lifecycle alignment and audit requirements) and Gate D-G2 (PASS based on canonical statuses, 0 `TARGET_EXT`, and accurate ExerciseType split).
+  - **P1-07 (Candidate / Open Design Normalization):** Harmonized all candidate physical fields (`supersedes_id`, `assignment_brief`, `starting_unit`, `placement_history`, `lesson_type`, `isAssessmentMode`) under `TARGET DESIGN CANDIDATE` or `OPEN DESIGN REPRESENTATION`. Maintained clear boundary between locked business policies (D3, D4, D6) and open physical representations.
+  - **PlantUML Synchronization:** Verified static syntax balance (`@startuml` / `@enduml`) across all 4 `.puml` files.
+  - **Strict Boundary Enforcement:** 0 application code, 0 schema changes in `schema.prisma`, 0 migrations created/run, 0 Supabase DB writes. M2.2+ NOT started.
+- **Tests:**
+  - `T-M21-FIX-001`: PASS (Automated static syntax, reference, and boundary scan across 7 commands).
+- **Commit:**
+  - Pending human review and authorization.

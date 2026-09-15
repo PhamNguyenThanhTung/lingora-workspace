@@ -9,15 +9,11 @@
 The final product name is **Lingora**. Approved repository boundaries are:
 
 ```text
-lingora-web/
-lingora-admin/
-lingora-ai/
-├── api/
-├── ml_srs/
-└── nlp_chatbot/
+lingora-web/    # Learner Web Platform (Next.js 15, SSR Auth, UI)
+lingora-admin/  # Admin & Content Studio (Next.js 15, Prisma 6, Content Workflow)
+lingora-ai/     # Supporting AI Capability Service (Python 3.11, FastAPI, GEC)
+└── api/
 ```
-
-These are documented boundaries only; M0 does not scaffold the repositories.
 
 ## Canonical documents
 
@@ -25,13 +21,15 @@ These are documented boundaries only; M0 does not scaffold the repositories.
 |---|---|
 | [00-master-plan.md](00-master-plan.md) | Scope, priority, roadmap, workflow, risk and delivery baseline |
 | [01-architecture.md](01-architecture.md) | System boundaries, responsibilities, stack, model roles and repository layout |
-| [02-requirements.md](02-requirements.md) | Project 1/ML/NLP scope, Must/Nice outputs and report traceability |
-| [03-api-contract.md](03-api-contract.md) | AI API request/response/error compatibility contract |
-| [04-data-model.md](04-data-model.md) | Proposed schema, RLS, RPC, payload and auth data flow |
-| [05-traceability-matrix.md](05-traceability-matrix.md) | Requirement-to-architecture/data/API/test/report traceability |
-| [project-1/](project-1/) | Software Engineering report evidence |
-| [ml/](ml/) | ML report evidence |
-| [nlp/](nlp/) | NLP report evidence |
+| [02-requirements.md](02-requirements.md) | Requirements, 19 MVP functions, 15 Use Cases, 6 roles, 6-state content workflow |
+| [03-api-contract.md](03-api-contract.md) | AI API contract (health, model info, target GEC contract, compatibility) |
+| [04-data-model.md](04-data-model.md) | Phase 0 Target Data Model, 6 roles, content lifecycle, RLS, RPC |
+| [05-traceability-matrix.md](05-traceability-matrix.md) | Requirement-to-MVP-UC-data-API-UI-test traceability |
+| [06-system-analysis.md](06-system-analysis.md) | System analysis, stakeholder catalog, boundaries, sequence flows |
+| [07-data-dictionary.md](07-data-dictionary.md) | Data dictionary, attribute constraints, schema definitions |
+| [phase-0-roles-and-mvp-final.md](phase-0-roles-and-mvp-final.md) | Phase 0 final roles (6 roles), permission matrix, 19 MVP functions |
+| [phase-0-survey-requirements.md](phase-0-survey-requirements.md) | Survey requirements elicitation baseline |
+| [QUICK-REF.md](QUICK-REF.md) | High-level quick reference snapshot for development |
 
 Workflow authority lives in [AGENTS.md](../AGENTS.md), [plans/current-task.md](../plans/current-task.md), and `logs/`.
 
@@ -60,7 +58,7 @@ Workflow authority lives in [AGENTS.md](../AGENTS.md), [plans/current-task.md](.
 | `05 rui ro va trien khai` §§5.1–5.7 | `00-master-plan.md`, `03-api-contract.md`, `04-data-model.md` | Migrate risks, fallback/mock, deployment, secrets, demo and citations | ORIGINAL |
 | `archive/06 quy trinh lam viec.md` §§6.3–6.6 | `AGENTS.md`, `plans/`, `logs/` | Workflow fully represented by current framework | DUPLICATE |
 | `archive/06 quy trinh lam viec.md` §§6.1–6.2 | `00-master-plan.md`, `01-architecture.md`, this file | Product/repository/document split represented with approved Lingora names | DUPLICATE |
-| `archive/06 quy trinh lam viec.md` §§6.7–6.8 | `AGENTS.md`, `DESIGN.md` | Preserved as historical guidance; Impeccable limited to UI/UX | DUPLICATE |
+| `archive/06 quy trinh lam viec.md` §§6.7–6.8 | `AGENTS.md`, `DESIGN.md` | Preserved as historical guidance; design tokens limited to UI/UX | DUPLICATE |
 | Legacy schema comment: omitted Course/Lesson/Vocabulary/Exercise/UserProgress definitions | `04-data-model.md` | Record unavailable referenced schema rather than inventing it | MISSING |
 | `ChatMessage.naturalnessScore` vs API `grammatical_acceptability_score` | `04-data-model.md`, `03-api-contract.md` | Preserve both source definitions and flag discrepancy | CONFLICT |
 | `/health` described as Render keep-alive vs prohibition on ping-based warming | `03-api-contract.md`, `00-master-plan.md` | Preserve endpoint and risk rule; intended operational use requires decision | CONFLICT |

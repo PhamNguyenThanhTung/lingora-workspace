@@ -1,6 +1,6 @@
 # Security Checklist
 
-Quick reference for web application security. Use alongside the `security-and-hardening` skill.
+Quick reference for web application security. Use alongside the Superpowers verification and review workflow.
 
 ## Table of Contents
 

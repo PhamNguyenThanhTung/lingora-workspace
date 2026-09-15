@@ -1,0 +1,90 @@
+@startuml
+title Lingora MVP - Learning Data Model
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+hide methods
+hide stereotypes
+hide circle
+
+entity Language #EEF2FF {
+  * code : varchar <<PK>>
+}
+
+entity Profile #EEF2FF {
+  * id : uuid <<PK>>
+  --
+  role : enum
+  daily_goal_min : int
+  streak_count : int
+}
+
+entity Course #E0F2FE {
+  * id : uuid <<PK>>
+  --
+  language_code : varchar <<FK>>
+  level : varchar
+  published : boolean
+}
+
+entity Unit #E0F2FE {
+  * id : uuid <<PK>>
+  --
+  course_id : uuid <<FK>>
+  order_index : int
+}
+
+entity Lesson #E0F2FE {
+  * id : uuid <<PK>>
+  --
+  unit_id : uuid <<FK>>
+  objective : text
+  order_index : int
+}
+
+entity Exercise #DCFCE7 {
+  * id : uuid <<PK>>
+  --
+  lesson_id : uuid <<FK>>
+  type : enum
+  payload : jsonb
+}
+
+entity Vocabulary #DCFCE7 {
+  * id : uuid <<PK>>
+  --
+  language_code : varchar <<FK>>
+  term : text
+  audio_path : text
+}
+
+entity UserProgress #FAF5FF {
+  * id : uuid <<PK>>
+  --
+  user_id : uuid <<FK>>
+  lesson_id : uuid <<FK>>
+  status : enum
+  score : int
+}
+
+entity UserVocabSrs #F5F3FF {
+  * id : uuid <<PK>>
+  --
+  user_id : uuid <<FK>>
+  vocabulary_id : uuid <<FK>>
+  next_review_at : timestamp
+}
+
+Language ||--o{ Course
+Language ||--o{ Vocabulary
+Course ||--o{ Unit
+Unit ||--o{ Lesson
+Lesson ||--o{ Exercise
+Lesson }o--o{ Vocabulary : Chứa từ vựng
+Profile ||--o{ UserProgress
+Lesson ||--o{ UserProgress
+Profile ||--o{ UserVocabSrs
+Vocabulary ||--o{ UserVocabSrs
+@enduml

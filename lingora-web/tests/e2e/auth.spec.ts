@@ -6,9 +6,9 @@ const hasRegistrationCredentials = Boolean(process.env.E2E_REGISTER_EMAIL && pro
 
 test("signed-out learner is redirected without a loop", async ({ page }) => {
   test.skip(!hasSupabase, "Supabase test environment is not configured");
-  const response = await page.goto("/foundation");
+  const response = await page.goto("/");
   expect(response?.status()).toBeLessThan(400);
-  await expect(page).toHaveURL(/\/login\?next=%2Ffoundation$/);
+  await expect(page).toHaveURL(/\/login$/);
 });
 
 test("live login persists across reload and logout clears the session", async ({ page, context }) => {
@@ -17,9 +17,9 @@ test("live login persists across reload and logout clears the session", async ({
   await page.getByLabel("Email").fill(process.env.E2E_LEARNER_EMAIL!);
   await page.getByLabel("Mật khẩu").fill(process.env.E2E_LEARNER_PASSWORD!);
   await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await expect(page).toHaveURL(/\/foundation$/);
+  await expect(page).toHaveURL(/\/$/);
   await page.reload();
-  await expect(page).toHaveURL(/\/foundation$/);
+  await expect(page).toHaveURL(/\/$/);
   const cookies = await context.cookies();
   const authCookies = cookies.filter((cookie) => cookie.name.startsWith("sb-"));
   expect(authCookies.length).toBeGreaterThan(0);
@@ -43,7 +43,7 @@ test("registration creates a learner without exposing a browser token", async ({
   await page.getByLabel("Email").fill(process.env.E2E_REGISTER_EMAIL!);
   await page.getByLabel("Mật khẩu").fill(process.env.E2E_REGISTER_PASSWORD!);
   await page.getByRole("button", { name: "Đăng ký" }).click();
-  await expect(page).toHaveURL(/\/(foundation|login)(\?.*)?$/);
+  await expect(page).toHaveURL(/\/(login|\?)?$/);
   const storage = await page.evaluate(() => ({ local: Object.keys(localStorage), session: Object.keys(sessionStorage) }));
   expect(storage.local.filter((key) => key.startsWith("sb-")).length).toBe(0);
   expect(storage.session.filter((key) => key.startsWith("sb-")).length).toBe(0);

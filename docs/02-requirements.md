@@ -1,29 +1,16 @@
 # 02 - Lingora Requirements and Report Scope
 
-> **Current normative scope (ADR-010, effective 2026-08-21):** delivery is consolidated into two tracks: Software Engineering and Machine Learning/Deep Learning with Transformer GEC. GEC/T5-small is an internal Lingora processing component, not a Use Case actor; the external actors are Learner and Admin. The migrated ML-SRS and NLP-chatbot material below is historical and SUPERSEDED as future target scope. The canonical requirement tables at the end contain the effective requirements.
-
-> **Canonical status:** M0 migration baseline. For the comprehensive Requirements & System Analysis specification, complete Use Case descriptions, and flows, see [`docs/06-system-analysis.md`](06-system-analysis.md). For the implementation-grounded ERD and Data Dictionary, see [`docs/07-data-dictionary.md`](07-data-dictionary.md).
-
-## 02 — Phân tách Yêu cầu & Trọng tâm Báo cáo (bản v3 — đã siết scope theo review)
-
-> **Cập nhật so với v2:** đánh dấu rõ **[Must]** (bắt buộc, ăn điểm trực tiếp) vs **[Nice]** (làm nếu còn thời gian, cắt trước tiên) cho từng hình/bảng của ML và NLP; ML thêm phần Scheduler tách khỏi DKT/HLR; NLP thu hẹp domain còn `hotel_booking`, bỏ DialoGPT, giảm số metric, đổi tên `naturalness_score` → `grammatical_acceptability_score`.
-
-### 2.0. Nguyên tắc bóc tách
-
-Cùng 1 source code, nhưng **3 hội đồng hỏi 3 thứ khác nhau**.
-
-| Hội đồng | Câu hỏi ngầm của họ | "Nhân vật chính" trong báo cáo |
-|---|---|---|
-| Đồ án KNPM | *"Em có biết làm phần mềm đúng quy trình không?"* | Sơ đồ, tài liệu, database, UI/UX |
-| Học máy | *"Em có hiểu mô hình mình train không?"* | Kiến trúc mạng (DKT-LSTM), loss, optimizer, biểu đồ, siêu tham số, so sánh với HLR |
-| NLP | *"Em có hiểu dữ liệu ngôn ngữ không?"* | Tokenization, embedding, attention, seq2seq hội thoại, metric ngôn ngữ |
-
-Quy tắc chống trùng lặp:
-- Báo cáo KNPM: cả 2 model AI chỉ được nhắc như **service bên ngoài** (hộp đen có API contract). Không giải thích kiến trúc mạng.
-- Báo cáo ML: chỉ dùng 1 trang mô tả app (bối cảnh "vì sao Lingora cần gợi ý ôn tập cá nhân hoá"). Không vẽ Use Case, không nói về hội thoại (đó là phần NLP).
-- Báo cáo NLP: tập trung từ **văn bản hội thoại thô → tensor → phản hồi + điểm số**. Không nói về training loop chi tiết (đó là phần ML) — nhưng NLP **vẫn có phần huấn luyện riêng cho model seq2seq của chính mình**, chỉ là trình bày ở góc độ "dữ liệu ngôn ngữ" chứ không đào sâu optimizer/scheduler.
+> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
+> The controlling requirements baseline is [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md), supported by [`docs/phase-0-survey-requirements.md`](phase-0-survey-requirements.md).
+> The system encompasses **6 canonical roles** and **19 MVP functions (`MVP-01` to `MVP-19`)** spanning 5 languages (English, Vietnamese, French, Chinese, Japanese) with English pilot first.
+> Product architecture is unified: **Software Engineering is the CORE system**, and **AI is a SUPPORTING CAPABILITY** (GEC feedback for scenario writing).
+> All legacy 3-faculty breakdown text (DKT-LSTM, HLR, MultiWOZ dialogue) is **SUPERSEDED** and retained strictly as historical context.
 
 ---
+
+## [SUPERSEDED / HISTORICAL REFERENCE] Migrated source: three-faculty breakdown (v3)
+
+> **Historical Context Note:** The section below reflects the earlier academic division into 3 independent tracks before ADR-010 consolidated the scope into Software Engineering + Transformer GEC and Phase 0 established the 19 MVP functions.
 
 ### 2.1. Đồ án Kỹ nghệ Phần mềm
 
@@ -202,9 +189,37 @@ Ch8. Kết luận
 
 
 
-## M0.5 canonical requirements baseline (approved)
+## Phase 0 Canonical Functional Baseline (MVP-01 to MVP-19)
 
-This section is the approved M0.5 normalization layer. The migrated material above is preserved as historical source context; the IDs and acceptance criteria below are the canonical requirements used for traceability. No application, schema, API, or model implementation is implied by this section.
+*Source: [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md)*
+
+| ID | Chức năng MVP | Owner chính | Tiêu chí nghiệm thu tối thiểu (Acceptance Criteria) | Liên kết Use Case |
+|---|---|---|---|---|
+| **MVP-01** | Đăng ký, đăng nhập, đăng xuất và khôi phục phiên | Administrator | Learner tạo phiên hợp lệ; lỗi xác thực rõ ràng; logout kết thúc phiên | `UC-01` |
+| **MVP-02** | Onboarding mục tiêu học | Learner | Chọn ngôn ngữ, cấp độ, mục tiêu, kỹ năng ưu tiên và thời lượng; có thể sửa sau | `UC-02` |
+| **MVP-03** | Placement hoặc chọn cấp độ | Learner | Có thể bỏ qua test và chọn cấp độ; kết quả test tạo đề xuất có giải thích | `UC-03` |
+| **MVP-04** | Lộ trình học | Lesson Creator | Hiển thị Course → Unit → Lesson, trạng thái khóa/mở và lesson tiếp theo | `UC-04` |
+| **MVP-05** | Lesson ngắn | Lesson Creator | Lesson có mục tiêu, thời lượng 5–10 phút, nội dung và điều kiện hoàn thành | `UC-05`, `UC-08` |
+| **MVP-06** | Ba dạng exercise cơ bản | Lesson Creator | MCQ, FILL_BLANK, REORDER chấm đúng/sai ổn định và không ghi tiến độ lặp | `UC-05`, `UC-08` |
+| **MVP-07** | Phản hồi tức thời | Moderator | Mỗi câu có kết quả, đáp án đúng và giải thích ngắn đã được duyệt | `UC-05`, `UC-09` |
+| **MVP-08** | Tiến độ học | Learner | Lưu lesson đang học, hoàn thành, điểm và lần hoạt động gần nhất | `UC-07` |
+| **MVP-09** | Ôn tập nội dung yếu (SRS) | Learner | Nội dung sai hoặc đến hạn xuất hiện trong review; hoàn thành review cập nhật lịch | `UC-06` |
+| **MVP-10** | Daily goal và streak | Learner | Goal chỉnh được; một ngày chỉ tăng streak tối đa một lần; bỏ ngày xử lý theo quy tắc công bố | `UC-02`, `UC-07` |
+| **MVP-11** | Báo cáo cá nhân | Learner | Xem lesson hoàn thành, độ chính xác, thời gian học, streak và nội dung cần ôn | `UC-07` |
+| **MVP-12** | Quản lý nội dung | Lesson Creator | Tạo/sửa/preview draft, thêm exercise/media và gửi duyệt | `UC-08` |
+| **MVP-13** | Kiểm duyệt nội dung | Moderator | Review, yêu cầu sửa, phê duyệt/từ chối và lưu lý do | `UC-09`, `UC-10` |
+| **MVP-14** | Quản trị tài khoản và quyền | Administrator | Tạo/khóa tài khoản, gán/thu hồi role và lưu audit | `UC-11` |
+| **MVP-15** | Báo cáo vận hành | Administrator | Lọc theo thời gian/ngôn ngữ/course; xem active users, completion, retention và content errors | `UC-12` |
+| **MVP-16** | Hỗ trợ người dùng | Operations Staff | Tạo, phân công, cập nhật và đóng ticket; truy cập dữ liệu tối thiểu | `UC-14` |
+| **MVP-17** | Quản lý cohort tùy chọn | Organizational Manager | Khi module bật: tạo nhóm, thêm thành viên, gán course và xem báo cáo tổng hợp | `UC-15` |
+| **MVP-18** | Trạng thái trải nghiệm chuẩn | Mọi owner | Các màn chính có loading, empty, error và success; dùng được trên mobile và desktop | Cross-cutting UI |
+| **MVP-19** | Quyền riêng tư và audit | Administrator | Kiểm tra quyền ở server/data layer; hành động nhạy cảm có actor, thời gian và đối tượng | `UC-11`, `UC-13` |
+
+---
+
+## Detailed Software Engineering & ML Requirements
+
+This section contains the detailed technical engineering requirements (`P1-FR-*`, `P1-NFR-*`, `ML-GEC-*`) mapped to the MVP functions above. No application, schema, API, or model implementation is implied by this section.
 
 ### M0.5 semantic decisions
 
@@ -242,8 +257,8 @@ This section is the approved M0.5 normalization layer. The migrated material abo
 | P1-FR-013 | Must | Learner can complete word-level `LISTENING` exercises. | Audio for the referenced vocabulary plays and the submitted answer is graded; the payload references `vocabularyId` and never a free-form URL, so read authorization remains with the existing Storage RLS policy; unavailable or unauthorized audio produces a recoverable empty/error state without a crash. | Exercise unit/E2E tests, Storage policy test |
 | P1-FR-014 | Must | Learner can view and set a daily study goal. | `Profile.dailyGoalMin` is readable and writable from the profile screen and scoped to the authenticated learner; a negative value is rejected by existing server-side validation; no schema, grant, or policy change is required because the M1.3 write path already grants and validates this field. | Profile E2E, Data/RLS tests |
 | P1-FR-015 | Must | Learner can enable a local daily study reminder. | When the current local day has no qualifying activity, an in-app reminder is presented within the learner-chosen window — never claimed as an exact time — derived client-side from `dailyGoalMin` and `lastQualifyingActivityDate`; the reminder appears when the learner opens the application inside that window and is not delivered while the application is closed; no server-side delivery, push subscription, device token, or reminder entity exists. | Web unit test, manual verification |
-| P1-FR-016 | Must | Learner can complete a placement test and receive a deterministic CEFR/course recommendation. | The system loads a versioned question set, validates a complete or explicitly handled partial submission, applies documented scoring, threshold, tie-break and fallback rules, maps the result to a supported CEFR/course level, and prevents the learner from directly editing the recorded result. | Placement policy unit tests, data/RLS tests, Web E2E |
-| P1-FR-017 | Must | Learner can view private achievements and badges earned from qualifying learning milestones. | The system evaluates a documented badge catalog and deterministic award rules, grants each qualifying badge idempotently, exposes awards only to their owner and authorized Admin operations, provides no public leaderboard, and never blocks the core learning flow when award evaluation fails. | Badge rule unit tests, data/RLS tests, Web E2E |
+| P1-FR-016 | Must | Learner can complete an exercise-based placement test (~30 questions) to receive a Starting Unit recommendation, or skip/retake. | The system loads a versioned ~30-question set; supports Skip (defaults to Starting Unit = Unit 1) and Retake from Profile; calculates score and maps to Starting Unit via approved curriculum placement rule (OD-PLACEMENT-MAPPING: APPROVED MAPPING A [0–7: U1, 8–12: U2, 13–17: U3, 18–22: U4, 23–26: U5, 27–30: U6]); does not claim international CEFR certification; prevents learner from directly editing the recorded result. | Placement policy unit tests, data/RLS tests, Web E2E |
+| P1-FR-017 | Nice / P2 | [OPTIONAL / DEFERRED FROM MUST] Learner can view private achievements and badges earned from qualifying learning milestones. | The system evaluates a documented badge catalog and deterministic award rules, grants each qualifying badge idempotently, exposes awards only to their owner and authorized Admin operations, provides no public leaderboard, and never blocks the core learning flow when award evaluation fails. Deferred from Core MVP (retained for future gamification expansion). | Badge rule unit tests, data/RLS tests, Web E2E |
 | P1-NFR-001 | Must | API and data access preserve the documented security boundary. | Learners can access only own learner data; AI Server receives history but does not directly own/write primary Supabase data; ADMIN-only operations are enforced server-side. | RLS/security checklist |
 | P1-NFR-002 | Must | The primary learning flow and deterministic SRS remain usable when GEC is unavailable. | Course, lesson, progress and vocabulary review remain available; scenario writing shows a recoverable model-unavailable state; no crash or indefinite spinner occurs. | Failure-mode E2E |
 | P1-NFR-003 | Must | AI contract migration is explicit and backward-compatible until consumers move. | JSON remains snake_case; successful GEC responses include `model_version` and `is_mock`; legacy endpoints remain compatibility surfaces until reference scans and regression tests prove no consumer remains. | Contract and compatibility tests |

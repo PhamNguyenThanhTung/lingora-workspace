@@ -1,0 +1,106 @@
+@startuml
+title LINGORA - Use Case Overview (Phase 0 MVP)
+left to right direction
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+skinparam note {
+  BackgroundColor #F8FAFC
+  BorderColor #64748B
+  FontColor #334155
+  FontSize 10
+}
+
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #374151
+}
+
+skinparam usecase {
+  BackgroundColor #F9FAFB
+  BorderColor #4B5563
+}
+
+skinparam rectangle {
+  BorderColor #9CA3AF
+}
+
+' --- ACTORS ---
+actor Learner
+actor "Lesson Creator" as Creator
+actor Moderator
+actor Administrator as Admin
+actor "Operations Staff" as Ops
+actor "Organizational Manager" as Org
+
+' --- SYSTEM BOUNDARY ---
+rectangle "Lingora Web Learning System" {
+
+  package "Core Learning" #F0FDF4 {
+    usecase "UC-01\nAuthenticate & Manage Session" as UC01
+    usecase "UC-02\nConfigure Goals & Study Time" as UC02
+    usecase "UC-03\nTake Placement Test" as UC03
+    usecase "UC-04\nBrowse Learning Path" as UC04
+    usecase "UC-05\nComplete Lesson Exercises" as UC05
+    usecase "UC-06\nSpaced Repetition Review (SRS)" as UC06
+    usecase "UC-07\nTrack Progress & Streak" as UC07
+  }
+
+  package "Content Workflow" #EFF6FF {
+    usecase "UC-08\nCreate & Edit Lesson Draft" as UC08
+    usecase "UC-09\nReview & Approve Content" as UC09
+    usecase "UC-10\nPublish Approved Content" as UC10
+
+    note right of UC09
+      <b>Nguyên tắc 4:</b>
+      Soạn giả không tự duyệt bài của mình
+      {creator != moderator}
+    end note
+  }
+
+  package "Administration & Operations" #F8FAFC {
+    usecase "UC-11\nManage Accounts & Roles" as UC11
+    usecase "UC-12\nView System Reports" as UC12
+    usecase "UC-13\nView & Audit Security Logs" as UC13
+    usecase "UC-14\nHandle Support Tickets" as UC14
+  }
+
+  package "Optional Module: Cohort Management" #FAF5FF {
+    usecase "UC-15\nManage Cohorts & Group Progress" as UC15
+    note right of UC15
+      <b>Nguyên tắc 7:</b>
+      Phân hệ tùy chọn
+      (chỉ bật cho tổ chức/cohort)
+    end note
+  }
+}
+
+' --- ASSOCIATIONS ---
+Learner -- UC01
+Learner -- UC02
+Learner -- UC03
+Learner -- UC04
+Learner -- UC05
+Learner -- UC06
+
+UC05 ..> UC07 : <<include>>
+UC06 ..> UC07 : <<include>>
+
+Creator -- UC08
+Moderator -- UC09
+Moderator -- UC10
+Admin -- UC10
+
+Admin -- UC11
+Admin -- UC12
+Admin -- UC13
+
+Ops -- UC14
+
+Org -- UC15
+@enduml
+
+

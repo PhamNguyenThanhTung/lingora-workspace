@@ -1,8 +1,24 @@
 # 04 - Lingora Data Model
 
-> **Current data decision (scope aligned 2026-08-23):** retain the applied 17-model Prisma baseline, migrations, RLS, RPC and Storage unchanged until the in-scope UC-09/UC-10 implementation design is separately approved. The reporting view classifies 15 models as active business-flow models and `ChatSession`/`ChatMessage` as 2 legacy/deprecated physical models pending a separately approved cleanup. GEC is internal processing and its output is transient in MVP; no writing_submissions, exercise_options or vocabulary-notebook entity is approved. Persistence for the official UC-09/UC-10 requirements is not part of the current physical count and must be added through an approved schema/API/RLS task. Keep UserVocabSrs, ReviewLog and record_review; call the scheduling policy SM-2 only after an implementation audit proves compatibility. recallProbability remains for schema compatibility and is not evidence that a learned SRS remains in the future target.
+> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
+> Target database schema aligns with [`docs/plantuml/erd-mvp-learning.puml`](plantuml/erd-mvp-learning.puml) and Phase 0 role/content specifications.
+> Historical migrations (`202608140001_init`, `202608140002_auth_rls_storage_record_review`, `202608140003_storage_two_bucket_size_enforcement`) and Git history are strictly preserved for audit.
 
-> **Canonical status:** M0 migration of the proposed legacy schema, SQL, RLS, RPC, Scheduler boundary and exercise payloads. Source wording/code is preserved. For the authoritative implementation-grounded ERD, schema dictionary, attribute constraints, and applied database baseline, see [`docs/07-data-dictionary.md`](07-data-dictionary.md).
+>
+> ### Current Schema vs Target Phase 0 Schema Evolution Strategy
+>
+> | Classification | Models | Notes & Target Action |
+> |---|---|---|
+> | **Models to Keep** | `Language`, `Course`, `CourseTranslation`, `Lesson`, `LessonTranslation`, `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary`, `Exercise`, `UserProgress`, `UserVocabSrs`, `ReviewLog` (12 models) | Core learning, vocabulary, exercise, and deterministic SRS foundation. Retain intact. |
+> | **Models to Extend** | `Profile` (1 model) | Current: `role: LEARNER \| ADMIN`. Target: support 6 canonical roles (`ADMINISTRATOR`, `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `LEARNER`, `ORGANIZATIONAL_MANAGER`) via backward-compatible enum extension or role-mapping junction; add optional cohort reference. |
+> | **Models to Extend (Workflow)** | `Course`, `Lesson` | Target: Content workflow status (`DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`), `created_by`, `reviewed_by` audit fields. |
+> | **Legacy Compatibility** | `ChatScenario`, `ChatScenarioTranslation` (2 models) | Retain for scenario writing prompts context (`UC-06` / `P1-FR-007`). |
+> | **Models to Deprecate** | `ChatSession`, `ChatMessage` (2 models) | Retained as physical models for backward compatibility; deprecated pending migration cleanup. |
+> | **Target Models to Introduce (Future)** | `Cohort`, `CohortMember`, `SupportTicket`, `AuditLog` | Required for Org Manager (`UC-15`), Ops Staff (`UC-14`), and System Audit (`UC-13`). Not implemented in Phase 0 Reconciliation; scheduled for subsequent milestones. |
+
+---
+
+## [SUPERSEDED / HISTORICAL REFERENCE] Migrated source: database design
 
 ### 1.3. Thiết kế Database
 
@@ -13,9 +29,7 @@
 | **UI i18n** | Nhãn nút, thông báo lỗi | Next.js i18n message catalogs (`vi`/`en`) — **không** nằm trong DB |
 | **Content i18n** | Tiêu đề bài học, nghĩa của từ, tiêu đề kịch bản chat | Bảng `*_translations` riêng, khoá `(entity_id, locale)` |
 
-#### `schema.prisma` (bản dự kiến v2 — thay khối GEC bằng SRS + Chat)
-
-> **Scope Gap Review clarification (approved 2026-08-14; amended by ADR-006 on 2026-08-15):** the following block is preserved legacy source. Its `MATCHING` and `WRITING` enum/examples remain superseded by ADR-002/ADR-003 and the applied M1.2 schema. The canonical exercise set is `MCQ`, `FILL_BLANK`, `REORDER`, `GRAMMAR`, and word-level `LISTENING`. ADR-006 restores `LISTENING` at **word level only** — audio belongs to a vocabulary row and reuses the existing `vocabulary/{vocabularyId}/` Storage path. The legacy sentence-level `LISTENING` payload example further down this block stays superseded, because sentence-level audio was explicitly rejected.
+#### `schema.prisma` (Applied M1.2/M1.3 runtime baseline)
 
 ```prisma
 generator client {
@@ -25,22 +39,21 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")      // Supabase Shared Pooler / Session mode (port 5432)
-  // DIRECT_URL intentionally unset: direct connection requires unavailable IPv6
 }
 
-enum Role           { STUDENT ADMIN }
+enum Role           { LEARNER ADMIN }
 enum Cefr           { A1 A2 B1 B2 C1 C2 }
-enum ExerciseType   { MCQ FILL_BLANK REORDER MATCHING LISTENING WRITING }
+enum ExerciseType   { MCQ FILL_BLANK REORDER }
 enum ProgressStatus { NOT_STARTED IN_PROGRESS COMPLETED }
 enum ChatRole        { USER AI }
 
-/// Danh mục ngôn ngữ (giữ nguyên bản gốc)
+/// Danh mục ngôn ngữ
 model Language {
   code        String  @id @db.VarChar(8)
   name        String
-  nativeName  String
-  isLearnable Boolean @default(false)
-  isUiLocale  Boolean @default(false)
+  nativeName  String  @map("native_name")
+  isLearnable Boolean @default(false) @map("is_learnable")
+  isUiLocale  Boolean @default(false) @map("is_ui_locale")
 
   courses      Course[]
   vocabularies Vocabulary[]
@@ -50,14 +63,14 @@ model Language {
 model Profile {
   id             String   @id @db.Uuid
   email          String   @unique
-  displayName    String?
-  avatarUrl      String?
-  role           Role     @default(STUDENT)
-  uiLocale       String   @default("vi") @db.VarChar(8)
-  nativeLangCode String   @default("vi") @db.VarChar(8)
-  dailyGoalMin   Int      @default(15)
-  streakCount    Int      @default(0)
-  createdAt      DateTime @default(now())
+  displayName    String?  @map("display_name")
+  avatarUrl      String?  @map("avatar_url")
+  role           Role     @default(LEARNER)
+  uiLocale       String   @default("vi") @map("ui_locale") @db.VarChar(8)
+  nativeLangCode String   @default("vi") @map("native_lang_code") @db.VarChar(8)
+  dailyGoalMin   Int      @default(15) @map("daily_goal_min")
+  streakCount    Int      @default(0) @map("streak_count")
+  createdAt      DateTime @default(now()) @map("created_at")
 
   progress     UserProgress[]
   srsCards     UserVocabSrs[]

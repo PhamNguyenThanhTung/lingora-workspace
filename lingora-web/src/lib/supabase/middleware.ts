@@ -29,18 +29,17 @@ export async function updateSession(request: NextRequest) {
   });
 
   const { data: { user } } = await supabase.auth.getUser();
-  const protectedRoute = request.nextUrl.pathname.startsWith("/foundation");
+  const isHome = request.nextUrl.pathname === "/";
   const authRoute = request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/register";
 
-  if (protectedRoute && !user) {
+  if (isHome && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("next", "/foundation");
     return NextResponse.redirect(url);
   }
   if (authRoute && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/foundation";
+    url.pathname = "/";
     url.search = "";
     return NextResponse.redirect(url);
   }

@@ -1,3 +1,7 @@
+> [!WARNING]
+> **[HISTORICAL / SUPERSEDED — LEGACY 10-UC CATALOG]**
+> Tài liệu này thuộc tập báo cáo học thuật đợt 1 (legacy 10 Use Cases, 2 vai trò Learner/Admin). Toàn bộ danh mục Use Case chuẩn mực của dự án Lingora hiện đã được nâng cấp thành **14 Use Cases Cốt lõi (Core MVP UC-01..UC-14) & 1 Phân hệ Mở rộng Tùy chọn (Optional B2B Module UC-15)** phủ 6 vai trò canonical tại [06-system-analysis.md](../06-system-analysis.md) và [05-traceability-matrix.md](../05-traceability-matrix.md). Giữ tài liệu này chỉ với mục đích tham khảo lịch sử đồ án.
+
 # TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI
 ## KHOA CÔNG NGHỆ THÔNG TIN
 
@@ -17,7 +21,7 @@ Lingora là nền tảng Web hỗ trợ người học tiếng Anh theo một qu
 ## 1.1. Mô tả bài toán
 
 Người học ngoại ngữ khi tự học thường gặp phải ba rào cản lớn gắn liền với nhau:
-1. **Nhanh quên từ vựng:** Người học tiếp thu từ mới một cách thụ động, thiếu chu kỳ ôn tập củng cố khoa học dẫn đến việc quên đến 80% kiến thức chỉ sau 24–48 giờ (theo đường cong quên lãng Ebbinghaus).
+1. **Nhanh quên từ vựng:** Người học tiếp thu từ mới một cách thụ động, thiếu chu kỳ ôn tập củng cố (đường cong quên lãng Ebbinghaus — nghiên cứu trí nhớ âm tiết vô nghĩa năm 1885 — chỉ dùng làm cảm hứng lịch sử cho SRS, không phải bằng chứng cho người dùng Lingora; bằng chứng thực tế: 15/15 phản hồi khảo sát N=15 cho biết hay quên từ đã học).
 2. **Hạn chế trong phản hồi kỹ năng viết:** Khi tự luyện viết câu, người học không có công cụ đối chiếu, phát hiện và giải thích chi tiết các lỗi sai ngữ pháp, cấu trúc câu hoặc cách dùng từ.
 3. **Đứt gãy động lực và thói quen học tập:** Người học dễ nản lòng và từ bỏ sau 1–2 tuần do thiếu hệ thống theo dõi tiến độ trực quan, thiếu cơ chế duy trì chuỗi ngày học (Streak) và bài học phân mảnh quá dài.
 
@@ -41,17 +45,17 @@ Bộ dữ liệu khảo sát 24 câu hỏi chi tiết ghi nhận 15 phản hồi
 - **86,7% (13/15)** từng bỏ học hoặc học không đều do thiếu phương pháp và mất động lực.
 - **80,0% (12/15)** đánh giá mức độ cấp thiết của việc tự động xác định từ và thời điểm ôn tập ở mức 4–5 sao (Điểm trung bình: **4,13 / 5,0**).
 - **66,7% (10/15)** yêu cầu công cụ kiểm tra ngữ pháp và giải thích chi tiết lỗi sai khi viết câu.
-- **80,0%** người học có mục tiêu phục vụ công việc và giao tiếp thực tế; **73,3%** ưu tiên định dạng bài tập điền từ và trắc nghiệm.
+- **80,0% (12/15)** người học có mục tiêu phục vụ công việc và giao tiếp thực tế; **73,3% (11/15)** ưu tiên định dạng bài tập điền từ và trắc nghiệm.
 
 ## 1.3. Kết quả nghiên cứu người dùng
 
 | Nhóm nhu cầu quan sát | Tỷ lệ khảo sát / Tần suất | Ý nghĩa đối với thiết kế hệ thống Lingora |
 |---|---|---|
-| Quên từ vựng nhanh chóng | 100% khảo sát (6/6 phỏng vấn) | Xây dựng kho từ vựng theo bài và thuật toán ôn tập SRS (UC-02, UC-05) |
-| Cần lịch nhắc nhở ôn tập tự động | 80,0% đánh giá 4-5 sao (4,13/5) | Tự động tính toán khoảng cách ôn tập theo thuật toán SM-2 (UC-05, UC-08) |
-| Đứt gãy thói quen, mất động lực | 86,7% khảo sát (5/6 phỏng vấn) | Thiết lập chuỗi Streak, mục tiêu ngày và huy hiệu thành tích (UC-07, UC-10) |
+| Quên từ vựng nhanh chóng | 100% khảo sát (15/15); 6/6 phỏng vấn định tính cùng nêu (xem evidence-register) | Xây dựng kho từ vựng theo bài và thuật toán ôn tập SRS (UC-02, UC-05) |
+| Cần lịch nhắc nhở ôn tập tự động | 80,0% đánh giá 4-5 sao (12/15; 4,13/5) | Tự động tính toán khoảng cách ôn tập theo thuật toán SRS xác định Policy B — không gọi SM-2 khi chưa có audit RPC (UC-05, UC-08) |
+| Đứt gãy thói quen, mất động lực | 86,7% khảo sát (13/15); 5/6 phỏng vấn định tính cùng nêu (xem evidence-register) | Thiết lập chuỗi Streak, mục tiêu ngày và huy hiệu thành tích (UC-07, UC-10) |
 | Cần định vị trình độ bài học | 93,3% mong muốn đề xuất nội dung | Xây dựng bài kiểm tra đầu vào Placement Test (UC-09) |
-| Cần sửa lỗi ngữ pháp câu viết | 66,7% khảo sát (6/6 phỏng vấn) | Tích hợp mô-đun kiểm tra ngữ pháp nội bộ sửa lỗi câu viết theo tình huống (UC-06) |
+| Cần sửa lỗi ngữ pháp câu viết | 66,7% khảo sát (10/15); 6/6 phỏng vấn định tính cùng nêu (xem evidence-register) | Tích hợp mô-đun kiểm tra ngữ pháp nội bộ sửa lỗi câu viết theo tình huống (UC-06) |
 | Bài tập tương tác đa dạng | 73,3% điền từ, 60% trắc nghiệm | Thiết kế engine bài tập tương tác đa dạng dạng thức (UC-03) |
 
 ## 1.5. Phạm vi, Stakeholder và Actor hệ thống
@@ -89,12 +93,27 @@ Hệ thống xác định rõ **2 Actor ngoài hệ thống** duy nhất:
 - **Khả năng tiếp cận & Trải nghiệm (Usability & Accessibility):** Giao diện Responsive tối ưu trên mọi kích thước màn hình (Desktop, Tablet, Mobile); hỗ trợ phím tắt và đa ngôn ngữ (tiếng Việt & tiếng Anh).
 - **Quyền riêng tư (Privacy):** Kết quả sửa lỗi ngữ pháp xử lý tạm thời (transient) bảo vệ quyền riêng tư; hệ thống huy hiệu cá nhân (Private by default) không áp lực bảng xếp hạng công khai.
 
-## 1.8. User Story và Tiêu chuẩn Nghiệm thu Tiêu biểu
+## 1.8. User Story và Tiêu chuẩn Nghiệm thu (10 Use Cases)
 
 ### US-01 - Xác thực và Quản lý phiên
 - **User Story:** Là Learner hoặc Admin, tôi muốn đăng ký, đăng nhập và quản lý phiên an toàn để truy cập đúng các chức năng học tập hoặc quản trị tương ứng.
 - **Acceptance Criteria:** Đăng nhập thành công thiết lập phiên qua httpOnly cookie; mật khẩu được băm an toàn; người dùng chưa đăng nhập bị chặn truy cập luồng học; đăng xuất xóa sạch phiên làm việc.
 - **Trace:** `UC-01`.
+
+### US-02 - Khám phá và Học bài học theo lộ trình
+- **User Story:** Là Learner, tôi muốn duyệt các khóa học, bài học đã xuất bản và học từ vựng kèm audio phát âm chuẩn theo lộ trình sư phạm.
+- **Acceptance Criteria:** Chỉ hiển thị nội dung đã xuất bản (`isPublished=true`); thứ tự bài học ổn định theo cấp độ CEFR; audio phát âm chuẩn có thể phát lại; giao diện có trạng thái phục hồi an toàn khi gặp sự cố mạng.
+- **Trace:** `UC-02`.
+
+### US-03 - Làm bài tập tương tác và đánh giá kết quả
+- **User Story:** Là Learner, tôi muốn làm các bài tập trắc nghiệm (MCQ), điền từ (FILL_BLANK), sắp xếp câu (REORDER) và luyện nghe để củng cố kiến thức bài học.
+- **Acceptance Criteria:** Dữ liệu bài nộp được kiểm tra hợp lệ; hiển thị kết quả đúng/sai và giải thích ngắn tức thì; cập nhật tiến độ bài học vào `UserProgress` một cách nguyên tử; không ghi nhận tiến độ lặp lại sai lệch.
+- **Trace:** `UC-03`.
+
+### US-04 - Quản trị nội dung học tập và xuất bản (CMS)
+- **User Story:** Là Admin hoặc Lesson Creator, tôi muốn tạo mới, chỉnh sửa, tải lên media và xuất bản khóa học, bài học, kịch bản để cung cấp học liệu chuẩn cho người học.
+- **Acceptance Criteria:** Chỉ tài khoản có quyền hợp lệ mới được thao tác; kiểm soát trạng thái nội dung theo quy trình (`Draft → In Review → Approved → Published`); kiểm tra định dạng và kích thước media an toàn; lưu vết audit log cho các thao tác nhạy cảm.
+- **Trace:** `UC-04`.
 
 ### US-05 - Ôn tập từ vựng thuật toán ôn tập lặp lại ngắt quãng SRS
 - **User Story:** Là Learner, tôi muốn xem danh sách các từ vựng đến hạn và thực hiện ôn tập để củng cố trí nhớ dài hạn mà không cần tự tính toán lịch học.
@@ -106,14 +125,24 @@ Hệ thống xác định rõ **2 Actor ngoài hệ thống** duy nhất:
 - **Acceptance Criteria:** Người học nhập câu tiếng Anh, hệ thống gọi mô-đun kiểm tra ngữ pháp nội bộ để đối chiếu và trả về câu đã sửa lỗi. Hỗ trợ tùy chọn nhập giọng nói qua Web Speech API; hiển thị vị trí lỗi sai trực quan (diff); hiển thị giải thích thân thiện và hỗ trợ phát âm câu sửa.
 - **Trace:** `UC-06`.
 
+### US-07 - Theo dõi tiến độ, Chuỗi Streak và Mục tiêu ngày
+- **User Story:** Là Learner, tôi muốn theo dõi tỷ lệ hoàn thành khóa học, chuỗi ngày học liên tục (Streak) và thiết lập mục tiêu thời lượng học hằng ngày để duy trì động lực.
+- **Acceptance Criteria:** Cập nhật chính xác tỷ lệ hoàn thành bài học; chuỗi Streak tăng tối đa 1 lần mỗi ngày theo múi giờ địa phương `Asia/Ho_Chi_Minh`; bỏ lỡ ngày học sẽ xử lý theo quy tắc công bố; mục tiêu phút học hằng ngày (`dailyGoalMin`) có thể tùy chỉnh linh hoạt trong hồ sơ cá nhân.
+- **Trace:** `UC-07`.
+
+### US-08 - Nhắc nhở học tập thông minh trong ứng dụng
+- **User Story:** Là Learner, tôi muốn nhận thông báo nhắc nhở nhẹ nhàng khi mở ứng dụng nếu chưa hoàn thành mục tiêu học trong ngày.
+- **Acceptance Criteria:** Hiển thị thông báo in-app tinh tế khi người học mở web app trong khung giờ đã cài đặt; không sử dụng push notification bên ngoài làm phiền; người dùng có thể đóng hoặc tùy chỉnh khung giờ nhắc nhở dễ dàng.
+- **Trace:** `UC-08`.
+
 ### US-09 - Kiểm tra định vị trình độ đầu vào (Placement Test)
 - **User Story:** Là Learner mới, tôi muốn làm bài kiểm tra ngắn gồm 15–20 câu hỏi đa kỹ năng để hệ thống tự động xác định trình độ CEFR (A1–B2) và phân bổ lộ trình học phù hợp.
-- **Acceptance Criteria:** Ngân hàng câu hỏi phân bố đều các cấp độ; hệ thống tự động chấm điểm và xác định trình độ ngay khi hoàn thành; lưu kết quả vào hồ sơ và gợi ý bài học xuất phát tương ứng.
+- **Acceptance Criteria:** Ngân hàng câu hỏi phân bố đều các cấp độ; hệ thống tự động chấm điểm và xác định trình độ ngay khi hoàn thành; lưu kết quả vào hồ sơ và gợi ý bài học xuất phát tương ứng; người học có thể bỏ qua bài test nếu muốn tự chọn cấp độ.
 - **Trace:** `UC-09`.
 
 ### US-10 - Hệ thống thành tích và Huy hiệu cá nhân
 - **User Story:** Là Learner, tôi muốn nhận huy hiệu khi đạt các mốc học tập (hoàn thành bài học đầu tiên, chuỗi Streak 7 ngày, ôn tập 50 từ vựng) để ghi nhận nỗ lực và duy trì động lực học.
-- **Acceptance Criteria:** Hệ thống tự động kiểm tra điều kiện và mở khóa huy hiệu; hiển thị thông báo chúc mừng trực quan; bộ sưu tập huy hiệu được lưu trữ an toàn và hiển thị trang trọng trong trang cá nhân.
+- **Acceptance Criteria:** Hệ thống tự động kiểm tra điều kiện và mở khóa huy hiệu; hiển thị thông báo chúc mừng trực quan; bộ sưu tập huy hiệu được lưu trữ an toàn và hiển thị trang trọng trong trang cá nhân mà không tạo áp lực bảng xếp hạng công khai.
 - **Trace:** `UC-10`.
 
 # PHẦN II. PHÂN TÍCH HỆ THỐNG

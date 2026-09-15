@@ -7,9 +7,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------------------------------------------------------
+// Phase 0 Canonical Roles (ADR-014 & docs/phase-0-roles-and-mvp-final.md)
+// ---------------------------------------------------------------------------
 enum Role {
+  ADMINISTRATOR
+  LESSON_CREATOR
+  MODERATOR
+  OPERATIONS_STAFF
   LEARNER
-  ADMIN
+  ORGANIZATIONAL_MANAGER
+}
+
+// ---------------------------------------------------------------------------
+// Phase 0 Content Lifecycle (Draft -> In Review -> Changes Requested -> Approved -> Published -> Archived)
+// ---------------------------------------------------------------------------
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  PUBLISHED
+  ARCHIVED
 }
 
 enum Cefr {
@@ -33,10 +52,9 @@ enum ProgressStatus {
   COMPLETED
 }
 
-enum ChatRole {
-  USER
-  AI
-}
+// ---------------------------------------------------------------------------
+// Core Learning Domain Models
+// ---------------------------------------------------------------------------
 
 model Language {
   code        String  @id @db.VarChar(8)
@@ -48,6 +66,7 @@ model Language {
   uiProfiles             Profile[]                 @relation("ProfileUiLocale")
   nativeProfiles         Profile[]                 @relation("ProfileNativeLanguage")
   courses                Course[]
+  unitTranslations       UnitTranslation[]         @relation("UnitTranslationLocale")
   vocabularies           Vocabulary[]
   courseTranslations     CourseTranslation[]       @relation("CourseTranslationLocale")
   lessonTranslations     LessonTranslation[]       @relation("LessonTranslationLocale")
@@ -63,6 +82,7 @@ model Profile {
   displayName                String?   @map("display_name")
   avatarUrl                  String?   @map("avatar_url")
   role                       Role      @default(LEARNER)
+  assignedRoles              Role[]    @default([LEARNER]) @map("assigned_roles")
   uiLocale                   String    @default("vi") @map("ui_locale") @db.VarChar(8)
   nativeLangCode             String    @default("vi") @map("native_lang_code") @db.VarChar(8)
   dailyGoalMin               Int       @default(15) @map("daily_goal_min")
@@ -71,29 +91,43 @@ model Profile {
   lastQualifyingActivityDate DateTime? @map("last_qualifying_activity_date") @db.Date
   createdAt                  DateTime  @default(now()) @map("created_at")
 
-  uiLanguage     Language       @relation("ProfileUiLocale", fields: [uiLocale], references: [code], onDelete: Restrict, onUpdate: Cascade)
-  nativeLanguage Language       @relation("ProfileNativeLanguage", fields: [nativeLangCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
-  progress       UserProgress[]
-  srsCards       UserVocabSrs[]
-  chatSessions   ChatSession[]
+  uiLanguage      Language       @relation("ProfileUiLocale", fields: [uiLocale], references: [code], onDelete: Restrict, onUpdate: Cascade)
+  nativeLanguage  Language       @relation("ProfileNativeLanguage", fields: [nativeLangCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
+  createdCourses  Course[]       @relation("CourseCreator")
+  reviewedCourses Course[]       @relation("CourseReviewer")
+  createdLessons  Lesson[]       @relation("LessonCreator")
+  reviewedLessons Lesson[]       @relation("LessonReviewer")
+  progress        UserProgress[]
+  srsCards        UserVocabSrs[]
+  auditLogs       AuditLog[]
 
   @@map("profiles")
 }
 
 model Course {
-  id           String   @id @default(uuid()) @db.Uuid
-  languageCode String   @map("language_code") @db.VarChar(8)
+  id           String        @id @default(uuid()) @db.Uuid
+  languageCode String        @map("language_code") @db.VarChar(8)
   cefr         Cefr
-  orderIndex   Int      @map("order_index")
-  isPublished  Boolean  @default(false) @map("is_published")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  orderIndex   Int           @map("order_index")
+  status       ContentStatus @default(DRAFT)
+  isPublished  Boolean       @default(false) @map("is_published")
+  creatorId    String?       @map("creator_id") @db.Uuid
+  reviewerId   String?       @map("reviewer_id") @db.Uuid
+  submittedAt  DateTime?     @map("submitted_at")
+  reviewedAt   DateTime?     @map("reviewed_at")
+  publishedAt  DateTime?     @map("published_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
 
   language     Language            @relation(fields: [languageCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
+  creator      Profile?            @relation("CourseCreator", fields: [creatorId], references: [id], onDelete: SetNull)
+  reviewer     Profile?            @relation("CourseReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
   translations CourseTranslation[]
+  units        Unit[]
   lessons      Lesson[]
 
   @@index([languageCode, orderIndex])
+  @@index([status])
   @@map("courses")
 }
 
@@ -110,21 +144,61 @@ model CourseTranslation {
   @@map("course_translations")
 }
 
+model Unit {
+  id         String   @id @default(uuid()) @db.Uuid
+  courseId   String   @map("course_id") @db.Uuid
+  orderIndex Int      @map("order_index")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  translations UnitTranslation[]
+  lessons      Lesson[]
+
+  @@unique([courseId, orderIndex])
+  @@map("units")
+}
+
+model UnitTranslation {
+  unitId      String  @map("unit_id") @db.Uuid
+  locale      String  @db.VarChar(8)
+  title       String
+  description String?
+
+  unit     Unit     @relation(fields: [unitId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  language Language @relation("UnitTranslationLocale", fields: [locale], references: [code], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([unitId, locale])
+  @@map("unit_translations")
+}
+
 model Lesson {
-  id          String   @id @default(uuid()) @db.Uuid
-  courseId    String   @map("course_id") @db.Uuid
-  orderIndex  Int      @map("order_index")
-  isPublished Boolean  @default(false) @map("is_published")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id          String        @id @default(uuid()) @db.Uuid
+  courseId    String        @map("course_id") @db.Uuid
+  unitId      String?       @map("unit_id") @db.Uuid
+  orderIndex  Int           @map("order_index")
+  status      ContentStatus @default(DRAFT)
+  isPublished Boolean       @default(false) @map("is_published")
+  objective   String?
+  creatorId   String?       @map("creator_id") @db.Uuid
+  reviewerId  String?       @map("reviewer_id") @db.Uuid
+  submittedAt DateTime?     @map("submitted_at")
+  reviewedAt  DateTime?     @map("reviewed_at")
+  publishedAt DateTime?     @map("published_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
   course       Course              @relation(fields: [courseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  unit         Unit?               @relation(fields: [unitId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  creator      Profile?            @relation("LessonCreator", fields: [creatorId], references: [id], onDelete: SetNull)
+  reviewer     Profile?            @relation("LessonReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
   translations LessonTranslation[]
   vocabulary   LessonVocabulary[]
   exercises    Exercise[]
   progress     UserProgress[]
 
   @@unique([courseId, orderIndex])
+  @@index([status])
   @@map("lessons")
 }
 
@@ -193,6 +267,8 @@ model Exercise {
   type       ExerciseType
   payload    Json
   orderIndex Int          @map("order_index")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
 
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
@@ -251,6 +327,10 @@ model ReviewLog {
   @@map("review_logs")
 }
 
+// ---------------------------------------------------------------------------
+// Scenario Context (for UC-06 Scenario Writing practice)
+// ---------------------------------------------------------------------------
+
 model ChatScenario {
   id           String   @id @default(uuid()) @db.Uuid
   code         String   @unique
@@ -259,7 +339,6 @@ model ChatScenario {
   createdAt    DateTime @default(now()) @map("created_at")
 
   translations ChatScenarioTranslation[]
-  sessions     ChatSession[]
 
   @@map("chat_scenarios")
 }
@@ -277,32 +356,22 @@ model ChatScenarioTranslation {
   @@map("chat_scenario_translations")
 }
 
-model ChatSession {
-  id         String    @id @default(uuid()) @db.Uuid
-  userId     String    @map("user_id") @db.Uuid
-  scenarioId String    @map("scenario_id") @db.Uuid
-  startedAt  DateTime  @default(now()) @map("started_at")
-  endedAt    DateTime? @map("ended_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
+// ---------------------------------------------------------------------------
+// Audit Log (MVP-19: System, Role & Content Action Auditability)
+// ---------------------------------------------------------------------------
 
-  user     Profile       @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  scenario ChatScenario  @relation(fields: [scenarioId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  messages ChatMessage[]
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String   @map("actor_id") @db.Uuid
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at")
 
-  @@index([userId, updatedAt])
-  @@map("chat_sessions")
-}
+  actor Profile @relation(fields: [actorId], references: [id], onDelete: Restrict)
 
-model ChatMessage {
-  id             String   @id @default(uuid()) @db.Uuid
-  sessionId      String   @map("session_id") @db.Uuid
-  sequenceNumber Int      @map("sequence_number")
-  role           ChatRole
-  content        String
-  createdAt      DateTime @default(now()) @map("created_at")
-
-  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@unique([sessionId, sequenceNumber])
-  @@map("chat_messages")
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
 }

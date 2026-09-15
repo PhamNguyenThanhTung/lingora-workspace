@@ -1,0 +1,193 @@
+@startuml
+title Lingora Core Domain Model (Implementation-Independent)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+hide methods
+hide circle
+
+' Scope palette definitions
+!define CORE_COLOR #E0F2FE
+!define VOCAB_COLOR #DCFCE7
+!define PROGRESS_COLOR #FAF5FF
+!define GOV_COLOR #FEF3C7
+!define EXTENSION_COLOR #F3F4F6
+
+legend top right
+  **Ranh giới & Phạm vi Miền:**
+  |<#E0F2FE>| **Core Learning Aggregate** (Course, Unit [Target], Lesson, Exercise) |
+  |<#DCFCE7>| **Vocabulary & SRS Aggregate** (Language, Vocabulary, SRS Cards, Review Logs) |
+  |<#FAF5FF>| **Learner Identity & Progress Aggregate** (Profile, UserProgress) |
+  |<#FEF3C7>| **Governance & Audit Aggregate** (AuditLog [Target]) |
+  |<#F3F4F6>| **Extension Boundary (Optional / Future Migration — Outside Core MVP)** |
+endlegend
+
+package "Core Learning Aggregate (Scope: CORE)" <<Rectangle>> {
+  class Course CORE_COLOR {
+    + id: UUID [Applied]
+    + language_code: String [Applied]
+    + cefr: Cefr (A1) [Applied]
+    + order_index: Integer [Applied]
+    + is_published: Boolean [Applied]
+    + status: ContentStatus [Target]
+    + creator_id: UUID [Target]
+    + reviewer_id: UUID [Target]
+    + published_at: Timestamp [Target]
+  }
+
+  class Unit CORE_COLOR {
+    + id: UUID [Target Schema]
+    + course_id: UUID [Target Schema]
+    + order_index: Integer (1..6) [Target Schema]
+    + title: String [Target Schema]
+    + description: String [Target Schema]
+  }
+
+  class Lesson CORE_COLOR {
+    + id: UUID [Applied]
+    + course_id: UUID [Applied]
+    + unit_id: UUID [Target Schema]
+    + order_index: Integer (1..24) [Applied]
+    + is_published: Boolean [Applied]
+    + status: ContentStatus [Target]
+    + objective: String [Applied]
+    + creator_id: UUID [Target]
+    + reviewer_id: UUID [Target]
+    + assignment_brief: String / JSON [Target Candidate]
+    + supersedes_id: UUID [Target Candidate DD-02]
+  }
+
+  class Exercise CORE_COLOR {
+    + id: UUID [Applied]
+    + lesson_id: UUID [Applied]
+    + type: ExerciseType [Applied: MCQ, FILL_BLANK, REORDER | Target: LISTENING, GRAMMAR]
+    + payload: JSONB (ADR-006 payloadVersion) [Applied]
+    + order_index: Integer [Applied]
+  }
+}
+
+package "Vocabulary & SRS Aggregate (Scope: CORE)" <<Rectangle>> {
+  class Language VOCAB_COLOR {
+    + code: String (PK) [Applied]
+    + name: String [Applied]
+    + native_name: String [Applied]
+    + is_learnable: Boolean [Applied]
+  }
+
+  class Vocabulary VOCAB_COLOR {
+    + id: UUID [Applied]
+    + language_code: String [Applied]
+    + term: String [Applied]
+    + audio_path: String [Applied]
+  }
+
+  class LessonVocabulary VOCAB_COLOR {
+    + lesson_id: UUID [Applied]
+    + vocabulary_id: UUID [Applied]
+  }
+
+  class UserVocabSrs VOCAB_COLOR {
+    + id: UUID [Applied]
+    + user_id: UUID [Applied]
+    + vocabulary_id: UUID [Applied]
+    + ease_factor: Float [Applied]
+    + interval_days: Float [Applied]
+    + recall_probability: Float [Applied]
+    + next_review_at: Timestamp [Applied]
+    + last_reviewed_at: Timestamp [Applied]
+    + review_count: Integer [Applied]
+    + lapse_count: Integer [Applied]
+  }
+
+  class ReviewLog VOCAB_COLOR {
+    + id: UUID [Applied]
+    + srs_card_id: UUID [Applied]
+    + is_correct: Boolean [Applied]
+    + interval_days: Float [Applied]
+    + reviewed_at: Timestamp [Applied]
+  }
+}
+
+package "Learner Identity & Progress Aggregate (Scope: CORE)" <<Rectangle>> {
+  class Profile PROGRESS_COLOR {
+    + id: UUID [Applied]
+    + email: String [Applied]
+    + display_name: String [Applied]
+    + role: Role [Applied: 2 roles | Target: 6 roles]
+    + assigned_roles: Role[] [Target]
+    + streak_count: Integer [Applied]
+    + daily_goal_min: Integer [Applied]
+    + starting_unit: Integer (1..6) [Target Candidate DD-06]
+    + placement_history: JSONB [Target Candidate DD-06]
+  }
+
+  class UserProgress PROGRESS_COLOR {
+    + id: UUID [Applied]
+    + user_id: UUID [Applied]
+    + lesson_id: UUID [Applied]
+    + status: ProgressStatus [Applied]
+    + score: Integer [Applied]
+    + completed_at: Timestamp [Applied]
+  }
+}
+
+package "Governance & Audit Aggregate (Scope: CORE)" <<Rectangle>> {
+  class AuditLog GOV_COLOR {
+    + id: UUID [Target Schema]
+    + actor_id: UUID [Target Schema]
+    + action: String [Target Schema]
+    + entity_type: String [Target Schema]
+    + entity_id: UUID [Target Schema]
+    + metadata: JSONB [Target Schema]
+    + created_at: Timestamp [Target Schema]
+  }
+}
+
+package "Extension Boundary (Scope: EXTENSION | Status: FUTURE_MIGRATION — Outside Core MVP)" <<Cloud>> EXTENSION_COLOR {
+  class Cohort EXTENSION_COLOR {
+    + id: UUID [Future]
+    + name: String [Future]
+    + manager_id: UUID [Future]
+  }
+
+  class CohortMember EXTENSION_COLOR {
+    + cohort_id: UUID [Future]
+    + user_id: UUID [Future]
+    + role: String [Future]
+  }
+
+  class SupportTicket EXTENSION_COLOR {
+    + id: UUID [Future]
+    + user_id: UUID [Future]
+    + assigned_to: UUID [Future]
+    + status: String [Future]
+  }
+}
+
+' Core Relationships
+Language "1" *-- "0..*" Course
+Course "1" *-- "1..*" Unit : contains [Target]
+Course "1" *-- "1..*" Lesson : direct [Applied]
+Unit "1" *-- "1..*" Lesson : contains [Target]
+Lesson "1" *-- "1..*" Exercise : contains
+Language "1" *-- "0..*" Vocabulary
+Lesson "1" o-- "0..*" LessonVocabulary
+Vocabulary "1" o-- "0..*" LessonVocabulary
+
+Profile "1" -- "0..*" UserProgress
+Lesson "1" -- "0..*" UserProgress
+Profile "1" -- "0..*" UserVocabSrs
+Vocabulary "1" -- "0..*" UserVocabSrs
+UserVocabSrs "1" *-- "0..*" ReviewLog
+
+Profile "1" -- "0..*" AuditLog : triggers [Target]
+Lesson "0..1" -- "0..1" Lesson : supersedes [Target Candidate]
+
+' Extension relationships (dashed)
+Profile "1" .. "0..*" CohortMember : member of [Future]
+Cohort "1" .. "0..*" CohortMember : enrolls [Future]
+Profile "1" .. "0..*" SupportTicket : files / handles [Future]
+
+@enduml

@@ -5,9 +5,9 @@
 - Status: SKELETON — design direction not approved
 - Product: Lingora
 - Applies to: Web learner app and Web Admin where relevant
-- Impeccable compatibility: this file is the durable visual authority once design decisions are approved
+- Document role: this file is the durable visual authority once design decisions are approved
 
-This document controls UI/UX decisions only. It does not define backend, database, API, ML, or NLP architecture.
+This document controls UI/UX decisions only. It does not define backend, database, API, or service architecture.
 
 ## Product identity
 
@@ -34,7 +34,7 @@ No logo, palette, typeface, imagery style, or visual motif is approved yet.
 - Web Admin: `Operate`
 - Future marketing/landing surface: `Persuade` only if separately approved
 
-These mode labels align with Impeccable. Surface-specific briefs may be added later without changing technical architecture.
+Surface-specific briefs may be added later without changing technical architecture.
 
 ## Typography
 

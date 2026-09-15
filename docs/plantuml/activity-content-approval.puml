@@ -1,0 +1,28 @@
+@startuml
+title Lingora MVP - Content Approval Workflow
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+start
+:Lesson Creator tạo bài học bản thảo (Draft);
+:Thêm mục tiêu, bản dịch, bài tập và media;
+:Xem trước bài học (Preview);
+repeat
+ :Gửi yêu cầu kiểm duyệt;
+ :Moderator kiểm tra ngôn ngữ, sư phạm, thang điểm & media;
+ if (Đạt tiêu chuẩn kiểm duyệt?) then (Đạt)
+  :Đánh dấu Đã duyệt (Approved);
+  :Administrator hoặc Moderator xuất bản;
+  :Bài học hiển thị công khai cho Learner;
+  stop
+ else (Không đạt)
+  :Ghi lý do và yêu cầu sửa đổi (Changes Requested);
+  :Lesson Creator chỉnh sửa lại bản thảo;
+ endif
+repeat while (Gửi lại để kiểm duyệt?) is (Có)
+stop
+@enduml
+

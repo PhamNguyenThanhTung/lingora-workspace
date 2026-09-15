@@ -1,28 +1,54 @@
 # Active Task
 
-`1-day-sprint-team-task-allocation`
+`phase-0-user-research-analysis-and-requirements-authoring`
 
 ## Status
 
-`DRAFT`
+`DONE`
 
-## Kế hoạch 1 Ngày (1-Day Sprint) cho Nhóm 3 Người
+## User Directive
 
-| Thành viên | Trách nhiệm | Nhiệm vụ cụ thể trong 1 Ngày | Sản phẩm bàn giao cuối ngày |
-|---|---|---|---|
-| **Thành viên 1**<br>*(Backend)* | **Hạt giống CSDL & Thẻ SRS** | 1. Bổ sung Khóa học Tiếng Anh A2 (5 bài học, 50 từ vựng theo chủ đề: Mua sắm, Du lịch, Ẩm thực, Công việc, Sức khỏe).<br>2. Nạp sẵn 25 thẻ Flashcard SRS gắn theo từng bài học cho tài khoản demo `student@lingora.test` (gồm thẻ đến hạn hôm nay, thẻ nhớ tốt, thẻ hay quên).<br>3. Chạy `node prisma/seed.js` nạp vào Supabase DB. | CSDL có sẵn 10 bài học, 100 từ vựng và kho thẻ SRS sẵn sàng để Frontend query. |
-| **Thành viên 2**<br>*(Frontend)* | **Giao diện Lật thẻ Flashcard SRS** | 1. Tạo component lật thẻ Flashcard 3D (`FlashcardItem.tsx`): Mặt trước (Từ, phiên âm, audio, tag chủ đề), Mặt sau (Nghĩa, ví dụ).<br>2. Tạo thanh chuyển chế độ: *Ôn theo Chủ đề* / *Ôn theo ngày*.<br>3. Tạo cụm 4 nút chấm điểm nhớ (Quên, Khó, Tốt, Dễ). | Giao diện trang `/srs/review` lật thẻ mượt mà, sẵn sàng kết nối dữ liệu. |
-| **Thành viên 3**<br>*(Admin CMS)* | **Màn hình Quản lý Bài học & Từ vựng** | 1. Tạo giao diện bảng danh sách Khóa học & Bài học trong `lingora-admin`.<br>2. Tạo Form thêm từ vựng mới (Từ, phiên âm, nghĩa tiếng Việt, câu ví dụ).<br>3. Tạo nút bật/tắt Xuất bản (`isPublished`) bài học. | Giao diện Admin quản trị xem và thêm được từ vựng mới vào CSDL. |
+> "bắt đầu làm đi" (Following completion and approval of `plans/phase-0-user-research-analysis-and-requirements-writing-plan.md`)
 
----
+## Objective
 
-## Active Execution: Nhiệm vụ Thành viên 1 (Backend Seed)
+Biên soạn toàn diện tài liệu đặc tả 6 phần trọng tâm của Báo cáo Đồ án Hệ thống Học Ngoại ngữ Lingora (`docs/phase-0-user-research-analysis-and-requirements.md`) theo đúng quy trình 10 bước và 6 Cổng Thẩm định đã phê duyệt trong `plans/phase-0-user-research-analysis-and-requirements-writing-plan.md`:
+1. **Section A:** User Research & Khảo sát Người học Thực nghiệm ($N=15$, trích xuất 24 câu hỏi, tiếp thu khung bảng Khó khăn / Kỹ năng / Tính năng từ đồ án mẫu nhưng sử dụng $100\%$ số liệu thực tế $N=15$, gắn kết nghiên cứu thứ cấp S1–S3).
+2. **Section B:** Application Survey & Phân tích Đo chuẩn Nền tảng (Duolingo, Quizlet, ELSA qua 17 tiêu chí chi tiết, trích dẫn tài liệu chính thức 2026-09-15, quyết định Adopt/Adapt/Reject).
+3. **Section C:** Qualitative Stakeholder Interviews & Tam giác hóa Dữ liệu (Tóm tắt phỏng vấn định tính học viên thật $P1$–$P6$, cô lập 20 Persona kịch bản mô phỏng vào mục riêng mang nhãn `[SYNTHETIC]`, ma trận tam giác hóa 3 chiều).
+4. **Section D:** User Pain Points, Phân tích Nguyên nhân Gốc rễ & Đáp ứng Sản phẩm (Ma trận 7 cột cho 8 điểm nghẽn $PP-01$..$PP-08$).
+5. **Section E:** Canonical Stakeholders, Tác nhân Hệ thống & Phân định Trách nhiệm (Đặc tả 6 vai trò chuẩn tắc, ma trận phân quyền SoD).
+6. **Section F:** Kỹ nghệ Yêu cầu (17 Yêu cầu Chức năng $P1-FR-001$..$017$ có AC Given-When-Then và truy vết bằng chứng; 11 nhóm NFR với kỷ luật số liệu `TBD / PROPOSED TARGET`).
 
-- **File thay đổi:** `lingora-admin/prisma/seed.js`
-- **Kiểm thử:** Chạy `node lingora-admin/prisma/seed.js` và kiểm tra 10 bài học, 25 thẻ SRS được tạo thành công.
+## Ranh giới & Cam kết Tuyệt đối
 
----
+1. **Ranh giới Kỹ thuật:**
+   - KHÔNG viết code chức năng ứng dụng (0 application code).
+   - KHÔNG sửa file `prisma/schema.prisma`.
+   - KHÔNG tạo hoặc chạy migration SQL.
+   - KHÔNG thay đổi cơ sở dữ liệu Supabase đang chạy.
+   - KHÔNG hiện thực hóa UI hay API endpoints.
+2. **Bảo tồn Quyết định Chính sách Sản phẩm đã Freeze (`D1`–`D9`):**
+   - Giữ nguyên toàn bộ quyết định D1–D9, Curriculum 08 (6 Units, 24 Lessons), và Placement Mapping A.
+3. **Ranh giới Milestone:**
+   - Giữ nguyên trạng thái M2.1 (`REVISED — READY FOR TARGETED RE-REVIEW`).
+   - Tuyệt đối DỪNG LẠI trước M2.2 (Behavioral Modeling).
+4. **Liêm chính Học thuật:**
+   - Tuyệt đối bác bỏ Hành vi 1 (sao chép $N=500$ TOEIC từ đồ án mẫu).
+   - Tuyệt đối bác bỏ Hành vi 2 (lấy 20 persona mô phỏng làm số liệu phần trăm người thật).
+   - $100\%$ số liệu khảo sát nhóm mang phân số $k/15$.
 
-## Approval Section
+## Deliverables
 
-- Status: `DRAFT` (Chờ người dùng duyệt để bắt đầu phần việc Thành viên 1)
+1. `docs/phase-0-user-research-analysis-and-requirements.md` (Tài liệu đặc tả 6 phần nghiên cứu người dùng và kỹ nghệ yêu cầu hoàn chỉnh).
+2. Cập nhật `logs/test-log.md` với bản ghi kiểm chứng Cổng G1–G6 (`T-P0-REQ-001`).
+3. Cập nhật `logs/development-log.md`.
+
+## Verification
+
+- Cổng G1 (Evidence Gate): 100% luận điểm có nhãn chuẩn tắc (PRIMARY, SECONDARY, SYNTHETIC, PRODUCT DECISION).
+- Cổng G2 (Number Gate): 100% số liệu khớp $N=15$ từ file Excel, phân số $k/15$ rõ ràng.
+- Cổng G3 (Synthetic Isolation Gate): 20 Persona cô lập trong phân mục riêng, $0$ tỷ lệ phần trăm giả mạo.
+- Cổng G4 (Sample-Report Rejection Gate): $0$ dữ liệu ngoại lai TOEIC 500 người.
+- Cổng G5 (NFR Rigor Gate): Không bịa đặt chỉ số `<500ms`, chỉ dùng `TBD / PROPOSED TARGET`.
+- Cổng G6 (Traceability Gate): 100% FRs và NFRs truy vết đầy đủ, 0 yêu cầu mồ côi.

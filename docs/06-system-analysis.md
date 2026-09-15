@@ -1,10 +1,10 @@
 # Lingora — Phân tích Hệ thống & Đặc tả Yêu cầu (System Analysis & Requirement Specification)
 
 > **Mã tài liệu:** `docs/06-system-analysis.md`  
-> **Trạng thái:** `CANONICAL / AUTHORITATIVE`  
-> **Phiên bản:** `1.1.0` (ADR-010 two-track amendment)
-> **Ngày hiệu lực:** `2026-08-21`
-> **Căn cứ pháp lý & kỹ thuật:** `docs/00`–`docs/05`, `ADR-001`–`ADR-010`, mã nguồn hiện thực tại `lingora-web/`, `lingora-admin/prisma/`, `lingora-ai/api/`.
+> **Trạng thái:** `READY FOR REQUIREMENTS REVIEW`  
+> **Phiên bản:** `1.3.0` (Phase 0 Canonical Baseline & Requirements Gap Synchronization)  
+> **Ngày hiệu lực:** `2026-09-14`  
+> **Căn cứ pháp lý & kỹ thuật:** `docs/00`–`docs/05`, `ADR-001`–`ADR-014`, `docs/phase-0-final-product-owner-decision-sheet.md`, `docs/phase-0-requirements-gap-audit.md`, `docs/phase-0-synthetic-stakeholder-research.md`.
 
 ---
 
@@ -12,32 +12,39 @@
 
 ### 1.1 Bối cảnh & Mục tiêu
 Lingora là nền tảng học ngoại ngữ số tích hợp trí tuệ nhân tạo, giải quyết bài toán tiếp thu và ghi nhớ kiến trúc tri thức ngôn ngữ thông qua:
-1. **Lộ trình học tập có cấu trúc (Structured Curriculum):** Khóa học, bài học, từ vựng và các dạng bài tập tương tác (`MCQ`, `FILL_BLANK`, `REORDER`, và mở rộng `GRAMMAR`/`LISTENING` theo `ADR-006`).
-2. **Hệ thống Lặp lại Ngắt quãng xác định (Deterministic SRS):** Chọn từ đến hạn và cập nhật lịch ôn dựa trên trạng thái/lịch sử của người học qua trusted RPC; tên SM-2 chỉ dùng sau khi audit công thức hiện thực.
-3. **Luyện viết Tình huống có GEC:** Môi trường thực hành câu tiếng Anh theo prompt có thứ tự; Transformer sửa lỗi ngữ pháp, còn application logic quản lý tiến trình tình huống.
-4. **Động lực học tập & Game hóa (Gamification & Retention):** Theo dõi tiến độ bài học, tính điểm tích lũy, duy trì chuỗi ngày học liên tục (streak) và mục tiêu học tập hàng ngày.
+1. **Lộ trình học tập có cấu trúc (Structured Curriculum):** Cấu trúc phân cấp chuẩn hóa `Course` $\rightarrow$ `Unit` $\rightarrow$ `Lesson` $\rightarrow$ `Exercise`, bài học cô đọng 5–10 phút, từ vựng cốt lõi và các dạng bài tập tương tác (`MCQ`, `FILL_BLANK`, `REORDER`, mở rộng `GRAMMAR`/`LISTENING` theo `ADR-006`).
+2. **Hệ thống Lặp lại Ngắt quãng xác định (Deterministic SRS Policy B):** Thuật toán 4 tầng logic chọn thẻ từ vựng đến hạn và cập nhật lịch ôn (`[1, 3, 7, 14, 30]` ngày) dựa trên kết quả ôn tập thực tế qua RPC `record_review`, độc lập 100% với dịch vụ AI.
+3. **Luyện viết Tình huống có GEC (Scenario Writing with GEC):** Môi trường thực hành câu tiếng Anh theo prompt ngữ cảnh; mô hình T5-small fine-tuned xử lý sửa lỗi ngữ pháp đơn lẻ, stateless qua proxy Next.js BFF Route Handler.
+4. **Động lực học tập & Giữ chân học viên (Gamification & Retention):** Theo dõi tiến độ bài học, tính điểm tích lũy có kiểm soát (Controlled Retry), duy trì chuỗi ngày học liên tục (streak) theo múi giờ địa phương và quản lý mục tiêu học tập hàng ngày.
 
 ### 1.2 Phạm vi 6 Năng lực Cốt lõi (Six Core Capabilities)
-Theo yêu cầu đồ án chuẩn, hệ thống đáp ứng trọn vẹn 6 nhóm năng lực với ranh giới hiện thực hóa minh bạch:
 
 | STT | Nhóm năng lực | Phạm vi hiện thực | Ranh giới & Cơ chế tin cậy |
 |---|---|---|---|
-| **C1** | **Học ngoại ngữ & Luyện tập** | Khóa học (`Course`), Bài học (`Lesson`), Từ vựng (`Vocabulary`), Bài tập tương tác (`Exercise`), Audio từ vựng (`Vocabulary.audioUrl`). | Learner Web Client (`lingora-web`) kết nối Supabase qua RLS chỉ đọc dữ liệu `isPublished=true`. |
-| **C2** | **Quản trị Nội dung & Học liệu** | Quản lý Course, Lesson, Exercise, Vocabulary, Media Audio/Image, ChatScenario, duyệt xuất bản (`isPublished`). | Web Admin (`lingora-admin`) có quyền vai trò `ADMIN`, tải media lên Supabase Storage bucket (`course-media`). |
-| **C3** | **SRS Từ vựng** | Trạng thái ôn (`UserVocabSrs`), lịch sử (`ReviewLog`), due-card query và cập nhật nguyên tử. | RPC `record_review` dẫn xuất user từ `auth.uid()`; deterministic policy không phụ thuộc GEC service. |
-| **C4** | **Luyện viết Tình huống & GEC** | `ChatScenario` cung cấp ngữ cảnh/prompt; input learner nhận corrected text và diff transient. | Next.js fixed Route Handler `/api/ai/gec` tới stateless FastAPI `/v1/gec/correct`; JWT fail-closed; không gọi trực tiếp từ browser. |
-| **C5** | **Tiến độ, Streak & Mục tiêu Ngày** | Tiến độ bài học (`UserProgress`), Streak hiện tại/kỷ lục (`Profile.currentStreak`, `longestStreak`), Mục tiêu ngày (`dailyGoalMin`, `dailyGoalExpiry`). | Tính điểm tập trung và cập nhật tiến độ qua trusted server action / RPC; kiểm soát gian lận điểm số từ client. |
-| **C6** | **Nhắc nhở Học tập (Reminders)** | Thông báo nhắc nhở học viên duy trì mục tiêu và chuỗi học tập hàng ngày. | **Cơ chế 6d (In-app reminder)** trong phiên học Web; **Cơ chế 6b (Web Push + scheduler) DEFERRED** (tạm hoãn cho giai đoạn mở rộng, không loại bỏ khỏi roadmap). |
+| **C1** | **Học ngoại ngữ & Luyện tập** | Khóa học (`Course`), Đơn vị học (`Unit`), Bài học (`Lesson`), Từ vựng (`Vocabulary`), Bài tập tương tác (`Exercise`), Audio từ vựng (`Vocabulary.audioUrl`). | Learner Web Client (`lingora-web`) kết nối Supabase qua RLS chỉ đọc dữ liệu `isPublished=true`. |
+| **C2** | **Quản trị Nội dung & Học liệu** | Quản lý Course, Unit, Lesson, Exercise, Vocabulary, Media Audio/Image, ChatScenario, quy trình duyệt xuất bản 6 trạng thái. | Web Admin (`lingora-admin`) phân quyền vai trò, tải media lên Supabase Storage bucket (`lingora-media`). Phân định trách nhiệm D1 (Manager-driven), D2 (Separation of duties 2B), D3 (Clone-to-draft 3B). |
+| **C3** | **SRS Từ vựng** | Trạng thái ôn (`UserVocabSrs`), lịch sử (`ReviewLog`), due-card query và cập nhật nguyên tử. | RPC `record_review` dẫn xuất user từ `auth.uid()`; Policy B deterministic không phụ thuộc AI microservice. |
+| **C4** | **Luyện viết Tình huống & GEC** | `ChatScenario` cung cấp ngữ cảnh/prompt; input learner nhận corrected text và diff transient. | Next.js Route Handler `/api/ai/gec` tới stateless FastAPI `/v1/gec/correct`; JWT fail-closed; timeout cứng 8.0s; không gọi trực tiếp từ browser. |
+| **C5** | **Tiến độ, Streak & Mục tiêu Ngày** | Tiến độ bài học (`UserProgress`), Streak (`Profile.streakCount`, `lastQualifyingActivityDate`), Mục tiêu ngày (`Profile.dailyGoalMin`). | Tính điểm tập trung và cập nhật tiến độ qua trusted server action / RPC; kiểm soát gian lận điểm số từ client; Streak Recovery tạm hoãn (D9). |
+| **C6** | **Nhắc nhở Học tập (Reminders)** | Thông báo nhắc nhở học viên duy trì mục tiêu và chuỗi học tập hàng ngày. | **Cơ chế 6d (In-app reminder)** trong phiên học Web; **Cơ chế 6b (Web Push + scheduler) DEFERRED** (tạm hoãn theo ADR-008). |
 
 ---
 
 ## 2. Tác nhân & Các bên Liên quan (Stakeholders & System Actors)
 
+*Căn cứ chuẩn:* [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md), [`docs/phase-0-synthetic-stakeholder-research.md`](phase-0-synthetic-stakeholder-research.md), và [`docs/plantuml/role-permission-matrix.puml`](plantuml/role-permission-matrix.puml).
+
+Hệ thống xác định **6 vai trò canonical**, phân định minh bạch giữa thiết kế mục tiêu (DESIGN) và trạng thái hiện thực runtime:
+
 ```mermaid
 flowchart TD
-    subgraph HumanActors[Tác nhân Con người]
-        L[Learner - Học viên]
-        A[Admin / Giáo viên]
+    subgraph HumanActors[Tác nhân Con người - 6 Canonical Roles]
+        L[Learner - Học viên: IMPLEMENTED]
+        LC[Lesson Creator - Soạn giả nội dung: DESIGN]
+        MOD[Moderator - Kiểm duyệt viên: DESIGN]
+        ORG[Organizational Manager - Quản lý Tổ chức & Đào tạo: DESIGN]
+        OPS[Operations Staff - Nhân viên Vận hành: DESIGN]
+        ADM[Administrator - Quản trị Hệ thống: PARTIAL]
     end
 
     subgraph LingoraSystem[Hệ thống Lingora]
@@ -50,32 +57,75 @@ flowchart TD
     subgraph SupportingServices[Dịch vụ Hỗ trợ]
         SupaAuth[Supabase Auth - GoTrue]
         SupaDB[(Supabase PostgreSQL + RLS + RPC)]
-        SupaStorage[(Supabase Storage: course-media, chat-audio)]
+        SupaStorage[(Supabase Storage: lingora-avatars, lingora-media)]
     end
 
     L -->|HTTPS / UI Web| WebClient
-    A -->|HTTPS / Dashboard| AdminClient
+    LC & MOD & ORG & OPS & ADM -->|HTTPS / Dashboard| AdminClient
     WebClient -->|SSR Auth / httpOnly Cookie| SupaAuth
-    WebClient -->|Prisma Client / PostgREST RLS| SupaDB
-    WebClient -->|Bff Proxy: /api/ai/*| RouteHandler
-    RouteHandler -->|bounded internal request| FastAPIService
-    AdminClient -->|Prisma Admin Role| SupaDB
+    WebClient -->|PostgREST RLS / RPC| SupaDB
+    WebClient -->|BFF Proxy: /api/ai/*| RouteHandler
+    RouteHandler -->|Bounded internal request| FastAPIService
+    AdminClient -->|Prisma Admin TCP| SupaDB
     AdminClient -->|Tải Media| SupaStorage
     FastAPIService -->|Verify JWKS| SupaAuth
 ```
 
-### 2.1 Bảng Phân loại Actor và Thành phần Hỗ trợ
+### 2.1 Hồ sơ Chi tiết 6 Tác nhân Canonical (Actor Catalog)
 
-| Actor / Thành phần | Bản chất | Quyền hạn & Ranh giới | Mục tiêu chính |
-|---|---|---|---|
-| **Learner (Học viên)** | Con người (End-user) | Role: `LEARNER`. Truy cập ứng dụng qua trình duyệt Web (`lingora-web`). Thao tác dữ liệu qua RLS và Server Actions. | Đăng ký, đăng nhập, duyệt khóa học, làm bài tập, nhận phản hồi AI, ôn tập từ vựng SRS, theo dõi streak. |
-| **Admin (Quản trị viên / Giáo viên)** | Con người (Staff) | Role: `ADMIN`. Truy cập bảng điều khiển `lingora-admin`. Quản trị toàn quyền dữ liệu nghiệp vụ và xuất bản nội dung. | Tạo/sửa khóa học, bài học, ngân hàng câu hỏi, tải audio/hình ảnh, tạo kịch bản roleplay, kích hoạt `isPublished`. |
-| **GEC/T5-small internal processing** | Thành phần xử lý nội bộ trong boundary Lingora | Được gọi bởi Route Handler nội bộ với request bounded; không phải system actor và không có mục tiêu nghiệp vụ độc lập. Không lưu session hoặc dữ liệu chính. | Chạy mock/real T5-small GEC, validate corrected text, tạo metadata; diff/classification thuộc module xác định riêng. |
-| **Supabase Auth (GoTrue)** | Dịch vụ nền tảng (PaaS) | Cấp phát token JWT `ES256` có `kid`, quản lý session, refresh token, cung cấp endpoint JWKS công khai. | Xác thực danh tính học viên và quản trị viên, bảo mật phiên làm việc qua httpOnly Cookie. |
-| **Supabase PostgreSQL** | Cơ sở dữ liệu hạt nhân | Thực thi RLS policies, Check constraints, Triggers, RPC functions (`record_review`). | Đảm bảo tính toàn vẹn dữ liệu, cô lập dữ liệu người dùng ở tầng engine cơ sở dữ liệu. |
-| **Supabase Storage** | Dịch vụ lưu trữ tệp | Lưu trữ nhị phân cho media (`course-media`, `chat-audio`). Giới hạn dung lượng 10MB/tệp, quản lý bởi RLS. | Phục vụ file âm thanh phát âm từ vựng, hình ảnh minh họa bài học và audio đoạn thoại. |
+#### 1. Learner (Học viên)
+- **Bản chất:** Người dùng cuối (End-user B2C hoặc thành viên Cohort B2B).
+- **Mục tiêu:** Tiếp thu kiến thức ngôn ngữ tiếng Anh A1 qua bài học ngắn 5–10 phút, làm bài tập tương tác, sửa lỗi câu viết qua AI, ôn tập từ vựng đúng chu kỳ SRS và duy trì streak hàng ngày.
+- **Trách nhiệm:** Tự chủ học tập, trung thực trong làm bài tập và đánh giá SRS, báo cáo lỗi học liệu/kỹ thuật khi phát hiện sự cố.
+- **Quyền hạn (Permissions):** Đọc nội dung công khai (`isPublished = true`); đọc/ghi tiến độ cá nhân (`UserProgress`, `UserVocabSrs`) qua `auth.uid() = userId`; gọi RPC `record_review`; gọi API GEC qua Route Handler.
+- **Chức năng chính:** `MVP-01`..`MVP-11`.
+- **Use Cases liên kết:** `UC-01`, `UC-02`, `UC-03`, `UC-04`, `UC-05`, `UC-06`, `UC-07`.
+- **Dữ liệu sở hữu:** `Profile`, `UserProgress`, `UserVocabSrs`, `ReviewLog`.
 
-Chỉ `Learner` và `Admin` là actor của hệ thống. GEC/T5-small, Supabase Auth, PostgreSQL và Storage là các thành phần xử lý/hỗ trợ, không được vẽ như actor trong Use Case diagram.
+#### 2. Lesson Creator (Soạn giả / Giảng viên Biên soạn)
+- **Bản chất:** Chuyên gia học thuật / Giảng viên cộng tác viên.
+- **Mục tiêu:** Nhận phân công từ Manager, biên soạn bài học chất lượng cao, nạp từ vựng, tạo bài tập tương tác đa dạng (`MCQ`, `FILL_BLANK`, `REORDER`), tải media chuẩn và gửi duyệt.
+- **Trách nhiệm:** Tuân thủ mục tiêu sư phạm trong `AssignmentBrief`; nộp bản thảo đúng hạn; sửa đổi nội dung khi Moderator yêu cầu (`CHANGES_REQUESTED`); tuyệt đối không tự ý thêm bài ngoài đề cương hoặc tự phê duyệt bài của mình.
+- **Quyền hạn (Permissions):** Tạo/chỉnh sửa bài học ở trạng thái `DRAFT` được phân công (`creatorId = profileId`); tải media lên thư mục draft của Storage; chuyển trạng thái sang `IN_REVIEW`.
+- **Chức năng chính:** `MVP-04`, `MVP-05`, `MVP-06`, `MVP-12`.
+- **Use Cases liên kết:** `UC-08`.
+- **Dữ liệu sở hữu:** Bản thảo `Lesson`, `Exercise`, `Vocabulary` được phân công.
+
+#### 3. Moderator (Kiểm duyệt viên Học thuật)
+- **Bản chất:** Chuyên gia thẩm định chất lượng học thuật và an toàn nội dung.
+- **Mục tiêu:** Rà soát tính chính xác ngữ pháp, từ vựng, đáp án bài tập, tính sư phạm và bản quyền truyền thông trước khi bài học được đưa vào kho học liệu sẵn sàng xuất bản.
+- **Trách nhiệm:** Thẩm định công tâm, ghi rõ lý do khi yêu cầu chỉnh sửa; kiểm tra kỹ sự khác biệt (diff) giữa các bản sửa đổi; chuyển trạng thái sang `APPROVED` khi đạt chuẩn; tuyệt đối không tự phê duyệt bài do chính mình biên soạn.
+- **Quyền hạn (Permissions):** Đọc toàn bộ bài học ở trạng thái `IN_REVIEW`; chuyển trạng thái sang `CHANGES_REQUESTED` (kèm phản hồi) hoặc `APPROVED`. Không có quyền kích hoạt `PUBLISHED`.
+- **Chức năng chính:** `MVP-07`, `MVP-13`.
+- **Use Cases liên kết:** `UC-09`.
+- **Dữ liệu sở hữu:** Bản ghi nhận xét và trạng thái kiểm duyệt nội dung.
+
+#### 4. Organizational Manager (Quản lý Tổ chức & Đào tạo)
+- **Bản chất:** Quản lý chương trình đào tạo của cơ sở giáo dục hoặc tổ chức doanh nghiệp.
+- **Mục tiêu:** Thiết lập khung chương trình tổng thể (Course, Unit, Lesson skeleton), phân công bài học cho Creator, theo dõi tiến độ sản xuất học liệu, phê duyệt xuất bản (`PUBLISHED`) các bài học đã đạt chuẩn `APPROVED`, và quản lý lớp học liên kết (Cohort B2B).
+- **Trách nhiệm:** Bảo đảm cấu trúc chương trình sư phạm logic; điều phối khối lượng công việc của đội ngũ biên soạn; chịu trách nhiệm pháp lý cao nhất khi công bố nội dung ra môi trường trực tiếp.
+- **Quyền hạn (Permissions):** Tạo/sửa cấu trúc Course, Unit; tạo phân công `AssignmentBrief` (`Lesson.creatorId`); chuyển bài học từ `APPROVED` sang `PUBLISHED` hoặc `ARCHIVED`; xem báo cáo tổng hợp tiến độ học viên theo lớp (Cohort).
+- **Chức năng chính:** `MVP-04`, `MVP-13`, `MVP-17`.
+- **Use Cases liên kết:** `UC-10`, `UC-15`.
+- **Dữ liệu sở hữu:** Cấu trúc Khóa học, Phân công biên soạn, Lớp học liên kết (Cohort).
+
+#### 5. Operations Staff (Nhân viên Vận hành & Chăm sóc Người học)
+- **Bản chất:** Nhân viên hỗ trợ vận hành và xử lý khiếu nại của người dùng.
+- **Mục tiêu:** Tiếp nhận và phân loại ticket hỗ trợ từ học viên; hướng dẫn sử dụng; chuyển tiếp báo lỗi nội dung bài học sang Moderator; chuyển tiếp sự cố tài khoản/bảo mật sang Administrator.
+- **Trách nhiệm:** Phản hồi nhanh chóng, bảo mật dữ liệu học viên theo nguyên tắc tối thiểu (Data Minimization); không tự ý sửa đổi nội dung học thuật hoặc can thiệp dữ liệu điểm số.
+- **Quyền hạn (Permissions):** Đọc/cập nhật trạng thái ticket hỗ trợ (`SupportTicket`); tra cứu thông tin tài khoản cơ bản (ẩn danh thông tin nhạy cảm); chuyển tiếp sự cố.
+- **Chức năng chính:** `MVP-16`.
+- **Use Cases liên kết:** `UC-14`.
+- **Dữ liệu sở hữu:** Nhật ký xử lý khiếu nại và trạng thái vé hỗ trợ (`SupportTicket`).
+
+#### 6. Administrator (Quản trị viên Hệ thống)
+- **Bản chất:** Quản trị viên kỹ thuật cao nhất của nền tảng.
+- **Mục tiêu:** Bảo đảm hệ thống vận hành ổn định, an toàn; quản lý tài khoản người dùng và gán vai trò; giám sát audit log; xử lý sự cố bảo mật và gỡ bài khẩn cấp khi có yêu cầu.
+- **Trách nhiệm:** Tuân thủ nguyên tắc Least Privilege; duy trì tính bất biến của nhật ký kiểm toán (`AuditLog`); không can thiệp vào công việc biên soạn học thuật thường nhật.
+- **Quyền hạn (Permissions):** Toàn quyền cấu hình hệ thống; tạo/khóa tài khoản; phân quyền vai trò (RBAC); gỡ bỏ nội dung khẩn cấp; truy xuất toàn bộ `AuditLog`.
+- **Chức năng chính:** `MVP-01`, `MVP-14`, `MVP-15`, `MVP-19`.
+- **Use Cases liên kết:** `UC-01`, `UC-11`, `UC-12`, `UC-13`.
+- **Dữ liệu sở hữu:** Cấu hình hệ thống, Danh mục tài khoản & quyền, `AuditLog`.
 
 ---
 
@@ -83,181 +133,620 @@ Chỉ `Learner` và `Admin` là actor của hệ thống. GEC/T5-small, Supabase
 
 1. **Ranh giới Client Học viên (`lingora-web`):**
    - Nền tảng: Web Application (Next.js 15 App Router, React 19, TypeScript 5, Tailwind CSS 4).
-   - Phiên đăng nhập: Quản lý qua `@supabase/ssr` bằng **`httpOnly`, `SameSite=Lax` cookie**. Trình duyệt client tuyệt đối không lưu access token vào `localStorage` hay `sessionStorage`.
-2. **Ranh giới Proxy AI trung gian (Backend-for-Frontend - BFF):**
-   - Mọi kết nối đến AI Microservice (`lingora-ai/api`) đều phải đi qua Server Route Handler (`/api/ai/srs`, `/api/ai/chat`).
-   - Route Handler chịu trách nhiệm: lấy token xác thực từ phiên server-side, gán header `Authorization: Bearer <JWT>`, thực thi timeout cứng **8.0 giây**, bắt lỗi và ánh xạ lỗi sang định dạng chuẩn `ApiErrorEnvelope`.
-   - Tuyệt đối không cho phép trình duyệt gọi trực tiếp tới địa chỉ AI microservice nhằm ngăn ngừa lộ API endpoint và chống tấn công SSRF.
-3. **Ranh giới Dữ liệu Cơ sở dữ liệu:**
-   - Dữ liệu người dùng chỉ được ghi vào bảng cá nhân (`UserProgress`, `UserVocabSrs`, `ChatSession`, `ChatMessage`) khi `userId == auth.uid()`.
-   - Việc tính toán và ghi nhận lịch sử SRS được đóng gói an toàn trong hàm RPC `record_review`.
+   - Quản lý phiên: `@supabase/ssr` qua **`httpOnly`, `SameSite=Lax` cookie**. Client tuyệt đối không lưu access token vào `localStorage` hay `sessionStorage`.
+2. **Ranh giới Proxy AI Trung gian (Backend-for-Frontend - BFF):**
+   - Mọi kết nối tới AI Microservice (`lingora-ai/api`) bắt buộc qua Route Handler (`/api/ai/gec`).
+   - Route Handler xác thực JWT từ server session cookie, forward request kèm header `Authorization: Bearer <JWT>`, thực thi timeout cứng **8.0 giây**, bắt lỗi và chuẩn hóa sang `ApiErrorEnvelope`.
+   - Trình duyệt client tuyệt đối không gọi trực tiếp tới FastAPI service.
+3. **Ranh giới Cơ sở Dữ liệu & RLS:**
+   - Học viên chỉ đọc nội dung công khai (`isPublished = true`) và chỉ đọc/ghi dữ liệu cá nhân (`userId = auth.uid()`).
+   - Thao tác ghi nhận lịch sử và tính toán chu kỳ SRS được đóng gói an toàn trong hàm RPC `record_review`.
 
 ---
 
 ## 4. Danh mục & Đặc tả Use Case Chi tiết (Use-Case Specifications)
 
-### 4.1 Danh mục Tổng thể Use Case
+### 4.1 Danh mục 14 Use Cases Cốt lõi (Core MVP) & 1 Phân hệ Mở rộng Tùy chọn (Optional B2B Module)
 
-| Mã Use Case | Tên Use Case | Tác nhân chính | Năng lực liên quan | Trạng thái hiện thực |
-|---|---|---|---|---|
-| **UC-01** | Đăng ký, Đăng nhập & Quản lý Phiên | Learner, Admin | Nền tảng Auth | `IMPLEMENTED` (M1.6W) |
-| **UC-02** | Khám phá & Học Bài học Ngôn ngữ | Learner | C1 (Learning) | `CONFIRMED / PENDING_M2` |
-| **UC-03** | Thực hiện Bài tập Tương tác & Đánh giá | Learner | C1 (Exercises) | `CONFIRMED / PENDING_M2` |
-| **UC-04** | Quản trị Khóa học, Bài học & Xuất bản | Admin | C2 (Content Management)| `CONFIRMED / PENDING_M3` |
-| **UC-05** | Ôn tập Từ vựng bằng SRS Xác định | Learner | C3 (SRS / Spaced Repetition) | `TARGET_AMENDED / POLICY_AUDIT_PENDING` |
-| **UC-06** | Luyện viết Tình huống với GEC | Learner | C4 (Scenario Writing / GEC) | `TARGET_AMENDED / IMPLEMENTATION_PENDING` |
-| **UC-07** | Theo dõi Tiến độ, Streak & Mục tiêu Ngày | Learner | C5 (Gamification) | `CONFIRMED / PENDING_M2` |
-| **UC-08** | Nhắc nhở Học tập Trong phiên (In-App) | Learner | C6 (Reminders) | `ADR-008 LOCKED (Option 6d)` |
-| **UC-09** | Kiểm tra Trình độ Đầu vào | Learner | Placement | `ACTIVE / IN SCOPE` |
-| **UC-10** | Thành tích và Huy hiệu Riêng tư | Learner | Private Achievements | `ACTIVE / IN SCOPE` |
+*Căn cứ chuẩn:* [`docs/plantuml/use-case-mvp-overview.puml`](plantuml/use-case-mvp-overview.puml)
+
+| Mã Use Case | Tên Use Case | Tác nhân chính | Gói chức năng | Chức năng MVP liên kết | Trạng thái hiện thực |
+|---|---|---|---|---|---|
+| **UC-01** | Authenticate & Manage Session | Learner, Admin | Core Learning / Admin | `MVP-01` | `IMPLEMENTED (M1.6W)` |
+| **UC-02** | Configure Goals & Study Time | Learner | Core Learning | `MVP-02`, `MVP-10` | `PARTIAL (Profile DB ready; UI pending M2)` |
+| **UC-03** | Take Placement Test | Learner | Core Learning | `MVP-03` | `DESIGN (D6 locked; Implementation pending M2)` |
+| **UC-04** | Browse Learning Path | Learner | Core Learning | `MVP-04` | `PARTIAL (Course/Unit/Lesson ready; UI pending M2)` |
+| **UC-05** | Complete Lesson Exercises | Learner | Core Learning | `MVP-05`, `MVP-06`, `MVP-07` | `PARTIAL (Payload ready; Engine pending M2)` |
+| **UC-06** | Spaced Repetition Review (SRS) | Learner | Core Learning | `MVP-09` | `PARTIAL (RPC record_review ready; UI pending M2)` |
+| **UC-07** | Track Progress & Streak | Learner | Core Learning | `MVP-08`, `MVP-10`, `MVP-11` | `PARTIAL (DB ready; UI pending M2)` |
+| **UC-08** | Create & Edit Lesson Draft | Lesson Creator | Content Workflow | `MVP-05`, `MVP-06`, `MVP-12` | `PARTIAL (DB ready; Admin UI pending M3)` |
+| **UC-09** | Review & Moderate Content | Moderator | Content Workflow | `MVP-07`, `MVP-13` | `DESIGN (D2=2B locked; UI pending M3)` |
+| **UC-10** | Publish Approved Content | Organizational Manager | Content Workflow | `MVP-13` | `PARTIAL (isPublished in DB; UI pending M3)` |
+| **UC-11** | Manage Accounts & Roles | Administrator | Admin & Operations | `MVP-14`, `MVP-19` | `PARTIAL (Profile ready; RBAC UI pending M3)` |
+| **UC-12** | View System Reports | Administrator | Admin & Operations | `MVP-15` | `DESIGN (Metrics specified; UI pending M3)` |
+| **UC-13** | View & Audit Security Logs | Administrator | Admin & Operations | `MVP-19` | `PARTIAL (DB RLS logs ready; Audit UI pending M3)` |
+| **UC-14** | Handle Support Tickets | Operations Staff | Admin & Operations | `MVP-16` | `DESIGN (LOGICAL GAP: Schema pending)` |
+| **UC-15** | [OPTIONAL B2B / FUTURE] Manage Cohorts & Group Progress | Organizational Manager | Optional Cohort Module | `MVP-17` | `DESIGN (FUTURE / OPTIONAL: Schema pending)` |
 
 ---
 
-### 4.2 Đặc tả Chi tiết Các Use Case Trọng yếu
+### 4.2 Đặc tả Chi tiết 14 Use Cases Core MVP & 1 Use Case Optional B2B
 
-#### 📌 UC-01: Đăng ký, Đăng nhập & Quản lý Phiên học viên
-* **Mục tiêu:** Xác thực danh tính học viên, khởi tạo hồ sơ cá nhân và thiết lập phiên làm việc bảo mật `httpOnly`.
-* **Tác nhân:** Học viên (`Learner`). Supabase Auth là thành phần hỗ trợ xác thực.
-* **Tiền điều kiện:** Học viên truy cập trang `/login` hoặc `/register`.
-* **Luồng chính (Main Flow):**
-  1. Học viên nhập email và mật khẩu hợp lệ (tối thiểu 6 ký tự), nhấn Submit.
-  2. Next.js Server Action nhận thông tin, gửi yêu cầu tới Supabase GoTrue Auth.
-  3. Supabase Auth xác thực thành công, phát hành access token `ES256` và refresh token.
+#### 📌 UC-01: Xác thực & Quản lý Phiên (Authenticate & Manage Session)
+- **Tác nhân chính:** `Learner`, `Administrator` (và các vai trò nội bộ khác).
+- **Mục tiêu:** Xác thực danh tính người dùng, cấp phát phiên an toàn qua `httpOnly` cookie, chuyển hướng người dùng về đúng phân hệ theo vai trò.
+- **Tiền điều kiện:** Người dùng truy cập trang `/login` hoặc `/register`.
+- **Luồng chính (Main Flow):**
+  1. Người dùng nhập email và mật khẩu (tối thiểu 6 ký tự), nhấn Submit.
+  2. Next.js Server Action gửi thông tin xác thực tới Supabase GoTrue Auth.
+  3. Supabase Auth xác thực thành công, phát hành token `ES256`.
   4. Server Action thiết lập cookie phiên `httpOnly=true`, `SameSite=Lax`.
-  5. Nếu là đăng ký mới, trigger cơ sở dữ liệu tự động tạo bản ghi `Profile` liên kết với `auth.users.id`.
-  6. Hệ thống chuyển hướng học viên tới trang tổng quan `/foundation` (hoặc Dashboard ở M2).
-* **Luồng ngoại lệ (Alternative / Error Flows):**
-  - *Email không hợp lệ / Sai mật khẩu:* Hệ thống trả về mã lỗi chuẩn và hiển thị thông báo song ngữ (vi/en) cục bộ, không lộ thông tin nhạy cảm.
-  - *Hết hạn phiên:* Middleware tự động refresh token trong nền; nếu refresh thất bại, chuyển hướng về `/login?next=...`.
+  5. Nếu đăng ký mới, trigger DB tự động tạo bản ghi `Profile` liên kết với `auth.users.id`.
+  6. Hệ thống chuyển hướng người dùng tới Dashboard tương ứng với vai trò.
+- **Luồng ngoại lệ (Alternative Flows):**
+  - *Sai mật khẩu / Email không tồn tại:* Trả về thông báo lỗi song ngữ thân thiện.
+  - *Hết hạn phiên:* Middleware tự động refresh token ngầm; nếu refresh thất bại, chuyển hướng về `/login?next=...`.
+- **Tiêu chuẩn nghiệm thu:** Token không bao giờ lưu tại `localStorage`; mật khẩu băm an toàn; người dùng chưa đăng nhập không thể truy cập tài nguyên bảo vệ.
+
+#### 📌 UC-02: Thiết lập Mục tiêu & Thời gian Học (Configure Goals & Study Time)
+- **Tác nhân chính:** `Learner`.
+- **Mục tiêu:** Cho phép học viên chọn ngôn ngữ học, ngôn ngữ mẹ đẻ, thời lượng mục tiêu hàng ngày (5–120 phút) và bật/tắt nhắc nhở học tập trong ứng dụng.
+- **Tiền điều kiện:** Học viên đã đăng nhập và truy cập trang Onboarding hoặc Hồ sơ cá nhân (`/profile`).
+- **Luồng chính:**
+  1. Học viên chọn mục tiêu thời lượng học hàng ngày (ví dụ: 15 phút/ngày).
+  2. Học viên thiết lập khung giờ nhắc nhở học tập trong ngày (In-app Reminder Window).
+  3. Học viên nhấn "Lưu thay đổi".
+  4. Server Action xác thực giá trị hợp lệ và cập nhật `Profile.dailyGoalMin`.
+  5. Client lưu cấu hình khung giờ nhắc nhở vào Local State của trình duyệt.
+- **Luồng ngoại lệ:**
+  - *Giá trị phút âm hoặc không hợp lệ:* Server Action từ chối và hiển thị cảnh báo lỗi.
+- **Tiêu chuẩn nghiệm thu:** Giá trị `dailyGoalMin` lưu trữ bền vững; nhắc nhở hoạt động theo cơ chế In-App (`ADR-008 Option 6d`).
+
+#### 📌 UC-03: Kiểm tra Định vị Trình độ Đầu vào (Take Placement Test)
+- **Tác nhân chính:** `Learner`.
+- **Mục tiêu:** Đánh giá năng lực tiếng Anh ban đầu qua bài thi định vị ~30 câu để đề xuất Đơn vị bài học xuất phát (`Starting Unit`) phù hợp, tránh bắt người học phải học lại từ đầu những nội dung đã biết.
+- **Tiền điều kiện:** Học viên mới đăng ký hoặc chủ động chọn "Làm lại bài kiểm tra trình độ" từ trang Hồ sơ.
+- **Luồng chính:**
+  1. Học viên bắt đầu bài thi gồm **cố định ~30 câu hỏi** trắc nghiệm bao phủ các chủ điểm kiến thức cơ bản của trình độ A1.
+  2. Học viên lần lượt trả lời các câu hỏi; hệ thống ghi nhận câu trả lời.
+  3. Sau khi hoàn thành, hệ thống tính toán tổng điểm số và đối chiếu với bảng quy chuẩn đề cương khóa học.
+  4. Hệ thống đề xuất **Starting Unit** tối ưu cho học viên (ví dụ: Bắt đầu từ Unit 3) kèm giải thích trực quan.
+  5. Học viên bấm "Bắt đầu học" để ghi nhận lộ trình và mở khóa từ Starting Unit trở về trước.
+- **Luồng ngoại lệ:**
+  - *Học viên chọn Bỏ qua (Skip):* Hệ thống ghi nhận Starting Unit mặc định là Unit 1 và chuyển thẳng đến lộ trình học.
+  - *Học viên làm lại bài (Retake):* Học viên có thể làm lại bài thi bất kỳ lúc nào từ trang cá nhân; kết quả mới chỉ áp dụng khi học viên xác nhận cập nhật lộ trình.
+- **Tiêu chuẩn nghiệm thu:** Không claim chuẩn CEFR quốc tế; đầu ra chuẩn xác là Starting Unit; bảng ánh xạ điểm số tuân thủ Placement Mapping A đã được Product Owner phê duyệt chính thức (0–7: U1, 8–12: U2, 13–17: U3, 18–22: U4, 23–26: U5, 27–30: U6).
+
+#### 📌 UC-04: Khám phá Lộ trình Học tập (Browse Learning Path)
+- **Tác nhân chính:** `Learner`.
+- **Mục tiêu:** Cho phép học viên xem cấu trúc toàn bộ khóa học theo phân cấp `Course` $\rightarrow$ `Unit` $\rightarrow$ `Lesson`, xem trạng thái mở khóa và nội dung xem trước (Preview) của các bài học tương lai.
+- **Tiền điều kiện:** Học viên đã đăng nhập và truy cập trang Học tập (`/learn`).
+- **Luồng chính:**
+  1. Hệ thống tải cây đề cương của khóa học đang kích hoạt (chỉ lấy nội dung `isPublished = true`).
+  2. Giao diện hiển thị các Unit theo thứ tự tuyến tính (`orderIndex`).
+  3. Mỗi bài học hiển thị trạng thái tương ứng: `LOCKED`, `AVAILABLE`, `IN_PROGRESS`, `COMPLETED`.
+  4. Học viên có thể nhấp vào bất kỳ bài học nào (kể cả bài `LOCKED`) để **Xem trước (Preview)** mục tiêu bài học và danh sách từ vựng trọng tâm.
+  5. Học viên chọn bài học khả dụng (`AVAILABLE` hoặc `IN_PROGRESS`) để bắt đầu học.
+- **Luồng ngoại lệ:**
+  - *Học viên chọn làm bài ở bài học đang bị khóa:* Hệ thống hiển thị modal giải thích bài học chưa mở khóa và cung cấp nút "Làm bài kiểm tra nhảy cấp (Jump Assessment)" nếu đủ điều kiện.
+- **Tiêu chuẩn nghiệm thu:** Hiển thị cây lộ trình ổn định; hỗ trợ preview bài chưa mở khóa theo đúng chính sách sản phẩm.
+
+#### 📌 UC-05: Thực hiện Bài tập & Làm lại Có kiểm soát (Complete Lesson Exercises & Controlled Retry)
+- **Tác nhân chính:** `Learner`.
+- **Mục tiêu:** Học viên giải quyết các bài tập tương tác trong bài học; nếu làm sai, hệ thống đưa vào hàng đợi làm lại có kiểm soát (Controlled Retry) nhằm bảo đảm nắm vững kiến thức trước khi hoàn thành bài.
+- **Tiền điều kiện:** Học viên đã mở một bài học khả dụng.
+- **Luồng chính:**
+  1. Client tải danh sách bài tập của bài học sắp xếp theo `orderIndex`.
+  2. Học viên tương tác với từng dạng bài tập (`MCQ`, `FILL_BLANK`, `REORDER`, `GRAMMAR`, `LISTENING`).
+  3. Học viên nộp câu trả lời; hệ thống hiển thị kết quả đúng/sai và giải thích tức thời.
+  4. Nếu câu trả lời sai:
+     - Câu hỏi được đẩy vào hàng đợi làm lại (Retry Queue).
+  5. Sau khi kết thúc lượt câu hỏi chính, hệ thống tính toán dung sai (Allowance): Cho phép bỏ qua tối đa 10% tổng số câu sai.
+  6. Các câu sai còn lại bắt buộc học viên phải giải quyết lại trong vòng Retry.
+  7. Câu làm lại đúng được hưởng **70% credit điểm số** (`D7`).
+  8. Khi học viên hoàn tất toàn bộ câu hỏi và mọi câu làm lại bắt buộc, Server Action cập nhật trạng thái `UserProgress` sang `COMPLETED` và ghi nhận điểm số tổng hợp.
+- **Luồng ngoại lệ (Nhảy cấp - Conditional Jump):**
+  - Nếu học viên làm bài đánh giá nhảy cấp (Jump Assessment) qua Unit: Yêu cầu điểm số $\ge 95\%$. Nếu thất bại, áp dụng thời gian chờ (cooldown) **24 giờ** trước khi cho phép thử lại (`D5`).
+- **Tiêu chuẩn nghiệm thu:** **Không áp dụng điểm sàn 80%**; hoàn thành bài học gắn chặt với việc giải quyết hết câu hỏi và câu làm lại; điểm số tính đúng theo trọng số retry credit 70%.
+
+#### 📌 UC-06: Ôn tập Từ vựng theo Chu kỳ SRS (Spaced Repetition Review)
+- **Tác nhân chính:** `Learner`.
+- **Mục tiêu:** Lựa chọn các thẻ từ vựng đến hạn cần ôn tập và ghi nhận kết quả ghi nhớ nguyên tử vào cơ sở dữ liệu qua thuật toán Policy B.
+- **Tiền điều kiện:** Học viên có từ vựng đến hạn trong `UserVocabSrs` (`nextReviewAt <= now()`).
+- **Luồng chính:**
+  1. Học viên truy cập mục Ôn tập (`/srs`).
+  2. Client truy vấn danh sách thẻ đến hạn thuộc sở hữu của học viên (`userId = auth.uid()`).
+  3. Học viên xem mặt trước thẻ từ vựng (từ vựng, phát âm IPA, audio chuẩn), tự nhớ lại nghĩa, rồi lật thẻ kiểm tra.
+  4. Học viên chọn mức độ ghi nhớ: `Again` (quên), `Hard` (khó), `Good` (nhớ tốt), `Easy` (rất dễ).
+  5. Client gọi hàm RPC `record_review` trên PostgreSQL.
+  6. Trong 1 transaction nguyên tử:
+     - Chèn 1 bản ghi bất biến vào `ReviewLog`.
+     - Cập nhật `UserVocabSrs` với chu kỳ ôn tiếp theo dựa trên bảng chu kỳ Policy B: `[1, 3, 7, 14, 30]` ngày.
+  7. Client hiển thị số thẻ còn lại trong ngày và cập nhật thẻ tiếp theo.
+- **Luồng ngoại lệ:**
+  - *AI service offline:* Luồng ôn tập SRS vẫn hoạt động $100\%$ bình thường vì thuật toán chạy thuần túy trên cơ sở dữ liệu PostgreSQL.
+- **Tiêu chuẩn nghiệm thu:** Thực thi RPC nguyên tử; chỉ học viên sở hữu thẻ mới được ghi nhận; tuân thủ chu kỳ xác định Policy B.
+
+#### 📌 UC-07: Theo dõi Tiến độ, Chuỗi Streak & Báo cáo Cá nhân (Track Progress & Streak)
+- **Tác nhân chính:** `Learner`.
+- **Mục tiêu:** Tổng hợp kết quả học tập cá nhân, tính toán tỷ lệ hoàn thành khóa học và duy trì chuỗi ngày học liên tục (Streak).
+- **Tiền điều kiện:** Học viên đã đăng nhập.
+- **Luồng chính:**
+  1. Học viên truy cập Dashboard hoặc Profile.
+  2. Hệ thống tổng hợp tỷ lệ % hoàn thành lộ trình từ bảng `UserProgress`.
+  3. Khi học viên hoàn thành ít nhất 1 bài học hoặc 1 phiên ôn tập SRS trong ngày, hệ thống cập nhật chuỗi Streak theo ngày cục bộ múi giờ `Asia/Ho_Chi_Minh`.
+  4. Tăng `Profile.streakCount` lên 1 nếu ngày hoạt động gần nhất là ngày hôm qua; giữ nguyên nếu đã tăng trong ngày hôm nay.
+  5. Cập nhật `lastQualifyingActivityDate` thành ngày hiện tại.
+- **Luồng ngoại lệ:**
+  - *Bỏ lỡ ngày học:* Nếu qua một ngày không có hoạt động đủ điều kiện, chuỗi Streak được đặt lại về 1 khi có hoạt động đủ điều kiện tiếp theo theo quy tắc công bố (D9: missed day resets next qualifying streak to 1; không có phục hồi chuỗi).
+- **Tiêu chuẩn nghiệm thu:** Streak chỉ tăng tối đa 1 lần/ngày; tính toán chính xác theo timezone `Asia/Ho_Chi_Minh`.
+
+#### 📌 UC-08: Biên soạn Bản thảo Bài học (Create & Edit Lesson Draft)
+- **Tác nhân chính:** `Lesson Creator`.
+- **Mục tiêu:** Nhận phân công từ Manager, tạo mới hoặc chỉnh sửa bản thảo bài học, thêm bài tập tương tác, tải media và gửi bản thảo đi kiểm duyệt.
+- **Tiền điều kiện:** Creator đã đăng nhập tài khoản có quyền biên soạn và được Manager phân công bài học qua `Lesson.creatorId`.
+- **Luồng chính:**
+  1. Creator mở danh sách bài học được phân công trên giao diện Admin CMS (`/admin/lessons`).
+  2. Đọc bản tóm tắt nhiệm vụ (`AssignmentBrief`) gồm mục tiêu bài học, danh sách từ vựng bắt buộc.
+  3. Biên soạn nội dung bài học, nạp từ vựng, tạo các bài tập tương tác (`MCQ`, `FILL_BLANK`, `REORDER`).
+  4. Tải lên tệp âm thanh phát âm hoặc hình ảnh minh họa vào Supabase Storage (`lingora-media`).
+  5. Chạy thử bản thảo trên giao diện Preview để kiểm tra trải nghiệm học viên.
+  6. Nhấn nút "Gửi kiểm duyệt"; trạng thái bài học chuyển từ `DRAFT` sang `IN_REVIEW`.
+- **Luồng ngoại lệ (Cập nhật bài đã xuất bản - Revision 3B):**
+  - Khi cần sửa bài học đang ở trạng thái `PUBLISHED`, hệ thống tạo một bản sao độc lập (`Clone-to-draft v2`). Creator thao tác trên v2, trong khi v1 vẫn phục vụ học viên bình thường.
+- **Tiêu chuẩn nghiệm thu:** Creator không thể tự xuất bản bài học; chỉ sửa bài được phân công; tuân thủ quy trình Revision 3B.
+
+#### 📌 UC-09: Kiểm duyệt Chất lượng Học liệu (Review & Moderate Content)
+- **Tác nhân chính:** `Moderator`.
+- **Mục tiêu:** Kiểm tra chất lượng học thuật, độ chính xác của bài tập, tính sư phạm và bản quyền trước khi chuyển bài học sang trạng thái sẵn sàng xuất bản.
+- **Tiền điều kiện:** Có bài học ở trạng thái `IN_REVIEW`.
+- **Luồng chính:**
+  1. Moderator truy cập hàng đợi kiểm duyệt (`/admin/moderation`).
+  2. Hệ thống kiểm tra quy tắc Separation of Duties (2B): Đảm bảo Moderator không phải là Creator của bài học này (`moderatorId != creatorId`).
+  3. Moderator kiểm tra nội dung bài học, làm thử toàn bộ bài tập tương tác, kiểm tra audio phát âm và câu ví dụ.
+  4. Đối với bản sửa đổi (Revision), Moderator sử dụng công cụ so sánh (`Diff Viewer`) để rà soát điểm thay đổi giữa v1 và v2.
+  5. Nếu bài học đạt chuẩn: Moderator nhấn "Phê duyệt"; bài học chuyển trạng thái sang `APPROVED`.
+- **Luồng ngoại lệ (Yêu cầu chỉnh sửa):**
+  - Nếu phát hiện lỗi: Moderator chọn "Yêu cầu chỉnh sửa", nhập lý do chi tiết và gợi ý sửa đổi; trạng thái bài học chuyển thành `CHANGES_REQUESTED`. Hệ thống thông báo cho Creator phụ trách.
+- **Tiêu chuẩn nghiệm thu:** Tuyệt đối ngăn chặn tự phê duyệt (Self-approval); lưu vết người duyệt (`reviewerId`); trạng thái chuyển đổi chuẩn xác.
+
+#### 📌 UC-10: Xuất bản Học liệu Đã Phê duyệt (Publish Approved Content)
+- **Tác nhân chính:** `Organizational Manager`.
+- **Mục tiêu:** Quyết định đưa các bài học và đơn vị học đã đạt chuẩn `APPROVED` lên môi trường học tập công khai (`PUBLISHED`) phục vụ học viên.
+- **Tiền điều kiện:** Bài học đang ở trạng thái `APPROVED`.
+- **Luồng chính:**
+  1. Manager truy cập danh mục khóa học và bài học sẵn sàng xuất bản (`/admin/publishing`).
+  2. Manager kiểm tra độ bao phủ của toàn Unit: Đảm bảo các bài học tiên quyết đều đã đạt chuẩn.
+  3. Manager kích hoạt xuất bản bài học; hệ thống cập nhật trạng thái `PUBLISHED` và bật cờ `isPublished = true`.
+  4. Đối với Revision v2: Khi v2 được xuất bản, hệ thống chuyển v1 sang trạng thái lưu trữ (`ARCHIVED`) và điều hướng người học mới sang v2 mà không làm đứt gãy tiến độ của người đang học.
+- **Luồng ngoại lệ:**
+  - *Gỡ bài học khẩn cấp:* Manager (hoặc Admin) có thể chuyển bài học từ `PUBLISHED` về `ARCHIVED` khi có khiếu nại nghiêm trọng.
+- **Tiêu chuẩn nghiệm thu:** Chỉ Manager mới có quyền công bố học liệu (tuân thủ `D2=2B`); bảo đảm tính nhất quán phiên bản theo `D3=3B`.
+
+#### 📌 UC-11: Quản trị Tài khoản & Phân quyền Vai trò (Manage Accounts & Roles)
+- **Tác nhân chính:** `Administrator`.
+- **Mục tiêu:** Quản lý vòng đời tài khoản người dùng, gán và thu hồi các vai trò trong hệ thống theo nguyên tắc đặc quyền tối thiểu.
+- **Tiền điều kiện:** Administrator đã đăng nhập với vai trò `ADMIN`.
+- **Luồng chính:**
+  1. Admin truy cập trang Quản trị người dùng (`/admin/users`).
+  2. Xem danh sách tài khoản, tìm kiếm theo email hoặc tên hiển thị.
+  3. Chọn tài khoản cần điều chỉnh, cập nhật vai trò (`Role`: `LEARNER`, `LESSON_CREATOR`, `MODERATOR`, `ORGANIZATIONAL_MANAGER`, `OPERATIONS_STAFF`, `ADMIN`).
+  4. Hệ thống ghi nhận thay đổi vào cơ sở dữ liệu và tự động chèn 1 bản ghi bất biến vào `AuditLog`.
+- **Luồng ngoại lệ:**
+  - *Khóa tài khoản vi phạm:* Admin có quyền khóa (Disable) tài khoản; phiên làm việc hiện tại của tài khoản bị hủy bỏ ngay lập tức.
+- **Tiêu chuẩn nghiệm thu:** Mọi thay đổi quyền hạn được ghi nhận đầy đủ vào Audit Log; không cho phép Admin tự thu hồi quyền Admin duy nhất của hệ thống.
+
+#### 📌 UC-12: Xem Báo cáo Tổng quan & Vận hành Hệ thống (View System Reports)
+- **Tác nhân chính:** `Administrator`.
+- **Mục tiêu:** Cung cấp số liệu thống kê tổng thể về số lượng người dùng hoạt động (DAU/MAU), tỷ lệ hoàn thành bài học, tỷ lệ giữ chân và các chỉ số sức khỏe của dịch vụ.
+- **Tiền điều kiện:** Administrator đã đăng nhập.
+- **Luồng chính:**
+  1. Admin truy cập trang Báo cáo hệ thống (`/admin/analytics`).
+  2. Chọn khoảng thời gian lọc (7 ngày, 30 ngày, quý).
+  3. Hệ thống hiển thị biểu đồ: Số học viên mới, tổng số bài học đã hoàn thành, số lượt ôn tập SRS thành công, và tỷ lệ phản hồi của API GEC.
+  4. Xuất báo cáo tóm tắt dưới dạng file phục vụ lưu trữ quản trị.
+- **Tiêu chuẩn nghiệm thu:** Số liệu tổng hợp chính xác từ các bảng dữ liệu vận hành; không làm rò rỉ dữ liệu định danh chi tiết của từng cá nhân.
+
+#### 📌 UC-13: Kiểm toán An toàn & Nhật ký Hệ thống (View & Audit Security Logs)
+- **Tác nhân chính:** `Administrator`.
+- **Mục tiêu:** Giám sát các sự kiện nhạy cảm (thay đổi quyền, xuất bản học liệu, xóa dữ liệu, đăng nhập bất thường) để phục vụ công tác an toàn thông tin và truy cứu trách nhiệm.
+- **Tiền điều kiện:** Administrator đã đăng nhập.
+- **Luồng chính:**
+  1. Admin truy cập trang Nhật ký kiểm toán (`/admin/audit-logs`).
+  2. Hệ thống tải danh sách các bản ghi `AuditLog` sắp xếp giảm dần theo thời gian (`createdAt DESC`).
+  3. Mỗi bản ghi hiển thị: Tác nhân thực hiện (`actorId`), Hành động (`action`), Đối tượng tác động (`targetType`, `targetId`), Dữ liệu thay đổi (`payloadDiff`), Địa chỉ IP và Thời điểm thực hiện.
+  4. Admin sử dụng bộ lọc tìm kiếm theo tác nhân hoặc loại hành động để kiểm tra sự cố.
+- **Tiêu chuẩn nghiệm thu:** Bản ghi kiểm toán là bất biến (chỉ cho phép ghi, tuyệt đối không thể sửa hoặc xóa qua UI/API).
+
+#### 📌 UC-14: Tiếp nhận & Xử lý Khiếu nại Hỗ trợ (Handle Support Tickets)
+- **Tác nhân chính:** `Operations Staff`.
+- **Mục tiêu:** Quản lý các vé hỗ trợ kỹ thuật và khiếu nại nội dung từ học viên, điều phối giải quyết theo đúng thẩm quyền nghiệp vụ.
+- **Tiền điều kiện:** Operations Staff đã đăng nhập vào phân hệ hỗ trợ (`/admin/support`).
+- **Luồng chính:**
+  1. Nhân viên vận hành xem danh sách ticket mới gửi đến từ học viên.
+  2. Xem chi tiết nội dung khiếu nại (với dữ liệu học viên đã được tối thiểu hóa).
+  3. Phân loại ticket:
+     - Nếu là lỗi kỹ thuật/tài khoản: Hướng dẫn học viên hoặc chuyển tiếp (`Escalate`) cho Administrator.
+     - Nếu là lỗi nội dung bài học (báo sai đáp án, câu hỏi sai): Chuyển tiếp cho Moderator phụ trách kèm liên kết tới bài học cụ thể.
+  4. Sau khi sự cố được khắc phục, cập nhật trạng thái ticket sang `RESOLVED` và phản hồi cho học viên.
+- **Tiêu chuẩn nghiệm thu:** Nhân viên vận hành không có quyền sửa đổi nội dung khóa học hay dữ liệu điểm; quy trình chuyển tiếp minh bạch.
+
+#### 📌 UC-15: Quản lý Lớp học Liên kết & Tiến độ Nhóm (Manage Cohorts & Group Progress)
+> **Phân loại Phân hệ:** OPTIONAL B2B MODULE / FUTURE (Non-MVP — Không thuộc phạm vi 14 Use Case cốt lõi bắt buộc của MVP).
+- **Tác nhân chính:** `Organizational Manager`.
+- **Mục tiêu:** Quản lý các nhóm học viên doanh nghiệp hoặc trường học (Cohort B2B), gán khóa học bắt buộc và theo dõi báo cáo tiến độ học tập tổng thể của nhóm.
+- **Tiền điều kiện:** Phân hệ Cohort được kích hoạt (Optional Module); Manager có quyền quản lý nhóm đào tạo.
+- **Luồng chính:**
+  1. Manager truy cập phân hệ quản lý lớp học (`/admin/cohorts`).
+  2. Tạo mới Cohort (tên lớp, niên khóa, mã định danh tổ chức).
+  3. Thêm danh sách học viên vào Cohort và gán Khóa học bắt buộc (`Course`).
+  4. Xem bảng tổng hợp tiến độ: Tỷ lệ học viên đã hoàn thành từng Unit, tỷ lệ duy trì streak trung bình của lớp.
+- **Luồng ngoại lệ:**
+  - Nhằm bảo vệ quyền riêng tư học viên, Manager chỉ xem số liệu thống kê tổng hợp (Aggregate stats), không xem chi tiết lịch sử sửa câu riêng tư của từng học viên.
+- **Tiêu chuẩn nghiệm thu:** Phân hệ hoạt động độc lập, không làm ảnh hưởng đến trải nghiệm học tập B2C thông thường.
 
 ---
 
-#### 📌 UC-03: Thực hiện Bài tập Tương tác & Đánh giá Kết quả
-* **Mục tiêu:** Học viên giải quyết các dạng bài tập trong bài học để củng cố kiến thức và tích lũy điểm tiến độ.
-* **Tác nhân:** Học viên (`Learner`).
-* **Tiền điều kiện:** Học viên đã mở một bài học đã xuất bản (`isPublished=true`).
-* **Luồng chính:**
-  1. Client tải danh sách bài tập của bài học sắp xếp theo `orderIndex ASC`.
-  2. Giao diện hiển thị lần lượt từng bài tập dựa trên `Exercise.type`:
-     - `MCQ`: Chọn 1 đáp án đúng trong danh sách lựa chọn.
-     - `FILL_BLANK`: Điền từ/cụm từ còn thiếu vào chỗ trống.
-     - `REORDER`: Kéo thả/sắp xếp lại các token từ thành câu hoàn chỉnh.
-     - `GRAMMAR` / `LISTENING`: (Dạng bài tập mở rộng theo `ADR-006`).
-  3. Học viên thao tác câu trả lời và nhấn "Kiểm tra".
-  4. Engine client kiểm tra kết quả dựa trên schema JSON payload, hiển thị giải thích đáp án ngay lập tức.
-  5. Khi hoàn thành toàn bộ bài tập trong bài học, client gửi kết quả tổng hợp lên Server Action.
-  6. Server Action tính toán tỷ lệ đúng (`score`: 0–100%), ghi nhận hoàn thành vào `UserProgress` (trạng thái `COMPLETED` nếu `score >= 80%`).
+## 5. Biểu đồ & Đặc tả 15 Luồng Xử lý Nghiệp vụ Trọng yếu (Business Flows)
 
----
-
-#### 📌 UC-05: Ôn tập Từ vựng bằng SRS Xác định
-* **Mục tiêu:** Chọn thẻ đến hạn theo trạng thái learner-owned và ghi nhận kết quả ôn tập nguyên tử.
-* **Tác nhân:** Học viên (`Learner`). Supabase PostgreSQL/RPC là thành phần hỗ trợ dữ liệu.
-* **Tiền điều kiện:** Học viên có từ vựng đã học trong bảng `UserVocabSrs`.
-* **Luồng chính:**
-  1. Client yêu cầu danh sách từ vựng cần ôn tập.
-  2. Web query lấy learner-owned due cards với `nextReviewAt <= now` qua RLS/index boundary.
-  3. Học viên thực hiện ôn tập từ vựng trên giao diện.
-  4. Sau khi trả lời, client gọi RPC `record_review` để cập nhật đồng thời `UserVocabSrs` và thêm bản ghi bất biến vào `ReviewLog`.
-* **Luồng ngoại lệ (Offline / Fallback Flow):**
-  - SRS không phụ thuộc GEC service; model-unavailable của GEC không làm gián đoạn review.
-
----
-
-#### 📌 UC-06: Luyện viết Tình huống với GEC
-* **Mục tiêu:** Học viên thực hành viết tiếng Anh theo prompt có thứ tự và nhận câu sửa lỗi.
-* **Tác nhân:** Học viên (`Learner`). GEC/T5-small là xử lý nội bộ của Lingora.
-* **Tiền điều kiện:** Học viên chọn một kịch bản giao tiếp đang hoạt động (`ChatScenario.isActive=true`).
-* **Luồng chính:**
-  1. Học viên chọn `ChatScenario` và nhận prompt kế tiếp do state machine xác định.
-  2. Học viên nhập câu tiếng Anh và nhấn Gửi.
-  3. Next.js Route Handler `/api/ai/gec` forward request tới `/v1/gec/correct`.
-  4. FastAPI xác thực JWT và T5-small sinh `corrected_text`.
-  5. Alignment/diff và classifier tạo corrections/error_type; suggestion/explanation có thể bỏ qua.
-  6. Client hiển thị original/corrected dưới dạng text đã escape; kết quả transient trong MVP.
-
----
-
-## 5. Biểu đồ Luồng Xử lý Nghiệp vụ Trọng yếu (System Sequence Flows)
-
-### 5.1 Luồng Xác thực & Gọi AI Microservice qua Next.js BFF Proxy
-
+### 5.1 BF-01: Luồng Xác thực & Khởi tạo Phiên (Authentication Flow)
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Learner as Học viên (Browser)
-    participant NextWeb as Next.js Web App (lingora-web)
-    participant RouteHandler as Route Handler (/api/ai/gec)
-    participant SupaAuth as Supabase Auth (JWKS)
-    participant FastAPI as Internal GEC Processing (lingora-ai/api)
-    participant SupaDB as Supabase PostgreSQL
+    actor User as Người dùng
+    participant Web as Next.js Web Client
+    participant Auth as Supabase GoTrue Auth
+    participant DB as PostgreSQL Database
 
-    Learner->>NextWeb: Nhập câu tiếng Anh theo prompt
-    NextWeb->>RouteHandler: POST /api/ai/gec (kèm Session Cookie)
-    Note over RouteHandler: Đọc access_token từ Server Session
-    RouteHandler->>FastAPI: POST /v1/gec/correct (Authorization: Bearer JWT)
-    FastAPI->>SupaAuth: Lấy public key qua kid từ .well-known/jwks.json (Cached)
-    FastAPI->>FastAPI: Cryptographic Verification (ES256/ECDSA, exp, role)
-    alt Token Hợp lệ
-        FastAPI-->>RouteHandler: HTTP 200 { corrected_text: "...", is_mock: true }
-        RouteHandler-->>NextWeb: HTTP 200 Response
-        NextWeb-->>Learner: Hiển thị original/corrected diff an toàn
-    else Token Hết hạn / Không hợp lệ
-        FastAPI-->>RouteHandler: HTTP 401 Unauthorized
-        RouteHandler-->>NextWeb: HTTP 401 Session Expired
-        NextWeb-->>Learner: Chuyển hướng /login hoặc yêu cầu làm mới phiên
-    else Timeout > 8.0s hoặc AI Down
-        RouteHandler-->>NextWeb: HTTP 504 / 503 (ApiErrorEnvelope)
-        NextWeb-->>Learner: Thông báo lỗi thân thiện / cho phép thử lại
+    User->>Web: Nhập email, mật khẩu tại /login
+    Web->>Auth: POST /auth/v1/token?grant_type=password
+    Auth-->>Web: Trả về access_token (ES256) & refresh_token
+    Web->>Web: Thiết lập httpOnly, SameSite=Lax Cookie
+    Web->>DB: Lấy vai trò Profile.role qua RLS
+    DB-->>Web: Trả về role (LEARNER / ADMIN / ...)
+    Web-->>User: Chuyển hướng Dashboard tương ứng
+```
+
+### 5.2 BF-02: Luồng Lập Kế hoạch Đề cương Khóa học (Curriculum Planning Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Manager as Organizational Manager
+    participant AdminUI as lingora-admin
+    participant DB as PostgreSQL Database
+
+    Manager->>AdminUI: Tạo Course & Thiết lập các Unit theo thứ tự
+    AdminUI->>DB: INSERT INTO "Course", "Unit"
+    Manager->>AdminUI: Khởi tạo khung bài học (Lesson Skeleton)
+    AdminUI->>DB: INSERT INTO "Lesson" (status = DRAFT, orderIndex)
+    DB-->>AdminUI: Xác nhận tạo thành công
+    AdminUI-->>Manager: Hiển thị sơ đồ đề cương khóa học
+```
+
+### 5.3 BF-03: Luồng Phân công Biên soạn (Content Assignment Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Manager as Organizational Manager
+    participant AdminUI as lingora-admin
+    participant DB as PostgreSQL Database
+    actor Creator as Lesson Creator
+
+    Manager->>AdminUI: Chọn Lesson, gán Creator & tạo AssignmentBrief
+    AdminUI->>DB: UPDATE "Lesson" SET creatorId = targetCreatorId
+    DB-->>AdminUI: Cập nhật thành công
+    AdminUI-->>Creator: Thông báo phân công nhiệm vụ mới
+    Creator->>AdminUI: Mở bài học, xem mục tiêu sư phạm và deadline
+```
+
+### 5.4 BF-04: Luồng Biên soạn Học liệu (Lesson Authoring Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Creator as Lesson Creator
+    participant AdminUI as lingora-admin
+    participant Storage as Supabase Storage
+    participant DB as PostgreSQL Database
+
+    Creator->>AdminUI: Soạn từ vựng, câu hỏi bài tập (MCQ, Fill, Reorder)
+    Creator->>AdminUI: Tải lên tệp audio phát âm & ảnh minh họa
+    AdminUI->>Storage: Upload media vào lingora-media (draft path)
+    Storage-->>AdminUI: Trả về public URL an toàn
+    Creator->>AdminUI: Bấm "Gửi duyệt"
+    AdminUI->>DB: UPDATE "Lesson" SET status = 'IN_REVIEW'
+    DB-->>AdminUI: Trạng thái cập nhật thành công
+```
+
+### 5.5 BF-05: Luồng Thẩm định & Phê duyệt Học liệu (Content Review Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Moderator as Moderator
+    participant AdminUI as lingora-admin
+    participant DB as PostgreSQL Database
+    actor Creator as Lesson Creator
+
+    Moderator->>AdminUI: Mở bài học trạng thái IN_REVIEW
+    Note over AdminUI: Kiểm tra moderatorId != creatorId (D2=2B)
+    Moderator->>AdminUI: Rà soát học thuật, audio, đáp án bài tập
+    alt Nội dung đạt chuẩn
+        Moderator->>AdminUI: Bấm "Phê duyệt"
+        AdminUI->>DB: UPDATE "Lesson" SET status = 'APPROVED', reviewerId = modId
+    else Phát hiện sai sót
+        Moderator->>AdminUI: Chọn "Yêu cầu chỉnh sửa", nhập lý do
+        AdminUI->>DB: UPDATE "Lesson" SET status = 'CHANGES_REQUESTED'
+        AdminUI-->>Creator: Thông báo kèm nhận xét chỉnh sửa
     end
 ```
 
----
+### 5.6 BF-06: Luồng Cập nhật Nội dung Đã Xuất bản (Content Revision Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Manager as Organizational Manager
+    participant AdminUI as lingora-admin
+    participant DB as PostgreSQL Database
+    actor Creator as Lesson Creator
 
-### 5.2 Luồng Ôn tập SRS & Ghi nhận Lịch sử Bất biến qua RPC
+    Note over DB: Bài học v1 đang PUBLISHED
+    Manager->>AdminUI: Yêu cầu nâng cấp bài học v1
+    AdminUI->>DB: Nhân bản v1 thành bản thảo v2 (Clone-to-Draft 3B)
+    DB-->>AdminUI: Bản ghi v2 ở trạng thái DRAFT
+    Manager->>AdminUI: Phân công v2 cho Creator
+    Creator->>AdminUI: Chỉnh sửa v2, gửi duyệt như luồng bình thường
+    Note over DB: Học viên tiếp tục học v1 không bị gián đoạn
+```
 
+### 5.7 BF-07: Luồng Xuất bản Học liệu (Publication Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Manager as Organizational Manager
+    participant AdminUI as lingora-admin
+    participant DB as PostgreSQL Database
+
+    Manager->>AdminUI: Chọn bài học APPROVED cần xuất bản
+    Manager->>AdminUI: Bấm "Xuất bản" (Publish)
+    AdminUI->>DB: UPDATE "Lesson" SET status = 'PUBLISHED', isPublished = true
+    opt Nếu là xuất bản Revision v2
+        AdminUI->>DB: UPDATE "Lesson" v1 SET status = 'ARCHIVED', isPublished = false
+    end
+    DB-->>AdminUI: Xuất bản thành công
+    AdminUI-->>Manager: Bài học đã hiển thị trên Web Learner Client
+```
+
+### 5.8 BF-08: Luồng Kiểm tra Định vị Trình độ (Placement Test Flow)
 ```mermaid
 sequenceDiagram
     autonumber
     actor Learner as Học viên
-    participant NextWeb as lingora-web
-    participant SupaDB as Supabase PostgreSQL (RPC)
+    participant Web as Next.js Web Client
+    participant DB as PostgreSQL Database
 
-    Learner->>NextWeb: Hoàn thành ôn tập từ vựng (Nhớ / Quên)
-    NextWeb->>SupaDB: CALL record_review(p_vocab_id, p_score, p_response_time_ms)
-    Note over SupaDB: Thực thi trong 1 Transaction nguyên tử:
-    SupaDB->>SupaDB: 1. INSERT INTO "ReviewLog" (id, userId, vocabId, score, ...)
-    SupaDB->>SupaDB: 2. UPDATE "UserVocabSrs" SET interval, nextReviewAt, repetitions...
-    SupaDB-->>NextWeb: Success (Cập nhật thành công)
-    NextWeb-->>Learner: Hiển thị tiến trình từ vựng & thời gian ôn tập tiếp theo
+    Learner->>Web: Bắt đầu bài kiểm tra định vị (~30 câu)
+    alt Bỏ qua bài kiểm tra (Skip)
+        Learner->>Web: Chọn "Bỏ qua"
+        Web->>DB: Thiết lập Starting Unit = Unit 1
+    else Hoàn thành bài kiểm tra
+        Learner->>Web: Trả lời 30 câu hỏi và nộp bài
+        Web->>Web: Tính tổng điểm và xác định Starting Unit
+        Web->>DB: Lưu điểm số & cập nhật Starting Unit
+        Web-->>Learner: Hiển thị đề xuất Starting Unit và nút bắt đầu
+    end
+```
+
+### 5.9 BF-09: Luồng Học Bài học & Làm Bài tập (Learning Lesson Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Learner as Học viên
+    participant Web as Next.js Web Client
+    participant DB as PostgreSQL Database
+
+    Learner->>Web: Chọn bài học khả dụng trong lộ trình
+    Web->>DB: Lấy chi tiết bài học, từ vựng và bài tập (RLS)
+    DB-->>Web: Trả về Lesson, Vocabulary, Exercise[]
+    Learner->>Web: Học từ vựng, nghe audio phát âm
+    Learner->>Web: Làm từng bài tập tương tác
+    Web-->>Learner: Hiển thị đúng/sai và giải thích tức thời
+```
+
+### 5.10 BF-10: Luồng Làm lại Có kiểm soát (Controlled Retry Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Learner as Học viên
+    participant Web as Next.js Web Client
+    participant DB as PostgreSQL Database
+
+    Note over Web: Kết thúc lượt câu hỏi chính, có k câu sai
+    Web->>Web: Tính dung sai: Bỏ qua tối đa 10% số câu sai
+    Web->>Web: Đưa các câu sai bắt buộc vào Hàng đợi Làm lại
+    loop Thực hiện hàng đợi làm lại
+        Learner->>Web: Giải quyết lại câu hỏi trong hàng đợi
+        Web->>Web: Ghi nhận đúng, tính 70% credit điểm số
+    end
+    Web->>DB: Ghi nhận UserProgress (status = COMPLETED, score)
+    DB-->>Web: Cập nhật thành công
+    Web-->>Learner: Chúc mừng hoàn thành bài học
+```
+
+### 5.11 BF-11: Luồng Đánh giá Nhảy cấp Đơn vị (Conditional Jump Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Learner as Học viên
+    participant Web as Next.js Web Client
+    participant DB as PostgreSQL Database
+
+    Learner->>Web: Yêu cầu Jump qua Unit kế tiếp
+    Web->>DB: Tải bài kiểm tra tổng hợp Unit (Jump Assessment)
+    Learner->>Web: Hoàn thành bài kiểm tra và nộp bài
+    alt Điểm số >= 95%
+        Web->>DB: Mở khóa Unit mục tiêu và các bài học trung gian
+        Web-->>Learner: Nhảy cấp thành công! Chuyển tới Unit mới
+    else Điểm số < 95%
+        Web->>DB: Ghi nhận thời điểm thất bại
+        Web-->>Learner: Chưa đạt điểm nhảy cấp. Khóa nút Jump trong 24 giờ (Cooldown)
+    end
+```
+
+### 5.12 BF-12: Luồng Ôn tập Thẻ Từ vựng SRS (SRS Review Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Learner as Học viên
+    participant Web as Next.js Web Client
+    participant DB as PostgreSQL (RPC record_review)
+
+    Learner->>Web: Mở màn hình Ôn tập SRS
+    Web->>DB: Truy vấn due cards (nextReviewAt <= now())
+    DB-->>Web: Trả về danh sách thẻ đến hạn
+    Learner->>Web: Xem thẻ, tự đánh giá (Again / Hard / Good / Easy)
+    Web->>DB: CALL record_review(vocabId, rating, responseTime)
+    Note over DB: Chèn ReviewLog và tính interval mới [1,3,7,14,30]
+    DB-->>Web: Cập nhật thành công trong 1 transaction
+    Web-->>Learner: Chuyển thẻ tiếp theo
+```
+
+### 5.13 BF-13: Luồng Cập nhật Tiến độ & Chuỗi Ngày học (Progress & Streak Tracking Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Learner as Học viên
+    participant Web as Next.js Web Client
+    participant DB as PostgreSQL Database
+
+    Learner->>Web: Hoàn thành 1 bài học hoặc 1 phiên ôn tập SRS
+    Web->>DB: Kiểm tra lastQualifyingActivityDate theo múi giờ Asia/Ho_Chi_Minh
+    alt Hoạt động đầu tiên trong ngày mới (hôm qua có học)
+        Web->>DB: UPDATE Profile SET streakCount = streakCount + 1, lastDate = today
+    else Đã học trong ngày hôm nay
+        Web->>DB: Giữ nguyên streakCount
+    else Bỏ lỡ ngày học (hôm qua không học)
+        Web->>DB: UPDATE Profile SET streakCount = 1, lastDate = today
+    end
+    DB-->>Web: Cập nhật streak thành công
+    Web-->>Learner: Hiển thị biểu tượng Streak lửa kèm hiệu ứng
+```
+
+### 5.14 BF-14: Luồng Luyện viết Tình huống & Sửa lỗi GEC (Scenario Writing with GEC Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Learner as Học viên
+    participant Web as Next.js Web Client (BFF)
+    participant AI as Internal FastAPI (T5-small)
+
+    Learner->>Web: Nhập câu tiếng Anh theo gợi ý kịch bản
+    Web->>Web: Lấy session JWT từ httpOnly Cookie
+    Web->>AI: POST /v1/gec/correct (Authorization: Bearer JWT)
+    Note over AI: Kiểm tra JWKS, phân tích ngữ pháp qua model T5
+    alt Thành công (thời gian < 8.0s)
+        AI-->>Web: 200 OK { corrected_text, edits, is_mock: false }
+        Web->>Web: Tính diff highlight trực quan
+        Web-->>Learner: Hiển thị câu đã sửa và giải thích ngữ pháp
+    else Timeout > 8.0s hoặc AI sự cố
+        Web-->>Learner: Thông báo lỗi thân thiện, cho phép học viên gửi lại
+    end
+```
+
+### 5.15 BF-15: Luồng Tiếp nhận Sự cố & Vận hành Ticket (Operations & Ticket Flow)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Learner as Học viên
+    participant Web as Next.js Web Client
+    actor Ops as Operations Staff
+    actor Mod as Moderator
+    actor Admin as Administrator
+
+    Learner->>Web: Gửi báo cáo lỗi câu hỏi / sự cố kỹ thuật
+    Web->>Ops: Tạo vé hỗ trợ mới (SupportTicket)
+    Ops->>Ops: Tiếp nhận và phân loại nội dung
+    alt Lỗi học thuật / Đáp án câu hỏi sai
+        Ops->>Mod: Chuyển tiếp (Escalate) sang Moderator xử lý
+        Mod->>Mod: Tạo Revision v2 sửa bài học
+    else Lỗi tài khoản / Bảo mật
+        Ops->>Admin: Chuyển tiếp sang Administrator xử lý
+    end
+    Ops->>Learner: Phản hồi kết quả xử lý và đóng vé hỗ trợ
 ```
 
 ---
 
-## 6. Sổ đăng ký Giả định, Ràng buộc & Phạm vi Tạm hoãn (Assumptions, Constraints & Deferred Scope)
+## 6. Mô hình Dữ liệu Logic & Ranh giới Thực thể (Logical Data Model Audit)
 
-### 6.1 Giả định Cốt lõi (Assumptions)
-- **G1 (Giả định Mạng & Hạ tầng):** Người học duy trì kết nối Internet tiêu chuẩn khi tương tác với nền tảng Web; AI microservice triển khai độc lập và được kết nối bảo mật nội bộ/HTTPS.
-- **G2 (Giả định Trình duyệt):** Trình duyệt học viên hỗ trợ tiêu chuẩn Web hiện đại (HTML5, ES2022, CSS Flexbox/Grid, hỗ trợ httpOnly Cookie và Audio API phát âm).
+### 6.1 Bảng Đối chiếu Thực thể Logic vs Hiện thực Cơ sở Dữ liệu (OD-3 Reality Check)
 
-### 6.2 Ràng buộc Kiến trúc & Kỹ thuật (Constraints)
-- **C1 (Công nghệ Nền tảng):** Web Client viết bằng Next.js 15 App Router + React 19 + TypeScript + Tailwind CSS 4.
-- **C2 (Bảo mật Phiên):** Tuyệt đối không lưu trữ Token nhạy cảm tại `localStorage`/`sessionStorage` của trình duyệt; bắt buộc sử dụng `httpOnly` Cookie.
-- **C3 (GEC nội bộ):** `lingora-ai/api` là thành phần xử lý stateless nằm trong ranh giới Lingora; giao tiếp nội bộ bằng REST JSON và xác thực request bằng JWKS.
-- **C4 (Toàn vẹn Dữ liệu):** RLS policies tại cơ sở dữ liệu là phòng tuyến bảo mật dữ liệu cuối cùng; mọi thao tác ghi nhật ký SRS bắt buộc qua RPC `record_review`.
+> 📌 **Phân biệt rành mạch 3 tầng hiện thực (OD-3):**  
+> - **TARGET DESIGN (`lingora-admin/prisma/schema.prisma`):** Thiết kế mục tiêu đầy đủ 6 vai trò, phân cấp Unit, và quy trình 6 trạng thái.  
+> - **CURRENT APPLIED DATABASE (`migrations/*.sql`):** CSDL PostgreSQL thực tế đang áp dụng cấu trúc phẳng Course–Lesson, 2 vai trò `LEARNER`/`ADMIN`, và cờ boolean `is_published`.  
+> - **CURRENT RUNTIME (`lingora-web`):** Môi trường chạy 5 bài học mẫu phẳng; cần migration M3 trước khi kích hoạt Unit và quy trình 6 vai trò trên runtime.
 
-### 6.3 Danh mục Phạm vi Tạm hoãn (Deferred Scope Register)
-- **Option 6b — Web Push & Background Scheduler:** Đã phê duyệt **TẠM HOÃN (DEFERRED)** theo `ADR-008`. Không triển khai Web Push Service Worker, bảng `push_subscriptions`, VAPID keys hoặc cron scheduler độc lập trong Milestone M1/M2.
-- **Option 6d — In-App Reminder UI:** Cơ chế nhắc nhở trong ứng dụng được lên kế hoạch cho milestone tính năng sau (M2+), không thuộc phạm vi nền tảng M1.6W.
-- **Dạng bài tập GRAMMAR & LISTENING:** Đã được phê duyệt về mặt kiến trúc tại `ADR-006`, nhưng được cấu trúc payload và triển khai schema trong milestone tính năng M2.
+| Thực thể Logic (Logical Concept) | Thực thể Prisma Mục tiêu | Tình trạng Hiện thực (Applied vs Target) | Ranh giới & Giải pháp Kỹ thuật |
+|---|---|:---:|---|
+| **Course** (Khóa học) | `Course`, `CourseTranslation` | `APPLIED_IN_DATABASE` | Đã có trong PostgreSQL thực tế và Prisma target; khóa học đa ngôn ngữ, phân cấp nội bộ A1. |
+| **Unit** (Đơn vị học) | `Unit`, `UnitTranslation` | `TARGET_SCHEMA_ONLY` | Đã có trong `schema.prisma` target; **chưa có trong Applied DB** (Cần migration M3 để tạo bảng `units`). |
+| **Lesson** (Bài học) | `Lesson`, `LessonTranslation` | `PARTIALLY_APPLIED` | Bảng `lessons` đã có trong Applied DB nhưng chỉ có `is_published` boolean. Các trường `creatorId`, `reviewerId`, `unitId` và enum `ContentStatus` chỉ mới tồn tại trong **Target Schema** (Cần migration M3). |
+| **Exercise** (Bài tập) | `Exercise` | `PARTIALLY_APPLIED` | Bảng `exercises` đã có trong Applied DB với 3 dạng (`MCQ`, `FILL_BLANK`, `REORDER`). Dạng `GRAMMAR` và `LISTENING` đã duyệt ở `ADR-006` nhưng là **Target M2 migration**. Không tạo bảng Quiz/Exam riêng (D4). |
+| **Vocabulary** (Từ vựng) | `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary` | `APPLIED_IN_DATABASE` | Đã có trong PostgreSQL thực tế và Prisma target; lưu từ vựng, phiên âm IPA, audio URL. |
+| **Progress** (Tiến độ học) | `UserProgress` | `APPLIED_IN_DATABASE` | Đã có trong PostgreSQL thực tế và Prisma target; lưu trạng thái hoàn thành và điểm số của từng học viên. |
+| **SRS State & Log** | `UserVocabSrs`, `ReviewLog` | `APPLIED_IN_DATABASE` | Đã có trong PostgreSQL thực tế và Prisma target; ôn tập qua RPC PostgreSQL `record_review`. |
+| **Scenario Writing** | `ChatScenario`, `ChatScenarioTranslation` | `APPLIED_IN_DATABASE` | Đã có trong PostgreSQL thực tế và Prisma target; kịch bản luyện viết; kết quả GEC xử lý transient. |
+| **Assignment Brief** | Thuộc tính phân công bài học | `LOGICAL_ATTRIBUTE` | Lưu trữ trong trường metadata JSONB của `Lesson` (Target), không cần bảng riêng. |
+| **Support Ticket** | Vé hỗ trợ vận hành người dùng | `LOGICAL GAP — FUTURE/REVIEW` | Yêu cầu nghiệp vụ đã định hình từ persona Ops Staff; không thêm bảng vào DB trong Phase 0. |
+| **Cohort** | Lớp học liên kết doanh nghiệp/trường học | `OPTIONAL B2B MODULE — FUTURE` | Phân hệ B2B mở rộng tùy chọn (`MVP-17`); không thêm bảng vào DB trong Phase 0. |
+| **Audit Log** | Nhật ký kiểm toán an toàn hệ thống | `TARGET_SCHEMA_ONLY` | Model `AuditLog` đã định nghĩa trong `schema.prisma` target; **chưa có trong Applied DB** (Cần migration M3). |
+
+> [!IMPORTANT]
+> **CAM KẾT BẢO TỒN SCHEMA:** Bảng phân tích trên hoàn toàn giữ nguyên `schema.prisma` và không phát sinh bất kỳ migration SQL nào trong Phase 0.
 
 ---
 
-## 7. Bảng Tổng hợp Kết quả Kiểm tra & Bằng chứng Đối chiếu (Audit Findings Register)
+## 7. Giả định, Ràng buộc, NFRs & Truy vết Phản biện Giảng viên
 
-| ID Phát hiện | Mô tả vấn đề | Căn cứ pháp lý / Bằng chứng thực tế | Phân loại | Hướng xử lý & Trạng thái |
-|---|---|---|---|---|
-| **F-01** | Trạng thái chuyển đổi nền tảng từ Android sang Web | `ADR-008` phê duyệt ngày 2026-08-17; 61 file Android đã được xóa sạch; commit `585ca6c` là recovery point. | `ADR-LOCKED` | Toàn bộ tài liệu chuẩn hóa chỉ mô tả `lingora-web`; Android chỉ xuất hiện trong mục lịch sử/superseded. |
-| **F-02** | Xung đột thuật toán JWT (ES256 vs HS256) | `ADR-009` sửa đổi verifier của FastAPI; hỗ trợ `ES256` qua JWKS và `HS256` fallback; 37/37 Pytest PASS. | `IMPLEMENTED` | Đã giải quyết triệt để trong `lingora-ai/api/app/auth.py`; test `M1.6W-T-006/007` đã PASS sau rerun. |
-| **F-03** | Enum `ExerciseType` trong Prisma hiện tại | Prisma schema và migration hiện tại có `MCQ`, `FILL_BLANK`, `REORDER`. Chưa có `GRAMMAR`, `LISTENING`. | `EVIDENCE-GAP` | Ghi nhận rõ trong Từ điển Dữ liệu: `GRAMMAR`/`LISTENING` đã duyệt theo `ADR-006` nhưng chờ migration M2. |
-| **F-04** | Route `/v1/chat/scenarios` trong internal processing | FastAPI hiện chỉ expose các compatibility/health/model routes đã ghi trong API contract. | `CONTRACT-FINDING`| Kịch bản `ChatScenario` được lưu và quản lý trực tiếp trong PostgreSQL/Prisma; internal processing không phải actor và không sở hữu dữ liệu chính. |
+### 7.1 Giả định & Ràng buộc Kỹ thuật
+- **G1 (Mạng & Hạ tầng):** Học viên sử dụng kết nối Internet ổn định; dịch vụ GEC triển khai nội bộ, stateless, cô lập với mạng ngoài.
+- **C1 (Nền tảng):** Web Client viết bằng Next.js 15 App Router + React 19 + TypeScript + Tailwind CSS 4.
+- **C2 (Bảo mật Phiên):** Không lưu token trong `localStorage`; dùng `httpOnly` cookie.
+- **C3 (Toàn vẹn SRS):** Mọi thao tác cập nhật SRS bắt buộc qua hàm RPC PostgreSQL `record_review`.
+
+### 7.2 10 Yêu cầu Phi Chức năng Thiết yếu (NFRs)
+1. **NFR-SEC-01:** Token phiên bảo mật qua cookie `httpOnly`, `SameSite=Lax`.
+2. **NFR-SEC-02:** RLS bảo đảm học viên chỉ đọc/ghi dữ liệu của chính mình (`auth.uid() = userId`).
+3. **NFR-AUD-03:** Mọi thao tác gán quyền, duyệt bài, xuất bản bắt buộc ghi nhận nhật ký kiểm toán.
+4. **NFR-REL-04:** Luồng học bài và ôn tập SRS hoạt động độc lập 100% với AI GEC service.
+5. **NFR-PERF-05:** Thời gian tải bài học và khởi tạo phiên $< 500\text{ms}$.
+6. **NFR-PERF-06:** Thời gian phản hồi GEC $p95 \le 2000\text{ms}$; timeout cứng 8.0s.
+7. **NFR-UX-07:** Giao diện Web Responsive từ di động ($375\text{px}$) đến máy tính để bàn; đạt chuẩn tương phản WCAG 2.1 AA.
+8. **NFR-I18N-08:** Hỗ trợ song ngữ đầy đủ (`vi`/`en`), chuyển đổi mượt mà không reload trang.
+9. **NFR-INT-09:** Thao tác ôn tập SRS thực thi nguyên tử qua RPC `record_review`.
+10. **NFR-VER-10:** Nhất quán phiên bản nội dung (Revision 3B); xuất bản v2 không gây lỗi cho học viên đang học v1.
+
+### 7.3 Bảng Truy vết 11 Điểm Phản biện của Giảng viên Hướng dẫn
+
+| STT | Phản biện của Giảng viên | Giải pháp Lingora | Minh chứng Kỹ thuật | Trạng thái |
+|:---:|---|---|---|:---:|
+| 1 | Xác định lại các nhóm đối tượng người dùng | 6 vai trò canonical phân định trách nhiệm minh bạch | Mục 2 & `plantuml/role-permission-matrix.puml` | `RESOLVED` |
+| 2 | Xác định yêu cầu chức năng của từng nhóm | Ma trận quyền hạn và 15 Use Case bao phủ 6 vai trò | Mục 4 & `docs/phase-0-synthetic-stakeholder-research.md` | `COMPLETED` |
+| 3 | Kế hoạch quản trị học liệu | Manager thiết lập Course/Unit skeleton trước khi phân công | D1=1A, BF-02, BF-03 | `LOCKED` |
+| 4 | Phân công biên soạn | Giao việc gắn liền `AssignmentBrief` và `Lesson.creatorId` | D1=1A, BF-03 | `LOCKED` |
+| 5 | Biên soạn học liệu | Bài học cô đọng 5–10 phút, bài tập `MCQ`, `FILL_BLANK`, `REORDER` | D4=4A, BF-04 | `LOCKED` |
+| 6 | Kiểm duyệt học thuật | Moderator kiểm tra độc lập, yêu cầu sửa kèm lý do cụ thể | D1, D2=2B, BF-05 | `LOCKED` |
+| 7 | Phê duyệt học liệu | Moderator cấp `APPROVED`; cấm tự duyệt bài của chính mình | D2=2B, BF-05 | `LOCKED` |
+| 8 | Xuất bản học liệu | Quyền xuất bản thuộc về Organizational Manager | D2=2B, BF-07 | `LOCKED` |
+| 9 | Cập nhật nội dung đã xuất bản | Quy trình Revision Clone-to-draft v2; không sửa in-place | D3=3B, BF-06 | `LOCKED` |
+| 10 | Quy trình học tập sư phạm | Placement (~30q), Jump (95%+24h), Controlled Retry (10%+70%), SRS Policy B, Streak timezone | D5–D9, BF-08 đến BF-13 | `LOCKED` |
+| 11 | Khám phá yêu cầu qua khảo sát | Phân định tuyệt đối khảo sát thật $N=15$ và khảo sát mô phỏng 20 persona | Mục 1 & `docs/phase-0-synthetic-stakeholder-research.md` | `COMPLETED` |
+
+---
+
+## 8. Kết luận & Trạng thái Tài liệu
+
+$$\mathbf{\Large \text{TRẠNG THÁI: } \text{READY FOR REQUIREMENTS FREEZE}}$$
+
+1. **Hoàn thiện Đặc tả Phân tích:** Hệ thống phân tích đã bao phủ toàn diện 6 vai trò, 15 Use Case canonical (14 Core + 1 Optional B2B), 15 luồng xử lý nghiệp vụ chuẩn mực và 11 yêu cầu phản biện của giảng viên.
+2. **Khép lại Hoàn toàn Quyết định Đề cương & Định vị:** Bảng quy đổi điểm kiểm tra định vị đã được Product Owner chính thức phê duyệt theo **Placement Mapping A** (0–7: U1, 8–12: U2, 13–17: U3, 18–22: U4, 23–26: U5, 27–30: U6; không claim CEFR), chính thức đóng quyết định `OD-PLACEMENT-MAPPING`.
+3. **Ranh giới Bất biến:**  
+   **TUYỆT ĐỐI KHÔNG CODE, KHÔNG SỬA SCHEMA, KHÔNG TẠO MIGRATION, KHÔNG TRIỂN KHAI M2.**

@@ -5,6 +5,36 @@ Append test evidence after implementation. Failed tests remain recorded; add a l
 | Test ID | Date | Feature | Expected | Actual | Status | Environment | Build/commit |
 |---|---|---|---|---|---|---|---|
 | `[T-XXX]` | `YYYY-MM-DD` | `[feature]` | `[expected]` | `[actual]` | `PASS/FAIL/BLOCKED` | `[OS/device/runtime/data]` | `[build/hash]` |
+| T-M21-FIX-001 | 2026-09-15 | M2.1 Independent Audit Fixes (P0-01..P1-07) | Administrator emergency authority restored with audit/justification; ARCHIVED->DRAFT removed from Core; TARGET_EXT eliminated repo-wide (2-axis model); ExerciseType field-level breakdown (Applied vs Target/Future, 0 Matching); D-G1 and D-G2 re-evaluated; candidates normalized to TARGET DESIGN CANDIDATE / OPEN DESIGN REPRESENTATION; 0 code/migrations/DB writes; M2.2 NOT STARTED | All 7 findings verified: Administrator emergency publish/archive present with mandatory reason and AuditLog constraint; ARCHIVED->DRAFT absent from Core; TARGET_EXT completely removed; ExerciseType enum accurately mapped (MCQ, FILL_BLANK, REORDER in Applied DB; LISTENING, GRAMMAR in Target Schema; 0 Matching); candidate columns/representations labeled TARGET DESIGN CANDIDATE / OPEN DESIGN REPRESENTATION; D-G1 and D-G2 re-evaluated with verified evidence; status REVISED — READY FOR RE-REVIEW | PASS | Windows 11 / Node v24 / Static Inspection & Verification Scripts | `m2-1-audit-fix` |
+| T-M21-VERIF-001 | 2026-09-15 | M2.1 Final Verification & Evidence Audit | Enforcement boundary clarified (no DB over-claims); DD-07/08 verified from applied migrations; 18 Core Scope tables align 1-to-1 with §8.1–§8.18 (100% coverage); 0 code/migrations/DB writes; M2.2 NOT STARTED | All 7 directives verified: forbidden actions labeled design invariants & future enforcement requirements; DD-07/08 proven from 202608140001_init/202608140002; exact 18-table inventory table added; §8 renumbered to 18 individual tables (§8.1–§8.18); M2.2 not started; status REVISED — READY FOR RE-REVIEW | PASS | Windows 11 / Node v24 / Static Verification & Migration Audit | `m2-1-verification` |
+| T-M21-REV-001 | 2026-09-15 | PlantUML Static Syntax & Reference Validation | 4 diagrams pass static syntax balance (@startuml/@enduml, valid types, no Matching, no Admin emergency publish) | Static syntax balance checked cleanly across all 4 .puml files; PlantUML/Java renderer unavailable in environment | PASS | Windows 11 / PowerShell static scan | `m2-1-revision` |
+| T-M21-REV-002 | 2026-09-15 | Data Dictionary Complete Field-Level Coverage | All 18 Core Scope tables have field-level specifications with 8 mandatory attributes | 18 tables specified at field-level; all fields have name, physical type, nullability, default, owner, lifecycle, status, and trace | PASS | Windows 11 / Markdown inspection | `m2-1-revision` |
+| T-M21-REV-003 | 2026-09-15 | 2-Axis ERD & Data Classification Model | Dimension A Scope (Core/Extension/Excluded) decoupled from Dimension B Status (Applied/Target/Future) | ERD and tables reflect 2-axis model; Cohort/Ticket are Scope: EXTENSION, Status: FUTURE_MIGRATION; Unit/AuditLog are Target Schema | PASS | Windows 11 / Markdown inspection | `m2-1-revision` |
+| T-M21-REV-004 | 2026-09-15 | Audit Findings F-01..F-12 Resolution | All 12 findings resolved (F-01 Admin override, F-02 bypass, F-03 Exercise types, F-04 lesson_type candidate, F-05 D7 formula N, F-06 D6 confirmation, F-07 DD-02 candidate, F-08 AuditLog status, F-09 DD-06 candidate, F-10 dictionary coverage, F-11 2-axis ERD, F-12 renderer disclaimer) | All 12 findings evidenced and resolved; 13 Exit Criteria checked; physical design decisions classified as open/candidates | PASS | Windows 11 / Markdown inspection | `m2-1-revision` |
+| T-M21-001 | 2026-09-15 | Gate D-G1: Domain & Lifecycle Traceability | 100% Core entities & states trace to FR/UC/BF; 0 orphan entities; forbidden self-approval/publish/bypass transitions barred | All 13 Core entities and 6 lifecycle states verified with FR/UC/BF traces; forbidden matrix proves 0 self-actions; Cohort/Ticket isolated to Extension Boundary | PASS | Windows 11 / Node v24 / Markdown inspection | `m2-1-foundation` |
+| T-M21-002 | 2026-09-15 | Gate D-G2: Data Model & Boundary Integrity | 100% tables and fields classified into Applied, Target, or Future; units and audit_logs marked target/future; 5 exercise payloads conform to ADR-006 with payloadVersion: 1; 0 ghost entities | 18 tables classified across 3 columns; units and audit_logs explicitly designated Target Schema (not runtime-ready); all 5 exercise payloads contain payloadVersion: 1; 0 Exam/QuestionBank entities | PASS | Windows 11 / Node v24 / Schema & Dictionary scan | `m2-1-foundation` |
+| T-M21-003 | 2026-09-15 | Milestone M2.1 Boundary Enforcement | 0 code files, 0 schema migrations, 0 DB mutations, M2.2+ not started | 0 application code modified; 0 migrations created/run; git status confirms purely design documentation deliverables; stopped before M2.2 | PASS | Windows 11 / Git 2.53.0 | `m2-1-foundation` |
+| T-P0-RESET-001 | 2026-09-14 | Web Unit Tests | All unit tests pass after business UI reset | 14/14 Vitest tests passed across 4 test files | PASS | Windows 11 / Node v24.14.0 / Vitest | `phase-0-reset` |
+| T-P0-RESET-002 | 2026-09-14 | Web TypeScript Check | TypeScript compilation passes without errors | `tsc --noEmit` exited 0 with 0 errors | PASS | Windows 11 / TypeScript 5.9.3 | `phase-0-reset` |
+| T-P0-RESET-003 | 2026-09-14 | Web ESLint | ESLint validation passes without errors | `eslint .` exited 0 with 0 errors | PASS | Windows 11 / ESLint 9 | `phase-0-reset` |
+| T-P0-RESET-004 | 2026-09-14 | Web Production Build | Production bundle compiles successfully | Next.js 15.5.23 production build succeeded (all routes static/dynamic compiled) | PASS | Windows 11 / Next.js 15 | `phase-0-reset` |
+| T-P0-RESET-005 | 2026-09-14 | Admin Prisma Validation | Phase 0 Target Schema validates cleanly | `npx prisma validate` and `prisma generate` succeeded (6 roles, 6-state workflow, Unit, AuditLog) | PASS | Windows 11 / Prisma 6.19.3 | `phase-0-reset` |
+| T-P0-RESET-006 | 2026-09-14 | AI API Pytest | Supporting AI service test suite passes | 37/37 pytest passed in 0.19s | PASS | Windows 11 / Python 3.11.9 / pytest 8.4.2 | `phase-0-reset` |
+| T-P0-RESET-007 | 2026-09-14 | Repo Git Diff Check | No whitespace or merge conflict errors | `git diff --check` exited 0 with 0 errors | PASS | Windows 11 / Git 2.53.0 | `phase-0-reset` |
+| T-P0-RESET-008 | 2026-09-14 | Deleted References Scan | Zero references to deleted paths (/foundation, foundation-status, ai.repository) | Regex scan found 0 references across web src and tests | PASS | Windows 11 / Python 3.11 scan | `phase-0-reset` |
+| T-P0-001 | 2026-09-07 | Phase 0 documentation | New plan and baseline document exist and active task is DRAFT | Files present; active task is `phase-0-survey-and-requirements-finalization` with status `DRAFT` | PASS | Windows / PowerShell / static Markdown inspection | PENDING |
+| T-P0-002 | 2026-09-07 | Documentation formatting | No whitespace errors | `git diff --check` returned no errors | PASS | Windows / PowerShell / Git | PENDING |
+| T-P0-003 | 2026-09-07 | Runtime regression | No application behavior changes | Not applicable; code, schema, API and dependencies unchanged | N/A | Documentation-only task | PENDING |
+| T-P0-004 | 2026-09-07 | Mock survey report | Report identifies synthetic data, five languages, roles, MVP and sources | `docs/phase-0-mock-survey-report.md` contains all required sections and labels mock figures as hypotheses | PASS | Windows / PowerShell / static Markdown inspection | PENDING |
+| T-P0-005 | 2026-09-07 | Factor-by-factor survey method | Factors are identified before mock results and analyzed individually | 14 factors defined; F1–F14 each contain questions, mock result and design decision | PASS | Windows / PowerShell / static Markdown inspection | PENDING |
+| T-P0-006 | 2026-09-07 | Roles and permissions | Every role has bounded scope and sensitive actions are separated | Final matrix defines six roles, resource actions, data boundaries and content workflow | PASS | Windows / PowerShell / static Markdown inspection | PENDING |
+| T-P0-007 | 2026-09-07 | MVP finalization | Every MVP item has owner and acceptance criteria | MVP-01..MVP-19 are listed with owner, acceptance criteria and phased order | PASS | Windows / PowerShell / static Markdown inspection | PENDING |
+| T-P0-008 | 2026-09-08 | PlantUML replacement | Old set removed and approved new set created | 36 old `.puml` files removed; 9 new files present | PASS | Windows / PowerShell | PENDING |
+| T-P0-009 | 2026-09-08 | PlantUML syntax envelope | Each new file has one `@startuml` and closing `@enduml` | 9/9 files pass static envelope check | PASS | Windows / PowerShell | PENDING |
+| T-P0-010 | 2026-09-08 | PlantUML compiler | Compile all new diagrams | Java OpenJDK / PlantUML 1.2026.8 executed `-checkonly docs/plantuml/*.puml`; exit code 0 on all 9 diagrams | PASS | Windows / Java 25 / PlantUML 1.2026.8 | PENDING |
+| T-P0-011 | 2026-09-08 | PlantUML PNG rendering | Render all 9 diagrams to PNG | All 9 diagrams rendered to PNG in `docs/plantuml/` and `docs/report/diagrams/`; exit code 0; images visually verified | PASS | Windows / Java 25 / PlantUML 1.2026.8 | PENDING |
+| T-P0-012 | 2026-09-08 | PlantUML Note Elimination & Localization | Remove all yellow note blocks; translate arrow labels to Vietnamese; keep actors/UC in English | Zero note blocks found; all 9 diagrams re-rendered; arrow messages in Vietnamese; visual inspection confirmed clean styling without yellow notes | PASS | Windows / Java 25 / PlantUML 1.2026.8 | PENDING |
+| T-P0-013 | 2026-09-08 | Refined Use Case Overview (15 UCs) | Decouple Admin/Ops roles, add Placement Test & Publish Content & Audit Logs, add non-yellow Principle 4 constraint and Principle 7 optional module notes, eliminate crossing lines | All 15 UCs properly organized into 4 packages; zero crossing lines for Admin/Ops/Org; neutral-colored notes; visual inspection PASS | PASS | Windows / Java 25 / PlantUML 1.2026.8 | PENDING |
 | T-M05-001 | 2026-08-13 | Requirement catalog | Requirement IDs are unique and every ID has a trace row | 26 IDs; 26 trace rows; 0 duplicates | PASS | Windows / PowerShell / static Markdown inspection | PENDING |
 | T-M05-002 | 2026-08-13 | Canonical semantic alignment | Approved grammar, health, locale, gamification and REORDER rules are represented | Normative M0.5 sections present in docs/01–04 and docs/05 | PASS | Windows / PowerShell / static Markdown inspection | PENDING |
 | T-M05-003 | 2026-08-13 | Cross-document traceability | Requirements map to architecture, data, API/RPC, tests and evidence | 26 nonblank rows; explicit gap statuses preserved | PASS | Windows / PowerShell / static Markdown inspection | PENDING |
@@ -705,3 +735,304 @@ Total diagrams in suite increased from 32 to 36, all rendered to 200 DPI PNG in 
 6. `chart-survey-5-in-1-montage.png` (Tấm ghép toàn cảnh 5 biểu đồ độ nét cao).
 Inserted new Slide 9 into the presentation deck (expanding from 22 to 23 slides total). Embedded real diagrams/charts across all previously empty slots. Rendered all 23 slides to PNG in `tmp/timhieupaper-template-audit/revised-render/` and saved PPTX to `docs/project-1/` and `docs/report/`.
 **Verdict:** PASS — `SURVEY-CHARTS-AND-SLIDE-09-EMBED-011`.
+
+## 2026-09-08 — full-uc-ac-completion-and-diagram-aesthetic-polish
+
+**Environment:** Windows 11, PowerShell, Java 25 (OpenJDK 25.0.2), Python 3.11.9, PlantUML 1.2026.8.
+
+**Command:** `& "D:\Android\Android Studio\jbr\bin\java.exe" -jar "$env:TEMP\lingora-plantuml\plantuml.jar" -checkonly "docs/plantuml/*.puml"`
+**Output:** Exit code 0; all 45/45 PlantUML files compile with zero syntax errors.
+**Verdict:** PASS — `PLANTUML-45-SYNTAX-CHECK-012`.
+
+**Command:** `& "D:\Android\Android Studio\jbr\bin\java.exe" -jar "$env:TEMP\lingora-plantuml\plantuml.jar" -tpng -DPLANTUML_LIMIT_SIZE=8192 -o "docs/plantuml" "docs/plantuml/*.puml"` and synchronized copy to `docs/report/diagrams/`.
+**Output:** Exit code 0; rendered all 45 diagrams at 200 DPI with Segoe UI typography, roundCorner 8, and soft pastel palette. Eliminated awkward looping arrows in `use-case-overview.puml` and `use-case-learner.puml`. 45 PNGs verified in both directories.
+**Verdict:** PASS — `PLANTUML-45-PNG-RENDER-SYNC-013`.
+
+**Command:** Audit of 10 Use Cases and Acceptance Criteria across canonical & report docs (`docs/06-system-analysis.md`, `docs/report/lingora-project-1-lecturer-format.md`, `docs/report/lingora-requirements-and-use-cases.md`).
+**Output:** Full 10 Use Cases (UC-01 to UC-10) and User Stories (US-01 to US-10) with Objective, Actor, Preconditions, Main Flow, Alternative Flows, and Acceptance Criteria are completely specified and verified.
+**Verdict:** PASS — `UC-AC-FULL-SPEC-AUDIT-014`.
+
+**Command:** `py -3.11 tools/build_lingora_final_report.py`
+**Output:** Exit code 0; `Successfully saved to: D:\school\btl\docs\report\Lingora-Project-1-Lecturer-Format-Final.docx`.
+**Verdict:** PASS — `FINAL-REPORT-DOCX-BUILD-015`.
+
+**Command:** `git diff --check`
+**Output:** Exit code 0; zero whitespace or syntax errors.
+**Verdict:** PASS — `GIT-DIFF-CHECK-016`.
+
+## 2026-09-14 — phase-0-repository-cleanup-and-superpowers-standardization
+
+**Environment:** Windows 11, PowerShell, Node.js 24.14.0, Python 3.11.9, Vitest 4.1.10, Pytest 8.4.2, Prisma 6.19.3.
+
+**Command:** `npm run typecheck` (in `lingora-web`)
+**Output:** Exit code 0; `tsc --noEmit` clean, zero type errors.
+**Verdict:** PASS — `WEB-TS-TYPECHECK-017`.
+
+**Command:** `npm run lint` (in `lingora-web`)
+**Output:** Exit code 0; ESLint passed with zero warnings or errors.
+**Verdict:** PASS — `WEB-ESLINT-018`.
+
+**Command:** `npm run test:unit` (in `lingora-web`)
+**Output:** Exit code 0; 6 test files passed, 19/19 tests passed.
+**Verdict:** PASS — `WEB-VITEST-UNIT-019`.
+
+**Command:** `npm run build` (in `lingora-web`)
+**Output:** Exit code 0; Next.js 15.5.23 compiled successfully, all 9 static and dynamic routes generated.
+**Verdict:** PASS — `WEB-PROD-BUILD-020`.
+
+**Command:** `py -3.11 -m pytest` (in `lingora-ai/api`)
+**Output:** Exit code 0; 37/37 tests passed in 0.43s.
+**Verdict:** PASS — `AI-FASTAPI-PYTEST-021`.
+
+**Command:** `npx prisma validate` (in `lingora-admin`)
+**Output:** Exit code 0; `The schema at prisma\schema.prisma is valid 🚀`.
+**Verdict:** PASS — `ADMIN-PRISMA-VALIDATE-022`.
+
+**Command:** `npm run test:m1_4` (in `lingora-admin`)
+**Output:** Exit code 1; `PrismaClientInitializationError: Error querying the database: FATAL: (ENOTFOUND) tenant/user postgres.oazmbpifslcpolkepyge not found`.
+**Verdict:** BLOCKED — environment/configuration issue.
+
+**Command:** `git diff --check`
+**Output:** Exit code 0; clean diff, zero whitespace errors.
+**Verdict:** PASS — `GIT-DIFF-CHECK-CLEANUP-023`.
+
+**Command:** Repository-wide reference scan for `impeccable`, old skills (`source-driven-development`, `security-and-hardening`, `debugging-and-error-recovery`, `code-review-and-quality`), and deleted files.
+**Output:** Zero broken references in active codebase; old frameworks completely removed.
+**Verdict:** PASS — `REPO-REF-SCAN-024`.
+
+---
+
+## 2026-09-14 — Phase 0 Rebuild Reconciliation Implementation
+
+**Environment:** Windows 11, PowerShell, Node.js 24.14.0, Python 3.11.9, Prisma 6.19.3.
+
+**Command:** `npm run typecheck` (in `lingora-web`)
+**Output:** Exit code 0; `tsc --noEmit` completed with zero type errors.
+**Verdict:** PASS — `RECON-WEB-TYPECHECK-025`.
+
+**Command:** `npm run lint` (in `lingora-web`)
+**Output:** Exit code 0; `eslint .` completed with zero lint errors.
+**Verdict:** PASS — `RECON-WEB-LINT-026`.
+
+**Command:** `npm run test:unit` (in `lingora-web`)
+**Output:** Exit code 0; Vitest 4.1.10 run: 6 test files passed, 19/19 tests passed in 3.47s.
+**Verdict:** PASS — `RECON-WEB-VITEST-027`.
+
+**Command:** `npm run build` (in `lingora-web`)
+**Output:** Exit code 0; Next.js 15.5.23 production build succeeded, all 9 static and dynamic routes compiled cleanly.
+**Verdict:** PASS — `RECON-WEB-BUILD-028`.
+
+**Command:** `py -3.11 -m pytest` (in `lingora-ai/api`)
+**Output:** Exit code 0; pytest 8.4.2 run: 37/37 tests passed in 0.36s.
+**Verdict:** PASS — `RECON-AI-PYTEST-029`.
+
+**Command:** `npx prisma validate` (in `lingora-admin`)
+**Output:** Exit code 0; `The schema at prisma\schema.prisma is valid 🚀`.
+**Verdict:** PASS — `RECON-ADMIN-PRISMA-030`.
+
+**Command:** Database integration harness check (Supabase remote connection)
+**Output:** Remote connection credentials unconfigured in local environment (`postgres.oazmbpifslcpolkepyge not found`).
+**Verdict:** BLOCKED — environment/configuration issue.
+
+**Command:** Repository-wide stale reference scan across active codebase for deleted artifacts/skills
+**Output:** 0 stale references in active code (`docs/00`–`07`, `QUICK-REF.md`, `.agents/`, `lingora-*`).
+**Verdict:** PASS — `RECON-REF-SCAN-031`.
+
+**Command:** `git diff --check`
+**Output:** Exit code 0; clean whitespace, zero merge conflict markers.
+**Verdict:** PASS — `RECON-GIT-DIFF-032`.
+
+---
+
+## 2026-09-15 — Milestone M2.1 Independent Audit Fixes (P0-01..P1-07)
+
+**Environment:** Windows 11, PowerShell, Node.js 24.14.0, Git 2.53.0.
+
+**Test ID:** `T-M21-FIX-001`
+
+**Command 1 (P0-01 - Administrator Emergency Authority):**
+Inspection of `docs/plantuml/content-lifecycle-state.puml` and `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` (§5.1, §5.2, §5.3, §11.1).
+**Output:**
+- Administrator Emergency Publish (`IN_REVIEW -> PUBLISHED`) restored as dashed transition `#DC2626` with mandatory justification and AuditLog constraint (`emergency_publish: reason + audit_log mandatory`).
+- Administrator Emergency Archive (`PUBLISHED -> ARCHIVED`) restored as dashed transition `#DC2626` with mandatory justification and AuditLog constraint (`emergency_archive: reason + audit_log mandatory`).
+- Normal workflow preserved: Manager plans/assigns -> Creator authors -> Moderator reviews/approves -> Manager publishes.
+- Prohibitions explicitly enforced: `CẤM Administrator Xuất bản Thường nhật`, `CẤM Tự phê duyệt / Xuất bản chéo` (Creator no self-approve/publish; Moderator no publish; no in-place edit).
+**Verdict:** PASS.
+
+**Command 2 (P1-02 - Removal of ARCHIVED -> DRAFT from Core):**
+Inspection of `docs/plantuml/content-lifecycle-state.puml` and `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` (§5.1, §5.2, §5.3, §11.1).
+**Output:**
+- Transition `ARCHIVED --> DRAFT` completely removed from Core state machine in `.puml` and Core transition matrix (§5.2).
+- Restoration classified strictly under `[FUTURE / OPEN DESIGN]` and `CẤM Phục hồi Core từ ARCHIVED` note.
+**Verdict:** PASS.
+
+**Command 3 (P1-03 - Elimination of TARGET_EXT / 2-Axis Model):**
+Repository-wide scan for `TARGET_EXT` across `.md` and `.puml` files.
+**Output:**
+- Zero occurrences of `TARGET_EXT` in design tables, ERD, and PlantUML diagrams.
+- Scope Axis (`CORE`, `EXTENSION`, `EXCLUDED`) strictly decoupled from Implementation Status Axis (`CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`).
+- All 23 tables in §7.1 and all 18 Core Scope tables in §8.1–§8.18 clearly labeled on both axes.
+**Verdict:** PASS.
+
+**Command 4 (P1-04 - ExerciseType Enum Field-Level Status):**
+Inspection of `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` (§8.8, §9.2).
+**Output:**
+- Explicit value-level breakdown table for `ExerciseType` in §8.8:
+  - `CURRENT_APPLIED_DATABASE`: `MCQ`, `FILL_BLANK`, `REORDER` (migration `202608140001_init`).
+  - `TARGET_SCHEMA / FUTURE_MIGRATION`: `LISTENING`, `GRAMMAR` (target `schema.prisma`, pending M2 migration).
+  - Non-existent: `MATCHING` (0 occurrences in active schema/design).
+**Verdict:** PASS.
+
+**Command 5 (P1-05 / P1-06 - D-G1 & D-G2 Re-evaluation):**
+Re-evaluation of Gate D-G1 and Gate D-G2 in §9.1 and §9.2.
+**Output:**
+- Gate D-G1: PASS (all 13 Core entities and 6 lifecycle states trace to FR/UC/BF; Administrator emergency publish/archive properly constrained with audit; ARCHIVED->DRAFT eliminated from Core; no self-approval/bypass).
+- Gate D-G2: PASS (100% tables/fields labeled with canonical 3 statuses; 0 TARGET_EXT; ExerciseType accurately mapped to Applied vs Target/Future; 0 MATCHING; 0 Exam/QuestionBank).
+**Verdict:** PASS.
+
+**Command 6 (P1-07 - Candidate / Open Design Normalization):**
+Inspection of candidate representations across §8.6, §8.8, §8.12, §11.1, §12.4.
+**Output:**
+- `assignment_brief`, `supersedes_id`, `starting_unit`, `placement_history`, `lesson_type`, `isAssessmentMode` consistently labeled `TARGET DESIGN CANDIDATE` or `OPEN DESIGN REPRESENTATION`.
+- Zero instances of `RESOLVED` or `CURRENT_APPLIED_DATABASE` on unapplied candidate fields.
+- Clear distinction maintained between locked behavioral policies (D3 clone-to-draft, D4 unified exercise, D6 placement mapping A) and open physical schema representations.
+**Verdict:** PASS.
+
+**Command 7 (Static PlantUML Syntax Balance & Boundary Verification):**
+Static syntax check on all 4 `.puml` files + `git status` check.
+**Output:**
+- All 4 `.puml` files have balanced `@startuml` / `@enduml` pairs.
+- Zero application code modified; zero schema changes in `prisma/schema.prisma`; zero migrations created/run; zero Supabase DB writes.
+- Milestone M2.2+ has NOT started.
+**Verdict:** PASS.
+
+---
+
+### `T-M21-FIX-002` (2026-09-15) — Targeted Fix Verification for P1-01 and P2-01
+
+- **Environment:** Windows, Git 2.53.0.
+- **Task:** `phase-1-m2-1-targeted-fix-p1-01-p2-01`
+- **Scope:** Correct P1-01 (false CURRENT_APPLIED field claims on SRS tables) and P2-01 (canonicalize LEGACY_APPLIED to EXCLUDED on Scope axis).
+
+**Command 1 (P1-01 - Migration Truth Verification):**
+```powershell
+Select-String -Path "lingora-admin/prisma/migrations/202608140001_init/migration.sql" -Pattern "CREATE TABLE.*review_logs|CREATE TABLE.*user_vocab_srs" -Context 0,15
+```
+**Output:**
+- `review_logs` contains: `id UUID`, `srs_card_id UUID`, `is_correct BOOLEAN`, `interval_days DOUBLE PRECISION`, `reviewed_at TIMESTAMP`. NO `score` column.
+- `user_vocab_srs` contains: `recall_probability DOUBLE PRECISION`. NO `recall_score Integer` column.
+- `user_progress` contains: `score INTEGER` (lines 152, 157). Authentic applied column.
+**Verdict:** PASS.
+
+**Command 2 (P1-01 - Elimination of False Applied Claims in Markdown & PlantUML):**
+```powershell
+Select-String -Path "docs/phase-1-m2-1-domain-and-logical-data-foundation.md", "docs/plantuml/domain-model-core.puml" -Pattern "score.*Applied|recall_score|review_logs.*score"
+```
+**Output:**
+- `recall_score`: 0 occurrences.
+- `review_logs.score` / `review_logs` score: 0 occurrences.
+- `docs/plantuml/domain-model-core.puml:131`: `+ score: Integer [Applied]` (under `UserProgress`, verified by migration).
+- `docs/phase-1-m2-1-domain-and-logical-data-foundation.md:197, 587`: `score` in `UserProgress` (verified by migration).
+**Verdict:** PASS.
+
+**Command 3 (P2-01 - Scope Label Canonicalization to EXCLUDED):**
+```powershell
+Select-String -Path "docs/phase-1-m2-1-domain-and-logical-data-foundation.md", "docs/plantuml/*" -Pattern "LEGACY_APPLIED"
+git grep "LEGACY_APPLIED" -- docs/phase-1-m2-1-domain-and-logical-data-foundation.md docs/plantuml
+```
+**Output:**
+- 0 occurrences found across all active M2.1 design files and diagrams.
+- Rows 22 and 23 in §7.1 now labeled `EXCLUDED` on Scope axis and `CURRENT_APPLIED_DATABASE` on Implementation Status axis.
+**Verdict:** PASS.
+
+**Command 4 (Markdown ↔ PlantUML Semantic Consistency):**
+Comparison between §8.14/§8.15 of `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` and `docs/plantuml/domain-model-core.puml`.
+**Output:**
+- `ReviewLog`: Both define exactly 5 applied attributes (`id`, `srs_card_id`, `is_correct`, `interval_days`, `reviewed_at`). No `score`.
+- `UserVocabSrs`: Both define `recall_probability: Float` with applied attributes. No `recall_score`.
+- `erd-logical-status-mapping.puml`: Already aligned with migration truth; 0 `chat_sessions`/`chat_messages` in ERD (Scope: `EXCLUDED`).
+**Verdict:** PASS.
+
+**Command 5 (Repository & Technical Boundary Hygiene):**
+```powershell
+git diff --check -- plans/current-task.md
+git status --short
+```
+**Output:**
+- `git diff --check`: 0 whitespace or patch conflicts on modified tracked files.
+- `git status --short`: Zero application code modified, 0 schema changes in `prisma/schema.prisma`, 0 migrations created/run, 0 database writes.
+- Milestone M2.2 NOT started.
+**Verdict:** PASS.
+
+---
+
+### `T-P0-REQ-001` (2026-09-15) — Phase 0 User Research, Application Benchmark & Requirements Specification Verification (Gates G1–G6)
+
+- **Environment:** Windows, Python 3.11.9, Git 2.53.0.
+- **Task:** `phase-0-user-research-analysis-and-requirements-authoring`
+- **Scope:** Complete authoring of 6 core report sections in `docs/phase-0-user-research-analysis-and-requirements.md` (127,955 characters, 911 lines).
+- **Target Deliverable:** `docs/phase-0-user-research-analysis-and-requirements.md`.
+
+**Command 1 (Automated Validation Gates Audit G1–G6):**
+```powershell
+py -3 scratch/verify_gates.py
+```
+**Output:**
+```
+================================================================================
+INDEPENDENT AUDIT & VERIFICATION OF PHASE 0 REQUIREMENTS DOCUMENT
+Target: d:\school\btl\docs\phase-0-user-research-analysis-and-requirements.md
+Document Length: 127955 chars | 911 lines
+================================================================================
+
+[GATE G1: EVIDENCE GATE]
+Evidence label counts: {'PRIMARY': 12, 'SECONDARY': 14, 'SYNTHETIC': 13, 'PRODUCT DECISION': 9}
+>> GATE G1 VERDICT: PASS (All 4 canonical evidence labels actively present)
+
+[GATE G2: NUMBER GATE]
+Instances of foreign N=500 claimed as empirical survey data: 0
+>> Foreign N=500 data check: PASS (0 foreign sample records)
+>> Survey fraction & percentage checks: PASS (All 11 key ratios verified)
+>> GATE G2 VERDICT: PASS
+
+[GATE G3: SYNTHETIC ISOLATION GATE]
+Contains mandatory synthetic disclaimer box: True
+Fabricated persona survey claims count: 0
+>> GATE G3 VERDICT: PASS (Synthetic data strictly isolated for process discovery; 0 false survey claims)
+
+[GATE G4: SAMPLE-REPORT REJECTION GATE]
+Active Exam entity matches: 0
+Active QuestionBank matches: 0
+>> GATE G4 VERDICT: PASS (0 phantom entities Exam/QuestionBank; TOEIC 200Q strictly rejected)
+
+[GATE G5: NFR RIGOR GATE]
+Contains 'TBD / PROPOSED TARGET' designation: True
+Ungrounded latency claims: 0
+>> GATE G5 VERDICT: PASS (Metric discipline enforced; unverified metrics tagged TBD)
+
+[GATE G6: TRACEABILITY GATE]
+Missing FRs count: 0
+Missing Pain Points count: 0
+Missing Roles count: 0
+Acceptance Criteria clauses: Given=19, When=19, Then=19
+>> GATE G6 VERDICT: PASS (100% FRs, Pain Points, Canonical Roles traced with Given-When-Then ACs; 0 orphan requirements)
+
+================================================================================
+FINAL AUDIT RESULT: ALL 6 VALIDATION GATES (G1-G6) PASSED WITH ZERO FINDINGS!
+================================================================================
+```
+**Verdict:** PASS.
+
+**Command 2 (Repository & Technical Boundary Hygiene):**
+```powershell
+git diff --check
+git status --short
+```
+**Output:**
+- `git diff --check`: Exit code 0 (no trailing whitespace or patch conflict markers).
+- Zero application code files created or modified.
+- Zero Prisma schema changes (`prisma/schema.prisma` untouched).
+- Zero SQL migrations created or executed.
+- Milestone M2.1 remains intact (`REVISED — READY FOR TARGETED RE-REVIEW`).
+- Milestone M2.2 NOT started.
+**Verdict:** PASS.

@@ -1,100 +1,72 @@
 # 00 - Lingora Master Plan
 
-> **Current normative baseline (ADR-010, effective 2026-08-21):** LINGORA now has two academic tracks: **Project 1 / Software Engineering** and **Machine Learning / Deep Learning with Transformer GEC**. DKT-LSTM, HLR, DQN and MultiWOZ dialogue generation are SUPERSEDED as future targets. The migrated v1-v5 material below is retained as historical planning evidence and does not override this section.
+> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
+> LINGORA is a **Software Engineering CORE** language learning system with an **AI SUPPORTING CAPABILITY** (Grammatical Error Correction - GEC).
+> Canonical Phase 0 reference documents:
+> - [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md) (6 roles, 19 MVP functions, 5 target languages: English, Vietnamese, French, Chinese, Japanese).
+> - [`docs/phase-0-survey-requirements.md`](phase-0-survey-requirements.md) & [`docs/phase-0-mock-survey-report.md`](phase-0-mock-survey-report.md) (Requirements & survey findings).
+> - Canonical Phase 0 PlantUML diagrams in [`docs/plantuml/`](plantuml/) (`use-case-mvp-overview`, `role-permission-matrix`, `system-architecture-mvp`, etc.).
+> ADR-014 formally supersedes ADR-010's "two equal academic tracks": Software Engineering is the primary system core, and GEC is a supporting capability via pretrained model or external API without requiring local training pipelines. DKT-LSTM, HLR, DQN, and generative MultiWOZ dialogue are **SUPERSEDED** historical targets.
 
-## ADR-010 current scope and roadmap
+## Phase 0 & ADR-014 Target Scope and Roadmap
 
-| Area | Current target |
+| Area | Current Target |
 |---|---|
-| Product | Web English-learning platform covering the six assignment capabilities |
-| Learned model | T5-small fine-tuned for English grammatical error correction |
+| Product | Web language-learning platform covering 6 roles and 19 MVP functions across 5 target languages (English first) |
+| System Core | Software Engineering: Web (`lingora-web`), Admin (`lingora-admin`), Supabase DB + RLS, Auth, Content lifecycle |
+| Roles | 6 canonical roles: Administrator, Lesson Creator, Moderator, Operations Staff, Learner, Organizational Manager |
+| Workflow | Content workflow: Draft → In Review → Changes Requested → Approved → Published → Archived |
+| Supporting AI | GEC via pretrained model or external API (stateless internal processing, pluggable provider) |
 | SRS | Deterministic rule-based scheduling; exact SM-2 naming requires RPC audit |
-| Practice | Ordered scenario writing prompts; no generative dialogue target |
-| Data | Existing 17 Prisma models; GEC feedback transient in MVP |
-| Reports | Software Engineering report and ML/GEC report |
+| Practice | Structured lesson exercises (MCQ, FILL_BLANK, REORDER) + Scenario writing with GEC feedback |
+| Data | Phase 0 Target Schema (6 roles, 6-state content lifecycle, Unit hierarchy, clean learning models); migration history preserved |
+| Reports | Software Engineering core report and academic presentation |
 
-### Current priority
+### Current Priority Tiers (Phase 0 MVP)
 
 | Tier | Contents |
 |---|---|
-| P0 | Auth, Course/Lesson/Vocabulary, five approved exercise types, progress, deterministic SRS, scenario writing, Admin CRUD, GEC API/mock, Web build, SE report and ML/GEC report |
-| P1 | Real T5-small checkpoint, ERRANT-compatible evaluation, accessible diff UI, vi/en, tests and production deployment |
-| P2 | Natural phrasing module, extended template explanations, ja UI, quantization and advanced analytics |
+| P0 | Core Web Learner (Auth, Course/Lesson/Vocab, 3 core exercise types, progress, deterministic SRS, profile/streak), Content Draft & Approval workflow, Admin basic management, GEC API mock/proxy, SE and ML/GEC reports |
+| P1 | Real T5-small checkpoint, ERRANT evaluation, accessible diff UI, multi-language rollout (Vietnamese, French, Chinese, Japanese A1/HSK1/N5), operations support, production deployment |
+| P2 | Organizational cohort module, speech input/playback UI, quantization/ONNX, advanced operational analytics |
 
-### Forward roadmap
+### Forward Roadmap
 
 | Order | Milestone/task | Outcome |
 |---|---|---|
-| 1 | Scope amendment | Canonical docs, ADR-010 and two-track traceability |
-| 2 | M2 Web core lesson flow | One lesson end-to-end and approved exercises |
-| 3 | Deterministic SRS audit | Lock RPC policy and due-card behavior |
-| 4 | GEC API foundation | New GEC endpoint, mock, typed proxy and contract tests |
+| 1 | Phase 0 Reconciliation | Single source of truth across 11 layers, 6 roles, 19 MVP functions, Superpowers workflow |
+| 2 | M2 Web core lesson flow | One lesson end-to-end and approved exercise engine (MCQ, FILL_BLANK, REORDER) |
+| 3 | Deterministic SRS audit | Lock RPC policy and due-card query behavior |
+| 4 | GEC API foundation | New GEC endpoint (`/v1/gec/correct`), mock, typed proxy and contract tests |
 | 5 | Scenario writing UI | Ordered prompts and safe original/corrected diff display |
-| 6 | ML training/evaluation | Licensed dataset, T5-small, F0.5/ERRANT and latency evidence |
-| 7 | Compatibility cleanup | Deprecate, then later remove unused legacy AI endpoints |
-| 8 | Final | Web/Admin/AI deployment, SE report, ML/GEC report and presentation |
+| 6 | Content & Review UI (M3) | Draft, review, approve, and publish workflow for Creator, Moderator, Admin |
+| 7 | ML training/evaluation | Licensed dataset, T5-small, F0.5/ERRANT and latency evidence |
+| 8 | Compatibility cleanup | Deprecate, then later remove unused legacy AI endpoints |
+| 9 | Final delivery | Production deployment, SE report, ML/GEC report and presentation |
 
 Current delivery rules: preserve the fixed Next.js proxy and stateless FastAPI boundary; T5-small produces corrected text only; keep the current SRS data/RPC boundary; preserve all historical evidence; migrate consumers before endpoint deprecation; and report cold start separately from the warm CPU p95 target of 2,000 ms.
 
-> **Canonical status:** M0 migration baseline. The blocks below preserve the legacy source wording and scope. Only product/repository naming and Markdown nesting were normalized under the approved M0 decision.
->
-> **Source coverage:** legacy 0 in full; legacy 4 in full; legacy 5 sections 5.1/5.1b and 5.4â€“5.7. Contract-specific 5.2â€“5.3 are canonical in 3-api-contract.md.
-
-> **M0.5 approved clarification (ADR-002), amended by ADR-008 (2026-08-17):** Lingora is the product name. Project 1 originally carried the title **“Xây dựng ứng dụng học ngoại ngữ trên nền tảng di động”**; `ADR-008` supersedes that platform clause and Project 1 now centers a **web** learner application (`lingora-web`). The title is kept as a record of the original brief, not as a binding platform constraint. ML personalized SRS and NLP roleplay are API-integrated capabilities, with their model/dataset/evaluation ownership remaining in the ML and NLP views. This clarification supersedes legacy wording only where it suggests Project 1 is AI-centric.
-
-## Migrated source: overview and roadmap
-
-## 00 — Tổng quan Kế hoạch Chi tiết & Lộ trình (bản v5 — baseline triển khai đã khóa)
-
-> **Lịch sử thay đổi:**
-> - **v1 → v2:** ML đổi từ GEC → Knowledge Tracing/SRS; NLP đổi từ GEC → Chatbot Roleplay.
-> - **v2 → v3 (bản này):** áp dụng review ngoài (đánh giá 8.2/10, chỉ ra NLP "tham quá"). Các sửa đổi chính:
->   1. **SRS**: tách rõ **DKT (dự đoán xác suất)** khỏi **Scheduler (chính sách suy ra lịch ôn)** — không để hội đồng hiểu nhầm DKT "tự sinh" ra interval.
->   2. **SRS**: thêm RPC `record_review` — server-side transaction cập nhật `review_logs` + `user_vocab_srs`, thay vì để client tự tính rồi ghi rời rạc (tránh lệch dữ liệu).
->   3. **Chatbot**: đổi tên field `naturalness_score` → `grammatical_acceptability_score` (đúng bản chất CoLA đo được), UI vẫn có thể hiển thị nhãn thân thiện "Grammar score".
->   4. **Chatbot production**: chỉ chọn **T5-small**, bỏ DialoGPT (giảm 1 nhánh train không cần thiết).
->   5. **Chatbot domain**: chỉ train **hotel_booking** trước; DailyDialog + domain khác chuyển thành *nice-to-have*.
->   6. **Metric NLP**: giảm còn Loss/Perplexity/Distinct-n (cho Transformer tự viết) + Inform/Success (cho task-oriented); BLEU chỉ tham khảo.
->   7. **Milestone M4** tách thành `M4` (≥1 AI chạy thật, AI còn lại mock ổn định) và `M4.5` (cả 2 AI chạy thật) — không coi cả milestone là fail nếu 1 nhánh trễ.
->   8. **Nguyên tắc "build bản đóng gói mỗi tuần"** đổi thành "mỗi tuần có trạng thái chạy được; bản đóng gói chỉ tạo tại các mốc `M*`". (ADR-008: với learner client Web, "bản đóng gói" nghĩa là một production build deploy lên Vercel.)
->   9. Thêm **Model acceptance criteria** (không deploy model mới nếu tệ hơn model cũ) — xem `04`.
->   10. Bỏ chiến lược ping `/health` để giữ Render "ấm" làm phương án chính — xem `05`.
->   11. Báo cáo: phân rõ hình/bảng **must-have** vs **nice-to-have** để không dồn quá nhiều nội dung — xem `02`.
->
-> **v3 → v4 (bản chốt — sau vòng review thứ 2, đánh giá 9.0/10):** 4 điểm sửa cuối trước khi khoá kiến trúc:
->   12. Sửa cách diễn đạt DKT để tránh domain-mismatch (ASSISTments ≠ dữ liệu từ vựng Lingora) — xem `02`.
->   13. Chốt thuật ngữ thống nhất: **DKT-LSTM = model nghiên cứu chính**, **HLR = baseline + production fallback**, **Scheduler = rule-based layer** — không đổi vai trò dù HLR có chạy production — xem `03`.
->   14. Thêm cấu hình Transformer nhỏ (`d_model=128, 2+2 layers`) làm fallback nếu cấu hình chính (256, 3+3) overfit trên tập hotel ~3.4k hội thoại — xem `03`.
->   15. Dọn `requirements.txt`: bỏ `seaborn` (không dùng), chuyển `spacy` thành tuỳ chọn; bỏ hẳn khái niệm "Combined Score" gộp nhiều metric NLP có trọng số tuỳ ý — mỗi metric báo cáo riêng — xem `02`, `03`.
->
-> **v4 → v5 (khóa baseline triển khai — sau vòng review cuối, đánh giá 9.1/10):** sửa terminology còn sót trong mock/dashboard; tách acceptance DKT và HLR; giới hạn so sánh perplexity trong cùng evaluation protocol; chuẩn hóa benchmark latency CPU; dùng một API contract canonical; tách integration API khỏi Web E2E; chuyển mock SRS sang deterministic; làm rõ `MOCK_MODE` thuộc FastAPI; bổ sung metadata tái lập cho Model Registry.
->
-> Sau bản v5 này, plan được coi là **baseline triển khai đã khóa** — chuyển sang implement tuần 1, không tiếp tục thêm tính năng/công nghệ hoặc redesign kiến trúc; chỉ điều chỉnh chi tiết khi thực thi phát sinh vấn đề cụ thể.
-
-Tài liệu này là **mục lục + lộ trình** cho bộ kế hoạch chi tiết.
-
-| File | Nội dung |
-|---|---|
-| [01-kien-truc-he-thong.md](01-architecture.md) | Sơ đồ hệ thống, phân tách trách nhiệm các boundary, cấu trúc thư mục và bảo mật |
-| [02-phan-tach-yeu-cau-bao-cao.md](02-requirements.md) | Ma trận sản phẩm bàn giao, dàn ý 3 báo cáo (SE / ML / NLP), danh sách hình vẽ & bảng số liệu cần có |
-| [03-api-contract.md](03-api-contract.md) | Hợp đồng giao tiếp API `/v1/`, cấu trúc JSON request/response và error envelope |
-| [04-data-model.md](04-data-model.md) | Mô hình dữ liệu logic, nguyên tắc đa ngôn ngữ và phân quyền RLS |
-| [05-traceability-matrix.md](05-traceability-matrix.md) | Ma trận truy vết yêu cầu sang Use Case, Component, Data Entity và Test Evidence |
-| [06-system-analysis.md](06-system-analysis.md) | Đặc tả phân tích hệ thống toàn diện, danh mục 6 năng lực, 8 Use Case và biểu đồ luồng |
-| [07-data-dictionary.md](07-data-dictionary.md) | Sơ đồ ERD 17 thực thể hiện thực, từ điển thuộc tính chi tiết, storage buckets và bảng đối chiếu |
+> **Canonical status:** Phase 0 reconciled baseline. The sections below preserve legacy v1-v5 planning text as historical context.
 
 ---
 
-### 0.1. Giả định đang dùng (cần xác nhận / sửa nếu sai)
+## [SUPERSEDED / HISTORICAL REFERENCE] Migrated source: overview and roadmap (v5)
 
-| # | Giả định | Ảnh hưởng nếu sai |
+> **Historical Context Note:** Sections 0.1–0.5 below represent the earlier v1–v5 planning drafts prior to the Phase 0 baseline reset and ADR-010 consolidation. In particular:
+> - **G3 (ML/NLP):** Originally planned DKT-LSTM and MultiWOZ dialogue. Superseded by Deterministic SRS + T5-small GEC.
+> - **Actors/Roles:** Originally simplified to Learner/Admin. Superseded by Phase 0 canonical 6 roles (`Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager`).
+> - **Target Languages:** Originally English only. Phase 0 expands the roadmap to 5 languages with English as the initial pilot.
+
+### 0.1. Giả định lịch sử & Cập nhật Phase 0
+
+| # | Giả định gốc | Trạng thái hiện tại (Phase 0 & ADR-010) |
 |---|---|---|
-| G1 | Thời gian còn lại **~12 tuần** (từ 13/08/2026) | Toàn bộ lộ trình co/giãn theo tỉ lệ |
-| G2 | Ngôn ngữ **được học**: **English**. Ngôn ngữ **giao diện**: `vi`, `en`, `ja` | Ảnh hưởng số lượng bảng `*_translations` cần seed |
-| G3 | ML = **Knowledge Tracing / Spaced Repetition** cho từ vựng tiếng Anh; NLP = **Chatbot Roleplay** (1–2 kịch bản hội thoại tiếng Anh, chấm độ tự nhiên câu) | Đây là hướng vừa chốt, thay thế GEC hoàn toàn |
-| G4 | Làm việc cá nhân (1 người, 3 vai) | Không có sprint ceremony nhiều người, thay bằng self-review |
-| G5 | GPU: Google Colab / Kaggle bản miễn phí (T4/P100) | Quyết định kích thước model (xem `03`) |
-| G6 | Chưa có dữ liệu tương tác thật của user (app mới) | Bắt buộc dùng dataset công khai để huấn luyện/pretrain, chiến lược cold-start (xem `03`, `05`) |
+| G1 | Thời gian còn lại ~12 tuần (từ 13/08/2026) | Tiến độ theo từng milestone có gate kiểm soát |
+| G2 | Ngôn ngữ học: English; UI: `vi`, `en`, `ja` | Mở rộng MVP sang 5 ngôn ngữ (English, Vietnamese, French, Chinese, Japanese) với English pilot đầu tiên |
+| G3 | ML = DKT-LSTM / HLR; NLP = Chatbot Roleplay | **SUPERSEDED by ADR-010:** SRS dùng deterministic rule-based; AI model duy nhất là T5-small GEC cho tiếng Anh |
+| G4 | Làm việc cá nhân / AI Pair-programming | AI workflow chuẩn hóa trên **Superpowers** với 2 agents: Codex (plan/review) và Antigravity (implement/test) |
+| G5 | GPU: Google Colab / Kaggle miễn phí (T4/P100) | Giữ nguyên cho việc fine-tune và benchmark T5-small GEC |
+| G6 | Chưa có dữ liệu tương tác thật của user | Bắt buộc dùng dataset công khai có bản quyền rõ ràng cho GEC; không ngụy tạo số liệu |
 
 ### 0.2. Nguyên tắc xuyên suốt
 

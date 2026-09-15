@@ -22,8 +22,6 @@ Tool versions in `docs/01-architecture.md` remain authoritative. Detected versio
 - `lingora-web/`: Project 1 Web learner application (Next.js App Router).
 - `lingora-admin/`: Project 1 administration boundary and future Prisma owner.
 - `lingora-ai/api/`: FastAPI integration surface.
-- `lingora-ai/ml_srs/`: ML-owned SRS research code boundary.
-- `lingora-ai/nlp_chatbot/`: NLP-owned chatbot research code boundary.
 
 M1.1 creates boundaries and non-secret configuration templates only. Later gated subtasks create build files, dependencies, schemas, endpoints, UI, and model code.
 

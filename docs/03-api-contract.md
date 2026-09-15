@@ -1,8 +1,24 @@
 # 03 - Lingora AI API Contract
 
-> **Current normative amendment (ADR-010, effective 2026-08-21):** the target inference contract is `POST /v1/gec/correct`. This HTTP boundary is an internal Lingora component contract, not an interaction with an external `AI Service` actor. Existing SRS and roleplay contracts below remain implemented compatibility surfaces until consumers migrate; they are not removed or marked as already deprecated by this documentation task.
+> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
+> This document defines the HTTP boundary for the supporting stateless AI service (`lingora-ai/api`).
+> Direct browser-to-FastAPI calls are forbidden; all calls must flow through the Next.js server-side Route Handler proxy in `lingora-web` with an 8-second timeout.
+>
+> ### Endpoint Tiers & Lifecycle
+>
+> | Tier | Method & Path | Purpose | Implementation Status |
+> |---|---|---|---|
+> | **CURRENT** | `GET /health/live` | Liveness check (process alive) | ✅ IMPLEMENTED |
+> | **CURRENT** | `GET /health/ready` | Readiness check (components loaded) | ✅ IMPLEMENTED |
+> | **CURRENT** | `GET /health` | Health alias check | ✅ IMPLEMENTED |
+> | **CURRENT** | `GET /v1/model/info` | Model metadata, registry & reports | ✅ IMPLEMENTED |
+> | **COMPATIBILITY** | `POST /v1/srs/schedule` | SRS schedule calculation (DKT/HLR fallback) | ✅ IMPLEMENTED (Retained for backward compat) |
+> | **COMPATIBILITY** | `POST /v1/chat/roleplay` | Scenario chat roleplay response | ✅ IMPLEMENTED (Retained for backward compat) |
+> | **TARGET** | `POST /v1/gec/correct` | Transformer T5-small English GEC | ⏳ TARGET (Specified, implementation pending) |
+>
+> *Rule:* Do not remove or deprecate compatibility endpoints while consumers or test suites rely on them. Do not claim GEC is implemented until its implementation task is approved and executed.
 
-## `POST /v1/gec/correct` — proposed canonical target
+## `POST /v1/gec/correct` — Proposed Canonical Target
 
 Request:
 
@@ -40,9 +56,9 @@ Normative rules: T5-small owns only `corrected_text`; alignment owns edits and o
 4. Run repository-wide reference and regression checks.
 5. Deprecation and removal occur in later approved tasks.
 
-> **Canonical status:** M0 migration of the locked legacy API contract. The source wording and examples are preserved. No endpoint implementation or semantic correction is included.
->
-> This file is the only editable API-contract source. Future repository copies must be generated/synchronized from it.
+---
+
+## [SUPERSEDED / HISTORICAL REFERENCE] Migrated source: legacy AI contracts
 
 ### 1.6. API Contract của AI Server (bản v2)
 

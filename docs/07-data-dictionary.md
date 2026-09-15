@@ -2,17 +2,18 @@
 
 > **Mã tài liệu:** `docs/07-data-dictionary.md`  
 > **Trạng thái:** `CANONICAL / AUTHORITATIVE`  
-> **Phiên bản:** `1.0.0` (Khôi phục & Chuẩn hóa sau Milestone `M1.6W`)  
-> **Ngày phê duyệt:** `2026-08-17`  
-> **Căn cứ pháp lý & kỹ thuật:** `docs/04-data-model.md`, `ADR-003`, `lingora-admin/prisma/schema.prisma`, và các migration SQL thực tế (`20260814000000_init`, `20260814000001_rls_and_rpc`, `20260814000002_storage_setup`).
+> **Phiên bản:** `1.1.0` (ADR-014 Software Engineering Core & AI Supporting Capability)
+> **Ngày hiệu lực:** `2026-09-14`
+> **Căn cứ pháp lý & kỹ thuật:** `docs/04-data-model.md`, `ADR-003`, `ADR-005`, `ADR-014`, `lingora-admin/prisma/schema.prisma`, và các migration SQL thực tế (`202608140001_init`, `202608140002_auth_rls_storage_record_review`, `202608140003_storage_two_bucket_size_enforcement`).
 >
-> **Scope alignment (2026-08-23):** toàn bộ 17 thực thể và 24 khóa ngoại bên dưới được giữ nguyên. Báo cáo phân loại 15 model phục vụ active business flow và 2 model `ChatSession`/`ChatMessage` là legacy/deprecated pending cleanup. GEC là xử lý nội bộ và không tạo persistence mới trong MVP. UC-09/UC-10 là chức năng chính thức trong phạm vi; persistence tương ứng chưa thuộc physical baseline 17-model và phải được bổ sung qua task schema/API/RLS được phê duyệt. ChatScenario tiếp tục quản lý ngữ cảnh tình huống; việc dùng ChatSession/ChatMessage cho lịch sử luyện viết cần quyết định semantics/RLS riêng. UserVocabSrs.recallProbability được giữ vì compatibility, không còn là bằng chứng về learned-SRS target.
+> **Phase 0 Scope Alignment (2026-09-14 & ADR-014):** Báo cáo phân loại 12 model cốt lõi phục vụ active learning flow, 1 model mở rộng 6 vai trò (`Profile`), 1 hierarchy bổ sung (`Unit`), 2 model mở rộng quy trình nội dung 6 trạng thái (`Course`, `Lesson`), 2 model ngữ cảnh (`ChatScenario`/`ChatScenarioTranslation`), và 2 model legacy/deprecated (`ChatSession`/`ChatMessage`). GEC là xử lý nội bộ không tạo persistence mới trong MVP. Migration history được bảo toàn tuyệt đối cho mục đích audit.
+
 
 ---
 
-## 1. Sơ đồ Thực thể Quan hệ Hiện thực (Implementation-Grounded ERD)
+## 1. Sơ đồ Thực thể Quan hệ Hiện thực (Current Applied Database ERD — Migration State)
 
-Biểu đồ ERD dưới đây phản ánh chính xác **17 thực thể** và **24 khóa ngoại** đang được quản lý bởi Prisma và PostgreSQL:
+> 📌 **OD-3 Phân định Tầng Hiện thực:** Biểu đồ ERD dưới đây phản ánh chính xác **17 thực thể** đang tồn tại trong **PostgreSQL Applied Database** (theo migration `202608140001_init` hiện tại). Các thực thể mở rộng của Target Design (`Unit`, `AuditLog`, enum `Role` 6 giá trị, enum `ContentStatus` 6 trạng thái) đã được định hình tại `lingora-admin/prisma/schema.prisma` và sẽ được đưa vào PostgreSQL thông qua migration M3 (xem chi tiết đối chiếu tại Mục 5). Không ngộ nhận rằng CSDL hiện tại đã có `Unit`.
 
 ```mermaid
 erDiagram
@@ -390,12 +391,13 @@ erDiagram
 
 ## 3. Danh mục Supabase Storage Buckets
 
-Hệ thống sử dụng **2 Private Storage Buckets** được bảo vệ bởi RLS:
+*Căn cứ thực tế:* Migration `202608140003_storage_two_bucket_size_enforcement` và `docs/QUICK-REF.md` §7.
+Hệ thống sử dụng **2 Private Storage Buckets** được bảo vệ bởi RLS nghiêm ngặt:
 
-| Tên Bucket | Trạng thái bảo mật | Giới hạn dung lượng | Định dạng MIME cho phép | RLS Quyền truy cập |
-|---|---|---|---|---|
-| `course-media` | **Private** | 10 MB / file | `audio/mpeg`, `audio/wav`, `image/jpeg`, `image/png`, `image/webp` | **SELECT:** Public (qua signed URL hoặc token xác thực); **INSERT/UPDATE/DELETE:** Chỉ `ADMIN`. |
-| `chat-audio` | **Private** | 10 MB / file | `audio/mpeg`, `audio/webm`, `audio/wav`, `audio/ogg` | **SELECT/INSERT:** Chỉ `auth.uid() == owner` (học viên sở hữu phiên chat); **UPDATE/DELETE:** `ADMIN` hoặc owner. |
+| Tên Bucket | Trạng thái bảo mật | Giới hạn dung lượng | Định dạng MIME cho phép | Đường dẫn lưu trữ | RLS Quyền truy cập |
+|---|---|---|---|---|---|
+| `lingora-avatars` | **Private** | 5 MB / file | `image/jpeg`, `image/png`, `image/webp` | `profiles/{userId}/{filename}` | **SELECT / INSERT / DELETE:** Chỉ owner (`auth.uid() == userId`). Cấm anonymous. |
+| `lingora-media` | **Private** | 10 MB / file | `audio/mpeg`, `audio/wav` | `vocabulary/{vocabularyId}/{filename}` | **SELECT:** Người dùng đã xác thực (đọc audio từ vựng); **INSERT / DELETE:** Chỉ `ADMIN` hoặc service-role. Không cho phép ghi đè. |
 
 ---
 
@@ -407,3 +409,20 @@ Hệ thống sử dụng **2 Private Storage Buckets** được bảo vệ bởi
 | **Nhật ký Đánh giá (`ReviewLog`)** | Lưu trữ kết quả ôn tập tối giản phục vụ tính toán SRS và thống kê. | Bảng `review_logs` chỉ lưu `srs_card_id`, `is_correct`, `interval_days`, `reviewed_at`. Không lưu toàn bộ raw input/output ML. | **Khớp 100% với `ADR-003`.** Không tạo thêm bảng ML chuyên biệt khi chưa có yêu cầu lưu trữ chi tiết. |
 | **Điểm Bài học (`UserProgress.score`)** | Điểm số tổng hợp 0–100% trên mỗi bài học. | Lưu dưới dạng `score INTEGER NULL` kèm `status NOT_STARTED / IN_PROGRESS / COMPLETED`. | **Khớp 100%.** Không sinh thêm bảng chi tiết từng lượt attempt khi không thuộc Must scope. |
 | **Bảng Nhắc nhở Đẩy (`push_subscriptions`)** | Dự kiến cho Web Push trong phương án cũ. | Không tồn tại trong cơ sở dữ liệu. | **Khớp 100% với `ADR-008`.** Option 6b đã được hoãn (DEFERRED), không tạo bảng thừa trong DB. |
+
+---
+
+## 5. Đối chiếu Mô hình Dữ liệu Phase 0 (Current Schema vs Target Schema)
+
+Đối chiếu kiến trúc dữ liệu giữa 17 thực thể hiện tại và yêu cầu Phase 0 (6 vai trò, quy trình duyệt bài 6 trạng thái, cohort và audit):
+
+| Phân loại | Mô hình | Hiện trạng Runtime (`lingora-admin`) | Mô hình Mục tiêu Phase 0 (Target Schema) | Chiến lược Di chuyển & Kế thừa |
+|---|---|---|---|---|
+| **Models to Keep** (12 models) | `Language`, `Course`, `CourseTranslation`, `Lesson`, `LessonTranslation`, `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary`, `Exercise`, `UserProgress`, `UserVocabSrs`, `ReviewLog` | Đã triển khai trong Prisma và PostgreSQL, có RLS và RPC | Giữ nguyên 100% cấu trúc lõi; tái sử dụng cho luồng học M2 | Không cần migration thay đổi cấu trúc ở Phase 0 |
+| **Models to Extend** (1 model) | `Profile` | `enum Role { LEARNER ADMIN }` | Hỗ trợ 6 roles: `ADMINISTRATOR`, `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `LEARNER`, `ORGANIZATIONAL_MANAGER` | Mở rộng enum Role hoặc tạo bảng trung gian gán role theo từng tổ chức trong milestone M3; giữ tương thích ngược với `LEARNER`/`ADMIN` |
+| **Models to Extend (Workflow)** (2 models) | `Course`, `Lesson` | Cờ `isPublished: Boolean` | Bổ sung trạng thái vòng đời bài học: `DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`, kèm `creator_id` và `reviewer_id` | Lập kế hoạch migration bổ sung trường không bắt buộc (nullable/default) ở M3; không xóa cờ `is_published` hiện có |
+| **Legacy Compatibility** (2 models) | `ChatScenario`, `ChatScenarioTranslation` | Bảng kịch bản hội thoại có `code`, `system_prompt` | Tái sử dụng để cung cấp prompt/ngữ cảnh cho Luyện viết tình huống (`UC-06` / `P1-FR-007`) | Giữ nguyên trong schema, không xóa |
+| **Target Models in Schema (Pending Migration)** | `Unit`, `UnitTranslation`, `AuditLog` | Đã có trong `schema.prisma` target; chưa có trong Applied DB | Phục vụ phân cấp bài học và nhật ký kiểm toán quản trị | Sẽ áp dụng vào PostgreSQL qua migration M3; không migration ở Phase 0 |
+| **Logical Models for Future Expansion** | `Cohort`, `CohortMember`, `SupportTicket` | Khái niệm logic nghiệp vụ; chưa có trong Prisma target và Applied DB | Phục vụ B2B Org Manager (`UC-15`) và ticket hỗ trợ Ops Staff (`UC-14`) | Thiết kế schema riêng tại milestone liên quan; tuyệt đối không tạo tùy tiện trong Phase 0 |
+
+**Nguyên tắc bất biến:** Bảo toàn 100% lịch sử migration (`202608140001_init`, `202608140002_auth_rls_storage_record_review`, `202608140003_storage_two_bucket_size_enforcement`). Không viết đè hoặc xóa bỏ bất kỳ migration SQL nào.

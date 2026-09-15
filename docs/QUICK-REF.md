@@ -1,6 +1,10 @@
 # Lingora — Quick Reference
 
-> **Current baseline (scope aligned 2026-08-23):** two tracks only — Software Engineering and ML/Deep Learning with T5-small GEC. Learner and Admin are the only external Use Case actors; GEC/T5-small is internal Lingora processing even when deployed as FastAPI. The official in-scope Use Case catalog is UC-01..UC-10, including UC-09 Placement Test and UC-10 Private Achievements. Deterministic SRS remains in Project 1; DKT/HLR/DQN and MultiWOZ dialogue generation are superseded future targets. Historical implementation evidence for the old mock endpoints remains valid.
+> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
+> LINGORA is a **Software Engineering CORE** language learning platform with an **AI SUPPORTING CAPABILITY** (GEC feedback).
+> It encompasses **6 canonical roles** (`Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager`), **19 MVP functions (`MVP-01`..`MVP-19`)**, **15 Use Cases (`UC-01`..`UC-15`)**, and a **6-state content review lifecycle** (`Draft` → `In Review` → `Changes Requested` → `Approved` → `Published` → `Archived`) across 5 target languages (English A1 first).
+> AI development is unified under **Superpowers** (`obra/superpowers`) with task-driven agents (Codex for discovery/planning/review, Antigravity for implementation/verification).
+> Database: Phase 0 Target Schema (6 roles, 6-state content workflow, Unit hierarchy, clean learning models); historical migration files are strictly preserved for audit. GEC is TARGET (`/v1/gec/correct`).
 
 > **Purpose:** Concise project snapshot for agents. Read this first.
 > For authoritative detail, follow the pointers in each section to the canonical source.
@@ -62,49 +66,55 @@ If AI Server is down, deterministic SRS and the core lesson flow remain usable; 
 | M1.5 | FastAPI mock runtime & test suite | ✅ DONE (JWKS/ES256 verifier amended) |
 | M1.6W | Web Learner Foundation (Next.js 15, SSR Auth, AI Route Handlers) | ✅ DONE — commit `f13521a` |
 | RSA-DOC | Requirements & System Analysis Documentation Recovery (`docs/06`, `docs/07`) | ✅ DONE |
-| M2 | Learn one lesson end-to-end (Web core lesson flow) | ⬜ upcoming / next |
-| M3 | Web Admin functional | ⬜ upcoming |
-| GEC API/ML | GEC mock foundation, then real T5-small evaluation | ⬜ upcoming |
+| Phase 0 Cleanup | Repository cleanup & Superpowers 14-skill standardization | ✅ DONE |
+| Phase 0 Recon | Phase 0 Rebuild & 11-layer Reconciliation Implementation | ✅ DONE |
+| Phase 0 Reset | Full Phase 0 Reset & Rebuild (SE Core + AI Supporting Capability) | 🔄 CURRENT TASK |
+| M2 | Learn one lesson end-to-end (Web core lesson flow & exercise engine) | ⬜ upcoming / next |
+| M3 | Web Admin & Moderation workflow (Creator/Moderator/Admin UI) | ⬜ upcoming |
+| GEC API | GEC supporting capability contract (`/v1/gec/correct`) & integration | ⬜ upcoming |
 | M5 | Feature freeze | ⬜ upcoming |
-| Final | Production deploy, SE report, ML/GEC report and presentation | ⬜ upcoming |
+| Final | Production deploy, SE report, academic presentation | ⬜ upcoming |
 
-**Current baseline:** M1.6W and System Analysis Documentation Recovery (`docs/06-system-analysis.md`, `docs/07-data-dictionary.md`) are DONE.
+**Current baseline:** Full Phase 0 Reset & Rebuild (ADR-014: Software Engineering Core + AI Supporting Capability).
 Next active milestone: **M2 (Web Core Lesson Flow & Exercise Engine)**.
-
 
 ---
 
 ## 4. Priority Tiers
 
-*Source: [`docs/00-master-plan.md`](00-master-plan.md) §0.3*
+*Source: [`docs/00-master-plan.md`](00-master-plan.md) §0.3, [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md)*
 
 | Tier | Contents |
 |---|---|
-| **P0 — must have** | Auth, Lesson, Vocabulary, approved exercises, Admin CRUD, deterministic SRS, scenario writing, GEC mock/API, Web build, SE + ML/GEC reports |
-| **P1 — should have** | Real T5-small GEC, F0.5/ERRANT evaluation, accessible diff UI, full RLS, vi/en UI, tests and deployment |
-| **P2 — only if time** | `grammatical_acceptability_score` scorer, DailyDialog, ja UI, ONNX/quantize, advanced Admin analytics |
+| **P0 — must have** | 19 MVP functions core: Auth (`UC-01`), Lesson & Curriculum (`UC-04`), 3 core exercise types (`UC-05`), Progress & Streak (`UC-07`), Deterministic SRS (`UC-06`), Content Draft & Publish (`UC-08`, `UC-10`), Admin basic account management (`UC-11`), GEC API contract/mock, Web build, SE + ML/GEC reports |
+| **P1 — should have** | Real T5-small GEC, F0.5/ERRANT evaluation, accessible diff UI, Moderation review queue (`UC-09`), multi-language rollout (Vietnamese, French, Chinese, Japanese A1/HSK1/N5), operations support (`UC-14`), tests and deployment |
+| **P2 — only if time** | Optional Cohort Management (`UC-15`), speech input/playback UI, ONNX/quantization, advanced Admin analytics (`UC-12`) |
 
-**Never cut:** Auth flow, core lesson flow, ≥1 AI API with a real model, 3 report documents.
+**Never cut:** Auth flow, core lesson flow, ≥1 AI API with a real model, SE and ML/GEC reports.
 
 ---
 
-## 5. AI API Endpoints
+## 5. AI API Endpoints & Tiers
 
 *Source: [`docs/03-api-contract.md`](03-api-contract.md)*
 
-### Target: `POST /v1/gec/correct`
+### Endpoint Tiers
+| Tier | Method & Path | Purpose | Status |
+|---|---|---|---|
+| **CURRENT** | `GET /health/live` | Liveness check (process alive) | ✅ IMPLEMENTED |
+| **CURRENT** | `GET /health/ready` | Readiness check (components loaded) | ✅ IMPLEMENTED |
+| **CURRENT** | `GET /health` | Health check alias | ✅ IMPLEMENTED |
+| **CURRENT** | `GET /v1/model/info` | Model metadata, registry & reports | ✅ IMPLEMENTED |
+| **COMPATIBILITY** | `POST /v1/srs/schedule` | SRS schedule calculation (DKT/HLR fallback) | ✅ IMPLEMENTED (Retained) |
+| **COMPATIBILITY** | `POST /v1/chat/roleplay` | Scenario chat roleplay response | ✅ IMPLEMENTED (Retained) |
+| **COMPATIBILITY** | `GET /v1/chat/scenarios` | Published scenarios list | ✅ IMPLEMENTED (Retained) |
+| **TARGET** | `POST /v1/gec/correct` | Transformer T5-small English GEC | ⏳ TARGET (Specified, pending) |
+
+### Target Specification: `POST /v1/gec/correct`
 - **Input:** `{ text, scenario_code, lang: "en", client }`
 - **Output:** `{ original_text, corrected_text, corrections?, suggested_text?, explanation?, model_version, is_mock, latency_ms }`
 - T5-small owns only corrected text; diff/classification are deterministic derived modules.
 - GEC output is transient in MVP. Legacy SRS/chat endpoints remain compatibility surfaces until migration.
-
-### Other endpoints
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/v1/model/info` | Model name/version/dataset/metric — for reports |
-| `GET` | `/v1/chat/scenarios` | Published scenarios list |
-| `GET` | `/health/live` | Liveness (no model dependency) |
-| `GET` | `/health/ready` | Readiness (SRS + NLP loaded) |
 
 **Error envelope:** `{ "error": { "code": "…", "message": "…", "detail": {…} } }`
 **All fields:** `snake_case`; inference path version prefix: `/v1/`
@@ -155,7 +165,7 @@ Anonymous access denied on both buckets. No signed-URL runtime. No overwrite per
 **Assumptions in effect:**
 - G1: ~12 weeks total (from 2026-08-13) — M1.3 consumed weeks 1–2.
 - G2: Learning language = English; UI locales = `vi`, `en` (`ja` P2).
-- G3: ML/Deep Learning = T5-small for English GEC; no separate NLP chatbot track.
+- G3: AI = Supporting capability (GEC via pretrained model or external API); no separate NLP chatbot track; no research track.
 - G4: Solo developer, 3 roles (SE + ML + NLP).
 - G5: GPU = Google Colab / Kaggle free (T4/P100).
 - G6: GEC dataset/license/split must be approved before training; no fabricated metrics.

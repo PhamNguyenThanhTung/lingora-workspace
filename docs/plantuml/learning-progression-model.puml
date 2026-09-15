@@ -1,0 +1,97 @@
+@startuml
+title Lingora Learning Progression, Placement & Conditional Jump Architecture
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+start
+
+:Learner Onboarding;
+
+if (Làm Placement Test?) then (Có (~30 câu))
+  :Thực hiện Placement Test (D6);
+  note right
+    **Phân bổ ~30 câu (U1..U6 Curriculum Blueprint):**
+    - B1 (U1): 6 câu
+    - B2 (U2): 6 câu
+    - B3 (U3): 5 câu
+    - B4 (U4): 5 câu
+    - B5 (U5): 5 câu
+    - B6 (U6): 3 câu
+  end note
+  
+  :Tính tổng điểm (0..30);
+  
+  if (0..7 điểm) then
+    :Starting Unit = **Unit 1**;
+  elseif (8..12 điểm) then
+    :Starting Unit = **Unit 2**;
+  elseif (13..17 điểm) then
+    :Starting Unit = **Unit 3**;
+  elseif (18..22 điểm) then
+    :Starting Unit = **Unit 4**;
+  elseif (23..26 điểm) then
+    :Starting Unit = **Unit 5**;
+  else (27..30 điểm)
+    :Starting Unit = **Unit 6**;
+  endif
+  :Lưu kết quả & lịch sử Placement (D6 / DD-06);
+else (Bỏ qua (Skip))
+  :Starting Unit = **Unit 1** (D6);
+  :Không lưu điểm số;
+endif
+
+:Vào Starting Unit trên Lộ trình Tuyến tính;
+
+partition "Tiến trình Học tập Tuyến tính (Course English A1: U1..U6)" {
+  repeat
+    :Học Lesson (N exercises trong bài);
+    
+    if (Có câu sai & còn trong hạn ngạch Controlled Retry?) then (Có)
+      :Thực hiện Controlled Retry (D7);
+      note right
+        **Thuật toán D7 Chuẩn:**
+        - N = số câu thực tế trong bài học
+        - Hạn ngạch: max(1, floor(N * 0.10))
+        - Retry đúng nhận 70% credit
+        - Hoàn thành = giải quyết hết bài first-pass
+          và các câu sai bắt buộc trong retry
+        - Completion != điểm sàn 80%
+      end note
+    endif
+    
+    :Cập nhật UserProgress = COMPLETED;
+    :Kích hoạt SRS Pool cho từ vựng bài học (Policy B: [1,3,7,14,30]);
+    
+    if (Yêu cầu Nhảy cấp (Conditional Jump D5)?) then (Có)
+      if (Đang trong Cooldown 24h?) then (Có)
+        :Bị chặn Jump; Tiếp tục học tuần tự;
+      else (Không)
+        :Xác định khoảng cách Jump đến Unit k;
+        if (Nhảy 1 Unit) then
+          :Bài test 20 câu (Unit k-1);
+        elseif (Nhảy 2-3 Units) then
+          :Bài test tích lũy 25-30 câu;
+        else (Nhảy >3 Units)
+          :Bài test chẩn đoán toàn diện 40 câu;
+        endif
+        
+        if (Điểm số >= 95%?) then (Đạt (Pass))
+          :Mở khóa thẳng đến Unit k;
+          :Đánh dấu hoàn thành các Unit bỏ qua;
+        else (Trượt (Fail))
+          :Kích hoạt Cooldown 24 giờ;
+          :Tiếp tục học tuần tự;
+        endif
+      endif
+    endif
+
+  repeat while (Còn bài học tiếp theo trong lộ trình?)
+}
+
+:Hoàn thành Khóa học English A1;
+stop
+
+@enduml

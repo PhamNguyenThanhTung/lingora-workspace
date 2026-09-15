@@ -1,10 +1,8 @@
 # lingora-ai
 
-AI service and research boundary for Lingora.
+Supporting AI capability service for Lingora (ADR-014).
 
-- `api/`: FastAPI compatibility and inference boundary.
-- `ml_srs/`: ML-owned SRS research boundary.
-- `nlp_chatbot/`: NLP-owned roleplay research boundary.
-
-M1.1 adds no endpoint, model, dataset, training, evaluation, or dependency.
+- **Role:** Supporting AI service (stateless, decoupled from core web and database).
+- **Directory:**
+  - `api/`: FastAPI runtime providing health checks, model info, target GEC contract (`/v1/gec/correct`), and legacy compatibility endpoints (`/v1/srs/schedule`, `/v1/chat/roleplay`).
 

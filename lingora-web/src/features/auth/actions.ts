@@ -9,13 +9,13 @@ export type AuthActionState = { code?: string };
 export async function loginAction(_: AuthActionState, formData: FormData): Promise<AuthActionState> {
   const result = await new AuthService().login(String(formData.get("email") ?? "").trim(), String(formData.get("password") ?? ""));
   if (!result.ok) return { code: result.code };
-  redirect("/foundation");
+  redirect("/");
 }
 
 export async function registerAction(_: AuthActionState, formData: FormData): Promise<AuthActionState> {
   const result = await new AuthService().register(String(formData.get("email") ?? "").trim(), String(formData.get("password") ?? ""));
   if (!result.ok) return { code: result.code };
-  redirect("/foundation");
+  redirect("/");
 }
 
 export async function logoutAction() {
