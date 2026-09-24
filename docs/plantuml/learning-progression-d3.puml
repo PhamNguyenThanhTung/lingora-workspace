@@ -1,0 +1,50 @@
+@startuml
+title D3 Learning Progression — Progress vs Proficiency vs Mastery vs Readiness (Design-Only)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+' FROZEN separation: Progress != Proficiency != Mastery != Readiness.
+' No completed-scope -> auto-advance edge. No downgrade edge.
+
+start
+:IN_LEARNING at curriculumStartingPoint;
+note right
+  Independent axes (FROZEN):
+  assessmentType: DIAGNOSTIC / EXIT / RE_EVALUATION
+  deliveryMode: PLACEMENT / JUMP / STANDARD
+end note
+repeat
+  :Study Lesson → Exercise → concept evidence;
+  :Update LearningProgress\n(content traversal only);
+  note right
+    LearningProgress != Proficiency
+    Proficiency != Mastery
+    Mastery != LevelReadiness
+  end note
+  :Update ConceptMastery /\nKnowledgeGap from typed evidence;
+  :Unit boundary? → LevelReadiness appraisal\n(typed evidence: progress + mastery\n+ gaps + sourceAssessmentResultIds);
+  if (Readiness output?) then (ADVANCE)
+    :Open next scope;
+  elseif (ADVANCE_WITH_SUPPORT) then
+    :Open next scope + support refs;
+  else (REMEDIATE)
+    :Prescribe concept remediation\n(see mastery-knowledge-gap-d3);
+  endif
+repeat while (More scope in plan?)
+
+:Curriculum scope completed\n(LearningProgress = 100%);
+note right
+  Completed scope != certification
+  Completed scope != automatic next-level grant
+  EXIT / RE_EVALUATION appraisal still required
+  assessmentType: EXIT or RE_EVALUATION
+  deliveryMode: STANDARD (or configured mode)
+end note
+
+:EXIT / RE_EVALUATION → AssessmentResult\n→ refreshed SkillProfile;
+:Personal report\n(LearningProgress + SkillProfile\n+ ConceptMastery + LevelReadiness);
+stop
+@enduml

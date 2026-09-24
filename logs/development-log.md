@@ -1,5 +1,94 @@
 # Development Log
 
+## 2026-09-24 — d3-assessment-and-learning-engine-design (category: scope-ambiguity)
+
+- **Context & Directive:** Human APPROVED D3 design-only task (chat directive 2026-09-24). Scope: `Assessment → Skill Profile → Learning → Mastery/Knowledge Gap → Readiness → Recommendation/Remediation` from D1/D2 COMPLETE baseline. Constraints: no runtime, no migration, no Prisma/Supabase schema change, no scoring/recommendation/remediation algorithm, no Design Freeze, preserve D2 FROZEN/PROPOSED/PENDING, Mapping A stays D2 compatibility.
+- **Deliverables (Files Expected To Change only):** new `docs/phase-1-d3-assessment-learning-engine-design.md` (A–Q; Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`); 6 new puml (`assessment-lifecycle-d3`, `diagnostic-flow-d3`, `learning-progression-d3`, `mastery-knowledge-gap-d3`, `level-readiness-d3`, `recommendation-remediation-d3`) with distinct `assessmentType`/`deliveryMode` and no downgrade/auto-advance edges; concise `01 §3.4` cross-reference; `05 §6` D3 traceability rows (15 UCs unchanged); `plans/current-task.md` APPROVED→IMPLEMENTING; logs updated.
+- **Preserved boundaries:** Progress ≠ Proficiency ≠ Mastery ≠ Readiness; Diagnostic ≠ EXIT/RE_EVALUATION; assessmentType ≠ deliveryMode; selfReportedLevel (UNVERIFIED) ≠ verifiedProficiency; no Completed B1 → B2; no whole-level downgrade; no forced replay; no hard-coded scoring/threshold/Anchor/readiness/remediation formula; Mapping A not generalized; no AssessmentSession (negated mentions only).
+- **Verification:** `T-D3-DESIGN-001` PASS (18/18 guards; diff--check 0; D3 focused scan OVERALL PASS; runtime scope empty). `T-D3-HYGIENE-001` PASS (D3 header status sync to Section Q, HANDOFF single-task cleanup, Reading semantic boundary note in §B3).
+- **Decisions:** ADR-016 recorded in `logs/decision-log.md`.
+
+## 2026-09-24 — d1-final-design-cleanup-and-d2-domain-data-design (category: scope-ambiguity)
+
+- **Context & Directive:** APPROVED System Design task D1 → D2 from `PASS WITH NON-BLOCKING ISSUES` baseline. Design-first only: 0 application code, 0 migrations, 0 runtime schema change, 0 scoring/recommendation/remediation algorithms. No Design Freeze declared.
+- **D1 Cleanup (6 items):** D1.1 AssessmentSession ghost removed from `04:449`, M2.1 purpose line decoupled, `STANDARD` added to `01:451`, `delivery_mode` added to puml AssessmentResult. D1.2/D1.3 verify-only (already correct, GUARD-09 + conceptId FKs). D1.4 `[PENDING-SOURCE-VERIFICATION]` on 5 credential spots (phase-0 §0.1/§3.5.1/§3.5.2, slide quy ước + methodology). D1.5 EN/ZH config keys in `01 §3.1`, M2.1 §6.9, tai-lieu YC-CORE-09. D1.6 HISTORICAL tags on 2 frozen `Ba dạng` rows + erd `audio_path` → `audio_url` (diagram-only).
+- **D2 Design (16 items):** Concept puml parity (name/prereq/isActive/PRONUNCIATION, cefr_level kept as level-ref — ADR-015); SkillProfile `sourceAssessmentResultId`; LevelReadiness typed evidenceSummary (thresholds CONFIGURABLE/PENDING); Recommendation inputSnapshot/ruleVersion/generatedAt; mastery/gap threshold guards + delete behavior; M2.1 §4.4 relationship matrix + §4.5 ten invariants; 01 §3.3 ten invariants; D2.7 conceptual Language→config note; §13 supplement (readiness table D2.15, versioning map D2.10, runtime compat report D2.16 — read-only); puml Exercise→Concept relation; slide 5-type `Viết` → `Ngữ pháp`.
+- **Verification:** `T-D1-D2-DESIGN-001` PASS (18/18 guards, `git diff --check` 0, puml balance 3×2, no new UCs).
+- **Decisions:** ADR-015 recorded in `logs/decision-log.md`.
+
+## 2026-09-24 — design-re-review-batch-fixes-round-3 (category: contract-gap)
+
+- **Context & Directive:** Implemented all batch fixes resulting from Independent Design Re-Review (Round 2) to prepare Lingora for Re-Review Round 3, transitioning the repository to `READY FOR DESIGN RE-REVIEW` (strictly zero runtime implementation, zero DB migrations/schema mutations).
+- **Key Accomplishments & Structural Alignments (All 11 Points):**
+  1. *P0-1 (Q13 Raw XLSX Recount & Contradiction Resolution):* Verified raw survey data from `Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` Column 14 (Q13, $N=15$): $5\star:8$ (53.3%), $4\star:4$ (26.7%), $3\star:1$ (6.7%), $2\star:1$ (6.7%), $1\star:1$ (6.7%), Sum = 62.0, Avg = 4.1333, Positive $4\text{–}5\star = 12/15$ (80.0%). Synchronized `docs/tai-lieu-phan-tich-yeu-cau.md`, `scratch/build_full_17_slides.py`, and `docs/slide-deck-17-slides.md`. Preserved raw Excel untouched.
+  2. *P0-2 (Language Expert Identity Fix):* Updated `docs/slide-deck-17-slides.md` (Slides 2 & 10) to canonical: English Teacher Trần Minh Quân (9 năm kinh nghiệm), Chinese Teacher Lê Hoàng Mai (8 năm kinh nghiệm). Zero occurrences of "Lê Tuyết Mai" or "7 năm" remaining in current documents.
+  3. *P1-3 (YC-CORE-01 Password Recovery Downstream Trace):* Retained "quên mật khẩu" in `YC-CORE-01`. Completed end-to-end downstream trace: `YC-CORE-01` $\rightarrow$ `MVP-01` $\rightarrow$ `P1-FR-001` $\rightarrow$ `UC-01` alternative flow $\rightarrow$ Acceptance criteria in `docs/06-system-analysis.md`, `docs/02-requirements.md`, and `docs/05-traceability-matrix.md`. Explicitly marked runtime implementation status as `PENDING / DESIGN SPEC ONLY`.
+  4. *P1-4 (NFR Qualifier Consistency):* Added `[PROPOSED TARGET / TBD — NOT BENCHMARKED]` qualifiers to latency/performance metrics in `docs/06-system-analysis.md` (NFR-PERF-05, NFR-PERF-06), `docs/report/lingora-project-1-lecturer-format.md`, and `docs/report/lingora-requirements-and-use-cases.md`.
+  5. *P1-5 (Multi-Language 4-Tier Assessment Chain):* Documented explicit 4-tier chain (`Common Assessment Engine` $\rightarrow$ `Language Config` $\rightarrow$ `Item Bank` $\rightarrow$ `Rubric`) in `docs/01-architecture.md` (§3.1) and `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` (§6.9). Clarified these are conceptual/configuration layers, not physical database tables.
+  6. *P1-6 (Canonical Exercise Types Aligned):* Replaced stale "Ghép thẻ" with "Ngữ pháp" (`GRAMMAR`) in `docs/slide-deck-17-slides.md` (Slide 15) and `scratch/generate_s15_learner_flow.py`. Canonical 5 types: `MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`.
+  7. *P1-7 (AssessmentType 3-vs-5 Drift Resolved):* Cleanly separated 3 canonical pedagogical assessment types (`DIAGNOSTIC`, `EXIT`, `RE_EVALUATION`) from delivery execution modes (`PLACEMENT`, `JUMP`, `STANDARD`) across `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` (§4.1, §6.12, §8.20.3) and `docs/01-architecture.md` (§3.1). Flat 5-value enum marked `[HISTORICAL / SUPERSEDED IN DRAFT]`.
+  8. *P1-8 (LearningProgress Sole Ownership by LearnerProfile):* Removed duplicate `Profile "1" -- "0..*" LearningProgress` link from `docs/plantuml/domain-model-core.puml`, retaining strictly `LearnerProfile "1" -- "0..*" LearningProgress : monitors / owns [Target]`. Synchronized in M2.1 §8.20.7 and `docs/05-traceability-matrix.md` (E-EXP-03).
+  9. *P2-9 (Stale Jump Semantics Guarded):* Marked historical proposal term `COMPLETED_BY_JUMP` as `[HISTORICAL / SUPERSEDED]` in `docs/phase-0-product-owner-decision-sheet.md` and `docs/plantuml/learning-progression-model.puml`. Current rule strictly enforces `SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP` (`by_jump = true`).
+  10. *P2-10 (Stale CEFR Auto-Placement Guarded):* Added `[HISTORICAL / SUPERSEDED]` markers to legacy stories claiming "tự động xác định trình độ CEFR" in `docs/report/lingora-requirements-and-use-cases.md` and `docs/report/lingora-project-1-lecturer-format.md`. Placement strictly maps to Starting Unit on curriculum (Placement Mapping A).
+  11. *P2-11 (N=35 / N=3 Evidence Labeled):* Explicitly labeled all references to $N=35$ and $N=3$ in `docs/slide-deck-17-slides.md` (Slides 2, 6, 7, 17) and `docs/tai-lieu-phan-tich-yeu-cau.md` (§2.5, §2.6) as `[PRELIMINARY / DISCOVERY RESEARCH — PENDING RAW REPOSITORY EVIDENCE]`.
+- **Verification:** `T-DESIGN-REVIEW-FIX-002` PASS (All 11 consistency guards verified via automated test harness `scratch/verify_consistency_guards.py`). `git diff --check` clean with 0 whitespace errors.
+- **Repository State:** `READY FOR DESIGN RE-REVIEW`.
+- **Commit:** Pending human review and authorization.
+
+## 2026-09-24 — design-review-fixes-and-consistency-alignment (category: contract-gap)
+
+- **Context & Directive:** Implemented all fixes for findings identified in the Design Review of Lingora to transition repository status from `NOT READY` to `READY FOR DESIGN RE-REVIEW`. Zero application code, zero DB migrations/schema mutations, 15 canonical UCs preserved.
+- **Key Accomplishments & Structural Alignments:**
+  1. *Critical Fixes (C-01 to C-08):*
+     - `C-01`: Eliminated requirement ID namespace collision in `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` §2 by renaming design-local definitions to `DESIGN-FR-001..016` and `DESIGN-NFR-001..005`, and re-mapping all entity/trace tables to canonical engineering `P1-FR-*` / `P1-NFR-*` IDs.
+     - `C-02`: Re-mapped `SupportTicket` trace from `UC-15` to `UC-14` (Operations Staff / `MVP-16`). Preserved `UC-15` exclusively for `Cohort` (Org Manager / `MVP-17`).
+     - `C-03`: Recounted raw survey responses from `Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` Column 8 (Q7, $N=15$) and updated `docs/tai-lieu-phan-tich-yeu-cau.md` lines 61–67 to exact distribution: Vocab 7 (46.7%), Listening 6 (40.0%), Speaking 6 (40.0%), Writing 6 (40.0%), Grammar 5 (33.3%), Reading 2 (13.3%). Excel file preserved untouched.
+     - `C-04`: Persisted `LearningProgress` entity (`completedContentRatio`, `lastAccessedAt`, `updatedAt`) across Mermaid, M2.1 §4.1/§4.3/§8.20, and PlantUML `domain-model-core.puml`, mapped to `UC-07` / `MVP-08` / `P1-FR-011`.
+     - `C-05`: Labeled `READING` exercise format (`passageText`, `questions`, `conceptCode`) as `PROPOSED / DESIGN GAP` in M2.1 §4.1, §6.11, §8.8, and §8.19.6.
+     - `C-06`: Added `EXIT` and `RE_EVALUATION` to `AssessmentType` enum in M2.1 §4.1/§6.12/§8.20.3, PlantUML `learning-progression-model.puml`, and system specs; asserted `Progress ≠ Proficiency` and `Completed B1 ≠ B2`.
+     - `C-07`: Fixed Jump completion semantics in `learning-progression-model.puml` and system specs: skipped units tagged `SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP` (`by_jump = true`), never `COMPLETED_BY_LEARNING`.
+     - `C-08`: Labeled `### Scope Gap Review data boundaries` in `docs/04-data-model.md` as `HISTORICAL / SUPERSEDED by Phase-1 M2.1 Logical Target Schema`.
+  2. *Major Fixes (M-01 to M-15):*
+     - `M-01`: Established explicit precedence in `docs/09-placement-and-jump-specification.md`: Stage-Adaptive Diagnostic Assessment is the FROZEN ARCHITECTURAL PATTERN system-wide; English A1 30-item mapping is a PROPOSED PLACEMENT INSTANCE for MVP-03.
+     - `M-02`: Disambiguated research sources in `docs/slide-deck-17-slides.md`: separated Learner Survey ($N=15$), Stakeholder Interviews ($N=7$, 5 roles), and Language Expert Interviews ($N=2$, Thầy Quân & Cô Mai, tagged `expert-informed`).
+     - `M-03`: Added content governance attributes (`creatorId`, `unitId`, `conceptId`, `status: ContentStatus`, `reviewerId`, `publishedAt`, `version`) to `RemedialModule` across M2.1 §4.2/§4.3/§6.13/§8.20.9 and PlantUML.
+     - `M-04`: Added `Concept` entity (`code`, `domain`, `languageCode`, `description`, etc.) and updated `ConceptMastery` and `KnowledgeGap` to reference `conceptId: UUID (FK)` instead of free-text `conceptTag`.
+     - `M-06`: Separated fixed `GRAMMAR` exercise from transient `GEC` in M2.1 §8.19.5, removing transient fields (`contextScenarioCode`, `gecEnabled`).
+     - `M-07`: Replaced `audioPath` in M2.1 §8.19.4 (`LISTENING`) with `vocabularyId` referencing canonical vocabulary.
+     - `M-08`: Qualified unmeasured latency numbers with `[PROPOSED TARGET / TBD]`.
+     - `M-09`: Added consistency guard on `docs/09` §4 weights (`40/45/15`): `[PROPOSED — unit-local test composition only, NOT used as SkillProfile overall-score formula]`.
+     - `M-11`: Added Section 3 (`## 3. Assessment, Remediation & Readiness Architecture`) to `docs/01-architecture.md`, resolving dangling pointers from `docs/05`.
+     - `M-12`: Aligned non-mandatory confirmation gate: placement/diagnostic directly updates verified profile; confirmation dialog is an optional UX recommendation.
+     - `M-13`: Synchronized 5 exercise types per ADR-006 (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`) across `docs/05`, `docs/06`, and `docs/02`.
+     - `M-14`: Added comprehensive Section 5 to `docs/05-traceability-matrix.md` with full 5-tier traceability chain `YC → MVP → P1-FR → UC → Design` covering all 12 YC-CORE, 8 YC-EXT, 19 MVP functions, P1-FR/NFR/ML-GEC, and 15 Canonical UCs.
+     - `M-15`: Fixed Profile and AuditLog field alignments in M2.1 §8.12 and §8.16.
+- **Verification:** `T-DESIGN-REVIEW-FIX-001` PASS (all 17 consistency guards verified via automated test harness `scratch/verify_consistency_guards.py`). `git diff --check` clean with 0 whitespace errors.
+- **Repository State:** `READY FOR DESIGN RE-REVIEW`.
+- **Commit:** Pending human review and authorization.
+
+## 2026-09-24 — language-expert-research-and-learning-design-update
+
+- **Context & Directive:** Implemented the full Language Expert Research update (Thầy Trần Minh Quân - TESOL English, Cô Lê Hoàng Mai - Applied Linguistics Chinese) and the pedagogical Learning Design model across all specification, requirements, use cases, domain model, and architecture documents.
+- **Key Accomplishments:**
+  1. *Evidence Governance & Synthesis:* Added 5th evidence label `[EXPERT — LANGUAGE EXPERT INTERVIEW]` (`E-EXP-01` to `E-EXP-07`) in `docs/phase-0-user-research-analysis-and-requirements.md` §0.1 and detailed interview records in §3.5. Updated multilateral triangulation matrix.
+  2. *Requirements & Use Cases:* Updated `YC-CORE-07`..`YC-CORE-11`, `YC-EXT-03`, `NFR-LOC`, `MVP-03`, `P1-FR-016` across `tai-lieu-phan-tich-yeu-cau.md`, `02-requirements.md`, and `06-system-analysis.md`. Replaced hard-coded "30 questions" as general system invariant with Stage-Adaptive Diagnostic Assessment, while preserving Placement Mapping A as initial English A1 curriculum rule. Maintained 15 canonical Use Cases (`UC-01`..`UC-15`).
+  3. *Four-Concept Separation:* Strictly separated `Learning Progress` $\ne$ `Proficiency` $\ne$ `Mastery` $\ne$ `Level Readiness`.
+  4. *Adaptive Learning & Remediation:* Specified 3 level transition states (`ADVANCE`, `ADVANCE_WITH_SUPPORT`, `REMEDIATE`) and Concept-level Remediation (targeted micro-lessons with fresh context; strictly no whole-learner downgrade, no repeating completed lessons).
+  5. *Multi-Language Architecture:* Standardized Common Assessment Engine with language-specific configuration (English CEFR A1–B2; Chinese versioned HSK with reading `hidePinyin: true`). Flexible Entry Flow (`selfReportedLevel` $\ne$ `verifiedProficiency`).
+  6. *Domain Model & Data Foundation:* Integrated 9 logical domain concepts into `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` (§4, §6, §8.20) and updated PlantUML models (`domain-model-core.puml`, `learning-progression-model.puml`).
+  7. *Slide Deck & Quick Reference:* Synchronized `docs/slide-deck-17-slides.md` and `docs/QUICK-REF.md`.
+- **Negative Invariants Preserved:** 0 application code modified; 0 database migrations touched; no fake experts or percentages; all adaptive parameters/thresholds marked `PROPOSED / PENDING VALIDATION`; M2.2 behavioral modeling not started.
+- **Verification:** `T-EXP-DESIGN-001` PASS. `git diff --check` clean with 0 whitespace errors.
+- **Commit:** Pending human review and authorization.
+
+## 2026-09-20 — phase-1-m2-1-targeted-fix-after-adjudication
+
+- **Completed:** Applied the adjudicated M2.1 documentation corrections: reconciled applied fields and dictionary coverage with migration `202608140001_init`, canonicalized Scope values, completed traceability for language/translation/supporting scenario entities, synchronized the two affected PlantUML artifacts, and removed forbidden literal tokens from the active M2.1 Markdown and four PlantUML files.
+- **Preserved boundaries:** No application code, Prisma schema, migration, Supabase/database, learner/admin runtime, lifecycle PlantUML, baseline/Product Decision documents, or M2.2 artifacts were changed. P0-01 remained rejected; no `IN_REVIEW -> PUBLISHED` path was introduced.
+- **Verification:** `T-M21-TFIX-001` PASS. Fresh audit observed `TARGET_EXT=0`, `MATCHING=0`, `CORE (Supporting)=0`; four PlantUML files each had one `@startuml` and one `@enduml`; no active `ARCHIVED -> DRAFT`; selected applied columns matched the migration and dictionary; the Exercise PlantUML block had zero timestamp fields and domain false-applied-field checks were zero; Markdown false-claim checks were zero; `git diff --check` exited 0. PlantUML renderer was unavailable, so only static syntax was verified.
+- **Final state:** `M2.1 = CORRECTED — READY FOR INDEPENDENT RE-REVIEW`; `M2.2 = NOT STARTED`. Independent re-review and M2.1 approval remain outside this task.
+- **Commit:** Pending human review and authorization.
+
 ## 2026-09-15 — phase-0-user-research-analysis-and-requirements-authoring
 
 - **Context & Directive:** Executed full authoring of the 6 Core Report Sections in `docs/phase-0-user-research-analysis-and-requirements.md` following user command "bắt đầu làm đi" and approved writing plan `plans/phase-0-user-research-analysis-and-requirements-writing-plan.md`. Strict technical and integrity boundaries enforced: 0 application code, 0 schema/migration changes, M2.1 preserved, M2.2 NOT started.
@@ -2019,3 +2108,27 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
   - `T-M21-FIX-001`: PASS (Automated static syntax, reference, and boundary scan across 7 commands).
 - **Commit:**
   - Pending human review and authorization.
+
+## 2026-09-20 — tai-lieu-phan-tich-yeu-cau.md slide-readiness fixes (plan `plans/phase-0-tai-lieu-requirements-fix-plan.md`, APPROVED in chat)
+- **Hoàn thành:** R-01 (offline-save theo canonical: lưu tạm trong phiên + tự thử lại; 3 vị trí §8.1(3)/§4.7/YC-CORE-07); R-02 (8 vị trí "4 dạng" → 5 dạng ADR-006 + `rule_explanation`, làm rõ GRAMMAR ≠ GEC tự luận); R-04 (câu tuyên bố supporting-doc + bảng mapping 20 YC↔P1-FR/UC/BF + Mapping A bands vào YC-CORE-09 + D7 formula vào YC-CORE-07; đổi tên "ngân hàng câu hỏi" → Exercise thống nhất theo D4 tại 3 vị trí); R-05/R-06 (cảnh báo ADR-008 + điều kiện chặn slide MVP cho YC-EXT-07/YC-EXT-01); NFR §6.3 (số liệu tham chiếu canonical TBD); R-07 (làm rõ phân loại "ai" ở Q24).
+- **Vấn đề phát hiện thêm khi implement:** file thực tế 650–675 dòng (nhiều hơn 509 dòng thấy qua read tool do cắt output); rà quét phát hiện thêm 4 điểm sót cùng họ (dòng 295, 358, 502, 545, 365) và đã fix hết, verify 0 hit.
+- **Tests:** `T-TAILIEU-FIX-001` (N/A — doc-only verification, xem test-log).
+- **Commit:** chưa commit (chờ human yêu cầu rõ).
+
+## 2026-09-20 — tai-lieu: xử lý 22 tags [CẦN NHÓM XÁC NHẬN] + xác minh UC-count (theo chỉ đạo trực tiếp của user)
+- **Phát hiện file đã bị viết lại (799 dòng):** các fix R-01/R-02/R-04/R-05/NFR từ plan DONE trước đó không còn (mapping table, Mapping A bands, D7 formula, ADR-008 warnings, TBD refs đã mất); nội dung mới gồm §8 quyết định, §9 appendix N=35/N=3, §10 S1–S6, §11 Q-list. Không tự ý khôi phục — báo user quyết định ở turn sau.
+- **UC-count FACT:** baseline canonical = 15 UCs (UC-01..UC-15, docs/05+06+02) + 19 MVP functions (MVP-01..MVP-19, roles-and-mvp-final). File tai-lieu = 20 YC (12 CORE + 8 EXT) — hệ mã yêu cầu nghiệp vụ khác, không mâu thuẫn số lượng. "19" user hỏi = 19 MVP (nhầm thuật ngữ UC/MVP, dễ hiểu).
+- **Xử lý tags (user đã xác nhận từng nhóm qua question tool):** N=35 methodology (5 tags) + N=3 methodology (6 tags) + N=3 cases §3.3.1+appendix (6 tags) + trial 17/09 (2 tags) → xóa tag; dòng 628 về "18/09" → viết lại theo mốc đã xác nhận (10–17/09); dòng 729 → diễn giải nhóm + đối chiếu luật gốc; dòng 744 audit retention → QUYẾT ĐỊNH MỞ chờ pháp lý.
+- **Tests:** grep verify 0 tag còn lại, 0 `CẦN BỔ SUNG`, không double-space thừa.
+- **Commit:** chưa commit (chờ human yêu cầu rõ).
+
+## 2026-09-21 — Attestation ghi chép PV chuyên môn back-office (user xác nhận trực tiếp trong chat)
+- **Nội dung được xác nhận là ghi chép thật 100%:** 7 người (Manager: Nguyễn Thu T., Lê Quang H. 16/09; Creator: Đặng Mai A., Trần Quốc T. 17/09; Moderator: Hoàng Thị Kim O. 16/09; Ops: Phạm Đức T. 18/09; SysAdmin 18/09), quotes nguyên văn, time-study 22/18/11/4 phút (tổng 55), ngày 16–18/09.
+- **Phạm vi agent verify được:** nhất quán nội bộ (22+18+11+4=55; % cộng đủ 100.0), khớp baseline D1–D9/SoD/Y C codes, không phần trăm bịa (45/30/15/10 đã bỏ đúng), legal tách khỏi interview đúng phương pháp.
+- **Agent KHÔNG verify được:** sự xảy ra thực tế (repo không có raw notes/audio) — hoàn toàn dựa trên attestation của nhóm. Khuyến nghị: lưu raw notes + file raw N=35/N=3 vào repo; đối chiếu lại NĐ 53/2022 Điều 26 (12 tháng) với văn bản luật gốc trước bảo vệ.
+- **Commit:** chưa commit (chờ human yêu cầu rõ).
+
+## 2026-09-21 — slide-deck-17-slides.md: fix Slide 9 + Slide 16 theo duyệt của user
+- Xóa "chiếm 60% thời gian" (không nguồn), giữ nguyên văn file về audio bottleneck.
+- Slide 16: UC-05 → CORE-07 (bỏ CORE-03 phía Creator); UC-12 → CORE-02 Dashboard (bỏ EXT-05 sai đối tượng); UC-02 → CORE-10 (bỏ CORE-01 gượng ép).
+- Tests: grep verify 0 hit các chuỗi cũ. Commit: chưa commit (chờ human yêu cầu rõ).

@@ -1,0 +1,83 @@
+@startuml
+title D3 Recommendation & Remediation — Explainable Contract (Design-Only)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+hide methods
+hide circle
+
+' Level 3 explainable recommendation. No algorithm. No downgrade. No replay.
+
+enum assessmentType {
+  DIAGNOSTIC
+  EXIT
+  RE_EVALUATION
+}
+
+enum deliveryMode {
+  PLACEMENT
+  JUMP
+  STANDARD
+}
+
+class Recommendation {
+  + learnerProfileId: UUID
+  + recommendationType
+  + targetUnitId
+  + remedialModuleId
+  + rationale
+  + inputSnapshot
+  + ruleVersion
+  + generatedAt
+}
+
+class RemedialModule {
+  + conceptId: UUID
+  + status: PUBLISHED only
+  + fresh payload
+}
+
+class LevelReadiness {
+  + ADVANCE
+  + ADVANCE_WITH_SUPPORT
+  + REMEDIATE
+}
+
+package "Inputs (observed refs, no weights)" {
+  [Verified proficiency + SkillProfile]
+  [Learning goal]
+  [Learning history]
+  [Error history]
+  [Mastery + gaps]
+  [LevelReadiness output]
+}
+
+package "Outputs" {
+  [NEXT_UNIT target]
+  [REMEDIAL_MODULE target]
+  [PRACTICE target]
+}
+
+[Verified proficiency + SkillProfile] --> Recommendation
+[Learning goal] --> Recommendation
+[Learning history] --> Recommendation
+[Error history] --> Recommendation
+[Mastery + gaps] --> Recommendation
+[LevelReadiness output] --> Recommendation
+
+Recommendation --> [NEXT_UNIT target] : prescribes
+Recommendation --> [REMEDIAL_MODULE target] : prescribes concept module
+Recommendation --> [PRACTICE target] : prescribes
+[REMEDIAL_MODULE target] ..> RemedialModule : published only\nfresh context/vocab/exercises
+
+note bottom of Recommendation
+  Every recommendation carries rationale +
+  inputSnapshot + ruleVersion + generatedAt.
+  No scoring / recommendation / remediation algorithm.
+  No whole-level downgrade; no forced replay.
+  assessmentType and deliveryMode stay independent.
+end note
+
+@enduml

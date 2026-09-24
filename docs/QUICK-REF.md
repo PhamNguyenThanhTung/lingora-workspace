@@ -77,6 +77,7 @@ If AI Server is down, deterministic SRS and the core lesson flow remain usable; 
 
 **Current baseline:** Full Phase 0 Reset & Rebuild (ADR-014: Software Engineering Core + AI Supporting Capability).
 Next active milestone: **M2 (Web Core Lesson Flow & Exercise Engine)**.
+**D3 status (2026-09-24, DONE):** Assessment & Learning Engine design-only complete (`docs/phase-1-d3-assessment-learning-engine-design.md` A–Q, Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`); D2-compatible, no runtime/migration/algorithm, no Design Freeze. Next design step: **D4 Content/Curriculum** under its own approved plan.
 
 ---
 
@@ -178,6 +179,7 @@ Anonymous access denied on both buckets. No signed-URL runtime. No overwrite per
 5. SRS and Chatbot are independent — one late does not block the other.
 6. NLP cannot delay SE — always use `MOCK_MODE` if model not ready.
 7. Do not upgrade libraries mid-project without approval.
+8. Pedagogical integrity (Expert-informed): Strictly separate `Learning Progress` $\ne$ `Proficiency` $\ne$ `Mastery` $\ne$ `Level Readiness`; stage-adaptive diagnostic assessment (Routing → Targeted, 4 core dimensions, multidimensional Skill Profile, language-specific config); concept-level remediation (no whole-level demotion, no repeating completed lessons); flexible entry flow (`selfReportedLevel` $\ne$ `verifiedProficiency`).
 
 ---
 

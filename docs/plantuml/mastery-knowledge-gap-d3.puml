@@ -1,0 +1,73 @@
+@startuml
+title D3 Mastery & Knowledge Gap — Error Signal to Remediation to Re-assessment (Design-Only)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+hide methods
+hide circle
+
+' Thresholds CONFIGURABLE / PENDING VALIDATION. No hard-coded counts.
+' No whole-level downgrade. No forced replay of completed lessons.
+
+enum MasteryState {
+  NOVICE
+  DEVELOPING
+  MASTERED
+}
+
+enum GapState {
+  OPEN
+  IN_REMEDIATION
+  RESOLVED
+}
+
+class ConceptMastery {
+  + learnerProfileId: UUID
+  + conceptId: UUID
+  + masteryState: MasteryState
+  + evidence refs
+}
+
+class KnowledgeGap {
+  + learnerProfileId: UUID
+  + conceptId: UUID
+  + gapSeverity: LOW/MEDIUM/HIGH
+  + gapState: GapState
+  + detectedAt / resolvedAt
+  + evidence / provenance refs
+}
+
+class RemedialModule {
+  + conceptId: UUID
+  + status: PUBLISHED only
+  + fresh context/vocab/exercises
+}
+
+state "Exercise attempt\n(typed error evidence)" as e0
+state "ConceptMastery\nNOVICE" as m0
+state "ConceptMastery\nDEVELOPING" as m1
+state "ConceptMastery\nMASTERED" as m2
+state "KnowledgeGap\nOPEN" as g0
+state "KnowledgeGap\nIN_REMEDIATION" as g1
+state "KnowledgeGap\nRESOLVED" as g2
+
+[*] --> e0
+e0 --> m0 : record concept evidence\n(policy CONFIGURABLE)
+m0 --> m1 : qualifying evidence\n(no numeric rule in D3)
+m1 --> m2 : qualifying evidence\n(no numeric rule in D3)
+e0 --> g0 : qualifying repeated-error pattern\n(policy CONFIGURABLE)
+g0 --> g1 : prescribe RemedialModule\n(same concept, fresh payload)
+g1 --> e0 : fresh-concept practice\n(never forced replay)
+e0 --> g2 : linked mastery qualifies\n(record resolvedAt)
+g2 --> [*] : retained as provenance\n(archive policy PENDING)
+
+note right of g1
+  Remediation != replay old lesson
+  Weak skill != whole-level downgrade
+  Independent axes: assessmentType DIAGNOSTIC / EXIT / RE_EVALUATION
+  deliveryMode PLACEMENT / JUMP / STANDARD
+end note
+
+@enduml

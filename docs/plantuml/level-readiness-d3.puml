@@ -1,0 +1,47 @@
+@startuml
+title D3 Level Readiness — Three-State Machine with Typed Evidence (Design-Only)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+' FROZEN outputs; no numeric guard on any edge. Completion never decides alone.
+
+class LevelReadiness {
+  + learnerProfileId: UUID
+  + currentLevel / targetLevel
+  + evidenceVersion
+  + progressInput ref
+  + masteryInput refs
+  + gapsInput refs
+  + sourceAssessmentResultIds[]
+  + evaluatedAt: Timestamp
+}
+
+state "Appraisal triggered\n(unit boundary / EXIT evidence)" as t0
+state "ADVANCE" as r0
+state "ADVANCE_WITH_SUPPORT" as r1
+state "REMEDIATE" as r2
+
+[*] --> t0 : collect typed evidence\n(progress + mastery + gaps\n+ assessment refs)
+t0 --> r0 : appraisal output\nADVANCE
+t0 --> r1 : appraisal output\nADVANCE_WITH_SUPPORT
+t0 --> r2 : appraisal output\nREMEDIATE
+
+r0 --> [*] : open next scope
+r1 --> [*] : open next scope + support
+r2 --> [*] : prescribe concept remediation
+
+note right of t0
+  Mastery != LevelReadiness
+  Completion != certification
+  Completion != automatic advance
+  No single score; no hard-coded threshold
+  Decision policy: CONFIGURABLE / PENDING
+  assessmentType: DIAGNOSTIC / EXIT / RE_EVALUATION
+  (this machine consumes EXIT / RE_EVALUATION)
+  deliveryMode orthogonal: PLACEMENT/JUMP/STANDARD
+end note
+
+@enduml

@@ -423,3 +423,87 @@ lingora-ai/
 ```
 
 Legacy `app + ml/srs + ml/chatbot` and `values-ja`-as-Must wording is superseded.
+
+---
+
+## 3. Assessment, Remediation & Readiness Architecture
+
+> **Phân định kiến trúc cốt lõi (Core Architecture Addition — M-11):**
+> Phần kiến trúc này chuẩn hóa tầng đánh giá chẩn đoán (Diagnostic Assessment), thích ứng năng lực (Adaptive Proficiency), bổ khuyết khái niệm (Remedial Learning) và đánh giá chuyển cấp (Level Readiness) dựa trên kết quả nghiên cứu chuyên gia ngôn ngữ (`E-EXP-01`..`E-EXP-07`), phục vụ đặc tả kỹ thuật cho `P1-FR-016`, `MVP-03`, `MVP-04`, `MVP-08`, `MVP-11` và `UC-03`, `UC-04`, `UC-07`. Chi tiết thiết kế logic và đặc tả quy tắc xem tại [`docs/phase-1-m2-1-domain-and-logical-data-foundation.md`](phase-1-m2-1-domain-and-logical-data-foundation.md) và [`docs/09-placement-and-jump-specification.md`](09-placement-and-jump-specification.md).
+
+### 3.1. Stage-Adaptive Diagnostic Assessment Engine (FROZEN Architecture)
+1. **Kiến trúc thích ứng 2 giai đoạn (Two-Stage Adaptive):**
+   - **Giai đoạn 1 (Routing Stage):** Nhóm câu hỏi định tuyến ban đầu với độ khó trung bình nhằm ước lượng sơ bộ phân dải năng lực của học viên.
+   - **Giai đoạn 2 (Targeted Stage):** Hệ thống phân nhánh học viên vào nhóm câu hỏi chuyên biệt theo độ khó mục tiêu, đo lường chi tiết 4 chiều năng lực cốt lõi.
+   - **Quy mô & Thời lượng:** Dự kiến ~25–30 câu hỏi, thời gian hoàn thành $\le 15$ phút nhằm tránh mệt mỏi nhận thức (`E-EXP-07`).
+2. **Bốn chiều năng lực cốt lõi (Core Dimensions):**
+   - Đánh giá bao phủ 4 chiều độc lập: **Từ vựng (Vocabulary)**, **Ngữ pháp (Grammar)**, **Đọc hiểu (Reading)**, **Nghe hiểu (Listening)**.
+   - Xuất kết quả dạng **Skill Profile đa chiều** (Spider/Radar Chart), tuyệt đối không gộp thành 1 điểm số trung bình phẳng duy nhất (`E-EXP-02`).
+3. **Kiến trúc Đánh giá Đa ngôn ngữ 4 Tầng (Multi-Language Assessment Chain):**
+   Hệ thống thiết lập chuỗi đánh giá tách lớp độc lập, tuyệt đối không hard-code các rẽ nhánh ngôn ngữ trong mã nguồn nghiệp vụ:
+   $$\text{Common Assessment Engine} \longrightarrow \text{Language Config} \longrightarrow \text{Item Bank} \longrightarrow \text{Rubric}$$
+   - **Tầng 1 — Common Assessment Engine (Động cơ Đánh giá Dùng chung):**
+     Điều phối toàn bộ vòng đời phiên đánh giá (khởi tạo, định tuyến 2 giai đoạn Routing Stage $\rightarrow$ Targeted Stage, ghi nhận phản hồi, tính toán vector năng lực, xuất báo cáo đa chiều Spider/Radar chart). Engine này hoàn toàn bất biến theo ngôn ngữ.
+     - **3 Mục đích Đánh giá Sư phạm Canonical (`AssessmentType`):**
+       1. `DIAGNOSTIC`: Đánh giá chẩn đoán đầu vào để xác định hồ sơ năng lực ban đầu (`SkillProfile`) và gợi ý Starting Unit.
+       2. `EXIT`: Đánh giá đầu ra cuối Unit / Khóa học nhằm thẩm định năng lực thực tế trước khi xác nhận chuyển cấp (`LevelReadiness`).
+       3. `RE_EVALUATION`: Đánh giá kiểm tra lại định kỳ hoặc theo nhu cầu để làm mới `SkillProfile`.
+      - **Chế độ Thực thi / Phân lớp (`DeliveryMode`):** `PLACEMENT` (chế độ phân lớp đầu vào đề cương), `JUMP` (chế độ kiểm tra vượt cấp bài học) và `STANDARD` (chế độ thực hiện đánh giá tiêu chuẩn) là các chế độ thực thi, không phải mục đích đánh giá độc lập.
+   - **Tầng 2 — Language Config (Cấu hình Chuyên biệt Ngôn ngữ):**
+     Lớp cấu hình định dạng JSON/tham số hóa cho từng ngôn ngữ mục tiêu:
+      - **Tiếng Anh:** Khung tham chiếu CEFR A1–B2, dải kỹ năng ngữ pháp/từ vựng/đọc/nghe; config có room cho `contextual vocabulary`, `collocation`, `word family`, `connected speech` (`E-EXP-07`).
+     - **Tiếng Trung:** Khung chuẩn HSK có hỗ trợ đa phiên bản (HSK 2.0 / HSK 3.0); cờ `hidePinyin: true` bắt buộc cho bài thi đọc hiểu để loại bỏ việc "đọc vẹt chữ cái Latinh" thay vì nhận diện Hán tự (`E-EXP-04`).
+   - **Tầng 3 — Item Bank (Ngân hàng Học liệu Đánh giá):**
+     Tập hợp câu hỏi/bài tập chuẩn hóa được phân loại theo `Concept` và độ khó, liên kết với từng ngôn ngữ cụ thể.
+   - **Tầng 4 — Rubric (Thang đo & Tiêu chí Đánh giá Chuyên biệt):**
+     Bộ quy tắc chấm điểm, phân loại lỗi sai và xác định trọng số năng lực riêng cho từng ngôn ngữ:
+      - **Tiếng Anh:** Đánh giá trật tự từ, thì động từ, sự hòa hợp chủ-vị, giới từ, mạo từ, ngữ điệu câu; room cho `collocation`, `word family`, `connected speech`, `contextual vocabulary`.
+      - **Tiếng Trung:** Đánh giá độ chính xác nét/bộ thủ Hán tự, thanh điệu, trật tự từ/lượng từ và hư từ, phân biệt cặp từ đồng âm, nghe hiểu tiếng Trung theo cấu hình ngôn ngữ.
+   > **Lưu ý kiến trúc:** 4 tầng trên là **các lớp kiến trúc logic & cấu hình hệ thống**, KHÔNG yêu cầu tách thành 4 bảng vật lý riêng biệt trong cơ sở dữ liệu nếu mô hình quan hệ hiện tại đã hỗ trợ thông qua schema cấu hình và thực thể `Exercise`/`Concept`.
+4. **Luồng khởi đầu linh hoạt (Flexible Entry Flow - Decision D4):**
+   - Tách biệt rạch ròi giữa `selfReportedLevel` (cấp độ tự khai báo / Skip, trạng thái `UNVERIFIED`) và `verifiedProficiency` (đã qua kiểm tra chẩn đoán) để tránh sai lệch thích ứng (`E-EXP-01`).
+   - Cập nhật hồ sơ trực tiếp; hộp thoại xác nhận chỉ là optional UX recommendation.
+
+### 3.2. Remediation & Knowledge Gap Architecture
+1. **Phát hiện lỗ hổng kiến thức (Knowledge Gap Detection):**
+   - Mỗi câu hỏi bài tập liên kết với một điểm kiến thức chuẩn hóa (`Concept`).
+   - Lỗi sai liên tiếp hoặc lặp lại kích hoạt tạo `KnowledgeGap` và hạ chỉ số `ConceptMastery`.
+2. **Bổ khuyết theo khái niệm (Concept-Level Remediation):**
+   - Khi kết thúc Unit, hệ thống đánh giá chuyển tiếp theo 3 trạng thái:
+     - `ADVANCE`: Đạt chuẩn tiến bộ và thuần thục, mở khóa Unit kế tiếp.
+     - `ADVANCE_WITH_SUPPORT`: Mở khóa Unit kế tiếp kèm bài tập bổ trợ nhẹ.
+     - `REMEDIATE`: Kích hoạt mô-đun bổ khuyết `RemedialModule` để lấp lỗ hổng kiến thức trước khi tiếp tục.
+   - **Nguyên tắc Remedial Learning (`E-EXP-06`):** Giao micro-lesson bổ khuyết nhắm trúng `KnowledgeGap` với ngữ cảnh mới, từ vựng mới, bài tập mới. **Tuyệt đối không hạ cấp độ tổng thể của học viên** và **không bắt học lại bài cũ đã hoàn thành**.
+3. **Quản trị nội dung bổ khuyết (Content Governance):**
+   - `RemedialModule` tuân thủ quy trình kiểm duyệt nội dung độc lập: có `creatorId`, `unitId`, `conceptId`, `status: ContentStatus`, `reviewerId`, `publishedAt`, `version`.
+
+### 3.3. Progression, Mastery & Readiness Boundary Rules
+Hệ thống Lingora tách biệt tuyệt đối 4 khái niệm tiến trình sư phạm độc lập (`E-EXP-03`):
+1. **Learning Progress:** Tiến độ hoàn thành bài học tuyến tính theo đề cương (`UserProgress = COMPLETED`, `LearningProgress.completedContentRatio`).
+2. **Skill Proficiency:** Năng lực ngôn ngữ đa chiều được kiểm chứng qua đánh giá chuẩn hóa (`SkillProfile`, `verifiedProficiency`).
+3. **Concept Mastery:** Mức độ làm chủ từng điểm kiến thức cụ thể dựa trên bằng chứng bài tập thực tế (`ConceptMastery`).
+4. **Level Readiness:** Đánh giá tổng hợp xem học viên đã sẵn sàng chuyển tiếp sang cấp độ / Unit tiếp theo hay chưa (`LevelReadiness`).
+
+**Các bất biến kiến trúc (Architectural Invariants):**
+- **Progress $\ne$ Proficiency:** Hoàn thành 100% đề cương bài học không tự động nâng cấp độ năng lực. Học viên cần làm bài Exit Assessment hoặc Re-evaluation Assessment để cập nhật `verifiedProficiency` mới.
+- **Completed B1 $\ne$ B2:** Hoàn thành khóa học A1/B1 chỉ chứng minh học viên đã học hết nội dung A1/B1, không đồng nghĩa người học đã đạt năng lực đầu ra của cấp độ tiếp theo.
+- **Proficiency $\ne$ Mastery:** Skill Profile 4 chiều không suy ra mastery từng concept.
+- **Mastery $\ne$ LevelReadiness:** Mastery là input bằng chứng; readiness là quyết định tổng hợp (`ADVANCE` / `ADVANCE_WITH_SUPPORT` / `REMEDIATE`).
+- **Completed B1 $\ne$ certification:** Hoàn thành nội dung B1 không phải chứng chỉ năng lực B1 khi chưa qua EXIT thẩm định.
+- **Weak skill $\ne$ whole-level downgrade:** Kỹ năng yếu kích hoạt remediation/scaffolding có mục tiêu, không hạ toàn bộ level.
+- **Remediation $\ne$ replay old lesson:** Micro-lesson dùng vocab/context/exercise mới củng cố concept cũ.
+- **Jump $\ne$ learning completion:** `SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP` (`by_jump=true`), never `COMPLETED_BY_LEARNING`.
+- **Self-reported $\ne$ verified:** `selfReportedLevel` luôn `UNVERIFIED` cho tới diagnostic.
+- **Diagnostic $\ne$ Exit:** Entry xác định điểm vào; exit thẩm định chuyển cấp; cả hai đều sinh `AssessmentResult` bất biến.
+- **Jump Provenance:** Khi người học vượt qua bài kiểm tra nhảy cấp (Jump Assessment $\ge 95\%$), các Unit bị bỏ qua được gán nhãn `SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP` (`by_jump = true`). Tuyệt đối không tương đương với `COMPLETED_BY_LEARNING`.
+
+### 3.4. D3 Assessment & Learning Engine — Concise Cross-Reference (Design-Only)
+
+> Canonical D3 detail: [`docs/phase-1-d3-assessment-learning-engine-design.md`](phase-1-d3-assessment-learning-engine-design.md) (sections A–Q). This section is a cross-reference and semantic alignment only; it changes no D2 structure, policy, or boundary.
+
+- **Flow:** `Assessment → Skill Profile → Learning → Mastery/Knowledge Gap → Readiness → Recommendation/Remediation` (D3 §A). Every transition is evidenced (`AssessmentResult`, `SkillProfile` + provenance, mastery/gap evidence, typed `LevelReadiness` evidence, `Recommendation` input snapshot). Completion alone never advances level.
+- **Axes:** `assessmentType` = `DIAGNOSTIC` / `EXIT` / `RE_EVALUATION` (purpose) is independent from `deliveryMode` = `PLACEMENT` / `JUMP` / `STANDARD` (execution). D2 field naming preserved; no merged enum; no `AssessmentSession`.
+- **Separation:** `LearningProgress ≠ Proficiency ≠ Mastery ≠ LevelReadiness`; `Diagnostic ≠ Exit`; `selfReportedLevel (UNVERIFIED) ≠ verifiedProficiency`; `Completed B1 ≠ certification`; `Completed B1 ≠ Automatic B2`.
+- **Remediation:** concept-targeted micro-lessons with fresh context/vocabulary/exercises; no whole-level downgrade; no forced replay of completed lessons (D3 §G).
+- **Values:** diagnostic scale (~25–30 items, ≤15 min), scoring, adaptive/stopping/mastery/readiness/remediation policies, Anchor aggregation, CEFR→Unit mapping beyond D2 Mapping A, and HSK mapping/version remain `PROPOSED / PENDING VALIDATION / CONFIGURABLE`. English A1 Mapping A stays a D2 curriculum placement compatibility rule, not a D3 scoring policy.
+- **Diagrams:** six D3 sources under `docs/plantuml/` (`assessment-lifecycle-d3`, `diagnostic-flow-d3`, `learning-progression-d3`, `mastery-knowledge-gap-d3`, `level-readiness-d3`, `recommendation-remediation-d3`) mirror D3 prose; no automatic completion-to-advance edge exists.

@@ -5,6 +5,13 @@ Append test evidence after implementation. Failed tests remain recorded; add a l
 | Test ID | Date | Feature | Expected | Actual | Status | Environment | Build/commit |
 |---|---|---|---|---|---|---|---|
 | `[T-XXX]` | `YYYY-MM-DD` | `[feature]` | `[expected]` | `[actual]` | `PASS/FAIL/BLOCKED` | `[OS/device/runtime/data]` | `[build/hash]` |
+| T-D3-HYGIENE-001 | 2026-09-24 | D3 Final Hygiene Fix (Post-Review Non-Blocking Fixes) | Header status updated to READY FOR D4 CONTENT/CURRICULUM DESIGN; HANDOFF.md cleaned to single Latest task; Reading semantic boundary documented in D3 §B3; 18/18 guards PASS; git diff --check 0 | `py scratch/verify_consistency_guards.py` exited 0 (ALL 18 PASSED); `git diff --check` exited 0; 0 code/migrations/algorithms | PASS | Windows 11 / Python 3.11 / Static Doc Inspection | `f986d96` |
+| T-D3-DESIGN-001 | 2026-09-24 | D3 Assessment & Learning Engine Design (APPROVED, design-only) | 18/18 guards PASS; git diff --check 0; 6/6 D3 puml balanced with distinct purpose/mode enums; 10 invariants present; 0 hard-coded D3 thresholds/formulas; 6/6 prose-diagram matches; 0 downgrade/auto-advance edges; 0 code/migrations/algorithms; 15 UCs intact; no Design Freeze; no AssessmentSession | **Environment:** Windows 11 / Python 3.11.9 / Static Doc Inspection; commit `f986d96b2bd4f825d6a84ce465021a1cf0f4a34a`. **Command 1:** `py scratch/verify_consistency_guards.py` — **Output:** exit 0, ALL 18 PASSED (GUARD-01..18). **Command 2:** `git diff --check` — **Output:** exit 0 (LF warnings only, 0 whitespace errors). **Command 3:** D3 focused scan (`C:/Users/tungt/AppData/Local/Temp/opencode/d3_scan.py`) — **Output:** 6/6 balance PASS; 6/6 purpose/mode distinct PASS; invariants PASS; Q status `READY FOR D4 CONTENT/CURRICULUM DESIGN` exact PASS; no freeze claim PASS; 0 forbidden numeric/formula hits; AssessmentSession only negated (4 mentions); 6/6 prose refs PASS; OVERALL PASS. **Runtime scope:** `git diff --name-only -- lingora-web lingora-admin lingora-ai prisma` empty. **Verdict:** PASS | PASS | Windows 11 / Python 3.11.9 / Static Doc Inspection | `f986d96` |
+| T-D1-D2-DESIGN-001 | 2026-09-24 | D1 Final Design Cleanup + D2 Domain/Data Design (APPROVED) | 18/18 guards PASS (11 Round-3 + 7 D1-D2 new: ghost-absence, pending-tag, EN/ZH keys, deliveryMode, puml parity, invariants, stale wording); git diff --check 0; puml @startuml/@enduml balance; 0 code, 0 migrations, 15 UCs intact, no Design Freeze | `py scratch/verify_consistency_guards.py` exited 0 ALL 18 PASSED; `git diff --check` exited 0 (after 1 whitespace fix in plan); puml balance 3 files x2; grep: conceptTag 0 live-field, UC-16/17/18 0, AssessmentSession 0 canonical, Ba dạng 0 bare | PASS | Windows 11 / Python 3.11 / Static Doc Inspection | `d1-d2-design` |
+| T-DESIGN-REVIEW-FIX-002 | 2026-09-24 | Independent Design Re-Review Fixes (Round 3) | All 11 consistency guards pass: Q13 raw XLSX recount (8/4/1/1/1, sum 62, avg 4.133), expert identity (Trần Minh Quân 9y, Lê Hoàng Mai 8y), NFR proposed target qualifiers (<500ms, p95<=2000ms), YC-CORE-01 password recovery downstream trace (YC-CORE-01 -> MVP-01 -> P1-FR-001 -> UC-01 -> Spec pending runtime), AssessmentType 3 canonical pedagogical types (DIAGNOSTIC, EXIT, RE_EVALUATION) vs execution modes (PLACEMENT, JUMP), stale jump semantics (SKIPPED_BY_JUMP, no raw COMPLETED_BY_JUMP), CEFR auto-placement historical qualification, N=35/N=3 preliminary evidence labeling, LearningProgress sole ownership by LearnerProfile, canonical 5 exercise types (0 Ghép thẻ in slides), multi-language 4-tier assessment chain; 0 code, 0 migrations, state READY FOR DESIGN RE-REVIEW | `py scratch/verify_consistency_guards.py` exited 0; all 11 consistency guards PASS; `git diff --check` exited 0; 0 application code modified | PASS | Windows 11 / Python 3.11 / Git 2.53.0 | `design-re-review-round3` |
+| T-DESIGN-REVIEW-FIX-001 | 2026-09-24 | Design Review Fixes & Consistency Alignment | All 17 consistency guards pass, Q7 recount verified from Excel (7/6/6/6/5/2), C-01..C-08 resolved, M-01..M-15 resolved, 0 code, 0 migrations, readiness state READY FOR DESIGN RE-REVIEW | `py scratch/verify_consistency_guards.py` exited 0; all 17 consistency guards PASS; `git diff --check` exited 0; 0 application code modified | PASS | Windows 11 / Python 3.11 / Git 2.53.0 | `design-review-fixes` |
+| T-EXP-DESIGN-001 | 2026-09-24 | Language Expert Research & Learning Design Update | End-to-end documentation alignment across Phase 0 & Phase 1: 5th evidence label [EXPERT], 2 interviews (Thầy Quân, Cô Mai), 4-concept separation (Progress != Proficiency != Mastery != Readiness), 3 transition states (ADVANCE, ADVANCE_WITH_SUPPORT, REMEDIATE), concept-level remediation (no whole-level demotion, no repeating completed lessons), stage-adaptive diagnostic assessment (Routing -> Targeted, pending validation parameters, hidePinyin: true for Chinese), 9 domain entities, 0 application code, 0 schema mutations | Verified: git diff --check returned 0; all 12 target files reconciled; 9 domain entities added to M2.1 foundation & PlantUML; UC-03..07 updated; negative invariants respected (0 code, 0 fake experts, 0 fake percentages, 0 new UCs); static PlantUML envelope check PASS | PASS | Windows 11 / Node v24 / Git 2.53.0 / Static Doc Inspection | `expert-design-update` |
+| T-M21-TFIX-001 | 2026-09-20 | M2.1 targeted correction after adjudication (P1-01, P1-02, P1-03, P1-04, P1-05, P2-01) | Applied dictionary and PlantUML fields match migration; canonical Scope values only; forbidden literal tokens absent; lifecycle has no active ARCHIVED -> DRAFT edge; no runtime/schema/database scope expansion | Fresh PowerShell audit: `TARGET_EXT=0`, `MATCHING=0`, `CORE (Supporting)=0`; all 4 PlantUML files `start=1/end=1`; `ARCHIVED_TO_DRAFT_ACTIVE=0`; 15 selected applied fields matched migration and dictionary; `EXERCISE_FALSE_TIMESTAMP_FIELDS=0`; `DOMAIN_FALSE_FIELDS=0`; all five false-claim patterns counted 0; `git diff --check` exit 0 | PASS | Windows / PowerShell 7.6.5 / Git 2.53.0.windows.1 / HEAD `f986d96b2bd4f825d6a84ce465021a1cf0f4a34a` | `m2-1-targeted-fix` |
 | T-M21-FIX-001 | 2026-09-15 | M2.1 Independent Audit Fixes (P0-01..P1-07) | Administrator emergency authority restored with audit/justification; ARCHIVED->DRAFT removed from Core; TARGET_EXT eliminated repo-wide (2-axis model); ExerciseType field-level breakdown (Applied vs Target/Future, 0 Matching); D-G1 and D-G2 re-evaluated; candidates normalized to TARGET DESIGN CANDIDATE / OPEN DESIGN REPRESENTATION; 0 code/migrations/DB writes; M2.2 NOT STARTED | All 7 findings verified: Administrator emergency publish/archive present with mandatory reason and AuditLog constraint; ARCHIVED->DRAFT absent from Core; TARGET_EXT completely removed; ExerciseType enum accurately mapped (MCQ, FILL_BLANK, REORDER in Applied DB; LISTENING, GRAMMAR in Target Schema; 0 Matching); candidate columns/representations labeled TARGET DESIGN CANDIDATE / OPEN DESIGN REPRESENTATION; D-G1 and D-G2 re-evaluated with verified evidence; status REVISED — READY FOR RE-REVIEW | PASS | Windows 11 / Node v24 / Static Inspection & Verification Scripts | `m2-1-audit-fix` |
 | T-M21-VERIF-001 | 2026-09-15 | M2.1 Final Verification & Evidence Audit | Enforcement boundary clarified (no DB over-claims); DD-07/08 verified from applied migrations; 18 Core Scope tables align 1-to-1 with §8.1–§8.18 (100% coverage); 0 code/migrations/DB writes; M2.2 NOT STARTED | All 7 directives verified: forbidden actions labeled design invariants & future enforcement requirements; DD-07/08 proven from 202608140001_init/202608140002; exact 18-table inventory table added; §8 renumbered to 18 individual tables (§8.1–§8.18); M2.2 not started; status REVISED — READY FOR RE-REVIEW | PASS | Windows 11 / Node v24 / Static Verification & Migration Audit | `m2-1-verification` |
 | T-M21-REV-001 | 2026-09-15 | PlantUML Static Syntax & Reference Validation | 4 diagrams pass static syntax balance (@startuml/@enduml, valid types, no Matching, no Admin emergency publish) | Static syntax balance checked cleanly across all 4 .puml files; PlantUML/Java renderer unavailable in environment | PASS | Windows 11 / PowerShell static scan | `m2-1-revision` |
@@ -1035,4 +1042,70 @@ git status --short
 - Zero SQL migrations created or executed.
 - Milestone M2.1 remains intact (`REVISED — READY FOR TARGETED RE-REVIEW`).
 - Milestone M2.2 NOT started.
+**Verdict:** PASS.
+
+### `T-TAILIEU-FIX-001` (2026-09-20) — tai-lieu-phan-tich-yeu-cau.md slide-readiness fixes (R-01/R-02/R-04/R-05/NFR/R-06/R-07) verification
+**Environment:** Windows (win32), PowerShell 5.1, Python 3.11 + openpyxl 3.1.5, repo `D:/school/btl`.
+**Command:** re-read vùng sửa + `py` grep-scan toàn file + recount Excel N=15 đối chiếu + `git status --short` (file untracked nên `git diff --stat` trống; thay bằng line/char count).
+**Output:**
+- `4 dạng` → 0 hit; `ngân hàng câu hỏi` → 0 hit (còn 4 hit phủ định `không .*ngân hàng đề thi độc lập` đúng ngữ cảnh D4); `không áp dụng cơ chế lưu tạm` → 0; `học lại từ đầu bài` → 0; `dưới 1 giây`/`không quá 3 giây` → 0.
+- `5 dạng` → 14 hits; `Mapping A` → 2 hits; `max(1, floor` → 1 hit; `ADR-008` → 2 hits; `TBD / PROPOSED TARGET` → 3 hits; mapping table YC-CORE/EXT 20 dòng hiện diện.
+- Số liệu Q1–Q24 không đụng tới (recount trước đó khớp raw toàn bộ).
+- File: 675 dòng / 90954 ký tự (`docs/tai-lieu-phan-tich-yeu-cau.md`, untracked, chỉ chạm file này + plan + logs).
+- 0 application code, 0 schema/migration, M2.2 NOT started.
+**Verdict:** N/A — documentation-only verification by re-read + grep + recount (không ghi PASS suy diễn cho acceptance nghiệp vụ; slide-readiness cuối do human quyết).
+
+### `T-TAILIEU-TAGS-001` (2026-09-20) — xử lý 22 tags [CẦN NHÓM XÁC NHẬN] trong tai-lieu
+**Environment:** Windows (win32), PowerShell 5.1, Python 3.11, repo `D:/school/btl`.
+**Command:** đếm tag chính xác bằng regex + xóa theo xác nhận nhóm qua question tool (5 nhóm) + viết lại 3 dòng đặc biệt (628/729/744) + grep-scan sau sửa.
+**Output:** `\[CẦN NHÓM XÁC NHẬN\]` → 0 hit (từ 22); `CẦN BỔ SUNG` → 0 hit; không double-space thừa; file 799 dòng. Chỉ chạm `docs/tai-lieu-phan-tich-yeu-cau.md` + logs. 0 code/schema/migration, M2.2 NOT started.
+**Verdict:** N/A — documentation-only (facts do nhóm xác nhận, không suy diễn).
+
+### `T-TAILIEU-TAGS-002` (2026-09-21) — xử lý tags + typo + L580 theo quyết định user
+**Environment:** Windows (win32), PowerShell 5.1, Python 3.11, repo `D:/school/btl`.
+**Command:** xóa 19 tags đã xác nhận + viết lại 3 dòng (623/724/739) + fix typo "dài dặc" + fix L580 Unit 5→6; grep-scan sau sửa.
+**Output:** `[CẦN NHÓM XÁC NHẬN]` → 0 hit; `dài dặc` (sai) → 0 hit; `Unit 1 đến Unit 5` → 0 hit; `Unit 1 đến Unit 6` → 3 hits; `QUYẾT ĐỊNH MỞ` → 1 hit. Chỉ chạm `docs/tai-lieu-phan-tich-yeu-cau.md` + logs. 0 code/schema/migration, M2.2 NOT started.
+**Verdict:** N/A — documentation-only.
+
+### `T-SLIDEDECK-FIX-001` (2026-09-21) — slide-deck Slide 9 + Slide 16 fixes
+**Environment:** Windows (win32), PowerShell 5.1, Python 3.11, repo `D:/school/btl`.
+**Command:** 4 edits + grep-scan sau sửa.
+**Output:** `chiếm 60%` → 0 hit; `CORE-03, CORE-07` → 0 hit; `EXT-05 (Báo cáo)` → 0 hit; `CORE-01, CORE-10` → 0 hit. Chỉ chạm `docs/slide-deck-17-slides.md` + logs. 0 code/schema/migration, M2.2 NOT started.
+**Verdict:** N/A — documentation-only.
+
+### `T-DESIGN-REVIEW-FIX-001` (2026-09-24) — Design Review Fixes & 17 Consistency Guards Verification
+**Environment:** Windows 11, PowerShell 5.1 / Python 3.11.9, Git 2.53.0.windows.1, repo `d:\school\btl`.
+**Command 1 (Consistency Guards Verification Script):**
+```powershell
+$env:PYTHONIOENCODING='utf-8'; py C:\Users\tungt\.gemini\antigravity\brain\d5d8ae2f-0f78-4ca2-a99a-d62652e1036d\scratch\verify_consistency_guards.py
+```
+**Output:**
+```text
+[PASS] 1. NO_UC_16_17_18: Found 0 positive matches: []
+[PASS] 2. SURVEY_N15_ACCURACY: Q7 distribution matches recounted 7/6/6/6/5/2
+[PASS] 3. NO_P1_FR_COLLISION: Col 1 uses DESIGN-FR-* without P1-FR collision: []
+[PASS] 4. READING_EXERCISE_PROPOSED: READING exercise labeled PROPOSED / DESIGN GAP
+[PASS] 5. EXIT_ASSESSMENT_SPECIFIED: EXIT / RE_EVALUATION specified with Progress != Proficiency
+[PASS] 6. JUMP_PROVENANCE_TAG: Jump provenance tags present in progression model
+[PASS] 7. REMEDIAL_GOVERNANCE: RemedialModule governance fields present
+[PASS] 8. CONCEPT_ENTITY_EXISTS: Concept entity defined and FK referenced
+[PASS] 9. FOUR_CONCEPTS_DISTINCT: Four concepts distinctly defined
+[PASS] 10. STRICT_SEPARATION_GEC_GRAMMAR: Grammar exercise separated from GEC AI tool
+[PASS] 11. LISTENING_EXERCISE_VOCAB_FK: LISTENING JSON payload uses vocabularyId and no audioPath key
+[PASS] 12. HISTORICAL_SCOPE_LABELED: 04-data-model scope boundaries labeled HISTORICAL / SUPERSEDED
+[PASS] 13. SLIDE_DECK_RESEARCH_DISAMBIGUATION: Slide deck distinguishes N=15, N=7, N=2 expert-informed
+[PASS] 14. NON_MANDATORY_CONFIRMATION: Non-mandatory confirmation gate aligned
+[PASS] 15. ARCHITECTURE_POINTER_RESOLVED: docs/01 §3 exists
+[PASS] 16. FIVE_EXERCISE_TYPES_CONSISTENT: 5 exercise types consistently noted in 05 and 02
+[PASS] 17. TRACEABILITY_FULL_CHAIN: Full traceability chain YC -> MVP -> P1-FR -> UC -> Design present
+--------------------------------------------------
+ALL 17 CONSISTENCY GUARDS PASSED!
+```
+**Verdict:** PASS.
+
+**Command 2 (Git Whitespace & Repository Boundary):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0 (no whitespace errors, no conflict markers). Zero application code, zero DB migrations created or modified.
 **Verdict:** PASS.

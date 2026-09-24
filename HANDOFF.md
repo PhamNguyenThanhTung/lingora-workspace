@@ -7,7 +7,21 @@
 
 ## Current state
 
-- Latest task: `phase-0-user-research-analysis-and-requirements-authoring` — DONE. Completed comprehensive authoring of the 6 Core Report Sections in `docs/phase-0-user-research-analysis-and-requirements.md` (127,955 characters, 911 lines) adhering strictly to `plans/phase-0-user-research-analysis-and-requirements-writing-plan.md` and academic integrity invariants.
+- Latest task: `d3-assessment-and-learning-engine-design` (category: `scope-ambiguity`) — DONE (APPROVED → IMPLEMENTED → TESTED → LOGGED; D3 ACCEPTED FOR D4).
+  - D3 design-only: `docs/phase-1-d3-assessment-learning-engine-design.md` (A–Q; Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`); 6 puml (`assessment-lifecycle-d3`, `diagnostic-flow-d3`, `learning-progression-d3`, `mastery-knowledge-gap-d3`, `level-readiness-d3`, `recommendation-remediation-d3`; purpose/mode distinct, no downgrade/auto-advance edges); concise `01 §3.4` + `05 §6` cross-references; D2 FROZEN/PROPOSED/PENDING preserved; Mapping A stays D2 compatibility.
+  - Verification: `T-D3-DESIGN-001` PASS — 18/18 guards, `git diff --check` 0, D3 focused scan OVERALL PASS, runtime scope empty. ADR-016 recorded. No Design Freeze; no AssessmentSession; 15 UCs intact.
+  - Independent Semantic Review: PASS WITH NON-BLOCKING ISSUES; Final Gate: `D3 ACCEPTED FOR D4`.
+  - Next task: D4 Content/Curriculum Design under its own approved plan (do not implement D3 runtime without a separate approved implementation task).
+
+- Previous task: `d1-final-design-cleanup-and-d2-domain-data-design` — DONE.
+  - D1 (6/6 items) & D2 (16/16 items) completed; `T-D1-D2-DESIGN-001` PASS; ADR-015 recorded.
+
+- Previous task: `design-re-review-batch-fixes-round-3` — DONE.
+  - Resolved all 11 Round-3 batch fixes (Q13 recount, expert identities, NFR qualifiers, YC-CORE-01 trace, 4-tier chain, 5 exercise types, AssessmentType/DeliveryMode decoupling, LearningProgress ownership, jump/CEFR guards, N=35/3 labeling). Repository state: `READY FOR DESIGN RE-REVIEW`.
+
+- Previous task: `language-expert-research-and-learning-design-update` — DONE.
+
+- Previous task: `phase-0-user-research-analysis-and-requirements-authoring` — DONE. Completed comprehensive authoring of the 6 Core Report Sections in `docs/phase-0-user-research-analysis-and-requirements.md` (127,955 characters, 911 lines) adhering strictly to `plans/phase-0-user-research-analysis-and-requirements-writing-plan.md` and academic integrity invariants.
   - **Academic Integrity Hard Constraints:** Banned Anti-Pattern 1 (zero foreign $N=500$ TOEIC survey data imported from external sample report `D:\PROJECTONE2_updated_with_conclusion_v2 (1).docx`) and Anti-Pattern 2 (zero falsification of simulated personas as surveyed people). Standardized on 4 canonical evidence labels (`PRIMARY`, `SECONDARY`, `SYNTHETIC`, `PRODUCT DECISION`).
   - **Section A (User Research & Empirical Learner Survey N=15):** 100% of 24 questions from `Khảo sát Nhu cầu & Thói quen Học Ngoại ngữ (Câu trả lời).xlsx` ($N=15$) extracted and analyzed. Adapted sample report table layouts: Table 1.1 Khó khăn ($N=15$), Table 1.2 Kỹ năng ($N=15$), Table 1.3 Tính năng ($N=15$), Table 1.4 Tổng hợp 24 câu hỏi. Every percentage has explicit fraction $(k/15, \text{XX.X}\%)$. Grounded in S1 (Hwang 2024 attrition $\sim 43.16\%$), S4 (Cepeda 2006 Spacing Effect), S5 (Settles 2016 HLR).
   - **Section B (Application Survey & Benchmark):** Benchmarked Duolingo, Quizlet, and ELSA Speak across 17 comprehensive criteria with official URLs (accessed 2026-09-15). Formally rejected TOEIC test platforms per Invariant D4 (Unified Exercise model, zero Exam/QuestionBank). Formulated Adopt/Adapt/Reject decisions with architectural rationale.

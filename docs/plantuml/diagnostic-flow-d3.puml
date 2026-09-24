@@ -1,0 +1,45 @@
+@startuml
+title D3 Diagnostic Flow — Entry and Stage-Adaptive Flow (Design-Only)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+' D3 FROZEN architecture; parameters PROPOSED / PENDING VALIDATION.
+' assessmentType and deliveryMode are independent labels on every assessment.
+
+start
+:Learner selects target language;
+note right
+  assessmentType: DIAGNOSTIC / EXIT / RE_EVALUATION
+  deliveryMode: PLACEMENT / JUMP / STANDARD
+  (independent axes; no merged enum)
+end note
+
+if (Entry path?) then (Diagnostic evidence)
+  :START assessment\n[assessmentType=DIAGNOSTIC]\n[deliveryMode=PLACEMENT or STANDARD];
+  :ROUTING stage\n(mid-band routing items);
+  note right
+    Scale: ~25-30 items, <=15 min
+    PROPOSED / PENDING VALIDATION
+    No exact count / distribution chosen
+  end note
+  :TARGETED stage\n(branch to targeted band;\n4 dims: Vocab/Grammar/Reading/Listening);
+  note right
+    Branching + stopping policy:
+    CONFIGURABLE / PENDING VALIDATION
+    Item metadata: itemId + conceptId
+    + dimension + band + versions
+  end note
+  :COMPLETE → emit AssessmentResult\n(responses + skillOutputs + stageData);
+  :Update SkillProfile\n(4 dims + provenance +\nanchor PENDING);
+  :Record verifiedProficiency +\ncurriculumStartingPoint;
+else (Self-report / skip)
+  :Record selfReportedLevel (UNVERIFIED)\nno SkillProfile write;
+  :Assign provisional curriculumStartingPoint\n(default entry);
+endif
+
+:Enter learning at curriculumStartingPoint;
+stop
+@enduml

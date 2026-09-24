@@ -1067,3 +1067,64 @@ Reconciliation was required to unify all 11 layers into a single source of truth
 - All 11 layers share a unified, verifiable Phase 0 canonical baseline.
 - Zero broken references across the repository.
 - The project is fully reconciled and ready for Milestone M2 (Web Core Lesson Flow).
+
+## ADR-015 � D1 Final Design Cleanup & D2 Domain Decisions (Assessment Semantics, Concept Parity, Provenance)
+
+### Date
+
+2026-09-24
+
+### Category
+
+scope-ambiguity
+
+### Context
+
+FINAL INDEPENDENT DESIGN RE-REVIEW (Round 3) left non-blocking cleanups: ghost mention AssessmentSession, purpose/mode conflation in one dictionary line, LearningProgress dual-link risk, free-text conceptTag legacy, unverified university credentials, under-specified EN/ZH config keys, stale wording in frozen baselines, opaque evidenceSummary, rationale-only Recommendation. Task d1-final-design-cleanup-and-d2-domain-data-design (APPROVED) resolves them design-first: 0 code, 0 migrations, 0 algorithms.
+
+### Decision
+
+1. AssessmentSession is NOT an entity (removed from 04:449 canonical list); Assessment = conceptual mode of Exercise (D4); AssessmentResult = sole persisted logical entity with assessmentType (DIAGNOSTIC/EXIT/RE_EVALUATION) + deliveryMode (PLACEMENT/JUMP/STANDARD).
+2. LearningProgress sole owner = LearnerProfile (Role.LEARNER only); no direct Profile link (puml + M2.1 + GUARD-09).
+3. Concept identity = conceptId FK everywhere; Concept keeps cefr_level as level/reference metadata alongside name/prerequisiteConceptId/isActive; domain includes PRONUNCIATION.
+4. Expert university credentials carry [PENDING-SOURCE-VERIFICATION]; names/tenures unchanged (Tr?n Minh Qu�n 9y; L� Ho�ng Mai 8y); no new university asserted.
+5. Multi-lang chain stays logical/config (01:462); EN room for collocation/word family/connected speech/contextual vocab; ZH room for grammar-order/listening + hidePinyin + versioned HSK.
+6. Frozen baselines are not rewritten: Ba-dang rows get HISTORICAL tags only.
+7. LevelReadiness.evidenceSummary = typed struct (evidenceVersion/progressRatio/masteryRatio/highSeverityGapsCount/sourceAssessmentResultIds) with thresholds CONFIGURABLE/PENDING; Recommendation gains inputSnapshot/ruleVersion/generatedAt for Why-explainability; no algorithm designed.
+8. Ten logical invariants consolidated (01 S3.3 + M2.1 S4.5); all adaptive/threshold/formula items stay PROPOSED/PENDING/CONFIGURABLE (open list in plan).
+
+### Consequences
+
+- Prose and diagrams agree; 18 guards green; D3 can start from S13 readiness/versioning/compat tables.
+- No runtime, migration, or algorithm commitment made.
+
+## ADR-016 — D3 Assessment & Learning Engine Design (Design-Only, D2-Compatible)
+
+### Date
+
+2026-09-24
+
+### Category
+
+scope-ambiguity
+
+### Context
+
+Approved D3 task designs the full logical flow Assessment → Skill Profile → Learning → Mastery/Knowledge Gap → Readiness → Recommendation/Remediation from the D1/D2 COMPLETE baseline. Constraints: design-only; no runtime, migration, schema change, or scoring/recommendation/remediation algorithm; no Design Freeze; preserve all D2 FROZEN/PROPOSED/PENDING boundaries and the separately approved English A1 Mapping A as D2 compatibility.
+
+### Decision
+
+1. Purpose (`assessmentType`: DIAGNOSTIC/EXIT/RE_EVALUATION) and execution (`deliveryMode`: PLACEMENT/JUMP/STANDARD) are independent axes with D2 naming; `AssessmentResult` is the sole persisted immutable/versioned/attributable evidence; no `AssessmentSession`.
+2. Entry keeps selfReportedLevel (UNVERIFIED), assessed observations, verifiedProficiency, and curriculumStartingPoint distinct; diagnostic scale (~25-30 items, <=15 min) stays PROPOSED / PENDING VALIDATION.
+3. `SkillProfile` holds four dimension level/status slots plus provenance (`sourceAssessmentResultId`, versions, `updatedAt`); Anchor slot stays PENDING with no flat score or weighted average.
+4. `ConceptMastery` (NOVICE → DEVELOPING → MASTERED per LearnerProfile×Concept) and `KnowledgeGap` (OPEN → IN_REMEDIATION → RESOLVED, LOW/MEDIUM/HIGH labels) use typed evidence/provenance; all open/resolve/promotion policies stay CONFIGURABLE / PENDING VALIDATION with no hard-coded counts.
+5. `LevelReadiness` uses typed evidence (`evidenceVersion`, progress/mastery/gap inputs, `sourceAssessmentResultIds`, `evaluatedAt`) and exactly three outputs (ADVANCE / ADVANCE_WITH_SUPPORT / REMEDIATE); completion is never certification and no threshold or single score is chosen.
+6. Remediation is concept-targeted with fresh payloads via governed `RemedialModule` (PUBLISHED only); no whole-level downgrade and no forced replay; re-assessment uses fresh items.
+7. Recommendation is a Level 3 explainable contract (six inputs → NEXT_UNIT/REMEDIAL_MODULE/PRACTICE + rationale + inputSnapshot + ruleVersion + generatedAt); no algorithm.
+8. Common Engine stays language-invariant; EN room and ZH room (hidePinyin, versioned HSK) live in config/bank/rubric; HSK mapping/version stays open.
+9. Ten invariants I1–I10 preserved; open decisions listed in D3 §N; Mapping A referenced only as D2 curriculum placement compatibility, never generalized.
+10. Compatibility verdict: no D2 change required; stop-rule triggered no out-of-scope edit.
+
+### Consequences
+
+- D3 spec (A–Q) with Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`; six D3 diagrams mirror prose; `01 §3.4` + `05 §6` cross-references added; T-D3-DESIGN-001 PASS; no freeze claimed.
