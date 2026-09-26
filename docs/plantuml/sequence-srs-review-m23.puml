@@ -1,0 +1,75 @@
+@startuml sequence-srs-review-m23
+title SEQ-06: Spaced Repetition (SRS) Review Flow (UC-06 / BF-12)
+autonumber
+skinparam style strictuml
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Learner" as Learner
+boundary "Web Learner Client\n(SCR-L-10)" as Web
+control "SRS Service\n(Route Handler / BFF)" as SRSSvc
+database "PostgreSQL Database\n(RLS / PostgREST)" as DB
+control "Supabase RPC\nrecord_review" as RPC
+entity "ReviewLog Store\n(SRS History Log)" as RevLog
+
+== 1. Query Due Vocabulary Cards ==
+Learner -> Web: Open SRS Review Screen (SCR-L-10)
+activate Web
+Web -> SRSSvc: GET /api/srs/due-cards
+activate SRSSvc
+SRSSvc -> DB: SELECT * FROM "user_vocab_srs"\nWHERE user_id = auth.uid() AND next_review_at <= now()\nORDER BY next_review_at ASC LIMIT 20 (illustrative batch limit, configurable)
+activate DB
+DB --> SRSSvc: Return list of due vocabulary cards
+deactivate DB
+SRSSvc --> Web: 200 OK { dueCards: [...] }
+deactivate SRSSvc
+
+== 2. Card Interaction & Review Submission ==
+loop For each due card
+    Web --> Learner: Display front of card (word prompt, audio)
+    Learner -> Web: Flip card and indicate recall (isCorrect: true/false)
+    Web -> SRSSvc: POST /api/srs/review {\n  srsCardId: card.id,\n  isCorrect: boolean\n}
+    activate SRSSvc
+
+    note right of SRSSvc
+        Architectural Boundary (ADR-002 / ADR-014):
+        - AI Server is EXCLUDED from authoritative SRS review persistence.
+        - Scheduling uses deterministic Policy B [1, 3, 7, 14, 30] days.
+        - Canonical locked RPC signature enforces atomic review recording and ownership.
+    end note
+
+    SRSSvc -> RPC: CALL record_review(\n  p_srs_card_id = srsCardId,\n  p_is_correct = isCorrect,\n  p_recall_probability = recallProb,\n  p_recommended_interval_days = recInterval\n)
+    activate RPC
+
+    RPC -> RPC: Verify caller ownership:\nauth.uid() = user_vocab_srs.user_id\n(Rejects unauthorized card access)
+
+    alt Ownership Check Fails
+        RPC --> SRSSvc: 403 Forbidden (SECURITY_UNAUTHORIZED_CARD_ACCESS)
+        SRSSvc --> Web: 403 Forbidden
+    else Ownership Verified
+        RPC -> RPC: Calculate next interval via Policy B:\n- Correct: step interval [1 -> 3 -> 7 -> 14 -> 30 days]\n- Incorrect: RESET interval strictly to Stage 1 (1 day)\n- Compute next_review_at = now() + interval_days
+
+        RPC -> DB: BEGIN TRANSACTION
+        activate DB
+        RPC -> RevLog: INSERT INTO "review_logs" (\n  id, srs_card_id, is_correct, interval_days, reviewed_at\n) [Canonical columns - No rating column]
+        activate RevLog
+        RevLog --> RPC: Log inserted
+        deactivate RevLog
+
+        RPC -> DB: UPDATE "user_vocab_srs" SET\n  interval_days = v_interval,\n  next_review_at = now() + interval,\n  last_reviewed_at = now(),\n  review_count = review_count + 1\nWHERE id = p_srs_card_id
+        DB --> RPC: Card updated
+
+        RPC -> DB: COMMIT TRANSACTION
+        deactivate DB
+
+        RPC --> SRSSvc: 200 OK {\n  status: "RECORDED",\n  nextReviewAt: calculatedDate,\n  intervalDays: newInterval\n}
+        deactivate RPC
+
+        SRSSvc --> Web: 200 OK { success: true, nextReviewAt }
+        deactivate SRSSvc
+        Web --> Learner: Animate card completion -> Advance to next due card
+    end
+end
+deactivate Web
+
+@enduml

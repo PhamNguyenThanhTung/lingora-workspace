@@ -7,11 +7,25 @@
 
 ## Current state
 
-- Latest task: `m2-2-behavior-uc-activity-state-acceptance` (category: `scope-ambiguity`) — DONE (`M2.2 ACCEPTED FOR M2.3`; `DESIGN COMPLETE: NOT CLAIMED`; `COMMIT: NOT CREATED`).
-  - Acceptance decision: `M2.2 ACCEPTED FOR M2.3` (acceptance milestone only — not Design Complete, not M2.3 Ready, not runtime readiness).
-  - Acceptance evidence: Independent Re-Review `PASS WITH NON-BLOCKING ISSUES` (0 × P0, 0 × P1, 4 × P2) + targeted acceptance verification confirming N-01..N-04 CLOSED in artifacts (Skill Profile → `P1-FR-016`, `P1-FR-017` DEFERRED/non-UC; 05 §8 GEC row split with no fabricated UC; freeze DEFERRED wording; Rate Limit removed) + D-G4 = PASS + D-G7 = PASS.
-  - Milestone status: `M2.1 ACCEPTED FOR M2.2`, `M2.2 ACCEPTED FOR M2.3`.
-  - Next milestone state: `M2.3 PLAN: NOT STARTED` — M2.3 (Sequence + API / Service Boundary) requires a separate human-approved plan before any work begins. Design-to-implementation boundary preserved: zero runtime/schema/API/UI/security implementation performed.
+- Latest task: `m2-3-acceptance` (category: `runtime-boundary`) — DONE (`M2.3 ACCEPTED FOR M2.4`; `M2.4 = NEXT MILESTONE / PLAN NOT STARTED`; `COMMIT: NOT CREATED`).
+  - Acceptance decision: `M2.3 ACCEPTED FOR M2.4` (ADR-025; acceptance milestone only — not Design Complete, not M2.4 Complete, no runtime implementation, not production-ready).
+  - Acceptance evidence: Re-Review `PASS WITH NON-BLOCKING ISSUES` + final P2 cleanup N-R1..N-R7/F-WS-01 verified closed + `T-M23-ACCEPT-001` PASS (24/24, 18/18, 17/17, diff-check clean) + D-G4 PASS + D-G5 PASS + D-G6 INPUT EVIDENCE ONLY; `03` byte-identical; open decisions preserved.
+  - Next milestone state: `M2.4 = NEXT MILESTONE / PLAN NOT STARTED` — M2.4 (Architecture + Security) requires a separate human-approved plan. Design-to-implementation boundary preserved.
+  - Independent Re-Review Result: Re-review passed with `PASS WITH NON-BLOCKING ISSUES` (0 P0, 0 P1, 7 P2: N-R1..N-R7, F-WS-01).
+  - Final Cleanup Completed: All 7 non-blocking findings (N-R1 through N-R7) and whitespace hygiene issue (F-WS-01) resolved strictly against canonical sources:
+    - Master specification: `docs/phase-1-m2-3-sequence-api-service-boundary.md` (Sections 1–11, 6-field architectural contract preserved across Artifacts #11, #12, #15).
+    - N-R1: Removed erroneous `[canonical]` marker from `isActive` on profiles; qualified `SUSPENDED` strictly as `[TARGET-CANDIDATE / OPEN DESIGN]`; completely unlinked `DD-01` from Profile state.
+    - N-R2: Corrected `assignmentBrief` -> `DD-04` (Assignment Representation) and `supersedesId` -> `DD-02` (Revision Representation); corrected `reviewNotes` -> `DD-04`; eliminated all erroneous `DD-07` tags across all M2.3 design artifacts and `docs/05-traceability-matrix.md`.
+    - N-R3: Audited error taxonomy strictly against `docs/03-api-contract.md`; classified exactly the 7 canonical codes from `03` as `CANONICAL_FROM_03` (`INVALID_INPUT`, `TEXT_TOO_LONG`, `LANG_NOT_SUPPORTED` [mapped to HTTP 422 per 03], `SCENARIO_NOT_FOUND`, `UNAUTHORIZED`, `RATE_LIMITED`, `MODEL_UNAVAILABLE`); classified all M2.3 design codes as `M2.3_DESIGN_ADDITION`; marked `request_id` as `[M2.3 DESIGN ADDITION / OPTIONAL]` telemetry.
+    - N-R4: Removed all 5 occurrences of "public CDN" and "Supabase Storage CDN" across master spec and PlantUML diagrams (`sequence-lesson-exercise-retry-m23.puml`, `service-boundary-m23.puml`); direct RLS-mediated Supabase Storage paths maintained without premature CDN topology assumptions.
+    - N-R5: Qualified entry pathway starting status as `IN_PROGRESS` (canonical M2.2) / `[PROVISIONAL / TARGET access status]`; annotated target unit unlocking in `sequence-conditional-jump-m23.puml` as `[PROVISIONAL / TARGET]`.
+    - N-R6: Replaced hardcoded dummy literals for `latency_ms` and `is_mock` in SEQ-10 and `sequence-gec-interaction-m23.puml` with runtime-derived example values (`<runtime/config-derived boolean, e.g. false>`, `<runtime-measured integer, e.g. 120>`).
+    - N-R7: Replaced Next.js bracket routes (`[id]`, `[exId]`) in Section 2 with framework-neutral URI templates (`{lessonId}`, `{exerciseId}`) annotated `[ILLUSTRATIVE / TARGET]`; sanitized Vietnamese headers containing "Mã lỗi Quy chuẩn"; qualified illustrative cookie names `sb-access-token` as `[ILLUSTRATIVE / TARGET]`.
+    - F-WS-01: Stripped trailing whitespace in `logs/decision-log.md` (ADR-016 historical entries); verified `git diff --check` exits with 0 across entire repository.
+  - Automated Verification: Expanded `scratch/verify_m23_design.py` to 24 deterministic checks (24/24 PASS); `verify_consistency_guards.py` (18/18 PASS); `verify_d4_design.py` (17/17 PASS); `git diff --check` (exit code 0).
+  - Governance & Traceability: Recorded ADR-024 in `logs/decision-log.md` and `T-M23-CLEANUP-001` in `logs/test-log.md`; updated `logs/development-log.md`, `plans/current-task.md`, and `HANDOFF.md`.
+  - Invariants Preserved: `docs/03-api-contract.md` 100% byte-identical; all 13 open decision groups preserved as `OPEN / CONFIGURABLE / PENDING VALIDATION`; zero runtime application code, zero DB schema/migrations, zero UI, zero commits created (`COMMIT: NOT CREATED`).
+  - Next step: Human review and formal acceptance of Milestone M2.3.
   - History preserved: FAIL review, re-review, and P2 cleanup evidence retained in prior log/plan records (not deleted).
   - Independent Re-Review result: `PASS WITH NON-BLOCKING ISSUES` (0 × P0, 0 × P1, 4 × P2: N-01, N-02, N-03, N-04).
   - Milestone status: `M2.1 ACCEPTED FOR M2.2`, `M2.2 ACCEPTED FOR M2.3`, `M2.3 PLAN: NOT STARTED`.

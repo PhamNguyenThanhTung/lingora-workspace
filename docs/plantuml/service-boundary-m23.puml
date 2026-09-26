@@ -1,0 +1,96 @@
+@startuml service-boundary-m23
+title Artifact #15: Service Interaction & Boundary Model (Logical Topology)
+skinparam componentStyle rectangle
+skinparam BoxPadding 10
+skinparam PackagePadding 15
+skinparam defaultTextAlignment center
+
+package "Presentation Layer (Clients)" {
+    [Web Learner Client\n(Next.js App Router / SSR)] as WebLearner
+    [Web Admin Portal\n(lingora-admin Web Client)] as WebAdmin
+}
+
+package "Application Layer (BFF Orchestration & Route Handlers)" {
+    [Auth Route Handler\n(/api/auth/*)] as BFFAuth
+    [Curriculum & Lesson Handler\n(/api/curriculum/*)] as BFFCurric
+    [Assessment & Jump Handler\n(/api/assessment/*)] as BFFAssess
+    [SRS Review Handler\n(/api/srs/*)] as BFFSRS
+    [AI Proxy Route Handler\n(/api/ai/gec - 8s Timeout)] as BFFAIProxy
+    [Admin Management Handler\n(/api/admin/*)] as BFFAdmin
+}
+
+package "Domain Services (Authoritative Business Logic)" {
+    [Profile & Goal Service] as DomainProfile
+    [Lesson & Retry Service\n(Owner: UserProgress)] as DomainLesson
+    [Assessment Service\n(Owner: AssessmentResult; Derives: SkillProfile)] as DomainAssess
+    [Jump Assessment Service\n(Owner: by_jump Provenance)] as DomainJump
+    [Streak Evaluator\n(Owner: streak_count, last_qualifying_activity_date)] as DomainStreak
+    [SRS Scheduler\n(Policy B: [1,3,7,14,30])] as DomainSRS
+    [Content Governance Service\n(SoD: Creator -> Mod -> Manager)] as DomainContent
+    [Support Operations Service\n(Owner: SupportTicket)] as DomainSupport
+}
+
+package "External & Supporting Boundaries" {
+    [Supabase GoTrue Auth\n(Identity Provider / ES256 JWT)] as ExtAuth
+    [Stateless FastAPI AI Server\n(T5-small GEC Model)] as ExtAI
+    [Supabase Storage\n(Audio & Media Buckets)] as ExtStorage
+}
+
+package "Persistence Boundary (PostgreSQL Data Layer)" {
+    database "PostgreSQL Relational DB\n(PostgREST / RLS Scoped)" as DataDB
+    database "Supabase RPC\nrecord_review\n(Atomic Transaction Boundary)" as DataRPC
+    database "AuditLog Store\n(TARGET Append-Only Ledger)" as DataAudit
+}
+
+' Client to Application Dependencies
+WebLearner --> BFFAuth : Authenticate
+WebLearner --> BFFCurric : Browse / Lesson
+WebLearner --> BFFAssess : Placement / Jump
+WebLearner --> BFFSRS : Due Cards / Review
+WebLearner --> BFFAIProxy : Scenario GEC
+WebAdmin --> BFFAdmin : Author / Review / Publish / Audit
+
+' Application to Domain Dependencies
+BFFAuth --> DomainProfile : Resolve Profile Context
+BFFCurric --> DomainLesson : Deliver Lesson & Retry
+BFFAssess --> DomainAssess : Execute Placement
+BFFAssess --> DomainJump : Execute Jump
+BFFSRS --> DomainSRS : Schedule Intervals
+BFFCurric --> DomainStreak : Evaluate Qualifying Activity
+BFFSRS --> DomainStreak : Evaluate Qualifying Activity
+BFFAdmin --> DomainContent : Enforce SoD Rules
+BFFAdmin --> DomainSupport : Triage Tickets
+
+' Application to External Dependencies
+BFFAuth ..> ExtAuth : Token Verification / Exchange
+BFFAIProxy ..> ExtAI : HTTP POST /v1/gec/correct\n(Stateless / 8s Timeout)
+BFFCurric ..> ExtStorage : Resolve Audio URLs
+
+' Domain to Persistence Dependencies
+DomainProfile --> DataDB : Read / Write Profile
+DomainLesson --> DataDB : UPSERT UserProgress
+DomainAssess --> DataDB : INSERT AssessmentResult (Immutable)\nUPSERT SkillProfile
+DomainJump --> DataDB : UPDATE by_jump = true
+DomainStreak --> DataDB : UPDATE Profile streak_count, last_qualifying_activity_date
+DomainSRS --> DataRPC : CALL record_review (Atomic Tx)
+DomainContent --> DataDB : UPDATE Lesson (SoD States)
+DomainContent --> DataAudit : Append Emergency Publish Audit
+DomainSupport --> DataDB : UPDATE SupportTicket
+BFFAdmin --> DataAudit : SELECT Immutable Audit Logs
+
+' Invariant Constraints
+note bottom of ExtAI
+    CRITICAL INVARIANT (ADR-014):
+    AI Server is strictly STATELESS.
+    Zero incoming / outgoing DB connections.
+    AI owns ZERO progress, mastery, streak, completion.
+end note
+
+note bottom of DataRPC
+    ATOMIC MUTATION BOUNDARY:
+    record_review verifies auth.uid()
+    inserts ReviewLog + updates user_vocab_srs
+    in single database transaction.
+end note
+
+@enduml

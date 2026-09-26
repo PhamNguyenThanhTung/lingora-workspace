@@ -198,3 +198,28 @@ Bảng dưới đây thiết lập chuỗi truy vết khép kín toàn diện 5 
 | Operational Support | `MVP-16` | `UC-14` | `BF-15` Operations & Ticket Flow | `SupportTicket`, `Profile` | M2.2 §2 (UC-14), §3 | `DESIGN / SUPPORTING` |
 | Scenario Writing with GEC (`P1-FR-007`) | `MVP-18` | *(No UC — Stateless Service)* | `BF-14` Scenario Writing with GEC Flow | `ChatScenario`, transient `/api/ai/gec` | M2.2 §3 (BF-14) | `FROZEN (Stateless Service)` |
 | Organizational Cohorts (B2B) | `MVP-17` | `UC-15` | Cohort & Group Management | `Cohort`, `CohortMember` (Extension Boundary) | M2.2 §2 (UC-15), §3 | `OPTIONAL BOUNDARY` |
+
+---
+
+## 9. M2.3 Sequence Interactions, API Contracts & Service Boundaries Traceability (Logical Design)
+
+> Canonical Detail: [`docs/phase-1-m2-3-sequence-api-service-boundary.md`](phase-1-m2-3-sequence-api-service-boundary.md) (sections 1–11). Preserves 15-UC canonical catalog (`UC-01`..`UC-15`) and 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
+
+| Technical Requirement & Policy | MVP Feature | Canonical UC | Behavioral Family Mapping | Domain / Persistence Boundary | M2.3 Sequence Flow Ref | M2.3 Contract & Service Surface Ref | Governance Status |
+|---|---|---|---|---|---|---|---|
+| `P1-FR-001`, `P1-FR-010`, `P1-NFR-001` | `MVP-01`, `MVP-02` | `UC-01` | `BF-01` Authentication Flow | `Profile`, Supabase GoTrue Auth, Session Cookie | `SEQ-01` | Surface 5 (GoTrue), §4.1 BFF | `FROZEN` |
+| `P1-FR-014`, `P1-FR-015` | `MVP-02`, `MVP-10` | `UC-02` | Goal & Profile Configuration | `Profile` (`dailyGoalMin`, `timezone`), `LearnerProfile` | `SEQ-02` | Surface 10 (App Services), §5 State 4 | `FROZEN` |
+| `P1-FR-016`, Policy D5, D6 | `MVP-03` | `UC-03` | `BF-08` Placement Test Flow | `AssessmentResult`, `SkillProfile`, `verifiedProficiency` | `SEQ-03` | Surface 10, §4.1 PlacementService, Mapping A | `FROZEN` |
+| `P1-FR-002`, `P1-FR-004`, `P1-FR-016` | `MVP-04`, `MVP-08` | `UC-04` | `BF-11` Conditional Jump Flow & Path Browse | `Course`, `Unit`, `Lesson`, `LearningProgress` | `SEQ-04` | Surface 10, §4.1 JumpService (>=95%, 24h) | `FROZEN` |
+| `P1-FR-003`, `P1-FR-012/013`, Policy D7 | `MVP-05/06/07` | `UC-05` | `BF-09` Learn & `BF-10` Retry | `Exercise`, `Concept`, `KnowledgeGap`, `ConceptMastery` | `SEQ-05` | Surface 6/8, §4.1 LessonExecutionService | `FROZEN` |
+| `P1-FR-005`, `P1-FR-006`, Policy D8 | `MVP-09` | `UC-06` | `BF-12` SRS Review Flow | `user_vocab_srs`, `review_logs`, RPC `record_review` | `SEQ-06` | Surface 7 (RPC), §4.1 SrsScheduler (Policy B) | `FROZEN` |
+| `P1-FR-004`, `P1-FR-016` (Skill Profile) | `MVP-08/10/11` | `UC-07` | `BF-13` Progress Tracking | `LearningProgress`, `Profile.streak_count`, `SkillProfile` | `SEQ-07` | Surface 6/7, §4.1 StreakEvaluator (Asia/Ho_Chi_Minh) | `FROZEN` |
+| `P1-FR-008`, ADR-002, ADR-004 | `MVP-12` | `UC-08` | `BF-03/04/06` Authoring | `Lesson` (`creatorId`), `Exercise` (supersedesId [TARGET-CANDIDATE DD-02]) | `SEQ-08` | Surface 9 (Admin/Prisma), §4.1 ContentLifecycle | `FROZEN` |
+| `P1-FR-008`, ADR-004 (SoD) | `MVP-13` | `UC-09` | `BF-05` Content Review | `Lesson` (`reviewerId`, `status: IN_REVIEW/APPROVED`) | `SEQ-08` | Surface 9 (Admin/Prisma), §4.1 ContentLifecycle | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001`, ADR-004 | `MVP-13/19` | `UC-10` | `BF-07` Publish & `BF-02` Plan | `Lesson.isPublished`, `Unit` (4/4 published), `AuditLog` | `SEQ-08` | Surface 9 (Admin/Prisma), §4.1 ContentLifecycle | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001`, ADR-003 | `MVP-14` | `UC-11` | Account/Role Management | `Profile.role`, `AuditLog` | `SEQ-09` | Surface 9 (Admin/Prisma), §4.1 AdminService | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001` | `MVP-15` | `UC-12` | System Analytics & Reports | System Aggregated Views, Activity Logs | `SEQ-09` | Surface 9 (Admin/Prisma), §4.1 AdminService | `DESIGN` |
+| `P1-NFR-001`, ADR-004 | `MVP-19` | `UC-13` | Security Audit Ledger | `AuditLog` (immutable event store) | `SEQ-09` | Surface 9 (Admin/Prisma), §5 State 9 | `FROZEN` |
+| Operational Support | `MVP-16` | `UC-14` | `BF-15` Support Tickets | `SupportTicket`, `Profile` | `SEQ-09` | Surface 9 (Admin/Prisma), §4.1 SupportService | `DESIGN / SUPPORTING` |
+| Scenario Free-Writing (`P1-FR-007`) | `MVP-18` | *(No UC — Stateless)* | `BF-14` Scenario Writing Flow | `ChatScenario`, transient GEC diffs | `SEQ-10` | Surface 2 & 4 (Proxy, 8.0s timeout, fallback) | `FROZEN (Stateless)` |
+| Organizational Cohorts (B2B) | `MVP-17` | `UC-15` | Cohort & Group Management | `Cohort`, `CohortMember` (Extension Boundary) | `SEQ-09` | Boundary marker only, Surface 9 | `OPTIONAL BOUNDARY` |

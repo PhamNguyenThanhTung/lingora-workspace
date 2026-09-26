@@ -2232,3 +2232,117 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 - Xóa "chiếm 60% thời gian" (không nguồn), giữ nguyên văn file về audio bottleneck.
 - Slide 16: UC-05 → CORE-07 (bỏ CORE-03 phía Creator); UC-12 → CORE-02 Dashboard (bỏ EXT-05 sai đối tượng); UC-02 → CORE-10 (bỏ CORE-01 gượng ép).
 - Tests: grep verify 0 hit các chuỗi cũ. Commit: chưa commit (chờ human yêu cầu rõ).
+
+## 2026-09-26 — m2-3-sequence-api-service-boundary (category: runtime-boundary)
+
+- **Completed:**
+  - Implemented authoritative Milestone M2.3 Master Specification: `docs/phase-1-m2-3-sequence-api-service-boundary.md` (Sections 1 through 11).
+  - Enforced roadmap-exact 6-field architectural contract for Artifacts #11, #12, and #15.
+  - Authored complete Sequence Interaction Suite (Artifact #11) with 10 PlantUML sequence diagrams under `docs/plantuml/`:
+    - `sequence-auth-session-m23.puml`: SEQ-01 Auth & Session (GoTrue ES256, httpOnly session cookies, RLS profile lookup, safe logout, AuditLog).
+    - `sequence-learner-onboarding-m23.puml`: SEQ-02 Learner Onboarding (goals/timezone, in-app reminder, Branch A Self-report UNVERIFIED vs Branch B Diagnostic offer).
+    - `sequence-diagnostic-placement-m23.puml`: SEQ-03 Diagnostic Placement (two-stage adaptive test ~25–30 items, 4 dimensions, 0–30 raw score Mapping A, immutable AssessmentResult, SkillProfile).
+    - `sequence-conditional-jump-m23.puml`: SEQ-04 Conditional Jump (UC-04/BF-11, 24h cooldown check, 20/25-30/40q, >=95% pass provenance `SKIPPED_BY_JUMP` with `by_jump = true`, zero `COMPLETED_BY_JUMP`).
+    - `sequence-lesson-exercise-retry-m23.puml`: SEQ-05 Lesson Exercise Execution & Controlled Retry (5 canonical exercises, Policy D7 retry allowance & 70% credit, completion owned by UC-05/BF-10, audio exception fallback).
+    - `sequence-srs-review-m23.puml`: SEQ-06 Spaced Repetition Review (due query, recall rating, deterministic Policy B [1,3,7,14,30], atomic `record_review` RPC verifying `auth.uid()`, ReviewLog, streak check, AI non-owner).
+    - `sequence-progress-streak-m23.puml`: SEQ-07 Progress & Daily Streak (qualifying activity, calendar boundary compare in `Asia/Ho_Chi_Minh`, consecutive +1, missed reset to 1, Streak Freeze DEFERRED).
+    - `sequence-authoring-moderation-publish-m23.puml`: SEQ-08 Content Lifecycle & SoD (Creator draft, Moderator review, Org Manager publish with 4/4 Unit visibility, Admin emergency publish on APPROVED only with justification + AuditLog, Clone-to-Draft v2 via `supersedesId`).
+    - `sequence-admin-ops-m23.puml`: SEQ-09 Admin Operations & Audit (Role management UC-11, system analytics UC-12, immutable audit log read UC-13, support tickets UC-14/BF-15, UC-15 B2B extension boundary).
+    - `sequence-gec-interaction-m23.puml`: SEQ-10 Scenario Free-Writing with GEC (Route Handler proxy, stateless FastAPI `/v1/gec/correct`, 8.0s hard timeout, recoverable fallback to raw learner text, zero DB access, BF-14 trace, zero fabricated UC).
+  - Authored Service Boundary and Layer Responsibility models (Artifact #15) under `docs/plantuml/`:
+    - `service-boundary-m23.puml`: Presentation, BFF Route Handlers, Domain Services, Persistence Boundary, External Providers.
+    - `layer-responsibility-m23.puml`: 4-layer model (Presentation, Application/BFF, Domain Services, Data/Infrastructure & External).
+  - API Surface & Gap Register (Artifact #12):
+    - Classified 10 surfaces: CURRENT (GoTrue, PostgREST, RPC `record_review`, Storage, AI Health), TARGET (GEC `POST /v1/gec/correct`, Route Handler Proxy, Admin/Prisma, App Services), COMPATIBILITY GAP (AI legacy `/v1/srs/schedule`, `/v1/chat/*`), and FUTURE (B2B Cohorts).
+    - Preserved `docs/03-api-contract.md` 100% byte-identical (read-only); recorded all technical distances in API Gap Register (§3.2).
+  - Established Authoritative Single State Ownership Matrix across 9 core state categories.
+  - Specified Conceptual Idempotency & Atomicity Matrix (reads, atomic mutations, anti-double-submit protections).
+  - Preserved all 13 open decision groups from D3 §N and D4 §Q as `OPEN / CONFIGURABLE / PENDING VALIDATION`.
+  - Updated supporting documents:
+    - `docs/01-architecture.md`: Added Section 3.7 concise cross-reference.
+    - `docs/05-traceability-matrix.md`: Added Section 9 M2.3 traceability mapping.
+    - `logs/decision-log.md`: Appended ADR-022.
+    - `logs/test-log.md`: Appended test execution log `T-M23-DESIGN-001`.
+    - `plans/current-task.md` & `HANDOFF.md`: Updated status to `READY FOR INDEPENDENT REVIEW`.
+  - Strict Boundary Invariants: Zero runtime application code, zero database schema changes or migrations, zero UI changes, zero git commits created (`COMMIT: NOT CREATED`).
+- **Current Milestone State:**
+  ```text
+  M2.2 ACCEPTED FOR M2.3
+  M2.3 IMPLEMENTATION: COMPLETE (DESIGN ONLY)
+  M2.3 STATUS: READY FOR INDEPENDENT REVIEW
+  M2.3 ACCEPTED: NOT CLAIMED
+  ```
+- **Tests:** `T-M23-DESIGN-001` PASS (`verify_m23_design.py` 12/12 PASS, `verify_consistency_guards.py` 18/18 PASS, `verify_d4_design.py` 17/17 PASS).
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-3-remediation-and-re-review (category: runtime-boundary)
+
+- **Context:**
+  - Milestone M2.3 Independent Final Review returned `FAIL` with 14 P1 findings and enumerated P2 findings.
+  - Note on review count accounting: Independent Review headline reported 17 P2, but the Findings table contains 13 enumerated P2 findings.
+  - Task objective: Remediate all 14 P1 and all 13 enumerated P2 findings according to canonical sources, enhance deterministic verification in `scratch/verify_m23_design.py`, update governance documentation, and stop at `READY FOR INDEPENDENT RE-REVIEW`.
+- **Completed:**
+  - Remediated all 14 P1 and all 13 enumerated P2 findings across master specification, 10 sequence diagrams, 2 architecture diagrams, and secondary cross-references:
+    - **F-ENT-01 (public.ExerciseAttempt):** Removed `public.ExerciseAttempt` completely as a persisted entity. Attempts remain transient in-flight data.
+    - **F-RPC-01, F-RPC-02, F-STEP-01 (record_review & review_logs):** Restored locked canonical 4-parameter signature for `record_review(p_srs_card_id, p_is_correct, p_recall_probability, p_recommended_interval_days)`; eliminated non-canonical parameters (`p_rating`, `p_vocab_id`, `p_response_time`) and FSRS scale references (AGAIN/HARD/GOOD/EASY); removed `rating` column from `review_logs`; reconciled column names to canonical `interval_days` and `review_count`; labeled ReviewLog Store in SEQ-06 as `(SRS History Log)` rather than audit log.
+    - **F-FIELD-01, F-FIELD-02 (AssessmentResult & SkillProfile):** Removed non-canonical columns `score` and `passed` from `AssessmentResult`; SkillProfile holds dimension levels and radarData (owned by Learner domain); `verifiedProficiency` preserved strictly on `LearnerProfile`.
+    - **F-FIELD-03, F-FIELD-04 (Candidate Fields & 24h Cooldown):** Reconciled Profile starting unit to `starting_unit INT [TARGET-CANDIDATE DD-06 / OPEN DESIGN]`; removed `lastJumpFailedAt` column (24h cooldown is a conceptual domain rule, persistence mechanism OPEN DESIGN).
+    - **F-FIELD-05, F-FIELD-06 (Account Status & Reminders):** Account locking uses canonical `isActive: BOOLEAN` (default true) alongside candidate enum `SUSPENDED [DD-01 / OPEN DESIGN]`; study reminders harmonized as client-local storage per ADR-006 with zero Profile database columns.
+    - **F-POL-01, F-OPEN-01, F-STORE-01 (Policy, Routing & Storage):** Locked `dailyGoalMin` range strictly to `[5..120]`; marked diagnostic routing item count as `[PROPOSED ~10-12 items, PENDING VALIDATION]`; vocabulary audio retrieval uses direct RLS-mediated Supabase Storage paths (`vocabulary/{vocabId}/{filename}`) per PA2 compliance (zero signed URLs).
+    - **F-SOD-01 (Separation of Duties):** Added explicit authorization guard in SEQ-08: `auth.uid() != Lesson.creatorId`, returning `403 Forbidden (SOD_VIOLATION_SELF_REVIEW)` upon self-approval attempt.
+    - **F-ENV-01, F-CODE-01 (Error Envelope & Codes):** Reconciled error response envelope to singular `"detail"` (`{"detail": "..."}`); Error Taxonomy classifies every error code into `CANONICAL_FROM_03`, `M2.3_DESIGN_ADDITION`, or `FUTURE`; mapped `TEXT_TOO_LONG` strictly to HTTP 413.
+    - **F-AUTH-01, F-RESP-01 (AI GEC Auth & Response Contract):** Enforced forwarding of learner session JWT to AI GEC; AI response specifies `model_version`, `is_mock: false`, and `latency_ms: 120`.
+    - **F-PLAT-01, F-FILE-01, F-WORD-01, N-03 (Hygiene):** Labeled `layer-responsibility-m23.puml` as `#15 (Supporting)`; reconciled platform scope to web-only admin portal (removed Desktop references); removed RFC phrasing and leaked finding IDs.
+  - Enhanced deterministic test harness `scratch/verify_m23_design.py` from 12 to 20 checks covering all P1 and enumerated P2 findings.
+  - Recorded ADR-023 in `logs/decision-log.md` and `T-M23-REMED-001` in `logs/test-log.md`.
+  - Reconciled `docs/01-architecture.md` §3.7 and `docs/05-traceability-matrix.md` §9.
+  - Preserved `docs/03-api-contract.md` 100% byte-identical (read-only).
+  - Preserved all 13 open decision groups as `OPEN / CONFIGURABLE / PENDING VALIDATION`.
+  - Strict Boundary Invariants: Zero runtime application code, zero database schema changes or migrations, zero UI changes, zero git commits created (`COMMIT: NOT CREATED`).
+- **Current Milestone State:**
+  ```text
+  M2.2 ACCEPTED FOR M2.3
+  M2.3 REMEDIATION: COMPLETE
+  M2.3 STATUS: READY FOR INDEPENDENT RE-REVIEW
+  M2.3 ACCEPTED: NOT CLAIMED
+  ```
+- **Tests:** `T-M23-REMED-001` PASS (`verify_m23_design.py` 20/20 PASS, `verify_consistency_guards.py` 18/18 PASS, `verify_d4_design.py` 17/17 PASS).
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-3-final-cleanup
+
+- **Context:**
+  - Milestone M2.3 Independent Re-Review returned `PASS WITH NON-BLOCKING ISSUES` (0 P0, 0 P1, 7 P2: `N-R1..N-R7`, `F-WS-01`).
+  - Task objective: Clean up all 7 remaining non-blocking findings (N-R1 through N-R7) and whitespace hygiene issue (F-WS-01), expand deterministic verification in `scratch/verify_m23_design.py` to 24 checks, update governance documentation and logs, and stop at `READY FOR ACCEPTANCE`.
+- **Completed:**
+  - Cleaned up all 7 P2 findings and F-WS-01 across master specification `docs/phase-1-m2-3-sequence-api-service-boundary.md`, PlantUML sequence/architecture diagrams, and secondary documents:
+    - **N-R1 (Profile State Labeling):** Removed erroneous `[canonical]` marker from `isActive` since M2.1 data dictionary does not define it; qualified `SUSPENDED` strictly as `[TARGET-CANDIDATE / OPEN DESIGN]`; completely unlinked `DD-01` from Profile state.
+    - **N-R2 (DD Reference Accuracy):** Corrected `assignmentBrief` -> `DD-04` (Assignment Representation) and `supersedesId` -> `DD-02` (Revision Representation); corrected `reviewNotes` -> `DD-04`; eliminated all erroneous `DD-07` tags across all M2.3 design artifacts and `docs/05-traceability-matrix.md`.
+    - **N-R3 (Error Taxonomy Provenance):** Audited error taxonomy strictly against `docs/03-api-contract.md`; classified exactly the 7 canonical codes from `03` as `CANONICAL_FROM_03` (`INVALID_INPUT`, `TEXT_TOO_LONG`, `LANG_NOT_SUPPORTED` [mapped to HTTP 422 per 03], `SCENARIO_NOT_FOUND`, `UNAUTHORIZED`, `RATE_LIMITED`, `MODEL_UNAVAILABLE`); classified all M2.3 design codes as `M2.3_DESIGN_ADDITION`; marked `request_id` as `[M2.3 DESIGN ADDITION / OPTIONAL]` telemetry.
+    - **N-R4 (CDN Wording Elimination):** Removed all 5 occurrences of "public CDN" and "Supabase Storage CDN" across master spec and PlantUML diagrams (`sequence-lesson-exercise-retry-m23.puml`, `service-boundary-m23.puml`); direct RLS-mediated Supabase Storage paths maintained without premature CDN topology assumptions.
+    - **N-R5 (UNLOCKED Vocabulary Qualification):** Qualified entry pathway starting status as `IN_PROGRESS` (canonical M2.2) / `[PROVISIONAL / TARGET access status]`; annotated target unit unlocking in `sequence-conditional-jump-m23.puml` as `[PROVISIONAL / TARGET]`.
+    - **N-R6 (AI Telemetry Examples):** Replaced hardcoded dummy literals for `latency_ms` and `is_mock` in SEQ-10 and `sequence-gec-interaction-m23.puml` with runtime-derived example values (`<runtime/config-derived boolean, e.g. false>`, `<runtime-measured integer, e.g. 120>`).
+    - **N-R7 (Framework Neutrality & Clean Terminology):** Replaced Next.js bracket routes (`[id]`, `[exId]`) in Section 2 with framework-neutral URI templates (`{lessonId}`, `{exerciseId}`) annotated `[ILLUSTRATIVE / TARGET]`; sanitized Vietnamese headers containing "Mã lỗi Quy chuẩn"; qualified illustrative cookie names `sb-access-token` as `[ILLUSTRATIVE / TARGET]`.
+    - **F-WS-01 (Whitespace Hygiene):** Stripped trailing whitespace in `logs/decision-log.md` (ADR-016 historical entries); verified `git diff --check` exits with 0 across entire repository.
+  - Enhanced deterministic test harness `scratch/verify_m23_design.py` from 20 to 24 comprehensive checks.
+  - Recorded ADR-024 in `logs/decision-log.md` and `T-M23-CLEANUP-001` in `logs/test-log.md`.
+  - Preserved `docs/03-api-contract.md` 100% byte-identical (read-only).
+  - Preserved all 13 open decision groups as `OPEN / CONFIGURABLE / PENDING VALIDATION`.
+  - Strict Boundary Invariants: Zero runtime application code, zero database schema changes or migrations, zero UI changes, zero git commits created (`COMMIT: NOT CREATED`).
+- **Current Milestone State:**
+  ```text
+  M2.2 ACCEPTED FOR M2.3
+  M2.3 FINAL CLEANUP: COMPLETE
+  M2.3 STATUS: READY FOR ACCEPTANCE
+  M2.3 ACCEPTANCE: NOT CLAIMED
+  ```
+- **Tests:** `T-M23-CLEANUP-001` PASS (`verify_m23_design.py` 24/24 PASS, `verify_consistency_guards.py` 18/18 PASS, `verify_d4_design.py` 17/17 PASS, `git diff --check` PASS).
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-3-acceptance-recording (category: `runtime-boundary`)
+
+- **Context:** Authorized acceptance recording for M2.3 following Re-Review (`PASS WITH NON-BLOCKING ISSUES`) and final P2 cleanup (N-R1..N-R7, F-WS-01 verified closed in artifacts: candidate/DD-tag corrections, taxonomy re-audit vs `03`, CDN removal, IN_PROGRESS qualification, telemetry examples, neutral routes, clean diff-check).
+- **Decision recorded:** `M2.3 ACCEPTED FOR M2.4` (ADR-025; acceptance milestone only — not Design Complete, not M2.4 Complete, no runtime, not production-ready). D-G4 PASS, D-G5 PASS, D-G6 INPUT EVIDENCE ONLY. Open decisions preserved.
+- **Governance updated:** `plans/current-task.md` → DONE (`M2.3 ACCEPTED FOR M2.4`); `HANDOFF.md` latest accepted milestone → `M2.3 ACCEPTED FOR M2.4`; `M2.4 = NEXT MILESTONE / PLAN NOT STARTED`; test record `T-M23-ACCEPT-001`.
+- **Boundary preserved:** zero runtime/schema/API/UI/security work; `03` byte-identical; D3/D4/M2.1/M2.2 unmodified; history retained.
+- **Commit:** `NOT CREATED` (per task rule; no M2.4 work started).

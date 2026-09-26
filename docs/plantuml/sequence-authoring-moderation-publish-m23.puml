@@ -1,0 +1,152 @@
+@startuml sequence-authoring-moderation-publish-m23
+title SEQ-08: Content Authoring, Moderation & Publishing Flow (UC-08 / UC-09 / UC-10)
+autonumber
+skinparam style strictuml
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Organizational\nManager" as Manager
+actor "Lesson Creator" as Creator
+actor "Moderator" as Moderator
+actor "Administrator" as Admin
+boundary "Web Admin Portal\n(lingora-admin)" as AdminUI
+control "Content Service\n(Admin BFF / Prisma)" as ContentSvc
+database "PostgreSQL Database\n(Core Schema)" as DB
+entity "AuditLog Store\n(Append-Only Ledger)" as Audit
+
+== 1. Content Assignment & Authoring (UC-08 / BF-03, BF-04) ==
+Manager -> AdminUI: Create Assignment Brief & Assign Lesson to Creator (SCR-A-01)
+activate AdminUI
+AdminUI -> ContentSvc: POST /api/admin/lessons/assign { lessonId, creatorId, brief }
+activate ContentSvc
+ContentSvc -> DB: UPDATE "Lesson" SET creatorId = targetId, status = 'DRAFT'\n(assignmentBrief [TARGET-CANDIDATE DD-04 / OPEN DESIGN])
+activate DB
+DB --> ContentSvc: Lesson updated
+deactivate DB
+ContentSvc --> AdminUI: 200 OK { status: "ASSIGNED" }
+deactivate ContentSvc
+AdminUI --> Manager: Assignment confirmed
+
+Creator -> AdminUI: Open assigned Lesson (SCR-A-02), author 5 exercises & vocabularies
+Creator -> AdminUI: Click "Submit for Review"
+AdminUI -> ContentSvc: POST /api/admin/lessons/{id}/submit-review
+activate ContentSvc
+ContentSvc -> DB: UPDATE "Lesson" SET status = 'IN_REVIEW' WHERE id = lessonId AND creatorId = auth.uid()
+activate DB
+DB --> ContentSvc: Status updated to IN_REVIEW
+deactivate DB
+ContentSvc --> AdminUI: 200 OK { status: "IN_REVIEW" }
+deactivate ContentSvc
+AdminUI --> Creator: Submission confirmed
+
+== 2. Content Moderation (UC-09 / BF-05, BF-06) ==
+Moderator -> AdminUI: Open review queue, inspect lesson content & exercises (SCR-A-04)
+
+alt Academic Quality Satisfactory -> APPROVE
+    Moderator -> AdminUI: Click "Approve Lesson"
+    AdminUI -> ContentSvc: POST /api/admin/lessons/{id}/approve
+    activate ContentSvc
+
+    note right of ContentSvc
+        Separation of Duties (SoD) Guard (ADR-005 / SEC-D8):
+        Enforce reviewer is NOT the content author:
+        IF auth.uid() == Lesson.creatorId THEN
+            REJECT 403 Forbidden (SOD_VIOLATION_SELF_REVIEW)
+        END IF
+    end note
+
+    ContentSvc -> DB: Query Lesson.creatorId
+    activate DB
+    DB --> ContentSvc: Return creatorId
+    deactivate DB
+
+    alt Self-Approval Attempt (auth.uid() == Lesson.creatorId)
+        ContentSvc --> AdminUI: 403 Forbidden (SOD_VIOLATION_SELF_REVIEW)
+        AdminUI --> Moderator: Error: Creators cannot approve their own authored lessons.
+    else Valid Distinct Reviewer
+        ContentSvc -> DB: UPDATE "Lesson" SET status = 'APPROVED', reviewerId = auth.uid()\nWHERE id = lessonId AND status = 'IN_REVIEW'
+        activate DB
+        DB --> ContentSvc: Lesson approved
+        deactivate DB
+        ContentSvc --> AdminUI: 200 OK { status: "APPROVED" }
+        AdminUI --> Moderator: Approval recorded
+    end
+    deactivate ContentSvc
+
+else Academic Deficiencies Detected -> REQUEST CHANGES (BF-06)
+    Moderator -> AdminUI: Enter review notes & click "Request Changes"
+    AdminUI -> ContentSvc: POST /api/admin/lessons/{id}/request-changes { notes }
+    activate ContentSvc
+    ContentSvc -> DB: UPDATE "Lesson" SET status = 'CHANGES_REQUESTED'\n(reviewNotes [TARGET-CANDIDATE DD-04 / OPEN DESIGN])
+    activate DB
+    DB --> ContentSvc: Status updated to CHANGES_REQUESTED
+    deactivate DB
+    ContentSvc --> AdminUI: 200 OK { status: "CHANGES_REQUESTED" }
+    deactivate ContentSvc
+    AdminUI --> Creator: Notification with notes -> Creator edits draft and resubmits
+end
+
+== 3. Standard Publication (UC-10 / BF-07) ==
+Manager -> AdminUI: View APPROVED lessons queue (SCR-A-06)
+Manager -> AdminUI: Click "Publish Lesson"
+AdminUI -> ContentSvc: POST /api/admin/lessons/{id}/publish
+activate ContentSvc
+ContentSvc -> DB: UPDATE "Lesson" SET status = 'PUBLISHED', isPublished = true, publishedAt = now()
+activate DB
+DB --> ContentSvc: Lesson published
+
+ContentSvc -> DB: Check parent Unit: Are 4/4 child lessons PUBLISHED?
+alt 4/4 Lessons PUBLISHED
+    DB -> DB: UPDATE "Unit" SET isPublished = true (Visible in Learner Catalog)
+else < 4 Lessons PUBLISHED
+    DB -> DB: Unit remains hidden from public catalog
+end
+deactivate DB
+
+ContentSvc --> AdminUI: 200 OK { status: "PUBLISHED", unitVisible: boolean }
+deactivate ContentSvc
+AdminUI --> Manager: Lesson published successfully
+
+== 4. Administrator Emergency Publishing (SoD Constrained Exception) ==
+Admin -> AdminUI: Request Emergency Publish for urgent release (SCR-A-06)
+AdminUI -> ContentSvc: POST /api/admin/lessons/{id}/emergency-publish { justification }
+activate ContentSvc
+
+ContentSvc -> DB: Query current lesson status
+activate DB
+DB --> ContentSvc: Return status
+deactivate DB
+
+alt Current status == 'APPROVED' (Legitimate Emergency Bypass)
+    ContentSvc -> DB: UPDATE "Lesson" SET status = 'PUBLISHED', isPublished = true
+    activate DB
+    DB --> ContentSvc: Published
+    deactivate DB
+
+    ContentSvc -> Audit: INSERT INTO "AuditLog" (\n  action = 'EMERGENCY_PUBLISH', actorId = auth.uid(),\n  targetId = lessonId, justification = text, timestamp = now()\n)
+    activate Audit
+    Audit --> ContentSvc: Audit entry recorded
+    deactivate Audit
+    ContentSvc --> AdminUI: 200 OK { status: "PUBLISHED", audited: true }
+    AdminUI --> Admin: Emergency publication confirmed with immutable audit trace
+
+else Current status != 'APPROVED' (Attempt to bypass review)
+    ContentSvc --> AdminUI: 403 Forbidden (SOD_ADMIN_MUST_BE_APPROVED)\n[Admin cannot publish DRAFT or IN_REVIEW content]
+    AdminUI --> Admin: Action rejected: Content must be reviewed and APPROVED first
+end
+deactivate ContentSvc
+
+== 5. Content Revision (Clone-to-Draft v2) ==
+Manager -> AdminUI: Request revision of active published lesson v1
+AdminUI -> ContentSvc: POST /api/admin/lessons/{id}/clone-to-draft
+activate ContentSvc
+ContentSvc -> DB: INSERT INTO "Lesson" (\n  version = 2, status = 'DRAFT',\n  content = v1.content\n) (supersedesId = v1.id [TARGET-CANDIDATE DD-02 / OPEN DESIGN]; v1 remains PUBLISHED and active)
+activate DB
+DB --> ContentSvc: Lesson v2 draft created
+deactivate DB
+ContentSvc --> AdminUI: 200 OK { newDraftId: v2.id }
+deactivate ContentSvc
+AdminUI --> Manager: v2 Draft ready for authoring (v1 uninterrupted)
+deactivate AdminUI
+
+@enduml

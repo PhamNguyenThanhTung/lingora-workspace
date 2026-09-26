@@ -1472,3 +1472,285 @@ Select-String -Path "docs/phase-1-m2-2-behavior-uc-activity-state.md","docs/plan
 ```
 **Output:** Exit code 0 (no whitespace errors, no conflict markers). Zero application code, zero DB migrations created or modified.
 **Verdict:** PASS.
+
+### `T-M23-DESIGN-001` (2026-09-26) — Milestone M2.3 Sequence, API Contract & Service Boundary Verification
+
+- **Environment:** Windows, Python 3.11, Git 2.53.0.
+- **Task:** `m2-3-sequence-api-service-boundary`
+- **Scope:** Automated verification of Milestone M2.3 design artifacts (Artifacts #11, #12, #15), 12 PlantUML models, consistency guards, and scope boundary invariants.
+
+**Command 1 (Automated M2.3 Design Verification):**
+```powershell
+py scratch/verify_m23_design.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA MILESTONE M2.3 - AUTOMATED DESIGN VERIFICATION
+===========================================================================
+[PASS] CHECK-01: Required Sections 1-11
+       -> All 11 sections present
+[PASS] CHECK-02: Six-Field Architectural Contract
+       -> Six-field contract defined for Artifacts #11, #12, #15
+[PASS] CHECK-03: All 12 M2.3 PlantUML Files
+       -> All 12 diagrams exist with balanced syntax (@startuml/@enduml)
+[PASS] CHECK-04: 10 Sequence Specifications (SEQ-01..10)
+       -> All 10 sequence subsections present in Section 2
+[PASS] CHECK-05: Stateless AI Non-Ownership Invariant
+       -> ADR-014 stateless AI verified: transient only, 8.0s timeout, non-owner of core progression
+[PASS] CHECK-06: Surface Classification & Gap Register
+       -> 4 status tiers classified and API Gap Register documented
+[PASS] CHECK-07: Single State Ownership Matrix
+       -> All 9 core states mapped to authoritative write owners
+[PASS] CHECK-08: Conceptual Idempotency & Atomicity
+       -> Atomic boundaries and anti-double-submit protections specified
+[PASS] CHECK-09: Validation Gates Evidence
+       -> D-G4/D-G5 PASS evidence present, D-G6 explicitly marked input-only (closure in M2.4+)
+[PASS] CHECK-10: Secondary Documents Cross-Reference
+       -> 01-architecture.md §3.7 and 05-traceability-matrix.md §9 successfully integrated
+[PASS] CHECK-11: Prohibition & Negative Assertions Scan
+       -> Zero active UC-16/17/18, zero active BF-16, zero ungrounded AssessmentSession ghost entities
+[PASS] CHECK-12: 03-api-contract.md Preservation
+       -> docs/03-api-contract.md remains 100% byte-identical / read-only
+===========================================================================
+ALL 12 M2.3 DESIGN VERIFICATION CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (Automated Consistency Guards):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 3 (D4 Focused Specification Scan):**
+```powershell
+py scratch/verify_d4_design.py
+```
+**Output:** Exit code 0.
+```text
+ALL D4 FOCUSED CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (PlantUML Compilation Environment Disclose):**
+```powershell
+java -version
+```
+**Output:** Exit code 1 (Java runtime not found on PATH).
+**Verdict:** N/A — ENVIRONMENT BLOCKED (Java not installed on PATH; static syntax check PASS with balanced @startuml/@enduml and zero banned tokens across all 12 diagrams).
+
+**Command 5 (Scope Boundary & Git Commit Status Check):**
+```powershell
+git status --short
+```
+**Output:** Exit code 0. Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero DB migrations created or modified, zero git commits created (`COMMIT: NOT CREATED`).
+**Verdict:** PASS.
+
+---
+
+## T-M23-REMED-001: Milestone M2.3 Independent Review Findings Remediation Verification
+
+**Date:** 2026-09-26<br>
+**Environment:** Windows 11, Python 3.11, Commit SHA `c7e2ad5` (uncommitted design remediation)<br>
+**Test Suite:** `scratch/verify_m23_design.py` (20 Automated Remediation Checks) + Regression Suites
+
+### Commands & Results
+
+**Command 1 (20-Check Remediation Verification Suite):**
+```powershell
+py scratch/verify_m23_design.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA MILESTONE M2.3 - AUTOMATED DESIGN VERIFICATION
+===========================================================================
+[PASS] CHECK-01: Required Sections 1-11
+       -> All 11 sections present
+[PASS] CHECK-02: Six-Field Architectural Contract
+       -> Six-field contract defined for Artifacts #11, #12, #15
+[PASS] CHECK-03: All 12 M2.3 PlantUML Files
+       -> All 12 diagrams exist with balanced syntax (@startuml/@enduml)
+[PASS] CHECK-04: 10 Sequence Specifications (SEQ-01..10)
+       -> All 10 sequence subsections present in Section 2
+[PASS] CHECK-05: Stateless AI Non-Ownership Invariant
+       -> ADR-014 stateless AI verified: transient only, 8.0s timeout, non-owner of core progression
+[PASS] CHECK-06: Surface Classification & Gap Register
+       -> 4 status tiers classified and API Gap Register documented
+[PASS] CHECK-07: Single State Ownership Matrix
+       -> All 9 core states mapped to authoritative write owners
+[PASS] CHECK-08: Conceptual Idempotency & Atomicity
+       -> Atomic boundaries and anti-double-submit protections specified
+[PASS] CHECK-09: Validation Gates Evidence
+       -> D-G4/D-G5 PASS evidence present, D-G6 explicitly marked input-only (closure in M2.4+)
+[PASS] CHECK-10: Secondary Documents Cross-Reference
+       -> 01-architecture.md §3.7 and 05-traceability-matrix.md §9 successfully integrated
+[PASS] CHECK-11: Prohibition & Negative Assertions Scan
+       -> Zero active UC-16/17/18, zero active BF-16, zero ungrounded AssessmentSession ghost entities
+[PASS] CHECK-12: 03-api-contract.md Preservation
+       -> docs/03-api-contract.md remains 100% byte-identical / read-only
+[PASS] CHECK-13: F-ENT-01: Zero Persisted ExerciseAttempt
+       -> Attempts remain transient request/session data; no public.ExerciseAttempt persisted entity
+[PASS] CHECK-14: F-RPC-01/02 & F-STEP-01: Canonical record_review & review_logs
+       -> Locked 4-param record_review signature restored; review_logs has no rating; canonical interval_days & review_count
+[PASS] CHECK-15: F-FIELD-01/02: AssessmentResult & SkillProfile Canonical Fields
+       -> AssessmentResult has no score/passed column; SkillProfile has levels and radarData; verifiedProficiency on LearnerProfile
+[PASS] CHECK-16: F-FIELD-03..06: Profile/LearnerProfile Field Harmonization
+       -> No lastJumpFailedAt column; reminder client-local per ADR-006; isActive boolean + SUSPENDED; starting_unit DD-06 candidate
+[PASS] CHECK-17: F-POL-01, F-OPEN-01, F-STORE-01: Policy Range, Routing & Storage
+       -> dailyGoalMin in [5..120]; routing stage marked PROPOSED / PENDING; direct RLS-mediated storage boundary
+[PASS] CHECK-18: F-SOD-01: Separation of Duties Self-Approval Guard
+       -> SEQ-08 explicitly enforces creator cannot self-approve lesson (403 SOD_VIOLATION_SELF_REVIEW)
+[PASS] CHECK-19: F-ENV-01, F-CODE-01, F-RESP-01, F-AUTH-01: Envelope, Codes, AI GEC Contract
+       -> Envelope uses 'detail' singular; taxonomy classified; TEXT_TOO_LONG is 413; AI returns latency_ms & is_mock with user session JWT
+[PASS] CHECK-20: F-PLAT-01, F-FILE-01, F-WORD-01: Hygiene & Supporting Labels
+       -> layer-responsibility-m23 labeled #15 supporting; web-only platform (no Desktop in topology); clean terminology
+===========================================================================
+ALL 20 M2.3 DESIGN REMEDIATION VERIFICATION CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (Automated Consistency Guards Regression):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 3 (D4 Focused Specification Scan Regression):**
+```powershell
+py scratch/verify_d4_design.py
+```
+**Output:** Exit code 0.
+```text
+ALL D4 FOCUSED CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (Scope Boundary & Git Commit Status Check):**
+```powershell
+git status --short
+```
+**Output:** Exit code 0. Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero DB migrations created or modified, zero git commits created (`COMMIT: NOT CREATED`).
+**Verdict:** PASS.
+
+---
+
+## T-M23-CLEANUP-001: Milestone M2.3 Independent Re-Review Non-Blocking Findings Final Cleanup Verification
+
+**Date:** 2026-09-26<br>
+**Environment:** Windows 11, Python 3.11, Commit SHA `c7e2ad5` (uncommitted final cleanup)<br>
+**Test Suite:** `scratch/verify_m23_design.py` (24 Automated Design & Hygiene Checks) + Regression Suites
+
+### Commands & Results
+
+**Command 1 (24-Check Comprehensive M2.3 Verification Suite):**
+```powershell
+py scratch/verify_m23_design.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA MILESTONE M2.3 - AUTOMATED DESIGN VERIFICATION
+===========================================================================
+[PASS] CHECK-01: Required Sections 1-11
+       -> All 11 sections present
+[PASS] CHECK-02: Six-Field Architectural Contract
+       -> Six-field contract defined for Artifacts #11, #12, #15
+[PASS] CHECK-03: All 12 M2.3 PlantUML Files
+       -> All 12 diagrams exist with balanced syntax (@startuml/@enduml)
+[PASS] CHECK-04: 10 Sequence Specifications (SEQ-01..10)
+       -> All 10 sequence subsections present in Section 2
+[PASS] CHECK-05: Stateless AI Non-Ownership Invariant
+       -> ADR-014 stateless AI verified: transient only, 8.0s timeout, non-owner of core progression
+[PASS] CHECK-06: Surface Classification & Gap Register
+       -> 4 status tiers classified and API Gap Register documented
+[PASS] CHECK-07: Single State Ownership Matrix
+       -> All 9 core states mapped to authoritative write owners
+[PASS] CHECK-08: Conceptual Idempotency & Atomicity
+       -> Atomic boundaries and anti-double-submit protections specified
+[PASS] CHECK-09: Validation Gates Evidence
+       -> D-G4/D-G5 PASS evidence present, D-G6 explicitly marked input-only (closure in M2.4+)
+[PASS] CHECK-10: Secondary Documents Cross-Reference
+       -> 01-architecture.md §3.7 and 05-traceability-matrix.md §9 successfully integrated
+[PASS] CHECK-11: Prohibition & Negative Assertions Scan
+       -> Zero active UC-16/17/18, zero active BF-16, zero ungrounded AssessmentSession ghost entities
+[PASS] CHECK-12: 03-api-contract.md Preservation
+       -> docs/03-api-contract.md remains 100% byte-identical / read-only
+[PASS] CHECK-13: F-ENT-01: Zero Persisted ExerciseAttempt
+       -> Attempts remain transient request/session data; no public.ExerciseAttempt persisted entity
+[PASS] CHECK-14: F-RPC-01/02 & F-STEP-01: Canonical record_review & review_logs
+       -> Locked 4-param record_review signature restored; review_logs has no rating; canonical interval_days & review_count
+[PASS] CHECK-15: F-FIELD-01/02: AssessmentResult & SkillProfile Canonical Fields
+       -> AssessmentResult has no score/passed column; SkillProfile has levels and radarData; verifiedProficiency on LearnerProfile
+[PASS] CHECK-16: F-FIELD-03..06: Profile/LearnerProfile Field Harmonization
+       -> No lastJumpFailedAt column; reminder client-local per ADR-006; isActive boolean + SUSPENDED; starting_unit DD-06 candidate
+[PASS] CHECK-17: F-POL-01, F-OPEN-01, F-STORE-01: Policy Range, Routing & Storage
+       -> dailyGoalMin in [5..120]; routing stage marked PROPOSED / PENDING; direct RLS-mediated storage boundary
+[PASS] CHECK-18: F-SOD-01: Separation of Duties Self-Approval Guard
+       -> SEQ-08 explicitly enforces creator cannot self-approve lesson (403 SOD_VIOLATION_SELF_REVIEW)
+[PASS] CHECK-19: F-ENV-01, F-CODE-01, F-RESP-01, F-AUTH-01: Envelope, Codes, AI GEC Contract
+       -> Envelope uses 'detail' singular; taxonomy classified; TEXT_TOO_LONG is 413; AI returns latency_ms & is_mock with user session JWT
+[PASS] CHECK-20: F-PLAT-01, F-FILE-01, F-WORD-01: Hygiene & Supporting Labels
+       -> layer-responsibility-m23 labeled #15 supporting; web-only platform (no Desktop in topology); clean terminology
+[PASS] CHECK-21: N-R1 & N-R2: Profile State Labeling & DD Reference Accuracy
+       -> No DD-01 on Profile; isActive not marked canonical; assignmentBrief->DD-04, supersedesId->DD-02; zero DD-07
+[PASS] CHECK-22: N-R3 & N-R4: Error Taxonomy Provenance & CDN Elimination
+       -> Exact 7 canonical codes from 03; LANG_NOT_SUPPORTED is 422; request_id is optional; zero CDN occurrences
+[PASS] CHECK-23: N-R5 & N-R6: UNLOCKED Vocabulary & AI Telemetry Examples
+       -> UNLOCKED qualified as PROVISIONAL/TARGET; AI telemetry formatted as runtime-derived example values
+[PASS] CHECK-24: N-R7 & F-WS-01: Framework Neutrality & Clean Terminology
+       -> Framework-neutral URI templates in Sec 2; 'Mã lỗi Quy chuẩn' cleaned; zero bracket routes in endpoints
+===========================================================================
+ALL 24 M2.3 DESIGN VERIFICATION CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (Automated Consistency Guards Regression):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 3 (D4 Focused Specification Scan Regression):**
+```powershell
+py scratch/verify_d4_design.py
+```
+**Output:** Exit code 0.
+```text
+ALL D4 FOCUSED CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (Repository Whitespace Hygiene Check):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0. Zero whitespace errors across all tracked files.
+**Verdict:** PASS.
+
+**Command 5 (Scope Boundary & Git Commit Status Check):**
+```powershell
+git status --short
+```
+**Output:** Exit code 0. Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero DB migrations created or modified, `docs/03-api-contract.md` 100% byte-identical, zero git commits created (`COMMIT: NOT CREATED`).
+**Verdict:** PASS.
+
+### `T-M23-ACCEPT-001` (2026-09-26) — Milestone M2.3 Acceptance Prerequisite Verification
+
+- **Environment:** Windows, PowerShell, read-only artifact inspection (automated suites covered by `T-M23-CLEANUP-001`).
+- **Scope:** Confirm N-R1..N-R7 closed in current artifacts (candidate/DD-tag corrections, taxonomy re-audit with 422 mapping, CDN removal, IN_PROGRESS qualification, telemetry examples, neutral `[ILLUSTRATIVE / TARGET]` routes, clean `git diff --check`); confirm 24/24 M2.3 checks, 18/18 guards, 17/17 D4 checks PASS; confirm `03` unmodified, zero runtime/schema scope, no unresolved P0/P1 or blocking P2.
+- **Commands:** `py scratch/verify_m23_design.py` (exit 0, 24/24), `py scratch/verify_consistency_guards.py` (exit 0, 18/18), `py scratch/verify_d4_design.py` (exit 0, 17/17), `git diff --check` (exit 0, LF notices only), `git status --short` (no runtime/schema/`03` changes).
+- **Verdict:** PASS → `M2.3 ACCEPTED FOR M2.4` (ADR-025).

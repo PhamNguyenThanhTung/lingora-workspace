@@ -1,0 +1,70 @@
+@startuml sequence-progress-streak-m23
+title SEQ-07: Progress & Daily Streak Tracking Flow (UC-07 / BF-13)
+autonumber
+skinparam style strictuml
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Learner" as Learner
+boundary "Web Learner Client\n(SCR-L-14 Dashboard)" as Web
+control "Streak Evaluator\n(Application Service)" as StreakSvc
+database "PostgreSQL Database\n(PostgREST / RLS)" as DB
+
+== 1. Qualifying Activity Trigger ==
+note over Learner, Web
+    Trigger: Learner completes a Qualifying Activity:
+    - Complete Lesson (UC-05 / BF-10) OR
+    - Complete SRS Review Session (UC-06 / BF-12)
+    (App opens or passive views DO NOT qualify)
+end note
+
+Web -> StreakSvc: POST /api/learner/streak/evaluate
+activate StreakSvc
+
+StreakSvc -> DB: Query Profile (timezone, streak_count, last_qualifying_activity_date)\nWHERE id = auth.uid()
+activate DB
+DB --> StreakSvc: Return Profile data
+deactivate DB
+
+StreakSvc -> StreakSvc: Resolve local calendar date:\ncurrentDate = GetLocalDate(now(), Profile.timezone || "Asia/Ho_Chi_Minh")
+
+alt Case A: Already Qualified Today (currentDate == last_qualifying_activity_date)
+    StreakSvc -> StreakSvc: Keep current streak_count (no duplicate increments)
+    StreakSvc --> Web: 200 OK { streakCount: current, streakState: "MAINTAINED" }
+
+else Case B: Consecutive Day Activity (currentDate == last_qualifying_activity_date + 1 day)
+    StreakSvc -> StreakSvc: Increment streak_count = streak_count + 1
+    StreakSvc -> DB: UPDATE "Profile" SET\n  streak_count = streak_count + 1,\n  last_qualifying_activity_date = currentDate\nWHERE id = auth.uid()
+    activate DB
+    DB --> StreakSvc: Profile updated
+    deactivate DB
+    StreakSvc --> Web: 200 OK { streakCount: newStreak, streakState: "INCREMENTED" }
+
+else Case C: Missed Day / Broken Streak (currentDate > last_qualifying_activity_date + 1 day)
+    StreakSvc -> StreakSvc: RESET streak_count = 1 (Decision D9)\n[NEVER reset to 0; no auto-freeze]
+    note right of StreakSvc
+        Policy D9 Invariant:
+        - Streak Freeze and Recovery Power-Up are DEFERRED.
+        - Missed calendar day resets streak strictly to 1.
+        - No active freeze behavior exists in Core.
+    end note
+    StreakSvc -> DB: UPDATE "Profile" SET\n  streak_count = 1,\n  last_qualifying_activity_date = currentDate\nWHERE id = auth.uid()
+    activate DB
+    DB --> StreakSvc: Profile updated
+    deactivate DB
+    StreakSvc --> Web: 200 OK { streakCount: 1, streakState: "RESET_TO_1" }
+end
+deactivate StreakSvc
+
+== 2. Dashboard Multidimensional Aggregation ==
+Learner -> Web: View Personal Dashboard (SCR-L-14)
+activate Web
+Web -> DB: Query aggregated metrics for auth.uid():\n- LearningProgress (completedContentRatio)\n- SkillProfile (4 independent dimensions: Vocab, Grammar, Reading, Listening)\n- ConceptMastery (counts of MASTERED, DEVELOPING, NOVICE)\n- LevelReadiness (ADVANCE / ADVANCE_WITH_SUPPORT / REMEDIATE)\n- Profile.streakCount
+activate DB
+DB --> Web: Return user metrics payload
+deactivate DB
+
+Web --> Learner: Render Dashboard Display:\n- Flame Streak Counter (streakCount)\n- 4-Dimensional Skill Profile Spider/Radar Chart\n- Curriculum Progress Bar\n- Concept Mastery & Readiness Cards
+deactivate Web
+
+@enduml

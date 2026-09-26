@@ -1,0 +1,87 @@
+@startuml sequence-diagnostic-placement-m23
+title SEQ-03: Stage-Adaptive Diagnostic Placement Assessment Flow (UC-03 / BF-08)
+autonumber
+skinparam style strictuml
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Learner" as Learner
+boundary "Web Learner Client\n(SCR-L-04 / SCR-L-05)" as Web
+control "Assessment Service\n(Route Handler / BFF)" as AssessSvc
+control "Adaptive Item Engine\n(2-Stage Adaptive Router)" as ItemEng
+database "PostgreSQL Database\n(PostgREST / RLS)" as DB
+
+== 1. Test Session Initialization & Delivery ==
+Learner -> Web: Start Diagnostic Assessment
+activate Web
+Web -> AssessSvc: POST /api/assessment/diagnostic/start { language: "en" }
+activate AssessSvc
+AssessSvc -> ItemEng: Initialize 2-Stage Session\n(Routing Stage: item batch across 4 dimensions [PROPOSED ~10-12 items, PENDING VALIDATION])
+activate ItemEng
+ItemEng --> AssessSvc: Return Routing Stage item batch
+deactivate ItemEng
+AssessSvc --> Web: 200 OK { sessionId, items: RoutingBatch }
+deactivate AssessSvc
+
+== 2. Execution & Stage Transition ==
+loop Routing & Targeted Stage Submissions (Total items: [PROPOSED ~25-30 items, PENDING VALIDATION])
+    Learner -> Web: Submit answers for current stage items
+    Web -> AssessSvc: POST /api/assessment/diagnostic/stage-submit { sessionId, answers }
+    activate AssessSvc
+    AssessSvc -> ItemEng: Evaluate intermediate response pattern
+    activate ItemEng
+    alt Routing Complete -> Transition to Targeted Stage
+        ItemEng --> AssessSvc: Return Targeted Stage item batch (calibrated difficulty)
+    else Assessment Complete
+        ItemEng --> AssessSvc: All stages complete, ready for scoring
+    end
+    deactivate ItemEng
+    AssessSvc --> Web: Return next stage items OR completion signal
+    deactivate AssessSvc
+end
+
+== 3. Final Evaluation & Evidence Persistence ==
+Learner -> Web: Submit Final Assessment
+Web -> AssessSvc: POST /api/assessment/diagnostic/complete { sessionId }
+activate AssessSvc
+
+AssessSvc -> AssessSvc: Calculate rawScores & dimensional breakdowns:\nVocabulary, Grammar, Reading, Listening (0-30 total scale per Mapping A)
+
+AssessSvc -> DB: INSERT INTO "AssessmentResult" (\n  id, userId = auth.uid(), assessmentType = 'DIAGNOSTIC',\n  deliveryMode = 'PLACEMENT', dimensions = JSONB, rawScores = JSONB,\n  stageData = JSONB, languageConfig = JSONB, completedAt = now()\n) [IMMUTABLE EVIDENCE CHAIN - No persisted score/passed column]
+activate DB
+DB --> AssessSvc: AssessmentResult persisted
+deactivate DB
+
+AssessSvc -> DB: UPSERT "SkillProfile" (\n  userId = auth.uid(), vocabularyLevel, grammarLevel, readingLevel, listeningLevel,\n  radarData = JSONB, sourceAssessmentResultId = result.id\n) [Data Owner: LearnerProfile domain]
+activate DB
+DB --> AssessSvc: SkillProfile updated
+deactivate DB
+
+AssessSvc -> AssessSvc: Apply English A1 Placement Mapping A:\n  0-7: Unit 1 | 8-12: Unit 2 | 13-17: Unit 3\n  18-22: Unit 4 | 23-26: Unit 5 | 27-30: Unit 6
+
+AssessSvc -> DB: UPDATE "LearnerProfile" SET\n  verifiedProficiency = 'VERIFIED'\nWHERE userId = auth.uid()\n(Candidate starting_unit INT on Profile [TARGET-CANDIDATE DD-06 / OPEN DESIGN])
+activate DB
+DB --> AssessSvc: LearnerProfile updated
+deactivate DB
+
+AssessSvc --> Web: 200 OK {\n  resultId: result.id,\n  rawScores: { total: rawScore, vocab, grammar, reading, listening },\n  skillProfile: { vocabularyLevel, grammarLevel, readingLevel, listeningLevel },\n  startingUnit: resolvedUnitId,\n  verifiedProficiency: 'VERIFIED'\n}
+deactivate AssessSvc
+
+Web --> Learner: Display Placement Summary (SCR-L-05)\n- Radar Chart of 4 Skill Dimensions\n- Recommended Starting Unit\n- Zero CEFR certification claimed
+
+== 4. Diagnostic Retake Flow (from Profile) ==
+opt Learner Initiates Retake from Profile (SCR-L-14)
+    Learner -> Web: Click "Retake Diagnostic Assessment"
+    Web -> AssessSvc: POST /api/assessment/diagnostic/start { retake: true }
+    activate AssessSvc
+    note over AssessSvc, DB
+        Invariant: Retake creates a BRAND NEW AssessmentResult record.
+        Prior results remain preserved as immutable historical audit evidence.
+    end note
+    AssessSvc --> Web: 200 OK { sessionId: newSessionId }
+    deactivate AssessSvc
+    Web --> Learner: Launch new test runner
+end
+deactivate Web
+
+@enduml

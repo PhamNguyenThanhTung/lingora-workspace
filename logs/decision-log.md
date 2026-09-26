@@ -1233,3 +1233,132 @@ Milestone M2.2 completed implementation, Independent Final Review (`FAIL`: 16 P1
 ### Consequences
 
 - D3 spec (A–Q) with Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`; six D3 diagrams mirror prose; `01 §3.4` + `05 §6` cross-references added; T-D3-DESIGN-001 PASS; no freeze claimed.
+
+## ADR-022 — Milestone M2.3 Sequence, API Contract & Service Boundary Modeling
+
+### Date
+
+2026-09-26
+
+### Category
+
+runtime-boundary
+
+### Context
+
+Milestone M2.2 established the behavioral layer (15 Use Cases, 15 Behavioral Families, state machines, decision flows) and was formally accepted (`M2.2 ACCEPTED FOR M2.3`). Milestone M2.3 translates accepted behavior into an authoritative design-level interaction contract: sequence interactions, service boundaries, API surface classification, state-change ownership, and error containment without implementing runtime code or modifying frozen database schemas.
+
+### Decision
+
+1. **Artifact #11 (Sequence Interaction Suite):** Authored 10 canonical sequence specifications (`SEQ-01` through `SEQ-10`) in `docs/phase-1-m2-3-sequence-api-service-boundary.md` and 10 PlantUML diagrams under `docs/plantuml/sequence-*m23.puml`. Lifeline vocabulary is strictly closed: `Learner`, 5 staff roles (`Lesson Creator`, `Moderator`, `Organizational Manager`, `Administrator`, `Operations Staff`), `Web Learner` (BFF proxy/UI), `Web Admin`, `Supabase GoTrue Auth`, `Supabase PostgREST`, `Supabase RPC (record_review)`, `Supabase Storage`, `AI Server (FastAPI, stateless)`, `AuditLog (append-only ledger)`.
+2. **Artifact #12 (API Contract / Service Boundary & Gap Register):** Classified 10 core surfaces across `CURRENT` (GoTrue, PostgREST reads, RPC `record_review`, Storage, AI Health), `TARGET` (GEC `POST /v1/gec/correct`, Route Handler Proxy, Admin/Prisma, App Services), `COMPATIBILITY GAP` (AI legacy `/v1/srs/schedule`, `/v1/chat/*`), and `FUTURE` (B2B Cohorts). Kept `docs/03-api-contract.md` 100% byte-identical (read-only); recorded all technical distances in the M2.3 API Gap Register (§3.2).
+3. **Artifact #15 (Service Interaction Model & 4-Layer Responsibility Model):** Modeled logical services across 4 architectural layers: Presentation Layer, Application/BFF Layer, Domain Services Layer (`PlacementService`, `JumpAssessmentService`, `LessonExecutionService`, `SrsScheduler`, `StreakEvaluatorService`, `ContentLifecycleService`), and Persistence/External Layer. Authored `service-boundary-m23.puml` and `layer-responsibility-m23.puml`.
+4. **Stateless AI Non-Ownership Invariant (ADR-014):** GEC is a stateless AI service (`BF-14` / `P1-FR-007`, zero UC). Invoked exclusively through the Route Handler proxy with a hard 8.0s timeout and graceful fallback to learner raw text with user notification. AI Server owns solely transient `corrected_text` and derived edit spans; AI owns ZERO learner progression, mastery, proficiency, streak, or completion.
+5. **Single State Ownership Matrix:** Established exclusive authoritative write owners across 9 core state categories, completely preventing conflicting mutations.
+6. **Conceptual Idempotency & Atomicity:** Strict atomicity enforced for RPC `record_review`, content publishing, and clone-to-draft v2 creation. Anti-double-submit protections specified for lesson retry and assessment submissions.
+7. **Preservation of Open Decisions:** Preserved all 13 open decision groups from D3 §N and D4 §Q as `OPEN / CONFIGURABLE / PENDING VALIDATION`.
+8. **Traceability & Governance:** Appended Section 9 to `docs/05-traceability-matrix.md` and Section 3.7 to `docs/01-architecture.md`. Recorded D-G4 PASS, D-G5 PASS, and D-G6 Input Evidence.
+
+### Consequences
+
+- System interaction architecture is fully specified at the logical design level, unblocking Milestone M2.4 (Physical Data & Security Architecture).
+- `docs/03-api-contract.md` preserved byte-identical with zero uncontrolled modifications.
+- Zero runtime application code, zero DB migrations/schema changes created.
+- Status set to `READY FOR INDEPENDENT REVIEW` (`DESIGN COMPLETE: NOT CLAIMED`, `M2.3 ACCEPTED: NOT CLAIMED`, `COMMIT: NOT CREATED`).
+
+---
+
+## ADR-023 — Milestone M2.3 Independent Review Findings Remediation
+
+### Date
+
+2026-09-26
+
+### Category
+
+runtime-boundary
+
+### Context
+
+Independent Review for Milestone M2.3 returned `FAIL` with 14 P1 findings and enumerated P2 findings across entity boundaries, RPC signatures, column names, policy ranges, separation of duties, and error envelope formatting. In accordance with canonical governance rules, remediation was executed strictly against canonical sources (`plans/m2-3-sequence-api-service-boundary-plan.md`, `docs/phase-1-m2-2-behavior-uc-activity-state.md`, `docs/phase-1-m2-1-domain-and-logical-data-foundation.md`, `docs/01-architecture.md`, `docs/05-traceability-matrix.md`, `docs/06-system-analysis.md`, ADR-002, ADR-003, ADR-006, ADR-008, ADR-010, ADR-014, SEC-D8..10), preserving `docs/03-api-contract.md` 100% byte-identical.
+
+### Decision
+
+1. **Entity Boundaries & Transient Attempts (F-ENT-01):** Removed `public.ExerciseAttempt` completely as a persisted entity across all specifications, diagrams, and matrices. Exercise attempts remain transient request/session data evaluated in-flight by `LessonExecutionService`.
+2. **Canonical RPC Signature & SRS Columns (F-RPC-01, F-RPC-02, F-STEP-01):** Restored the canonical locked 4-parameter signature for `record_review(p_srs_card_id, p_is_correct, p_recall_probability, p_recommended_interval_days)`. Completely eliminated non-canonical parameters (`p_rating`, `p_vocab_id`, `p_response_time`) and FSRS scale references (AGAIN/HARD/GOOD/EASY) from SEQ-06. Restored canonical columns on `review_logs` (`id, srs_card_id, is_correct, interval_days, reviewed_at`), removing any `rating` column. Reconciled column names to canonical `interval_days` and `review_count`. Clarified `ReviewLog Store` in SEQ-06 as `(SRS History Log)` rather than audit log.
+3. **AssessmentResult & SkillProfile Canonical Alignment (F-FIELD-01, F-FIELD-02):** Removed non-canonical columns `score` and `passed` from `AssessmentResult`. Persist only canonical M2.1 fields (`dimensions, rawScores, stageData, languageConfig, completedAt`). Reconciled `SkillProfile` to contain skill dimension levels (`vocabularyLevel, ...`) and `radarData`, owned by Learner domain. Preserved `verifiedProficiency` strictly on `LearnerProfile`.
+4. **Candidate Fields & Idempotency Rules (F-FIELD-03, F-FIELD-04):** Reconciled Profile starting unit to `starting_unit INT [TARGET-CANDIDATE DD-06 / OPEN DESIGN]`. Removed `lastJumpFailedAt` column from database references; 24h cooldown rule is enforced as a conceptual domain rule, with persistence mechanism preserved as OPEN DESIGN.
+5. **Account Status & Reminder Ownership (F-FIELD-05, F-FIELD-06):** Reconciled account locking to canonical boolean `isActive: BOOLEAN` (default true) alongside candidate enum `SUSPENDED [DD-01 / OPEN DESIGN]`. Harmonized study reminders as client-local storage per ADR-006 with zero Profile database columns.
+6. **Policy Ranges & Storage Boundaries (F-POL-01, F-OPEN-01, F-STORE-01):** Locked `dailyGoalMin` range strictly to `[5..120]`. Explicitly tagged diagnostic routing item count as `[PROPOSED ~10-12 items, PENDING VALIDATION]`. Updated vocabulary audio retrieval to direct RLS-mediated Supabase Storage paths (`vocabulary/{vocabId}/{filename}`) per PA2 compliance (zero signed URLs).
+7. **Separation of Duties & Self-Approval Prevention (F-SOD-01):** Added explicit authorization guard in SEQ-08: `auth.uid() != Lesson.creatorId`, returning `403 Forbidden (SOD_VIOLATION_SELF_REVIEW)` upon self-approval attempt.
+8. **Error Envelope & Code Taxonomy (F-ENV-01, F-CODE-01):** Reconciled error response envelope to singular `"detail"` (`{"detail": "..."}`). Error Taxonomy classifies every error code into `CANONICAL_FROM_03`, `M2.3_DESIGN_ADDITION`, or `FUTURE`. Reconciled `TEXT_TOO_LONG` strictly to HTTP 413.
+9. **Stateless AI GEC Contract & Auth (F-AUTH-01, F-RESP-01):** Enforced forwarding of learner session JWT to AI GEC. AI response explicitly specifies `model_version`, `is_mock: false`, and `latency_ms: 120`.
+10. **Hygiene & Architectural Parity (F-PLAT-01, F-FILE-01, F-WORD-01, N-03):** Labeled `layer-responsibility-m23.puml` as `#15 (Supporting)`. Reconciled platform scope to web-only admin portal (removed Desktop references from topology). Removed RFC phrasing and leaked finding IDs.
+
+### Consequences
+
+- All 14 P1 findings and all 13 enumerated P2 findings resolved.
+- Automated verification expanded to 20 deterministic checks in `scratch/verify_m23_design.py`, passing with exit code 0.
+- All 18 consistency guards and all D4 focused checks remain 100% green.
+- Milestone status updated to `READY FOR INDEPENDENT RE-REVIEW` (`DESIGN COMPLETE: NOT CLAIMED`, `M2.3 ACCEPTED: NOT CLAIMED`, `COMMIT: NOT CREATED`).
+
+---
+
+## ADR-024 — Milestone M2.3 Final Cleanup of Independent Re-Review Non-Blocking Findings
+
+### Date
+
+2026-09-26
+
+### Category
+
+runtime-boundary
+
+### Context
+
+Milestone M2.3 Independent Re-Review returned `PASS WITH NON-BLOCKING ISSUES` (0 P0, 0 P1, 7 P2: N-R1..N-R7, F-WS-01). To achieve full cleanliness prior to formal acceptance, a targeted final cleanup was conducted addressing: profile state labeling, DD reference accuracy, error taxonomy provenance against `docs/03-api-contract.md`, CDN wording elimination, UNLOCKED vocabulary qualification, AI telemetry formatting as runtime-derived examples, framework-neutral URI templates, and zero whitespace errors (`git diff --check`).
+
+### Decision
+
+1. **Profile State Labeling (N-R1):** Removed `[canonical boolean]` from `isActive` since M2.1 does not define `Profile.isActive`; preserved `isActive` and `SUSPENDED` strictly as `[TARGET-CANDIDATE / OPEN DESIGN]`; completely removed ungrounded tag `DD-01` from Profile state.
+2. **DD Reference Correction (N-R2):** Corrected `assignmentBrief` to reference `DD-04` (Assignment Representation) and `supersedesId` to reference `DD-02` (Revision Representation); completely eliminated erroneous `DD-07` tags across all M2.3 specifications and diagrams.
+3. **Error Taxonomy Provenance (N-R3):** Re-audited error taxonomy strictly against `docs/03-api-contract.md`. Tagged exclusively the 7 canonical codes from `03` as `CANONICAL_FROM_03` (`INVALID_INPUT`, `TEXT_TOO_LONG`, `LANG_NOT_SUPPORTED` [mapped to HTTP 422 per 03], `SCENARIO_NOT_FOUND`, `UNAUTHORIZED`, `RATE_LIMITED`, `MODEL_UNAVAILABLE`). Classified all M2.3-designed codes as `M2.3_DESIGN_ADDITION`. Explicitly documented `request_id` as `[M2.3 DESIGN ADDITION / OPTIONAL]` telemetry rather than a canonical standard field.
+4. **CDN Wording Elimination (N-R4):** Replaced all references to "public CDN" or "Supabase Storage CDN" with direct RLS-mediated Supabase Storage buckets, as baseline does not lock CDN topology.
+5. **UNLOCKED Vocabulary Qualification (N-R5):** Qualified all lesson access references using canonical M2.2 terminology (`IN_PROGRESS`) or annotated as `[PROVISIONAL / TARGET access status]`; preserved canonical `SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP` provenance.
+6. **AI Telemetry Examples (N-R6):** Formatted `latency_ms` and `is_mock` in SEQ-10 and diagram as explicit runtime-derived examples (`<runtime-derived boolean, e.g. false>`, `<runtime-measured integer, e.g. 120>`) rather than hardcoded system constants.
+7. **Framework Neutrality & Hygiene (N-R7 & F-WS-01):** Standardized route definitions in Section 2 to framework-neutral URI templates (`{lessonId}`, `{exerciseId}`) annotated as `[ILLUSTRATIVE / TARGET]`; replaced "Mã lỗi Quy chuẩn" with descriptive headers; cleaned all trailing whitespace resulting in 0 errors in `git diff --check`.
+
+### Consequences
+
+- All 7 non-blocking P2 findings (N-R1..N-R7) and F-WS-01 closed.
+- Automated verification suite `scratch/verify_m23_design.py` expanded to 24 deterministic checks, passing with exit code 0.
+- All 18 consistency guards and all 17 D4 checks remain 100% green.
+- Milestone status updated to `READY FOR ACCEPTANCE` (`M2.3 ACCEPTANCE: NOT CLAIMED`, `COMMIT: NOT CREATED`).
+
+---
+
+## ADR-025 — Milestone M2.3 Acceptance FOR M2.4
+
+### Date
+
+2026-09-26
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+Milestone M2.3 completed implementation, Independent Review (`FAIL`: 14 P1 + 13 P2), full remediation, Independent Re-Review (`PASS WITH NON-BLOCKING ISSUES`: 0 P0/P1, 7 P2 N-R1..N-R7), and final P2 cleanup (all closed; `verify_m23_design.py` 24/24 PASS, guards 18/18, D4 17/17, `git diff --check` clean). Targeted acceptance verification confirmed all preconditions: M2.2 ACCEPTED, plan APPROVED, artifacts complete, `03` byte-identical, zero runtime/schema changes, no unresolved P0/P1 or blocking P2.
+
+### Decision
+
+1. Record `M2.3 ACCEPTED FOR M2.4` (acceptance milestone only — not Design Complete, not M2.4 Complete, no runtime implementation, not production-ready).
+2. Scope accepted: Artifact #11 (SEQ-01..10), Artifact #12 (contract/service boundary + Gap Register, `03` read-only), Artifact #15 (service interaction model, single ownership, stateless AI boundary); D-G4 PASS, D-G5 PASS, D-G6 INPUT EVIDENCE ONLY (closure belongs to M2.4/M2.5); 13 open decision groups preserved OPEN/CONFIGURABLE/PENDING.
+3. Set `M2.4 = NEXT MILESTONE / PLAN NOT STARTED` — no M2.4 work begins in this task.
+4. Preserve all prior review/remediation history; do not rewrite historical entries.
+
+### Consequences
+
+- M2.3 interaction layer is the accepted baseline for M2.4 Architecture + Security design.
+- `COMMIT: NOT CREATED` in this task.
