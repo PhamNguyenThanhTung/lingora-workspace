@@ -1111,6 +1111,24 @@ scope-ambiguity
 ### Context
 
 Approved D3 task designs the full logical flow Assessment → Skill Profile → Learning → Mastery/Knowledge Gap → Readiness → Recommendation/Remediation from the D1/D2 COMPLETE baseline. Constraints: design-only; no runtime, migration, schema change, or scoring/recommendation/remediation algorithm; no Design Freeze; preserve all D2 FROZEN/PROPOSED/PENDING boundaries and the separately approved English A1 Mapping A as D2 compatibility.
+
+### Decision
+
+1. Purpose (`assessmentType`: DIAGNOSTIC/EXIT/RE_EVALUATION) and execution (`deliveryMode`: PLACEMENT/JUMP/STANDARD) are independent axes with D2 naming; `AssessmentResult` is the sole persisted immutable/versioned/attributable evidence; no `AssessmentSession`.
+2. Entry keeps selfReportedLevel (UNVERIFIED), assessed observations, verifiedProficiency, and curriculumStartingPoint distinct; diagnostic scale (~25-30 items, <=15 min) stays PROPOSED / PENDING VALIDATION.
+3. `SkillProfile` holds four dimension level/status slots plus provenance (`sourceAssessmentResultId`, versions, `updatedAt`); Anchor slot stays PENDING with no flat score or weighted average.
+4. `ConceptMastery` (NOVICE → DEVELOPING → MASTERED per LearnerProfile×Concept) and `KnowledgeGap` (OPEN → IN_REMEDIATION → RESOLVED, LOW/MEDIUM/HIGH labels) use typed evidence/provenance; all open/resolve/promotion policies stay CONFIGURABLE / PENDING VALIDATION with no hard-coded counts.
+5. `LevelReadiness` uses typed evidence (`evidenceVersion`, progress/mastery/gap inputs, `sourceAssessmentResultIds`, `evaluatedAt`) and exactly three outputs (ADVANCE / ADVANCE_WITH_SUPPORT / REMEDIATE); completion is never certification and no threshold or single score is chosen.
+6. Remediation is concept-targeted with fresh payloads via governed `RemedialModule` (PUBLISHED only); no whole-level downgrade and no forced replay; re-assessment uses fresh items.
+7. Recommendation is a Level 3 explainable contract (six inputs → NEXT_UNIT/REMEDIAL_MODULE/PRACTICE + rationale + inputSnapshot + ruleVersion + generatedAt); no algorithm.
+8. Common Engine stays language-invariant; EN room and ZH room (hidePinyin, versioned HSK) live in config/bank/rubric; HSK mapping/version stays open.
+9. Ten invariants I1–I10 preserved; open decisions listed in D3 §N; Mapping A referenced only as D2 curriculum placement compatibility, never generalized.
+10. Compatibility verdict: no D2 change required; stop-rule triggered no out-of-scope edit.
+
+### Consequences
+
+- D3 spec (A–Q) with Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`; six D3 diagrams mirror prose; `01 §3.4` + `05 §6` cross-references added; T-D3-DESIGN-001 PASS; no freeze claimed.
+
 ## ADR-019 — Milestone M2.2 System Behavior, Use Cases, Activity & State Machine Design Foundation
 
 ### Date
@@ -1215,24 +1233,6 @@ Milestone M2.2 completed implementation, Independent Final Review (`FAIL`: 16 P1
 - M2.2 behavior layer is the accepted baseline for M2.3 Sequence + API / Service Boundary design.
 - Implementation remains out of scope: zero runtime/schema/API/UI/security work; D3/D4/M2.1 unmodified.
 - `COMMIT: NOT CREATED` in this task.
-
-
-### Decision
-
-1. Purpose (`assessmentType`: DIAGNOSTIC/EXIT/RE_EVALUATION) and execution (`deliveryMode`: PLACEMENT/JUMP/STANDARD) are independent axes with D2 naming; `AssessmentResult` is the sole persisted immutable/versioned/attributable evidence; no `AssessmentSession`.
-2. Entry keeps selfReportedLevel (UNVERIFIED), assessed observations, verifiedProficiency, and curriculumStartingPoint distinct; diagnostic scale (~25-30 items, <=15 min) stays PROPOSED / PENDING VALIDATION.
-3. `SkillProfile` holds four dimension level/status slots plus provenance (`sourceAssessmentResultId`, versions, `updatedAt`); Anchor slot stays PENDING with no flat score or weighted average.
-4. `ConceptMastery` (NOVICE → DEVELOPING → MASTERED per LearnerProfile×Concept) and `KnowledgeGap` (OPEN → IN_REMEDIATION → RESOLVED, LOW/MEDIUM/HIGH labels) use typed evidence/provenance; all open/resolve/promotion policies stay CONFIGURABLE / PENDING VALIDATION with no hard-coded counts.
-5. `LevelReadiness` uses typed evidence (`evidenceVersion`, progress/mastery/gap inputs, `sourceAssessmentResultIds`, `evaluatedAt`) and exactly three outputs (ADVANCE / ADVANCE_WITH_SUPPORT / REMEDIATE); completion is never certification and no threshold or single score is chosen.
-6. Remediation is concept-targeted with fresh payloads via governed `RemedialModule` (PUBLISHED only); no whole-level downgrade and no forced replay; re-assessment uses fresh items.
-7. Recommendation is a Level 3 explainable contract (six inputs → NEXT_UNIT/REMEDIAL_MODULE/PRACTICE + rationale + inputSnapshot + ruleVersion + generatedAt); no algorithm.
-8. Common Engine stays language-invariant; EN room and ZH room (hidePinyin, versioned HSK) live in config/bank/rubric; HSK mapping/version stays open.
-9. Ten invariants I1–I10 preserved; open decisions listed in D3 §N; Mapping A referenced only as D2 curriculum placement compatibility, never generalized.
-10. Compatibility verdict: no D2 change required; stop-rule triggered no out-of-scope edit.
-
-### Consequences
-
-- D3 spec (A–Q) with Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`; six D3 diagrams mirror prose; `01 §3.4` + `05 §6` cross-references added; T-D3-DESIGN-001 PASS; no freeze claimed.
 
 ## ADR-022 — Milestone M2.3 Sequence, API Contract & Service Boundary Modeling
 
