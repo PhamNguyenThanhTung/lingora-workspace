@@ -1111,6 +1111,111 @@ scope-ambiguity
 ### Context
 
 Approved D3 task designs the full logical flow Assessment → Skill Profile → Learning → Mastery/Knowledge Gap → Readiness → Recommendation/Remediation from the D1/D2 COMPLETE baseline. Constraints: design-only; no runtime, migration, schema change, or scoring/recommendation/remediation algorithm; no Design Freeze; preserve all D2 FROZEN/PROPOSED/PENDING boundaries and the separately approved English A1 Mapping A as D2 compatibility.
+## ADR-019 — Milestone M2.2 System Behavior, Use Cases, Activity & State Machine Design Foundation
+
+### Date
+
+2026-09-25
+
+### Category
+
+runtime-boundary
+
+### Context
+
+Milestone M2.2 bridges the logical domain/data foundation (M2.1) and curriculum design (D3/D4) to runtime system behavior, activity modeling, use case execution, and state machines. It formalizes Artifacts #2, #3, #9, #10, #17, #18, #19 across Core Learning, Content Governance, Administration, and Optional Modules.
+
+### Decision
+
+1. **Master Specification:** Authored `docs/phase-1-m2-2-behavior-uc-activity-state.md` (Sections 1–16) establishing behavioral semantics, preconditions, postconditions, and error handling.
+2. **15 Canonical Use Cases & 15 Behavioral Families:** Complete coverage of `UC-01` through `UC-15` and `BF-01` through `BF-15`. `UC-15` / `BF-15` explicitly categorized as `OPTIONAL / FUTURE EXTENSION BOUNDARY`. Zero ghost use cases (`UC-16/17/18`). `BF-14` encapsulates P1-FR-007 scenario writing/GEC.
+3. **Six-Field Architectural Contract:** Enforced 6-field contract (`Artifact Number & Title`, `Source Traceability`, `Scope & Boundary`, `System Actors & Authorizations`, `Lifecycle States & Invariants`, `Open Decisions & Non-Claims`) across all designated artifacts (#2, #3, #9, #10, #17, #18, #19).
+4. **Content Lifecycle & SoD:** 6 states (`DRAFT`, `IN_REVIEW`, `REJECTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`). Separation of Duties strictly enforced: Creator authors/submits; Moderator reviews/approves; Content Manager publishes approved batches; Administrator emergency publish permitted ONLY on `APPROVED` content. `ARCHIVED` is terminal in Core; mutations require Clone-to-Draft v2.
+5. **Learner Progression & Jump Invariants:** 4 progression states (`LOCKED`, `IN_PROGRESS`, `COMPLETED`, `SKIPPED_BY_JUMP`). Successful Jump Assessment ($\ge 95\%$) marks bypassed units/lessons as `SKIPPED_BY_JUMP` (`by_jump=true`). Zero `COMPLETED_BY_JUMP`. Zero CEFR certification. Failed Jump triggers a 24-hour cooldown lock.
+6. **Dual Assessment Entry Pathways:** Branch A (Self-Report / Skip) records `selfReportedLevel` as `UNVERIFIED` with default/provisional starting point; explicitly produces NO `AssessmentResult`, NO `SkillProfile`, and NO `verifiedProficiency`. Branch B (Diagnostic Assessment) administers 30-item test, persists immutable `AssessmentResult`, generates `SkillProfile`, assigns `verifiedProficiency`, and routes via English A1 Mapping A bands (0–7: U1, 8–12: U2, 13–17: U3, 18–22: U4, 23–26: U5, 27–30: U6).
+7. **Exercise Execution & Controlled Retry:** Policy D7: `allowance = max(1, floor(N * 0.10))`, 70% credit score on correct retry attempt. Zero 80% retry floor.
+8. **SRS Review & Daily Streak Engine:** Policy B review intervals `[1, 3, 7, 14, 30]` days; failure resets interval strictly to Stage 1 (1 day). Atomic execution via `record_review` RPC. Daily streak evaluated at 23:59:59 in `Asia/Ho_Chi_Minh` timezone; missed day resets streak strictly to 1 (never 0; no auto-freeze without freeze power-up).
+9. **Logical Screen-Flow Inventory:** 13 Learner screen flows (`SCR-L-01` to `SCR-L-13`) and 7 Authoring/Ops screen flows (`SCR-A-01` to `SCR-A-07`).
+10. **DD Behavioral Closure:** Addressed DD-01, DD-02, DD-04, DD-05, DD-06 at the behavioral and lifecycle level without modifying frozen physical schemas.
+11. **PlantUML Visual Specifications:** Authored 7 diagrams under `docs/plantuml/` (`uc-overview-m22.puml`, `activity-learner-flow-m22.puml`, `activity-authoring-flow-m22.puml`, `state-progression-readiness-m22.puml`, `placement-jump-m22.puml`, `srs-flow-m22.puml`, `screen-flow-inventory-m22.puml`).
+12. **Gates D-G4 & D-G7 Satisfied:** Formal evidence documented in §12 for Gate D-G4 (Behavioral & Use Case Integrity) and Gate D-G7 (State Machine & Transition Completeness).
+13. **Strict Boundary Invariants:** Zero runtime application code, zero database schema mutations or migrations, zero UI code, zero git commits created.
+
+### Consequences
+
+- Establishes canonical behavioral baseline for M2.3 API contract alignment and M3 runtime implementations.
+- Status set to `READY FOR INDEPENDENT REVIEW` (`DESIGN COMPLETE: NOT CLAIMED`, `ACCEPTED: NOT CLAIMED`).
+
+---
+
+## ADR-020 — Milestone M2.2 Remediation & Independent Review Findings Closure
+
+### Date
+
+2026-09-26
+
+### Category
+
+scope-ambiguity
+
+### Context
+
+Milestone M2.2 independent review returned a verdict of `FAIL` citing 16 P1 and 15 P2 findings across Use Case definitions, Behavioral Family alignment, state machine naming, actor role terminology, diagnostic sizing, and diagram syntax. Remediation is required to restore complete semantic and architectural alignment before submitting for independent re-review.
+
+### Decision
+
+1. **Content Lifecycle State Machine Alignment:** Standardized on 6 canonical states (`DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`), eliminating the non-canonical `REJECTED` state across all text and diagrams. Content revisions strictly follow Clone-to-Draft v2 (`supersedesId`).
+2. **Actor & Role Normalization:** Standardized strictly on the 6 canonical human roles (`Learner`, `Administrator`, `Lesson Creator`, `Moderator`, `Organizational Manager`, `Operations Staff`). Content publishing authority belongs canonically to `Organizational Manager` (`UC-10`). Administrator emergency publishing is restricted strictly to already `APPROVED` content with mandatory reason + `AuditLog`. The invented role "Content Manager" is completely eliminated.
+3. **Decoupling Jump from UC-03:** `UC-03` is strictly defined as Placement Test / Diagnostic Assessment (`BF-08`). Conditional Jump is decoupled from UC-03 and placed under `UC-04` Curriculum Browse & Conditional Jump (`BF-11`).
+4. **Behavioral Family Alignment with System Analysis §5:** Corrected all mappings of `BF-01` through `BF-15` to match `docs/06-system-analysis.md` §5 definitions (e.g. BF-02 = Curriculum Planning, BF-08 = Placement Test, BF-11 = Conditional Jump, BF-12 = SRS Review, BF-13 = Progress & Streak Tracking).
+5. **State Machine Output & Transition Alignment:**
+   - `LevelReadiness` strictly produces 3 canonical outputs: `ADVANCE`, `ADVANCE_WITH_SUPPORT`, `REMEDIATE` (eliminating `NOT_READY`, `EVALUATING`).
+   - `KnowledgeGap` strictly follows 3 states: `OPEN`, `IN_REMEDIATION`, `RESOLVED` (eliminating `DETECTED`).
+   - `ConceptMastery` strictly follows 3 states: `NOVICE`, `DEVELOPING`, `MASTERED` (eliminating `INTRODUCED`, `PRACTICING`).
+6. **Lesson Completion Semantics:** Formally defined that lesson completion is owned by `UC-05` / `BF-10` upon completing all first-pass exercises and available retry allowance, with zero 80% retry floor. Invariant preserved: Exercise correctness $\ne$ Lesson completion $\ne$ Mastery $\ne$ Proficiency.
+7. **Diagnostic Assessment Sizing:** Baseline scale is maintained as `~25–30 items, PROPOSED / PENDING VALIDATION`. Mapping A is clarified as a 0–30 raw score range, not proof of 30 delivered items.
+8. **Streak & SRS Semantics:** Evaluated lazily on qualifying activity across calendar date boundaries (`lastQualifyingActivityDate`); removed the artificial 23:59:59 cutoff; removed active Streak Freeze / Power-up (noted as future gamification extension).
+9. **Screen-Flow Inventory Unification:** Standardized on 14 Learner screens (`SCR-L-01`..`SCR-L-14`) and 11 Admin/Authoring screens (`SCR-A-01`..`SCR-A-11`).
+10. **Full Specification of Administrative Use Cases:** Expanded `UC-11`, `UC-12`, `UC-13`, `UC-14` with all 10 required specification sections including Alternate and Exception flows.
+11. **PlantUML Diagrams Re-authored:** All 7 PlantUML diagrams re-authored to reflect remediated states, roles, and flows, with verified syntax balance.
+12. **Secondary Documents & Logs Aligned:** Synchronized `docs/05-traceability-matrix.md` §8 and `docs/01-architecture.md` §3.6.
+
+### Consequences
+
+- All 16 P1 findings and 15 P2 hygiene findings are completely resolved.
+- M2.2 artifacts achieve 100% semantic consistency with D1–D4 and M2.1 frozen baselines.
+- Status set to `READY FOR INDEPENDENT RE-REVIEW` (`DESIGN COMPLETE: NOT CLAIMED`, `ACCEPTED: NOT CLAIMED`, `COMMIT: NOT CREATED`).
+- Zero runtime application code, zero DB migrations/schema changes created.
+
+---
+
+## ADR-021 — Milestone M2.2 Acceptance FOR M2.3
+
+### Date
+
+2026-09-26
+
+### Category
+
+scope-ambiguity
+
+### Context
+
+Milestone M2.2 completed implementation, Independent Final Review (`FAIL`: 16 P1 + 15 P2), full remediation, Independent Re-Review (`PASS WITH NON-BLOCKING ISSUES`: 0 P0, 0 P1, 4 P2: N-01..N-04), and final P2 cleanup. Targeted acceptance verification (read-only artifact reads + keyword scans, no trust in prior reports alone) confirmed: N-01 CLOSED (Skill Profile → `P1-FR-016`; `P1-FR-017` DEFERRED/non-UC with explicit note), N-02 CLOSED (05 §8 GEC row split: support `UC-14`/`BF-15` vs GEC `P1-FR-007`/no-UC/`BF-14`), N-03 CLOSED (freeze DEFERRED wording in `01` §3.6), N-04 CLOSED (Rate Limit removed from 05 §8); no remaining P1 semantic violations; no active ghost entities/values/roles (remaining scan hits are prohibition text or locked-policy values).
+
+### Decision
+
+1. Record `M2.2 ACCEPTED FOR M2.3` (acceptance milestone only — not Design Complete, not M2.3 Ready, not product implementation complete, not runtime readiness).
+2. Confirm D-G4 = PASS and D-G7 = PASS on current artifacts (15 UCs, 15 canonical BFs, 6 roles + SoD, canonical state machines, locked placement/jump/retry/SRS values, self-report vs diagnostic separation, immutable AssessmentResult, consistent 14+11 screen inventory, traceability chain).
+3. Set `M2.3 PLAN: NOT STARTED` — M2.3 requires a separate human-approved plan; no M2.3 work begins in this task.
+4. Preserve all prior review/remediation history (FAIL review, re-review, P2 cleanup evidence retained, not deleted).
+
+### Consequences
+
+- M2.2 behavior layer is the accepted baseline for M2.3 Sequence + API / Service Boundary design.
+- Implementation remains out of scope: zero runtime/schema/API/UI/security work; D3/D4/M2.1 unmodified.
+- `COMMIT: NOT CREATED` in this task.
+
 
 ### Decision
 

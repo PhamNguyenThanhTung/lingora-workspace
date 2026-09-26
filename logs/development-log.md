@@ -1983,6 +1983,106 @@ Final COMMIT gate uses Conventional Commit message: `docs: complete PlantUML cov
 ### Commit
 
 Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML diagrams`.
+## 2026-09-25 — m2-2-behavior-uc-activity-state
+
+- **Completed:**
+  - Implemented Milestone M2.2 Master Specification: `docs/phase-1-m2-2-behavior-uc-activity-state.md` (Sections 1 through 16).
+  - Enforced 6-field contract for Artifacts #2, #3, #9, #10, #17, #18, #19.
+  - Specified all 15 canonical Use Cases (`UC-01` to `UC-15`) and 15 Behavioral Families (`BF-01` to `BF-15`). Categorized `UC-15` / `BF-15` explicitly as `OPTIONAL / FUTURE EXTENSION BOUNDARY`. Enforced 0 `UC-16/17/18`, 0 `BF-16`.
+  - Modeled state machines: Content Lifecycle (6 states: `DRAFT`, `IN_REVIEW`, `REJECTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`; SoD strictly enforced; `ARCHIVED` is terminal in Core, modifications via Clone-to-Draft v2); Learner Progression (4 states: `LOCKED`, `IN_PROGRESS`, `COMPLETED`, `SKIPPED_BY_JUMP` with `by_jump=true`; 0 `COMPLETED_BY_JUMP`); LevelReadiness (5 states); KnowledgeGap (3 states); ConceptMastery (3 states).
+  - Modeled dual Assessment Entry Pathways: Branch A (Self-Report / Skip → `UNVERIFIED` starting point; NO `AssessmentResult`, NO `SkillProfile`, NO `verifiedProficiency`) vs Branch B (Diagnostic Assessment → 30 items → `AssessmentResult` → `SkillProfile` → `verifiedProficiency` → English A1 Mapping A bands: 0–7: U1, 8–12: U2, 13–17: U3, 18–22: U4, 23–26: U5, 27–30: U6).
+  - Modeled Jump Assessment: 20q (1 unit) / 25–30q (2–3 units) / 40q (>3 units); pass $\ge 95\%$; 24h cooldown on failure; provenance `SKIPPED_BY_JUMP` (`by_jump=true`); zero CEFR certification.
+  - Modeled Exercise Execution & Controlled Retry: Policy D7 `allowance = max(1, floor(N * 0.10))`, 70% credit score on correct retry attempt; zero 80% retry floor.
+  - Modeled SRS Review & Daily Streak: Policy B `[1, 3, 7, 14, 30]` days, failure resets to Stage 1 (1 day), atomic `record_review` RPC; daily streak evaluated at 23:59:59 in `Asia/Ho_Chi_Minh`, missed day resets streak strictly to 1 (never 0; no auto-freeze without freeze power-up).
+  - Modeled Logical Screen-Flow Inventory: 13 Learner screen flows (`SCR-L-01` to `SCR-L-13`) and 7 Authoring/Ops screen flows (`SCR-A-01` to `SCR-A-07`).
+  - Addressed DD Behavioral Closure for DD-01, DD-02, DD-04, DD-05, DD-06 without mutating physical schemas.
+  - Authored 7 PlantUML visual specifications under `docs/plantuml/`:
+    - `uc-overview-m22.puml`
+    - `activity-learner-flow-m22.puml`
+    - `activity-authoring-flow-m22.puml`
+    - `state-progression-readiness-m22.puml`
+    - `placement-jump-m22.puml`
+    - `srs-flow-m22.puml`
+    - `screen-flow-inventory-m22.puml`
+  - Updated supporting architecture and traceability:
+    - `docs/01-architecture.md`: Added §3.6 M2.2 System Behavior, Use Cases & State Machines cross-reference.
+    - `docs/05-traceability-matrix.md`: Added Section 8 M2.2 Traceability mapping all 15 UCs/BFs to requirements, domain entities, and status.
+  - Recorded ADR-019 in `logs/decision-log.md`.
+  - Satisfied Gates D-G4 (Behavioral & Use Case Integrity) and D-G7 (State Machine & Transition Completeness).
+  - Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero database schema changes or migrations, zero UI code, zero git commits created.
+- **Current Milestone State:**
+  ```text
+  M2.1 ACCEPTED FOR M2.2
+  M2.2 IMPLEMENTATION: COMPLETE (READY FOR INDEPENDENT REVIEW)
+  M2.2 DESIGN FREEZE: NOT CLAIMED
+  ```
+- **Tests:**
+  - `T-M22-BEHAVIOR-001`: PASS (18/18 consistency guards, 17/17 D4 checks, 7/7 PlantUML static syntax balance, `git diff --check` PASS, negative checks PASS).
+- **Commit:**
+  - Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-2-behavior-uc-activity-state-remediation
+
+- **Completed:**
+  - Resolved 100% of review findings from Independent Review (`0 × P0`, `16 × P1`, `15 × P2` closed):
+    - **P1-01 / P2-01 (Content Lifecycle State Alignment):** Replaced non-canonical `REJECTED` state with canonical `CHANGES_REQUESTED` across master specification `docs/phase-1-m2-2-behavior-uc-activity-state.md` (§2, §3, §4, §5, §10, §14), secondary documents (`docs/01-architecture.md`, `docs/05-traceability-matrix.md`), and all 7 PlantUML diagrams.
+    - **P1-02 / P2-02 (Separation of Duties & Role Normalization):** Removed non-canonical "Content Manager" role across all diagrams and prose; standardized strictly on `Organizational Manager` as the canonical content publisher (`UC-10`); constrained Administrator emergency publishing to already `APPROVED` content only with mandatory justification and `AuditLog`.
+    - **P1-03 / P2-03 (Decoupling Jump from UC-03):** Decoupled Jump Assessment from `UC-03` (strictly Placement Test / Diagnostic Assessment, `BF-08`) and relocated under `UC-04` Curriculum Browse & Conditional Jump (`BF-11`).
+    - **P1-04 / P2-04 (Diagnostic Assessment Sizing & Mapping A Clarification):** Sized diagnostic test as `~25–30 items, PROPOSED / PENDING VALIDATION`; clarified Mapping A defines a 0–30 raw score range, not proof of 30 delivered items.
+    - **P1-05 / P2-05 (Readiness & Mastery 3-State Alignment):** Unified `LevelReadiness` to 3 canonical outputs (`ADVANCE`, `ADVANCE_WITH_SUPPORT`, `REMEDIATE`), eliminating `NOT_READY` and `EVALUATING`. Unified `KnowledgeGap` to 3 canonical states (`OPEN`, `IN_REMEDIATION`, `RESOLVED`). Unified `ConceptMastery` to 3 canonical states (`NOVICE`, `DEVELOPING`, `MASTERED`).
+    - **P1-06 / P2-06 (Lesson Completion Semantics):** Formally owned lesson completion under `UC-05` / `BF-10` upon completing all first-pass exercises and available retry allowance, with zero 80% retry floor. Preserved invariant: Exercise correctness $\ne$ Lesson completion $\ne$ Mastery $\ne$ Proficiency.
+    - **P1-07 / P2-07 (Streak & Timezone Evaluation):** Evaluated streak lazily across calendar date boundaries (`lastQualifyingActivityDate`); removed artificial 23:59:59 cutoff; removed active Streak Freeze / Power-up (noted as future gamification extension).
+    - **P1-08 / P2-08 (Screen-Flow Inventory Unification):** Standardized on 14 Learner screens (`SCR-L-01`..`SCR-L-14`) and 11 Admin/Authoring screens (`SCR-A-01`..`SCR-A-11`) across text and PlantUML.
+    - **P1-09 / P2-09 (Full Specification of Administrative Use Cases):** Fully expanded `UC-11`, `UC-12`, `UC-13`, `UC-14` with all 10 required sections (including Main Success Flow, Alternate Flows, Exception Flows, Preconditions, Postconditions, Business Rules, and Traceability).
+    - **P1-10 / P2-10 (Traceability Matrix Requirements Ownership):** Updated `docs/05-traceability-matrix.md` §8 to place `P1-FR-014/015` under `UC-02` and `P1-FR-004/011/017` under `UC-07`.
+    - **P1-11 / P2-11 (Behavioral Family Alignment with System Analysis §5):** Corrected all mappings of `BF-01` through `BF-15` to match `docs/06-system-analysis.md` §5 definitions.
+    - **P1-12 / P2-12 (Artifact 6-Field Architectural Contract Preservation):** Verified and reinforced 6-field contract across Artifacts #2, #3, #9, #10, #17, #18, #19.
+    - **P1-13 / P2-13 (Open Decisions Retention):** Preserved all 13 open decision groups in §12 as `OPEN / CONFIGURABLE / PENDING VALIDATION`.
+    - **P1-14 / P2-14 (Validation Gates D-G4 & D-G7 Evidence):** Re-evaluated and updated formal evidence tables for Gates D-G4 and D-G7 in master specification §13.
+    - **P1-15 / P2-15 (PlantUML Diagram Syntax & Token Hygiene):** Re-authored all 7 PlantUML diagrams under `docs/plantuml/`, verified static syntax balance (`start=1, end=1, trailing_ws=0`), and verified zero prohibited tokens.
+    - **P1-16 / P2-16 (Supporting Documentation & Governance Synchronization):** Synchronized `docs/01-architecture.md` (§3.6), `plans/current-task.md`, and `HANDOFF.md` to `READY FOR INDEPENDENT RE-REVIEW`. Recorded ADR-020 in `logs/decision-log.md`.
+  - Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero database schema changes or migrations, zero UI code, zero git commits created (`COMMIT: NOT CREATED`).
+- **Current Milestone State:**
+  ```text
+  M2.1 ACCEPTED FOR M2.2
+  M2.2 REMEDIATION: COMPLETE (READY FOR INDEPENDENT RE-REVIEW)
+  M2.2 DESIGN FREEZE: NOT CLAIMED
+  ```
+- **Tests:**
+  - `T-M22-REMED-001`: PASS (18/18 consistency guards, 17/17 D4 checks, 7/7 PlantUML static syntax balance, `git diff --check` PASS, negative checks PASS).
+- **Commit:**
+  - Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-2-behavior-uc-activity-state-final-p2-cleanup
+
+- **Completed:**
+  - Handled all 4 non-blocking issues from Independent Re-Review (`PASS WITH NON-BLOCKING ISSUES`):
+    - **N-01 (P1-FR-017 Ownership Cleanup):** Updated `docs/phase-1-m2-2-behavior-uc-activity-state.md` (§1 Artifact #10, §2 UC-07, §13 D-G4) and `docs/05-traceability-matrix.md` §8 to attribute Skill Profile to canonical `P1-FR-016` (displayed in personal reports per `MVP-11`); removed `P1-FR-017` from `UC-07` ownership while preserving its canonical status as Nice/P2 Achievements & Badges (`DEFERRED` outside MVP Core); no new UC fabricated.
+    - **N-02 (GEC / Support Traceability Split):** Split the combined row in `docs/05-traceability-matrix.md` §8 into two distinct rows: `UC-14 → Support → BF-15` and `P1-FR-007 → GEC/Scenario → BF-14 → no fabricated UC` (stateless AI service).
+    - **N-03 (Streak Freeze Canonical Wording):** Replaced non-canonical phrasing in `docs/01-architecture.md` §3.6 and `HANDOFF.md` with explicit canonical deferred wording: `Streak Freeze and Recovery Power-Up are DEFERRED; no freeze behavior exists in Core`.
+    - **N-04 (Rate Limit Removal):** Removed unsupported `Rate Limit` wording from `docs/05-traceability-matrix.md:185`.
+  - Maintained scope boundary invariants: zero runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero database schema changes or migrations, zero UI changes, zero git commits created (`COMMIT: NOT CREATED`).
+  - Updated `plans/current-task.md` and `HANDOFF.md` to `FINAL P2 CLEANUP COMPLETE`.
+- **Current Milestone State:**
+  ```text
+  M2.1 ACCEPTED FOR M2.2
+  M2.2 FINAL P2 CLEANUP: COMPLETE
+  M2.2 DESIGN FREEZE: NOT CLAIMED
+  ```
+- **Tests:**
+  - `T-M22-CLEANUP-001`: PASS (`verify_final_p2_cleanup.py` PASS, `verify_consistency_guards.py` 18/18 PASS, `verify_d4_design.py` 17/17 PASS, `git diff --check` PASS).
+- **Commit:**
+  - Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-2-acceptance-recording (category: scope-ambiguity)
+
+- **Context & Directive:** Authorized acceptance recording for Milestone M2.2 following Independent Re-Review (`PASS WITH NON-BLOCKING ISSUES`) and final P2 cleanup. Verified prerequisites by targeted acceptance verification (read-only): N-01 CLOSED (spec UC-07 Skill Profile → `P1-FR-016`; `P1-FR-017` explicitly DEFERRED/non-UC; 05 §8 UC-07 row cleaned), N-02 CLOSED (05 §8 split into `UC-14 → Support → BF-15` and `P1-FR-007 → GEC/Scenario → BF-14 → no fabricated UC`), N-03 CLOSED (`01` §3.6 freeze DEFERRED wording; no freeze behavior in Core), N-04 CLOSED (Rate Limit removed from 05 §8); confirmatory negative scan over M2.2 spec + 7 diagrams shows only prohibition text and locked-policy values (zero active violations); D-G4/D-G7 gate definitions intact with canonical names.
+- **Decision recorded:** `M2.2 ACCEPTED FOR M2.3` (ADR-021; acceptance milestone only — not Design Complete, not M2.3 Ready, not runtime readiness).
+- **Governance updated:** `plans/current-task.md` → `DONE (M2.2 ACCEPTED FOR M2.3)` with `M2.3 PLAN: NOT STARTED`; `HANDOFF.md` latest accepted milestone → `M2.2 ACCEPTED FOR M2.3`; `logs/decision-log.md` ADR-021 appended (history preserved); `logs/test-log.md` `T-M22-ACCEPT-001` recorded.
+- **Boundary preserved:** zero runtime/schema/API/UI/security work; D3/D4/M2.1 unmodified; prior FAIL/re-review/cleanup history retained.
+- **Next:** M2.3 requires a separate human-approved plan; `M2.3 PLAN: NOT STARTED`.
+- **Commit:** `NOT CREATED` (per task commit rule).
+
 ## 2026-08-23 — align-uc-scope-and-report-status
 
 - **Completed:** Promoted UC-09 Placement Test and UC-10 Private Achievements to official active/in-scope requirements across active canonical documentation and synchronized the requested Markdown reports plus the five-chapter report.

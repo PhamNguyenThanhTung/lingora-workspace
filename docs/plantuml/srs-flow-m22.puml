@@ -1,0 +1,94 @@
+@startuml
+title LINGORA - SRS Review Lifecycle & Streak Evaluation Flow (M2.2)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+skinparam activity {
+  BackgroundColor #F9FAFB
+  BorderColor #4B5563
+}
+
+skinparam diamond {
+  BackgroundColor #FEF3C7
+  BorderColor #D97706
+}
+
+skinparam note {
+  BackgroundColor #F8FAFC
+  BorderColor #64748B
+  FontSize 10
+}
+
+|#EFF6FF|SRS Item Queue & Execution (UC-06 / BF-12)|
+start
+:Item Enters SRS Queue from Completed Lesson (UC-05);
+:Initialize SRS Item State (stage=1, interval_days=1);
+
+repeat
+  :System queries Due Items where nextReviewAt <= today (Asia/Ho_Chi_Minh);
+  :Learner Initiates Review Session (UC-06);
+  :Present Review Card (Vocab / Grammar Prompt);
+  :Learner Submits Response;
+
+  if (Evaluation: Response Correct?) then (Correct)
+    if (Current Stage < 5?) then (Advance Stage)
+      :Increment Stage: stage = stage + 1;
+    else (Max Stage Reached)
+      :Maintain Stage = 5;
+    endif
+
+    note right
+      <b>Policy B Interval Schedule:</b>
+      Stage 1 -> 1 day
+      Stage 2 -> 3 days
+      Stage 3 -> 7 days
+      Stage 4 -> 14 days
+      Stage 5 -> 30 days
+    end note
+    :Set nextReviewAt = currentDate + interval_days(stage);
+  else (Incorrect)
+    :Reset Stage: stage = 1;
+    :Set interval_days = 1;
+    :Set nextReviewAt = currentDate + 1 day;
+    note right
+      Failure resets interval
+      to stage 1 (1 day).
+    end note
+  endif
+
+  :Execute RPC: record_review(card_id, is_correct, recall_prob, interval_days);
+  note right
+    <b>NON-NORMATIVE CONCEPTUAL LABEL</b>
+    Persist review history & update nextReviewAt.
+  end note
+
+repeat while (More Due Items in Session?) is (Yes)
+-> No;
+
+|#F0FDF4|Daily Streak Evaluation (UC-07 / BF-13)|
+:Learner completes qualifying activity (UC-05 or UC-06);
+:Fetch Learner Profile & lastQualifyingActivityDate;
+:Determine Current Date in Asia/Ho_Chi_Minh Timezone;
+
+if (lastQualifyingActivityDate == currentDate?) then (Already active today)
+  :Keep Current streakCount Unchanged;
+elseif (lastQualifyingActivityDate == currentDate - 1 day?) then (Active yesterday)
+  :Increment Streak: streakCount = streakCount + 1;
+  :Update lastQualifyingActivityDate = currentDate;
+else (Gap >= 1 day)
+  :Reset Streak: streakCount = 1;
+  :Update lastQualifyingActivityDate = currentDate;
+  note right
+    <b>Streak Miss Invariant (Decision D9):</b>
+    Resets strictly to 1, NEVER 0.
+    Evaluated per local day in Asia/Ho_Chi_Minh.
+    No automatic streak freeze (DEFERRED).
+  end note
+endif
+
+stop
+
+@enduml

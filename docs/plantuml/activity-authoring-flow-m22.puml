@@ -1,0 +1,94 @@
+@startuml
+title LINGORA - Content Authoring, Review & Publishing Activity Flow (M2.2)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+skinparam activity {
+  BackgroundColor #F9FAFB
+  BorderColor #4B5563
+  ArrowColor #374151
+}
+
+skinparam diamond {
+  BackgroundColor #FEF3C7
+  BorderColor #D97706
+}
+
+skinparam note {
+  BackgroundColor #F8FAFC
+  BorderColor #64748B
+  FontSize 10
+}
+
+|#EFF6FF|Lesson Creator|
+start
+:Initialize New Lesson Draft (or Clone v2) (UC-08 / BF-04);
+:Author Lesson Metadata & Blueprint (D4 Schema);
+:Create Exercise Items & Link to Taxonomy / Concepts;
+:Define Remedial Mapping & Review Content;
+:Validate Completeness & Consistency Guards;
+:Submit Content for Review (DRAFT -> IN_REVIEW);
+
+|#F0FDF4|Moderator|
+:Receive Item in Moderation Queue (UC-09 / BF-05);
+note right
+  <b>SoD Rule:</b>
+  Reviewer != Author
+  {creator_id != moderator_id}
+end note
+:Inspect Pedagogical Quality & English A1 Alignment;
+:Verify Taxonomy Tags, Keys & Explanations;
+
+if (Meets Quality & Curriculum Standards?) then (Approved)
+  :Approve Content (IN_REVIEW -> APPROVED);
+  note right
+    Moderator CANNOT publish.
+    Approved content enters
+    Publishing Queue.
+  end note
+else (Changes Requested)
+  :Request Changes with Detailed Feedback;
+  :Transition IN_REVIEW -> CHANGES_REQUESTED;
+  |Lesson Creator|
+  :Review Moderation Feedback (UC-08 / BF-06);
+  :Revise Content (CHANGES_REQUESTED -> DRAFT);
+  :Re-submit for Review;
+  detach
+endif
+
+|#FFFBEB|Organizational Manager / Administrator|
+:Inspect Approved Content Batch (UC-10 / BF-07);
+if (Release Authorization Decision) then (Manager Standard Publish)
+  :Organizational Manager authorizes release;
+else (Admin Emergency Publish)
+  :Administrator authorizes emergency release;
+  note right
+    Permitted ONLY on
+    APPROVED content.
+    Reason + AuditLog required.
+  end note
+endif
+
+|#F8FAFC|System Infrastructure|
+:Logical Status Transition: APPROVED -> PUBLISHED;
+:Synchronize Curriculum Index for Learners (UC-04/05);
+
+|#FFFBEB|Organizational Manager / Administrator|
+if (Content Lifecycle Deprecation?) then (Retire / Deprecate)
+  :Trigger Content Archival (UC-10 / BF-07);
+  |#F8FAFC|System Infrastructure|
+  :Logical Status Transition: PUBLISHED -> ARCHIVED;
+  note right
+    Core terminal state.
+    Revisions use Clone-to-Draft v2
+    (supersedesId).
+  end note
+else (Remain Active)
+endif
+
+stop
+
+@enduml

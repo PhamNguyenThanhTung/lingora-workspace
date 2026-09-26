@@ -1,0 +1,104 @@
+@startuml
+title LINGORA - Logical Screen-Flow Inventory & Navigation Architecture (M2.2)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+skinparam rectangle {
+  BackgroundColor #F9FAFB
+  BorderColor #4B5563
+}
+
+skinparam note {
+  BackgroundColor #F8FAFC
+  BorderColor #64748B
+  FontSize 10
+}
+
+' ========================================================
+' LEARNER SCREEN FLOW CHAIN (SCR-L-01 to SCR-L-14)
+' ========================================================
+package "Learner Navigation Chain" #F0FDF4 {
+  rectangle "SCR-L-01\nAuth & Welcome\n(Login / Register)" as L01
+  rectangle "SCR-L-02\nOnboarding & Goal Setting\n(Study Target / Daily Minutes)" as L02
+  rectangle "SCR-L-03\nAssessment Choice\n(Diagnostic vs Self-Report)" as L03
+  rectangle "SCR-L-04\nDiagnostic Assessment Runner\n(~25-30 Items, PROPOSED)" as L04
+  rectangle "SCR-L-05\nPlacement Summary\n(Starting Unit; Confirm = FUTURE UX OPTION)" as L05
+  rectangle "SCR-L-06\nCurriculum Dashboard\n(Unit & Lesson Path View)" as L06
+  rectangle "SCR-L-07\nLesson Player & Runner\n(Interactive Exercise Flow)" as L07
+  rectangle "SCR-L-08\nControlled Retry Modal\n(Remaining Allowance / Retry Item)" as L08
+  rectangle "SCR-L-09\nLesson Completion Summary\n(Status, Mastery, Gaps; XP = FUTURE)" as L09
+  rectangle "SCR-L-10\nSRS Review Session\n(Spaced Flashcards / Audio)" as L10
+  rectangle "SCR-L-11\nJump Assessment Runner\n(Accelerated Bypass Test, 20/25-30/40q)" as L11
+  rectangle "SCR-L-12\nRemedial Micro-Lesson Hub\n(Targeted Concept Fresh Content)" as L12
+  rectangle "SCR-L-13\nScenario Writing & GEC\n(Contextual Prompt & Diff)" as L13
+  rectangle "SCR-L-14\nLearner Profile & Streak\n(Analytics, History & Settings)" as L14
+
+  L01 --> L02 : Successful Auth (UC-01)
+  L02 --> L03 : Goals Saved (UC-02)
+  L03 --> L04 : Select Diagnostic (UC-03 / BF-08)
+  L03 --> L05 : Select Self-Report / Skip (provisional starting unit)
+  L04 --> L05 : Assessment Complete (produces AssessmentResult)
+  L05 --> L06 : Enter Learning Path (UC-04)
+
+  L06 --> L07 : Select Active Lesson (UC-05 / BF-09)
+  L07 --> L08 : Incorrect Answer & Allowance > 0 (UC-05 / BF-10)
+  L08 --> L07 : Submit Retry Answer (70% credit)
+  L07 --> L09 : All Exercises Completed (UC-05)
+  L09 --> L06 : Return to Curriculum Path (UC-04)
+  L09 --> L12 : Remediation Scheduled (ADVANCE_WITH_SUPPORT / REMEDIATE)
+
+  L06 --> L10 : Launch Daily SRS Review (UC-06 / BF-12)
+  L10 --> L06 : Review Session Finished (UC-04)
+
+  L06 --> L11 : Request Unit Jump (UC-04 / BF-11)
+  L11 --> L06 : Jump Evaluated (PASS: Unlocked / FAIL: 24h Cooldown)
+
+  L06 --> L12 : Select Remedial Micro-Lesson (UC-04 / BF-09)
+  L12 --> L06 : Remedial Completed
+
+  L06 --> L13 : Open Scenario Writing (Supporting AI / BF-14)
+  L13 --> L06 : Return to Curriculum
+
+  L06 --> L14 : Open Profile & Streak View (UC-07 / BF-13)
+  L14 --> L06 : Close Profile
+}
+
+' ========================================================
+' AUTHORING & OPS SCREEN FLOW CHAIN (SCR-A-01 to SCR-A-11)
+' ========================================================
+package "Authoring & Operations Navigation Chain" #EFF6FF {
+  rectangle "SCR-A-01\nStaff Auth & Dispatch\n(Role Check; MFA = FUTURE SECURITY)" as A01
+  rectangle "SCR-A-02\nStaff Operations Dashboard\n(Content Status Overview)" as A02
+  rectangle "SCR-A-03\nCurriculum & Lesson Editor\n(Blueprint & Lesson Metadata)" as A03
+  rectangle "SCR-A-04\nItem Bank Authoring\n(Exercise Creator & Taxonomy Link)" as A04
+  rectangle "SCR-A-05\nModeration Queue & Review\n(Audit Interface, Approve / Changes)" as A05
+  rectangle "SCR-A-06\nPublishing Operations\n(Org Manager / Admin Emergency)" as A06
+  rectangle "SCR-A-07\nAccount & Role Administration\n(User Management & RBAC)" as A07
+  rectangle "SCR-A-08\nSystem Operations Reports\n(Aggregated Performance Views)" as A08
+  rectangle "SCR-A-09\nSecurity Audit Log Viewer\n(Immutable Audit Trail)" as A09
+  rectangle "SCR-A-10\nSupport Ticket Queue\n(Resolution & Escalation)" as A10
+  rectangle "SCR-A-11\nCohort Management Portal\n(OPTIONAL / FUTURE EXTENSION)" as A11
+
+  A01 --> A02 : Authenticated Staff (UC-01)
+  A02 --> A03 : Create / Edit Draft Lesson (UC-08 / BF-04)
+  A03 --> A04 : Manage Lesson Items (UC-08 / BF-04)
+  A04 --> A03 : Items Saved & Tagged
+  A03 --> A02 : Submit for Review (DRAFT -> IN_REVIEW)
+
+  A02 --> A05 : Open Moderation Queue (UC-09 / BF-05) [Moderator]
+  A05 --> A02 : Moderation Decision (APPROVED / CHANGES_REQUESTED)
+
+  A02 --> A06 : Open Publishing Operations (UC-10 / BF-07) [Org Manager / Admin]
+  A06 --> A02 : Content Published (APPROVED -> PUBLISHED) or Archived
+
+  A02 --> A07 : Open Account Administration (UC-11) [Administrator]
+  A02 --> A08 : Open System Reports (UC-12) [Admin / Org Manager]
+  A02 --> A09 : Open Audit Log Viewer (UC-13) [Administrator]
+  A02 --> A10 : Open Support Ticket Queue (UC-14 / BF-15) [Operations Staff]
+  A02 --> A11 : Open Cohort Portal (UC-15) [Org Manager - Optional]
+}
+
+@enduml

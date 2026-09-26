@@ -1,0 +1,96 @@
+@startuml
+title LINGORA - Placement Assessment vs Jump Assessment Architecture (M2.2)
+skinparam dpi 200
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 8
+
+skinparam activity {
+  BackgroundColor #F9FAFB
+  BorderColor #4B5563
+}
+
+skinparam diamond {
+  BackgroundColor #FEF3C7
+  BorderColor #D97706
+}
+
+skinparam note {
+  BackgroundColor #F8FAFC
+  BorderColor #64748B
+  FontSize 10
+}
+
+|#EFF6FF|Placement Entry Pathway (Onboarding)|
+start
+:Learner Enters Onboarding (UC-01 / UC-02);
+
+if (Select Entry Method?) then (Take Diagnostic Assessment)
+  :Administer Diagnostic Assessment (~25-30 items, PROPOSED) (UC-03 / BF-08);
+  :Persist immutable AssessmentResult;
+  :Generate SkillProfile (Vocab, Grammar, Reading, Listening);
+  :Assign verifiedProficiency status;
+  :Map Diagnostic Score to English A1 Units (Mapping A: 0-30 Score Range);
+
+  if (Diagnostic Score Band (Mapping A)) then (0 to 7)
+    :Assign Starting Point: Unit 1;
+  elseif (8 to 12)
+    :Assign Starting Point: Unit 2;
+  elseif (13 to 17)
+    :Assign Starting Point: Unit 3;
+  elseif (18 to 22)
+    :Assign Starting Point: Unit 4;
+  elseif (23 to 26)
+    :Assign Starting Point: Unit 5;
+  else (27 to 30)
+    :Assign Starting Point: Unit 6;
+  endif
+
+else (Self-Report / Skip Assessment)
+  :Record selfReportedLevel as UNVERIFIED;
+  :Assign Provisional Starting Point: Unit 1;
+  note right
+    <b>Branch A Invariant:</b>
+    - No AssessmentResult record created
+    - No SkillProfile generated
+    - No verifiedProficiency assigned
+  end note
+endif
+
+:Learner enters assigned Unit in Curriculum (UC-04 / BF-09);
+
+|#F0FDF4|Jump Assessment Pathway (In-Flight Acceleration in UC-04 / BF-11)|
+if (Learner Requests Jump to Bypass Content?) then (Attempt Jump)
+  :Evaluate Jump Request Scope;
+  if (Jump Scope Distance?) then (1 Unit ahead)
+    :Select 20-item Jump Assessment (UC-04 / BF-11);
+  elseif (2 to 3 Units ahead)
+    :Select 25-30 item Jump Assessment (UC-04 / BF-11);
+  else (> 3 Units ahead)
+    :Select 40-item Jump Assessment (UC-04 / BF-11);
+  endif
+
+  :Learner Completes Jump Assessment;
+  :Persist immutable AssessmentResult (deliveryMode=JUMP);
+
+  if (Jump Score >= 95%?) then (PASS)
+    :Mark all bypassed lessons as SKIPPED_BY_JUMP (by_jump=true);
+    :Unlock Target Unit and First Lesson;
+    note right
+      <b>Jump Pass Invariant:</b>
+      - Status is SKIPPED_BY_JUMP, NEVER COMPLETED_BY_JUMP
+      - Zero CEFR certification awarded
+      - Content bypassed, not completed
+    end note
+  else (FAIL [< 95%])
+    :Record Failed Attempt;
+    :Apply 24-hour Cooldown Lockout on Jump attempts;
+    :Learner remains in current curriculum position;
+  endif
+else (Follow Normal Progression)
+endif
+
+stop
+
+@enduml

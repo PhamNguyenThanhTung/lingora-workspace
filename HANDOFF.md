@@ -7,11 +7,35 @@
 
 ## Current state
 
-- Latest task: `d3-assessment-and-learning-engine-design` (category: `scope-ambiguity`) — DONE (APPROVED → IMPLEMENTED → TESTED → LOGGED; D3 ACCEPTED FOR D4).
-  - D3 design-only: `docs/phase-1-d3-assessment-learning-engine-design.md` (A–Q; Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`); 6 puml (`assessment-lifecycle-d3`, `diagnostic-flow-d3`, `learning-progression-d3`, `mastery-knowledge-gap-d3`, `level-readiness-d3`, `recommendation-remediation-d3`; purpose/mode distinct, no downgrade/auto-advance edges); concise `01 §3.4` + `05 §6` cross-references; D2 FROZEN/PROPOSED/PENDING preserved; Mapping A stays D2 compatibility.
-  - Verification: `T-D3-DESIGN-001` PASS — 18/18 guards, `git diff --check` 0, D3 focused scan OVERALL PASS, runtime scope empty. ADR-016 recorded. No Design Freeze; no AssessmentSession; 15 UCs intact.
-  - Independent Semantic Review: PASS WITH NON-BLOCKING ISSUES; Final Gate: `D3 ACCEPTED FOR D4`.
-  - Next task: D4 Content/Curriculum Design under its own approved plan (do not implement D3 runtime without a separate approved implementation task).
+- Latest task: `m2-2-behavior-uc-activity-state-acceptance` (category: `scope-ambiguity`) — DONE (`M2.2 ACCEPTED FOR M2.3`; `DESIGN COMPLETE: NOT CLAIMED`; `COMMIT: NOT CREATED`).
+  - Acceptance decision: `M2.2 ACCEPTED FOR M2.3` (acceptance milestone only — not Design Complete, not M2.3 Ready, not runtime readiness).
+  - Acceptance evidence: Independent Re-Review `PASS WITH NON-BLOCKING ISSUES` (0 × P0, 0 × P1, 4 × P2) + targeted acceptance verification confirming N-01..N-04 CLOSED in artifacts (Skill Profile → `P1-FR-016`, `P1-FR-017` DEFERRED/non-UC; 05 §8 GEC row split with no fabricated UC; freeze DEFERRED wording; Rate Limit removed) + D-G4 = PASS + D-G7 = PASS.
+  - Milestone status: `M2.1 ACCEPTED FOR M2.2`, `M2.2 ACCEPTED FOR M2.3`.
+  - Next milestone state: `M2.3 PLAN: NOT STARTED` — M2.3 (Sequence + API / Service Boundary) requires a separate human-approved plan before any work begins. Design-to-implementation boundary preserved: zero runtime/schema/API/UI/security implementation performed.
+  - History preserved: FAIL review, re-review, and P2 cleanup evidence retained in prior log/plan records (not deleted).
+  - Independent Re-Review result: `PASS WITH NON-BLOCKING ISSUES` (0 × P0, 0 × P1, 4 × P2: N-01, N-02, N-03, N-04).
+  - Milestone status: `M2.1 ACCEPTED FOR M2.2`, `M2.2 ACCEPTED FOR M2.3`, `M2.3 PLAN: NOT STARTED`.
+  - Non-blocking P2 closures:
+    - **N-01:** Corrected Skill Profile attribution to canonical `P1-FR-016` (displayed in `MVP-11` personal report); removed `P1-FR-017` from `UC-07` ownership while preserving its canonical status as Nice/P2 Achievements & Badges (`DEFERRED`).
+    - **N-02:** Split combined `UC-14 / GEC` row in `docs/05-traceability-matrix.md` §8 into two distinct rows: `UC-14 → Support → BF-15` and `P1-FR-007 → GEC/Scenario → BF-14 → no fabricated UC`.
+    - **N-03:** Replaced non-canonical wording in `docs/01-architecture.md` §3.6 and `HANDOFF.md` with explicit canonical deferred wording: `Streak Freeze and Recovery Power-Up are DEFERRED; no freeze behavior exists in Core`.
+    - **N-04:** Removed unsupported `Rate Limit` wording from `docs/05-traceability-matrix.md:185`.
+  - Resolution of Review Findings: 100% of findings corrected (16/16 P1, 15/15 P2 from initial review, 4/4 P2 from re-review).
+  - Master specification: `docs/phase-1-m2-2-behavior-uc-activity-state.md` (Sections 1–16, 6-field contract preserved across Artifacts #2, #3, #9, #10, #17, #18, #19).
+  - Canonical 15 Use Cases (`UC-01` to `UC-15`) and 15 Behavioral Families (`BF-01` to `BF-15`) aligned strictly with `docs/06-system-analysis.md` §5. `UC-15` explicitly categorized as `OPTIONAL / FUTURE EXTENSION BOUNDARY`. Zero `UC-16/17/18`, zero `BF-16`, zero `UC-06-viết`.
+  - State machines: 6-state Content Lifecycle (`DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`; zero `REJECTED`; Clone-to-Draft v2 via `supersedesId`); 4-state Learner Progression (`LOCKED`, `IN_PROGRESS`, `COMPLETED`, `SKIPPED_BY_JUMP` with `by_jump=true`; zero `COMPLETED_BY_JUMP`); 3-state LevelReadiness (`ADVANCE`, `ADVANCE_WITH_SUPPORT`, `REMEDIATE`; zero `NOT_READY`, zero `EVALUATING`); 3-state KnowledgeGap (`OPEN`, `IN_REMEDIATION`, `RESOLVED`; zero `DETECTED`); 3-state ConceptMastery (`NOVICE`, `DEVELOPING`, `MASTERED`; zero `INTRODUCED`, zero `PRACTICING`).
+  - Use Case & Behavioral Decoupling: Jump Assessment decoupled from UC-03 and placed under `UC-04` Curriculum Browse & Conditional Jump (`BF-11`); `UC-03` is strictly Placement Test / Diagnostic Assessment (`BF-08`).
+  - Diagnostic Test Scope: Baseline is `~25–30 items, PROPOSED / PENDING VALIDATION`. Mapping A defines a 0–30 raw score range, not proof of 30 delivered items.
+  - Actor Normalization: 6 canonical human roles only (`Learner`, `Administrator`, `Lesson Creator`, `Moderator`, `Organizational Manager`, `Operations Staff`). Content Publisher is `Organizational Manager` (`UC-10`); Administrator emergency publish permitted ONLY on already `APPROVED` content with mandatory reason + `AuditLog`. Zero "Content Manager".
+  - Lesson Completion Semantics: Owned by `UC-05` / `BF-10` (all first-pass items and retry allowance processed; zero 80% retry floor). Invariant: Exercise correctness $\ne$ Lesson completion $\ne$ Mastery $\ne$ Proficiency.
+  - SRS & Daily Streak: Policy B `[1, 3, 7, 14, 30]` days, failure resets interval strictly to Stage 1 (1 day), conceptual label `record_review` RPC; daily streak evaluated lazily across calendar date boundaries (`lastQualifyingActivityDate`); removed artificial 23:59:59 cutoff; Streak Freeze and Recovery Power-Up are DEFERRED; no freeze behavior exists in Core.
+  - Logical Screen-Flow Inventory: Unified to 14 Learner screen flows (`SCR-L-01` to `SCR-L-14`) and 11 Authoring/Ops screen flows (`SCR-A-01` to `SCR-A-11`).
+  - Full Expansion of Admin/Ops UCs: `UC-11`, `UC-12`, `UC-13`, `UC-14` fully detailed with all 10 required specification sections including Alternate and Exception flows.
+  - PlantUML Diagrams: All 7 diagrams re-authored and statically verified (`start=1, end=1, trailing_ws=0`).
+  - Supporting docs updated: `docs/01-architecture.md` (§3.6), `docs/05-traceability-matrix.md` (§8), `logs/decision-log.md` (ADR-020), `logs/test-log.md` (`T-M22-REMED-001`), `logs/development-log.md`.
+  - Verification: `T-M22-REMED-001` PASS (18/18 consistency guards, 17/17 D4 checks, 7/7 PlantUML static syntax balance, `git diff --check` PASS, negative checks PASS).
+  - Strict Boundary Invariants: Zero runtime application code, zero DB schema/migration changes, zero UI changes, zero git commits created (`COMMIT: NOT CREATED`).
+  - Next step: Human-approved M2.3 plan (Sequence + API / Service Boundary) before any M2.3 work; M2.3 remains NOT STARTED.
 
 - Previous task: `d1-final-design-cleanup-and-d2-domain-data-design` — DONE.
   - D1 (6/6 items) & D2 (16/16 items) completed; `T-D1-D2-DESIGN-001` PASS; ADR-015 recorded.

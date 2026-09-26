@@ -153,3 +153,48 @@ Bảng dưới đây thiết lập chuỗi truy vết khép kín toàn diện 5 
 | `E-EXP-03` → four-concept separation (`LearningProgress` ≠ Proficiency ≠ Mastery ≠ Readiness) | `YC-CORE-11` → `MVP-08`, `MVP-11` → `P1-FR-004` → `UC-07` | `LearningProgress` / `SkillProfile` / `ConceptMastery` / `LevelReadiness` | D3 §D, §E, §F, §I |
 | `E-EXP-06` → concept remediation + 3-state transition (no downgrade, no replay) | `YC-EXT-03` → `MVP-04` → `P1-FR-016` → `UC-04`, `UC-07` | `LevelReadiness` (`ADVANCE` / `ADVANCE_WITH_SUPPORT` / `REMEDIATE`) → `RemedialModule` → `Recommendation` | D3 §F, §G, §H |
 | `E-EXP-04` → 4-tier multi-lang chain + `hidePinyin: true` | `YC-CORE-09` → `MVP-03` → `P1-FR-016` → `UC-03` | Engine → Config → Bank → Rubric; `AssessmentResult.languageConfig` | D3 §J, §A |
+
+---
+
+## 7. D4 Content & Curriculum Design Traceability (Logical Design)
+
+> Detail: [`docs/phase-1-d4-content-curriculum-design.md`](phase-1-d4-content-curriculum-design.md) (A–T). Preserves 15-UC canonical catalog (`UC-01`..`UC-15`). Zero new requirements or ghost entities invented. All content rules trace backward to approved baselines and expert evidence.
+
+| Source Evidence / Finding | Requirement → MVP → P1-FR → UC | Domain Entity / Logical Construct | D4 Content Design Rule | D4 Section | Status |
+|---|---|---|---|---|---|
+| `E-EXP-01` (Thầy Quân) | `YC-CORE-09` → `MVP-03` → `P1-FR-016` → `UC-03`, `UC-02` | `LearnerProfile`, `Lesson`, `AssessmentItem` | Blueprint (§F) and Item Bank (§L) isolate unverified starting points from diagnostic items | D4 §F, §L | `FROZEN` |
+| `E-EXP-02` (Thầy Quân) | `YC-CORE-09` → `MVP-03`, `MVP-11` → `P1-FR-016` → `UC-03`, `UC-07` | `SkillProfile`, `Exercise`, `AssessmentItem` | Exercise & Item authoring envelopes tag discrete skill dimensions (Vocab/Grammar/Reading/Listening) | D4 §H, §L | `FROZEN` |
+| `E-EXP-03` (Thầy Quân) | `YC-CORE-11` → `MVP-08`, `MVP-11` → `P1-FR-004` → `UC-07` | `LearningProgress`, `ConceptMastery`, `LevelReadiness` | Strict separation: Lesson completion measures progress; mastery and readiness require evidence gates | D4 §D, §F | `FROZEN` |
+| `E-EXP-04` (Cô Mai) | `YC-CORE-09`, `NFR-LOC` → `MVP-03` → `P1-FR-016` → `UC-03` | `LanguageConfig`, Common Engine | Declarative Chinese config enforces `hidePinyinDefault: true` for Hanzi reading assessment | D4 §M | `FROZEN` |
+| `E-EXP-05` (Cô Mai) | `YC-CORE-07` → `MVP-05/06` → `P1-FR-003`, `P1-FR-012` → `UC-05` | `Concept`, `ConceptMastery`, `KnowledgeGap` | Authoritative `Concept` schema; 0 free-text `conceptTag` allowed; acyclic prerequisite DAG | D4 §G | `FROZEN` |
+| `E-EXP-06` (Cô Mai & Quân) | `YC-EXT-03` → `MVP-04` → `P1-FR-016` → `UC-04` | `RemedialModule`, `KnowledgeGap`, `Recommendation` | RemedialModule delivers fresh context/exercises for target concept; no downgrade, no forced replay | D4 §K | `FROZEN` |
+| `E-EXP-07` (Quân & Mai) | `YC-CORE-09` → `MVP-03` → `P1-FR-016` → `UC-03` | `AssessmentItem`, `AssessmentResult.stageData` | Item Bank classifies items by difficulty bands (Entry/Mid/Upper) for 2-stage adaptive routing | D4 §L | `PROPOSED / PENDING` |
+| ADR-002 / PO SoD | `YC-CORE-04..06` → `MVP-12/13/19` → `P1-FR-008` → `UC-08/10/13` | `Course`, `Unit`, `Lesson`, `AuditLog` | Content lifecycle SoD, Unit visibility (4/4 published), and `supersedesId` for Clone-to-Draft v2 | D4 §D | `FROZEN` |
+| ADR-006 / PO Exercise Mix | `YC-CORE-03/07` → `MVP-05` → `P1-FR-012/013` → `UC-05` | `Exercise` (5 canonical types: MCQ, FILL, REORDER, LIS, GRM) | Standard 5-exercise mix per lesson; JSON authoring envelopes; 0 Matching canonical | D4 §H | `FROZEN (Logical)` |
+| PO Policy D5 / D6 | `YC-CORE-09` → `MVP-03` → `P1-FR-016` → `UC-03` | `Unit`, `Lesson`, `AssessmentResult` | English A1 6-Unit/24-Lesson baseline mapping; Unit unlock via linear progress or Jump (>=95%) | D4 §E | `FROZEN (Mapping A)` |
+| PO Policy D8 / SRS Baseline | `YC-CORE-08` → `MVP-09` → `P1-FR-005/006` → `UC-06` | `UserVocabSrs`, `Vocabulary` | MVP-09 is inherited from D8; D4 defines only vocabulary/content linkage (§J1) and does not redefine SRS scheduling policy | D4 §J | `FROZEN (D8)` |
+
+---
+
+## 8. M2.2 System Behavior, Use Cases & State Machine Traceability (Logical Design)
+
+> Canonical Detail: [`docs/phase-1-m2-2-behavior-uc-activity-state.md`](phase-1-m2-2-behavior-uc-activity-state.md) (sections 1–16). Preserves the 15-UC canonical catalog (`UC-01`..`UC-15`) and maps exactly 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
+
+| Technical Requirement & Policy | MVP Feature | Canonical Use Case | Behavioral Family Mapping | Domain Entities & Logical State Representation | M2.2 Contract Ref | Governance Status |
+|---|---|---|---|---|---|---|
+| `P1-FR-001`, `P1-FR-010`, `P1-NFR-001` | `MVP-01`, `MVP-02` | `UC-01` | `BF-01` Authentication Flow | `Profile`, Session Cookie (`@supabase/ssr`) | M2.2 §2 (UC-01), §3 | `FROZEN` |
+| `P1-FR-014`, `P1-FR-015` | `MVP-02`, `MVP-10` | `UC-02` | Goal & Profile Configuration | `Profile` (`dailyGoalMin`, `timezone`, In-app Reminder) | M2.2 §2 (UC-02), §3 | `FROZEN` |
+| `P1-FR-016`, Policy D5, D6 | `MVP-03` | `UC-03` | `BF-08` Placement Test Flow | `AssessmentResult`, `SkillProfile`, `verifiedProficiency`, `LearnerProfile` | M2.2 §2 (UC-03), §3, §6 | `FROZEN` |
+| `P1-FR-002`, `P1-FR-004`, `P1-FR-016` | `MVP-04`, `MVP-08` | `UC-04` | `BF-11` Conditional Jump Flow & Path Browse | `Course`, `Unit`, `Lesson`, `LearningProgress` | M2.2 §2 (UC-04), §3, §6 | `FROZEN` |
+| `P1-FR-003`, `P1-FR-012/013`, Policy D7 | `MVP-05/06/07` | `UC-05` | `BF-09` Learning Lesson & `BF-10` Controlled Retry | `Exercise`, `Concept`, `KnowledgeGap`, `ConceptMastery` | M2.2 §2 (UC-05), §3, §5 | `FROZEN` |
+| `P1-FR-005`, `P1-FR-006`, Policy D8 | `MVP-09` | `UC-06` | `BF-12` SRS Review Flow | `UserVocabSrs`, `ReviewLog`, RPC `record_review` | M2.2 §2 (UC-06), §3, §7 | `FROZEN` |
+| `P1-FR-004`, `P1-FR-011` (Skill Profile ref: `P1-FR-016`) | `MVP-08`, `MVP-10`, `MVP-11` | `UC-07` | `BF-13` Progress & Streak Tracking Flow | `LearningProgress`, `Profile.streakCount`, `SkillProfile`, `LevelReadiness` | M2.2 §2 (UC-07), §3, §4 | `FROZEN` |
+| `P1-FR-008`, ADR-002, ADR-004 | `MVP-12` | `UC-08` | `BF-03` Assignment, `BF-04` Authoring, `BF-06` Revision | `Lesson` (`creatorId`, `assignmentBrief`, `supersedesId`), `Exercise`, `Concept` | M2.2 §2 (UC-08), §3, §4 | `FROZEN` |
+| `P1-FR-008`, ADR-004 (SoD) | `MVP-13` | `UC-09` | `BF-05` Content Review Flow | `Lesson` (`reviewerId`, `status: IN_REVIEW / APPROVED / CHANGES_REQUESTED`), `AuditLog` | M2.2 §2 (UC-09), §3, §4 | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001`, ADR-004 | `MVP-13`, `MVP-19` | `UC-10` | `BF-07` Publication & `BF-02` Curriculum Planning | `Lesson.isPublished`, `Unit`, `AuditLog` | M2.2 §2 (UC-10), §3, §4 | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001`, ADR-003 | `MVP-14` | `UC-11` | Account & Role Management | `Profile.role`, `AuditLog` | M2.2 §2 (UC-11), §3 | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001` | `MVP-15` | `UC-12` | System Reporting & Analytics | System Analytics Views, Aggregated Activity Logs | M2.2 §2 (UC-12), §3 | `DESIGN` |
+| `P1-NFR-001`, ADR-004 | `MVP-19` | `UC-13` | Security Audit Log | `AuditLog` (immutable event ledger) | M2.2 §2 (UC-13), §3 | `FROZEN` |
+| Operational Support | `MVP-16` | `UC-14` | `BF-15` Operations & Ticket Flow | `SupportTicket`, `Profile` | M2.2 §2 (UC-14), §3 | `DESIGN / SUPPORTING` |
+| Scenario Writing with GEC (`P1-FR-007`) | `MVP-18` | *(No UC — Stateless Service)* | `BF-14` Scenario Writing with GEC Flow | `ChatScenario`, transient `/api/ai/gec` | M2.2 §3 (BF-14) | `FROZEN (Stateless Service)` |
+| Organizational Cohorts (B2B) | `MVP-17` | `UC-15` | Cohort & Group Management | `Cohort`, `CohortMember` (Extension Boundary) | M2.2 §2 (UC-15), §3 | `OPTIONAL BOUNDARY` |
