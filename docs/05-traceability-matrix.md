@@ -223,3 +223,28 @@ Bảng dưới đây thiết lập chuỗi truy vết khép kín toàn diện 5 
 | Operational Support | `MVP-16` | `UC-14` | `BF-15` Support Tickets | `SupportTicket`, `Profile` | `SEQ-09` | Surface 9 (Admin/Prisma), §4.1 SupportService | `DESIGN / SUPPORTING` |
 | Scenario Free-Writing (`P1-FR-007`) | `MVP-18` | *(No UC — Stateless)* | `BF-14` Scenario Writing Flow | `ChatScenario`, transient GEC diffs | `SEQ-10` | Surface 2 & 4 (Proxy, 8.0s timeout, fallback) | `FROZEN (Stateless)` |
 | Organizational Cohorts (B2B) | `MVP-17` | `UC-15` | Cohort & Group Management | `Cohort`, `CohortMember` (Extension Boundary) | `SEQ-09` | Boundary marker only, Surface 9 | `OPTIONAL BOUNDARY` |
+
+---
+
+## 10. M2.4 Component Architecture & Security Responsibility Matrix Traceability (Logical Design)
+
+> Canonical Detail: [`docs/phase-1-m2-4-architecture-security.md`](phase-1-m2-4-architecture-security.md) (sections 1–15). Preserves 15-UC canonical catalog (`UC-01`..`UC-15`) and 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
+
+| Technical Requirement & Policy | MVP Feature | Canonical UC | Behavioral Family Mapping | Component Architecture Owner (#13) | Deployment & Security Zone (#14) | Security Matrix Enforcement Boundary (#16) | Governance Status |
+|---|---|---|---|---|---|---|---|
+| `P1-FR-001`, `P1-FR-010`, `P1-NFR-001` | `MVP-01`, `MVP-02` | `UC-01` | `BF-01` Authentication Flow | `COMP-DOM-01` Auth & Identity Service | Zone 1 (Client) ↔ Zone 2 (BFF) ↔ Zone 3 (GoTrue) | OP-01: App httpOnly cookie, DB RLS `profiles`, GoTrue emit | `FROZEN` |
+| `P1-FR-014`, `P1-FR-015` | `MVP-02`, `MVP-10` | `UC-02` | Goal & Profile Configuration | `COMP-DOM-01` Auth & Identity Service | Zone 1 (Client) ↔ Zone 2 (BFF) ↔ Zone 3 (DB) | OP-02: App bounds `[5..120]`, DB RLS `auth.uid() = id`, client-local reminder | `FROZEN` |
+| `P1-FR-016`, Policy D5, D6 | `MVP-03` | `UC-03` | `BF-08` Placement Test Flow | `COMP-DOM-03` Assessment & Diagnostic Service | Zone 1 (Client) ↔ Zone 2 (BFF) ↔ Zone 3 (DB) | OP-03: Mapping A (0–30), immutable `AssessmentResult`, emit `DIAGNOSTIC_COMPLETED` | `FROZEN` |
+| `P1-FR-002`, `P1-FR-004`, `P1-FR-016` | `MVP-04`, `MVP-08` | `UC-04` | `BF-11` Conditional Jump Flow & Path Browse | `COMP-DOM-03` Assessment & Diagnostic Service | Zone 1 (Client) ↔ Zone 2 (BFF) ↔ Zone 3 (DB) | OP-04: $\ge 95\%$ check, 24h lockout guard, emit `JUMP_PASSED`/`JUMP_FAILED` | `FROZEN` |
+| `P1-FR-003`, `P1-FR-012/013`, Policy D7 | `MVP-05/06/07` | `UC-05` | `BF-09` Learn & `BF-10` Retry | `COMP-DOM-05` Lesson Execution & Retry Service | Zone 1 (Client) ↔ Zone 2 (BFF) ↔ Zone 3 (DB) | OP-05: Policy D7 allowance/70% credit, DB RLS `user_progress` | `FROZEN` |
+| `P1-FR-005`, `P1-FR-006`, Policy D8 | `MVP-09` | `UC-06` | `BF-12` SRS Review Flow | `COMP-DOM-04` SRS Scheduling Service | Zone 1 (Client) ↔ Zone 2 (BFF) ↔ Zone 3 (DB/RPC) | OP-06: Policy B `[1,3,7,14,30]`, atomic RPC `record_review`, log to `review_logs` | `FROZEN` |
+| `P1-FR-004`, `P1-FR-016` (Skill Profile) | `MVP-08/10/11` | `UC-07` | `BF-13` Progress Tracking | `COMP-DOM-02` Curriculum & Progression Service | Zone 1 (Client) ↔ Zone 2 (BFF) ↔ Zone 3 (DB) | OP-05/06/07: Calendar date boundary (`Asia/Ho_Chi_Minh`), DB RLS `LearningProgress` | `FROZEN` |
+| `P1-FR-008`, ADR-002, ADR-004 | `MVP-12` | `UC-08` | `BF-03/04/06` Authoring | `COMP-DOM-06` Content Lifecycle & SoD Service | Zone 1 (Admin) ↔ Zone 2 (Admin BFF) ↔ Zone 3 (DB) | OP-07: Creator role check, `supersedesId` [DD-02], emit `CONTENT_DRAFT_CREATED` | `FROZEN` |
+| `P1-FR-008`, ADR-004 (SoD) | `MVP-13` | `UC-09` | `BF-05` Content Review | `COMP-DOM-06` Content Lifecycle & SoD Service | Zone 1 (Admin) ↔ Zone 2 (Admin BFF) ↔ Zone 3 (DB) | OP-08: Moderator check, SoD cut `auth.uid() != creatorId`, emit `CONTENT_APPROVED` | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001`, ADR-004 | `MVP-13/19` | `UC-10` | `BF-07` Publish & `BF-02` Plan | `COMP-DOM-06` Content Lifecycle & SoD Service | Zone 1 (Admin) ↔ Zone 2 (Admin BFF) ↔ Zone 3 (DB) | OP-09: Org Manager check, 4/4 Unit publish rule, emit `CONTENT_PUBLISHED` | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001`, ADR-020 | `MVP-14` | `UC-11` | Account/Role Management & Emergency | `COMP-DOM-07` Admin Governance & Audit Service | Zone 1 (Admin) ↔ Zone 2 (Admin BFF) ↔ Zone 3 (DB) | OP-10/11: Admin role check, emergency publish on `APPROVED` only, emit `AuditLog` | `FROZEN` |
+| `P1-FR-008`, `P1-NFR-001` | `MVP-15` | `UC-12` | System Analytics & Reports | `COMP-DOM-07` Admin Governance & Audit Service | Zone 1 (Admin) ↔ Zone 2 (Admin BFF) ↔ Zone 3 (DB) | OP-12: Read-only aggregated views, PII minimization | `DESIGN` |
+| `P1-NFR-001`, ADR-004, DD-03 | `MVP-19` | `UC-13` | Security Audit Ledger | `COMP-INFRA-05` Immutable Audit Log Store | Zone 2 (BFF) ↔ Zone 3 (Append-Only DB Store) | OP-13: Admin read-only audit query, UPDATE/DELETE denied, emit `AUDIT_LOG_INSPECTED` | `FROZEN` |
+| Operational Support | `MVP-16` | `UC-14` | `BF-15` Support Tickets | `COMP-DOM-07` Admin Governance & Audit Service | Zone 1 (Admin) ↔ Zone 2 (Admin BFF) ↔ Zone 3 (DB) | OP-14: Operations Staff minimal lookup, no content editing | `DESIGN / SUPPORTING` |
+| Scenario Free-Writing (`P1-FR-007`) | `MVP-18` | *(No UC — Stateless)* | `BF-14` Scenario Writing Flow | `COMP-DOM-08` AI Integration & Proxy Service | Zone 1 (Client) ↔ Zone 2 (Proxy) ↔ Zone 4 (AI Engine) | OP-15: Forward user JWT, 8.0s timeout, circuit-breaker fallback, zero DB access | `FROZEN (Stateless)` |
+| Organizational Cohorts (B2B) | `MVP-17` | `UC-15` | Cohort & Group Management | Extension Boundary | Zone 1 (Admin) ↔ Zone 2 (Admin BFF) ↔ Zone 3 (DB) | Boundary marker only, Future Migration | `OPTIONAL BOUNDARY` |

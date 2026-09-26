@@ -1362,3 +1362,65 @@ Milestone M2.3 completed implementation, Independent Review (`FAIL`: 14 P1 + 13 
 
 - M2.3 interaction layer is the accepted baseline for M2.4 Architecture + Security design.
 - `COMMIT: NOT CREATED` in this task.
+
+---
+
+## ADR-026 — Milestone M2.4 Component Architecture and Security Responsibility Design
+
+### Date
+
+2026-09-26
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+Approved implementation plan `plans/m2-4-architecture-security-plan.md` required establishing Artifacts #13 (Component Architecture), #14 (Deployment/Runtime Boundary), and #16 (Security Responsibility Matrix), resolving DD-03 (Audit Architecture) and DD-10 (Role Enforcement Split) in mandatory 3 tiers, providing design evidence for validation gates D-G5 and D-G6, and mapping all 15 Use Cases and 15 sensitive operations without claiming the target runtime is production-ready or closed.
+
+### Decision
+
+1. **Component Hierarchy & Ownership (Artifact #13):** Established a strict 5-layer logical hierarchy (`Presentation → Application Orchestrators (BFF) → Domain Services → Persistence & Infrastructure → External Providers`) spanning 19 logical components with strictly acyclic, top-down dependencies. Every domain rule and state transition is owned by exactly one domain service. AI Integration is modeled as a stateless external provider proxy without database connections or state ownership.
+2. **Deployment & Logical Security Zones (Artifact #14):** Partitioned the system into 5 logical security zones (Zone 1 Client, Zone 2 BFF/Vercel, Zone 3 Managed Supabase DB/Storage, Zone 4 Isolated AI Compute, Zone 5 Privileged Ops). Categorized all components, secrets, and datastores strictly as `CURRENT_APPLIED` vs `TARGET_DESIGN` vs `FUTURE_EXTENSION`. Established the anti-drift rule that target runtime is NEVER claimed ready or deployed.
+3. **Secret Isolation & Credential Boundaries:** Completely isolated `SUPABASE_SERVICE_ROLE_KEY` from Learner Web runtime (`lingora-web`) and browser clients. Client sessions are managed strictly via server-side `httpOnly`, `SameSite=Lax` cookies. AI Server receives forwarded user JWT via Next.js proxy and verifies via public JWKS (ES256) with zero database credentials.
+4. **Security Responsibility Matrix (Artifact #16):** Defined a single authoritative 6-boundary matrix (`Learner Web`, `Admin Web`, `Supabase RLS`, `Privileged Service Role`, `AI Server`, `Audit`) governing 15 sensitive operations (`OP-01`..`OP-15`). Application Authorization checks and Database RLS policies are both mandatory; app checks never replace RLS. Privileged service role execution is strictly limited to maintenance/seed/migrations (`N/A — privileged service-role path`).
+5. **Separation of Duties (SoD) & Negative Denial Paths:** Explicitly modeled negative paths denying creator self-review (`403 SOD_VIOLATION_SELF_REVIEW`), moderator self-publish (`403 SOD_VIOLATION_MODERATOR_PUBLISH`), learner cross-tenant access, and direct transition `IN_REVIEW → PUBLISHED`. Administrator emergency publish is permitted ONLY on already `APPROVED` content with mandatory reason and `AuditLog` emission (ADR-020).
+6. **Decision DD-03 (Audit Architecture) 3-Tier Resolution:** Locked Behavior (immutable, append-only, 4 core fields), Design Specification closed in M2.4 (event catalog of 11 sensitive event codes, actor/target typing, UTC ISO 8601 timestamps), and Open Physical Representation (`metadata JSONB` shape, trigger vs app emission, IP/device fields, retention values stay `OPEN`).
+7. **Decision DD-10 (Role Enforcement Split) 3-Tier Resolution:** Locked Behavior (6 canonical roles, DB-level RLS mandatory, app never replaces RLS), Design Specification closed in M2.4 (CURRENT 2-role vs TARGET 6-role mapping, app check vs RLS split, backward compatibility guarantee), and Open Physical Representation (migration DDL and SQL scripts stay `OPEN`).
+8. **Validation Gates D-G5 & D-G6:** Provided design evidence confirming component/deployment boundary consistency (D-G5) and security/auth boundary consistency (D-G6); explicit invariant that D-G5 and D-G6 are NOT claimed as closed.
+
+### Consequences
+
+- Master specification `docs/phase-1-m2-4-architecture-security.md` and 3 PlantUML diagrams (`docs/plantuml/component-architecture-m24.puml`, `docs/plantuml/deployment-boundary-m24.puml`, `docs/plantuml/security-matrix-m24.puml`) establish the complete architecture and security design baseline for M2.5/M2.6.
+- Secondary docs reconciled: `docs/01-architecture.md` (§3.8) and `docs/05-traceability-matrix.md` (§10).
+- Zero application runtime code, zero DB schema/migrations, zero RLS SQL written, `docs/03-api-contract.md` 100% byte-identical.
+- Milestone status: `READY FOR INDEPENDENT REVIEW` (`M2.4 ACCEPTANCE: NOT CLAIMED`, `COMMIT: NOT CREATED`).
+
+---
+
+## ADR-027 — Milestone M2.4 Acceptance FOR M2.5
+
+### Date
+
+2026-09-26
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+Milestone M2.4 completed implementation, Independent Review (`PASS WITH NON-BLOCKING ISSUES`: 0 P0, 0 P1, 5 P2), and final P2 cleanup (F-AUTH-01 social-login removed; F-EVT-01 event count corrected to 11 specified events; F-DEP-01 deployment details marked illustrative/candidate; F-TGT-01 SupportTicket wording fixed to FUTURE_MIGRATION boundary; F-SCR-01 verifier precedence fixed with negative self-test CHECK-17). Targeted acceptance verification confirmed: `verify_m24_design.py` 17/17 PASS, guards 18/18, D4 17/17, `git diff --check` clean, `03` byte-identical, zero runtime/schema scope, no unresolved P0/P1 or blocking P2.
+
+### Decision
+
+1. Record `M2.4 ACCEPTED FOR M2.5` (acceptance milestone only — not Design Complete, not M2.5 Complete, no runtime implementation, not production-ready).
+2. Scope accepted: Artifact #13 (Component Architecture, 19 components), Artifact #14 (Deployment/Runtime Boundary, 5 zones), Artifact #16 (Security Responsibility Matrix, 15 operations × 6 boundaries); D-G5 design evidence PASS; D-G6 INPUT EVIDENCE ONLY (closure belongs to M2.5/M2.6; production readiness NOT claimed); target runtime NOT PRODUCTION READY / NOT DEPLOYED; open decisions preserved.
+3. Set `M2.5 = NEXT MILESTONE / PLAN NOT STARTED` — no M2.5 work begins in this task.
+4. Preserve all prior review/remediation history; do not rewrite historical entries.
+
+### Consequences
+
+- M2.4 architecture/security package is the accepted baseline for M2.5 Design Validation.
+- `COMMIT: NOT CREATED` in this task.

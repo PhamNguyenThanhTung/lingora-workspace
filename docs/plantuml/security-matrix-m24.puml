@@ -1,0 +1,83 @@
+@startuml security-matrix-m24
+title Artifact #16: Six-Boundary Security Responsibility & Enforcement Pipeline
+skinparam BoxPadding 15
+skinparam defaultTextAlignment left
+
+package "Boundary 1: Learner Web (BFF / Client)" as B1 {
+    [Learner UI & Route Handlers] as LearnerWeb
+    note bottom of LearnerWeb
+      Enforcement:
+      - Cookie-based session extraction
+      - Input bounds validation (e.g. dailyGoalMin in [5..120])
+      - 8.0s timeout & graceful circuit-breaker fallback
+      - ZERO direct database / AI client calls
+    end note
+}
+
+package "Boundary 2: Admin Web (BFF / Server Actions)" as B2 {
+    [Admin Portal & Server Actions] as AdminWeb
+    note bottom of AdminWeb
+      Enforcement:
+      - Role-based UI view filtering
+      - Pre-persistence SoD validation:
+        * Creator self-approval -> 403 Forbidden
+        * Moderator publish -> 403 Forbidden
+        * Admin emergency publish without APPROVED -> 400 Bad Request
+    end note
+}
+
+package "Boundary 3: Supabase RLS (Database Core)" as B3 {
+    [PostgreSQL RLS Engine] as DatabaseRLS
+    note bottom of DatabaseRLS
+      Ultimate Enforcement:
+      - Mandatory independent DB-level security
+      - auth.uid() = learner_id enforcement
+      - Cross-tenant / cross-user query denial (empty set)
+      - Content visibility: published = true for learners
+      - Cannot be bypassed by client application code
+    end note
+}
+
+package "Boundary 4: Privileged Service Role (Operations)" as B4 {
+    [Service Role Key Operator] as PrivilegedService
+    note bottom of PrivilegedService
+      Strict Isolation:
+      - N/A for standard learner & admin workflows
+      - Restricted strictly to database migrations & seed
+      - NEVER loaded in Learner Web environment
+    end note
+}
+
+package "Boundary 5: AI Server (Stateless Inference)" as B5 {
+    [FastAPI T5-small Service] as AIServer
+    note bottom of AIServer
+      Non-Ownership Isolation:
+      - Stateless text correction only
+      - Zero direct DB connection strings
+      - Authenticates user JWT via JWKS (ES256)
+      - FORBIDDEN from writing learner progression
+    end note
+}
+
+package "Boundary 6: Audit Store (Immutable Ledger)" as B6 {
+    [Append-Only AuditLog] as AuditStore
+    note bottom of AuditStore
+      Audit Responsibility:
+      - Captures sensitive admin actions:
+        * Emergency publish (with mandatory reason)
+        * Role assignments & account suspension
+        * Jump assessment lockouts & diagnostic completions
+      - Strictly Append-Only (UPDATE/DELETE forbidden)
+    end note
+}
+
+' Security Data & Enforcement Flows
+LearnerWeb --> DatabaseRLS : PostgREST / RPC (with user Bearer JWT)
+LearnerWeb --> AIServer : Proxied HTTP POST /v1/gec/correct (forwarded JWT)
+
+AdminWeb --> DatabaseRLS : Prisma TCP (authorized mutations)
+AdminWeb --> AuditStore : Emit required AuditLog events upon sensitive ops
+
+PrivilegedService ..> DatabaseRLS : Migration execution (bypasses RLS for schema DDL only)
+
+@enduml

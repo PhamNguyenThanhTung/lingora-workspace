@@ -1,0 +1,77 @@
+@startuml component-architecture-m24
+title Artifact #13: Component Architecture & 5-Layer Responsibility Hierarchy
+skinparam BoxPadding 10
+skinparam defaultTextAlignment left
+skinparam componentStyle uml2
+
+package "Layer 1: Presentation Layer (Untrusted Public Client Zone)" {
+    [Learner Web Presentation\n(lingora-web Client Components)\nCOMP-PRES-01] as PresLearner
+    [Admin Web Presentation\n(lingora-admin Client Components)\nCOMP-PRES-02] as PresAdmin
+}
+
+package "Layer 2: Application / BFF Layer (Trusted Server Runtime)" {
+    [Learner BFF Orchestrator\n(Next.js Route Handlers & Proxies)\nCOMP-APP-01] as AppLearnerBFF
+    [Admin BFF Orchestrator\n(Next.js Server Actions & Prisma)\nCOMP-APP-02] as AppAdminBFF
+}
+
+package "Layer 3: Domain Services Layer (Headless Business Engines)" {
+    [Auth & Identity Service\nCOMP-DOM-01] as DomAuth
+    [Curriculum & Progression Service\nCOMP-DOM-02] as DomCurriculum
+    [Assessment & Diagnostic Service\nCOMP-DOM-03] as DomAssessment
+    [SRS Scheduling Service (Policy B)\nCOMP-DOM-04] as DomSRS
+    [Lesson Execution Service (Policy D7)\nCOMP-DOM-05] as DomLesson
+    [Content Lifecycle & SoD Service\nCOMP-DOM-06] as DomContent
+    [Admin Governance & Audit Service\nCOMP-DOM-07] as DomAudit
+    [AI Integration & Proxy Service\nCOMP-DOM-08] as DomAIProxy
+}
+
+package "Layer 4: Persistence & Infrastructure Layer (Database & Security Core)" {
+    database "PostgreSQL Relational DB\n(Current Applied & Target Schema)\nCOMP-INFRA-01" as InfraPostgres
+    [Row Level Security (RLS) Engine\nCOMP-INFRA-02] as InfraRLS
+    [Stored Procedure RPC Engine\n(record_review atomic transaction)\nCOMP-INFRA-03] as InfraRPC
+    [Object Media Storage Engine\n(PA2 Direct Private Buckets)\nCOMP-INFRA-04] as InfraStorage
+    [Immutable Audit Log Store\n(Append-Only Event Ledger)\nCOMP-INFRA-05] as InfraAuditStore
+}
+
+package "Layer 5: External Providers Layer (Managed & Independent Services)" {
+    [Supabase GoTrue Auth Provider\n(Identity & ES256/HS256 JWT)\nCOMP-EXT-01] as ExtGoTrue
+    [Stateless AI Compute Service\n(FastAPI / T5-small GEC Inference)\nCOMP-EXT-02] as ExtAI
+}
+
+' Strict One-Way Dependency Wiring (Top-Down, No Cycles)
+PresLearner --> AppLearnerBFF : HTTPS (Session Cookie)
+PresAdmin --> AppAdminBFF : HTTPS (Session Cookie)
+
+AppLearnerBFF --> DomCurriculum : linear progression query
+AppLearnerBFF --> DomAssessment : submit placement / jump
+AppLearnerBFF --> DomLesson : submit exercise / retry
+AppLearnerBFF --> DomSRS : query due / trigger review
+AppLearnerBFF --> DomAIProxy : forward scenario writing text
+AppLearnerBFF --> ExtGoTrue : user authentication / refresh
+
+AppAdminBFF --> DomContent : draft / review / publish (SoD)
+AppAdminBFF --> DomAudit : role assignment / audit read
+AppAdminBFF --> ExtGoTrue : admin authentication
+
+DomCurriculum --> InfraPostgres : read/write progress
+DomAssessment --> InfraPostgres : persist AssessmentResult
+DomLesson --> InfraPostgres : complete UserProgress
+DomContent --> InfraPostgres : update lesson lifecycle
+DomAudit --> InfraAuditStore : append-only audit emission
+
+DomSRS --> InfraRPC : atomic record_review call
+InfraRPC --> InfraPostgres : update srs cards & review_logs
+
+AppLearnerBFF --> InfraStorage : direct PA2 media retrieval
+InfraPostgres ..> InfraRLS : enforces data isolation
+
+DomAIProxy --> ExtAI : proxied HTTP POST (8.0s timeout, JWT forward)
+note right of ExtAI
+  Invariant (ADR-014):
+  Stateless AI Service owns solely
+  transient corrected_text diffs.
+  Zero DB connection; Zero writes
+  to learner progression/mastery/streak.
+end note
+
+@enduml

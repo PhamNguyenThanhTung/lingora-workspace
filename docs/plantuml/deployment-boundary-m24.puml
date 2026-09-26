@@ -1,0 +1,88 @@
+@startuml deployment-boundary-m24
+title Artifact #14: Deployment & Runtime Boundary (5 Logical Security Zones & Secret Isolation)
+skinparam BoxPadding 15
+skinparam defaultTextAlignment left
+skinparam componentStyle uml2
+
+package "Zone 1: Untrusted Public Client Zone (Browser Environment)" as Zone1 {
+    [Learner Web Client\n(Browser / React UI)\nStatus: CURRENT_APPLIED] as ClientLearner
+    [Admin Web Client\n(Browser / React UI)\nStatus: CURRENT_APPLIED] as ClientAdmin
+    note bottom of ClientLearner
+      Secret Boundary:
+      - ZERO server secret keys
+      - ZERO raw JWTs in localStorage
+      - Authenticated solely via httpOnly session cookie
+    end note
+}
+
+package "Zone 2: Trusted Application Server Zone (Vercel Serverless / Edge Runtime)" as Zone2 {
+    [Learner Application BFF\n(Route Handlers & AI Proxy)\nStatus: CURRENT_APPLIED] as ServerLearnerBFF
+    [Admin Application BFF\n(Server Actions & Prisma)\nStatus: CURRENT_APPLIED] as ServerAdminBFF
+    note top of ServerLearnerBFF
+      Secret Boundary:
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY (Public read-only)
+      - AI_API_BASE_URL (Server-only private config)
+      - ISOLATED from SUPABASE_SERVICE_ROLE_KEY
+    end note
+    note top of ServerAdminBFF
+      Secret Boundary:
+      - Database Session Pooler credentials (port 5432)
+      - Enforces SoD logic prior to persistence
+    end note
+}
+
+package "Zone 3: Managed Database & Storage Zone (Supabase Cloud ap-southeast-1)" as Zone3 {
+    [GoTrue Auth Service\nStatus: CURRENT_APPLIED] as SupabaseAuth
+    database "PostgreSQL 15 Core\n- 2-Role DB Enum [CURRENT_APPLIED]\n- 6-Role Target Schema [TARGET_DESIGN]\n- RLS Policy Engine [CURRENT + TARGET]" as SupabaseDB
+    [Private Storage Buckets\n- lingora-avatars (5MB, direct RLS)\n- lingora-media (10MB, direct RLS)\nStatus: CURRENT_APPLIED (PA2)] as SupabaseStorage
+    database "Append-Only AuditLog Ledger\nStatus: TARGET_DESIGN" as SupabaseAudit
+    note right of SupabaseDB
+      RLS Enforcement:
+      - Primary database security fence
+      - Independent of application layer
+      - auth.uid() derived from verified JWT
+    end note
+}
+
+package "Zone 4: Isolated AI Compute Zone (FastAPI / Render or HF Spaces)" as Zone4 {
+    [FastAPI AI Compute Server\n- Mock Mode [CURRENT_APPLIED]\n- T5-small GEC Model [TARGET_DESIGN]\n- Zero Database Connection] as ServerAI
+    note bottom of ServerAI
+      Isolation & Secret Boundary:
+      - ZERO database access credentials
+      - Token verification via Supabase JWKS (ES256)
+      - Transient text processing only
+    end note
+}
+
+package "Zone 5: Privileged Infrastructure Operations Zone (Internal Operator Boundary)" as Zone5 {
+    [Migration CLI & Seed Harnesses\n(Prisma CLI, psql, deploy scripts)\nStatus: CURRENT_APPLIED] as InfraOpsCLI
+    note bottom of InfraOpsCLI
+      Privileged Secret:
+      - SUPABASE_SERVICE_ROLE_KEY
+      - Used EXCLUSIVELY for migrations & seed
+      - NEVER accessible by Zone 1 or Zone 2 (Learner)
+    end note
+}
+
+' Inter-Zone Communication Paths & Protocols
+ClientLearner --> ServerLearnerBFF : HTTPS (TLS [ILLUSTRATIVE], httpOnly Cookie)
+ClientAdmin --> ServerAdminBFF : HTTPS (TLS [ILLUSTRATIVE], httpOnly Cookie)
+
+ServerLearnerBFF --> SupabaseAuth : Verify session & exchange tokens
+ServerLearnerBFF --> SupabaseDB : PostgREST / RPC (with user Bearer JWT)
+ServerLearnerBFF --> SupabaseStorage : Direct media download via PA2 RLS
+ServerLearnerBFF --> ServerAI : Proxied HTTP POST /v1/gec/correct\n(with forwarded user JWT, 8.0s timeout)
+
+ServerAdminBFF --> SupabaseDB : Prisma TCP (Shared Pooler port 5432)
+ServerAdminBFF --> SupabaseAudit : Emit security audit events (Target)
+
+InfraOpsCLI --> SupabaseDB : Admin connection (migrations / schema updates)
+
+' Architectural Disclaimer
+note as DeploymentDisclaimer
+  Status Note:
+  Components labeled TARGET_DESIGN represent architectural specifications.
+  TARGET RUNTIME IS NOT CLAIMED PRODUCTION-READY OR DEPLOYED.
+end note
+
+@enduml

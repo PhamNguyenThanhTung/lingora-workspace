@@ -1754,3 +1754,79 @@ git status --short
 - **Scope:** Confirm N-R1..N-R7 closed in current artifacts (candidate/DD-tag corrections, taxonomy re-audit with 422 mapping, CDN removal, IN_PROGRESS qualification, telemetry examples, neutral `[ILLUSTRATIVE / TARGET]` routes, clean `git diff --check`); confirm 24/24 M2.3 checks, 18/18 guards, 17/17 D4 checks PASS; confirm `03` unmodified, zero runtime/schema scope, no unresolved P0/P1 or blocking P2.
 - **Commands:** `py scratch/verify_m23_design.py` (exit 0, 24/24), `py scratch/verify_consistency_guards.py` (exit 0, 18/18), `py scratch/verify_d4_design.py` (exit 0, 17/17), `git diff --check` (exit 0, LF notices only), `git status --short` (no runtime/schema/`03` changes).
 - **Verdict:** PASS → `M2.3 ACCEPTED FOR M2.4` (ADR-025).
+
+### `T-M24-DESIGN-001` (2026-09-26) — Milestone M2.4 Architecture & Security Design Automated Verification
+
+- **Environment:** Windows, PowerShell, Python 3.11, Git.
+- **Scope:** Complete automated verification of Milestone M2.4 deliverables: master specification `docs/phase-1-m2-4-architecture-security.md`, 3 PlantUML diagrams (`component-architecture-m24.puml`, `deployment-boundary-m24.puml`, `security-matrix-m24.puml`), secondary updates `docs/01-architecture.md` (§3.8) and `docs/05-traceability-matrix.md` (§10), consistency guards regression, D4 regression, whitespace hygiene, and scope firewall checks.
+
+**Command 1 (M2.4 Automated Design Verification Suite):**
+```powershell
+py scratch/verify_m24_design.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA MILESTONE M2.4 - AUTOMATED DESIGN VERIFICATION
+===========================================================================
+[PASS] CHECK-01: Artifact Identities #13, #14, #16 exact
+[PASS] CHECK-02: 6 Canonical Roles verified; Service Role treated as infrastructure boundary
+[PASS] CHECK-03: Current 2-role vs Target 6-role distinction modeled under DD-10
+[PASS] CHECK-04: Zero target-as-ready claims; explicit anti-drift guards present
+[PASS] CHECK-05: DD-03 Audit architecture handled in mandatory 3 tiers
+[PASS] CHECK-06: DD-10 Role enforcement split handled in mandatory 3 tiers
+[PASS] CHECK-07: Security matrix encompasses all 6 boundaries across 15 sensitive operations
+[PASS] CHECK-08: Application AuthZ vs DB RLS cleanly separated; app checks never replace RLS
+[PASS] CHECK-09: Privileged Service Role isolated from client & learner runtime
+[PASS] CHECK-10: Separation of Duties (SoD) negative denial paths enforced
+[PASS] CHECK-11: GEC stateless non-ownership and 8.0s timeout verified
+[PASS] CHECK-12: Zero active fabricated IDs (UC-16..18, BF-16) and zero ghost entities
+[PASS] CHECK-13: Open decision firewall preserved (DD-03, DD-10, D3/D4, DD-06 open)
+[PASS] CHECK-14: M2.2/M2.3 pedagogical and learning progression invariants preserved
+[PASS] CHECK-15: docs/03-api-contract.md remains 100% byte-identical / read-only
+[PASS] CHECK-16: All 3 M2.4 PlantUML diagrams structurally valid with 0 trailing whitespace
+===========================================================================
+ALL 16 M2.4 DESIGN VERIFICATION CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (Automated Consistency Guards Regression):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 3 (D4 Focused Specification Scan Regression):**
+```powershell
+py scratch/verify_d4_design.py
+```
+**Output:** Exit code 0.
+```text
+ALL D4 FOCUSED CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (Repository Whitespace Hygiene Check):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0. Zero whitespace errors across all tracked files.
+**Verdict:** PASS.
+
+**Command 5 (Scope Boundary & Git Commit Status Check):**
+```powershell
+git status --short
+```
+**Output:** Exit code 0. Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero DB migrations created or modified, `docs/03-api-contract.md` 100% byte-identical, zero git commits created (`COMMIT: NOT CREATED`).
+**Verdict:** PASS.
+
+### `T-M24-ACCEPT-001` (2026-09-26) -- Milestone M2.4 Acceptance Prerequisite Verification
+
+- **Environment:** Windows, PowerShell, read-only artifact inspection (automated suites covered by `T-M24-DESIGN-001` + final cleanup verification).
+- **Scope:** Confirm 5 P2 closed in current artifacts (social-login removed; 11 specified events; deployment details illustrative/candidate; SupportTicket FUTURE_MIGRATION wording; verifier precedence fixed + CHECK-17 negative self-test); confirm 17/17 M2.4 checks, 18/18 guards, 17/17 D4 checks PASS; confirm `03` unmodified, zero runtime/schema scope, D-G6 input-only (no PASS claimed), no unresolved P0/P1 or blocking P2.
+- **Commands:** `py scratch/verify_m24_design.py` (exit 0, 17/17), `py scratch/verify_consistency_guards.py` (exit 0, 18/18), `py scratch/verify_d4_design.py` (exit 0, 17/17), `git diff --check` (exit 0, LF notices only), `git status --short` (no runtime/schema/`03` changes, no M2.5 work).
+- **Verdict:** PASS -- `M2.4 ACCEPTED FOR M2.5` (ADR-027).

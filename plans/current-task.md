@@ -1,48 +1,32 @@
-# Milestone M2.3: Sequence / API / Service Boundary Modeling — DONE (`M2.3 ACCEPTED FOR M2.4`)
+# Milestone M2.4: Architecture & Security Design -- DONE (M2.4 ACCEPTED FOR M2.5)
 
 ## Status
 
-`DONE — M2.3 ACCEPTED FOR M2.4` (acceptance recorded 2026-09-26: Re-Review `PASS WITH NON-BLOCKING ISSUES`, final P2 cleanup N-R1..N-R7 + F-WS-01 verified closed, 24/24 + 18/18 + 17/17 PASS, `git diff --check` clean, `03` byte-identical, zero runtime/schema scope; `M2.4 = NEXT MILESTONE / PLAN NOT STARTED`; `COMMIT: NOT CREATED`)
-
-## Next Milestone State
-
-```text
-M2.4 = NEXT MILESTONE / PLAN NOT STARTED
-```
-
-M2.4 (Architecture + Security) requires a separate human-approved plan. No M2.4 work begins in this task.
+`DONE -- M2.4 ACCEPTED FOR M2.5` (acceptance recorded 2026-09-26: Independent Review `PASS WITH NON-BLOCKING ISSUES`, final P2 cleanup verified closed, 17/17 + 18/18 + 17/17 PASS, `git diff --check` clean, `03` byte-identical, zero runtime/schema scope; `M2.5 = NEXT MILESTONE / PLAN NOT STARTED`; `COMMIT: NOT CREATED`.)
 
 ## Entry Condition
 
-- `M2.2 ACCEPTED FOR M2.3` (Independent Re-Review passed with non-blocking issues; final P2 cleanup N-01..N-04 closed; Gates D-G1, D-G2, D-G4, D-G7 PASS)
-- `M2.3 PLAN APPROVED` (`plans/m2-3-sequence-api-service-boundary-plan.md`)
-- D1–D4 & M2.1/M2.2 baselines FROZEN & ACCEPTED
+- `M2.3 ACCEPTED FOR M2.4` (ADR-025; commit `379c259` + governance repair `d37fc78`)
+- `M2.4 PLAN APPROVED` (`plans/m2-4-architecture-security-plan.md`)
+- D1–D4, M2.1, M2.2, M2.3 baselines FROZEN & ACCEPTED
 
-## Objective
+## Objective & Deliverables
 
-Implement the complete authoritative sequence, API, and service boundary layer for Lingora according to the approved plan `plans/m2-3-sequence-api-service-boundary-plan.md`, covering:
-1. **Master Specification:** `docs/phase-1-m2-3-sequence-api-service-boundary.md` encompassing Artifacts #11, #12, #15, each exposing the roadmap-exact 6-field architectural contract.
-2. **Artifact #11 (Sequence Diagrams / Sequence Set):** Grouped PlantUML sequence specifications for SEQ-01 through SEQ-10 mapping all 15 Use Cases (`UC-01`..`UC-15`) and 15 Behavioral Families (`BF-01`..`BF-15`), including alternate/error flows, timeout/fallback semantics, and authoritative persistence boundaries.
-3. **Artifact #12 (API Contract / Service Boundary):** Service-facing request/response semantics, input/output ownership, auth context, error boundary taxonomy (codes reused from `docs/03-api-contract.md` or marked `OPEN / PENDING VALIDATION`), and API compatibility/gap register (`docs/03-api-contract.md` remains strictly READ-ONLY).
-4. **Artifact #15 (Service Interaction / Boundary Model):** Service responsibilities, presentation/data/domain layer duties, dependency directions, authoritative state ownership matrix, AI stateless boundary (non-owner of progression/mastery/streak/completion), persistence boundaries, failure containment, and CURRENT / TARGET / FUTURE / COMPATIBILITY GAP classification.
-5. **Data Ownership Matrix:** Explicit table establishing authoritative owners, AI role, and persistence boundaries across all learner states.
-6. **Error / Failure Taxonomy & Conceptual Idempotency/Atomicity Matrix:** Classification of read, mutation, atomic mutation (`record_review`), and idempotent/replay-protected operations.
-7. **Traceability:** Section 9 update in `docs/05-traceability-matrix.md` linking requirements, MVP, P1-FR, UC, BF, M2.2 behavior to M2.3 sequence and service boundaries.
-8. **Architecture Cross-Reference:** Section 3.7 update in `docs/01-architecture.md`.
-9. **Validation Gates:** Evidence records for D-G4 (Behavioral & Interaction Integrity), D-G5 (Boundary & Contract Consistency), and D-G6 Input Evidence (Security/Auth Boundary input to M2.4/M2.5; D-G6 closure not claimed).
+Implement the complete authoritative architecture and security design layer for Lingora according to the approved plan `plans/m2-4-architecture-security-plan.md`, covering:
+1. **Master Specification:** `docs/phase-1-m2-4-architecture-security.md` encompassing Artifacts #13, #14, #16, each exposing the roadmap-exact 6-field architectural contract.
+2. **Artifact #13 (Component Architecture):** 5-layer logical hierarchy (Presentation, BFF/Application Orchestrators, Domain Services, Persistence/Infrastructure, External Providers) across 19 logical components with strict top-down acyclic dependencies; authoritative ownership of rules and data boundaries; stateless AI integration boundary.
+3. **Artifact #14 (Deployment / Runtime Boundary):** 5 logical security zones (Untrusted Public Client, Trusted App Server / Vercel, Managed Database & Storage / Supabase, Isolated AI Compute / FastAPI, Privileged Ops / CLI); secret isolation boundaries; explicit `CURRENT_APPLIED` vs `TARGET_DESIGN` vs `FUTURE_EXTENSION` classification; strict anti-drift rule that target runtime is NEVER claimed ready or deployed.
+4. **Artifact #16 (Security Responsibility Matrix):** Authoritative single 6-boundary matrix across 15 sensitive operations (`OP-01`..`OP-15`) detailing Learner Web, Admin Web, Supabase RLS, Privileged Service Role, AI Server, and Audit Ledger; strict enforcement split between Application Authorization and Database RLS (app checks never replace RLS); Separation of Duties (SoD) negative denial paths (`403 SOD_VIOLATION_SELF_REVIEW`, `403 SOD_VIOLATION_MODERATOR_PUBLISH`); least-privilege privileged service role isolation.
+5. **Decision DD-03 (Audit Architecture) Handling:** Mandatory 3-tier verdict: Locked Behavior (immutable, append-only, 4 core fields), Design Specification (closed in M2.4: 11-event catalog, actor/target typing, UTC ISO 8601), and Open Physical Representation (`metadata JSONB` shape, trigger vs app emission, IP/device fields, retention stay `OPEN`).
+6. **Decision DD-10 (Role Enforcement Split) Handling:** Mandatory 3-tier verdict: Locked Behavior (6 canonical roles, DB-level RLS mandatory, app never replaces RLS), Design Specification (closed in M2.4: CURRENT 2-role vs TARGET 6-role mapping, app check vs RLS split, backward compatibility guarantee), and Open Physical Representation (migration DDL and SQL scripts stay `OPEN`).
+7. **Traceability:** Section 10 update in `docs/05-traceability-matrix.md` linking requirements, MVP, P1-FR, UC, BF, Domain to M2.4 Component, Deployment Zone, and Security Matrix Operations.
+8. **Architecture Cross-Reference:** Section 3.8 update in `docs/01-architecture.md`.
+9. **Validation Gates:** Design evidence for D-G5 (Boundary & Contract Consistency) and D-G6 (Security & Auth Boundary Consistency); explicit rule that D-G5 and D-G6 are NOT claimed as closed.
 10. **PlantUML Diagrams:** Authored under `docs/plantuml/`:
-    - `sequence-auth-session-m23.puml` (SEQ-01)
-    - `sequence-learner-onboarding-m23.puml` (SEQ-02)
-    - `sequence-diagnostic-placement-m23.puml` (SEQ-03)
-    - `sequence-conditional-jump-m23.puml` (SEQ-04)
-    - `sequence-lesson-exercise-retry-m23.puml` (SEQ-05)
-    - `sequence-srs-review-m23.puml` (SEQ-06)
-    - `sequence-progress-streak-m23.puml` (SEQ-07)
-    - `sequence-authoring-moderation-publish-m23.puml` (SEQ-08)
-    - `sequence-admin-ops-m23.puml` (SEQ-09)
-    - `sequence-gec-interaction-m23.puml` (SEQ-10)
-    - `service-boundary-m23.puml`
-    - `layer-responsibility-m23.puml`
+    - `component-architecture-m24.puml`
+    - `deployment-boundary-m24.puml`
+    - `security-matrix-m24.puml`
+11. **Deterministic Verification Harness:** `scratch/verify_m24_design.py` validating all 16 invariant criteria.
 
 ## Category Tag
 
@@ -50,17 +34,21 @@ Implement the complete authoritative sequence, API, and service boundary layer f
 
 ## Constraints & Scope Firewall
 
-- Zero runtime application code (`lingora-web`, `lingora-admin`, `lingora-ai`).
+- Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`).
 - Zero database schema or migration changes (`schema.prisma`, `migrations/`).
-- Zero RLS implementation, security middleware, or runtime security code.
-- Zero AI model implementation or scoring algorithm code.
-- Zero modifications to `docs/03-api-contract.md` (read-only context; gaps recorded in M2.3 spec).
-- Zero changes to source artifacts of D1/D2/D3/D4, M2.1, or M2.2.
-- Zero ghost entities (`Exam`, `QuestionBank`, `AssessmentSession`).
-- No `UC-16/17/18`, no `BF-16`, no fabricated GEC UC.
-- Self-reported entry produces 0 AssessmentResult, 0 SkillProfile, 0 verifiedProficiency.
-- AI Server owns ZERO learner progression/mastery/proficiency/streak/completion.
-- Jump remains strictly under `UC-04` / `BF-11`; Placement remains strictly under `UC-03` / `BF-08`.
-- Content publishing owned by `Organizational Manager`; Admin emergency publish on `APPROVED` only.
-- All 13 open decision groups preserved as `OPEN / CONFIGURABLE / PENDING VALIDATION`.
+- Zero RLS SQL or migration SQL written.
+- Zero modifications to `docs/03-api-contract.md` (100% byte-identical, read-only).
+- Zero changes to source artifacts of D1/D2/D3/D4, M2.1, M2.2, or M2.3.
+- Target runtime is NEVER claimed ready or deployed.
+- D-G5 and D-G6 are NOT claimed as closed.
+- Exactly 6 canonical roles; `service_role` is a technical infrastructure boundary swimlane.
+- All open decision groups preserved as `OPEN / CONFIGURABLE / PENDING VALIDATION`.
 - `COMMIT: NOT CREATED`.
+
+## Next Milestone State
+
+```text
+M2.5 = NEXT MILESTONE / PLAN NOT STARTED
+```
+
+M2.5 (Design Validation) requires a separate human-approved plan. No M2.5 work begins in this task.

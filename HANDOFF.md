@@ -7,7 +7,22 @@
 
 ## Current state
 
-- Latest task: `m2-3-acceptance` (category: `runtime-boundary`) — DONE (`M2.3 ACCEPTED FOR M2.4`; `M2.4 = NEXT MILESTONE / PLAN NOT STARTED`; `COMMIT: NOT CREATED`).
+- Latest task: `m2-4-acceptance` (category: `runtime-boundary`) — DONE (`M2.4 ACCEPTED FOR M2.5`; `M2.5 = NEXT MILESTONE / PLAN NOT STARTED`; `COMMIT: NOT CREATED`).
+  - Acceptance decision: `M2.4 ACCEPTED FOR M2.5` (ADR-027; acceptance milestone only — not Design Complete, not M2.5 Complete, no runtime implementation, not production-ready).
+  - Acceptance evidence: Independent Review `PASS WITH NON-BLOCKING ISSUES` (0 P0/P1, 5 P2) + final P2 cleanup verified closed + `T-M24-ACCEPT-001` PASS (17/17, 18/18, 17/17, diff-check clean) + D-G5 design evidence PASS + D-G6 INPUT EVIDENCE ONLY; target runtime NOT PRODUCTION READY / NOT DEPLOYED; `03` byte-identical; open decisions preserved.
+  - Master specification: `docs/phase-1-m2-4-architecture-security.md` (Sections 1–15, 6-field architectural contracts for Artifacts #13, #14, #16).
+  - Artifact #13 (Component Architecture): 5-layer logical hierarchy, 19 logical components (`COMP-PRES-01/02`, `COMP-APP-01/02`, `COMP-DOM-01..08`, `COMP-INFRA-01..05`, `COMP-EXT-01/02`), strict top-down acyclic dependencies, rule/data ownership, stateless AI integration.
+  - Artifact #14 (Deployment/Runtime Boundary): 5 logical security zones (Zone 1 Client, Zone 2 BFF/Vercel, Zone 3 Supabase DB/Storage, Zone 4 FastAPI AI, Zone 5 Privileged Ops), secret boundaries (zero service-role key in learner/client), `CURRENT_APPLIED` vs `TARGET_DESIGN` vs `FUTURE_EXTENSION`. Anti-drift rule: target runtime is NEVER claimed ready or deployed.
+  - Artifact #16 (Security Responsibility Matrix): Single authoritative 6-boundary matrix across 15 sensitive operations (`OP-01`..`OP-15`). Application Authorization + Database RLS both present; app checks never replace RLS; privileged service role scoped strictly to maintenance/seed/migration (`N/A — privileged service-role path`). SoD negative denial paths (`403 SOD_VIOLATION_SELF_REVIEW`, `403 SOD_VIOLATION_MODERATOR_PUBLISH`).
+  - DD-03 & DD-10: Handled in mandatory 3 tiers (Locked Behavior / Design Specification / Open Physical Representation). Physical tables, migration SQL, DDL, retention stay OPEN.
+  - Visual Specifications: `docs/plantuml/component-architecture-m24.puml`, `docs/plantuml/deployment-boundary-m24.puml`, `docs/plantuml/security-matrix-m24.puml`.
+  - Secondary Documentation: `docs/01-architecture.md` (§3.8), `docs/05-traceability-matrix.md` (§10).
+  - Automated Verification: `scratch/verify_m24_design.py` (16/16 PASS), `verify_consistency_guards.py` (18/18 PASS), `verify_d4_design.py` (17/17 PASS), `git diff --check` (exit 0).
+  - Governance: `ADR-026` in `logs/decision-log.md`, `T-M24-DESIGN-001` in `logs/test-log.md`, `logs/development-log.md`.
+  - Invariants: Zero application runtime code, zero DB schema/migrations, zero RLS SQL written, `docs/03-api-contract.md` 100% byte-identical.
+  - Next step: Human independent review of Milestone M2.4.
+
+- Previous task: `m2-3-acceptance` (category: `runtime-boundary`) — DONE (`M2.3 ACCEPTED FOR M2.4`; `M2.4 = NEXT MILESTONE / PLAN NOT STARTED`; `COMMIT: NOT CREATED`).
   - Acceptance decision: `M2.3 ACCEPTED FOR M2.4` (ADR-025; acceptance milestone only — not Design Complete, not M2.4 Complete, no runtime implementation, not production-ready).
   - Acceptance evidence: Re-Review `PASS WITH NON-BLOCKING ISSUES` + final P2 cleanup N-R1..N-R7/F-WS-01 verified closed + `T-M23-ACCEPT-001` PASS (24/24, 18/18, 17/17, diff-check clean) + D-G4 PASS + D-G5 PASS + D-G6 INPUT EVIDENCE ONLY; `03` byte-identical; open decisions preserved.
   - Next milestone state: `M2.4 = NEXT MILESTONE / PLAN NOT STARTED` — M2.4 (Architecture + Security) requires a separate human-approved plan. Design-to-implementation boundary preserved.
