@@ -7,7 +7,38 @@
 
 ## Current state
 
-- Latest task: `m2-5-acceptance` (category: `runtime-boundary`) — DONE (`M2.5 ACCEPTED FOR M2.6`; `M2.6 = NEXT MILESTONE / NOT STARTED`; `COMMIT: NOT CREATED`).
+- Latest task: `m2-6-acceptance` (category: `runtime-boundary`) — DONE (`M2.6 ACCEPTED`; formal Phase 1 Design-to-Implementation Handoff acceptance; `COMMIT: NOT CREATED`).
+  - Acceptance decision: `M2.6 ACCEPTED` (ADR-029; formal acceptance only — not a production implementation approval, not a deployment approval, not production-ready).
+  - Acceptance evidence: Final Independent Re-Review `PASS` (NEW-P1-01, P2-01, P2-05, NEW-P2-01/02/03 verified CLOSED; prior P1-01..P1-11 findings remain CLOSED; no new regression) + `T-M26-ACCEPT-001` PASS (17/17, 18/18, 17/17, diff-check clean) + D-G10 `IMPLEMENTATION HANDOFF READINESS` evidenced (NOT runtime/production readiness); `03` byte-identical; open Phase 2 entry items preserved as documented dependencies.
+  - Master specification: `docs/phase-1-m2-6-design-handoff.md` (Handoff Specification: migration outline 8 phases + rollback, 18 test skeleton frames, 4-tier API register, 5-zone/6-role/11-event security reconfirmation, §11 report mapping + evidence index, 7 Tier-3 DD closures on paper, 9-field dependency register with 0 BLOCKING).
+  - Validation gates: D-G1..D-G9 regression clean (M2.5 baseline preserved); D-G10 evidenced with Input/Method/PASS-FAIL/Evidence; D-G5/D-G6 remain NOT closed for production as established by M2.4.
+  - Six-field ×20: reconfirmed complete via M2.5 Artifact #20 (read-only reference, not duplicated).
+  - Traceability: M2.5 evidence index reused read-only; `01` §§3.1–3.8 and `05` §§1–10 fully read-only; §11 mapping reconfirmed.
+  - Open decisions: DD-01..DD-06/DD-10 Tier 3 physical representations RESOLVED ON PAPER (documented TARGET decisions, zero execution); no DDL/SQL authored or run; no schema modified.
+  - Invariants: Zero runtime/schema/migration/RLS/UI/infra work; `docs/03-api-contract.md` 100% byte-identical; target runtime NOT PRODUCTION READY / NOT DEPLOYED.
+  - Next step: Phase 2 implementation requires its own gated plans; no Phase 2 work begins here. Unrelated worktree changes preserved untouched.
+
+- Previous task: `m2-6-design-handoff-remediation` (category: `runtime-boundary`) — REMEDIATION COMPLETE (`M2.6 STATUS: READY FOR INDEPENDENT RE-REVIEW`; `M2.6 ACCEPTANCE: NOT RECORDED`; `COMMIT: NOT CREATED`).
+  - Active task: `plans/current-task.md` -> `READY FOR INDEPENDENT RE-REVIEW`.
+  - Approved plan: `plans/m2-6-design-handoff-plan.md` (APPROVED).
+  - Primary deliverable: `docs/phase-1-m2-6-design-handoff.md` (Design-to-Implementation Handoff Specification — Remediated).
+  - Re-review findings closed:
+    * `NEW-P1-01 = CLOSED`: Canonical Component Ownership rebuilt strictly from live accepted M2.4 source (`docs/phase-1-m2-4-architecture-security.md` and `docs/plantuml/component-architecture-m24.puml`), eliminating all misassigned or invented services. Created the auditable Canonical Component Ownership Matrix in Section 4.3 with exactly 29 rows covering 18 frames + 11 API groups. Aligned Section 3 target components, DD-06 (`COMP-DOM-03`), and API Dependency Register.
+    * `P2-01 = CLOSED`: Canonical Security Boundary Alignment (B1..B6) strictly aligned across Section 4.2 and Section 5.2 to M2.4 canonical definitions (B1: Learner Web, B2: Admin Web, B3: Supabase RLS, B4: Privileged Service Role, B5: AI Server, B6: Audit Store). Zero parallel or altered boundary taxonomy.
+    * `P2-05 = CLOSED`: Hardened `scratch/verify_m26_handoff.py` to 17 automated tests with 25 load-bearing semantic mutants testing component ownership, boundaries, ADR citations, illustrative route classification, and M2.6 error code taxonomy (17/17 PASS, 25/25 mutants rejected).
+    * `NEW-P2-01 = CLOSED`: Classified `SOD_VIOLATION_EMERGENCY_UNAPPROVED` and `SOD_VIOLATION_MISSING_JUSTIFICATION` explicitly as `[M2.6 DESIGN ADDITION]` across Frame 16 and Section 4.5 Error Taxonomy, detailing all 6 required governance and architectural criteria.
+    * `NEW-P2-02 = CLOSED`: Explicitly tagged all concrete `/api/` route examples in test frames with `(cú pháp route minh họa [ILLUSTRATIVE ROUTE EXAMPLE — NOT LOCKED]: ...)`, accompanied by a clear warning banner in Section 4.1 affirming framework-neutral architecture.
+    * `NEW-P2-03 = CLOSED`: Stripped trailing blank line at EOF of `logs/test-log.md`; verified `git diff --check` exits with 0.
+  - Automated verification:
+    * `scratch/verify_m26_handoff.py`: 17/17 PASS (with 25 load-bearing semantic mutants)
+    * `scratch/verify_consistency_guards.py`: 18/18 PASS
+    * `scratch/verify_d4_design.py`: 17/17 PASS
+    * `git diff --check`: EXIT 0 (Clean)
+    * `git diff --exit-code docs/03-api-contract.md`: EXIT 0 (100% Byte-Identical)
+  - Invariants: Zero runtime/schema/migration/RLS/UI/infra work; `docs/03-api-contract.md` 100% byte-identical; target runtime NOT PRODUCTION READY / NOT DEPLOYED.
+  - What NOT to do next: Do NOT self-accept M2.6; do NOT create a git commit; do NOT start Phase 2 implementation; do NOT write SQL/DDL/runtime code. Await independent re-review.
+
+- Previous task: `m2-5-acceptance` (category: `runtime-boundary`) — DONE (`M2.5 ACCEPTED FOR M2.6`; `M2.6 = NEXT MILESTONE / NOT STARTED`; `COMMIT: NOT CREATED`).
   - Acceptance decision: `M2.5 ACCEPTED FOR M2.6` (ADR-028; acceptance milestone only — not Design Complete, not M2.6 Complete, no runtime implementation, not production-ready).
   - Acceptance evidence: Independent Re-Review `PASS` (P1-01..P1-04, P2-01..P2-04 all CLOSED) + `T-M25-ACCEPT-001` PASS (16/16, 18/18, 17/17, diff-check clean) + D-G1..D-G9 validated (D-G5 design evidence, D-G6 input-only; D-G10 EXCLUDED to M2.6); `03` byte-identical; open decisions preserved.
   - Master specification: `docs/phase-1-m2-5-design-validation.md` (Artifact #20: D-G1..D-G9 evidence, six-field ×20 audit, 11-category D-G9 scan, traceability + §11 mapping 12/12, DD-01..06/10 closure record with physical OPEN, M2.6 gap list, M2.4 regression).

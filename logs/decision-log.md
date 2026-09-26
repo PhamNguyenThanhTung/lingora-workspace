@@ -1452,3 +1452,31 @@ Milestone M2.5 completed implementation (Artifact #20 Design Validation Report),
 
 - M2.5 validation package is the accepted baseline for M2.6 Design-to-Implementation Handoff.
 - `COMMIT: NOT CREATED` in this task.
+
+---
+
+## ADR-029 — Milestone M2.6 Acceptance (Design-to-Implementation Handoff)
+
+### Date
+
+2026-09-26
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+Milestone M2.6 completed implementation (Handoff Specification with 7 deliverables: migration-plan outline, test-plan skeleton, API register, security/audit reconfirmation, report mapping + index, DD closure record, dependency register), Independent Review (`FAIL`: 11 P1 + 6 P2), full remediation, Independent Re-Review (`FAIL`: NEW-P1-01, P2-01/P2-05 residuals, NEW-P2-01/02/03), second remediation, and Final Independent Re-Review (`PASS`: all findings verified CLOSED, no new regression). Targeted acceptance verification confirmed: `verify_m26_handoff.py` 17/17 PASS (incl. 25-mutant suite), `verify_m25_validation.py` 16/16, guards 18/18, `git diff --check` clean, `03` byte-identical, zero runtime/schema scope, D-G10 handoff-readiness evidenced, no unresolved P0/P1.
+
+### Decision
+
+1. Record `M2.6 ACCEPTED` (formal acceptance of the Phase 1 Design-to-Implementation Handoff; acceptance milestone only — no production implementation executed, not production-ready, not a deployment approval).
+2. Scope accepted: Handoff Specification (`docs/phase-1-m2-6-design-handoff.md`) with migration-plan outline (8 phases + rollback, design-only), test-plan skeleton (18 frames, `SKELETON — NOT EXECUTED`), API register (4 tiers, `03` read-only), security/audit reconfirmation (5 zones incl. Zone 5, 6 roles, 11 canonical events), report mapping + artifact/evidence index (§11 parity, anti-fabrication enforced), DD-01..DD-06/DD-10 Tier 3 physical decisions documented on paper (no SQL/DDL executed, no schema modified), Implementation & Governance Dependency Register (9-field schema, 0 unresolved BLOCKING); D-G10 `IMPLEMENTATION HANDOFF READINESS` evidenced (NOT runtime/production readiness); target runtime NOT PRODUCTION READY / NOT DEPLOYED; open Phase 2 entry items preserved as documented dependencies.
+3. Phase 1 System Design is COMPLETE up to the approved handoff boundary; downstream Phase 2 implementation requires its own gated plans. No Phase 2 work begins in this task.
+4. Preserve all prior review/remediation history; do not rewrite historical entries.
+
+### Consequences
+
+- The M2.6 handoff package is the accepted baseline for Phase 2 implementation planning.
+- `COMMIT: NOT CREATED` in this task.

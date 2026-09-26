@@ -2010,3 +2010,280 @@ git diff --stat -- docs/03-api-contract.md docs/05-traceability-matrix.md docs/0
 - **Scope:** Confirm all 8 findings closed in current artifacts (P1-01 traceability rebuilt canonical incl. FR-007 zero-UC/BF-14, UC-07→BF-13, FR-017 deferred, UC-15 Manage Cohorts & Groups; P1-02 raw bands 0–7:U1..27–30:U6; P1-03 UC-15 canonical; P1-04 real PlantUML citations; P2-01 row #20 D-G10 excluded; P2-02 10-mutation suite; P2-03 Zone 5; P2-04 D1–D9 vs DD-10); confirm 16/16 M2.5 checks, 18/18 guards, 17/17 D4 checks PASS; confirm `03` unmodified, zero runtime/schema scope, D-G10 excluded to M2.6, D-G5/D-G6 input-only (no production claim), no unresolved P0/P1.
 - **Commands:** `py scratch/verify_m25_validation.py` (exit 0, 16/16), `py scratch/verify_consistency_guards.py` (exit 0, 18/18), `py scratch/verify_d4_design.py` (exit 0, 17/17), `git diff --check` (exit 0, LF notices only), `git status --short` (no runtime/schema/`03` changes, no M2.6 work).
 - **Verdict:** PASS -- `M2.5 ACCEPTED FOR M2.6` (ADR-028).
+
+---
+
+### `T-M26-HANDOFF-001` (2026-09-26) — Milestone M2.6 Design-to-Implementation Handoff Specification Verification
+
+- **Environment:** Windows 11, PowerShell 5.1, Python 3.12, Git 2.53.0.windows.1, repo `d:\school\btl`, HEAD checkpoint `d09f7cc5ef0ec251bbf64b272d91b4ecae56a3e4`.
+- **Scope:** Verify deliverable `docs/phase-1-m2-6-design-handoff.md`: 8 migration phases with rollback, 18 test-plan skeleton frames (SKELETON — NOT EXECUTED), API register across 4 tiers, security & audit reconfirmation (5 zones incl. Zone 5 Privileged Infrastructure Operations, 6 roles, 11 audit events), academic report mapping synced with roadmap §11 (anti-fabrication rule enforced), 7 open decisions resolved on paper with exact 10-column schema, Implementation & Governance Dependency Register with exact 9 fields (0 BLOCKING dependencies), Gate D-G10 formal six-field verification (Implementation Handoff Readiness ONLY; NOT Production Ready), `docs/03-api-contract.md` 100% byte-identical, zero runtime code, zero schema/migration DDL, zero RLS deployment, zero commit created (`COMMIT: NOT CREATED`), M2.6 acceptance not recorded (`M2.6 ACCEPTANCE: NOT RECORDED`).
+
+**Command 1 (M2.6 Automated Handoff Verification Suite):**
+```powershell
+py scratch/verify_m26_handoff.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA DESIGN M2.6 - AUTOMATED HANDOFF VERIFICATION SUITE
+===========================================================================
+[PASS] M26-VAL-01: Document Existence & Header Metadata
+       -> Document header and strict firewalls verified
+[PASS] M26-VAL-02: Output 1 — Migration Outline (8 Phases, Rollback, Zero SQL)
+       -> All 8 migration phases present with rollback targets and zero executable SQL
+[PASS] M26-VAL-03: Output 2 — Test-Plan Skeleton (18 Frames, SKELETON — NOT EXECUTED)
+       -> All 18 mandatory test frames present and labeled SKELETON — NOT EXECUTED
+[PASS] M26-VAL-04: Output 3 — API Register (4 Tiers, 03-Contract Cross-Check)
+       -> API surfaces classified into 4 tiers and cross-checked against docs/03
+[PASS] M26-VAL-05: Output 4 — Security & Audit Reconfirmation (5 Zones, Zone 5, 6 Roles, 11 Events)
+       -> 5 security zones (incl. Zone 5), 6 roles, and 11 audit events reconfirmed
+[PASS] M26-VAL-06: Output 5 — Report Mapping & Evidence Index (Roadmap §11 Parity)
+       -> Academic report mapping synced with roadmap §11; anti-fabrication enforced
+[PASS] M26-VAL-07: Output 6 — DD Closure Record (7 Decisions, Exact 10 Columns)
+       -> All 7 decisions resolved on paper with exact 10-column schema
+[PASS] M26-VAL-08: Deliverable 7 — Dependency Register (Exact 9 Fields, 0 BLOCKING)
+       -> Dependency register matches exact 9-field schema with 0 BLOCKING items
+[PASS] M26-VAL-09: Gate D-G10 — Formal Six Fields & Handoff Readiness ONLY
+       -> Gate D-G10 satisfies formal six-field contract for handoff readiness only
+[PASS] M26-VAL-10: CURRENT / TARGET / FUTURE Distinction & No Runtime Claims
+       -> Strict distinction between CURRENT, TARGET, and FUTURE preserved
+[PASS] M26-VAL-11: Repository Firewall & docs/03-api-contract.md Byte-Identical
+       -> Repository firewall preserved: docs/03 byte-identical, zero runtime/schema changes
+[PASS] M26-VAL-12: Mutation & Negative Verification Suite (5 Load-Bearing Mutants)
+       -> All 5 mutation tests properly rejected invalid inputs
+===========================================================================
+ALL 12 HANDOFF VERIFICATION SUITE CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (M2.5 Design Validation Regression Suite):**
+```powershell
+py scratch/verify_m25_validation.py
+```
+**Output:** Exit code 0.
+```text
+================================================================================
+RESULTS: 16/16 PASSED, 0 FAILED
+================================================================================
+```
+**Verdict:** PASS.
+
+**Command 3 (Automated Consistency Guards Regression):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (Repository Whitespace & Boundary Hygiene):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0 (zero whitespace errors, zero conflict markers).
+**Verdict:** PASS.
+
+**Command 5 (API Contract Immutability Check):**
+```powershell
+git diff --exit-code docs/03-api-contract.md
+```
+**Output:** Exit code 0. File `docs/03-api-contract.md` is 100% byte-identical.
+**Verdict:** PASS.
+
+## 2026-09-26 — M2.6 Design Handoff Remediation Verification (P1-01..11, P2-01..06)
+
+**Environment:** Windows 11, PowerShell, Python 3.11 (`py`), Git HEAD `d09f7cc5ef0ec251bbf64b272d91b4ecae56a3e4`.
+
+**Scope:** Verification of all 17 findings (P1-01 through P1-11 and P2-01 through P2-06) remediated in `docs/phase-1-m2-6-design-handoff.md` and hardened in `scratch/verify_m26_handoff.py`.
+
+**Command 1 (Hardened M2.6 Handoff Verification Suite with 19 Semantic Mutations):**
+```powershell
+py scratch/verify_m26_handoff.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA DESIGN M2.6 - HARDENED HANDOFF VERIFICATION SUITE
+===========================================================================
+[PASS] M26-VAL-01: Document Existence & Header Metadata
+       -> Document header and strict firewalls verified
+[PASS] M26-VAL-02: Output 1 — Migration Outline (8 Phases, Rollback, Zero SQL)
+       -> All 8 migration phases present with rollback targets and zero executable SQL
+[PASS] M26-VAL-03: Output 2 — Test-Plan Skeleton (18 Frames, SKELETON, Deep Parity)
+       -> All 18 mandatory test frames present, labeled SKELETON, with deep semantic parity verified
+[PASS] M26-VAL-04: Output 3 — API Register (4 Tiers, 03-Contract, No P2-M*, Canonical Comps)
+       -> API surfaces classified into 4 tiers, cross-checked against docs/03, canonical components & boundaries
+[PASS] M26-VAL-05: Output 4 — Security & Audit (5 Zones, Zone 5, 6 Roles, 11 Canonical Events)
+       -> 5 security zones (incl. Zone 5), 6 roles, and exact 11 canonical audit events reconfirmed
+[PASS] M26-VAL-06: Output 5 — Report Mapping & Evidence Index (Roadmap §11, Real SHAs, ADRs)
+       -> Academic report mapping synced with roadmap §11; anti-fabrication enforced with real SHAs
+[PASS] M26-VAL-07: Output 6 — DD Closure Record (7 Decisions, Exact 10 Cols, Deep Parity)
+       -> All 7 decisions resolved on paper with exact 10 columns and full semantic parity
+[PASS] M26-VAL-08: Deliverable 7 — Dependency Register (Exact 9 Fields, 0 BLOCKING)
+       -> Dependency register matches exact 9-field schema with 0 BLOCKING items
+[PASS] M26-VAL-09: Gate D-G10 — Formal Six Fields & Handoff Readiness ONLY
+       -> Gate D-G10 satisfies formal six-field contract for handoff readiness only
+[PASS] M26-VAL-10: CURRENT / TARGET / FUTURE Distinction & No Runtime Claims
+       -> Strict distinction between CURRENT, TARGET, and FUTURE preserved
+[PASS] M26-VAL-11: Repository Firewall & docs/03-api-contract.md Byte-Identical
+       -> Repository firewall preserved: docs/03 byte-identical, zero runtime/schema changes
+[PASS] M26-VAL-12: Mutation & Negative Verification Suite (19 Load-Bearing Mutants)
+       -> All 19 semantic mutation tests properly rejected invalid inputs
+===========================================================================
+ALL 12 HARDENED HANDOFF VERIFICATION SUITE CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (M2.5 Design Validation Regression Suite):**
+```powershell
+py scratch/verify_m25_validation.py
+```
+**Output:** Exit code 0.
+```text
+================================================================================
+RESULTS: 16/16 PASSED, 0 FAILED
+================================================================================
+```
+**Verdict:** PASS.
+
+**Command 3 (Automated Consistency Guards Regression):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (Repository Whitespace & Boundary Hygiene):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0 (zero whitespace errors, zero conflict markers).
+**Verdict:** PASS.
+
+**Command 5 (API Contract Immutability Check):**
+```powershell
+git diff --exit-code docs/03-api-contract.md
+```
+**Output:** Exit code 0. File `docs/03-api-contract.md` is 100% byte-identical.
+**Verdict:** PASS.
+
+## 2026-09-26 — M2.6 Design-to-Implementation Handoff Re-Review Remediation Verification
+
+**Environment:** Windows 11, PowerShell, Python 3.11, git HEAD `d09f7cc5ef0ec251bbf64b272d91b4ecae56a3e4` (uncommitted handoff package and verification suite in working tree; unrelated dirty changes preserved untouched).
+
+**Purpose:** Verify closure of all independent re-review findings:
+- NEW-P1-01: Canonical Component Ownership (rebuilt from live accepted M2.4 source; exact 29-row matrix in Sec 4.3; 0 fictitious services)
+- P2-01: Canonical Security Boundary Alignment (B1..B6 strictly mapped to M2.4 boundaries across Sec 4.2 & 5.2)
+- P2-05: Verifier Semantic Coverage & Load-Bearing Mutation Tests (17 tests, 25 load-bearing semantic mutants)
+- NEW-P2-01: Error Taxonomy & M2.6 Design Additions (SOD 403 errors classified as `[M2.6 DESIGN ADDITION]`, 6 governance criteria documented)
+- NEW-P2-02: Route Neutrality & Non-Locking Classification (`[ILLUSTRATIVE ROUTE EXAMPLE — NOT LOCKED]` on all concrete routes)
+- NEW-P2-03: Git Whitespace Hygiene (`git diff --check` exits with 0; no trailing whitespace/blank lines)
+
+**Command 1 (Hardened M2.6 Handoff Verification Suite with 17 Tests & 25 Mutants):**
+```powershell
+py scratch/verify_m26_handoff.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA DESIGN M2.6 - HARDENED HANDOFF VERIFICATION SUITE
+===========================================================================
+[PASS] M26-VAL-01: Document Existence & Header Metadata
+       -> Document header and strict firewalls verified
+[PASS] M26-VAL-02: Output 1 — Migration Outline (8 Phases, Rollback, Zero SQL)
+       -> All 8 migration phases present with rollback targets and zero executable SQL
+[PASS] M26-VAL-03: Output 2 — Test-Plan Skeleton (18 Frames, SKELETON, Deep Parity)
+       -> All 18 mandatory test frames present, labeled SKELETON, with deep semantic parity verified
+[PASS] M26-VAL-04: Output 3 — API Register (4 Tiers, 03-Contract, No P2-M*, Canonical Comps)
+       -> API surfaces classified into 4 tiers, cross-checked against docs/03, canonical components & boundaries
+[PASS] M26-VAL-05: Output 4 — Security & Audit (5 Zones, Zone 5, 6 Roles, 11 Canonical Events)
+       -> 5 security zones (incl. Zone 5), 6 roles, and exact 11 canonical audit events reconfirmed
+[PASS] M26-VAL-06: Output 5 — Report Mapping & Evidence Index (Roadmap §11, Real SHAs, ADRs)
+       -> Academic report mapping synced with roadmap §11; anti-fabrication enforced with real SHAs
+[PASS] M26-VAL-07: Output 6 — DD Closure Record (7 Decisions, Exact 10 Cols, Deep Parity)
+       -> All 7 decisions resolved on paper with exact 10 columns and full semantic parity
+[PASS] M26-VAL-08: Deliverable 7 — Dependency Register (Exact 9 Fields, 0 BLOCKING)
+       -> Dependency register matches exact 9-field schema with 0 BLOCKING items
+[PASS] M26-VAL-09: Gate D-G10 — Formal Six Fields & Handoff Readiness ONLY
+       -> Gate D-G10 satisfies formal six-field contract for handoff readiness only
+[PASS] M26-VAL-10: CURRENT / TARGET / FUTURE Distinction & No Runtime Claims
+       -> Strict distinction between CURRENT, TARGET, and FUTURE preserved
+[PASS] M26-VAL-11: Repository Firewall & docs/03-api-contract.md Byte-Identical
+       -> Repository firewall preserved: docs/03 byte-identical, zero runtime/schema changes
+[PASS] M26-VAL-12: Canonical Component Ownership Matrix (Exact 29 Rows, M2.4 Live Source)
+       -> All 29 component ownership rows match canonical M2.4 live sources with zero fictitious services
+[PASS] M26-VAL-13: Canonical Security Boundary Alignment (B1..B6 Exact Parity Across Sec 4.2 & 5.2)
+       -> All 6 security boundaries (B1..B6) strictly aligned with canonical M2.4 specifications
+[PASS] M26-VAL-14: ADR Citation Rigor & Decision-Log Verification (18 ADRs Verified, 0 Broken)
+       -> All 18 ADR citations verified against live logs/decision-log.md (0 broken)
+[PASS] M26-VAL-15: Route Neutrality & Non-Locking Classification ([ILLUSTRATIVE ROUTE EXAMPLE])
+       -> All concrete route syntax labeled [ILLUSTRATIVE ROUTE EXAMPLE — NOT LOCKED]
+[PASS] M26-VAL-16: Error Taxonomy & M2.6 Design Additions (SOD 403 Errors, 6 Governance Criteria)
+       -> New error codes classified as [M2.6 DESIGN ADDITION] with 6 required architectural aspects
+[PASS] M26-VAL-17: Mutation & Negative Verification Suite (25 Load-Bearing Semantic Mutants)
+       -> All 25 semantic mutation tests properly rejected invalid inputs
+===========================================================================
+ALL 17 HARDENED HANDOFF VERIFICATION SUITE CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (Automated Consistency Guards Regression):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 3 (D4 Design Focused Specification Scan):**
+```powershell
+py scratch/verify_d4_design.py
+```
+**Output:** Exit code 0.
+```text
+ALL D4 FOCUSED CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (Repository Whitespace & Boundary Hygiene):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0 (zero whitespace errors, zero conflict markers).
+**Verdict:** PASS.
+
+**Command 5 (API Contract Immutability Check):**
+```powershell
+git diff --exit-code docs/03-api-contract.md
+```
+**Output:** Exit code 0. File `docs/03-api-contract.md` is 100% byte-identical to HEAD.
+**Verdict:** PASS.
+
+---
+
+## 2026-09-26 — M2.6 Formal Acceptance Verification (T-M26-ACCEPT-001)
+
+**Environment:** Windows 11, PowerShell, Python 3.11, prior checkpoint `d09f7cc5ef0ec251bbf64b272d91b4ecae56a3e4` (M2.5). Read-only artifact inspection; no implementation executed by this acceptance task.
+
+**Acceptance basis:** Final Independent Re-Review `PASS` (NEW-P1-01, P2-01, P2-05, NEW-P2-01/02/03 verified CLOSED; prior P1-01..P1-11 and P2 findings remain CLOSED; no new regression).
+
+**Scope confirmed:** Handoff Specification with 7 deliverables (migration outline 8 phases + rollback; 18 test skeleton frames; 4-tier API register; 5-zone/6-role/11-event security reconfirmation; §11 report mapping + evidence index; 7 Tier-3 DD closures on paper; 9-field dependency register with 0 BLOCKING); D-G10 `IMPLEMENTATION HANDOFF READINESS` evidenced (NOT runtime/production readiness); target runtime NOT PRODUCTION READY / NOT DEPLOYED.
+
+**Commands:**
+```powershell
+py scratch/verify_m26_handoff.py
+py scratch/verify_m25_validation.py
+py scratch/verify_consistency_guards.py
+git diff --check
+git status --short
+git diff --exit-code docs/03-api-contract.md
+```
+**Output:** `verify_m26_handoff.py` exit 0 (17/17 PASS, 25 mutants rejected); `verify_m25_validation.py` exit 0 (16/16); `verify_consistency_guards.py` exit 0 (18/18); `git diff --check` exit 0; `git status --short` shows only M2.6 package files plus preserved unrelated dirty changes, nothing staged; `docs/03-api-contract.md` exit 0 (byte-identical). Zero runtime/schema/migration/RLS/UI/infra deltas. No production implementation executed.
+**Verdict:** PASS — `M2.6 FINAL IMPLEMENTATION RE-REVIEW = PASS`; `M2.6 ACCEPTANCE = ACCEPTED` (ADR-029).

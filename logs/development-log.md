@@ -2472,3 +2472,114 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 - **Governance updated:** `plans/current-task.md` → DONE (`M2.5 ACCEPTED FOR M2.6`); `HANDOFF.md` latest accepted milestone → `M2.5 ACCEPTED FOR M2.6`; `M2.6 = NEXT MILESTONE / NOT STARTED`; test record `T-M25-ACCEPT-001`.
 - **Boundary preserved:** zero runtime/schema/API/UI/security work; `03` byte-identical; D1–D4/M2.1–M2.4 unmodified; history retained.
 - **Commit:** `NOT CREATED` (per task rule; no M2.6 work started).
+
+## 2026-09-26 — m2-6-design-to-implementation-handoff (category: `runtime-boundary`)
+
+- **Context:**
+  - Milestone M2.6 implementation executed under approved plan `plans/m2-6-design-handoff-plan.md`.
+  - Objective: Deliver the comprehensive implementation-readable handoff package (`docs/phase-1-m2-6-design-handoff.md`), closing Phase 1 without executing code or altering the database.
+- **Completed:**
+  - Authored Primary Deliverable: `docs/phase-1-m2-6-design-handoff.md` (Design-to-Implementation Handoff Specification):
+    - **Header & Management Contract:** Explicit scope firewall, non-execution boundaries, preserved M2.5 baseline.
+    - **Section 2 (Output 1 — Migration-Plan Outline + Rollback):** All 8 design phases (Pre-migration checks, Compatibility/Expand, Data transformation/Backfill, Role/RLS transition, Application cutover, Validation checkpoints, Rollback strategy, Post-migration validation) with order, status transitions (`CURRENT_APPLIED` / `TARGET_DESIGN` / `FUTURE_EXTENSION`), per-step rollback targets, and zero executable SQL.
+    - **Section 3 (Output 2 — Test-Plan Skeleton):** 18 mandatory scenario frames covering Mapping A (0–7:U1..27–30:U6), Skip->U1, Retake immutable `AssessmentResult`, Jump >=95%, Jump cooldown 24h, Jump != completion, Controlled Retry 10% allowance, Retry 70% credit, SRS Policy B `[1, 3, 7, 14, 30]`, streak local timezone, streak reset to 1, six-role authorization matrix, cross-user RLS isolation, Creator self-review denied, Moderator publish denied, Admin emergency publish constraints, GEC 8.0s timeout/fallback, and AI non-ownership of learner state. All frames labeled `TEST PLAN SKELETON — NOT EXECUTED`.
+    - **Section 4 (Output 3 — API Register):** 26 API surfaces classified into 4 tiers (`CURRENT_APPLIED`, `TARGET_DESIGN`, `FUTURE_EXTENSION`, `COMPATIBILITY_GAP`), with owning boundaries, callers, target domains, and cross-checked against `docs/03-api-contract.md`.
+    - **Section 5 (Output 4 — Security & Audit Baseline Reconfirmation):** 5 logical security zones (preserving explicit Zone 5 Privileged Infrastructure Operations), 6 security boundaries (B1–B6), 6 canonical roles (Learner, Lesson Creator, Moderator, Organizational Manager, Administrator, Operations Staff; service-role is infrastructure, not 7th business role), SoD negative constraints, dual App AuthZ + DB RLS, stateless AI with 8.0s timeout, and 11-event audit catalog.
+    - **Section 6 (Output 5 — Academic Report Mapping & Evidence Index):** Comprehensive synchronization with roadmap `docs/phase-1-system-design-plan.md` §11; strict anti-fabrication rules for downstream links (marked `PLANNED` or `SKELETON`); evidence index distinguishing `CURRENT EVIDENCE`, `TARGET DESIGN`, and `FUTURE IMPLEMENTATION EVIDENCE`.
+    - **Section 7 (Output 6 — Open Decisions Closure Record):** All 7 open decisions (DD-01, DD-02, DD-03, DD-04, DD-05, DD-06, DD-10) resolved on paper in prose/spec form using the exact 10-column table schema.
+    - **Section 8 (Deliverable 7 — Implementation & Governance Dependency Register):** 16 technical and governance dependencies structured with the exact approved 9-field schema, with exactly 0 unresolved `BLOCKING` items at handoff.
+    - **Section 9 (Gate D-G10 Handoff Readiness Validation):** Formal six-field specification (Input, Method, PASS Condition with 12 criteria, FAIL Condition, Evidence, Source of Truth). Verdict: `PASS` for `IMPLEMENTATION HANDOFF READINESS ONLY` (NOT Production Ready).
+    - **Section 10 (Current / Target / Future Integrity):** Strict status taxonomy, zero target-as-ready claims, full M2.5 regression integrity.
+  - Verification & Governance:
+    - Created deterministic test suite `scratch/verify_m26_handoff.py` (12/12 PASS including 5 load-bearing mutation tests).
+    - Appended test record `T-M26-HANDOFF-001` in `logs/test-log.md`.
+    - Maintained `docs/03-api-contract.md` 100% byte-identical.
+    - Preserved unrelated dirty worktree files untouched.
+    - Zero runtime, schema, migration, RLS, or UI code.
+    - Updated `plans/current-task.md` status to `TESTING — READY FOR INDEPENDENT REVIEW`.
+- **Milestone State:**
+  ```text
+  M2.6 IMPLEMENTATION: COMPLETE
+  M2.6 STATUS: TESTING — READY FOR INDEPENDENT REVIEW
+  M2.6 ACCEPTANCE: NOT RECORDED
+  COMMIT: NOT CREATED
+  ```
+- **Tests:** `T-M26-HANDOFF-001` PASS (`verify_m26_handoff.py` 12/12 PASS, `verify_m25_validation.py` 16/16 PASS, `verify_consistency_guards.py` 18/18 PASS, `git diff --check` PASS).
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-6-remediation (category: `runtime-boundary`)
+
+- **Context:**
+  - Independent review of M2.6 implementation resulted in `FAIL` with 11 P1 findings (P1-01..11) and 6 P2 findings (P2-01..06).
+  - Remediated all 17 findings in `docs/phase-1-m2-6-design-handoff.md` while strictly preserving M2.6 as `HANDOFF-ONLY / ZERO IMPLEMENTATION`.
+- **Completed:**
+  - **P1-01 (Skip Branch Violation):** Rebuilt Frame 2 from Canonical M2.2 Branch A: Skip assigns `startingUnit = 1` and `UNVERIFIED` status only; explicitly asserts exactly 0 AssessmentResult, 0 SkillProfile, and does not establish `verifiedProficiency`.
+  - **P1-02 (Controlled Retry Semantics):** Rebuilt Frame 7 with canonical D7 formula `allowance = max(1, floor(N * 0.10))` calculated per lesson attempt/context; eliminated all references to daily global pools and midnight resets.
+  - **P1-03 (Learner Progression Entity & State Names):** Rebuilt Frame 6 using canonical entity `LearningProgress` and flags `by_jump = true` / `SKIPPED_BY_JUMP`; eliminated stale `LessonProgress` and bare `UNTOUCHED`.
+  - **P1-04 (Fabricated Service/Component Names):** Replaced `lingora-core` and invented standalone services across frames and API Register with canonical M2.4 components (`COMP-DOM-*`, `COMP-APP-*`, `COMP-INFRA-*`, `COMP-EXT-*`) and M2.3 service boundaries; added explicit Component Owner and Boundary mapping table (B1–B6).
+  - **P1-05 (DD-05 LISTENING Audio Reference):** Replaced free-form path `audioRef` in DD-05 with `vocabularyId` referencing `vocabularies.id` under Supabase Storage RLS governance.
+  - **P1-06 (DD-06 Assessment Type Enum & Placement Model):** Locked `assessment_type` enum to `DIAGNOSTIC`, `EXIT`, `RE_EVALUATION`; decoupled Jump delivery mode; established immutable chain `AssessmentResult` -> `SkillProfile` -> `verifiedProficiency` -> `curriculumStartingPoint`.
+  - **P1-07 (Content Lifecycle States in DD-02):** Added `CHANGES_REQUESTED` to status enum (6 canonical states: `DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`).
+  - **P1-08 (11 Canonical Audit Events):** Restored exact 11 canonical audit events from M2.4 Artifact #16 / DD-03 (`AUTH_LOGIN_FAILED`, `ROLE_ASSIGNED`, `ACCOUNT_SUSPENDED`, `CONTENT_APPROVED`, `CONTENT_CHANGES_REQ`, `CONTENT_PUBLISHED`, `CONTENT_EMERGENCY_PUB`, `CONTENT_EMERGENCY_ARCH`, `DIAGNOSTIC_COMPLETED`, `JUMP_LOCKOUT_TRIGGERED`, `AUDIT_LOG_INSPECTED`).
+  - **P1-09 (Commit SHA Integrity):** Replaced non-existent commit SHAs with real verified checkpoints in git history (`ea1a2f3`, `7ab74b4`, `379c259`, `0a9a126`, `d09f7cc`).
+  - **P1-10 (Fabricated Phase 2 Milestone IDs `P2-M*`):** Audited and eliminated all 42 occurrences of `P2-M*`, replacing them with canonical roadmap phase labels (e.g. `Phase 2 Entry`, `Phase 2 Core Implementation`).
+  - **P1-11 (Diagnostic Item Count):** Updated API-ASSESS-02 to specify `~25–30 proposed diagnostic items` with raw score band 0–30 under Mapping A, eliminating false requirement of exact 30 answers.
+  - **P2-01 (Boundary Label Mapping & Status Phrasing):** Added explicit B1..B6 boundary mapping table in Section 4; replaced stale "Thiết kế mục tiêu sẵn sàng" with "Đặc tả thiết kế mục tiêu hoàn tất / chờ triển khai Phase 2".
+  - **P2-02 (ADR Range Narrowing):** Narrowed broad `ADR-001..028` citation in Section 6 to actual existing architectural ADRs (`ADR-002, ADR-003, ADR-004, ADR-005, ADR-006, ADR-008, ADR-010, ADR-011, ADR-012, ADR-014, ADR-016, ADR-020, ADR-023, ADR-024, ADR-025, ADR-026, ADR-027, ADR-028`).
+  - **P2-03 (DD-10 Role Enforcement Lookup):** Replaced unverified custom JWT claim helper with identity-derived lookup via `profiles.role` joined on `auth.uid()`, with optional auth hook claim synced from `profiles.role` and `auth.uid()` fallback.
+  - **P2-04 (DD-06 App Service Atomic Transaction):** Decisively resolved DD-06 architecture: Application BFF Service (`COMP-DOM-05`) performs atomic transaction writing `assessment_results` and updating `profiles.verified_starting_unit`; database trigger is secondary audit verification.
+  - **P2-05 (Verifier Hardening & Meaningful Semantic Mutations):** Hardened `scratch/verify_m26_handoff.py` with 19 semantic load-bearing mutation checks covering all P1 and P2 items (12/12 PASS).
+  - **P2-06 (SoD Error Status Codes in Frame 16):** Corrected emergency publish error codes in Frame 16 to HTTP 403 (`403 SOD_VIOLATION_EMERGENCY_UNAPPROVED` and `403 SOD_VIOLATION_MISSING_JUSTIFICATION`).
+  - **Governance & Verification:**
+    - `scratch/verify_m26_handoff.py`: 12/12 PASS (with 19 semantic mutations).
+    - `scratch/verify_m25_validation.py`: 16/16 PASS.
+    - `scratch/verify_consistency_guards.py`: 18/18 PASS.
+    - `git diff --check`: EXIT 0 (Clean).
+    - `git diff --exit-code docs/03-api-contract.md`: EXIT 0 (100% Byte-Identical).
+    - `plans/current-task.md` updated to `READY FOR INDEPENDENT RE-REVIEW`.
+    - `logs/test-log.md` updated with remediation evidence.
+    - `HANDOFF.md` updated.
+- **Milestone State:**
+  ```text
+  M2.6 REMEDIATION: COMPLETE
+  M2.6 STATUS: READY FOR INDEPENDENT RE-REVIEW
+  M2.6 ACCEPTANCE: NOT RECORDED
+  COMMIT: NOT CREATED
+  ```
+- **Tests:** `scratch/verify_m26_handoff.py` PASS (12/12), `scratch/verify_m25_validation.py` PASS (16/16), `scratch/verify_consistency_guards.py` PASS (18/18).
+- **Commit:** `NOT CREATED` (pending independent review and explicit user authorization).
+
+## 2026-09-26 — m2-6-re-review-remediation (category: `runtime-boundary`)
+
+- **Context:**
+  - Independent re-review of M2.6 implementation resulted in `FAIL` with findings:
+    - P2-01 (Boundary labels B1..B6 parallel taxonomy)
+    - P2-05 (Verifier semantic coverage & load-bearing mutation tests)
+    - NEW-P1-01 (Canonical Component Ownership & invented services)
+    - NEW-P2-01 (M2.6 Design Addition classification for 403 error codes)
+    - NEW-P2-02 (Illustrative route example non-locking classification)
+    - NEW-P2-03 (Trailing blank line in test log)
+- **Completed:**
+  - **NEW-P1-01 (Canonical Component Ownership Rebuilt):** Rebuilt strictly from live accepted M2.4 source (`docs/phase-1-m2-4-architecture-security.md` and `docs/plantuml/component-architecture-m24.puml`), eliminating all misassigned or invented services. Created the auditable Canonical Component Ownership Matrix in Section 4.3 with exactly 29 rows covering 18 frames + 11 API groups. Aligned Section 3 target components, DD-06 (`COMP-DOM-03`), and API Dependency Register.
+  - **P2-01 (Canonical Security Boundary Alignment):** Fully aligned Section 4.2 and Section 5.2 security boundary definitions with canonical M2.4 boundaries (B1: Learner Web, B2: Admin Web, B3: Supabase RLS, B4: Privileged Service Role, B5: AI Server, B6: Audit Store). Zero parallel or altered boundary taxonomy.
+  - **P2-05 (Verifier Hardening & Mutation Coverage):** Expanded `scratch/verify_m26_handoff.py` from 12 to 17 automated tests, with 25 load-bearing semantic mutants testing component ownership, boundaries, ADR citations, illustrative route classification, and M2.6 error code taxonomy (17/17 PASS, 25/25 mutants rejected).
+  - **NEW-P2-01 (Error Taxonomy & M2.6 Design Additions):** Formally classified `SOD_VIOLATION_EMERGENCY_UNAPPROVED` and `SOD_VIOLATION_MISSING_JUSTIFICATION` as `[M2.6 DESIGN ADDITION]` across Frame 16 and Section 4.5 Error Taxonomy, documenting all 6 required governance and architectural criteria.
+  - **NEW-P2-02 (Route Neutrality & Non-Locking Classification):** Tagged all concrete route syntax in test frames with `(cú pháp route minh họa [ILLUSTRATIVE ROUTE EXAMPLE — NOT LOCKED]: ...)`, accompanied by a clear warning banner in Section 4.1 affirming framework-neutral architecture.
+  - **NEW-P2-03 (Git Whitespace Hygiene):** Stripped trailing blank line at EOF of `logs/test-log.md`; verified `git diff --check` exits with 0.
+- **Milestone State:**
+  ```text
+  M2.6 REMEDIATION: COMPLETE
+  M2.6 STATUS: READY FOR INDEPENDENT RE-REVIEW
+  M2.6 ACCEPTANCE: NOT RECORDED
+  COMMIT: NOT CREATED
+  ```
+- **Tests:** `scratch/verify_m26_handoff.py` PASS (17/17, 25 mutants), `scratch/verify_consistency_guards.py` PASS (18/18), `scratch/verify_d4_design.py` PASS (17/17), `git diff --check` PASS (exit 0), `git diff --exit-code docs/03-api-contract.md` PASS (100% byte-identical).
+- **Commit:** `NOT CREATED` (pending independent review and explicit user authorization).
+
+## 2026-09-26 — m2-6-acceptance-recording (category: `runtime-boundary`)
+
+- **Context:** Authorized formal acceptance recording for M2.6 following Final Independent Re-Review (`PASS`: NEW-P1-01, P2-01, P2-05, NEW-P2-01/02/03 verified CLOSED; prior P1-01..P1-11 findings remain CLOSED; no new regression).
+- **Decision recorded:** `M2.6 ACCEPTED` (ADR-029; formal acceptance of the Phase 1 Design-to-Implementation Handoff — not a production implementation approval, not a deployment approval, not production-ready). Handoff package with 7 deliverables complete; D-G10 `IMPLEMENTATION HANDOFF READINESS` evidenced (NOT runtime/production readiness); Tier-3 DD physical decisions documented on paper with zero execution; target runtime NOT PRODUCTION READY / NOT DEPLOYED; `03` byte-identical; open Phase 2 entry items preserved as documented dependencies.
+- **Governance updated:** `plans/current-task.md` → DONE (`M2.6 ACCEPTED`); `HANDOFF.md` latest accepted milestone → `M2.6 ACCEPTED`; test record `T-M26-ACCEPT-001`.
+- **Boundary preserved:** zero runtime/schema/API/UI/security work; `03` byte-identical; D1–D4/M2.1–M2.5 unmodified; history retained.
+- **Commit:** `NOT CREATED` (per task rule; no Phase 2 work started).
