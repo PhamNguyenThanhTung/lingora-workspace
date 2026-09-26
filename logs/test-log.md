@@ -1830,3 +1830,183 @@ git status --short
 - **Scope:** Confirm 5 P2 closed in current artifacts (social-login removed; 11 specified events; deployment details illustrative/candidate; SupportTicket FUTURE_MIGRATION wording; verifier precedence fixed + CHECK-17 negative self-test); confirm 17/17 M2.4 checks, 18/18 guards, 17/17 D4 checks PASS; confirm `03` unmodified, zero runtime/schema scope, D-G6 input-only (no PASS claimed), no unresolved P0/P1 or blocking P2.
 - **Commands:** `py scratch/verify_m24_design.py` (exit 0, 17/17), `py scratch/verify_consistency_guards.py` (exit 0, 18/18), `py scratch/verify_d4_design.py` (exit 0, 17/17), `git diff --check` (exit 0, LF notices only), `git status --short` (no runtime/schema/`03` changes, no M2.5 work).
 - **Verdict:** PASS -- `M2.4 ACCEPTED FOR M2.5` (ADR-027).
+
+### `T-M25-VAL-001` (2026-09-26) -- Milestone M2.5 Design Validation Test Suite
+
+- **Environment:** Windows, PowerShell, Python 3.11, Commit SHA `0a9a126e952226518f3f772bc8e33babb4e2ebde`.
+- **Scope:** Execution of automated M2.5 Design Validation test suite (`scratch/verify_m25_validation.py`), consistency guards regression (`scratch/verify_consistency_guards.py`), D4 specification scan (`scratch/verify_d4_design.py`), whitespace hygiene (`git diff --check`), and forbidden file change check.
+- **Commands:**
+
+**Command 1 (M2.5 Automated Design Validation Suite):**
+```powershell
+py scratch/verify_m25_validation.py
+```
+**Output:** Exit code 0.
+```text
+================================================================================
+LINGORA M2.5 DESIGN VALIDATION TEST SUITE (T-M25-VAL-001)
+================================================================================
+[PASS] M25-VAL-01: Doc Structure & Contract
+       -> Artifact #20 header and six-field contract verified
+[PASS] M25-VAL-02: Gates D-G1..D-G9 Coverage & D-G10 Exclusion
+       -> D-G1..D-G9 covered; D-G10 explicitly excluded to M2.6
+[PASS] M25-VAL-03: D-G5 & D-G6 Preserved at M2.4 Status
+       -> D-G5/D-G6 preserved at design evidence / input only; not closed for production
+[PASS] M25-VAL-04: Six-Field × 20 Artifact Audit Matrix
+       -> All 20 artifacts audited across 6 fields with 100% concrete entries
+[PASS] M25-VAL-05: D-G9 11-Category Contradiction & Drift Scan
+       -> All 11 categories scanned, dispositioned, and GUARD-12 compliant
+[PASS] M25-VAL-06: End-to-End Traceability Chain
+       -> P1-FR-001..017 and P1-NFR-001..004 fully traced
+[PASS] M25-VAL-07: Report Mapping §11 Row-by-Row Parity
+       -> 12/12 rows of Phase-1 Plan §11 report mapping verified
+[PASS] M25-VAL-08: docs/05-traceability-matrix.md Read-Only Integrity
+       -> docs/05 §§1–10 preserved read-only; Artifact #20 serves as self-contained evidence index
+[PASS] M25-VAL-09: Open Decisions (DD-01..06/10) Tier 3 OPEN Status
+       -> DD-01..06 and DD-10 recorded with Tier 3 physical representation strictly OPEN
+[PASS] M25-VAL-10: DD-03 & DD-10 3-Tier Split Preservation
+       -> DD-03 (11 events, physical open) and DD-10 (6 roles, DB RLS mandatory, physical open) verified
+[PASS] M25-VAL-11: M2.4 Architecture & Security Regression Invariants
+       -> 19 components, 5 layers, 5 security zones, 6 boundaries preserved
+[PASS] M25-VAL-12: Zero Forbidden Changes & API Byte-Identical
+       -> docs/03-api-contract.md byte-identical; zero runtime/schema changes
+================================================================================
+RESULTS: 12/12 PASSED, 0 FAILED
+================================================================================
+```
+**Verdict:** PASS.
+
+**Command 2 (Automated Consistency Guards Regression):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 3 (D4 Focused Specification Scan Regression):**
+```powershell
+py scratch/verify_d4_design.py
+```
+**Output:** Exit code 0.
+```text
+ALL D4 FOCUSED CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (Repository Whitespace Hygiene Check):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0. Zero whitespace errors across all tracked files.
+**Verdict:** PASS.
+
+**Command 5 (Scope Boundary & API Contract Integrity Check):**
+```powershell
+git diff --exit-code docs/03-api-contract.md
+git diff --stat -- docs/03-api-contract.md docs/05-traceability-matrix.md lingora-web lingora-admin lingora-ai prisma migrations
+```
+**Output:** Exit code 0. `docs/03-api-contract.md` 100% byte-identical, `docs/05-traceability-matrix.md` untouched read-only, zero application runtime code, zero DB migrations created or modified, zero git commits created (`COMMIT: NOT CREATED`).
+**Verdict:** PASS.
+
+---
+
+### `T-M25-REM-001` (2026-09-26) -- Milestone M2.5 Remediation Verification Suite
+
+- **Environment:** Windows 11, PowerShell, Python 3.11, Commit SHA `0a9a126e952226518f3f772bc8e33babb4e2ebde` (checkpoint M2.4).
+- **Task:** `m2-5-design-validation-remediation`
+- **Scope:** Execution of the hardened automated M2.5 Design Validation test suite (`scratch/verify_m25_validation.py`) with 16 load-bearing checks closing findings P1-01 through P1-04 and P2-01 through P2-04, active mutation testing suite, consistency guards regression (`scratch/verify_consistency_guards.py`), D4 specification scan (`scratch/verify_d4_design.py`), repository whitespace hygiene check (`git diff --check`), and scope boundary checks.
+- **Commands:**
+
+**Command 1 (Hardened M2.5 Remediation Verification Suite with Mutation Testing):**
+```powershell
+py scratch/verify_m25_validation.py
+```
+**Output:** Exit code 0.
+```text
+================================================================================
+LINGORA M2.5 HARDENED REMEDIATION VERIFICATION SUITE (T-M25-REM-001)
+================================================================================
+[PASS] M25-VAL-01: Doc Structure & Contract
+       -> Artifact #20 header and six-field contract verified
+[PASS] M25-VAL-02: Gates D-G1..D-G9 Coverage & D-G10 Exclusion
+       -> D-G1..D-G9 covered; D-G10 explicitly excluded to M2.6
+[PASS] M25-VAL-03: D-G5 & D-G6 Preserved at M2.4 Status
+       -> D-G5/D-G6 preserved at design evidence / input only; not closed for production
+[PASS] M25-VAL-04: Six-Field x 20 Artifact Audit Matrix & Row #20 D-G10 Excluded
+       -> All 20 artifacts audited; Row #20 explicitly marks D-G10 pending/excluded to M2.6
+[PASS] M25-VAL-05: D-G9 11-Category Contradiction & Drift Scan
+       -> All 11 categories scanned, dispositioned, and GUARD-12 compliant
+[PASS] M25-VAL-06: End-to-End Traceability Chain
+       -> P1-FR-001..017 and P1-NFR-001..004 fully traced
+[PASS] M25-VAL-07: Report Mapping §11 Row-by-Row Parity
+       -> 12/12 rows of Phase-1 Plan §11 report mapping verified
+[PASS] M25-VAL-08: docs/05-traceability-matrix.md Read-Only Integrity
+       -> docs/05 §§1–10 preserved read-only; Artifact #20 serves as self-contained evidence index
+[PASS] M25-VAL-09: Open Decisions (DD-01..06/10) Tier 3 OPEN Status
+       -> DD-01..06 and DD-10 recorded with Tier 3 physical representation strictly OPEN
+[PASS] M25-VAL-10: DD-03 & DD-10 3-Tier Split Preservation
+       -> DD-03 (11 events, physical open) and DD-10 (6 roles, DB RLS mandatory, physical open) verified
+[PASS] M25-VAL-11: M2.4 Architecture & Security Regression Invariants
+       -> 19 components, 5 layers, 5 zones (including Zone 5 Privileged Ops), D1-D9 locked vs DD-10 open verified
+[PASS] M25-VAL-12: Zero Forbidden Changes & API Byte-Identical
+       -> docs/03-api-contract.md byte-identical; zero runtime/schema changes
+[PASS] M25-VAL-13: Canonical FR & UC/BF Semantic Mapping (P1-01, P1-03)
+       -> 17 P1-FR mappings verified; FR-007 zero UC ownership; UC-07->BF-13; UC-15 canonical
+[PASS] M25-VAL-14: D-G7 Mapping A 6 Raw-Score Bands & Boundaries (P1-02)
+       -> Mapping A 6 raw-score bands (0-7, 8-12, 13-17, 18-22, 23-26, 27-30) and boundaries verified
+[PASS] M25-VAL-15: PlantUML Artifact Citations On-Disk (P1-04)
+       -> All 18 citations (27 physical files) verified on disk; 0 fictitious files
+[PASS] M25-VAL-16: Mutation & Negative Verification Suite (P2-02)
+       -> All 10 mutation & negative tests successfully triggered expected validation errors
+================================================================================
+RESULTS: 16/16 PASSED, 0 FAILED
+================================================================================
+```
+**Verdict:** PASS.
+
+**Command 2 (Automated Consistency Guards Regression):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 3 (D4 Focused Specification Scan Regression):**
+```powershell
+py scratch/verify_d4_design.py
+```
+**Output:** Exit code 0.
+```text
+ALL D4 FOCUSED CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 4 (Repository Whitespace Hygiene Check):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0. Zero whitespace errors across all tracked files.
+**Verdict:** PASS.
+
+**Command 5 (Scope Boundary & API Contract Integrity Check):**
+```powershell
+git diff --exit-code docs/03-api-contract.md
+git diff --stat -- docs/03-api-contract.md docs/05-traceability-matrix.md docs/01-architecture.md docs/02-requirements.md lingora-web lingora-admin lingora-ai prisma migrations
+```
+**Output:** Exit code 0. `docs/03-api-contract.md` 100% byte-identical, `docs/05-traceability-matrix.md` untouched read-only, zero application runtime code, zero DB migrations created or modified, zero git commits created (`COMMIT: NOT CREATED`).
+**Verdict:** PASS.
+
+---
+
+### `T-M25-ACCEPT-001` (2026-09-26) -- Milestone M2.5 Acceptance Prerequisite Verification
+
+- **Environment:** Windows, PowerShell, read-only artifact inspection (automated suites covered by `T-M25-VAL-001` + `T-M25-REM-001`).
+- **Scope:** Confirm all 8 findings closed in current artifacts (P1-01 traceability rebuilt canonical incl. FR-007 zero-UC/BF-14, UC-07→BF-13, FR-017 deferred, UC-15 Manage Cohorts & Groups; P1-02 raw bands 0–7:U1..27–30:U6; P1-03 UC-15 canonical; P1-04 real PlantUML citations; P2-01 row #20 D-G10 excluded; P2-02 10-mutation suite; P2-03 Zone 5; P2-04 D1–D9 vs DD-10); confirm 16/16 M2.5 checks, 18/18 guards, 17/17 D4 checks PASS; confirm `03` unmodified, zero runtime/schema scope, D-G10 excluded to M2.6, D-G5/D-G6 input-only (no production claim), no unresolved P0/P1.
+- **Commands:** `py scratch/verify_m25_validation.py` (exit 0, 16/16), `py scratch/verify_consistency_guards.py` (exit 0, 18/18), `py scratch/verify_d4_design.py` (exit 0, 17/17), `git diff --check` (exit 0, LF notices only), `git status --short` (no runtime/schema/`03` changes, no M2.6 work).
+- **Verdict:** PASS -- `M2.5 ACCEPTED FOR M2.6` (ADR-028).

@@ -7,7 +7,17 @@
 
 ## Current state
 
-- Latest task: `m2-4-acceptance` (category: `runtime-boundary`) — DONE (`M2.4 ACCEPTED FOR M2.5`; `M2.5 = NEXT MILESTONE / PLAN NOT STARTED`; `COMMIT: NOT CREATED`).
+- Latest task: `m2-5-acceptance` (category: `runtime-boundary`) — DONE (`M2.5 ACCEPTED FOR M2.6`; `M2.6 = NEXT MILESTONE / NOT STARTED`; `COMMIT: NOT CREATED`).
+  - Acceptance decision: `M2.5 ACCEPTED FOR M2.6` (ADR-028; acceptance milestone only — not Design Complete, not M2.6 Complete, no runtime implementation, not production-ready).
+  - Acceptance evidence: Independent Re-Review `PASS` (P1-01..P1-04, P2-01..P2-04 all CLOSED) + `T-M25-ACCEPT-001` PASS (16/16, 18/18, 17/17, diff-check clean) + D-G1..D-G9 validated (D-G5 design evidence, D-G6 input-only; D-G10 EXCLUDED to M2.6); `03` byte-identical; open decisions preserved.
+  - Master specification: `docs/phase-1-m2-5-design-validation.md` (Artifact #20: D-G1..D-G9 evidence, six-field ×20 audit, 11-category D-G9 scan, traceability + §11 mapping 12/12, DD-01..06/10 closure record with physical OPEN, M2.6 gap list, M2.4 regression).
+  - Six-field ×20: 20/20 complete; row #20 marks D-G10 pending/excluded; zero generic fields.
+  - Traceability: P1-FR-001..017 + P1-NFR-001..004 verified (FR-007 zero-UC/BF-14; UC-07→BF-13; FR-017 deferred non-UC; UC-15 Manage Cohorts & Groups OPTIONAL/FUTURE); `05` §§1–10 read-only.
+  - Open decisions: DD-01..DD-06/DD-10 Tier 3 physical OPEN; DD-03/DD-10 physical OPEN; RECORDED != PHYSICALLY RESOLVED; no DDL/SQL.
+  - Invariants: Zero runtime/schema/migration/RLS/UI/infra work; `docs/03-api-contract.md` 100% byte-identical; target runtime NOT PRODUCTION READY / NOT DEPLOYED.
+  - Next step: Human-approved M2.6 plan (Design-to-Implementation Handoff) before any M2.6 work; M2.6 remains NOT STARTED.
+
+- Previous task: `m2-4-acceptance` (category: `runtime-boundary`) — DONE (`M2.4 ACCEPTED FOR M2.5`; `M2.5 = NEXT MILESTONE / PLAN NOT STARTED`; `COMMIT: NOT CREATED`).
   - Acceptance decision: `M2.4 ACCEPTED FOR M2.5` (ADR-027; acceptance milestone only — not Design Complete, not M2.5 Complete, no runtime implementation, not production-ready).
   - Acceptance evidence: Independent Review `PASS WITH NON-BLOCKING ISSUES` (0 P0/P1, 5 P2) + final P2 cleanup verified closed + `T-M24-ACCEPT-001` PASS (17/17, 18/18, 17/17, diff-check clean) + D-G5 design evidence PASS + D-G6 INPUT EVIDENCE ONLY; target runtime NOT PRODUCTION READY / NOT DEPLOYED; `03` byte-identical; open decisions preserved.
   - Master specification: `docs/phase-1-m2-4-architecture-security.md` (Sections 1–15, 6-field architectural contracts for Artifacts #13, #14, #16).

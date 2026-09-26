@@ -2404,3 +2404,71 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 - **Governance updated:** `plans/current-task.md` → DONE (`M2.4 ACCEPTED FOR M2.5`); `HANDOFF.md` latest accepted milestone → `M2.4 ACCEPTED FOR M2.5`; `M2.5 = NEXT MILESTONE / PLAN NOT STARTED`; test record `T-M24-ACCEPT-001`.
 - **Boundary preserved:** zero runtime/schema/API/UI/security work; `03` byte-identical; D1–D4/M2.1/M2.2/M2.3 unmodified; history retained.
 - **Commit:** `NOT CREATED` (per task rule; no M2.5 work started).
+
+## 2026-09-26 — m2-5-design-validation (category: `runtime-boundary`)
+
+- **Context:**
+  - Milestone M2.5 implementation executed under approved plan `plans/m2-5-design-validation-plan.md`.
+  - Objective: Deliver the comprehensive design validation report (Artifact #20) consolidating D-G1–D-G9 evidence, six-field × 20 completeness audit, contradiction/drift scan across 11 categories, full traceability and report-mapping verification, and open-decision status recording.
+- **Completed:**
+  - Authored Master Specification: `docs/phase-1-m2-5-design-validation.md` (Artifact #20 Design Validation Report) covering:
+    - **Header & Management Contract:** Explicit scope firewall, non-execution boundaries, preserved M2.4 baseline.
+    - **Section 20.1 (Validation Gates D-G1..D-G9 Detailed Evidence):** Individual Input, Method, PASS/FAIL verdict, Evidence, and Source of Truth for each gate. D-G1..D-G4, D-G7..D-G9 PASS; D-G5/D-G6 preserved at M2.4 status (`DESIGN EVIDENCE SATISFIED` / `INPUT EVIDENCE ONLY`; NOT closed for production); D-G10 explicitly EXCLUDED (M2.6).
+    - **Section 20.2 (Six-Field × 20 Artifact Audit Matrix):** Complete audit of Artifacts #1 through #20 against Purpose, Inputs, Outputs, Dependencies, Trace, and Validation Gate (100% concrete, zero generic placeholders).
+    - **Section 20.3 (D-G9 Contradiction, Drift & Boundary Scan):** Full scan and disposition of 11 categories (Obsolete Terminology, Ghost Concepts, Stale UC/BF IDs, State Machine Terms, Progress vs Mastery, CEFR Claims, Target-as-Ready, Stale Source Refs, Security/SoD, AI Boundary, Status Taxonomy). 0 open P0/P1 issues. GUARD-12 compliant (AssessmentSession labeled HISTORICAL alias, no canonical entity).
+    - **Section 20.4 (Full Traceability & Academic Report Mapping):** Complete chain `P1-FR-001..017` / `P1-NFR-001..004` → MVP → UC → BF → Domain → D3/D4 → M2.2/M2.3/M2.4/M2.5; row-by-row verification of `docs/phase-1-system-design-plan.md` §11 (Rows 1–12); `docs/05-traceability-matrix.md` kept read-only.
+    - **Section 20.5 (Open Decision Status & Closure Record):** Recorded status for DD-01, DD-02, DD-03, DD-04, DD-05, DD-06, DD-10 preserving Tier 3 physical representation strictly OPEN (no physical DDL/SQL, no metadata schema locking, RECORDED != PHYSICALLY RESOLVED).
+    - **Section 20.6 (DoD Gap List for M2.6 Handoff):** Detailed inventory of completed design deliverables vs remaining handoff tasks (physical closures, migration outline, test skeleton, D-G10).
+    - **Section 20.7 (M2.4 Invariant & Regression Verification):** Re-verified 19 components, 5 layers, 5 security zones, 6-boundary matrix, 11 audit events, SoD negative paths, ADR-026/027.
+  - Verification & Governance:
+    - Created deterministic test suite `scratch/verify_m25_validation.py` (12/12 PASS).
+    - Appended test record `T-M25-VAL-001` in `logs/test-log.md`.
+    - Maintained `docs/03-api-contract.md` 100% byte-identical.
+    - Preserved unrelated dirty worktree files untouched.
+    - Zero runtime, schema, migration, RLS, or UI code.
+    - Updated `plans/current-task.md` status to `TESTING — READY FOR INDEPENDENT REVIEW`.
+- **Current Milestone State:**
+  ```text
+  M2.5 IMPLEMENTATION: COMPLETE
+  M2.5 STATUS: READY FOR INDEPENDENT REVIEW
+  M2.5 ACCEPTANCE: NOT CLAIMED
+  D-G10: EXCLUDED (M2.6)
+  COMMIT: NOT CREATED
+  ```
+- **Tests:** `T-M25-VAL-001` PASS (`verify_m25_validation.py` 12/12 PASS, `verify_consistency_guards.py` 18/18 PASS, `verify_d4_design.py` 17/17 PASS, `git diff --check` PASS).
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-5-design-validation-remediation (category: `runtime-boundary`)
+
+- **Context:**
+  - Remediation of findings from independent review of Milestone M2.5 (`M2.5 IMPLEMENTATION REVIEW = FAIL`).
+  - Target findings closed: P1-01, P1-02, P1-03, P1-04, P2-01, P2-02, P2-03, P2-04.
+  - Baseline preserved: M2.4 checkpoint `0a9a126e952226518f3f772bc8e33babb4e2ebde`.
+- **Completed Remediation:**
+  - **P1-01 (Traceability rows contradiction):** Rebuilt §5.1 traceability table strictly aligned with `docs/02-requirements.md` (P1-FR-001..017) and accepted M2.2 UC/BF mappings. P1-FR-007 is explicitly marked as a supporting capability mapped to BF-14 with zero UC ownership. Added Section 5.1.1 canonical UC-01..15 ↔ BF-01..15 matrix.
+  - **P1-02 (D-G7 Mapping A bands):** Corrected all Mapping A evidence across D-G7, Section 3 row #17, Section 4 category 6, and §5.1 to canonical raw-score 0–30 mapped to 6 units on English A1 curriculum (0–7 Unit 1, 8–12 Unit 2, 13–17 Unit 3, 18–22 Unit 4, 23–26 Unit 5, 27–30 Unit 6). Skip maps directly to Unit 1 with unverified level; retake generates fresh result; explicit disclaimer that no CEFR certification is issued.
+  - **P1-03 (UC-15 canonical identification):** Restored canonical naming for UC-15: `Manage Cohorts & Group Progress` (OPTIONAL / FUTURE EXTENSION BOUNDARY). Completely eliminated all instances of "Advanced Reports & Analytics".
+  - **P1-04 (Fictitious PlantUML citations):** Replaced non-existent PlantUML citations (`use-case-m22.puml`, `activity-state-m22.puml`, `class-layer-model-m23.puml`) with verified physical on-disk files (`uc-overview-m22.puml`, `activity-learner-flow-m22.puml`, `activity-authoring-flow-m22.puml`, `state-progression-readiness-m22.puml`, `layer-responsibility-m23.puml`, `service-boundary-m23.puml`, and wildcard `sequence-*m23.puml`).
+  - **P2-01 (Six-field row #20 D-G10 exclusion):** Updated Six-Field row #20 to explicitly mark D-G8/D-G9 as evidenced in M2.5, and D-G10 as pending / excluded / deferred to M2.6 rather than validated.
+  - **P2-02 (Hardened verification suite & mutation testing):** Refactored `scratch/verify_m25_validation.py` into 16 modular, load-bearing checks with positive, boundary, and negative checks, plus an active 10-mutation testing suite proving all validators detect defects.
+  - **P2-03 (M2.4 5-zone security taxonomy):** Restored full 5-zone logical security model in D-G5 and Section 8.2 (Zone 1 Public Client, Zone 2 Trusted BFF, Zone 3 Managed DB/Storage, Zone 4 Isolated AI, Zone 5 Privileged Infrastructure Operations), specifically preserving Zone 5 Privileged Ops and `SUPABASE_SERVICE_ROLE_KEY` isolation.
+  - **P2-04 (D-G3 store wording & D1–D9 vs DD-10):** Eliminated `stores (D1–D10)` phrasing; listed explicit store inventory; separated locked policies D1–D9 from open architectural decision DD-10; affirmed no D10 product policy exists.
+- **Verification:**
+  - `T-M25-REM-001` PASS (`verify_m25_validation.py` 16/16 PASS including all 10 mutation tests).
+  - Regressions: `verify_consistency_guards.py` 18/18 PASS, `verify_d4_design.py` 17/17 PASS, `git diff --check` PASS.
+  - File integrity: `docs/03-api-contract.md` 100% byte-identical, `docs/05-traceability-matrix.md` untouched read-only.
+- **Milestone State:**
+  ```text
+  M2.5 REMEDIATION: COMPLETE
+  M2.5 STATUS: READY FOR INDEPENDENT RE-REVIEW
+  M2.5 ACCEPTANCE: NOT RECORDED
+  COMMIT: NOT CREATED
+  ```
+
+## 2026-09-26 — m2-5-acceptance-recording (category: `runtime-boundary`)
+
+- **Context:** Authorized acceptance recording for M2.5 following Independent Review (`FAIL`: P1-01..P1-04, P2-01..P2-04), full remediation, and Independent Re-Review (`PASS`: all 8 findings verified CLOSED).
+- **Decision recorded:** `M2.5 ACCEPTED FOR M2.6` (ADR-028; acceptance milestone only — not Design Complete, not M2.6 Complete, no runtime, not production-ready). Artifact #20 complete; D-G1..D-G9 validated (D-G5 design evidence, D-G6 input-only as M2.4; D-G10 EXCLUDED to M2.6); six-field × 20 complete; traceability + §11 mapping (12/12) validated; DD-01..06/DD-10 recorded with physical OPEN (DD-03/DD-10 physical OPEN); target runtime NOT PRODUCTION READY / NOT DEPLOYED; open decisions preserved.
+- **Governance updated:** `plans/current-task.md` → DONE (`M2.5 ACCEPTED FOR M2.6`); `HANDOFF.md` latest accepted milestone → `M2.5 ACCEPTED FOR M2.6`; `M2.6 = NEXT MILESTONE / NOT STARTED`; test record `T-M25-ACCEPT-001`.
+- **Boundary preserved:** zero runtime/schema/API/UI/security work; `03` byte-identical; D1–D4/M2.1–M2.4 unmodified; history retained.
+- **Commit:** `NOT CREATED` (per task rule; no M2.6 work started).

@@ -1424,3 +1424,31 @@ Milestone M2.4 completed implementation, Independent Review (`PASS WITH NON-BLOC
 
 - M2.4 architecture/security package is the accepted baseline for M2.5 Design Validation.
 - `COMMIT: NOT CREATED` in this task.
+
+---
+
+## ADR-028 — Milestone M2.5 Acceptance FOR M2.6
+
+### Date
+
+2026-09-26
+
+### Category
+
+`runtime-boundary`
+
+### Context
+
+Milestone M2.5 completed implementation (Artifact #20 Design Validation Report), Independent Review (`FAIL`: 4 P1 + 4 P2: P1-01 traceability rows, P1-02 Mapping A bands, P1-03 UC-15 identity, P1-04 PlantUML citations, P2-01 row #20 D-G10, P2-02 verifier weakness, P2-03 Zone 5, P2-04 D1–D10 wording), full remediation, and Independent Re-Review (`PASS`: all 8 findings P1-01..P1-04, P2-01..P2-04 verified CLOSED). Targeted acceptance verification confirmed: `verify_m25_validation.py` 16/16 PASS (incl. 10-mutation suite), guards 18/18, D4 17/17, `git diff --check` clean, `03` byte-identical, zero runtime/schema scope, D-G10 excluded, no unresolved P0/P1.
+
+### Decision
+
+1. Record `M2.5 ACCEPTED FOR M2.6` (acceptance milestone only — not Design Complete, not M2.6 Complete, no runtime implementation, not production-ready).
+2. Scope accepted: Artifact #20 (Design Validation Report with six-field contract); D-G1..D-G9 validated with Input/Method/PASS-FAIL/Evidence each (D-G5 design evidence, D-G6 INPUT EVIDENCE ONLY as established by M2.4; D-G10 EXCLUDED to M2.6); six-field × 20 complete; traceability (P1-FR-001..017, P1-NFR-001..004, UC-01..15, BF-01..15) and `phase-1-system-design-plan.md` §11 mapping (12/12) validated; DD-01..DD-06/DD-10 status recorded with physical representations OPEN (DD-03/DD-10 physical OPEN); target runtime NOT PRODUCTION READY / NOT DEPLOYED; open decisions preserved.
+3. Set `M2.6 = NEXT MILESTONE / NOT STARTED` — no M2.6 work begins in this task.
+4. Preserve all prior review/remediation history; do not rewrite historical entries.
+
+### Consequences
+
+- M2.5 validation package is the accepted baseline for M2.6 Design-to-Implementation Handoff.
+- `COMMIT: NOT CREATED` in this task.
