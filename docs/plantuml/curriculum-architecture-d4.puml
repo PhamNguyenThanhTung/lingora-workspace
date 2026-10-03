@@ -1,0 +1,133 @@
+@startuml
+!theme plain
+skinparam roundCorner 8
+skinparam defaultFontName "Segoe UI"
+skinparam monochrome false
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title Lingora — Curriculum Architecture & Content Governance (D4)
+
+package "Structural Containment Hierarchy" as Hierarchy #F8FAFC {
+  class Course #E2E8F0 {
+    +UUID id
+    +String title
+    +String languageCode
+    +String cefrBand (e.g. A1)
+    +ContentStatus status
+  }
+
+  class Unit #E2E8F0 {
+    +UUID id
+    +UUID courseId
+    +Integer orderIndex (1..6)
+    +String title
+    +UUID prerequisiteUnitId
+    +ContentStatus status
+    -- Visibility Invariant --
+    4/4 Lessons PUBLISHED => Unit visible
+  }
+
+  class Lesson #E2E8F0 {
+    +UUID id
+    +UUID unitId
+    +Integer orderIndex (1..4)
+    +String title
+    +UUID creatorId
+    +UUID reviewerId
+    +UUID supersedesId (Clone-to-Draft v2)
+    +ContentStatus status
+  }
+
+  class Exercise #E2E8F0 {
+    +UUID id
+    +UUID lessonId
+    +Integer orderIndex (1..5)
+    +ExerciseType type
+    +UUID conceptId
+    +JSONB payload
+  }
+
+  Course "1" *-- "1..*" Unit : contains
+  Unit "1" *-- "4" Lesson : contains (U1-U6: 4 lessons/unit)
+  Lesson "1" *-- "5" Exercise : contains (5 exercises/lesson)
+}
+
+package "Semantic Knowledge & Evidence Network" as KnowledgeNet #F1F5F9 {
+  class Concept #FEF3C7 {
+    +UUID id
+    +String code (e.g. EN-A1-VOC-GREET-01)
+    +String languageScope
+    +ConceptDomain domain
+    +String name
+    +UUID prerequisiteConceptId
+    +ConceptStatus status
+    +Integer version
+  }
+
+  class ConceptMastery #DCFCE7 {
+    +UUID id
+    +UUID userId
+    +UUID conceptId
+    +MasteryState state
+    +Integer evidenceCount
+  }
+
+  class KnowledgeGap #FEE2E2 {
+    +UUID id
+    +UUID userId
+    +UUID conceptId
+    +GapSeverity severity
+    +DateTime detectedAt
+  }
+
+  class RemedialModule #FEF9C3 {
+    +UUID id
+    +UUID conceptId
+    +UUID unitId
+    +ContentStatus status (PUBLISHED only)
+    +JSONB freshPayload
+  }
+
+  class AssessmentItem #E0E7FF {
+    +UUID id
+    +UUID conceptId
+    +SkillDimension dimension
+    +ItemDifficulty difficulty
+    +ExerciseType exerciseType
+    +Eligibility[] eligibility
+  }
+
+  Concept "1" <-- "0..*" Concept : prerequisite DAG
+  Concept "1" <-- "0..*" ConceptMastery : tracks mastery
+  Concept "1" <-- "0..*" KnowledgeGap : identifies deficit
+  Concept "1" <-- "0..*" RemedialModule : targets concept
+  KnowledgeGap "1" ..> "1" RemedialModule : triggers fresh scaffolding
+  AssessmentItem "0..*" --> "1" Concept : evaluates
+}
+
+' Semantic Cross-Links (Decoupled from physical containment)
+Lesson ..> Concept : introduces / reinforces
+Exercise --> Concept : evaluates / targets (FK conceptId)
+
+note bottom of Concept #FFFFFF
+  <b>CRITICAL ARCHITECTURAL RULE:</b>
+  Concept is an independent, reusable domain entity.
+  It is NEVER a child entity of Exercise.
+  Multiple Exercises and Assessment Items reference
+  the same Concept across Units.
+end note
+
+package "Content Governance & Roles (SoD)" as Governance #F8FAFC {
+  actor "Lesson Creator" as Creator #DBEAFE
+  actor "Moderator" as Moderator #E0E7FF
+  actor "Organizational Manager" as Manager #F3E8FF
+  actor "Administrator" as Admin #FEE2E2
+
+  Creator --> Lesson : Authors (DRAFT -> IN_REVIEW)
+  Moderator --> Lesson : Reviews (APPROVED / CHANGES_REQUESTED)
+  Manager --> Lesson : Publishes (PUBLISHED / ARCHIVED)
+  Admin ..> Lesson : Emergency Publish/Archive (with AuditLog)
+}
+
+@enduml

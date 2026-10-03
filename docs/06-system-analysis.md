@@ -154,11 +154,11 @@ flowchart TD
 |---|---|---|---|---|---|
 | **UC-01** | Authenticate & Manage Session | Learner, Admin | Core Learning / Admin | `MVP-01` | `IMPLEMENTED (M1.6W)` |
 | **UC-02** | Configure Goals & Study Time | Learner | Core Learning | `MVP-02`, `MVP-10` | `PARTIAL (Profile DB ready; UI pending M2)` |
-| **UC-03** | Take Placement Test | Learner | Core Learning | `MVP-03` | `DESIGN (D6 locked; Implementation pending M2)` |
+| **UC-03** | Take Diagnostic Assessment / Select Level | Learner | Core Learning | `MVP-03` | `DESIGN (Adaptive engine specified; Implementation pending M2)` |
 | **UC-04** | Browse Learning Path | Learner | Core Learning | `MVP-04` | `PARTIAL (Course/Unit/Lesson ready; UI pending M2)` |
 | **UC-05** | Complete Lesson Exercises | Learner | Core Learning | `MVP-05`, `MVP-06`, `MVP-07` | `PARTIAL (Payload ready; Engine pending M2)` |
 | **UC-06** | Spaced Repetition Review (SRS) | Learner | Core Learning | `MVP-09` | `PARTIAL (RPC record_review ready; UI pending M2)` |
-| **UC-07** | Track Progress & Streak | Learner | Core Learning | `MVP-08`, `MVP-10`, `MVP-11` | `PARTIAL (DB ready; UI pending M2)` |
+| **UC-07** | Track Progress, Mastery & Readiness | Learner | Core Learning | `MVP-08`, `MVP-10`, `MVP-11` | `PARTIAL (DB ready; UI pending M2)` |
 | **UC-08** | Create & Edit Lesson Draft | Lesson Creator | Content Workflow | `MVP-05`, `MVP-06`, `MVP-12` | `PARTIAL (DB ready; Admin UI pending M3)` |
 | **UC-09** | Review & Moderate Content | Moderator | Content Workflow | `MVP-07`, `MVP-13` | `DESIGN (D2=2B locked; UI pending M3)` |
 | **UC-10** | Publish Approved Content | Organizational Manager | Content Workflow | `MVP-13` | `PARTIAL (isPublished in DB; UI pending M3)` |
@@ -174,8 +174,8 @@ flowchart TD
 
 #### 📌 UC-01: Xác thực & Quản lý Phiên (Authenticate & Manage Session)
 - **Tác nhân chính:** `Learner`, `Administrator` (và các vai trò nội bộ khác).
-- **Mục tiêu:** Xác thực danh tính người dùng, cấp phát phiên an toàn qua `httpOnly` cookie, chuyển hướng người dùng về đúng phân hệ theo vai trò.
-- **Tiền điều kiện:** Người dùng truy cập trang `/login` hoặc `/register`.
+- **Mục tiêu:** Xác thực danh tính người dùng, cấp phát phiên an toàn qua `httpOnly` cookie, chuyển hướng người dùng về đúng phân hệ theo vai trò; hỗ trợ quy trình khôi phục mật khẩu (Password Recovery Flow).
+- **Tiền điều kiện:** Người dùng truy cập trang `/login` hoặc `/register` hoặc yêu cầu khôi phục mật khẩu.
 - **Luồng chính (Main Flow):**
   1. Người dùng nhập email và mật khẩu (tối thiểu 6 ký tự), nhấn Submit.
   2. Next.js Server Action gửi thông tin xác thực tới Supabase GoTrue Auth.
@@ -183,10 +183,18 @@ flowchart TD
   4. Server Action thiết lập cookie phiên `httpOnly=true`, `SameSite=Lax`.
   5. Nếu đăng ký mới, trigger DB tự động tạo bản ghi `Profile` liên kết với `auth.users.id`.
   6. Hệ thống chuyển hướng người dùng tới Dashboard tương ứng với vai trò.
-- **Luồng ngoại lệ (Alternative Flows):**
+- **Luồng ngoại lệ & Luồng thay thế (Alternative Flows):**
   - *Sai mật khẩu / Email không tồn tại:* Trả về thông báo lỗi song ngữ thân thiện.
   - *Hết hạn phiên:* Middleware tự động refresh token ngầm; nếu refresh thất bại, chuyển hướng về `/login?next=...`.
-- **Tiêu chuẩn nghiệm thu:** Token không bao giờ lưu tại `localStorage`; mật khẩu băm an toàn; người dùng chưa đăng nhập không thể truy cập tài nguyên bảo vệ.
+  - *Quên mật khẩu & Khôi phục phiên (Password Recovery Flow - [PENDING / DESIGN SPEC ONLY]):*
+    1. Người dùng chọn "Quên mật khẩu" trên trang `/login` và nhập email đã đăng ký.
+    2. Hệ thống gửi yêu cầu xác thực tới Supabase GoTrue Auth (`POST /auth/v1/recover`).
+    3. Hệ thống phát hành token khôi phục an toàn (Recovery Token / Password Reset Link) gửi tới email của người dùng.
+    4. Người dùng truy cập đường dẫn chứa token hợp lệ, hệ thống xác thực token và cho phép nhập mật khẩu mới.
+    5. Người dùng thiết lập mật khẩu mới (tối thiểu 6 ký tự).
+    6. Hệ thống băm và cập nhật mật khẩu mới, vô hiệu hóa token khôi phục và mọi phiên đăng nhập cũ, đồng thời yêu cầu đăng nhập lại.
+    *Trạng thái hiện thực:* Thiết kế luồng logic hoàn chỉnh; runtime code [PENDING / DESIGN SPEC ONLY — chưa triển khai mã nguồn runtime].
+- **Tiêu chuẩn nghiệm thu:** Token không bao giờ lưu tại `localStorage`; mật khẩu băm an toàn; người dùng chưa đăng nhập không thể truy cập tài nguyên bảo vệ. Quy trình khôi phục mật khẩu tuân thủ quy trình phát hành và hủy token an toàn (đặc tả thiết kế đầy đủ, runtime pending).
 
 #### 📌 UC-02: Thiết lập Mục tiêu & Thời gian Học (Configure Goals & Study Time)
 - **Tác nhân chính:** `Learner`.
@@ -202,56 +210,65 @@ flowchart TD
   - *Giá trị phút âm hoặc không hợp lệ:* Server Action từ chối và hiển thị cảnh báo lỗi.
 - **Tiêu chuẩn nghiệm thu:** Giá trị `dailyGoalMin` lưu trữ bền vững; nhắc nhở hoạt động theo cơ chế In-App (`ADR-008 Option 6d`).
 
-#### 📌 UC-03: Kiểm tra Định vị Trình độ Đầu vào (Take Placement Test)
+#### 📌 UC-03: Đánh giá Chẩn đoán Thích ứng & Xác định Điểm Xuất phát (Take Diagnostic Assessment / Select Level)
 - **Tác nhân chính:** `Learner`.
-- **Mục tiêu:** Đánh giá năng lực tiếng Anh ban đầu qua bài thi định vị ~30 câu để đề xuất Đơn vị bài học xuất phát (`Starting Unit`) phù hợp, tránh bắt người học phải học lại từ đầu những nội dung đã biết.
-- **Tiền điều kiện:** Học viên mới đăng ký hoặc chủ động chọn "Làm lại bài kiểm tra trình độ" từ trang Hồ sơ.
+- **Mục tiêu:** Đánh giá năng lực ngôn ngữ đa chiều (Từ vựng, Ngữ pháp, Đọc hiểu, Nghe hiểu) qua bài kiểm tra thích ứng 2 giai đoạn (Routing Stage → Targeted Stage, ~25–30 câu, ≤ 15 phút; các tham số này mang trạng thái `PROPOSED / PENDING VALIDATION`) hoặc cho phép chọn cấp độ tự khai báo (`Initial Self-Reported Level`) để đề xuất Điểm xuất phát (Starting Unit / Starting Level), xuất Skill Profile đa chiều (Spider/Radar chart), phát hiện lỗ hổng kiến thức ban đầu.
+- **Tiền điều kiện:** Học viên mới đăng ký trong luồng Onboarding hoặc chủ động chọn "Làm lại bài đánh giá chẩn đoán" từ trang Hồ sơ cá nhân.
 - **Luồng chính:**
-  1. Học viên bắt đầu bài thi gồm **cố định ~30 câu hỏi** trắc nghiệm bao phủ các chủ điểm kiến thức cơ bản của trình độ A1.
-  2. Học viên lần lượt trả lời các câu hỏi; hệ thống ghi nhận câu trả lời.
-  3. Sau khi hoàn thành, hệ thống tính toán tổng điểm số và đối chiếu với bảng quy chuẩn đề cương khóa học.
-  4. Hệ thống đề xuất **Starting Unit** tối ưu cho học viên (ví dụ: Bắt đầu từ Unit 3) kèm giải thích trực quan.
-  5. Học viên bấm "Bắt đầu học" để ghi nhận lộ trình và mở khóa từ Starting Unit trở về trước.
+  1. Học viên lựa chọn: (A) Làm bài đánh giá chẩn đoán thích ứng (Khuyến nghị), hoặc (B) Chọn cấp độ tự khai báo (Initial Self-Reported Level) để vào học ngay.
+  2. Nếu học viên chọn làm bài đánh giá: Hệ thống kích hoạt Common Assessment Engine và nạp cấu hình ngôn ngữ mục tiêu (Tiếng Anh: CEFR A1–B2; Tiếng Trung: HSK versioned; phần đọc tiếng Trung mặc định ẩn pinyin `hidePinyin: true` để đo năng lực nhận diện chữ Hán).
+  3. **Giai đoạn 1 (Routing Stage):** Học viên hoàn thành nhóm câu hỏi định tuyến ban đầu. Dựa trên kết quả sơ bộ, thuật toán định tuyến phân nhánh người học vào độ khó phù hợp ở Giai đoạn 2 (`PROPOSED / PENDING VALIDATION`).
+  4. **Giai đoạn 2 (Targeted Stage):** Học viên hoàn thành các câu hỏi tập trung đào sâu vào 4 chiều năng lực cốt lõi (Từ vựng, Ngữ pháp, Đọc hiểu, Nghe hiểu).
+  5. Hệ thống tổng hợp kết quả, trích xuất **Skill Profile đa chiều** (Spider/Radar chart thể hiện năng lực từng chiều, không ép thành 1 điểm số phẳng duy nhất; thuật toán tính Anchor Level mang trạng thái `PENDING VALIDATION`).
+  6. Hệ thống đề xuất **Starting Unit / Starting Level** tối ưu kèm giải thích trực quan (đối với phạm vi ban đầu của chương trình Tiếng Anh A1, áp dụng quy tắc đề cương Placement Mapping A: 0–7: U1, 8–12: U2, 13–17: U3, 18–22: U4, 23–26: U5, 27–30: U6).
+  7. Hệ thống trực tiếp cập nhật hồ sơ (`verifiedProficiency`), lưu kết quả đánh giá, mở khóa lộ trình học tương ứng và chuyển tiếp người học vào học (hộp thoại xác nhận / xem lại kết quả nếu có chỉ đóng vai trò khuyến nghị trải nghiệm người dùng tùy chọn - optional UX recommendation, không phải chốt chặn hệ thống bắt buộc).
 - **Luồng ngoại lệ:**
-  - *Học viên chọn Bỏ qua (Skip):* Hệ thống ghi nhận Starting Unit mặc định là Unit 1 và chuyển thẳng đến lộ trình học.
-  - *Học viên làm lại bài (Retake):* Học viên có thể làm lại bài thi bất kỳ lúc nào từ trang cá nhân; kết quả mới chỉ áp dụng khi học viên xác nhận cập nhật lộ trình.
-- **Tiêu chuẩn nghiệm thu:** Không claim chuẩn CEFR quốc tế; đầu ra chuẩn xác là Starting Unit; bảng ánh xạ điểm số tuân thủ Placement Mapping A đã được Product Owner phê duyệt chính thức (0–7: U1, 8–12: U2, 13–17: U3, 18–22: U4, 23–26: U5, 27–30: U6).
+  - *Học viên chọn cấp độ tự khai báo (Skip / Self-Reported):* Hệ thống ghi nhận `LearnerProfile.selfReportedLevel`, phân biệt rõ với `verifiedProficiency` (trạng thái `UNVERIFIED`). Starting Unit được gán theo cấp độ tự chọn (hoặc mặc định Unit 1 nếu chọn bắt đầu từ đầu).
+  - *Học viên làm lại bài (Retake):* Học viên có thể làm lại bài đánh giá từ trang cá nhân; hệ thống lưu lại lịch sử `AssessmentResult` và trực tiếp cập nhật `verifiedProficiency` / `SkillProfile` (hộp thoại xác nhận tùy chọn nếu người học muốn xem lại trước khi vào học).
+- **Tiêu chuẩn nghiệm thu:** Phân biệt rõ ràng giữa `selfReportedLevel` và `verifiedProficiency`; kết quả xuất ra dạng Skill Profile đa chiều; không claim chứng chỉ CEFR quốc tế; các tham số số câu (~25–30), thời gian (≤ 15 phút) và ngưỡng phân nhánh mang trạng thái `PROPOSED / PENDING VALIDATION`; đối với bài đọc tiếng Trung, pinyin mặc định bị ẩn.
 
-#### 📌 UC-04: Khám phá Lộ trình Học tập (Browse Learning Path)
+#### 📌 UC-04: Khám phá Lộ trình Học tập & Bổ khuyết Chuyên biệt (Browse Learning Path & Remediation)
 - **Tác nhân chính:** `Learner`.
-- **Mục tiêu:** Cho phép học viên xem cấu trúc toàn bộ khóa học theo phân cấp `Course` $\rightarrow$ `Unit` $\rightarrow$ `Lesson`, xem trạng thái mở khóa và nội dung xem trước (Preview) của các bài học tương lai.
+- **Mục tiêu:** Cho phép học viên xem cấu trúc toàn bộ khóa học theo phân cấp `Course` $\rightarrow$ `Unit` $\rightarrow$ `Lesson`, xem trạng thái mở khóa, tiếp nhận các mô-đun bổ khuyết chuyên biệt (`RemedialModule`) và xem trước (Preview) nội dung các bài học tương lai.
 - **Tiền điều kiện:** Học viên đã đăng nhập và truy cập trang Học tập (`/learn`).
 - **Luồng chính:**
   1. Hệ thống tải cây đề cương của khóa học đang kích hoạt (chỉ lấy nội dung `isPublished = true`).
   2. Giao diện hiển thị các Unit theo thứ tự tuyến tính (`orderIndex`).
   3. Mỗi bài học hiển thị trạng thái tương ứng: `LOCKED`, `AVAILABLE`, `IN_PROGRESS`, `COMPLETED`.
   4. Học viên có thể nhấp vào bất kỳ bài học nào (kể cả bài `LOCKED`) để **Xem trước (Preview)** mục tiêu bài học và danh sách từ vựng trọng tâm.
-  5. Học viên chọn bài học khả dụng (`AVAILABLE` hoặc `IN_PROGRESS`) để bắt đầu học.
+  5. Khi học viên hoàn thành một Unit, hệ thống đánh giá trạng thái chuyển tiếp (Transition State) với 3 trạng thái hợp lệ:
+     - `ADVANCE`: Người học đạt chuẩn tiến bộ và thuần thục, tự động mở khóa Unit kế tiếp.
+     - `ADVANCE_WITH_SUPPORT`: Mở khóa Unit kế tiếp kèm theo các gợi ý bài tập hỗ trợ nhẹ cho các kỹ năng còn yếu.
+     - `REMEDIATE`: Xuất hiện mô-đun bổ khuyết khái niệm (`Concept-level Remediation`) nhằm lấp lỗ hổng kiến thức trước khi tiếp tục.
+  6. **Nguyên tắc Remedial Learning:** Hệ thống giao micro-lesson bổ khuyết nhắm trúng `KnowledgeGap` với ngữ cảnh mới, từ vựng mới và bài tập mới. **Tuyệt đối không hạ cấp độ tổng thể của người học** và **không bắt học lại toàn bộ lesson cũ đã hoàn thành**.
+  7. Học viên chọn bài học khả dụng (`AVAILABLE`, `IN_PROGRESS` hoặc `REMEDIAL`) để tiếp tục học.
 - **Luồng ngoại lệ:**
   - *Học viên chọn làm bài ở bài học đang bị khóa:* Hệ thống hiển thị modal giải thích bài học chưa mở khóa và cung cấp nút "Làm bài kiểm tra nhảy cấp (Jump Assessment)" nếu đủ điều kiện.
-- **Tiêu chuẩn nghiệm thu:** Hiển thị cây lộ trình ổn định; hỗ trợ preview bài chưa mở khóa theo đúng chính sách sản phẩm.
+- **Tiêu chuẩn nghiệm thu:** Hiển thị cây lộ trình ổn định; hỗ trợ preview bài chưa mở khóa; kích hoạt đúng 3 trạng thái chuyển cấp; cơ chế remediation xử lý ở cấp độ concept/skill.
 
-#### 📌 UC-05: Thực hiện Bài tập & Làm lại Có kiểm soát (Complete Lesson Exercises & Controlled Retry)
+#### 📌 UC-05: Thực hiện Bài tập, Bắt tín hiệu Lỗ hổng & Làm lại Có kiểm soát (Complete Lesson Exercises, Gap Detection & Controlled Retry)
 - **Tác nhân chính:** `Learner`.
-- **Mục tiêu:** Học viên giải quyết các bài tập tương tác trong bài học; nếu làm sai, hệ thống đưa vào hàng đợi làm lại có kiểm soát (Controlled Retry) nhằm bảo đảm nắm vững kiến thức trước khi hoàn thành bài.
+- **Mục tiêu:** Học viên giải quyết các bài tập tương tác trong bài học; hệ thống ghi nhận tín hiệu lỗi để cập nhật `ConceptMastery` và phát hiện `KnowledgeGap`; nếu làm sai, đưa vào hàng đợi làm lại có kiểm soát (Controlled Retry) nhằm bảo đảm nắm vững kiến thức trước khi hoàn thành bài.
 - **Tiền điều kiện:** Học viên đã mở một bài học khả dụng.
 - **Luồng chính:**
-  1. Client tải danh sách bài tập của bài học sắp xếp theo `orderIndex`.
+  1. Client tải danh sách bài tập của bài học sắp xếp theo `orderIndex`. Mỗi bài tập được gắn thẻ khái niệm (`Concept Tag`).
   2. Học viên tương tác với từng dạng bài tập (`MCQ`, `FILL_BLANK`, `REORDER`, `GRAMMAR`, `LISTENING`).
   3. Học viên nộp câu trả lời; hệ thống hiển thị kết quả đúng/sai và giải thích tức thời.
-  4. Nếu câu trả lời sai:
-     - Câu hỏi được đẩy vào hàng đợi làm lại (Retry Queue).
+  4. **Ghi nhận tín hiệu lỗi & Lỗ hổng kiến thức:**
+     - Nếu học viên làm đúng: Tăng điểm bằng chứng năng lực cho `ConceptMastery`.
+     - Nếu học viên làm sai: Đẩy câu hỏi vào hàng đợi làm lại (Retry Queue), đồng thời ghi nhận tín hiệu lỗi lên concept tương ứng. Nếu sai lặp lại trên cùng concept, hệ thống đánh dấu tạo `KnowledgeGap`.
   5. Sau khi kết thúc lượt câu hỏi chính, hệ thống tính toán dung sai (Allowance): Cho phép bỏ qua tối đa 10% tổng số câu sai.
   6. Các câu sai còn lại bắt buộc học viên phải giải quyết lại trong vòng Retry.
   7. Câu làm lại đúng được hưởng **70% credit điểm số** (`D7`).
-  8. Khi học viên hoàn tất toàn bộ câu hỏi và mọi câu làm lại bắt buộc, Server Action cập nhật trạng thái `UserProgress` sang `COMPLETED` và ghi nhận điểm số tổng hợp.
+  8. Khi học viên hoàn tất toàn bộ câu hỏi và mọi câu làm lại bắt buộc, Server Action cập nhật trạng thái `UserProgress` sang `COMPLETED` (ghi nhận `Learning Progress`).
+  9. **Tách biệt rõ ràng:** Hoàn thành bài học cập nhật tiến độ (`Learning Progress`), nhưng mức độ thành thạo (`ConceptMastery`) được tính toán độc lập dựa trên lịch sử làm bài và độ chính xác thực tế.
 - **Luồng ngoại lệ (Nhảy cấp - Conditional Jump):**
-  - Nếu học viên làm bài đánh giá nhảy cấp (Jump Assessment) qua Unit: Yêu cầu điểm số $\ge 95\%$. Nếu thất bại, áp dụng thời gian chờ (cooldown) **24 giờ** trước khi cho phép thử lại (`D5`).
-- **Tiêu chuẩn nghiệm thu:** **Không áp dụng điểm sàn 80%**; hoàn thành bài học gắn chặt với việc giải quyết hết câu hỏi và câu làm lại; điểm số tính đúng theo trọng số retry credit 70%.
+  - Nếu học viên làm bài đánh giá nhảy cấp (Jump Assessment) qua Unit: Yêu cầu điểm số $\ge 95\%$. Nếu thành công, hệ thống mở khóa thẳng tới Unit đích và gán nhãn các Unit bị bỏ qua là `SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP` (`UserProgress` ghi nhận `by_jump = true`; tuyệt đối không tương đương `COMPLETED_BY_LEARNING`). Nếu thất bại, áp dụng thời gian chờ (cooldown) **24 giờ** trước khi cho phép thử lại (`D5`).
+- **Tiêu chuẩn nghiệm thu:** **Không áp dụng điểm sàn 80%**; hoàn thành bài học gắn chặt với việc giải quyết hết câu hỏi và câu làm lại; điểm số tính đúng theo trọng số retry credit 70%; ghi nhận tín hiệu lỗi phục vụ theo dõi Knowledge Gap; bảo đảm tính toàn vẹn nhãn xuất xứ nhảy cấp (Jump provenance).
 
 #### 📌 UC-06: Ôn tập Từ vựng theo Chu kỳ SRS (Spaced Repetition Review)
 - **Tác nhân chính:** `Learner`.
-- **Mục tiêu:** Lựa chọn các thẻ từ vựng đến hạn cần ôn tập và ghi nhận kết quả ghi nhớ nguyên tử vào cơ sở dữ liệu qua thuật toán Policy B.
+- **Mục tiêu:** Lựa chọn các thẻ từ vựng đến hạn cần ôn tập và ghi nhận kết quả ghi nhớ nguyên tử vào cơ sở dữ liệu qua thuật toán Policy B; trực tiếp đóng góp dữ liệu củng cố chiều năng lực Từ vựng (`Vocabulary`) trong Skill Profile.
 - **Tiền điều kiện:** Học viên có từ vựng đến hạn trong `UserVocabSrs` (`nextReviewAt <= now()`).
 - **Luồng chính:**
   1. Học viên truy cập mục Ôn tập (`/srs`).
@@ -262,24 +279,29 @@ flowchart TD
   6. Trong 1 transaction nguyên tử:
      - Chèn 1 bản ghi bất biến vào `ReviewLog`.
      - Cập nhật `UserVocabSrs` với chu kỳ ôn tiếp theo dựa trên bảng chu kỳ Policy B: `[1, 3, 7, 14, 30]` ngày.
+     - Cập nhật bằng chứng năng lực từ vựng trong hệ thống theo dõi Mastery.
   7. Client hiển thị số thẻ còn lại trong ngày và cập nhật thẻ tiếp theo.
 - **Luồng ngoại lệ:**
   - *AI service offline:* Luồng ôn tập SRS vẫn hoạt động $100\%$ bình thường vì thuật toán chạy thuần túy trên cơ sở dữ liệu PostgreSQL.
 - **Tiêu chuẩn nghiệm thu:** Thực thi RPC nguyên tử; chỉ học viên sở hữu thẻ mới được ghi nhận; tuân thủ chu kỳ xác định Policy B.
 
-#### 📌 UC-07: Theo dõi Tiến độ, Chuỗi Streak & Báo cáo Cá nhân (Track Progress & Streak)
+#### 📌 UC-07: Theo dõi Tiến độ, Độ thuần thục & Đánh giá Sẵn sàng Lên cấp (Track Progress, Mastery & Level Readiness)
 - **Tác nhân chính:** `Learner`.
-- **Mục tiêu:** Tổng hợp kết quả học tập cá nhân, tính toán tỷ lệ hoàn thành khóa học và duy trì chuỗi ngày học liên tục (Streak).
+- **Mục tiêu:** Tổng hợp kết quả học tập cá nhân, tách biệt rõ ràng 4 khái niệm (`Learning Progress`, `Proficiency`, `Mastery`, `Level Readiness`), duy trì chuỗi ngày học liên tục (Streak) và hiển thị báo cáo năng lực đa chiều trực quan.
 - **Tiền điều kiện:** Học viên đã đăng nhập.
 - **Luồng chính:**
-  1. Học viên truy cập Dashboard hoặc Profile.
-  2. Hệ thống tổng hợp tỷ lệ % hoàn thành lộ trình từ bảng `UserProgress`.
+  1. Học viên truy cập Dashboard hoặc Báo cáo Cá nhân (`/profile`).
+  2. Hệ thống tổng hợp và hiển thị trực quan 4 trường thông tin độc lập:
+     - **Tiến độ học tập (`Learning Progress`):** Tỷ lệ % hoàn thành lộ trình/khóa học/unit từ bảng `UserProgress`.
+     - **Hồ sơ năng lực (`Skill Profile`):** Biểu đồ mạng nhện (Spider/Radar chart) thể hiện 4 chiều (Từ vựng, Ngữ pháp, Đọc hiểu, Nghe hiểu) theo khung chuẩn (CEFR hoặc HSK), phản ánh cả điểm mạnh lẫn điểm yếu thay vì một điểm số cào bằng.
+     - **Mức độ thuần thục (`Mastery`):** Tổng hợp trạng thái nắm vững của các Concept (`ConceptMastery`) và danh sách các lỗ hổng kiến thức đang cần bổ khuyết (`KnowledgeGap`).
+     - **Sẵn sàng chuyển cấp (`Level Readiness`):** Đánh giá tổng hợp dựa trên Tiến độ + Độ thuần thục + Lỗ hổng còn tồn đọng để xác định trạng thái sẵn sàng lên cấp tiếp theo (`ADVANCE`, `ADVANCE_WITH_SUPPORT`, `REMEDIATE`). Bất biến nhất quán (Consistency Invariant): `Progress ≠ Proficiency`, `Completed B1 ≠ B2`; hoàn thành 100% bài học đề cương không tự động nâng cấp độ năng lực, người học cần thực hiện Đánh giá Đầu ra (`AssessmentType: EXIT`) hoặc Đánh giá Lại (`RE_EVALUATION`) để cập nhật `verifiedProficiency` mới.
   3. Khi học viên hoàn thành ít nhất 1 bài học hoặc 1 phiên ôn tập SRS trong ngày, hệ thống cập nhật chuỗi Streak theo ngày cục bộ múi giờ `Asia/Ho_Chi_Minh`.
   4. Tăng `Profile.streakCount` lên 1 nếu ngày hoạt động gần nhất là ngày hôm qua; giữ nguyên nếu đã tăng trong ngày hôm nay.
   5. Cập nhật `lastQualifyingActivityDate` thành ngày hiện tại.
 - **Luồng ngoại lệ:**
   - *Bỏ lỡ ngày học:* Nếu qua một ngày không có hoạt động đủ điều kiện, chuỗi Streak được đặt lại về 1 khi có hoạt động đủ điều kiện tiếp theo theo quy tắc công bố (D9: missed day resets next qualifying streak to 1; không có phục hồi chuỗi).
-- **Tiêu chuẩn nghiệm thu:** Streak chỉ tăng tối đa 1 lần/ngày; tính toán chính xác theo timezone `Asia/Ho_Chi_Minh`.
+- **Tiêu chuẩn nghiệm thu:** Phân biệt rành mạch giữa Tiến độ hoàn thành bài học (%) và Năng lực thực tế/Độ thuần thục; biểu đồ mạng nhện đa chiều không làm phẳng thành điểm duy nhất; Streak chỉ tăng tối đa 1 lần/ngày theo timezone `Asia/Ho_Chi_Minh`.
 
 #### 📌 UC-08: Biên soạn Bản thảo Bài học (Create & Edit Lesson Draft)
 - **Tác nhân chính:** `Lesson Creator`.
@@ -288,7 +310,7 @@ flowchart TD
 - **Luồng chính:**
   1. Creator mở danh sách bài học được phân công trên giao diện Admin CMS (`/admin/lessons`).
   2. Đọc bản tóm tắt nhiệm vụ (`AssignmentBrief`) gồm mục tiêu bài học, danh sách từ vựng bắt buộc.
-  3. Biên soạn nội dung bài học, nạp từ vựng, tạo các bài tập tương tác (`MCQ`, `FILL_BLANK`, `REORDER`).
+  3. Biên soạn nội dung bài học, nạp từ vựng, tạo 5 câu bài tập tương tác thuộc 5 dạng chuẩn thống nhất (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`).
   4. Tải lên tệp âm thanh phát âm hoặc hình ảnh minh họa vào Supabase Storage (`lingora-media`).
   5. Chạy thử bản thảo trên giao diện Preview để kiểm tra trải nghiệm học viên.
   6. Nhấn nút "Gửi kiểm duyệt"; trạng thái bài học chuyển từ `DRAFT` sang `IN_REVIEW`.
@@ -717,8 +739,8 @@ sequenceDiagram
 2. **NFR-SEC-02:** RLS bảo đảm học viên chỉ đọc/ghi dữ liệu của chính mình (`auth.uid() = userId`).
 3. **NFR-AUD-03:** Mọi thao tác gán quyền, duyệt bài, xuất bản bắt buộc ghi nhận nhật ký kiểm toán.
 4. **NFR-REL-04:** Luồng học bài và ôn tập SRS hoạt động độc lập 100% với AI GEC service.
-5. **NFR-PERF-05:** Thời gian tải bài học và khởi tạo phiên $< 500\text{ms}$.
-6. **NFR-PERF-06:** Thời gian phản hồi GEC $p95 \le 2000\text{ms}$; timeout cứng 8.0s.
+5. **NFR-PERF-05:** Thời gian tải bài học và khởi tạo phiên $< 500\text{ms}$ `[PROPOSED TARGET / TBD — NOT BENCHMARKED]`.
+6. **NFR-PERF-06:** Thời gian phản hồi GEC $p95 \le 2000\text{ms}$; timeout cứng 8.0s `[PROPOSED TARGET / TBD — NOT BENCHMARKED]`.
 7. **NFR-UX-07:** Giao diện Web Responsive từ di động ($375\text{px}$) đến máy tính để bàn; đạt chuẩn tương phản WCAG 2.1 AA.
 8. **NFR-I18N-08:** Hỗ trợ song ngữ đầy đủ (`vi`/`en`), chuyển đổi mượt mà không reload trang.
 9. **NFR-INT-09:** Thao tác ôn tập SRS thực thi nguyên tử qua RPC `record_review`.
@@ -732,7 +754,7 @@ sequenceDiagram
 | 2 | Xác định yêu cầu chức năng của từng nhóm | Ma trận quyền hạn và 15 Use Case bao phủ 6 vai trò | Mục 4 & `docs/phase-0-synthetic-stakeholder-research.md` | `COMPLETED` |
 | 3 | Kế hoạch quản trị học liệu | Manager thiết lập Course/Unit skeleton trước khi phân công | D1=1A, BF-02, BF-03 | `LOCKED` |
 | 4 | Phân công biên soạn | Giao việc gắn liền `AssignmentBrief` và `Lesson.creatorId` | D1=1A, BF-03 | `LOCKED` |
-| 5 | Biên soạn học liệu | Bài học cô đọng 5–10 phút, bài tập `MCQ`, `FILL_BLANK`, `REORDER` | D4=4A, BF-04 | `LOCKED` |
+| 5 | Biên soạn học liệu | Bài học cô đọng 5–10 phút, 5 dạng bài tập (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`) | D4=4A, BF-04 | `LOCKED` |
 | 6 | Kiểm duyệt học thuật | Moderator kiểm tra độc lập, yêu cầu sửa kèm lý do cụ thể | D1, D2=2B, BF-05 | `LOCKED` |
 | 7 | Phê duyệt học liệu | Moderator cấp `APPROVED`; cấm tự duyệt bài của chính mình | D2=2B, BF-05 | `LOCKED` |
 | 8 | Xuất bản học liệu | Quyền xuất bản thuộc về Organizational Manager | D2=2B, BF-07 | `LOCKED` |

@@ -1,0 +1,126 @@
+@startuml
+!theme plain
+skinparam roundCorner 8
+skinparam defaultFontName "Segoe UI"
+skinparam monochrome false
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title Lingora — Concept Knowledge, Learning Evidence & Readiness Pipeline (D4)
+
+package "Instruction & Practice Tier" as PracticeTier #F8FAFC {
+  class Lesson #E2E8F0 {
+    +UUID id
+    +String title
+    +Integer orderIndex
+  }
+
+  class Exercise #E2E8F0 {
+    +UUID id
+    +ExerciseType type
+    +UUID conceptId (FK)
+    +JSONB payload
+  }
+
+  Lesson "1" *-- "5" Exercise : contains
+}
+
+package "Concept Registry & Taxonomy" as ConceptTier #FEF3C7 {
+  class Concept #FDE68A {
+    +UUID id
+    +String code (e.g. EN-A1-GRM-BE-PRES-01)
+    +ConceptDomain domain
+    +String name
+    +UUID prerequisiteConceptId
+    +ConceptStatus status
+  }
+
+  Exercise --> Concept : references (FK conceptId)
+}
+
+package "Learner Evidence Generation" as EvidenceTier #F0FDF4 {
+  class "Exercise Interaction Event" as Attempt #E2E8F0 {
+    +UUID userId
+    +UUID exerciseId
+    +UUID conceptId
+    +Boolean isCorrect
+    +String submittedAnswer
+    +DateTime timestamp
+  }
+
+  class LearningProgress #E2E8F0 {
+    +UUID userId
+    +UUID lessonId
+    +Float completedContentRatio
+    +DateTime completedAt
+    -- Invariant --
+    Measures content completion ONLY
+  }
+
+  class ConceptMastery #DCFCE7 {
+    +UUID userId
+    +UUID conceptId
+    +MasteryState state (NOVICE, DEVELOPING, MASTERED)
+    +Integer evidenceCount
+    +DateTime lastAssessedAt
+  }
+
+  class KnowledgeGap #FEE2E2 {
+    +UUID userId
+    +UUID conceptId
+    +GapSeverity severity (LOW, MEDIUM, HIGH)
+    +GapStatus status (ACTIVE, RESOLVED, ARCHIVED)
+    +DateTime detectedAt
+    +DateTime resolvedAt
+  }
+
+  Attempt --> LearningProgress : increments completion
+  Attempt --> ConceptMastery : success/failure evidence
+  Attempt --> KnowledgeGap : repeated errors trigger gap
+}
+
+package "Decision & Adaptive Governance" as DecisionTier #F8FAFC {
+  class LevelReadiness #E0E7FF {
+    +UUID userId
+    +String currentLevel
+    +String targetLevel
+    +ReadinessStatus readinessStatus
+    +JSONB evidenceSummary
+    -- 3 Decision Outputs --
+    * ADVANCE
+    * ADVANCE_WITH_SUPPORT
+    * REMEDIATE
+  }
+
+  class Recommendation #F3E8FF {
+    +UUID userId
+    +RecommendationType type
+    +UUID targetUnitId
+    +UUID remedialModuleId
+    +String rationale
+  }
+
+  class RemedialModule #FEF9C3 {
+    +UUID id
+    +UUID conceptId
+    +ContentStatus status (PUBLISHED only)
+    +JSONB freshPayload
+  }
+
+  ConceptMastery ..> LevelReadiness : mastery evidence input
+  KnowledgeGap ..> LevelReadiness : gap evidence input
+  LearningProgress ..> LevelReadiness : progress evidence input
+
+  LevelReadiness --> Recommendation : triggers adaptive decision
+  Recommendation ..> RemedialModule : prescribes fresh scaffolding (REMEDIATE)
+  KnowledgeGap ..> RemedialModule : targets specific concept
+}
+
+note bottom of LevelReadiness #FFFFFF
+  <b>FOUR-CONCEPT SEPARATION:</b>
+  LearningProgress != Proficiency != Mastery != LevelReadiness
+  Readiness is an aggregate evidence-based gate,
+  never an automatic consequence of 100% completion.
+end note
+
+@enduml

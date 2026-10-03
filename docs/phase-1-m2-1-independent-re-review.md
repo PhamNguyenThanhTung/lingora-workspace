@@ -1,102 +1,110 @@
 # M2.1 INDEPENDENT RE-REVIEW — DOMAIN & LOGICAL DATA FOUNDATION
 
-> **Report:** `docs/phase-1-m2-1-independent-re-review.md`
-> **Role:** INDEPENDENT RE-REVIEW (not self-approval). No files modified during review. No M2.2 started.
-> **Sources read directly:** M2.1 md (888 lines, full), 4 PlantUML (full), baseline
-> (`phase-0-roles-and-mvp-final.md:64`, `06-system-analysis.md:218,323,737`, decision sheet,
-> `02:259`, `05:14,52,74-75`, `09 §2/§9`), applied migrations
-> (`.../202608140001_init/migration.sql` CREATE TABLE ×17, `ExerciseType` enum line 11,
-> `user_progress` lines 147–157, `user_vocab_srs`/`review_logs` lines 161–192;
-> `.../202608140002.../migration.sql` `record_review` params lines 193–196 + streak logic,
-> `user_progress_own_read` policy), `schema.prisma` (target).
-> **Renderer:** unavailable (no java) → static checks only, no render claims.
+> **Vai trò:** Independent re-review, không self-approval.
+> **Phạm vi:** Chỉ đối soát M2.1 sau bản sửa; không sửa artifact nguồn trong lúc review; không bắt đầu M2.2.
+> **Evidence rule:** Mọi kết luận dưới đây dựa trên file và command output đọc trực tiếp trong repository.
 
 ## Executive Verdict
 
-**FAIL — M2.1 REQUIRES CORRECTION**
+**FAIL — M2.1 REQUIRES FIX**
 
-One P1 documentation defect (false `CURRENT_APPLIED` field claims on SRS tables, 3 spots)
-violates D-G2 truthfulness and D-G6. One P2 labeling deviation (`LEGACY_APPLIED` scope axis).
-Everything else passes, including the P0 emergency-authority hard gate. Fix is small and scoped;
-re-review after correction should be fast. No corrections applied by this review (per §12).
+Review không đạt hard gate vì còn các P0/P1 findings:
+
+1. Tiêu chí yêu cầu nêu emergency publish `IN_REVIEW -> PUBLISHED`, nhưng M2.1 và PlantUML chỉ mô hình hóa `APPROVED -> PUBLISHED`.
+2. Data Dictionary/PlantUML vẫn có các claim `CURRENT_APPLIED_DATABASE` không khớp migration thực tế và claim bao phủ 100% trường nhưng còn thiếu nhiều cột.
+3. `TARGET_EXT` còn 5 occurrences và `MATCHING` còn 6 occurrences trong M2.1 Markdown, trái với yêu cầu literal zero-occurrence.
+4. `CORE (Supporting)` được dùng như giá trị Scope, trái với tập canonical `{CORE, EXTENSION, EXCLUDED}`.
+
+Không có thay đổi nào đối với M2.1 Markdown, bốn PlantUML nguồn, schema, migration, Supabase, web hoặc AI code trong review này. Chỉ báo cáo review được cập nhật sau khi hoàn tất kiểm tra.
 
 ## Finding Matrix
 
 | ID | Severity | Finding | Evidence | Status |
 |---|---|---|---|---|
-| P0-01 | P0 | Admin emergency authority must match baseline (normal=Manager; emergency with condition+reason+AuditLog; all prohibitions) | M2.1 §5.1:246–262, §5.2 rows 274–277, §5.3 rows 287–294, puml lines 35,38,45,52–61 vs baseline `roles-and-mvp-final.md:64` (Approved→Published incl. Admin khẩn cấp), `06:323` (emergency archive) | PASS |
-| F-01 | (old) | Emergency publish/archive baseless? | Baseline HAS basis (above); M2.1 restores with constraints, no normal-publish for Admin | PASS |
-| F-02 | (old) | Creator bypass D1 | Matrix starts Manager PLAN_AND_ASSIGN (§5.2:268); puml `[*]-->DRAFT` by Manager only (line 17); forbidden row §5.3:293 | PASS |
-| F-03 | (old) | ExerciseType/MATCHING | §8.8 per-value rows; applied enum verified `('MCQ','FILL_BLANK','REORDER')` (migration line 11); MATCHING only in "removed/0-occ" statements (md:124,536,737,756,776,879); 0 in puml | PASS |
-| F-04 | (old) | lesson_type locked | §6.5:374 candidate only | PASS |
-| F-05 | (old) | Retry N=5 hard-code / completion | §6.4:353–362 general N + correct completion; puml lines 56–61 general N; "5 câu/bài" only as curriculum-input note (:357, explicitly non-invariant) | PASS |
-| F-06 | (old) | Placement confirm-apply rule | §6.2:335 removed to FUTURE UX OPTION; puml flow test→score→unit→save, no confirm gate (lines 25–44) | PASS |
-| F-07 | (old) | DD-02 resolved | §5.4:306 OPEN; candidates only | PASS |
-| F-08 | (old) | AuditLog mixing | §5.6:315–319 TARGET vs ABSENT vs REQUIRED; §7.1 row 16; §8.16 | PASS |
-| F-09 | (old) | DD-06 locked physical | §6.6:378–381 TARGET CANDIDATE/FUTURE, OPEN | PASS |
-| F-10 | (old) | Dictionary 100% claim | 18 sections §8.1–8.18 exist BUT §8.15:608 false row (see P1-01) | PARTIAL |
-| F-11 | (old) | ERD Extension vs Future mix | §7.1 rows 19–21 separate axes; TARGET_EXT 0 in artifacts (only "removed" mentions md:735,754,775,778,877); erd puml canonical EXTENSION+FUTURE (lines 197–214) | PASS (with P2-01) |
-| F-12 | (old) | Render-validated claim | §4.2:134 + §7.2:430 static-only notes; no render claims found | PASS |
-| C-01 | Critical | DD-07/DD-08 applied evidence | user_progress DDL lines 147–157; srs/review DDL 161–192; record_review params 193–196 + streak; RLS `user_progress_own_read` verified; app-layer algorithm separation §6.4:366, §6.7:390 | PASS |
-| C-02 | Critical | 18 core tables count | §7.1 #1–18; §8.1–8.18 headings verified; applied PRESENT=15 (#1,2,3,6,7,8,9,10,11,12,13,14,15,17,18) vs 17 CREATE TABLEs; target-only=3 (#4,5,16); future-required=7; count is real | PASS (count) / FAIL (truthfulness — see P1-01) |
-| C-03 | Critical | Enforcement claims | Only proper disclaimers (§5.3:296–298); "khóa cứng" scoped to LOCKED BEHAVIOR (:846); 0 false DB-enforcement claims | PASS |
-| P1-01 | **P1** | **False CURRENT_APPLIED field claims (SRS tables)** — `review_logs.score INTEGER NULL CURRENT_APPLIED` (§8.15:608) and `recall_score [Applied]` + `score [Applied]` (domain-model-core.puml:99,105); applied migration has NEITHER column (review_logs: id/srs_card_id/is_correct/interval_days/reviewed_at; user_vocab_srs has recall_probability, no score/recall_score) | md:608; puml:99,105; migration 161–192 | **FAIL — requires correction** |
-| P2-01 | P2 | Scope-axis label `LEGACY_APPLIED` (§7.1 rows 22–23) deviates from canonical Scope {CORE,EXTENSION,EXCLUDED}; truthful content, wrong axis value — normalize to EXCLUDED + compat note | md:423–424 | OPEN (fix with P1-01) |
-| O-01 | Obs | Task text cites emergency `IN_REVIEW->PUBLISHED`; M2.1 models emergency `APPROVED->PUBLISHED`, matching cited baseline source (roles:64). Stricter + baseline-faithful. No action. | roles:64 vs §5.2:275 | ACCEPTABLE |
-| O-02 | Obs | puml omits some applied SRS columns (recall_probability, last_reviewed_at, lapse_count, created_at) while §8.14 lists them correctly — align during P1-01 fix. | puml:91–109 vs md:594–601 | NOTE (fix with P1-01) |
-
-D1–D9 drift check: D1/D2/D3 (§5 + puml, incl. F-02 prohibitions) PASS; D4 (no Exam/QB entity; assessment-mode candidates open, §6.5) PASS; D5 (sizes 20/25–30/40, 95% policy, 24h — §6.3 + puml:74–86) PASS; D6 (30/Skip/Retake/StartingUnit/Mapping A bands verified puml:27–38, no CEFR, no confirm rule) PASS; D7 (general N, 70%, completion semantics) PASS; D8 (Policy B, deterministic, no ML/entities) PASS; D9 (deferred, no freeze/recovery) PASS.
+| P0-01 | P0 | Emergency publish theo tiêu chí review phải có `IN_REVIEW -> PUBLISHED`; artifact chỉ có `APPROVED -> PUBLISHED`. | M2.1 `§5.2` lines 273-275; `content-lifecycle-state.puml:38`; baseline `phase-0-roles-and-mvp-final.md:64` cũng ghi `Approved -> Published` (emergency Admin). | **FAIL against requested gate; baseline inconsistency requires clarification/fix** |
+| P1-01 | P1 | Applied claims không trung thực: `lessons.objective`, `vocabularies.audio_path`, `exercises.created_at`, `exercises.updated_at`, `user_progress.created_at` được ghi là applied nhưng không có trong applied migration. | M2.1 lines 502, 529-530, 548, 589; `domain-model-core.puml:55,83`; migration `202608140001_init`: lessons lines 75-85, exercises 133-144, user_progress 147-158, vocabularies 98-110. | **FAIL** |
+| P1-02 | P1 | Data Dictionary tuyên bố bao phủ 100% nhưng bỏ sót các cột applied thực tế: `profiles.ui_locale`, `native_lang_code`, `timezone`, `last_qualifying_activity_date`; `vocabularies.normalized_term`, `phonetic`, `audio_url`, `created_at`, `updated_at`; `chat_scenarios.is_published`, `created_at`. | Claim 100% tại M2.1 lines 430, 742; dictionary lines 565-578, 542-549, 627-633; migration lines 31-48, 98-110, 195-203. | **FAIL** |
+| P1-03 | P1 | Forbidden-token zero check không đạt: `TARGET_EXT=5`, `MATCHING=6` trong M2.1 Markdown. Các occurrences nằm trong câu phủ định/“đã loại bỏ”, nhưng yêu cầu re-review đặt `0 occurrences` và command check sẽ bắt chúng. | Fresh command `Select-String` trên M2.1 + PlantUML: `TARGET_EXT=5`, `MATCHING=6`; M2.1 lines 124, 540, 738-740, 757, 779, 880, 882. | **FAIL** |
+| P1-04 | P1 | `CORE (Supporting)` là hybrid Scope label, không thuộc canonical Scope `{CORE, EXTENSION, EXCLUDED}`. | M2.1 lines 418-419, 627, 634; `erd-logical-status-mapping.puml:222,231`. | **FAIL** |
+| P1-05 | P1 | D-G1 traceability table không bao phủ toàn bộ core/supporting entities được inventory: `Language`, các translation tables và `ChatScenario`/`ChatScenarioTranslation` không có dòng mapping FR/UC/BF tương ứng trong §4.3. | Core inventory M2.1 lines 117-130 và §7.1 lines 402-419; trace table §4.3 lines 224-236 chỉ có 13 dòng logic, không có các thực thể trên. | **FAIL** |
+| P2-01 | P2 | PlantUML ERD không liệt kê đầy đủ các trường đã có trong Data Dictionary của `user_vocab_srs`, `vocabularies` và `chat_scenarios`; ngoài các false claims ở P1-01, đây là rủi ro drift khi triển khai. | `domain-model-core.puml:91-110`; `erd-logical-status-mapping.puml:123-178`; đối chiếu M2.1 §8.9, §8.14, §8.17 và migration. | **OPEN** |
 
 ## D-G1
 
-- **Input:** Artifacts 1–3 (§4–6), 4 puml, baseline (02/05/06/08/09, roles, decision sheet).
-- **Validation method:** rebuilt trace table independently (spot-verified, not self-report):
+**Input:** M2.1 artifacts §§4-6, bốn PlantUML, `docs/02-requirements.md`, `docs/05-traceability-matrix.md`, `docs/09-placement-and-jump-specification.md`, role baseline và product-owner decision sheet.
+
+**Validation method:** Đọc trực tiếp các bảng traceability, state matrix, prohibition matrix, progression rules và baseline role authority; kiểm tra từng dòng theo yêu cầu review.
 
 | Item | Evidence | Result |
 |---|---|---|
-| Core entities → FR/UC/BF | §4.3 table + §7.1 inventory + 05 matrix | PASS |
-| Lifecycle states → FR/UC/BF | §5.2 matrix + puml + UC-08/09/10, BF-05/06/07 | PASS |
-| Admin emergency authority | baseline roles:64 + 06:323 vs §5.1–5.3 + puml:38,45 | PASS |
-| Separation of duties | §5.3 rows 287–291 + puml note 52–61 + 06:737 | PASS |
-| No archived→draft Core | matrix row 294 + note :280–281; puml: no ARCHIVED arrows, prohibitions :47,61; clone arrow is PUBLISHED→DRAFT (:50, matrix :278) | PASS |
+| Core entities → FR/UC/BF | M2.1 §4.1 và §7.1 liệt kê `Language`, translations và chat supporting entities; §4.3 lines 224-236 không map đầy đủ chúng. | **FAIL — P1-05** |
+| Lifecycle states → FR/UC/BF | M2.1 §5.2 lines 268-278; PlantUML lifecycle lines 17-50; các state/normal flow hiện diện. | PASS, nhưng P0-01 còn unresolved |
+| Admin emergency authority | M2.1 lines 251-257, 275-277; PlantUML lines 35-45; normal publish là Manager, emergency có justification + AuditLog. | **FAIL against requested `IN_REVIEW -> PUBLISHED`; baseline itself says `APPROVED -> PUBLISHED`** |
+| Separation of duties | M2.1 §5.3 lines 287-294; Creator self-approve/publish, Moderator publish, Admin normal publish và direct edit published đều bị cấm. | PASS |
+| No archived→draft Core | M2.1 lines 280-294; PlantUML không có transition edge từ `ARCHIVED` tới `DRAFT`; occurrences chỉ là prohibition/boundary text. | PASS |
 
-- **Verdict:** **D-G1 PASS.**
+**D-G1 Verdict: FAIL.** P0-01 và P1-05 ngăn PASS.
 
 ## D-G2
 
-- **Input:** Artifacts 4–5 (§7–8), 04-data-model, schema.prisma, migrations 001–003.
-- **Validation method:** per-table applied/target/future verification against migration DDL (17 CREATE TABLEs, enum line 11, RLS policies, record_review); per-value ExerciseType check; candidate-label check; dictionary section inventory.
-- **Evidence:** C-01/C-02 verified counts above; §8.8, §8.4/8.5/8.16 TARGET labels correct; BUT P1-01 false applied rows.
-- **Verdict:** **D-G2 FAIL** (sole cause: P1-01; dictionary-100% claim at §7.1:426 and §9.2:739 overstates until fixed).
+**Input:** M2.1 §7.1 và §§8.1-8.19, `schema.prisma`, applied migrations `202608140001_init` và `202608140002_auth_rls_storage_record_review`.
+
+**Validation method:** Đối chiếu từng applied field và enum với DDL; kiểm tra độc lập hai trục Scope/Implementation Status; kiểm tra candidate fields; chạy forbidden-token searches.
+
+**Evidence:**
+
+- Applied `ExerciseType` trong migration chỉ là `MCQ`, `FILL_BLANK`, `REORDER` (`migration.sql:11`); schema target có thêm `LISTENING`, `GRAMMAR` (`schema.prisma:43-47`).
+- `review_logs` thực tế chỉ có 5 cột (`migration.sql:183-192`); `user_vocab_srs` có `recall_probability`, không có `recall_score` (`161-180`). Các claim cũ về SRS score đã được loại bỏ.
+- Tuy nhiên các false applied claims và omissions trong P1-01/P1-02 vẫn tồn tại.
+- Scope canonical bị phá bởi `CORE (Supporting)`; implementation statuses canonical vẫn quan sát được là `CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`.
+- Fresh forbidden search trên M2.1 + PlantUML: `TARGET_EXT=5`, `MATCHING=6`; trên bốn PlantUML riêng lẻ, hai token này bằng 0.
+
+**D-G2 Verdict: FAIL.** P1-01, P1-02, P1-03 và P1-04 đều ảnh hưởng truthfulness/boundary integrity.
 
 ## Scope Check
 
-- `git status --short`: M2.1 md + 4 puml are untracked new files (fix work product, design-docs scope — in scope).
-- `git diff --check -- docs/`: clean (only LF warnings).
-- No changes made during this re-review (reviewer touched zero files; report file creation is the only write).
-- Pre-existing worktree modifications (schema.prisma target redesign, web reset, cleanup deletions) predate and are independent of M2.1; no migration/runtime files were added or altered by the M2.1 fix (migrations dir: no new files; M2.1 artifacts are docs-only).
-- Forbidden-token repo-scope search in M2.1 artifacts: MATCHING/Exam-as-entity/QuestionBank/TARGET_EXT/ARCHIVED→DRAFT-transition all 0 (only removal/prohibition mentions). No scope breach by M2.1 content.
-- **Scope: CLEAN.**
+Fresh command results trước khi cập nhật báo cáo:
+
+```text
+git status --short --untracked-files=all
+<no changed paths; only pre-existing Git directory warnings>
+
+git diff --check
+exit code 0
+```
+
+Không phát hiện thay đổi ngoài phạm vi review trong:
+
+- `lingora-admin/prisma/schema.prisma`
+- `lingora-admin/prisma/migrations/*`
+- `lingora-web/*`
+- `lingora-ai/*`
+- remote Supabase
+
+Sau review, file duy nhất được cập nhật là báo cáo này: `docs/phase-1-m2-1-independent-re-review.md`.
 
 ## PlantUML Check
 
-| File | Static syntax (`@startuml`/`@enduml` balance) | Forbidden tokens | Semantic consistency vs md | Renderer |
+| File | Static syntax | Forbidden-token search | Semantic consistency | Renderer |
 |---|---|---|---|---|
-| domain-model-core.puml (:1–192) | PASS | none (no MATCHING/Exam/QB/TARGET_EXT/ARCHIVED→DRAFT) | CONSISTENT except P1-01 field tags (:99,105) | UNAVAILABLE → STATIC SYNTAX CHECK PASS — RENDERER UNAVAILABLE |
-| content-lifecycle-state.puml (:1–64) | PASS | :47,:61 are prohibitions, not transitions; 0 arrows from ARCHIVED | CONSISTENT with §5.1–5.3 (Manager normal, Admin emergency+reason+audit, clone candidate) | UNAVAILABLE → STATIC ONLY |
-| learning-progression-model.puml (:1–97) | PASS | none; Mapping A bands exact; general-N retry; no confirm gate | CONSISTENT with §6.2–6.4 | UNAVAILABLE → STATIC ONLY |
-| erd-logical-status-mapping.puml (:1–263) | PASS | none (EXTENSION+FUTURE canonical; :137 `example:text` false positive) | CONSISTENT with §7.1 (modulo P2-01 label) | UNAVAILABLE → STATIC ONLY |
+| `domain-model-core.puml` | PASS: 1 `@startuml`, 1 `@enduml` | `TARGET_EXT`/`MATCHING`/`Exam`/`QuestionBank`: 0; không có archived→draft edge | **FAIL** do `Lesson.objective` và `Vocabulary.audio_path` gắn `[Applied]` nhưng migration không có các cột đó | `java` và `plantuml` unavailable; static only |
+| `content-lifecycle-state.puml` | PASS: 1/1 | Không có forbidden model token; archived→draft chỉ xuất hiện trong prohibition note | **PARTIAL**: normal/emergency semantics nhất quán với M2.1; không có `IN_REVIEW -> PUBLISHED` như tiêu chí review | `java` và `plantuml` unavailable; static only |
+| `learning-progression-model.puml` | PASS: 1/1 | Không phát hiện forbidden model token | PASS cho Mapping A, retry tổng quát và không có archived→draft edge | `java` và `plantuml` unavailable; static only |
+| `erd-logical-status-mapping.puml` | PASS: 1/1 | `TARGET_EXT`/`MATCHING`/`Exam`/`QuestionBank`: 0; không có archived→draft edge | **FAIL** do `CORE (Supporting)` và thiếu/không khớp field coverage với dictionary | `java` và `plantuml` unavailable; static only |
+
+Kết luận renderer: **STATIC SYNTAX CHECK PASS — RENDERER UNAVAILABLE**. Không tuyên bố render/compile PASS.
 
 ## Remaining Risks
 
-1. P1-01 (above) — blocks M2.1 approval; fix = delete/re-tag 3 rows + align puml SRS classes with §8.14.
-2. P2-01 LEGACY_APPLIED label — normalize with the same fix pass.
-3. Pre-existing worktree dirt (uncommitted target-schema/web changes) is outside M2.1 but M2.2 implementers must not mistake uncommitted target files for applied reality — restate 3-state boundary at M2.2 kickoff.
+1. M2.1 chưa thể được phê duyệt trước khi chốt semantics emergency publish (`IN_REVIEW` theo yêu cầu review hay `APPROVED` theo baseline) và cập nhật đồng bộ Markdown/PlantUML.
+2. Data Dictionary cần đối soát lại toàn bộ applied fields với migration, không chỉ ba field SRS đã sửa trước đó.
+3. Phải loại bỏ literal `TARGET_EXT` và `MATCHING` khỏi artifact nếu acceptance criterion thực sự yêu cầu zero occurrences.
+4. Phải chuẩn hóa `CORE (Supporting)` thành một Scope canonical và biểu diễn “supporting capability” ở cột ghi chú/khác, không ở giá trị Scope.
 
 ## Handoff State
 
 **M2.1 — REQUIRES FIX**
 
-**M2.2 — NOT STARTED** (verified: no `phase-1-m2-2*` or `*m2-2*` artifacts; M2.1 §12.7 stop commitment intact).
+**M2.2 — NOT STARTED**
 
-**STOP.** No M2.2, no API/architecture design, no migration, no code. Awaiting fix + re-review of P1-01/P2-01 only.
+STOP. Không bắt đầu M2.2, không thiết kế API/deployment, không migration, không schema change và không application code.

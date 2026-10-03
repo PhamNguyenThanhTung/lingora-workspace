@@ -5,6 +5,7 @@ Append test evidence after implementation. Failed tests remain recorded; add a l
 | Test ID | Date | Feature | Expected | Actual | Status | Environment | Build/commit |
 |---|---|---|---|---|---|---|---|
 | `[T-XXX]` | `YYYY-MM-DD` | `[feature]` | `[expected]` | `[actual]` | `PASS/FAIL/BLOCKED` | `[OS/device/runtime/data]` | `[build/hash]` |
+| T-D4-DESIGN-001 | 2026-09-24 | D4 Content & Curriculum Design (APPROVED, design-only) | 18/18 consistency guards PASS; git diff --check 0; D4 focused scan (17/17 checks) PASS; 6/6 D4 puml balanced with distinct purpose/mode enums; 6 Units / 24 Lessons English A1 baseline inventory; lesson blueprint; concept taxonomy (0 conceptTag); 5 logical exercise types; Reading logical representation (candidate); RemedialModule (published-only, fresh context, no downgrade/replay); 4-tier multi-language chain (hidePinyin: true); 0 code/migrations/algorithms; 15 UCs intact; no Design Freeze; no AssessmentSession | **Environment:** Windows 11 / Python 3.11.9 / Static Doc Inspection. **Command 1:** `py scratch/verify_consistency_guards.py` — **Output:** exit 0, ALL 18 PASSED (GUARD-01..18). **Command 2:** `git diff --check` — **Output:** exit 0 (LF warnings only, 0 whitespace errors). **Command 3:** `py scratch/verify_d4_design.py` — **Output:** exit 0, ALL 17 CHECKS PASSED (Sections A-T, 6U/24L, 4/4 visibility, Concept not child of Exercise, 5 canonical exercise types, 0 Matching, Reading boundary, Remedial bounds, purpose/mode decoupled, multi-lang chain, status review/no freeze, 6/6 PlantUML balance). **Runtime scope:** `git diff --name-only -- lingora-web lingora-admin lingora-ai prisma` empty. **Verdict:** PASS | PASS | Windows 11 / Python 3.11.9 / Static Doc Inspection | `f986d96` |
 | T-D3-HYGIENE-001 | 2026-09-24 | D3 Final Hygiene Fix (Post-Review Non-Blocking Fixes) | Header status updated to READY FOR D4 CONTENT/CURRICULUM DESIGN; HANDOFF.md cleaned to single Latest task; Reading semantic boundary documented in D3 §B3; 18/18 guards PASS; git diff --check 0 | `py scratch/verify_consistency_guards.py` exited 0 (ALL 18 PASSED); `git diff --check` exited 0; 0 code/migrations/algorithms | PASS | Windows 11 / Python 3.11 / Static Doc Inspection | `f986d96` |
 | T-D3-DESIGN-001 | 2026-09-24 | D3 Assessment & Learning Engine Design (APPROVED, design-only) | 18/18 guards PASS; git diff --check 0; 6/6 D3 puml balanced with distinct purpose/mode enums; 10 invariants present; 0 hard-coded D3 thresholds/formulas; 6/6 prose-diagram matches; 0 downgrade/auto-advance edges; 0 code/migrations/algorithms; 15 UCs intact; no Design Freeze; no AssessmentSession | **Environment:** Windows 11 / Python 3.11.9 / Static Doc Inspection; commit `f986d96b2bd4f825d6a84ce465021a1cf0f4a34a`. **Command 1:** `py scratch/verify_consistency_guards.py` — **Output:** exit 0, ALL 18 PASSED (GUARD-01..18). **Command 2:** `git diff --check` — **Output:** exit 0 (LF warnings only, 0 whitespace errors). **Command 3:** D3 focused scan (`C:/Users/tungt/AppData/Local/Temp/opencode/d3_scan.py`) — **Output:** 6/6 balance PASS; 6/6 purpose/mode distinct PASS; invariants PASS; Q status `READY FOR D4 CONTENT/CURRICULUM DESIGN` exact PASS; no freeze claim PASS; 0 forbidden numeric/formula hits; AssessmentSession only negated (4 mentions); 6/6 prose refs PASS; OVERALL PASS. **Runtime scope:** `git diff --name-only -- lingora-web lingora-admin lingora-ai prisma` empty. **Verdict:** PASS | PASS | Windows 11 / Python 3.11.9 / Static Doc Inspection | `f986d96` |
 | T-D1-D2-DESIGN-001 | 2026-09-24 | D1 Final Design Cleanup + D2 Domain/Data Design (APPROVED) | 18/18 guards PASS (11 Round-3 + 7 D1-D2 new: ghost-absence, pending-tag, EN/ZH keys, deliveryMode, puml parity, invariants, stale wording); git diff --check 0; puml @startuml/@enduml balance; 0 code, 0 migrations, 15 UCs intact, no Design Freeze | `py scratch/verify_consistency_guards.py` exited 0 ALL 18 PASSED; `git diff --check` exited 0 (after 1 whitespace fix in plan); puml balance 3 files x2; grep: conceptTag 0 live-field, UC-16/17/18 0, AssessmentSession 0 canonical, Ba dạng 0 bare | PASS | Windows 11 / Python 3.11 / Static Doc Inspection | `d1-d2-design` |
@@ -864,6 +865,11 @@ Inspection of `docs/plantuml/content-lifecycle-state.puml` and `docs/phase-1-m2-
 - Administrator Emergency Archive (`PUBLISHED -> ARCHIVED`) restored as dashed transition `#DC2626` with mandatory justification and AuditLog constraint (`emergency_archive: reason + audit_log mandatory`).
 - Normal workflow preserved: Manager plans/assigns -> Creator authors -> Moderator reviews/approves -> Manager publishes.
 - Prohibitions explicitly enforced: `CẤM Administrator Xuất bản Thường nhật`, `CẤM Tự phê duyệt / Xuất bản chéo` (Creator no self-approve/publish; Moderator no publish; no in-place edit).
+- *Historical wording correction (F-LOG-01):*
+  The earlier phrase “restored IN_REVIEW → PUBLISHED” was incorrect.
+  The approved/current lifecycle remains APPROVED → PUBLISHED for both normal Manager publishing
+  and emergency Admin publishing, with emergency justification + AuditLog.
+  The prior wording referred to the rejected review criterion, not the approved behavior.
 **Verdict:** PASS.
 
 **Command 2 (P1-02 - Removal of ARCHIVED -> DRAFT from Core):**
@@ -1106,6 +1112,132 @@ ALL 17 CONSISTENCY GUARDS PASSED!
 **Command 2 (Git Whitespace & Repository Boundary):**
 ```powershell
 git diff --check
+```
+**Output:** Exit code 0 (no whitespace errors, no conflict markers). Zero application code, zero DB migrations created or modified.
+**Verdict:** PASS.
+
+### `T-D4-HYGIENE-001` (2026-09-25) — D4 Post-Review Hygiene Fixes (F-01..F-05) Verification
+**Environment:** Windows 11, PowerShell 5.1, Python 3.11.9, Git 2.53.0.windows.1, repo `d:\school\btl`.
+**Command 1 (Consistency Guards Verification):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA DESIGN D1-D2 - AUTOMATED CONSISTENCY GUARDS
+===========================================================================
+[PASS] GUARD-01: Q13 Raw XLSX Recount & Distribution
+[PASS] GUARD-02: Language Expert Identity
+[PASS] GUARD-03: NFR Qualifiers
+[PASS] GUARD-04: Password Recovery Downstream Trace
+[PASS] GUARD-05: AssessmentType Semantic Consistency
+[PASS] GUARD-06: Stale Jump Semantics
+[PASS] GUARD-07: Stale CEFR Auto-Placement
+[PASS] GUARD-08: N=35 / N=3 Evidence Status
+[PASS] GUARD-09: LearningProgress Canonical Ownership
+[PASS] GUARD-10: Canonical Five Exercise Types
+[PASS] GUARD-11: Multi-Language 4-Tier Assessment Chain
+[PASS] GUARD-12: No AssessmentSession Ghost Entity
+[PASS] GUARD-13: Expert PENDING-SOURCE-VERIFICATION
+[PASS] GUARD-14: Multi-Language Config Keys EN/ZH
+[PASS] GUARD-15: DeliveryMode Decoupling Prose+Puml
+[PASS] GUARD-16: D2 Puml Parity
+[PASS] GUARD-17: Ten Logical Invariants
+[PASS] GUARD-18: No Bare Stale Wording
+===========================================================================
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (D4 Design Focused Scan):**
+```powershell
+py scratch/verify_d4_design.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA DESIGN D4 - FOCUSED SPECIFICATION SCAN
+===========================================================================
+[PASS] Sections A-T: All 20 sections A through T present
+[PASS] 6 Units / 24 Lessons Inventory: 6 Units, 24 Lessons, 4 Lessons/Unit verified
+[PASS] Unit Publication Visibility: 4/4 Lessons Published visibility rule present
+[PASS] Concept Semantic Invariant: Concept confirmed independent domain entity; never child of Exercise
+[PASS] 5 Canonical Exercise Types: MCQ, FILL_BLANK, REORDER, LISTENING, GRAMMAR present in D4 logical model
+[PASS] 0 MATCHING Canonical: MATCHING confirmed excluded from canonical scope
+[PASS] Reading Semantic Boundary: Reading skill dimension vs READING exercise candidate decoupled
+[PASS] Remedial Boundaries: No whole-level downgrade, no forced replay, fresh context verified
+[PASS] Assessment Axes Decoupling: assessmentType (purpose) vs deliveryMode (mode) cleanly decoupled
+[PASS] Multi-Language & hidePinyin: 4-tier chain and Chinese hidePinyin: true default verified
+[PASS] Status & Freeze Guard: Status READY FOR INDEPENDENT REVIEW, Design Freeze NOT CLAIMED
+[PASS] PlantUML curriculum-architecture-d4.puml: Balanced @startuml/@enduml (starts=1, ends=1)
+[PASS] PlantUML lesson-blueprint-d4.puml: Balanced @startuml/@enduml (starts=1, ends=1)
+[PASS] PlantUML concept-content-evidence-d4.puml: Balanced @startuml/@enduml (starts=1, ends=1)
+[PASS] PlantUML item-bank-authoring-d4.puml: Balanced @startuml/@enduml (starts=1, ends=1)
+[PASS] PlantUML remedial-content-d4.puml: Balanced @startuml/@enduml (starts=1, ends=1)
+[PASS] PlantUML multilanguage-content-d4.puml: Balanced @startuml/@enduml (starts=1, ends=1)
+===========================================================================
+ALL D4 FOCUSED CHECKS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 3 (Git Whitespace & Boundary Hygiene):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0 (no whitespace errors, no conflict markers). Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero DB migrations created or modified.
+**Verdict:** PASS.
+
+### `T-M21-ACCEPT-001` (2026-09-25) — Milestone M2.1 Final Acceptance & Log Reconciliation Verification
+**Environment:** Windows 11, PowerShell 5.1, Python 3.11.9, Git 2.53.0.windows.1, repo `d:\school\btl`.
+**Independent Re-Review Evidence:**
+- `M2.1 ACCEPTED FOR M2.2`
+- `D-G1 PASS` (Domain & Lifecycle Traceability)
+- `D-G2 PASS` (Data Model & Boundary Integrity)
+- `Independent Re-Review = final acceptance evidence`
+- Audit findings status: P0-01 CLOSED; P1-05 CLOSED; historical log wording reconciled (F-LOG-01, F-LOG-02, F-LOG-03).
+
+**Command 1 (Consistency Guards Verification):**
+```powershell
+py scratch/verify_consistency_guards.py
+```
+**Output:** Exit code 0.
+```text
+===========================================================================
+  LINGORA DESIGN D1-D2 - AUTOMATED CONSISTENCY GUARDS
+===========================================================================
+[PASS] GUARD-01: Q13 Raw XLSX Recount & Distribution
+[PASS] GUARD-02: Language Expert Identity
+[PASS] GUARD-03: NFR Qualifiers
+[PASS] GUARD-04: Password Recovery Downstream Trace
+[PASS] GUARD-05: AssessmentType Semantic Consistency
+[PASS] GUARD-06: Stale Jump Semantics
+[PASS] GUARD-07: Stale CEFR Auto-Placement
+[PASS] GUARD-08: N=35 / N=3 Evidence Status
+[PASS] GUARD-09: LearningProgress Canonical Ownership
+[PASS] GUARD-10: Canonical Five Exercise Types
+[PASS] GUARD-11: Multi-Language 4-Tier Assessment Chain
+[PASS] GUARD-12: No AssessmentSession Ghost Entity
+[PASS] GUARD-13: Expert PENDING-SOURCE-VERIFICATION
+[PASS] GUARD-14: Multi-Language Config Keys EN/ZH
+[PASS] GUARD-15: DeliveryMode Decoupling Prose+Puml
+[PASS] GUARD-16: D2 Puml Parity
+[PASS] GUARD-17: Ten Logical Invariants
+[PASS] GUARD-18: No Bare Stale Wording
+===========================================================================
+ALL 18 CONSISTENCY GUARDS PASSED CLEANLY.
+```
+**Verdict:** PASS.
+
+**Command 2 (Git Diff & Boundary Hygiene):**
+```powershell
+git diff --check
+```
+**Output:** Exit code 0 (no whitespace errors, no conflict markers). Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero DB migrations created or modified.
+**Verdict:** PASS.
+
+---
+
 ### `T-M22-BEHAVIOR-001` (2026-09-25) — Milestone M2.2 System Behavior, Use Cases & State Machine Verification
 
 - **Environment:** Windows, Git 2.53.0, Python 3.12 (launcher `py`).
@@ -1468,10 +1600,6 @@ Select-String -Path "docs/phase-1-m2-2-behavior-uc-activity-state.md","docs/plan
 ```
 **Output:** N-01: spec UC-07 Skill Profile → `P1-FR-016`, `P1-FR-017` explicitly DEFERRED/non-UC, 05 §8 UC-07 row cleaned. N-02: 05 §8 split into `UC-14 → Support → BF-15` and `P1-FR-007 → GEC/Scenario → BF-14 → no fabricated UC`. N-03: `01` §3.6 freeze DEFERRED wording, no freeze behavior in Core. N-04: Rate Limit absent from 05 §8 (remaining "rate limit" hit is pre-existing `lingora-ai` requirements comment, unrelated). Negative scan: only prohibition text, locked-policy values, and `~25-30 items, PROPOSED` labels; zero active violations.
 **Verdict:** PASS (N-01..N-04 CLOSED; no remaining P1).
-
-```
-**Output:** Exit code 0 (no whitespace errors, no conflict markers). Zero application code, zero DB migrations created or modified.
-**Verdict:** PASS.
 
 ### `T-M23-DESIGN-001` (2026-09-26) — Milestone M2.3 Sequence, API Contract & Service Boundary Verification
 

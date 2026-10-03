@@ -88,7 +88,7 @@ Hệ thống xác định rõ **2 Actor ngoài hệ thống** duy nhất:
 ## 1.7. Yêu cầu Phi chức năng
 
 - **Bảo mật (Security):** Quản lý phiên bằng cookie `httpOnly` an toàn; mã hóa mật khẩu; kiểm soát phân quyền dữ liệu nghiêm ngặt ở cấp hàng (Row-Level Security - RLS) theo `auth.uid()`; bảo vệ quyền Admin phía server.
-- **Hiệu năng & Phản hồi (Performance):** Tải nội dung bài học và Flashcard < 500ms; phản hồi kiểm tra bài tập tức thì; timeout xử lý Route Handler tối đa 8 giây.
+- **Hiệu năng & Phản hồi (Performance):** Tải nội dung bài học và Flashcard < 500ms `[PROPOSED TARGET / TBD — NOT BENCHMARKED]`; phản hồi kiểm tra bài tập tức thì; timeout xử lý Route Handler tối đa 8 giây.
 - **Độ tin cậy & Sẵn sàng (Reliability):** Hệ thống sẵn sàng 24/7; các luồng học bài và ôn tập SRS hoạt động độc lập ngay cả khi mô-đun kiểm tra ngữ pháp gặp sự cố; xử lý lỗi an toàn và có trạng thái phục hồi (fallback).
 - **Khả năng tiếp cận & Trải nghiệm (Usability & Accessibility):** Giao diện Responsive tối ưu trên mọi kích thước màn hình (Desktop, Tablet, Mobile); hỗ trợ phím tắt và đa ngôn ngữ (tiếng Việt & tiếng Anh).
 - **Quyền riêng tư (Privacy):** Kết quả sửa lỗi ngữ pháp xử lý tạm thời (transient) bảo vệ quyền riêng tư; hệ thống huy hiệu cá nhân (Private by default) không áp lực bảng xếp hạng công khai.
@@ -136,7 +136,7 @@ Hệ thống xác định rõ **2 Actor ngoài hệ thống** duy nhất:
 - **Trace:** `UC-08`.
 
 ### US-09 - Kiểm tra định vị trình độ đầu vào (Placement Test)
-- **User Story:** Là Learner mới, tôi muốn làm bài kiểm tra ngắn gồm 15–20 câu hỏi đa kỹ năng để hệ thống tự động xác định trình độ CEFR (A1–B2) và phân bổ lộ trình học phù hợp.
+- **User Story:** Là Learner mới, tôi muốn làm bài kiểm tra ngắn gồm 15–20 câu hỏi đa kỹ năng để hệ thống tự động xác định trình độ CEFR (A1–B2) [HISTORICAL / SUPERSEDED: CEFR là khung tham chiếu năng lực; placement test xếp Starting Unit trên curriculum theo Placement Mapping A] và phân bổ lộ trình học phù hợp.
 - **Acceptance Criteria:** Ngân hàng câu hỏi phân bố đều các cấp độ; hệ thống tự động chấm điểm và xác định trình độ ngay khi hoàn thành; lưu kết quả vào hồ sơ và gợi ý bài học xuất phát tương ứng; người học có thể bỏ qua bài test nếu muốn tự chọn cấp độ.
 - **Trace:** `UC-09`.
 

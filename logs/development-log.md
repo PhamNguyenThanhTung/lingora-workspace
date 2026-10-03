@@ -2127,7 +2127,7 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 
 ## 2026-08-24 — slide-deck-dfd0-and-erd-full-width-polish
 
-- **Completed:** 
+- **Completed:**
   - Standardized Slide 18 (Sơ đồ luồng dữ liệu DFD Mức 0) and Slide 19 (Mô hình thực thể ERD).
   - Removed all cluttered side cards (numbered badges 1..6 and side text cards) to maximize diagram presentation area.
   - Re-rendered PlantUML diagrams at high resolution with clean spatial layout without overlapping or clipping.
@@ -2232,6 +2232,60 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 - Xóa "chiếm 60% thời gian" (không nguồn), giữ nguyên văn file về audio bottleneck.
 - Slide 16: UC-05 → CORE-07 (bỏ CORE-03 phía Creator); UC-12 → CORE-02 Dashboard (bỏ EXT-05 sai đối tượng); UC-02 → CORE-10 (bỏ CORE-01 gượng ép).
 - Tests: grep verify 0 hit các chuỗi cũ. Commit: chưa commit (chờ human yêu cầu rõ).
+
+## 2026-09-25 — d4-content-and-curriculum-design-implementation-and-post-review-hygiene
+
+- **Completed:**
+  - Implemented authoritative D4 Logical Content & Curriculum Design master specification `docs/phase-1-d4-content-curriculum-design.md` (Sections A through T).
+  - Authored 6 D4 PlantUML diagrams under `docs/plantuml/`:
+    - `curriculum-architecture-d4.puml`: Hierarchy, SoD, 6-state lifecycle, and Concept reuse.
+    - `lesson-blueprint-d4.puml`: Lesson blueprint, multi-skill payloads, 3-stage practice, and retry boundary.
+    - `concept-content-evidence-d4.puml`: Flow from Exercise interaction to Concept evidence, ConceptMastery, KnowledgeGap, LevelReadiness.
+    - `item-bank-authoring-d4.puml`: Authoring envelopes for 5 logical exercise types and assessment items.
+    - `remedial-content-d4.puml`: RemedialModule authoring, fresh payload delivery, and gap resolution.
+    - `multilanguage-content-d4.puml`: 4-tier multi-language architecture separating Common Engine, Config (EN/ZH), Bank, and Rubric.
+  - Updated supporting documentation:
+    - `docs/08-english-a1-curriculum.md`: Cross-referenced with D4 lesson blueprints and concept models.
+    - `docs/01-architecture.md`: Added §3.5 cross-referencing D4 content & curriculum architecture.
+    - `docs/05-traceability-matrix.md`: Added §7 D4 content rule traceability table and linked MVP-09 to D8 SRS baseline.
+    - `docs/QUICK-REF.md`: Updated milestone status and content architecture summary.
+  - Executed Post-Review Hygiene Fixes (F-01 through F-05) following Independent Final Review (`D4 ACCEPTED`).
+  - Zero application runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), zero database schema changes or migrations, zero UI changes, and zero git commits created.
+- **Tests:** `T-D4-DESIGN-001` PASS, `T-D4-HYGIENE-001` PASS.
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-25 — m2-1-acceptance-recording-and-log-reconciliation
+
+- **Completed:**
+  - Recorded formal Final Acceptance for Milestone M2.1 following Independent Re-Review (`M2.1 ACCEPTED FOR M2.2`, `D-G1 PASS`, `D-G2 PASS`).
+  - Confirmed audit finding closure: P0-01 CLOSED (Administrator emergency authority strictly constrained to already APPROVED content with mandatory reason + AuditLog); P1-05 CLOSED.
+  - Resolved historical log inaccuracies via append-only corrections (F-LOG-01, F-LOG-02, F-LOG-03).
+  - Updated `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` metadata to `ACCEPTED FOR M2.2`.
+  - Recorded ADR-018 in `logs/decision-log.md`.
+  - Zero application runtime code, zero database schema changes or migrations, and zero git commits created.
+- **Tests:** `T-M21-ACCEPT-001` PASS.
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-25 — m2-2-behavior-uc-activity-state
+
+- **Completed:**
+  - Implemented Milestone M2.2 Master Specification: `docs/phase-1-m2-2-behavior-uc-activity-state.md` (Sections 1 through 16).
+  - Specified all 15 canonical Use Cases (`UC-01` to `UC-15`) and 15 Behavioral Families (`BF-01` to `BF-15`).
+  - Authored 7 PlantUML diagrams under `docs/plantuml/*m22.puml`.
+  - Zero application runtime code, zero database schema changes or migrations, zero UI changes, zero git commits created (`COMMIT: NOT CREATED`).
+- **Tests:** `T-M22-DESIGN-001` PASS.
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
+
+## 2026-09-26 — m2-2-behavior-uc-activity-state-remediation-and-acceptance
+
+- **Completed:**
+  - Remediated all 16 P1 findings and 15 P2 findings from Independent Final Review.
+  - Re-authored all 7 M2.2 PlantUML diagrams.
+  - Resolved all 4 non-blocking issues from Independent Re-Review (N-01, N-02, N-03, N-04).
+  - Recorded formal Final Acceptance: `M2.2 ACCEPTED FOR M2.3` (ADR-021).
+  - Zero application runtime code, zero DB migrations/schema changes created.
+- **Tests:** `T-M22-REMED-001` PASS, `T-M22-CLEANUP-001` PASS, `T-M22-ACCEPT-001` PASS.
+- **Commit:** Pending human review and authorization (`COMMIT: NOT CREATED`).
 
 ## 2026-09-26 — m2-3-sequence-api-service-boundary (category: runtime-boundary)
 

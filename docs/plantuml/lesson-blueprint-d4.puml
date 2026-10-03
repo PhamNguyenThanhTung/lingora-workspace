@@ -1,0 +1,94 @@
+@startuml
+!theme plain
+skinparam roundCorner 8
+skinparam defaultFontName "Segoe UI"
+skinparam monochrome false
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title Lingora — Reusable Lesson Blueprint & Pedagogical Execution Flow (D4)
+
+package "Lesson Logical Blueprint" as Blueprint #F8FAFC {
+  class "Lesson Identity & Governance" as Meta #E2E8F0 {
+    +UUID lessonId
+    +UUID courseId & unitId
+    +Integer orderIndex (1..4)
+    +String title
+    +Integer version
+    +ContentStatus status
+    +UUID creatorId & reviewerId
+    +UUID supersedesId (Clone-to-Draft v2)
+  }
+
+  class "Pedagogical Objectives" as Pedagogy #FEF3C7 {
+    +String canDoStatement
+    +String targetLanguage (e.g. 'en')
+    +String cefrBand (e.g. 'A1')
+    +Integer estimatedDurationMinutes (5..10m)
+    +List<TargetConcept> targetConcepts
+  }
+
+  class "Multi-Skill Content Payload" as Content #E0E7FF {
+    +List<VocabularyItem> vocabulary (8..10 words + audio)
+    +GrammarStructure grammar (form, function, common errors)
+    +ReadingSnippet reading (short passage, comprehension Qs)
+    +ListeningSnippet listening (audio clip, transcript)
+  }
+
+  class "Standard Exercise Composition (5 Items)" as Exercises #F1F5F9 {
+    +Exercise 1: MCQ (Vocabulary in context)
+    +Exercise 2: MCQ (Grammar / Form recognition)
+    +Exercise 3: FILL_BLANK (Gap completion)
+    +Exercise 4: REORDER (Sentence syntax)
+    +Exercise 5: LISTENING / GRAMMAR (Alternating rotation)
+  }
+
+  Meta *-- Pedagogy
+  Meta *-- Content
+  Meta *-- Exercises
+}
+
+package "3-Stage Pedagogical Practice Flow" as Flow #F0FDF4 {
+  rectangle "Stage 1: Guided Practice" as Stage1 #DCFCE7 {
+    label "Scaffolded exploration\nAudio prompts + contextual hints\n(Exercises 1 & 2)"
+  }
+
+  rectangle "Stage 2: Independent Practice" as Stage2 #BBF7D0 {
+    label "Unprompted application\nGap filling & syntax reordering\n(Exercises 3 & 4)"
+  }
+
+  rectangle "Stage 3: Synthesis & Review" as Stage3 #86EFAC {
+    label "Integrated communication item\nAlternating Listening/Grammar\n(Exercise 5)"
+  }
+
+  Stage1 -right-> Stage2 : progress
+  Stage2 -right-> Stage3 : progress
+}
+
+package "Evidence & Boundary Discipline" as Evidence #FFFFFF {
+  rectangle "Controlled Retry Allowance" as Retry #FEF9C3 {
+    label "allowance = max(1, floor(5 * 0.10)) = 1\nGuarantees retry possibility without infinite loops"
+  }
+
+  rectangle "Learning Progress (Completion)" as Completion #E2E8F0 {
+    label "All 5 exercises attempted within allowance\n=> UserProgress: COMPLETED\n=> completedContentRatio updated"
+  }
+
+  rectangle "Concept Mastery Evidence" as MasteryEv #DCFCE7 {
+    label "Item responses record success/error\n=> ConceptMastery evidenceCount incremented\n=> Repeated errors trigger KnowledgeGap"
+  }
+
+  rectangle "Proficiency Boundary" as ProfBoundary #FEE2E2 {
+    label "INVARIANT:\nLesson completion != Verified Proficiency\nProficiency requires formal EXIT Assessment"
+  }
+
+  Stage3 --> Retry
+  Retry --> Completion
+  Retry --> MasteryEv
+  Completion .right.> ProfBoundary : completion NEVER\nupdates proficiency
+}
+
+Exercises ..> Flow : instantiated in
+Pedagogy ..> MasteryEv : evaluates concepts
+
+@enduml

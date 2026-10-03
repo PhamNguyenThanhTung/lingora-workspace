@@ -154,3 +154,4 @@ L1 → L2 → L3 → L4             (trong mỗi Unit; L4 = review gate mở Uni
 | Illustrative word examples (non-normative) | APPROVED (PO Decision) | Creator linh hoạt trong assignment (D1) | UC-08, MVP-12 | RESOLVED |
 
 > Placement mapping + jump scope chi tiết: xem `docs/09-placement-and-jump-specification.md`.
+> Chi tiết thiết kế đặc tả khung bài học vi mô (Lesson Blueprint), phân loại Concept chuẩn hóa và mô hình ngân hàng học liệu D4: xem [`docs/phase-1-d4-content-curriculum-design.md`](phase-1-d4-content-curriculum-design.md).

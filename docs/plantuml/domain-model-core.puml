@@ -13,6 +13,7 @@ hide circle
 !define VOCAB_COLOR #DCFCE7
 !define PROGRESS_COLOR #FAF5FF
 !define GOV_COLOR #FEF3C7
+!define ADAPTIVE_COLOR #EDE9FE
 !define EXTENSION_COLOR #F3F4F6
 
 legend top right
@@ -20,6 +21,7 @@ legend top right
   |<#E0F2FE>| **Core Learning Aggregate** (Course, Unit [Target], Lesson, Exercise) |
   |<#DCFCE7>| **Vocabulary & SRS Aggregate** (Language, Vocabulary, SRS Cards, Review Logs) |
   |<#FAF5FF>| **Learner Identity & Progress Aggregate** (Profile, UserProgress) |
+  |<#EDE9FE>| **Assessment, Remediation & Mastery Aggregate** (LearnerProfile, SkillProfile, etc.) |
   |<#FEF3C7>| **Governance & Audit Aggregate** (AuditLog [Target]) |
   |<#F3F4F6>| **Extension Boundary (Optional / Future Migration — Outside Core MVP)** |
 endlegend
@@ -52,7 +54,7 @@ package "Core Learning Aggregate (Scope: CORE)" <<Rectangle>> {
     + order_index: Integer (1..24) [Applied]
     + is_published: Boolean [Applied]
     + status: ContentStatus [Target]
-    + objective: String [Applied]
+    + objective: String [Target Schema]
     + creator_id: UUID [Target]
     + reviewer_id: UUID [Target]
     + assignment_brief: String / JSON [Target Candidate]
@@ -74,18 +76,25 @@ package "Vocabulary & SRS Aggregate (Scope: CORE)" <<Rectangle>> {
     + name: String [Applied]
     + native_name: String [Applied]
     + is_learnable: Boolean [Applied]
+    + is_ui_locale: Boolean [Applied]
   }
 
   class Vocabulary VOCAB_COLOR {
     + id: UUID [Applied]
     + language_code: String [Applied]
     + term: String [Applied]
-    + audio_path: String [Applied]
+    + normalized_term: String [Applied]
+    + phonetic: String [Applied]
+    + audio_url: String [Applied]
+    + cefr: Cefr [Applied]
+    + created_at: Timestamp [Applied]
+    + updated_at: Timestamp [Applied]
   }
 
   class LessonVocabulary VOCAB_COLOR {
     + lesson_id: UUID [Applied]
     + vocabulary_id: UUID [Applied]
+    + order_index: Integer [Applied]
   }
 
   class UserVocabSrs VOCAB_COLOR {
@@ -99,6 +108,7 @@ package "Vocabulary & SRS Aggregate (Scope: CORE)" <<Rectangle>> {
     + last_reviewed_at: Timestamp [Applied]
     + review_count: Integer [Applied]
     + lapse_count: Integer [Applied]
+    + created_at: Timestamp [Applied]
   }
 
   class ReviewLog VOCAB_COLOR {
@@ -117,8 +127,12 @@ package "Learner Identity & Progress Aggregate (Scope: CORE)" <<Rectangle>> {
     + display_name: String [Applied]
     + role: Role [Applied: 2 roles | Target: 6 roles]
     + assigned_roles: Role[] [Target]
+    + ui_locale: String [Applied]
+    + native_lang_code: String [Applied]
     + streak_count: Integer [Applied]
     + daily_goal_min: Integer [Applied]
+    + timezone: String [Applied]
+    + last_qualifying_activity_date: Date [Applied]
     + starting_unit: Integer (1..6) [Target Candidate DD-06]
     + placement_history: JSONB [Target Candidate DD-06]
   }
@@ -130,6 +144,16 @@ package "Learner Identity & Progress Aggregate (Scope: CORE)" <<Rectangle>> {
     + status: ProgressStatus [Applied]
     + score: Integer [Applied]
     + completed_at: Timestamp [Applied]
+    + updated_at: Timestamp [Applied]
+  }
+
+  class LearningProgress PROGRESS_COLOR {
+    + id: UUID [Target Schema]
+    + user_id: UUID [Target Schema]
+    + course_id: UUID [Target Schema]
+    + completed_content_ratio: Float [Target Schema]
+    + last_accessed_at: Timestamp [Target Schema]
+    + updated_at: Timestamp [Target Schema]
   }
 }
 
@@ -142,6 +166,107 @@ package "Governance & Audit Aggregate (Scope: CORE)" <<Rectangle>> {
     + entity_id: UUID [Target Schema]
     + metadata: JSONB [Target Schema]
     + created_at: Timestamp [Target Schema]
+  }
+}
+
+package "Learning Assessment, Remediation & Mastery Aggregate (Scope: CORE)" <<Rectangle>> {
+  class LearnerProfile ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + user_id: UUID [Target]
+    + target_language: String [Target]
+    + learning_goal: String [Target]
+    + self_reported_level: String [Target]
+    + verified_proficiency: String [Target]
+  }
+
+  class SkillProfile ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + user_id: UUID [Target]
+    + vocabulary_level: String [Target]
+    + grammar_level: String [Target]
+    + reading_level: String [Target]
+    + listening_level: String [Target]
+    + anchor_level: String [Pending Validation]
+    + radar_data: JSONB [Target]
+    + source_assessment_result_id: UUID [Target, Nullable]
+  }
+
+  class AssessmentResult ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + user_id: UUID [Target]
+    + assessment_type: String [Target]
+    + delivery_mode: String [Target]
+    + dimensions: JSONB [Target]
+    + raw_scores: JSONB [Target]
+    + stage_data: JSONB [Target]
+    + language_config: JSONB [Target]
+    + completed_at: Timestamp [Target]
+  }
+
+  class Concept ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + code: String [Target]
+    + domain: String [VOCABULARY, GRAMMAR, READING, LISTENING, PRONUNCIATION]
+    + language_code: String [Target]
+    + name: String [Target]
+    + description: String [Target]
+    + cefr_level: String [Target]
+    + prerequisite_concept_id: UUID [Target, Nullable]
+    + is_active: Boolean [Target]
+  }
+
+  class ConceptMastery ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + user_id: UUID [Target]
+    + concept_id: UUID [Target]
+    + mastery_state: String [Target]
+    + evidence_count: Integer [Target]
+    + last_assessed_at: Timestamp [Target]
+  }
+
+  class KnowledgeGap ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + user_id: UUID [Target]
+    + concept_id: UUID [Target]
+    + gap_severity: String [Target]
+    + detected_at: Timestamp [Target]
+    + resolved_at: Timestamp [Target]
+  }
+
+  class LevelReadiness ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + user_id: UUID [Target]
+    + current_level: String [Target]
+    + target_level: String [Target]
+    + readiness_status: String [ADVANCE, ADVANCE_WITH_SUPPORT, REMEDIATE]
+    + evidence_summary: JSONB [Target]
+    + evaluated_at: Timestamp [Target]
+  }
+
+  class RemedialModule ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + concept_id: UUID [Target]
+    + unit_id: UUID [Target]
+    + creator_id: UUID [Target]
+    + status: ContentStatus [Target]
+    + reviewer_id: UUID [Target]
+    + published_at: Timestamp [Target]
+    + version: Integer [Target]
+    + remedial_type: String [Target]
+    + content_payload: JSONB [Target]
+    + created_at: Timestamp [Target]
+  }
+
+  class Recommendation ADAPTIVE_COLOR {
+    + id: UUID [Target]
+    + user_id: UUID [Target]
+    + recommendation_type: String [Target]
+    + target_unit_id: UUID [Target]
+    + remedial_module_id: UUID [Target]
+    + rationale: String [Target]
+    + input_snapshot: JSONB [Target]
+    + rule_version: String [Target]
+    + generated_at: Timestamp [Target]
   }
 }
 
@@ -184,6 +309,22 @@ UserVocabSrs "1" *-- "0..*" ReviewLog
 
 Profile "1" -- "0..*" AuditLog : triggers [Target]
 Lesson "0..1" -- "0..1" Lesson : supersedes [Target Candidate]
+
+Profile "1" -- "1" LearnerProfile : manages [Target]
+LearnerProfile "1" -- "0..1" SkillProfile : outputs [Target]
+LearnerProfile "1" -- "0..*" AssessmentResult : evaluated by [Target]
+LearnerProfile "1" -- "0..*" LearningProgress : monitors / owns [Target]
+' Note: Profile -- LearningProgress direct link removed; sole canonical owner is LearnerProfile (Role.LEARNER only)
+LearnerProfile "1" -- "0..*" ConceptMastery : tracks [Target]
+LearnerProfile "1" -- "0..*" KnowledgeGap : detects [Target]
+LearnerProfile "1" -- "0..*" LevelReadiness : measures [Target]
+LearnerProfile "1" -- "0..*" Recommendation : receives [Target]
+Recommendation "0..*" -- "0..1" RemedialModule : prescribes [Target]
+Concept "1" -- "0..*" ConceptMastery : tracks [Target]
+Concept "1" -- "0..*" KnowledgeGap : identifies [Target]
+Concept "1" -- "0..*" RemedialModule : addresses [Target]
+Exercise "0..*" -- "1" Concept : tags [Target]
+Unit "1" -- "0..*" RemedialModule : contains [Target]
 
 ' Extension relationships (dashed)
 Profile "1" .. "0..*" CohortMember : member of [Future]

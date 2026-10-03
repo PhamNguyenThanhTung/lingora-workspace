@@ -44,8 +44,37 @@ Jump >3 diagnostic). `[ASSUMPTION]` Phân bổ này tối ưu cho onboarding; hi
 - **Skip:** bất kỳ lúc nào trước khi nộp → Starting Unit = U1, không lưu score.
 - **Retake:** từ Profile, không giới hạn số lần `[ASSUMPTION]`; mỗi lần làm lại dùng cùng blueprint
   (ngân hàng câu hỏi chi tiết + shuffle là việc của M-implementation, không thuộc spec này);
-  kết quả mới chỉ áp dụng khi learner xác nhận cập nhật lộ trình.
+  kết quả mới được cập nhật trực tiếp vào profile; hộp thoại xác nhận/review modal (nếu có) chỉ đóng vai trò khuyến nghị trải nghiệm người dùng tùy chọn (optional UX recommendation), không phải chốt chặn hệ thống bắt buộc.
 - **Output duy nhất:** `Starting Unit` (U1–U6). Không output CEFR, không output điểm thành tích.
+
+### 1.4 Hệ thống Đánh giá Chẩn đoán Thích ứng (Stage-Adaptive Diagnostic Assessment) & Cấu hình Đa ngôn ngữ
+
+> **Quan hệ Thứ bậc Kiến trúc (Architecture Precedence — M-01):**
+> 1. **Kiến trúc Toàn Hệ thống Đóng băng (FROZEN ARCHITECTURAL PATTERN):** Cơ chế **Stage-Adaptive Diagnostic Assessment** (2 giai đoạn: Routing Stage $\rightarrow$ Targeted Stage, 4 chiều năng lực: Vocab/Grammar/Reading/Listening, Common Assessment Engine tham số hóa đa ngôn ngữ, `E-EXP-01`..`E-EXP-07`) là mẫu kiến trúc chuẩn hóa cấp hệ thống của Lingora cho placement & diagnostic engine.
+> 2. **Thể hiện Đề xuất Cụ thể (PROPOSED PLACEMENT INSTANCE):** Bản thiết kế Blueprint 30 câu (§1.1–§1.3) và Mapping A (§2) là một thể hiện cụ thể được đề xuất (proposed instance) dành riêng cho đề cương Tiếng Anh A1 trong phạm vi MVP-03.
+> 3. **Ranh giới thực thi:** Khi triển khai đề cương Tiếng Anh A1 cho MVP-03, bản 30 câu tuyến tính đóng vai trò simplified baseline instance, tuyệt đối không thay thế hay vô hiệu hóa mô hình Stage-Adaptive Architecture toàn hệ thống.
+
+1. **Cấu trúc Thích ứng 2 Giai đoạn (Two-Stage Adaptive):**
+   - **Giai đoạn 1 (Routing Stage):** Nhóm câu hỏi định tuyến ban đầu với độ khó trung bình nhằm ước lượng sơ bộ phân dải năng lực của người học.
+   - **Giai đoạn 2 (Targeted Stage):** Hệ thống phân nhánh người học sang nhánh câu hỏi tương ứng với độ khó mục tiêu, đào sâu đánh giá từng chiều năng lực cốt lõi.
+   - **Quy mô & Thời lượng:** Dự kiến khoảng ~25–30 câu hỏi, thời gian hoàn thành $\le 15$ phút nhằm tránh mệt mỏi nhận thức (`E-EXP-07`).
+   - *Lưu ý trạng thái:* Số lượng câu hỏi chính xác, tỷ lệ phân bổ từng phần, và ngưỡng thăng/giáng nhánh (Branching Thresholds) mang trạng thái `PROPOSED / PENDING VALIDATION`, cần thử nghiệm thực tế với dữ liệu người học trước khi chốt cứng.
+
+2. **Bốn Chiều Năng lực Cốt lõi (Core Dimensions):**
+   - Đánh giá bao phủ 4 chiều: **Từ vựng (Vocabulary)**, **Ngữ pháp (Grammar)**, **Đọc hiểu (Reading)**, **Nghe hiểu (Listening)**.
+   - Kỹ năng Viết (Writing) và Nói (Speaking) được phân loại là thành phần tùy chọn/mở rộng trong các phiên bản tiếp theo.
+   - Xuất kết quả dạng **Skill Profile đa chiều** (Spider/Radar Chart), hiển thị mức độ từng kỹ năng, tuyệt đối không gộp thành 1 điểm số trung bình phẳng duy nhất (`E-EXP-02`). Công thức tính Anchor Level (nếu có) mang trạng thái `PENDING VALIDATION`.
+
+3. **Cấu hình Đa Ngôn ngữ (Language-Specific Configuration):**
+   - Common Assessment Engine dùng chung cơ chế điều phối bài test, nhưng tham số hóa hoàn toàn qua file cấu hình ngôn ngữ (`Language-Specific Config`):
+     - **Tiếng Anh:** Khung tham chiếu CEFR A1–B2 cho MVP.
+     - **Tiếng Trung:** Khung tham chiếu HSK có hỗ trợ versioning (HSK 2.0 / HSK 3.0). Phần đọc hiểu tiếng Trung mặc định ẩn hoàn toàn pinyin (`hidePinyin: true`) để đo chính xác năng lực nhận diện mặt chữ Hán (`E-EXP-04`).
+
+4. **Luồng Khởi đầu Linh hoạt (Flexible Entry Flow - Decision D4):**
+   - Người học được quyền lựa chọn:
+     - (A) Làm bài đánh giá chẩn đoán thích ứng (Khuyến nghị) $\rightarrow$ ghi nhận `verifiedProficiency`.
+     - (B) Chọn cấp độ tự khai báo (`Initial Self-Reported Level`) hoặc Bỏ qua (Skip) $\rightarrow$ ghi nhận `selfReportedLevel`.
+   - Hệ thống nghiêm ngặt tách biệt `selfReportedLevel` (chưa kiểm chứng) khỏi `verifiedProficiency` (đã qua đánh giá chẩn đoán) để tránh sai lệch thích ứng (`E-EXP-01`).
 
 ---
 
@@ -106,6 +135,11 @@ Jump assessment = tập Exercise ở assessment mode (D4), số câu và scope n
 ---
 
 ## 4. Assessment Blueprint (mỗi Unit — conceptual, trên Exercise model)
+
+> **Consistency Guard (M-09):**
+> Các tỷ lệ phần trăm dưới đây (`40/45/15`, `35/50/15`, `30/55/15`) mang trạng thái:
+> `[PROPOSED — unit-local test composition only, NOT used as SkillProfile overall-score formula]`.
+> SkillProfile đa chiều tuyệt đối không gộp thành 1 điểm số trung bình phẳng duy nhất (theo nguyên tắc `E-EXP-02`). Tỷ lệ này chỉ đại diện cho cơ cấu thành phần câu hỏi trong bài kiểm tra cục bộ của từng Unit.
 
 | Unit | Learning objective (đánh giá) | Dimensions + Weight `[ASSUMPTION]` | Exercise types | Ghi chú D4 |
 |---|---|---|---|---|

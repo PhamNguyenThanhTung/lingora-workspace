@@ -77,7 +77,8 @@ If AI Server is down, deterministic SRS and the core lesson flow remain usable; 
 
 **Current baseline:** Full Phase 0 Reset & Rebuild (ADR-014: Software Engineering Core + AI Supporting Capability).
 Next active milestone: **M2 (Web Core Lesson Flow & Exercise Engine)**.
-**D3 status (2026-09-24, DONE):** Assessment & Learning Engine design-only complete (`docs/phase-1-d3-assessment-learning-engine-design.md` A–Q, Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`); D2-compatible, no runtime/migration/algorithm, no Design Freeze. Next design step: **D4 Content/Curriculum** under its own approved plan.
+**D3 status (2026-09-24, DONE):** Assessment & Learning Engine design-only complete (`docs/phase-1-d3-assessment-learning-engine-design.md`, D3 ACCEPTED FOR D4).
+**D4 status (2026-09-24, IMPLEMENTED — READY FOR REVIEW):** Content & Curriculum Design complete (`docs/phase-1-d4-content-curriculum-design.md` A–T; 6 PlantUML diagrams; 6 Units / 24 Lessons English A1 baseline; lesson blueprint; concept taxonomy; 5 logical exercise types; remedial content; multi-language configs; no code/migration/algorithm; no Design Freeze).
 
 ---
 

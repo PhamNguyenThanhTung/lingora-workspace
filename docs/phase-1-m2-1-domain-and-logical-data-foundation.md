@@ -3,7 +3,7 @@
 > **Mã tài liệu:** `docs/phase-1-m2-1-domain-and-logical-data-foundation.md`  
 > **Giai đoạn:** Phase 1 — System Analysis & Design (Implementation-Independent)  
 > **Mốc thực thi:** Milestone M2.1 (Domain + Logical Data Foundation)  
-> **Trạng thái:** `REVISED — READY FOR RE-REVIEW` (Đã sửa đổi toàn diện theo kết luận Design Audit: *D — REQUIREMENTS DRIFT / DESIGN BOUNDARY VIOLATION*; KHÔNG tự ý coi là APPROVED).  
+> **Trạng thái:** `ACCEPTED FOR M2.2` (Đã vượt qua Independent Re-Review với kết luận D-G1 = PASS, D-G2 = PASS; sẵn sàng cho Milestone M2.2; không runtime/migration).
 > **Căn cứ kế hoạch:** `docs/phase-1-system-design-plan.md` §7 (M2.1), §8, §9, §10  
 > **Ranh giới nghiêm ngặt:** KHÔNG code, KHÔNG schema/migration/DB execution, KHÔNG API/UI implementation, KHÔNG thay đổi Product Policies D1–D9, KHÔNG sửa Requirements Baseline, KHÔNG bắt đầu M2.2+.
 
@@ -36,31 +36,33 @@ Tài liệu tuân thủ tuyệt đối quy tắc không biến giải pháp kỹ
 
 ## 2. Alias Table & Terminology Normalization (Workstream A)
 
-Bảng chuẩn hóa thuật ngữ đối chiếu các mã yêu cầu chuẩn hóa (`P1-FR-*`, `P1-NFR-*`) với các mã cũ (`FR-*`, `BR-*`), gắn nhãn ranh giới dữ liệu thực tế:
+> **Lưu ý Quản trị Namespace:** Để tránh xung đột với mã yêu cầu kỹ nghệ chuẩn tắc (`P1-FR-001..017`, `P1-NFR-001..004` trong `docs/02-requirements.md` và `docs/05-traceability-matrix.md`), bảng đối chiếu cục bộ của thiết kế M2.1 sử dụng tiền tố **`DESIGN-FR-*`** và **`DESIGN-NFR-*`** (`category: contract-gap`). Toàn bộ các bảng thực thể và ma trận truy vết hệ thống tiếp tục liên kết trực tiếp với các mã chuẩn tắc `P1-FR-*` / `P1-NFR-*`.
 
-| Mã Chuẩn hóa P1 | Mã Cũ / Bí danh | Tên Nghiệp vụ Chuẩn hóa | Tác nhân / Quyền hạn | Phân loại Trạng thái Dữ liệu | Trạng thái Nghiệp vụ |
-|---|---|---|---|---|---|
-| **P1-FR-001** | FR-01, FR-AUTH | Đăng ký, Đăng nhập & Quản lý Phiên | Learner, All Roles | `CURRENT_APPLIED_DATABASE` (`profiles`) | Core MVP Active |
-| **P1-FR-002** | FR-02, FR-NAV | Điều hướng Cấu trúc Khóa học (Course→Unit→Lesson) | Learner | `TARGET_SCHEMA` (`units`, `courses`, `lessons`) | Core MVP Active (DD-01) |
-| **P1-FR-003** | FR-03, FR-LESSON | Học bài tương tác (Exercise Model hợp nhất) | Learner | `CURRENT_APPLIED_DATABASE` (`exercises`) | Core MVP Active (ADR-006) |
-| **P1-FR-004** | FR-04, FR-PROGRESS | Ghi nhận Tiến độ & Hoàn thành Bài học | Learner | `CURRENT_APPLIED_DATABASE` (`user_progress`) | Core MVP Active (D7) |
-| **P1-FR-005** | FR-05, FR-SRS | Lặp lại Ngắt quãng Từ vựng (SRS Policy B) | Learner | `CURRENT_APPLIED_DATABASE` (`user_vocab_srs`, `review_logs`) | Core MVP Active (D8) |
-| **P1-FR-006** | FR-06, FR-STREAK | Duy trì Chuỗi Ngày Học (Streak Daily Goal) | Learner | `CURRENT_APPLIED_DATABASE` (`profiles.streak_count`) | Core MVP Active (D9 deferred) |
-| **P1-FR-007** | FR-07, FR-GEC | Luyện viết & Kiểm tra Ngữ pháp (GEC Supporting) | Learner | `CURRENT_APPLIED_DATABASE` (`chat_scenarios`) | Core MVP Supporting (ADR-014) |
-| **P1-FR-008** | FR-08, FR-CONTENT-PLAN | Lập kế hoạch Khóa học & Đơn vị bài học | Organizational Manager | `TARGET_SCHEMA` (`courses`, `units`, `lessons`) | Core MVP Active (D1) |
-| **P1-FR-009** | FR-09, FR-AUTHOR | Biên soạn Nội dung Bài học được giao | Lesson Creator | `CURRENT_APPLIED_DATABASE` (`lessons`, `exercises`) | Core MVP Active (D1) |
-| **P1-FR-010** | FR-10, FR-MODERATE | Kiểm duyệt Chuyên môn & Phê duyệt Xuất bản | Moderator, Org Manager | `TARGET_SCHEMA` (`ContentStatus`, `audit_logs`) | Core MVP Active (D2/D3) |
-| **P1-FR-011** | FR-11, FR-USER-MGMT | Quản lý Người dùng & Phân vai Hệ thống | Administrator | `TARGET_SCHEMA` (Role 6-enum, `profiles`) | Core MVP Active (DD-10) |
-| **P1-FR-012** | FR-12, FR-SYS-AUDIT | Kiểm toán Hệ thống & Nhật ký Vết thao tác | Administrator | `TARGET_SCHEMA` (`audit_logs`) | Core MVP Active (DD-03) |
-| **P1-FR-013** | FR-13, FR-AUDIO | Quản lý Âm thanh Luyện nghe Từ vựng | Creator, Learner | `CURRENT_APPLIED_DATABASE` (`vocabularies.audio_path`) | Core MVP Active (DD-11) |
-| **P1-FR-014** | FR-14, FR-REVISION | Nhân bản Cập nhật Bài đã Xuất bản (Clone-to-Draft) | Creator, Org Manager | `TARGET_SCHEMA` (`lessons.supersedes_id` candidate) | Core MVP Active (D3, DD-02) |
-| **P1-FR-015** | FR-15, FR-COHORT | Quản lý Lớp học / Nhóm Tổ chức B2B | Organizational Manager | `FUTURE_MIGRATION` (`cohorts`, `cohort_members`) | **EXTENSION BOUNDARY ONLY** |
-| **P1-FR-016** | FR-16, FR-PLACEMENT | Kiểm tra Đầu vào & Nhảy bài Có điều kiện | Learner | `TARGET_SCHEMA` candidate (`profiles.placement_history`) | Core MVP Active (D5, D6, DD-06) |
-| **P1-NFR-001**| NFR-01, NFR-SEC | An toàn Thông tin & Phân quyền RLS Đa tầng | All Roles | `CURRENT_APPLIED_DATABASE` (Supabase RLS) | Core MVP Active (DD-10) |
-| **P1-NFR-002**| NFR-02, NFR-PERF | Hiệu năng Hệ thống & Timeout AI 8s | All Roles | Architecture Boundary (Web BFF) | Core MVP Active (ADR-014) |
-| **P1-NFR-003**| NFR-03, NFR-AVAIL | Độ Sẵn sàng & Khả năng Chịu lỗi Fallback | Learner | Architecture Boundary (Web BFF) | Core MVP Active (ADR-014) |
-| **P1-NFR-004**| NFR-04, NFR-ENV | Cách ly Môi trường & Bảo mật Khóa Bí mật | Infrastructure | Infrastructure Boundary (Vercel, Supabase) | Core MVP Active |
-| **P1-NFR-005**| NFR-05, NFR-UX | Trải nghiệm Người dùng Đa ngôn ngữ (vi/en) | Learner | `CURRENT_APPLIED_DATABASE` (i18n catalogs) | Core MVP Active |
+Bảng chuẩn hóa thuật ngữ đối chiếu các mã thiết kế cục bộ (`DESIGN-FR-*`, `DESIGN-NFR-*`) với các mã cũ (`FR-*`, `BR-*`), gắn nhãn ranh giới dữ liệu thực tế:
+
+| Mã Thiết kế Cục bộ | Mã Cũ / Bí danh | Tên Nghiệp vụ Chuẩn hóa | Tác nhân / Quyền hạn | Phân loại Trạng thái Dữ liệu | Trạng thái Nghiệp vụ | Mã Yêu cầu Canonical tương đương |
+|---|---|---|---|---|---|---|
+| **DESIGN-FR-001** | FR-01, FR-AUTH | Đăng ký, Đăng nhập & Quản lý Phiên | Learner, All Roles | `CURRENT_APPLIED_DATABASE` (`profiles`) | Core MVP Active | `P1-FR-001` |
+| **DESIGN-FR-002** | FR-02, FR-NAV | Điều hướng Cấu trúc Khóa học (Course→Unit→Lesson) | Learner | `TARGET_SCHEMA` (`units`, `courses`, `lessons`) | Core MVP Active (DD-01) | `P1-FR-002` |
+| **DESIGN-FR-003** | FR-03, FR-LESSON | Học bài tương tác (Exercise Model hợp nhất) | Learner | `CURRENT_APPLIED_DATABASE` (`exercises`) | Core MVP Active (ADR-006) | `P1-FR-003` |
+| **DESIGN-FR-004** | FR-04, FR-PROGRESS | Ghi nhận Tiến độ & Hoàn thành Bài học | Learner | `CURRENT_APPLIED_DATABASE` (`user_progress`) | Core MVP Active (D7) | `P1-FR-004` |
+| **DESIGN-FR-005** | FR-05, FR-SRS | Lặp lại Ngắt quãng Từ vựng (SRS Policy B) | Learner | `CURRENT_APPLIED_DATABASE` (`user_vocab_srs`, `review_logs`) | Core MVP Active (D8) | `P1-FR-005, P1-FR-006` |
+| **DESIGN-FR-006** | FR-06, FR-STREAK | Duy trì Chuỗi Ngày Học (Streak Daily Goal) | Learner | `CURRENT_APPLIED_DATABASE` (`profiles.streak_count`) | Core MVP Active (D9 deferred) | `P1-FR-011, P1-FR-014` |
+| **DESIGN-FR-007** | FR-07, FR-GEC | Luyện viết & Kiểm tra Ngữ pháp (GEC Supporting) | Learner | `CURRENT_APPLIED_DATABASE` (`chat_scenarios`) | Core MVP Supporting (ADR-014) | `P1-FR-007` |
+| **DESIGN-FR-008** | FR-08, FR-CONTENT-PLAN | Lập kế hoạch Khóa học & Đơn vị bài học | Organizational Manager | `TARGET_SCHEMA` (`courses`, `units`, `lessons`) | Core MVP Active (D1) | `P1-FR-008` |
+| **DESIGN-FR-009** | FR-09, FR-AUTHOR | Biên soạn Nội dung Bài học được giao | Lesson Creator | `CURRENT_APPLIED_DATABASE` (`lessons`, `exercises`) | Core MVP Active (D1) | `P1-FR-008, P1-FR-009` |
+| **DESIGN-FR-010** | FR-10, FR-MODERATE | Kiểm duyệt Chuyên môn & Phê duyệt Xuất bản | Moderator, Org Manager | `TARGET_SCHEMA` (`ContentStatus`, `audit_logs`) | Core MVP Active (D2/D3) | `P1-FR-008` |
+| **DESIGN-FR-011** | FR-11, FR-USER-MGMT | Quản lý Người dùng & Phân vai Hệ thống | Administrator | `TARGET_SCHEMA` (Role 6-enum, `profiles`) | Core MVP Active (DD-10) | `P1-FR-008, P1-NFR-001` |
+| **DESIGN-FR-012** | FR-12, FR-SYS-AUDIT | Kiểm toán Hệ thống & Nhật ký Vết thao tác | Administrator | `TARGET_SCHEMA` (`audit_logs`) | Core MVP Active (DD-03) | `P1-FR-008, P1-NFR-001` |
+| **DESIGN-FR-013** | FR-13, FR-AUDIO | Quản lý Âm thanh Luyện nghe Từ vựng | Creator, Learner | `CURRENT_APPLIED_DATABASE` (`vocabularies.audio_url`) | Core MVP Active (DD-11) | `P1-FR-002, P1-FR-009, P1-FR-013` |
+| **DESIGN-FR-014** | FR-14, FR-REVISION | Nhân bản Cập nhật Bài đã Xuất bản (Clone-to-Draft) | Creator, Org Manager | `TARGET_SCHEMA` (`lessons.supersedes_id` candidate) | Core MVP Active (D3, DD-02) | `P1-FR-008` |
+| **DESIGN-FR-015** | FR-15, FR-COHORT | Quản lý Lớp học / Nhóm Tổ chức B2B | Organizational Manager | `FUTURE_MIGRATION` (`cohorts`, `cohort_members`) | **EXTENSION BOUNDARY ONLY** | `MVP-17 (Optional B2B)` |
+| **DESIGN-FR-016** | FR-16, FR-PLACEMENT | Kiểm tra Đầu vào & Nhảy bài Có điều kiện | Learner | `TARGET_SCHEMA` candidate (`profiles.placement_history`) | Core MVP Active (D5, D6, DD-06) | `P1-FR-016` |
+| **DESIGN-NFR-001**| NFR-01, NFR-SEC | An toàn Thông tin & Phân quyền RLS Đa tầng | All Roles | `CURRENT_APPLIED_DATABASE` (Supabase RLS) | Core MVP Active (DD-10) | `P1-NFR-001` |
+| **DESIGN-NFR-002**| NFR-02, NFR-PERF | Hiệu năng Hệ thống & Timeout AI 8s [PROPOSED TARGET] | All Roles | Architecture Boundary (Web BFF) | Core MVP Active (ADR-014) | `P1-NFR-002` |
+| **DESIGN-NFR-003**| NFR-03, NFR-AVAIL | Độ Sẵn sàng & Khả năng Chịu lỗi Fallback | Learner | Architecture Boundary (Web BFF) | Core MVP Active (ADR-014) | `P1-NFR-002` |
+| **DESIGN-NFR-004**| NFR-04, NFR-ENV | Cách ly Môi trường & Bảo mật Khóa Bí mật | Infrastructure | Infrastructure Boundary (Vercel, Supabase) | Core MVP Active | `P1-NFR-001` |
+| **DESIGN-NFR-005**| NFR-05, NFR-UX | Trải nghiệm Người dùng Đa ngôn ngữ (vi/en) | Learner | `CURRENT_APPLIED_DATABASE` (i18n catalogs) | Core MVP Active | `P1-FR-010, P1-NFR-004` |
 
 ---
 
@@ -79,8 +81,8 @@ Toàn bộ các thực thể được phân loại dứt khoát theo hai chiều
 │    - Language, ChatScenario (Context GEC), ChatScenarioTranslation                     │
 │                                                                                        │
 │ 2. EXTENSION BOUNDARY (Tùy chọn B2B / Vận hành — NẰM NGOÀI CORE MVP):                 │
-│    - Cohort, CohortMember (UC-15 Quản lý nhóm B2B)                                     │
-│    - SupportTicket (UC-15 Help Desk hỗ trợ người dùng)                                 │
+│    - Cohort, CohortMember (UC-15 Quản lý nhóm B2B / Org Manager)                       │
+│    - SupportTicket (UC-14 Help Desk hỗ trợ người dùng / Operations Staff)               │
 │    * Quy ước: Luôn vẽ nét đứt (dashed); không chặn nghiệm thu Core MVP.                 │
 │                                                                                        │
 │ 3. EXCLUDED CONCEPTS (Tuyệt đối Cấm đưa vào Thiết kế hoặc Dữ liệu):                   │
@@ -121,13 +123,26 @@ Toàn bộ các thực thể được phân loại dứt khoát theo hai chiều
    - **Phân loại Trạng thái Exercise Types theo từng Giá trị Enum:**
      - `CURRENT_APPLIED_DATABASE`: Chỉ hỗ trợ 3 kiểu enum: `MCQ`, `FILL_BLANK`, `REORDER` (đã có trong migration `202608140001_init`).
      - `TARGET_SCHEMA / FUTURE_MIGRATION`: Hai kiểu `LISTENING` và `GRAMMAR` (phê duyệt trong ADR-006) định nghĩa ở `schema.prisma`, chưa có trong enum DB hiện tại, cần migration mở rộng enum Postgres trong tương lai.
-     - **`MATCHING` tuyệt đối KHÔNG tồn tại (0 Occurrences):** Baseline không phê duyệt kiểu `MATCHING` như một enum riêng biệt; việc gộp `REORDER / MATCHING` trước đây là sai sót từ ngữ và đã bị loại bỏ hoàn toàn.
+     - `PROPOSED / DESIGN GAP (C-05)`: Dạng bài tập Đọc hiểu `READING` (Passage + Questions payload). Chưa triển khai trong runtime bài học MVP nhưng kiến trúc logic và động cơ đánh giá (Assessment Engine) dành sẵn slot biểu diễn dữ liệu.
+     - **Không có enum bài tập ghép cặp riêng:** Baseline chỉ phê duyệt các kiểu Applied và hai Target additions được liệt kê bên dưới; mọi nhãn ghép cặp ngoài baseline đã bị loại bỏ.
 5. **Language & Vocabulary (Ngôn ngữ & Từ vựng — Scope: CORE | Status: CURRENT_APPLIED_DATABASE):** Danh mục từ vựng chuẩn hóa theo ngôn ngữ, liên kết bài học qua `LessonVocabulary`.
 6. **UserProgress (Tiến độ — Scope: CORE | Status: CURRENT_APPLIED_DATABASE):** Theo dõi trạng thái học tập (`NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`), điểm số và số lần retry.
 7. **UserVocabSrs & ReviewLog (Ôn tập Ngắt quãng — Scope: CORE | Status: CURRENT_APPLIED_DATABASE):** Thẻ ghi nhớ từ vựng cá nhân hóa theo thuật toán Policy B `[1, 3, 7, 14, 30]` (xác định, không ML, không AI sở hữu tiến độ; lưu DB qua bảng SRS và RPC `record_review`).
 8. **Profile (Hồ sơ Người dùng — Scope: CORE | Status: CURRENT_APPLIED_DATABASE):** Mở rộng từ `auth.users`, lưu trữ vai trò (Applied: 2 roles, Target: 6 roles), streak count, Starting Unit (Target Candidate DD-06).
 9. **AuditLog (Kiểm toán — Scope: CORE | Status: TARGET_SCHEMA):** Ghi vết bất biến các hành vi nhạy cảm (actor, action, target, timestamp). *Cảnh báo: Bảng chưa có trong Applied DB, cần Future Migration (DD-03).*
 10. **Cohort, CohortMember, SupportTicket (Scope: EXTENSION | Status: FUTURE_MIGRATION):** Các module mở rộng tổ chức và hỗ trợ, không thuộc Core MVP.
+11. **Learning Assessment, Remediation & Mastery Subsystem (Phân hệ Đánh giá, Bổ khuyết & Độ thuần thục — Scope: CORE | Status: TARGET_SCHEMA / LOGICAL_MODEL):**
+Bộ thực thể logic phục vụ mô hình sư phạm chuyên gia (Expert-informed Learning Design):
+- `LearnerProfile`: Quản lý mục tiêu học tập, ngôn ngữ đích, phân tách rõ `selfReportedLevel` (chưa kiểm chứng, cờ `UNVERIFIED`) và `verifiedProficiency` (đã qua kiểm tra). Ràng buộc liên kết: chỉ áp dụng cho người dùng có vai trò `Role.LEARNER`.
+- `SkillProfile`: Hồ sơ năng lực 4 chiều (Vocabulary, Grammar, Reading, Listening), xuất dạng Radar/Spider chart. Thuật toán Anchor Level mang trạng thái `PENDING VALIDATION`.
+- `AssessmentResult`: Kết quả bài đánh giá gồm 3 dạng (`DIAGNOSTIC`, `EXIT`, `RE_EVALUATION`), ghi nhận điểm chi tiết từng chiều và dữ liệu phân nhánh (C-06).
+- `Concept`: Thực thể định danh khái niệm học thuật chuẩn hóa (`code`, `domain`, `languageCode`), thay thế chuỗi tự do `conceptTag` (M-04).
+- `ConceptMastery`: Trạng thái nắm vững từng khái niệm/kỹ năng cụ thể dựa trên chuỗi bằng chứng làm bài tập (`NOVICE`, `DEVELOPING`, `MASTERED`).
+- `KnowledgeGap`: Lỗ hổng kiến thức được phát hiện từ các chuỗi lỗi lặp lại, có độ nghiêm trọng và trạng thái khắc phục (tự động đóng khi `ConceptMastery` đạt ngưỡng).
+- `LearningProgress`: Tiến độ hoàn thành chương trình tuyến tính (Course/Unit/Lesson, `completedContentRatio`), tách biệt hoàn toàn với `ConceptMastery` và `Proficiency` (`LearningProgress ↔ UC-07 ↔ MVP-08`).
+- `LevelReadiness`: Đánh giá mức độ sẵn sàng chuyển cấp (`ADVANCE`, `ADVANCE_WITH_SUPPORT`, `REMEDIATE`).
+- `Recommendation`: Đề xuất lộ trình/bước học tiếp theo dựa trên 6 biến đầu vào.
+- `RemedialModule`: Mô-đun bổ khuyết khái niệm/kỹ năng có đầy đủ trường quản trị nội dung (`creatorId`, `status`, `reviewerId`, `publishedAt`, `version`), không hạ cấp độ tổng thể, không bắt học lại bài cũ (M-03).
 
 ### 4.2. Sơ đồ Domain Model UML
 Sơ đồ PlantUML lưu tại [`docs/plantuml/domain-model-core.puml`](plantuml/domain-model-core.puml).  
@@ -206,6 +221,107 @@ classDiagram
     +JSONB metadata [Target Schema]
   }
 
+  class LearnerProfile {
+    +UUID id (PK) [Logical/Target]
+    +UUID userId (FK) [Logical/Target]
+    +String targetLanguage [Logical/Target]
+    +String learningGoal [Logical/Target]
+    +String selfReportedLevel [Logical/Target]
+    +String verifiedProficiency [Logical/Target]
+  }
+
+  class SkillProfile {
+    +UUID id (PK) [Logical/Target]
+    +UUID userId (FK) [Logical/Target]
+    +String vocabularyLevel [Logical/Target]
+    +String grammarLevel [Logical/Target]
+    +String readingLevel [Logical/Target]
+    +String listeningLevel [Logical/Target]
+    +String anchorLevel [Pending Validation]
+  }
+
+  class AssessmentResult {
+    +UUID id (PK) [Logical/Target]
+    +UUID userId (FK) [Logical/Target]
+    +AssessmentType assessmentType [Logical/Target]
+    +JSONB dimensions [Logical/Target]
+    +JSONB rawScores [Logical/Target]
+    +JSONB stageData [Logical/Target]
+    +JSONB languageConfig [Logical/Target]
+    +DateTime completedAt [Logical/Target]
+  }
+
+  class LearningProgress {
+    +UUID id (PK) [Logical/Target]
+    +UUID userId (FK) [Logical/Target]
+    +UUID courseId (FK) [Logical/Target]
+    +UUID unitId (FK) [Logical/Target]
+    +UUID lessonId (FK) [Logical/Target]
+    +Float completedContentRatio [Logical/Target]
+    +DateTime completedAt [Logical/Target]
+  }
+
+  class Concept {
+    +UUID id (PK) [Logical/Target]
+    +String code [Logical/Target]
+    +String languageCode (FK) [Logical/Target]
+    +String domain [Logical/Target]
+    +String name [Logical/Target]
+    +String description [Logical/Target]
+    +UUID prerequisiteConceptId (FK) [Logical/Target]
+    +Boolean isActive [Logical/Target]
+  }
+
+  class ConceptMastery {
+    +UUID id (PK) [Logical/Target]
+    +UUID userId (FK) [Logical/Target]
+    +UUID conceptId (FK) [Logical/Target]
+    +MasteryState masteryState [Logical/Target]
+    +Integer evidenceCount [Logical/Target]
+    +DateTime lastAssessedAt [Logical/Target]
+  }
+
+  class KnowledgeGap {
+    +UUID id (PK) [Logical/Target]
+    +UUID userId (FK) [Logical/Target]
+    +UUID conceptId (FK) [Logical/Target]
+    +GapSeverity gapSeverity [Logical/Target]
+    +DateTime detectedAt [Logical/Target]
+    +DateTime resolvedAt [Logical/Target]
+  }
+
+  class LevelReadiness {
+    +UUID id (PK) [Logical/Target]
+    +UUID userId (FK) [Logical/Target]
+    +String currentLevel [Logical/Target]
+    +String targetLevel [Logical/Target]
+    +ReadinessStatus readinessStatus [Logical/Target]
+    +JSONB evidenceSummary [Logical/Target]
+    +DateTime evaluatedAt [Logical/Target]
+  }
+
+  class RemedialModule {
+    +UUID id (PK) [Logical/Target]
+    +UUID creatorId (FK) [Logical/Target]
+    +UUID unitId (FK) [Logical/Target]
+    +UUID conceptId (FK) [Logical/Target]
+    +RemedialType remedialType [Logical/Target]
+    +ContentStatus status [Logical/Target]
+    +UUID reviewerId (FK) [Logical/Target]
+    +JSONB contentPayload [Logical/Target]
+    +DateTime publishedAt [Logical/Target]
+    +Integer version [Logical/Target]
+  }
+
+  class Recommendation {
+    +UUID id (PK) [Logical/Target]
+    +UUID userId (FK) [Logical/Target]
+    +RecommendationType recommendationType [Logical/Target]
+    +UUID targetUnitId [Logical/Target]
+    +UUID remedialModuleId [Logical/Target]
+    +String rationale [Logical/Target]
+  }
+
   Language "1" --> "0..*" Course
   Course "1" --> "1..*" Unit : contains [Target]
   Course "1" --> "1..*" Lesson : direct [Applied]
@@ -215,25 +331,84 @@ classDiagram
   Lesson "1" --> "0..*" UserProgress
   Profile "1" --> "0..*" AuditLog : triggers [Target]
   Lesson "0..1" --> "0..1" Lesson : supersedes [Candidate DD-02]
+  Profile "1" --> "0..1" LearnerProfile : role=LEARNER [Target]
+  LearnerProfile "1" --> "0..1" SkillProfile [Target]
+  LearnerProfile "1" --> "0..*" AssessmentResult [Target]
+  LearnerProfile "1" --> "0..*" LearningProgress [Target]
+  LearnerProfile "1" --> "0..*" ConceptMastery [Target]
+  LearnerProfile "1" --> "0..*" KnowledgeGap [Target]
+  LearnerProfile "1" --> "0..*" LevelReadiness [Target]
+  LearnerProfile "1" --> "0..*" Recommendation [Target]
+  Concept "1" --> "0..*" ConceptMastery [Target]
+  Concept "1" --> "0..*" KnowledgeGap [Target]
+  Concept "1" --> "0..*" RemedialModule [Target]
+  Recommendation "0..*" --> "0..1" RemedialModule [Target]
 ```
 
 ### 4.3. Bảng Truy vết Mô hình Miền về Yêu cầu (Traceability Table)
 
-| Thực thể Logic Domain | Scope (Trục 1) | Implementation Status (Trục 2) | Yêu cầu (P1-FR) | Use Case | Business Flow | Quyết định Khóa Chi phối |
+| Thực thể Logic Domain | Scope (Trục 1) | Implementation Status (Trục 2) | Yêu cầu Canonical (P1-FR / MVP) | Use Case | Business Flow | Quyết định Khóa Chi phối |
 |---|---|---|---|---|---|---|
-| **Course** | `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-002, 008 | UC-02, 08 | BF-02, 05 | Baseline Curriculum 08 |
-| **Unit** | `CORE` | `TARGET_SCHEMA` | P1-FR-002, 008 | UC-02, 08 | BF-02, 05 | Hierarchy Invariant, DD-01 |
-| **Lesson** | `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-002, 003, 008, 009, 014 | UC-02, 04, 08, 09, 10 | BF-02, 03, 05, 06, 07 | Policies D1, D2, D3, DD-02, DD-04 |
-| **Exercise** | `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-003, 009 | UC-04, 08 | BF-03, 10 | Unified Model D4, ADR-006, DD-05 |
-| **Vocabulary** | `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-003, 013 | UC-04, 06 | BF-03, 12 | Curriculum 08, DD-11 |
-| **LessonVocabulary**| `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-003, 005 | UC-04, 06 | BF-03, 12 | Curriculum 08 |
-| **Profile** | `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-001, 006, 011, 016 | UC-01, 03, 11 | BF-01, 08, 11 | Roles Baseline, Mapping A, DD-06 |
-| **UserProgress** | `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-004, 016 | UC-04, 05 | BF-04, 10 | Controlled Retry D7, DD-07 |
-| **UserVocabSrs** | `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-005 | UC-06 | BF-12 | SRS Policy B D8, DD-08 |
-| **ReviewLog** | `CORE` | `CURRENT_APPLIED_DATABASE` | P1-FR-005 | UC-06 | BF-12 | SRS Policy B D8, DD-08 |
-| **AuditLog** | `CORE` | `TARGET_SCHEMA` | P1-FR-010, 012 | UC-10, 13 | BF-07, 13 | Governance Invariant, DD-03 |
-| **Cohort / Member**| `EXTENSION` | `FUTURE_MIGRATION` | P1-FR-015 | UC-15 | BF-15 | Extension Boundary (Outside MVP) |
-| **SupportTicket** | `EXTENSION` | `FUTURE_MIGRATION` | P1-FR-015 | UC-15 | BF-15 | Extension Boundary (Outside MVP) |
+| **Course** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-002, P1-FR-008` | `UC-02, 08` | `BF-02, 05` | Baseline Curriculum 08 |
+| **Unit** | `CORE` | `TARGET_SCHEMA` | `P1-FR-002, P1-FR-008` | `UC-02, 08` | `BF-02, 05` | Hierarchy Invariant, DD-01 |
+| **Lesson** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-002, P1-FR-003, P1-FR-008, P1-FR-009` | `UC-02, 04, 08, 09, 10` | `BF-02, 03, 05, 06, 07` | Policies D1, D2, D3, DD-02, DD-04 |
+| **Exercise** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-003, P1-FR-012, P1-FR-013` | `UC-04, 05, 08` | `BF-03, 10` | Unified Model D4, ADR-006, DD-05 |
+| **Vocabulary** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-002, P1-FR-003, P1-FR-013` | `UC-04, 06` | `BF-03, 12` | Curriculum 08, DD-11 |
+| **LessonVocabulary**| `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-002, P1-FR-003, P1-FR-005` | `UC-04, 06` | `BF-03, 12` | Curriculum 08 |
+| **Profile** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-001, P1-FR-011, P1-FR-014, P1-FR-016` | `UC-01, 02, 03, 11` | `BF-01, 08, 11` | Roles Baseline, Mapping A, DD-06 |
+| **UserProgress** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-004` | `UC-04, 05` | `BF-04, 10` | Controlled Retry D7, DD-07 |
+| **LearningProgress** | `CORE` | `TARGET_SCHEMA` | `P1-FR-004, MVP-08` | `UC-07` | `BF-04, 10` | Linear Progress Tracking, Progress != Proficiency (C-04) |
+| **UserVocabSrs** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-005, P1-FR-006` | `UC-06` | `BF-12` | SRS Policy B D8, DD-08 |
+| **ReviewLog** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-005, P1-FR-006` | `UC-06` | `BF-12` | SRS Policy B D8, DD-08 |
+| **AuditLog** | `CORE` | `TARGET_SCHEMA` | `P1-FR-008, P1-NFR-001, MVP-19` | `UC-10, 13` | `BF-07, 13` | Governance Invariant, DD-03 |
+| **Language** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-002, P1-NFR-005, P1-FR-010` | `UC-02, 04` | `BF-02, 03` | Language taxonomy and locale boundary |
+| **CourseTranslation** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-002, P1-NFR-005, P1-FR-010` | `UC-02, 04` | `BF-02, 03` | Course i18n representation |
+| **UnitTranslation** | `CORE` | `TARGET_SCHEMA` | `P1-FR-002, P1-NFR-005, P1-FR-010` | `UC-02` | `BF-02` | Unit i18n representation |
+| **LessonTranslation** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-008, P1-NFR-005, P1-FR-010` | `UC-04, 08` | `BF-03, 05` | Lesson i18n representation |
+| **VocabularyTranslation** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-003, P1-NFR-005, P1-FR-010` | `UC-04, 06` | `BF-03, 12` | Vocabulary i18n representation |
+| **ChatScenario** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-007` | Scenario Writing | Supporting GEC | Supporting GEC scenario context (ADR-014) |
+| **ChatScenarioTranslation** | `CORE` | `CURRENT_APPLIED_DATABASE` | `P1-FR-007, P1-NFR-005, P1-FR-010` | Scenario Writing | Supporting GEC | Supporting scenario i18n context |
+| **LearnerProfile** | `CORE` | `TARGET_SCHEMA` | `P1-FR-016, MVP-02, MVP-03` | `UC-02, UC-03` | Flexible Entry Flow | D4, E-EXP-01 (Self-Reported != Verified) |
+| **SkillProfile** | `CORE` | `TARGET_SCHEMA` | `P1-FR-016, MVP-03, MVP-11` | `UC-03, UC-07` | Multidimensional Reporting | D1, E-EXP-03 (Spider/Radar Chart, Anchor pending) |
+| **AssessmentResult** | `CORE` | `TARGET_SCHEMA` | `P1-FR-016, MVP-03` | `UC-03, UC-07` | Stage-Adaptive Diagnostic & Exit | D3, E-EXP-01, E-EXP-07 (Diagnostic vs Exit C-06) |
+| **Concept** | `CORE` | `TARGET_SCHEMA` | `P1-FR-003, MVP-08` | `UC-05, UC-07` | Concept Taxonomy | Standardized Concept Model, M-04 |
+| **ConceptMastery** | `CORE` | `TARGET_SCHEMA` | `P1-FR-003, MVP-08, MVP-11` | `UC-05, UC-07` | Mastery Tracking | E-EXP-03, E-EXP-07 (Mastery != Progress) |
+| **KnowledgeGap** | `CORE` | `TARGET_SCHEMA` | `P1-FR-003, MVP-09` | `UC-05, UC-06` | Error Signal Detection | E-EXP-05 (Concept-based gap tracking) |
+| **LevelReadiness** | `CORE` | `TARGET_SCHEMA` | `MVP-08, MVP-11, YC-EXT-03` | `UC-04, UC-07` | Path Transition Check | E-EXP-07 (Readiness evaluation: 3 states) |
+| **RemedialModule** | `CORE` | `TARGET_SCHEMA` | `MVP-04, YC-EXT-03` | `UC-04` | Concept-level Remediation | E-EXP-06 (Governed micro-lesson, M-03) |
+| **Recommendation** | `CORE` | `TARGET_SCHEMA` | `YC-EXT-03` | `UC-04` | Adaptive Recommendation | Scope Level 3 (6 inputs -> path) |
+| **Cohort / Member**| `EXTENSION` | `FUTURE_MIGRATION` | `MVP-17` | `UC-15` | `BF-15` | Extension Boundary (Outside MVP / Org Manager) |
+| **SupportTicket** | `EXTENSION` | `FUTURE_MIGRATION` | `MVP-16` | `UC-14` | `BF-14 (Ops)` | Extension Boundary (Outside MVP / Ops Staff) |
+
+### 4.4. Ma trận Quan hệ & Cardinality (D2.12)
+
+| Quan hệ | Owner | Cardinality | Optionality | Lifecycle dependency | Delete / Archive |
+|---|---|---|---|---|---|
+| `LearnerProfile → LearningProgress` | `LearnerProfile` | 1 → 0..* | Bắt buộc phía owner; progress optional | Progress sống theo learner; course/unit/lesson ref có thể null khi nội dung bị archive | Không xóa cứng; chỉ learner mang `Role.LEARNER` mới có rows |
+| `LearnerProfile → SkillProfile` | `LearnerProfile` | 1 → 0..1 | Optional (null tới diagnostic đầu tiên) | Tạo/cập nhật bởi `AssessmentResult` (DIAGNOSTIC/EXIT/RE_EVALUATION) | Giữ snapshot cuối; không xóa khi có assessment mới |
+| `LearnerProfile → AssessmentResult` | `LearnerProfile` | 1 → 0..* | Optional | Immutable log; không depend vòng đời nội dung | Bất biến, không xóa/sửa (P1-FR-016) |
+| `LearnerProfile → ConceptMastery` | `LearnerProfile` | 1 → 0..* | Optional | Phụ thuộc `Concept.isActive`; giữ lịch sử khi concept ngừng active | Không xóa cứng |
+| `LearnerProfile → KnowledgeGap` | `LearnerProfile` | 1 → 0..* | Optional | Mở khi chuỗi lỗi; đóng (`resolvedAt`) khi mastery đạt ngưỡng | Resolved giữ làm provenance; archive policy PENDING |
+| `Concept → ConceptMastery` | `Concept` (registry) | 1 → 0..* | Mastery optional per learner | Concept `isActive=false` → ngừng dùng cho readiness mới | Registry không xóa; chỉ deactivate |
+| `Concept → KnowledgeGap` | `Concept` (registry) | 1 → 0..* | Gap optional per learner | Như trên | Như trên |
+| `Concept → RemedialModule` | `Concept` (registry) | 1 → 0..* | Module optional per concept | Module theo lifecycle nội dung 6 trạng thái (D1/D2/D3) | Archive theo content lifecycle, không xóa published history |
+| `Lesson → Exercise` | `Lesson` | 1 → 1..* | Bắt buộc ≥1 exercise khi Published | Exercise sống theo lesson version (clone-to-draft tạo v2) | Bản published bất biến; sửa qua v2 |
+| `Exercise → Concept` | `Concept` (registry) | * → 1 (mỗi exercise gắn đúng 1 `conceptId` chính) | Bắt buộc ở Target; Applied rows thiếu tag được backfill ở M-implementation | Tag theo concept version tại thời điểm biên soạn | Đổi tag = revision nội dung, qua review |
+
+Không tồn tại duplicate ownership: `Profile` chung không trực tiếp sở hữu `LearningProgress`/`SkillProfile`/`AssessmentResult` (đi qua `LearnerProfile`).
+
+### 4.5. Logical Invariants (D2.11)
+
+1. `LearningProgress ≠ Proficiency` — hoàn thành nội dung không phải năng lực verified.
+2. `Proficiency ≠ Mastery` — SkillProfile 4 chiều không suy ra mastery từng concept.
+3. `Mastery ≠ LevelReadiness` — mastery là input, readiness là quyết định tổng hợp.
+4. `Completed B1 ≠ B1 proficiency certification` — cần EXIT thẩm định.
+5. `Completed B1 ≠ Automatic B2` — không tự nâng cấp độ.
+6. `Weak skill ≠ whole-level downgrade` — chỉ remediation/scaffolding có mục tiêu.
+7. `Remediation ≠ replay old lesson` — micro-lesson với vocab/context/exercise mới cho concept cũ.
+8. `Jump ≠ learning completion` — `SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP` (`by_jump=true`), never `COMPLETED_BY_LEARNING`.
+9. `Self-reported level ≠ verified proficiency` — self-report là `UNVERIFIED`.
+10. `Diagnostic ≠ Exit Assessment` — entry xác định điểm vào; exit thẩm định chuyển cấp; cả hai đều sinh `AssessmentResult` bất biến.
 
 ---
 
@@ -390,6 +565,90 @@ Tiến trình học tập cốt lõi là tuyến tính tuần tự: $\text{Unit 
   - *Phân định Ranh giới Vật lý vs Ứng dụng:* Bảng dữ liệu và RPC atomic update hoàn toàn tồn tại trong `CURRENT_APPLIED_DATABASE`. Chuỗi khoảng thời gian Policy B $[1, 3, 7, 14, 30]$ ngày được tầng logic ứng dụng / client service tính toán xác định và truyền qua đối số `p_recommended_interval_days`, không hardcode vào constraint DB.
   - *Phân loại DD-08:* `LOCKED BEHAVIOR` + `CURRENT_APPLIED_DATABASE (SRS Tables & RPC)` + `APPLICATION LAYER (Deterministic Schedule Calculation)`.
 
+### 6.8. Tách biệt 4 Khái niệm Sư phạm Cốt lõi & Luồng Khởi đầu Linh hoạt (Expert-informed)
+Dựa trên nghiên cứu chuyên gia ngôn ngữ (`E-EXP-01`..`E-EXP-07`), Lingora phân định dứt khoát 4 khái niệm sư phạm độc lập:
+1. **Tiến độ Học tập (`Learning Progress`):** Tỷ lệ % hoàn thành nội dung bài học/Unit/Khóa học tuyến tính (lưu tại `user_progress.status = COMPLETED`). Tiến độ chỉ phản ánh việc người học đã đi qua bài học, không phản ánh năng lực thực tế.
+2. **Trình độ Năng lực (`Proficiency`):** Năng lực ngôn ngữ chuẩn hóa theo khung tham chiếu (CEFR A1–B2 cho tiếng Anh, HSK versioned cho tiếng Trung), ghi nhận qua bài đánh giá chẩn đoán thích ứng (`verifiedProficiency`).
+3. **Mức độ Thuần thục (`Mastery`):** Độ thành thạo trên từng khái niệm/kỹ năng cụ thể (`ConceptMastery`), được tích lũy từ chuỗi bài tập và ôn tập SRS, độc lập với tiến độ hoàn thành bài.
+4. **Mức độ Sẵn sàng Lên cấp (`Level Readiness`):** Đánh giá tổng hợp xem học viên có đủ điều kiện và sẵn sàng chuyển cấp/lên Unit tiếp theo hay chưa (dựa trên Progress + Mastery + Skill Profile + Knowledge Gaps còn đọng).
+
+- **Luồng khởi đầu linh hoạt (Decision D4):** Người học được quyền chọn:
+  - (A) Làm bài đánh giá chẩn đoán thích ứng $\rightarrow$ ghi nhận `verifiedProficiency`.
+  - (B) Chọn cấp độ tự khai báo (`Initial Self-Reported Level`) hoặc Bỏ qua (Skip) $\rightarrow$ ghi nhận `selfReportedLevel` (trạng thái `UNVERIFIED`).
+  - Hệ thống nghiêm cấm đồng nhất tự khai báo với năng lực đã kiểm chứng (`E-EXP-01`).
+
+### 6.9. Hệ thống Đánh giá Chẩn đoán Thích ứng (Stage-Adaptive Diagnostic Assessment) & Common Assessment Engine
+- **Kiến trúc Thích ứng 2 Giai đoạn:**
+  - **Giai đoạn 1 (Routing Stage):** Nhóm câu hỏi định tuyến ban đầu với độ khó trung bình nhằm ước lượng sơ bộ dải năng lực của học viên.
+  - **Giai đoạn 2 (Targeted Stage):** Phân nhánh học viên vào nhóm câu hỏi chuyên sâu theo độ khó phù hợp để đo đạc chính xác 4 chiều năng lực cốt lõi.
+- **Bốn Chiều Năng lực Cốt lõi:**
+  - **Từ vựng (Vocabulary)**, **Ngữ pháp (Grammar)**, **Đọc hiểu (Reading)**, **Nghe hiểu (Listening)**.
+  - Kỹ năng Viết (Writing) và Nói (Speaking) được phân loại là tùy chọn tương lai.
+  - Kết quả xuất ra: **Skill Profile đa chiều** (Spider/Radar Chart), hiển thị độc lập từng kỹ năng (`E-EXP-02`), không cào bằng thành 1 điểm số duy nhất. Thuật toán tính Anchor Level mang trạng thái `PENDING VALIDATION`.
+- **Cấu hình Đa Ngôn ngữ (Common Assessment Engine):** Dùng chung engine thích ứng, tham số hóa qua file cấu hình ngôn ngữ (`Language-Specific Config`) theo chuỗi kiến trúc 4 tầng:
+  $$\text{Common Assessment Engine} \longrightarrow \text{Language Config} \longrightarrow \text{Item Bank} \longrightarrow \text{Rubric}$$
+  - *Tầng 1 (Engine):* Điều phối phiên thi, định tuyến 2 giai đoạn, xuất spider/radar chart đa chiều. Bất biến theo ngôn ngữ.
+  - *Tầng 2 (Language Config):* Tham số hóa cấu hình cho từng ngôn ngữ:
+    - **Tiếng Anh:** Khung tham chiếu CEFR A1–B2 cho MVP; config có room cho `contextual vocabulary`, `collocation`, `word family`, `connected speech` (`E-EXP-07`).
+    - **Tiếng Trung:** Khung tham chiếu HSK có hỗ trợ versioning (HSK 2.0 / HSK 3.0). Phần đọc hiểu tiếng Trung mặc định ẩn hoàn toàn pinyin (`hidePinyin: true`) để đo chính xác năng lực nhận diện chữ Hán (`E-EXP-04`).
+  - *Tầng 3 (Item Bank):* Ngân hàng câu hỏi/học liệu phân loại theo `Concept` và độ khó theo từng ngôn ngữ.
+  - *Tầng 4 (Rubric):* Bộ quy tắc chấm điểm và phân loại lỗi sai riêng biệt (Tiếng Anh: trật tự từ, thì, hòa hợp chủ-vị, collocation, word family, connected speech; Tiếng Trung: nét/bộ thủ, thanh điệu, trật tự từ/lượng từ và hư từ, nghe hiểu).
+  - *Lưu ý:* 4 tầng trên là cấu trúc kiến trúc logic & cấu hình hệ thống, không yêu cầu phân mảnh thành 4 bảng vật lý riêng biệt.
+  - *Cấu trúc domain khái niệm (D2.7):* `Language` (bảng applied `languages`) → `LanguageConfig` / `AssessmentConfig` (các scope cấu hình JSON trong file `Language-Specific Config`, hiện thực runtime là `AssessmentResult.languageConfig`, không phải bảng riêng) → `ItemBank` (tập Exercise/Concept phân loại theo ngôn ngữ) → `Rubric` (quy tắc chấm trong config). Không rải nhánh `if language` khắp domain.
+- **Trạng thái Thông số:** Số lượng câu hỏi (~25–30 câu), thời gian hoàn thành ($\le 15$ phút), ngưỡng thăng/giáng nhánh và công thức điểm mang trạng thái `PROPOSED / PENDING VALIDATION`.
+
+### 6.10. Cơ chế Chuyển tiếp Lộ trình (3 Trạng thái) & Bổ khuyết Chuyên biệt (Concept-level Remediation)
+- **Ba Trạng thái Chuyển cấp (Transition States):** Khi học viên kết thúc một Unit, hệ thống đánh giá chuyển tiếp với 3 trạng thái:
+  - `ADVANCE`: Đạt cả tiến độ và độ thuần thục, tự động mở khóa Unit kế tiếp.
+  - `ADVANCE_WITH_SUPPORT`: Mở khóa Unit kế tiếp kèm theo các gợi ý bài tập hỗ trợ nhẹ cho các kỹ năng còn yếu.
+  - `REMEDIATE`: Kích hoạt mô-đun bổ khuyết khái niệm (`RemedialModule`) trước khi cho phép tiếp tục.
+- **Nguyên tắc Remedial Learning (`E-EXP-06`):**
+  - Giao micro-lesson bổ khuyết nhắm đúng `KnowledgeGap` với ngữ cảnh mới, từ vựng mới và bài tập mới.
+  - **Tuyệt đối không hạ cấp độ tổng thể của người học (No demotion).**
+  - **Tuyệt đối không bắt người học học lại toàn bộ bài học cũ đã hoàn thành (No repeating completed lessons).**
+
+### 6.11. Thiết kế Logic cho Dạng bài Đọc hiểu (`READING` Representation & Payload Shape [C-05])
+- **Ranh giới Thiết kế & Phân loại:**
+  - Kỹ năng Đọc hiểu (Reading) là 1 trong 4 chiều năng lực cốt lõi bắt buộc của Động cơ Đánh giá Chẩn đoán Thích ứng (`E-EXP-01`..`07`).
+  - Trong chương trình bài học thường nhật MVP v1 (English A1), dạng bài tập Reading được phân loại là **`PROPOSED / DESIGN GAP`** (chưa kích hoạt trong runtime bài học thường nhật nhưng cấu trúc dữ liệu logic được chuẩn hóa sẵn sàng).
+  - Tuyệt đối không biến Reading thành từ đồng nghĩa của Trắc nghiệm đơn lẻ (MCQ). Mô hình Reading yêu cầu cấu trúc gồm đoạn văn bản đọc hiểu ngữ cảnh (*Reading Passage*) kết hợp chuỗi câu hỏi phân tích (*Questions Array*):
+- **Cấu trúc Dữ liệu Logic của Payload Đọc hiểu (`Exercise.payload`):**
+  - `passageText`: Văn bản đoạn đọc vi mô (micro-reading, 50–150 từ ở mức độ A1/A2).
+  - `questions`: Mảng các câu hỏi đọc hiểu đi kèm (`questionId`, `prompt`, `options`, `correctAnswer`, `explanation`).
+  - `conceptId`: Liên kết tới khái niệm học thuật (ví dụ: `reading-main-idea`, `reading-detail`, `reading-inference`).
+  - `languageConfig`: Cấu hình chuyên biệt theo ngôn ngữ (với tiếng Trung: bắt buộc `hidePinyin: true` để đo khả năng nhận diện Hán tự không có nạng Pinyin).
+
+### 6.12. Vòng đời Đánh giá Năng lực: Phân biệt Chẩn đoán vs Đánh giá Chuyển cấp / Cuối khóa (`EXIT / RE_EVALUATION` [C-06])
+- **Phân định Rạch ròi 3 Dạng Đánh giá Sư phạm Canonical (`AssessmentType`):**
+  1. `DIAGNOSTIC`: Đánh giá chẩn đoán đầu vào để xác định hồ sơ năng lực khởi đầu (`SkillProfile`) và gợi ý Unit bắt đầu (`Starting Unit`).
+  2. `EXIT`: Đánh giá cuối Unit hoặc cuối Khóa học nhằm thẩm định năng lực thực tế trước khi xác nhận chuyển cấp.
+  3. `RE_EVALUATION`: Đánh giá kiểm tra lại theo yêu cầu của học viên hoặc định kỳ để cập nhật lại `SkillProfile`.
+- **Phân định Chế độ Thực thi / Phân lớp (`DeliveryMode`):**
+  - `PLACEMENT`: Chế độ phân lớp đầu vào đề cương (onboarding instance, e.g. 30 câu đề cương English A1 theo Placement Mapping A).
+  - `JUMP`: Chế độ kiểm tra nhảy cóc vượt cấp đơn vị học bài tập (`SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP`).
+  - `STANDARD`: Chế độ thực hiện đánh giá tiêu chuẩn.
+  - *Ghi chú nhất quán:* Biểu diễn gộp 5 giá trị enum phẳng trong các bản thảo trước mang trạng thái `[HISTORICAL / SUPERSEDED IN DRAFT]`; kiến trúc chuẩn tách rạch ròi mục đích đánh giá (`AssessmentType` - 3 giá trị) khỏi chế độ thực thi (`DeliveryMode`).
+- **Vòng đời Đánh giá Chuẩn mực:**
+  $$\text{Quá trình Học} \longrightarrow \text{Exit / Level Assessment} \longrightarrow \text{AssessmentResult} \longrightarrow \text{SkillProfile} \longrightarrow \text{LevelReadiness} \longrightarrow \text{Quyết định chuyển cấp}$$
+- **Ràng buộc Bất biến Tuyệt đối (Consistency Guards):**
+  - **`Learning Progress ≠ Proficiency`:** Việc hoàn thành 100% nội dung bài học cơ học chỉ thể hiện người học đã xem/làm qua bài, không chứng minh người học đã đạt trình độ năng lực tương ứng.
+  - **`Completed B1 ≠ Automatically B1 Proficiency`:** Hoàn thành toàn bộ bài học cấp độ B1 tuyệt đối không tự động cấp chứng chỉ hoặc nâng trình độ B1/B2 nếu chưa vượt qua bài kiểm tra `EXIT` đánh giá năng lực độc lập.
+
+### 6.13. Quản trị Nội dung Mô-đun Bổ khuyết (`RemedialModule` Content Governance [M-03])
+- Mô-đun học bổ trợ `RemedialModule` là một dạng học liệu chuyên biệt, tuân thủ nghiêm ngặt **Quy trình Quản trị Nội dung 6 Trạng thái** (`Draft` $\rightarrow$ `In Review` $\rightarrow$ `Changes Requested` $\rightarrow$ `Approved` $\rightarrow$ `Published` $\rightarrow$ `Archived`), tuyệt đối không được bypass kiểm duyệt:
+  - Trường `creatorId`: Soạn giả chịu trách nhiệm biên soạn nội dung.
+  - Trường `unitId`: Gắn liền với Unit học tập tương ứng.
+  - Trường `conceptId`: Khái niệm học thuật mà mô-đun nhắm tới để khắc phục.
+  - Trường `status`: Trạng thái vòng đời (`ContentStatus`), chỉ nội dung `PUBLISHED` mới được động cơ đề xuất đưa vào lộ trình học.
+  - Trường `reviewerId` & `publishedAt`: Ghi vết kiểm toán chuyên môn của Moderator và thời điểm xuất bản của Organizational Manager.
+
+### 6.14. Chuẩn hóa Khái niệm Học thuật (`Concept` Model & Gap Resolution [M-04])
+- Loại bỏ hoàn toàn việc sử dụng chuỗi văn bản tự do (`conceptTag: String`) làm khóa định danh duy nhất. Thay thế bằng thực thể **`Concept`**:
+  - `id: UUID (PK)`, `code: VARCHAR(64) UNIQUE`, `languageCode: VARCHAR(8)`, `domain: VARCHAR(32)` (`VOCABULARY`, `GRAMMAR`, `READING`, `LISTENING`), `name: TEXT`, `description: TEXT`.
+- **Quan hệ Giải quyết Lỗ hổng Kiến thức (`KnowledgeGap` $\longleftrightarrow$ `ConceptMastery`):**
+  - Một `KnowledgeGap` được hệ thống tự động ghi nhận khi học viên làm sai liên tiếp các bài tập gắn với một `conceptId`.
+  - Lỗ hổng được chuyển trạng thái `RESOLVED` (`resolvedAt = now()`) khi và chỉ khi `ConceptMastery` của khái niệm đó đạt ngưỡng thuần thục quy định (`masteryState` chuyển sang `DEVELOPING` hoặc `MASTERED`). Ngưỡng điểm chi tiết ở trạng thái `CONFIGURABLE / PENDING VALIDATION`.
+
 ---
 
 ## 7. Artifact 4: ERD (2-Axis Logical Status Mapping)
@@ -415,8 +674,8 @@ Bảng tổng hợp kiểm kê toàn diện và phân loại chính xác các th
 | 14 | `user_vocab_srs` | `CORE` | `CURRENT_APPLIED_DATABASE` | `PRESENT` | `ALIGNED` | `NONE` | §8.14 | Chạy thực tế (`202608140001_init`); cập nhật chu kỳ SRS qua RPC `record_review` (`202608140002`) |
 | 15 | `review_logs` | `CORE` | `CURRENT_APPLIED_DATABASE` | `PRESENT` | `ALIGNED` | `NONE` | §8.15 | Chạy thực tế (`202608140001_init`); ghi log qua RPC `record_review` (`202608140002`) |
 | 16 | `audit_logs` | `CORE` | `TARGET_SCHEMA` | `ABSENT` | `DEFINED` | `REQUIRED` | §8.16 | Target Schema (`schema.prisma`); chưa có trong Applied DB, cần migration tạo bảng |
-| 17 | `chat_scenarios` | `CORE (Supporting)` | `CURRENT_APPLIED_DATABASE` | `PRESENT` | `ALIGNED` | `NONE` | §8.17 | Chạy thực tế (phục vụ ngữ cảnh GEC AI) |
-| 18 | `chat_scenario_translations` | `CORE (Supporting)` | `CURRENT_APPLIED_DATABASE` | `PRESENT` | `ALIGNED` | `NONE` | §8.18 | Chạy thực tế (phục vụ ngữ cảnh GEC AI) |
+| 17 | `chat_scenarios` | `CORE` | `CURRENT_APPLIED_DATABASE` | `PRESENT` | `ALIGNED` | `NONE` | §8.17 | Supporting capability phục vụ ngữ cảnh GEC AI; qualifier nằm ở ghi chú, không nằm trong Scope value |
+| 18 | `chat_scenario_translations` | `CORE` | `CURRENT_APPLIED_DATABASE` | `PRESENT` | `ALIGNED` | `NONE` | §8.18 | Supporting capability phục vụ i18n GEC; qualifier nằm ở ghi chú, không nằm trong Scope value |
 | 19 | `cohorts` | `EXTENSION` | `FUTURE_MIGRATION` | `ABSENT` | `ABSENT` | `FUTURE_MIGRATION` | Excluded | Tùy chọn B2B ngoài Core MVP (Boundary Register §3) |
 | 20 | `cohort_members` | `EXTENSION` | `FUTURE_MIGRATION` | `ABSENT` | `ABSENT` | `FUTURE_MIGRATION` | Excluded | Tùy chọn B2B ngoài Core MVP (Boundary Register §3) |
 | 21 | `support_tickets` | `EXTENSION` | `FUTURE_MIGRATION` | `ABSENT` | `ABSENT` | `FUTURE_MIGRATION` | Excluded | Tùy chọn HelpDesk ngoài Core MVP (Boundary Register §3) |
@@ -499,7 +758,7 @@ Nhằm đảm bảo tính trung thực tuyệt đối, danh mục dưới đây 
 | `order_index` | `INTEGER` | NO | - | Org Manager | Sequence rank (1..24)| `CURRENT_APPLIED_DATABASE` | P1-FR-008 |
 | `is_published` | `BOOLEAN` | NO | `false` | Org Manager | Applied toggle | `CURRENT_APPLIED_DATABASE` | P1-FR-010 |
 | `status` | `ENUM ContentStatus`| NO | `DRAFT` | Moderator / Manager| Target 6-state | `TARGET_SCHEMA` | P1-FR-010 |
-| `objective` | `TEXT` | YES | NULL | Creator | Learning goal | `CURRENT_APPLIED_DATABASE` | P1-FR-009 |
+| `objective` | `TEXT` | YES | NULL | Creator | Learning goal | `TARGET_SCHEMA` | P1-FR-009 |
 | `creator_id` | `UUID` | YES | NULL | Org Manager | Assignee link | `TARGET_SCHEMA` | P1-FR-008 |
 | `reviewer_id` | `UUID` | YES | NULL | Moderator | Reviewer link | `TARGET_SCHEMA` | P1-FR-010 |
 | `assignment_brief`| `TEXT / JSONB` | YES | NULL | Org Manager | Candidate brief | `TARGET DESIGN CANDIDATE (DD-04 / OPEN DESIGN)` | P1-FR-008 |
@@ -526,8 +785,6 @@ Nhằm đảm bảo tính trung thực tuyệt đối, danh mục dưới đây 
 | `type` | `ENUM ExerciseType`| NO | - | Creator | Kiểu bài tập (Chi tiết giá trị xem bảng dưới) | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
 | `payload` | `JSONB` | NO | - | Creator | ADR-006 payload | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
 | `order_index` | `INTEGER` | NO | - | Creator | Sequence rank | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `created_at` | `TIMESTAMPTZ` | NO | `now()` | System | Immutable | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `updated_at` | `TIMESTAMPTZ` | NO | `now()` | System | Mutable | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
 
 *Chi tiết Trạng thái Triển khai từng Giá trị Enum `ExerciseType` (Field-Level Values Status):*
 | Giá trị Enum (`ExerciseType`) | Trạng thái Triển khai (Implementation Status) | Bằng chứng Kỹ thuật & Ranh giới | Ghi chú Sư phạm / Nghiệp vụ |
@@ -535,32 +792,37 @@ Nhằm đảm bảo tính trung thực tuyệt đối, danh mục dưới đây 
 | `MCQ` | `CURRENT_APPLIED_DATABASE` | Đã có trong DB (migration `202608140001_init`) | Trắc nghiệm khách quan (1 hoặc nhiều đáp án) |
 | `FILL_BLANK` | `CURRENT_APPLIED_DATABASE` | Đã có trong DB (migration `202608140001_init`) | Điền từ vào chỗ trống trong câu |
 | `REORDER` | `CURRENT_APPLIED_DATABASE` | Đã có trong DB (migration `202608140001_init`) | Sắp xếp lại trật tự các khối từ |
-| `LISTENING` | `TARGET_SCHEMA / FUTURE_MIGRATION` | Khai báo trong `schema.prisma`; chưa có trong Postgres enum DB | Luyện nghe tương tác (cần migration bổ sung enum) |
-| `GRAMMAR` | `TARGET_SCHEMA / FUTURE_MIGRATION` | Khai báo trong `schema.prisma`; chưa có trong Postgres enum DB | Luyện ngữ pháp chuyên sâu (cần migration bổ sung enum) |
-| `MATCHING` | **KHÔNG TỒN TẠI (0 Occurrences)** | Tuyệt đối không có trong Applied DB lẫn Target Schema | Đã loại bỏ hoàn toàn khỏi hệ thống |
+| `LISTENING` | `TARGET_SCHEMA / FUTURE_MIGRATION` | Khai báo trong `schema.prisma`; chưa có trong Postgres enum DB | Luyện nghe tương tác (cần migration bổ sung enum; P1-FR-013) |
+| `GRAMMAR` | `TARGET_SCHEMA / FUTURE_MIGRATION` | Khai báo trong `schema.prisma`; chưa có trong Postgres enum DB | Luyện ngữ pháp chuyên sâu (cần migration bổ sung enum; P1-FR-012) |
+| `READING` | `PROPOSED / DESIGN GAP (C-05)` | Định nghĩa trong mô hình dữ liệu logic & Assessment Engine; chưa có trong DB enum | Đọc hiểu văn bản vi mô kèm câu hỏi ngữ cảnh (C-05) |
 
 ### 8.9. Thực thể `Vocabulary` (Bảng `vocabularies` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
-| `id` | `UUID` | NO | `uuid()` | Creator / Admin | Created on dictionary entry | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `language_code` | `VARCHAR(8)`| NO | FK | Creator / Admin | Static linkage | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `term` | `TEXT` | NO | - | Creator / Admin | Word/phrase term | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `audio_path` | `TEXT` | YES | NULL | Creator / Admin | Storage path to audio | `CURRENT_APPLIED_DATABASE` | P1-FR-013 |
+| `id` | `UUID` | NO | `uuid()` | Creator / Admin | Created on dictionary entry | `CURRENT_APPLIED_DATABASE` | P1-FR-002, P1-FR-003 |
+| `language_code` | `VARCHAR(8)`| NO | FK | Creator / Admin | Static linkage | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `term` | `TEXT` | NO | - | Creator / Admin | Word/phrase term | `CURRENT_APPLIED_DATABASE` | P1-FR-002, P1-FR-003 |
+| `normalized_term` | `TEXT` | NO | - | System | Canonical lookup term | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `phonetic` | `TEXT` | YES | NULL | Creator / Admin | Pronunciation notation | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `audio_url` | `TEXT` | YES | NULL | Creator / Admin | Storage URL/path to audio | `CURRENT_APPLIED_DATABASE` | P1-FR-002, P1-FR-009, P1-FR-013 |
+| `cefr` | `ENUM Cefr` | YES | NULL | Admin | Internal level tag (Tiếng Anh; Tiếng Trung dùng lớp ánh xạ HSK) | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `created_at` | `TIMESTAMPTZ` | NO | `now()` | System | Immutable | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `updated_at` | `TIMESTAMPTZ` | NO | `now()` | System | Mutable | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
 
 ### 8.10. Thực thể `LessonVocabulary` (Bảng `lesson_vocabulary` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
-| `lesson_id` | `UUID` | NO | PK, FK | Creator | Created on associate | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `vocabulary_id` | `UUID` | NO | PK, FK | Creator | Created on associate | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `order_index` | `INTEGER` | NO | - | Creator | Presentation order | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
+| `lesson_id` | `UUID` | NO | PK, FK | Creator | Created on associate | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `vocabulary_id` | `UUID` | NO | PK, FK | Creator | Created on associate | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `order_index` | `INTEGER` | NO | - | Creator | Presentation order | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
 
 ### 8.11. Thực thể `VocabularyTranslation` (Bảng `vocabulary_translations` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
-| `vocabulary_id`| `UUID` | NO | PK, FK | Creator | Created with term | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `locale` | `VARCHAR(8)` | NO | PK, FK | Creator | i18n key | `CURRENT_APPLIED_DATABASE` | P1-NFR-005 |
-| `meaning` | `TEXT` | NO | - | Creator | Vietnamese meaning | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
-| `example` | `TEXT` | YES | NULL | Creator | Example sentence | `CURRENT_APPLIED_DATABASE` | P1-FR-003 |
+| `vocabulary_id`| `UUID` | NO | PK, FK | Creator | Created with term | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `locale` | `VARCHAR(8)` | NO | PK, FK | Creator | i18n key | `CURRENT_APPLIED_DATABASE` | P1-NFR-005, P1-FR-010 |
+| `meaning` | `TEXT` | NO | - | Creator | Vietnamese meaning | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
+| `example` | `TEXT` | YES | NULL | Creator | Example sentence | `CURRENT_APPLIED_DATABASE` | P1-FR-002 |
 
 ### 8.12. Thực thể `Profile` (Bảng `profiles` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
@@ -569,10 +831,14 @@ Nhằm đảm bảo tính trung thực tuyệt đối, danh mục dưới đây 
 | `email` | `TEXT` | NO | Unique | System / Learner | Account identity | `CURRENT_APPLIED_DATABASE` | P1-FR-001 |
 | `display_name` | `TEXT` | YES | NULL | Learner | User profile | `CURRENT_APPLIED_DATABASE` | P1-FR-001 |
 | `avatar_url` | `TEXT` | YES | NULL | Learner | Storage link | `CURRENT_APPLIED_DATABASE` | P1-FR-001 |
-| `role` | `ENUM Role` | NO | `LEARNER` | Admin | Applied: 2 roles; Target: 6 roles | `CURRENT_APPLIED_DATABASE` | P1-FR-011 |
-| `assigned_roles` | `ENUM Role[]` | NO | `[LEARNER]` | Admin | Target multi-role | `TARGET_SCHEMA` | P1-FR-011 |
-| `daily_goal_min` | `INTEGER` | NO | `15` | Learner | Daily target | `CURRENT_APPLIED_DATABASE` | P1-FR-006 |
-| `streak_count` | `INTEGER` | NO | `0` | System (`record_review`)| Daily counter | `CURRENT_APPLIED_DATABASE` | P1-FR-006 |
+| `role` | `ENUM Role` | NO | `LEARNER` | Admin | Applied: 2 roles; Target: 6 roles | `CURRENT_APPLIED_DATABASE` | P1-FR-008, P1-NFR-001, MVP-14 |
+| `assigned_roles` | `ENUM Role[]` | NO | `[LEARNER]` | Admin | Target multi-role | `TARGET_SCHEMA` | P1-FR-008, P1-NFR-001, MVP-14 |
+| `ui_locale` | `VARCHAR(8)` | NO | `vi` | System / Learner | UI locale | `CURRENT_APPLIED_DATABASE` | P1-FR-010, P1-NFR-004 |
+| `native_lang_code` | `VARCHAR(8)` | NO | `vi` | System / Learner | Native language | `CURRENT_APPLIED_DATABASE` | P1-FR-010 |
+| `daily_goal_min` | `INTEGER` | NO | `15` | Learner | Daily target | `CURRENT_APPLIED_DATABASE` | P1-FR-014, MVP-10 |
+| `streak_count` | `INTEGER` | NO | `0` | System (`record_review`)| Daily counter | `CURRENT_APPLIED_DATABASE` | P1-FR-011, MVP-10 |
+| `timezone` | `TEXT` | NO | `Asia/Ho_Chi_Minh` | Learner / System | Local-timezone streak basis | `CURRENT_APPLIED_DATABASE` | P1-FR-011 |
+| `last_qualifying_activity_date` | `DATE` | YES | NULL | System (`record_review`) | Last qualifying local date | `CURRENT_APPLIED_DATABASE` | P1-FR-011 |
 | `starting_unit` | `INTEGER` | NO | `1` | System (Placement) | Target Candidate DD-06| `TARGET DESIGN CANDIDATE (DD-06 / OPEN DESIGN)` | P1-FR-016 |
 | `placement_history`| `JSONB` | NO | `'[]'` | System (Placement) | Target Candidate DD-06| `TARGET DESIGN CANDIDATE (DD-06 / OPEN DESIGN)` | P1-FR-016 |
 | `created_at` | `TIMESTAMPTZ` | NO | `now()` | System | Immutable | `CURRENT_APPLIED_DATABASE` | P1-FR-001 |
@@ -580,20 +846,19 @@ Nhằm đảm bảo tính trung thực tuyệt đối, danh mục dưới đây 
 ### 8.13. Thực thể `UserProgress` (Bảng `user_progress` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
-| `id` | `UUID` | NO | `uuid()` | System (`record_review`)| Created on start | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
+| `id` | `UUID` | NO | `uuid()` | System (`record_review`)| Created on start | `CURRENT_APPLIED_DATABASE` | P1-FR-004, MVP-08 |
 | `user_id` | `UUID` | NO | FK | System | Learner link | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
 | `lesson_id` | `UUID` | NO | FK | System | Lesson link | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
 | `status` | `ENUM ProgressStatus`| NO | `NOT_STARTED`| System | Progress state | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
-| `score` | `INTEGER` | NO | `0` | System | Weighted score | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
+| `score` | `INTEGER` | YES | NULL | System | Weighted score, nullable until scored | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
 | `completed_at` | `TIMESTAMPTZ` | YES | NULL | System | Completion timestamp | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
-| `created_at` | `TIMESTAMPTZ` | NO | `now()` | System | Immutable | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
 | `updated_at` | `TIMESTAMPTZ` | NO | `now()` | System | Mutable | `CURRENT_APPLIED_DATABASE` | P1-FR-004 |
 
 ### 8.14. Thực thể `UserVocabSrs` (Bảng `user_vocab_srs` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
-| `id` | `UUID` | NO | `uuid()` | System (`record_review`)| Created on first encounter | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
-| `user_id` | `UUID` | NO | FK | System | Learner owner link | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
+| `id` | `UUID` | NO | `uuid()` | System (`record_review`)| Created on first encounter | `CURRENT_APPLIED_DATABASE` | P1-FR-005, P1-FR-006, MVP-09 |
+| `user_id` | `UUID` | NO | FK | System | Learner owner link | `CURRENT_APPLIED_DATABASE` | P1-FR-005, P1-FR-006 |
 | `vocabulary_id`| `UUID` | NO | FK | System | Vocabulary item link | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
 | `ease_factor` | `FLOAT` | NO | `2.5` | System (Deterministic D8)| Multiplier factor | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
 | `interval_days`| `FLOAT` | NO | `1.0` | System (Policy B D8) | Review interval | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
@@ -607,31 +872,33 @@ Nhằm đảm bảo tính trung thực tuyệt đối, danh mục dưới đây 
 ### 8.15. Thực thể `ReviewLog` (Bảng `review_logs` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
-| `id` | `UUID` | NO | `uuid()` | System (`record_review`)| Immutable log entry | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
-| `srs_card_id` | `UUID` | NO | FK | System (`record_review`)| Linked SRS card PK | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
-| `is_correct` | `BOOLEAN` | NO | - | System (`record_review`)| Binary review result | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
-| `interval_days`| `FLOAT` | NO | - | System (`record_review`)| Prior interval before update| `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
-| `reviewed_at` | `TIMESTAMPTZ` | NO | `now()` | System (`record_review`)| Review timestamp | `CURRENT_APPLIED_DATABASE` | P1-FR-005 |
+| `id` | `UUID` | NO | `uuid()` | System (`record_review`)| Immutable log entry | `CURRENT_APPLIED_DATABASE` | P1-FR-005, P1-FR-006, MVP-09 |
+| `srs_card_id` | `UUID` | NO | FK | System (`record_review`)| Linked SRS card PK | `CURRENT_APPLIED_DATABASE` | P1-FR-005, P1-FR-006 |
+| `is_correct` | `BOOLEAN` | NO | - | System (`record_review`)| Binary review result | `CURRENT_APPLIED_DATABASE` | P1-FR-005, P1-FR-006 |
+| `interval_days`| `FLOAT` | NO | - | System (`record_review`)| Prior interval before update| `CURRENT_APPLIED_DATABASE` | P1-FR-005, P1-FR-006 |
+| `reviewed_at` | `TIMESTAMPTZ` | NO | `now()` | System (`record_review`)| Review timestamp | `CURRENT_APPLIED_DATABASE` | P1-FR-005, P1-FR-006 |
 
 ### 8.16. Thực thể `AuditLog` (Bảng `audit_logs` — Scope: CORE | Status: TARGET_SCHEMA [Migration Required])
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
-| `id` | `UUID` | NO | `uuid()` | System | Immutable entry | `TARGET_SCHEMA` | P1-FR-012 |
-| `actor_id` | `UUID` | NO | FK | System (Trích xuất từ JWT) | Immutable entry | `TARGET_SCHEMA` | P1-FR-012 |
-| `action` | `TEXT` | NO | - | System | Event name | `TARGET_SCHEMA` | P1-FR-012 |
-| `entity_type` | `TEXT` | NO | - | System | Target table | `TARGET_SCHEMA` | P1-FR-012 |
-| `entity_id` | `UUID` | NO | - | System | Target PK | `TARGET_SCHEMA` | P1-FR-012 |
-| `metadata` | `JSONB` | YES | NULL | System | Context data | `TARGET_SCHEMA` | P1-FR-012 |
-| `created_at` | `TIMESTAMPTZ` | NO | `now()` | System | Immutable timestamp | `TARGET_SCHEMA` | P1-FR-012 |
+| `id` | `UUID` | NO | `uuid()` | System | Immutable entry | `TARGET_SCHEMA` | P1-FR-008, P1-NFR-001, MVP-19 |
+| `actor_id` | `UUID` | NO | FK | System (Trích xuất từ JWT) | Immutable entry | `TARGET_SCHEMA` | P1-FR-008, P1-NFR-001, MVP-19 |
+| `action` | `TEXT` | NO | - | System | Event name | `TARGET_SCHEMA` | P1-FR-008, P1-NFR-001, MVP-19 |
+| `entity_type` | `TEXT` | NO | - | System | Target table | `TARGET_SCHEMA` | P1-FR-008, P1-NFR-001, MVP-19 |
+| `entity_id` | `UUID` | NO | - | System | Target PK | `TARGET_SCHEMA` | P1-FR-008, P1-NFR-001, MVP-19 |
+| `metadata` | `JSONB` | YES | NULL | System | Context data | `TARGET_SCHEMA` | P1-FR-008, P1-NFR-001, MVP-19 |
+| `created_at` | `TIMESTAMPTZ` | NO | `now()` | System | Immutable timestamp | `TARGET_SCHEMA` | P1-FR-008, P1-NFR-001, MVP-19 |
 
-### 8.17. Thực thể Ngữ cảnh Bổ trợ: `ChatScenario` (Bảng `chat_scenarios` — Scope: CORE Supporting | Status: CURRENT_APPLIED_DATABASE)
+### 8.17. Thực thể Ngữ cảnh Bổ trợ: `ChatScenario` (Bảng `chat_scenarios` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
 | `id` | `UUID` | NO | `uuid()` | Admin | Scenario definition | `CURRENT_APPLIED_DATABASE` | P1-FR-007 |
 | `code` | `TEXT` | NO | Unique | Admin | Unique scenario code | `CURRENT_APPLIED_DATABASE` | P1-FR-007 |
+| `is_published` | `BOOLEAN` | NO | `false` | Admin | Scenario publication flag | `CURRENT_APPLIED_DATABASE` | P1-FR-007 |
 | `system_prompt`| `TEXT` | NO | - | Admin | System prompt template | `CURRENT_APPLIED_DATABASE` | P1-FR-007 |
+| `created_at` | `TIMESTAMPTZ` | NO | `now()` | System | Immutable | `CURRENT_APPLIED_DATABASE` | P1-FR-007 |
 
-### 8.18. Thực thể Ngữ cảnh Bổ trợ: `ChatScenarioTranslation` (Bảng `chat_scenario_translations` — Scope: CORE Supporting | Status: CURRENT_APPLIED_DATABASE)
+### 8.18. Thực thể Ngữ cảnh Bổ trợ: `ChatScenarioTranslation` (Bảng `chat_scenario_translations` — Scope: CORE | Status: CURRENT_APPLIED_DATABASE)
 | Tên Trường | Kiểu Dữ liệu | Nullable? | Mặc định | Quyền Ghi (Owner) | Vòng đời | Trạng thái Triển khai | Truy vết |
 |---|---|---|---|---|---|---|---|
 | `scenario_id` | `UUID` | NO | PK, FK | Admin | Created with scenario | `CURRENT_APPLIED_DATABASE` | P1-FR-007 |
@@ -693,7 +960,7 @@ Mọi payload bài tập trong thực thể `Exercise` đều phải chứa thu�
 {
   "payloadVersion": 1,
   "instruction": "Nghe phát âm và chọn từ đúng:",
-  "audioPath": "audio/en/numbers/twelve.mp3",
+  "vocabularyId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "transcript": "twelve",
   "options": [
     {"id": "opt_1", "text": "twelve", "isCorrect": true},
@@ -701,19 +968,197 @@ Mọi payload bài tập trong thực thể `Exercise` đều phải chứa thu�
   ]
 }
 ```
+*Ghi chú Ranh giới (M-07):* Payload tham chiếu trực tiếp qua `vocabularyId` chuẩn hóa, không sử dụng đường dẫn file tĩnh (`audioPath`) tự do nhằm loại bỏ filesystem coupling và tuân thủ Storage RLS policy.
 
-#### 5. Dạng Luyện viết Ngữ pháp / GEC (Grammar Correction & Scenario Writing — `GRAMMAR` [Status: TARGET_SCHEMA / FUTURE_MIGRATION])
+#### 5. Dạng Luyện Ngữ pháp Chuyên sâu (Grammar Rule Practice — `GRAMMAR` [Status: TARGET_SCHEMA / FUTURE_MIGRATION])
 ```json
 {
   "payloadVersion": 1,
-  "instruction": "Viết câu trả lời hoàn chỉnh dựa trên ngữ cảnh:",
-  "contextScenarioCode": "SCENARIO_INTRODUCE_SELF",
-  "prompt": "Giới thiệu bản thân bằng tiếng Anh (tên và quốc tịch).",
-  "minWords": 5,
-  "maxWords": 30,
-  "gecEnabled": true
+  "instruction": "Chọn dạng đúng của động từ để hoàn thành câu:",
+  "prompt": "She _____ (go) to school by bus every morning.",
+  "options": [
+    {"id": "opt_1", "text": "goes", "isCorrect": true},
+    {"id": "opt_2", "text": "go", "isCorrect": false},
+    {"id": "opt_3", "text": "going", "isCorrect": false}
+  ],
+  "ruleExplanation": "Với chủ ngữ ngôi thứ ba số ít (She) ở thì Hiện tại Đơn, động từ kết thúc bằng 'o' thêm 'es'."
 }
 ```
+*Ghi chú Ranh giới (M-06):* Bài tập `GRAMMAR` là dạng bài tập cố định trong bài học (`P1-FR-012`). Dịch vụ kiểm tra ngữ pháp tự luận GEC (`P1-FR-007`) là tính năng bổ trợ không trạng thái (stateless/transient), không ghép chung các trường transient (`contextScenarioCode`, `gecEnabled`) vào cấu trúc bài tập cố định.
+
+#### 6. Dạng Đọc hiểu Ngữ cảnh (Contextual Reading Comprehension — `READING` [Status: PROPOSED / DESIGN GAP])
+```json
+{
+  "payloadVersion": 1,
+  "instruction": "Đọc đoạn văn ngắn và trả lời câu hỏi bên dưới:",
+  "passageText": "Minh is a software engineer living in Hanoi. Every morning, he wakes up at 6:30 AM, drinks a cup of black coffee, and walks to his office near West Lake.",
+  "questions": [
+    {
+      "id": "q1",
+      "prompt": "Where does Minh live?",
+      "options": [
+        {"id": "opt_1", "text": "Hanoi", "isCorrect": true},
+        {"id": "opt_2", "text": "Da Nang", "isCorrect": false},
+        {"id": "opt_3", "text": "Ho Chi Minh City", "isCorrect": false}
+      ],
+      "explanation": "Đoạn văn nêu rõ: 'Minh is a software engineer living in Hanoi.'"
+    }
+  ],
+  "conceptCode": "EN-READ-DETAIL-LOC"
+}
+```
+*Ghi chú Sư phạm (C-05):* Đọc hiểu là 1 trong 4 chiều đánh giá bắt buộc. Cấu trúc lưu trữ cho phép quản trị đoạn văn bản kèm chuỗi câu hỏi phân tích, hỗ trợ cấu hình ẩn Pinyin (`hidePinyin: true`) cho tiếng Trung.
+
+### 8.20. Đặc tả Thực thể Logic Phân hệ Đánh giá & Bổ khuyết (Learning Assessment & Remediation Logical Entities [Status: TARGET_SCHEMA / LOGICAL_MODEL])
+
+> **Ghi chú phân loại ranh giới:**
+> Toàn bộ 10 thực thể logic dưới đây thuộc phạm vi **`CORE SCOPE (Target Design & Logical Progression)`**, phục vụ trực tiếp cho mô hình sư phạm chuyên gia (`E-EXP-01`..`E-EXP-07`).
+> Trạng thái kỹ thuật: **`TARGET_SCHEMA / LOGICAL_MODEL`** (chưa có trong migrations Supabase hiện tại; sẽ được thiết kế chi tiết và sinh migration ở các mốc tiếp theo).
+
+#### 1. Thực thể `LearnerProfile` (Hồ sơ Năng lực Người học)
+- **Mục đích:** Quản lý thông tin học tập, mục tiêu, ngôn ngữ đích và lịch sử năng lực.
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `userId: UUID (FK -> profiles.id, UNIQUE)`
+  - `targetLanguage: VARCHAR(10)` (ví dụ: `en`, `zh`)
+  - `learningGoal: VARCHAR(100)` (ví dụ: giao tiếp công sở, du lịch, học tập)
+  - `selfReportedLevel: VARCHAR(20)` (cấp độ tự khai báo: A0, A1, A2, B1, B2)
+  - `verifiedProficiency: VARCHAR(20) [Nullable]` (cấp độ đã kiểm chứng qua bài đánh giá chẩn đoán)
+  - `createdAt: TIMESTAMP`, `updatedAt: TIMESTAMP`
+- **Ràng buộc nghiệp vụ:**
+  - Tuyệt đối không đồng nhất `selfReportedLevel` với `verifiedProficiency`. Khi người học chưa làm bài chẩn đoán, `verifiedProficiency` nhận giá trị `NULL` hoặc `UNVERIFIED`.
+  - Ràng buộc vai trò: Chỉ người dùng có vai trò `Role.LEARNER` mới được khởi tạo bản ghi `LearnerProfile`.
+
+#### 2. Thực thể `SkillProfile` (Hồ sơ Kỹ năng Đa chiều)
+- **Mục đích:** Lưu trữ năng lực chi tiết trên 4 chiều độc lập của người học.
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `userId: UUID (FK -> profiles.id, UNIQUE)`
+  - `vocabularyLevel: VARCHAR(20)` (ví dụ: `A2.2` [Internal Lingora Sub-level])
+  - `grammarLevel: VARCHAR(20)` (ví dụ: `A1.3` [Internal Lingora Sub-level])
+  - `readingLevel: VARCHAR(20)` (ví dụ: `B1.1` [Internal Lingora Sub-level])
+  - `listeningLevel: VARCHAR(20)` (ví dụ: `A2.1` [Internal Lingora Sub-level])
+  - `anchorLevel: VARCHAR(20) [Nullable]` (`[PENDING VALIDATION]` — cấp độ neo tham chiếu)
+  - `radarData: JSONB` (dữ liệu điểm số chuẩn hóa phục vụ vẽ Spider/Radar chart)
+  - `sourceAssessmentResultId: UUID (FK -> assessment_results.id) [Nullable]` (provenance: AssessmentResult gần nhất đã sinh ra snapshot này; cho phép giải thích "vì sao ở mức này" và làm mới sau EXIT/RE_EVALUATION)
+  - `updatedAt: TIMESTAMP`
+- **Ràng buộc nghiệp vụ:** Không cào bằng 4 chiều kỹ năng thành 1 điểm số phẳng duy nhất (`E-EXP-03`). Chủ sở hữu duy nhất là `LearnerProfile`.
+
+#### 3. Thực thể `AssessmentResult` (Kết quả Đánh giá Thích ứng)
+- **Mục đích:** Lưu vết bất biến kết quả bài đánh giá theo mục đích sư phạm (`DIAGNOSTIC`, `EXIT`, `RE_EVALUATION`); chế độ thực thi (`PLACEMENT`, `JUMP`, `STANDARD`) ghi ở `deliveryMode`, không phải mục đích độc lập.
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `userId: UUID (FK -> profiles.id)`
+  - `assessmentType: AssessmentType` (3 canonical pedagogical types: `DIAGNOSTIC`, `EXIT`, `RE_EVALUATION`)
+  - `deliveryMode: VARCHAR(20)` (Execution Delivery Mode: `PLACEMENT`, `JUMP`, `STANDARD` — phân định rạch ròi chế độ thực thi khỏi mục đích sư phạm; biểu diễn gộp 5 giá trị trong draft cũ là `[HISTORICAL / SUPERSEDED IN DRAFT]`)
+  - `dimensions: JSONB` (điểm số và đánh giá chi tiết theo từng kỹ năng: vocab, grammar, reading, listening)
+  - `rawScores: JSONB` (số câu đúng/sai, thời gian làm bài)
+  - `stageData: JSONB` (nhật ký định tuyến Giai đoạn 1 sang Giai đoạn 2 của adaptive engine)
+  - `languageConfig: JSONB` (cấu hình áp dụng: thang CEFR/HSK, cờ `hidePinyin: true`)
+  - `completedAt: TIMESTAMP`
+- **Ràng buộc nghiệp vụ:**
+  - Bản ghi bất biến, người học không được chỉnh sửa (`P1-FR-016`).
+  - Phân biệt rõ ranh giới mục đích: `DIAGNOSTIC` xác định điểm vào; `EXIT` thẩm định điều kiện chuyển cấp/tốt nghiệp.
+
+#### 4. Thực thể `Concept` (Khái niệm Học thuật Chuẩn hóa [M-04])
+- **Mục đích:** Định danh tập trung các đơn vị kiến thức/kỹ năng trong toàn hệ thống, loại bỏ sự phân mảnh của chuỗi tự do.
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `code: VARCHAR(64) UNIQUE` (ví dụ: `EN-GRAM-PAST-SIMPLE`, `ZH-HANZI-RADICAL-WATER`)
+  - `languageCode: VARCHAR(8) (FK -> languages.code)`
+  - `domain: VARCHAR(32)` (`VOCABULARY`, `GRAMMAR`, `READING`, `LISTENING`, `PRONUNCIATION`)
+  - `name: TEXT` (tên hiển thị sư phạm)
+  - `description: TEXT` (mô tả quy tắc/khái niệm)
+  - `prerequisiteConceptId: UUID (FK -> concepts.id) [Nullable]`
+  - `isActive: BOOLEAN` (mặc định: `true`)
+
+#### 5. Thực thể `ConceptMastery` (Mức độ Thuần thục Khái niệm)
+- **Mục đích:** Theo dõi độ thành thạo của học viên trên từng khái niệm học thuật chuẩn hóa.
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `userId: UUID (FK -> profiles.id)`
+  - `conceptId: UUID (FK -> concepts.id)` (thay thế chuỗi tự do `conceptTag`, M-04)
+  - `masteryState: VARCHAR(30)` (`NOVICE`, `DEVELOPING`, `MASTERED`)
+  - `evidenceCount: INT` (số lần thực hành thành công liên tiếp)
+  - `lastAssessedAt: TIMESTAMP`
+- **Ràng buộc nghiệp vụ:** Tách biệt hoàn toàn với việc hoàn thành bài học (`Learning Progress`). Chỉ tăng trạng thái khi có bằng chứng thực hành đúng trong bài tập và phiên ôn tập SRS. Ngưỡng chuyển trạng thái chi tiết (`evidenceCount`, số lần đúng liên tiếp như `3 consecutive correct` nếu dùng) giữ `CONFIGURABLE / PENDING VALIDATION` — tuyệt đối không hard-code production rule khi chưa validated.
+- **Vòng đời & lưu trữ:** Bản ghi tồn tại theo learner; khi `Concept` bị `isActive=false`, các `ConceptMastery` liên quan giữ nguyên lịch sử (không xóa cứng), ngừng dùng cho readiness/recency tính từ thời điểm đó.
+
+#### 6. Thực thể `KnowledgeGap` (Lỗ hổng Kiến thức)
+- **Mục đích:** Ghi nhận và theo dõi các điểm yếu kiến thức cần bổ khuyết.
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `userId: UUID (FK -> profiles.id)`
+  - `conceptId: UUID (FK -> concepts.id)` (M-04)
+  - `gapSeverity: VARCHAR(20)` (`LOW`, `MEDIUM`, `HIGH`)
+  - `detectedAt: TIMESTAMP`
+  - `resolvedAt: TIMESTAMP [Nullable]`
+- **Ràng buộc nghiệp vụ:** Tạo tự động khi học viên mắc chuỗi lỗi liên tiếp trên cùng một `conceptId`. Lỗ hổng được giải quyết (`resolvedAt = now()`) khi `ConceptMastery` tương ứng đạt ngưỡng thuần thục (`masteryState` chuyển sang `DEVELOPING` hoặc `MASTERED`). Toàn bộ ngưỡng (số lỗi kích hoạt, ngưỡng resolve) giữ `CONFIGURABLE / PENDING VALIDATION`.
+- **Vòng đời & lưu trữ:** `KnowledgeGap` đã `RESOLVED` giữ lại làm provenance (không xóa cứng); gap mở quá hạn theo policy tương lai mới được archive — policy đó hiện `PENDING`, không tự suy.
+
+#### 7. Thực thể `LearningProgress` (Tiến độ Khóa học Tuyến tính [C-04])
+- **Mục đích:** Theo dõi tiến độ hoàn thành nội dung khóa học theo phân cấp Course $\rightarrow$ Unit $\rightarrow$ Lesson (`LearningProgress ↔ UC-07 ↔ MVP-08`).
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `learnerProfileId / userId: UUID` (FK -> profiles.id / learner_profiles.id — chủ sở hữu duy nhất là `LearnerProfile`)
+  - `courseId: UUID (FK -> courses.id)`
+  - `unitId: UUID (FK -> units.id)`
+  - `lessonId: UUID (FK -> lessons.id)`
+  - `completedContentRatio: FLOAT` (tỷ lệ 0.0 – 1.0)
+  - `completedAt: TIMESTAMP [Nullable]`
+- **Ràng buộc nghiệp vụ:**
+  - Chủ sở hữu duy nhất là `LearnerProfile` (`LearnerProfile 1--0..* LearningProgress`), chỉ áp dụng cho người học mang vai trò `Role.LEARNER`. Loại bỏ liên kết trực tiếp từ `Profile` chung để ngăn chặn việc tài khoản phi-người học (Admin, Creator, Moderator...) bị gán bản ghi tiến độ.
+  - Tiến độ học tập phản ánh tỷ lệ hoàn thành nội dung cơ học.
+  - Tuyệt đối không đồng nhất `LearningProgress` với `ConceptMastery` hay `Proficiency` (`Progress ≠ Proficiency`).
+
+#### 8. Thực thể `LevelReadiness` (Đánh giá Sẵn sàng Lên cấp)
+- **Mục đích:** Xác định mức độ sẵn sàng chuyển cấp/lên Unit kế tiếp dựa trên bằng chứng tổng hợp.
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `userId: UUID (FK -> profiles.id)`
+  - `currentLevel: VARCHAR(20)`
+  - `targetLevel: VARCHAR(20)`
+  - `readinessStatus: VARCHAR(30)` (`ADVANCE`, `ADVANCE_WITH_SUPPORT`, `REMEDIATE`)
+  - `evidenceSummary: JSONB` (typed struct, không ngưỡng cứng — mọi ngưỡng giữ `CONFIGURABLE / PENDING VALIDATION`):
+    - `evidenceVersion: STRING` (phiên bản schema evidence, mặc định: `v1`)
+    - `progressRatio: FLOAT` (0.0–1.0, từ `LearningProgress`)
+    - `masteryRatio: FLOAT` (0.0–1.0, từ `ConceptMastery`)
+    - `highSeverityGapsCount: INT` (số `KnowledgeGap` severity HIGH còn mở)
+    - `sourceAssessmentResultIds: UUID[]` (AssessmentResult đã dùng; rỗng nếu chỉ suy từ tiến độ/mastery)
+  - `evaluatedAt: TIMESTAMP`
+- **Ràng buộc nghiệp vụ:** Quyết định chuyển trạng thái chỉ được công nhận khi thỏa mãn đồng thời tiêu chí tiến độ và độ thuần thục tối thiểu. Không coi content completion = readiness; không coi single score = readiness.
+
+#### 9. Thực thể `RemedialModule` (Mô-đun Bổ khuyết Khái niệm [M-03])
+- **Mục đích:** Cung cấp bài học bổ khuyết chuyên biệt dạng micro-lesson để lấp lỗ hổng kiến thức.
+- **Trường dữ liệu (Đầy đủ Thuộc tính Quản trị Nội dung):**
+  - `id: UUID (PK)`
+  - `creatorId: UUID (FK -> profiles.id)` (Soạn giả chịu trách nhiệm)
+  - `unitId: UUID (FK -> units.id)` (Gắn với Unit nguồn)
+  - `conceptId: UUID (FK -> concepts.id)` (M-04)
+  - `remedialType: VARCHAR(30)` (`CONCEPT_REMEDIATION`, `SKILL_SCAFFOLDING`)
+  - `status: ContentStatus` (`DRAFT`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED`, `PUBLISHED`, `ARCHIVED`)
+  - `reviewerId: UUID (FK -> profiles.id) [Nullable]` (Moderator kiểm duyệt)
+  - `contentPayload: JSONB` (chứa lý thuyết ngắn gọn, ngữ cảnh mới, từ vựng mới và bài tập củng cố)
+  - `publishedAt: TIMESTAMP [Nullable]`
+  - `version: INTEGER` (mặc định: `1`)
+  - `createdAt: TIMESTAMP`
+- **Ràng buộc nghiệp vụ:**
+  - Tuân thủ 100% quy trình kiểm duyệt nội dung 6 trạng thái. Không cho phép payload bypass kiểm duyệt (M-03).
+  - Không dùng lại nội dung bài học cũ (`E-EXP-06`). Phải sử dụng ngữ cảnh và câu hỏi mới.
+
+#### 10. Thực thể `Recommendation` (Đề xuất Thích ứng Cá nhân hóa)
+- **Mục đích:** Lưu trữ các đề xuất học tập tiếp theo cho học viên theo Scope Level 3 (Adaptive Recommendation).
+- **Trường dữ liệu:**
+  - `id: UUID (PK)`
+  - `userId: UUID (FK -> profiles.id)`
+  - `recommendationType: VARCHAR(30)` (`NEXT_UNIT`, `REMEDIAL_MODULE`, `PRACTICE`)
+  - `targetUnitId: UUID (FK -> units.id) [Nullable]`
+  - `remedialModuleId: UUID (FK -> remedial_modules.id) [Nullable]`
+  - `rationale: TEXT` (lý do sư phạm minh bạch gửi tới học viên — trả lời "Why was this recommended?")
+  - `inputSnapshot: JSONB` (snapshot 6 inputs tại thời điểm sinh: proficiency, skillProfile, learningGoal, learningHistory, errorHistory, mastery/gaps refs + versions)
+  - `ruleVersion: STRING` (phiên bản rule/model đã sinh đề xuất, mặc định: `v1`)
+  - `generatedAt: TIMESTAMP` (thay `createdAt` semantics: thời điểm sinh đề xuất)
+- **Ràng buộc nghiệp vụ:** Đề xuất được sinh ra dựa trên 6 biến đầu vào: Năng lực chuẩn hóa, Skill Profile, Mục tiêu học, Lịch sử học, Lịch sử lỗi và Danh sách Knowledge Gaps. Không implement algorithm ở milestone này; provenance đủ để giải thích và tái kiểm.
 
 ---
 
@@ -723,27 +1168,27 @@ Mọi payload bài tập trong thực thể `Exercise` đều phải chứa thu�
 - **Input:** Artifacts 1, 2, 3; Requirements Baseline (`docs/02`, `05`, `06`, `08`, `09`), `docs/phase-0-roles-and-mvp-final.md`.
 - **Validation Method:** Đối soát toàn diện 100% thực thể Core Domain và các bước chuyển trạng thái vòng đời nội dung với Requirements Baseline và Policies D1–D9.
 - **Kết quả Kiểm tra Điều kiện PASS:**
-   1. *Core domain concepts traced:* ĐẠT. 100% thực thể Core có căn cứ yêu cầu tại §4.3 và §8.
+   1. *Core domain concepts traced:* Đã bổ sung các entity/translation/supporting rows còn thiếu trong §4.3; kết quả cuối cùng chờ independent re-review.
    2. *Lifecycle matches D1–D3 & baseline exactly:* ĐẠT. Normal workflow: Manager kế hoạch & giao bài $\rightarrow$ Creator biên soạn $\rightarrow$ Moderator APPROVED $\rightarrow$ Manager PUBLISHED. Emergency override: Administrator Emergency Publish/Archive với ràng buộc khẩn cấp (có lý do & bắt buộc AuditLog). Đã loại bỏ hoàn toàn transition `ARCHIVED -> DRAFT` khỏi Core Lifecycle (trạng thái `ARCHIVED` là terminal trong Core; restore thuộc `[FUTURE / OPEN DESIGN]`).
    3. *Progression matches D5–D8 exactly:* ĐẠT. Placement Mapping A, Jump 95%/24h, Controlled Retry theo công thức tổng quát $N$, SRS Policy B xác định.
    4. *Forbidden self-actions:* ĐẠT. Ma trận cấm tại §5.3 thiết lập rõ các Bất biến Thiết kế (Design Invariants) và Yêu cầu Ràng buộc Phân quyền (Enforcement Requirements) cho các milestone triển khai sau (M2.4 / Implementation); loại bỏ hoàn toàn các luồng tự duyệt, tự xuất bản hay sửa in-place bài published trong mô hình logic.
    5. *Administrator role truth & Emergency Override:* ĐẠT. Khôi phục đúng chuẩn baseline: Administrator KHÔNG xuất bản trong quy trình thường nhật; CHỈ được phép can thiệp khẩn cấp (Emergency Publish / Emergency Archive) trong tình huống khẩn cấp xác định, bắt buộc có lý do giải trình (justification) và ghi nhận AuditLog bất biến. Không bypass quy trình kiểm duyệt thường nhật; tuyệt đối không cấp quyền tự duyệt hay xuất bản cho Creator/Moderator.
 - **Bằng chứng Nghiệm thu:** Bảng Traceability §4.3, Ma trận Chuyển trạng thái §5.2, Ma trận Cấm §5.3, và Bảng Quyết định Thiết kế §11.
-- **Kết luận Cổng D-G1:** **PASS.**
+- **Kết luận Cổng D-G1:** **PENDING INDEPENDENT RE-REVIEW.** Targeted correction đã bổ sung các trace rows còn thiếu; không tự claim PASS trong cùng task fix.
 
 ### 9.2. Đánh giá Cổng D-G2 (Data Model & Boundary Integrity)
 - **Input:** Artifacts 4, 5; `docs/04-data-model.md`, `lingora-admin/prisma/schema.prisma`, migrations.
 - **Validation Method:** Kiểm tra cấu trúc dữ liệu theo mô hình 2 trục (Scope vs Implementation Status); rà soát độ phủ mức trường cho toàn bộ Core Scope; thẩm định 5 JSONB payload schemas; xác minh trạng thái từng giá trị enum bài tập.
 - **Kết quả Kiểm tra Điều kiện PASS:**
-   1. *2-Axis ERD Model:* ĐẠT. Tách biệt rõ Scope (`CORE`, `EXTENSION`, `EXCLUDED`) khỏi Implementation Status (`CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`); loại bỏ hoàn toàn nhãn gộp `TARGET_EXT` (0 occurrences repo-wide).
+   1. *2-Axis ERD Model:* Đã chuẩn hóa Scope (`CORE`, `EXTENSION`, `EXCLUDED`) và tách khỏi Implementation Status (`CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`); không còn nhãn gộp giữa hai trục.
    2. *Status truthfulness:* ĐẠT. `units`, `unit_translations`, `audit_logs` được định danh chính xác là `TARGET_SCHEMA` (Migration Required), không bị ngộ nhận là runtime-ready.
-   3. *Exercise Type Status per Value:* ĐẠT. Phân định chính xác theo từng giá trị enum tại §8.8: Applied (`MCQ`, `FILL_BLANK`, `REORDER`) và Target additions (`LISTENING`, `GRAMMAR`). Đã loại bỏ hoàn toàn `MATCHING` (0 occurrences).
+   3. *Exercise Type Status per Value:* Giữ nguyên phân định theo từng giá trị enum tại §8.8: Applied (`MCQ`, `FILL_BLANK`, `REORDER`) và Target additions (`LISTENING`, `GRAMMAR`). Không thay đổi ExerciseType semantics.
    4. *Zero Ghost Entities:* ĐẠT. Tuyệt đối không tồn tại `Exam` hay `QuestionBank`. Assessment chỉ là conceptual mode của Exercise (D4).
-   5. *Data Dictionary Completeness:* ĐẠT. Bao phủ đầy đủ 100% các trường của 18 bảng Core Scope tại 18 đề mục riêng biệt §8.1–§8.18 kèm thuộc tính 8 cột chi tiết.
+   5. *Data Dictionary Completeness:* Đã bổ sung applied columns theo migration và sửa false claims; independent re-review phải xác nhận coverage cuối cùng.
    6. *Candidate Consistency:* ĐẠT. Các trường ứng viên (`supersedes_id`, `assignment_brief`, `starting_unit`, `placement_history`, `isAssessmentMode`, `lesson_type`) gắn nhãn nhất quán là `TARGET DESIGN CANDIDATE` hoặc `OPEN DESIGN REPRESENTATION`.
    7. *Exercise Payloads:* ĐẠT. Cả 5 cấu trúc payload đều chứa `payloadVersion: 1` theo chuẩn ADR-006 tại §8.19.
 - **Bằng chứng Nghiệm thu:** Bảng Kiểm kê §7.1, Từ điển dữ liệu §8.1–§8.18, JSON Schemas §8.19, và Bảng Quyết định Thiết kế §11.
-- **Kết luận Cổng D-G2:** **PASS.**
+- **Kết luận Cổng D-G2:** **PENDING INDEPENDENT RE-REVIEW.** Data Dictionary, Scope labels, PlantUML fields và literal-token hygiene đã được hiệu chỉnh; chưa tự claim PASS.
 
 ---
 
@@ -751,15 +1196,15 @@ Mọi payload bài tập trong thực thể `Exercise` đều phải chứa thu�
 
 | # | Tiêu chí Hoàn thành M2.1 (Exit Criteria) | Kết quả Đánh giá | Bằng chứng Cụ thể trong Tài liệu |
 |---|---|---|---|
-| 1 | Core domain concepts traced to requirements | **ĐẠT (PASS)** | Bảng truy vết §4.3: 13 thực thể Core ánh xạ đầy đủ về P1-FR, UC, BF. |
+| 1 | Core domain concepts traced to requirements | **CORRECTED — PENDING RE-REVIEW** | Bảng truy vết §4.3 đã bổ sung Language, translation entities và ChatScenario supporting entities bằng các source IDs có thật hoặc ghi rõ baseline không cấp UC/BF code riêng. |
 | 2 | Lifecycle matches D1–D3 & baseline exactly | **ĐẠT (PASS)** | §5.1 & §5.2: Normal: Manager giao bài $\rightarrow$ Creator soạn $\rightarrow$ Moderator APPROVED $\rightarrow$ Manager PUBLISHED. Emergency: Admin Emergency Publish/Archive (kèm lý do & AuditLog). Không có `ARCHIVED -> DRAFT` trong Core. |
 | 3 | Progression matches D5–D8 exactly | **ĐẠT (PASS)** | §6: Mapping A chuẩn; Jump 95%/24h; Controlled Retry theo $N$; SRS Policy B xác định. |
-| 4 | Applied / Target / Future status is truthful | **ĐẠT (PASS)** | §3, §7.1 & §8: Mô hình 2 trục phân định rõ thực tế: `CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`; 0 `TARGET_EXT`. |
-| 5 | No target field is presented as Current Applied | **ĐẠT (PASS)** | §7.1 & §8: `units`, `audit_logs`, `supersedes_id`, `placement_history` ghi rõ Target / Candidate. |
-| 6 | No unapproved entity or unapproved type | **ĐẠT (PASS)** | Đã loại bỏ `MATCHING`; `LISTENING`/`GRAMMAR` ghi rõ Target additions; không thêm enum trái phép vào DB. |
+| 4 | Applied / Target / Future status is truthful | **CORRECTED — PENDING RE-REVIEW** | §7.1 & §8 đã đối soát applied columns với migration và tách Scope khỏi Implementation Status. |
+| 5 | No target field is presented as Current Applied | **CORRECTED — PENDING RE-REVIEW** | `lessons.objective` đã hạ về `TARGET_SCHEMA`; các field Applied không tồn tại đã bị loại bỏ khỏi dictionary. |
+| 6 | No unapproved entity or unapproved type | **CORRECTED — PENDING RE-REVIEW** | `MCQ`, `FILL_BLANK`, `REORDER` giữ Applied; `LISTENING`, `GRAMMAR` giữ Target; không thay đổi ExerciseType semantics. |
 | 7 | No new product behavior invented | **ĐẠT (PASS)** | Giữ nguyên D1–D9; Administrator emergency override tuân thủ đúng baseline (chỉ khẩn cấp + lý do + audit, không phải quyền thường nhật); loại bỏ bước xác nhận profile bắt buộc; không có `ARCHIVED -> DRAFT` trong Core. |
-| 8 | Data Dictionary coverage claim is truthful | **ĐẠT (PASS)** | §8.1–§8.18: Bao phủ đầy đủ chi tiết mức trường cho toàn bộ 18 bảng Core Scope; không có bảng bị tóm tắt. |
-| 9 | ERD separates scope from implementation status | **ĐẠT (PASS)** | §7: Trục 1 (Scope: Core/Extension) tách biệt hoàn toàn khỏi Trục 2 (Status: Applied/Target/Future); không dùng nhãn gộp. |
+| 8 | Data Dictionary coverage claim is truthful | **CORRECTED — PENDING RE-REVIEW** | Đã bổ sung applied columns bị thiếu và sửa false claims theo migration; independent re-review phải xác nhận lại. |
+| 9 | ERD separates scope from implementation status | **CORRECTED — PENDING RE-REVIEW** | Scope chỉ dùng `CORE`, `EXTENSION`, `EXCLUDED`; supporting chỉ còn là explanatory note. |
 | 10| No Exam / QuestionBank entity | **ĐẠT (PASS)** | Bất biến D4 được tuân thủ nghiêm ngặt; Assessment chỉ là mode của `Exercise`. |
 | 11| No CEFR certification claims | **ĐẠT (PASS)** | §6.2: Khẳng định Placement Mapping A là quy tắc phân lớp nội bộ, không cấp chứng chỉ CEFR. |
 | 12| No 80% completion rule | **ĐẠT (PASS)** | §6.4: Hoàn thành bài học gắn với xử lý hết câu first-pass và retry bắt buộc; không áp điểm sàn 80%. |
@@ -775,10 +1220,10 @@ Mọi payload bài tập trong thực thể `Exercise` đều phải chứa thu�
 |---|---|---|---|---|
 | **P0-01** | Khôi phục thẩm quyền can thiệp khẩn cấp của Administrator theo baseline. | Khôi phục đúng semantics baseline: Administrator KHÔNG xuất bản thường nhật, CHỈ được phép Emergency Publish / Emergency Archive trong tình huống khẩn cấp xác định (kèm lý do giải trình justification và bắt buộc ghi AuditLog). Cấm Creator/Moderator xuất bản; cấm Creator tự duyệt. | §5.1, §5.2, §5.3, §9.1, §10, PlantUML `content-lifecycle-state.puml` | **RESOLVED** |
 | **P1-02** | Loại bỏ chuyển trạng thái `ARCHIVED -> DRAFT` khỏi Core Lifecycle. | Baseline không khóa transition này. Xóa khỏi Core state machine, PlantUML và ma trận chuyển trạng thái; trạng thái `ARCHIVED` là terminal trong Core. Mọi khả năng restore xếp vào `[FUTURE / OPEN DESIGN]`, không dùng làm PASS evidence. | §5.2, §5.3, PlantUML `content-lifecycle-state.puml` | **RESOLVED** |
-| **P1-03** | Xóa bỏ hoàn toàn nhãn gộp `TARGET_EXT`. | Tách biệt hoàn toàn 2 trục: Scope (`CORE`, `EXTENSION`, `EXCLUDED`) và Implementation Status (`CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`). Quét sạch 100% `TARGET_EXT` trong tài liệu và PlantUML. | §4.1, §4.3, §7.1, §8, PlantUML `erd-logical-status-mapping.puml` | **RESOLVED** |
-| **P1-04** | Minh bạch trạng thái từng giá trị Enum `ExerciseType`. | Phân định rõ ở mức giá trị: `MCQ`, `FILL_BLANK`, `REORDER` thuộc `CURRENT_APPLIED_DATABASE`; `LISTENING`, `GRAMMAR` thuộc `TARGET_SCHEMA / FUTURE_MIGRATION`. Loại bỏ hoàn toàn `MATCHING` (0 occurrences). | §4.1, §7.1, §8.8, PlantUML `erd-logical-status-mapping.puml` | **RESOLVED** |
+| **P1-03** | Xóa bỏ nhãn gộp giữa Scope và Implementation Status. | Tách biệt hoàn toàn 2 trục: Scope (`CORE`, `EXTENSION`, `EXCLUDED`) và Implementation Status (`CURRENT_APPLIED_DATABASE`, `TARGET_SCHEMA`, `FUTURE_MIGRATION`). | §4.1, §4.3, §7.1, §8, PlantUML `erd-logical-status-mapping.puml` | **CORRECTED — PENDING RE-REVIEW** |
+| **P1-04** | Minh bạch trạng thái từng giá trị Enum `ExerciseType`. | Phân định rõ Applied (`MCQ`, `FILL_BLANK`, `REORDER`) và Target additions (`LISTENING`, `GRAMMAR`) mà không thêm enum ngoài baseline. | §4.1, §7.1, §8.8, PlantUML `erd-logical-status-mapping.puml` | **CORRECTED — PENDING RE-REVIEW** |
 | **P1-05** | Đánh giá Cổng D-G1 dựa trên bằng chứng baseline đối soát. | Kiểm tra: Administrator emergency override có mặt với đúng ràng buộc; quy trình chuẩn Manager xuất bản; không có `ARCHIVED -> DRAFT` trong Core. Cổng D-G1 đạt đầy đủ bằng chứng. | §9.1, §10, §12.6 | **RESOLVED** |
-| **P1-06** | Đánh giá Cổng D-G2 dựa trên bằng chứng dữ liệu thực tế và 2 trục. | Kiểm tra: 3 canonical implementation statuses, 0 `TARGET_EXT`, 18 bảng Core có Data Dictionary chi tiết mức trường, ExerciseType phân rã giá trị chính xác, 0 ghost entities. | §9.2, §10, §12.6 | **RESOLVED** |
+| **P1-06** | Đánh giá Cổng D-G2 dựa trên bằng chứng dữ liệu thực tế và 2 trục. | Kiểm tra: 3 canonical implementation statuses, 18 bảng Core có Data Dictionary chi tiết mức trường, ExerciseType phân rã giá trị chính xác, 0 ghost entities. | §9.2, §10, §12.6 | **CORRECTED — PENDING RE-REVIEW** |
 | **P1-07** | Đồng bộ nhãn các ứng viên thiết kế vật lý (Candidate / Open Design). | Các trường `supersedes_id`, `assignment_brief`, `starting_unit`, `placement_history`, `isAssessmentMode`, `lesson_type` gắn nhãn nhất quán `TARGET DESIGN CANDIDATE` hoặc `OPEN DESIGN REPRESENTATION`. Không dùng `RESOLVED` hay `LOCKED PHYSICAL DESIGN`. | §5.4, §5.5, §6.5, §6.6, §8.6, §8.12, §11.2 | **RESOLVED** |
 | **F-02** | Creator có thể tự tạo bài ngoài kế hoạch (đường bypass D1). | Thiết lập bất biến quy trình (Process Design Invariant): Manager bắt buộc phải tạo skeleton và gán bài trước; Creator không có quyền tự tạo bài bypass trong mô hình logic. | §5.1, §5.2, §5.3, PlantUML `content-lifecycle-state.puml` | **RESOLVED** |
 | **F-04** | Tuyên bố `lesson_type` đã được chọn/chốt (DD-05) dù chưa có trong schema. | Hạ cấp `lesson_type` thành Candidate thuộc `OPEN DESIGN REPRESENTATION`; khẳng định bất biến D4. | §6.5, §11.2 (Bảng DD) | **RESOLVED** |
@@ -809,11 +1254,11 @@ Mọi payload bài tập trong thực thể `Exercise` đều phải chứa thu�
 
 ### 12.1. Trạng thái Nghiệm thu M2.1 (Verification Status)
 ```text
-M2.1 Status: REVISED — READY FOR RE-REVIEW
-Review Verdict Targeted: Ready for Independent Review after Findings Resolution & Applied DB Verification
+M2.1 Status: CORRECTED — READY FOR INDEPENDENT RE-REVIEW
+Review Verdict Targeted: Pending Independent Re-Review after Adjudicated Findings Fix
 M2.1 Approved by Human: PENDING (Chờ phê duyệt độc lập từ Người dùng / Gatekeeper)
-Cổng D-G1: PASS (Bằng chứng đầy đủ tại §9.1)
-Cổng D-G2: PASS (Bằng chứng đầy đủ tại §9.2)
+Cổng D-G1: PENDING INDEPENDENT RE-REVIEW
+Cổng D-G2: PENDING INDEPENDENT RE-REVIEW
 Milestone M2.2+ Started: NO (DỪNG LẠI HOÀN TOÀN TẠI M2.1 THEO LỆNH)
 ```
 
@@ -870,22 +1315,71 @@ Các quyết định sau đây đã được khóa cứng về mặt quy tắc n
   - `support_tickets` (Scope: EXTENSION, helpdesk feature).
 
 ### 12.6. Section D — M2.1 Exit Gate Status (Đánh giá Cổng Nghiệm thu)
-- **Cổng D-G1 (Domain & Lifecycle Traceability):** **`PASS`**
+- **Cổng D-G1 (Domain & Lifecycle Traceability):** **`PENDING INDEPENDENT RE-REVIEW`**
   - 100% thực thể Core Scope có căn cứ truy vết rõ ràng đến Requirements Baseline.
   - Quy trình vòng đời D1/D2/D3 hoàn chỉnh: Manager giao việc $\rightarrow$ Creator biên soạn $\rightarrow$ Moderator APPROVED $\rightarrow$ Manager PUBLISHED.
   - Administrator Emergency Override được khôi phục chuẩn xác theo baseline (chỉ can thiệp khi có sự cố khẩn cấp, có lý do giải trình và bắt buộc AuditLog). Cấm Administrator xuất bản thường nhật; cấm Creator/Moderator xuất bản; cấm Creator tự duyệt.
   - Loại bỏ hoàn toàn luồng `ARCHIVED -> DRAFT` khỏi Core Lifecycle.
   - Ma trận cấm thiết lập rõ các Bất biến Thiết kế và Yêu cầu Ràng buộc Phân quyền.
-- **Cổng D-G2 (Data Model & Boundary Integrity):** **`PASS`**
-  - Mô hình 2 trục phân định rạch ròi giữa Scope nghiệp vụ và Trạng thái triển khai; loại bỏ hoàn toàn nhãn gộp `TARGET_EXT`.
+- **Cổng D-G2 (Data Model & Boundary Integrity):** **`PENDING INDEPENDENT RE-REVIEW`**
+  - Mô hình 2 trục phân định rạch ròi giữa Scope nghiệp vụ và Trạng thái triển khai; không dùng nhãn gộp giữa hai trục.
   - Phân định trung thực trạng thái: `units`, `audit_logs` gắn nhãn `TARGET_SCHEMA`, không ngộ nhận runtime-ready.
-  - Phân loại chính xác từng giá trị kiểu bài tập: Applied (`MCQ`, `FILL_BLANK`, `REORDER`), Target additions (`LISTENING`, `GRAMMAR`), 0 `MATCHING`.
+  - Phân loại chính xác từng giá trị kiểu bài tập: Applied (`MCQ`, `FILL_BLANK`, `REORDER`), Target additions (`LISTENING`, `GRAMMAR`), không có enum ngoài baseline trong active model.
   - Tuyệt đối không tồn tại thực thể ma `Exam` hay `QuestionBank`.
-  - Độ phủ Từ điển dữ liệu đạt 100% Core Scope với 18 đề mục riêng biệt (§8.1–§8.18) tương ứng 18 bảng Core.
+  - Data Dictionary đã được reconcile với applied migration cho các bảng Core; claim cuối cùng vẫn chờ independent re-review.
   - Các trường ứng viên (`supersedes_id`, `assignment_brief`, `starting_unit`, `placement_history`, `isAssessmentMode`, `lesson_type`) gắn nhãn nhất quán `TARGET DESIGN CANDIDATE` hoặc `OPEN DESIGN REPRESENTATION`.
   - 100% 5 JSONB payload schemas tuân thủ `payloadVersion: 1` theo ADR-006 (§8.19).
 
 ### 12.7. Section E — Explicit Statement: M2.2 NOT STARTED
 > **CAM KẾT RANH GIỚI TUYỆT ĐỐI:**  
 > **MILESTONE M2.2 (Use Case, Activity, & Sequence Behavioral Modeling) CHƯA ĐƯỢC BẮT ĐẦU (M2.2 NOT STARTED).**  
-> Mọi hoạt động tại phiên làm việc hiện tại dừng lại hoàn toàn tại mốc M2.1 (Domain Model & Logical Data Foundation). Toàn bộ hệ thống giữ nguyên hiện trạng kỹ thuật: 0 file code thay đổi, 0 migration được tạo, 0 thay đổi database, 0 thay đổi schema. M2.1 ở trạng thái `REVISED — READY FOR TARGETED RE-REVIEW` và chờ phê duyệt độc lập từ Người dùng / Gatekeeper trước khi được phép chuyển sang M2.2.
+> Mọi hoạt động tại phiên làm việc hiện tại dừng lại hoàn toàn tại mốc M2.1 (Domain Model & Logical Data Foundation). Toàn bộ hệ thống giữ nguyên hiện trạng kỹ thuật: 0 file code thay đổi, 0 migration được tạo, 0 thay đổi database, 0 thay đổi schema. M2.1 ở trạng thái `ACCEPTED FOR M2.2` (D-G1 PASS, D-G2 PASS) theo kết luận Independent Re-Review; Milestone M2.2 ở trạng thái `NOT STARTED` và chờ kế hoạch thực hiện riêng biệt.
+
+---
+
+## 13. D2 Detailed Domain & Logical Data Design Supplement (D1–D2 Task)
+
+> Design-only. Không migration, không runtime change, không algorithm. Mọi ngưỡng/formula giữ `PROPOSED / PENDING VALIDATION / CONFIGURABLE`.
+
+### 13.1. Logical Schema Readiness (D2.15)
+
+| Entity | Purpose | Owner | Key relations | Status |
+|---|---|---|---|---|
+| `LearnerProfile` | Learner identity, goal, self-reported vs verified proficiency | Learner (`Role.LEARNER`) | → LearningProgress / SkillProfile / AssessmentResult / ConceptMastery / KnowledgeGap | FROZEN (structure) |
+| `SkillProfile` | Multidim proficiency (4 dims + anchor PENDING + provenance) | `LearnerProfile` | ← AssessmentResult (via `sourceAssessmentResultId`) | FROZEN (structure); anchor PENDING VALIDATION |
+| `LearningProgress` | Content completion / engagement | `LearnerProfile` (sole) | → Course/Unit/Lesson refs | FROZEN (structure) |
+| `AssessmentResult` | Immutable assessment log (purpose + deliveryMode + evidence) | `LearnerProfile` | → SkillProfile / LevelReadiness evidence | FROZEN (structure); params PROPOSED / PENDING |
+| `Concept` | Concept registry (code/domain/lang/desc/level-ref) | System registry | → ConceptMastery / KnowledgeGap / RemedialModule / Exercise tag | FROZEN (structure) |
+| `ConceptMastery` | NOVICE/DEVELOPING/MASTERED per concept | `LearnerProfile` + `Concept` | ← Exercise/SRS evidence | FROZEN (structure); thresholds CONFIGURABLE / PENDING |
+| `KnowledgeGap` | Learner×concept severity/state/detected/resolved + provenance | `LearnerProfile` + `Concept` | → RemedialModule; ↔ ConceptMastery resolve | FROZEN (structure); thresholds CONFIGURABLE / PENDING |
+| `LevelReadiness` | ADVANCE / ADVANCE_WITH_SUPPORT / REMEDIATE + typed evidence | `LearnerProfile` | ← AssessmentResult / Mastery / Gaps | FROZEN (structure); thresholds PROPOSED / PENDING |
+| `Recommendation` | L3 output + rationale + inputSnapshot + ruleVersion | `LearnerProfile` | ← 6 inputs; → Unit / RemedialModule | FROZEN (architecture); algorithm NOT designed |
+| `RemedialModule` | Governed micro-lesson (fresh context for old concept) | Creator + `Concept` + Unit | 6-state content lifecycle via Moderator | FROZEN (structure) |
+| `Language` / `LanguageConfig` / `AssessmentConfig` / `ItemBank` / `Rubric` | Multi-lang chain (conceptual/config, per `01:462` — không bắt buộc 4 physical tables) | System config | → AssessmentResult.languageConfig | FROZEN (architecture); HSK versioned/configurable |
+| `Course → Unit → Lesson → Exercise` | Content hierarchy (5 types + READING PROPOSED) | Manager / Creator | Exercise → Concept (`conceptId`) | Applied (3 types) + Target (LISTENING/GRAMMAR/READING) |
+
+### 13.2. Versioning / Provenance Map (D2.10 — chỉ nơi future consistency phụ thuộc)
+
+| Artifact | Version field | Lý do cần |
+|---|---|---|
+| Assessment blueprint (Mapping A, 30-item instance) | `OD-PLACEMENT-MAPPING` + blueprint version khi revise | Placement phải tái hiện đúng rule đã xếp lớp |
+| `LanguageConfig` / `AssessmentConfig` | config version trong `languageConfig` JSONB | CEFR/HSK version + `hidePinyin` thay đổi theo thời gian |
+| `ItemBank` | item version qua `Concept` + Exercise revision (clone-to-draft v2) | Câu hỏi sửa đổi không làm sai lệch evidence cũ |
+| `Rubric` | rubric version trong config | Tiêu chí chấm thay đổi phải gắn đúng AssessmentResult |
+| `RemedialModule` | `version` (có sẵn) | Content lifecycle + published history |
+| `Recommendation` | `ruleVersion` + `inputSnapshot` (mới D2.4) | Giải thích "Why was this recommended?" + tái kiểm |
+| Proficiency mapping (CEFR→Unit, HSK ref) | mapping version (Mapping A locked; còn lại PENDING) | Không nhầm rule đề cương với certification |
+| Không version: `LearningProgress` ratio, `ConceptMastery` state, `KnowledgeGap` severity — state hiện tại; lịch sử nằm ở evidence chain (`AssessmentResult`, resolved log) | — | Tránh overdesign |
+
+### 13.3. Compatibility with Current M1 Runtime (D2.16 — read-only, design impact only)
+
+Đối chiếu target logic (§13.1) với applied runtime (`lingora-admin/prisma/schema.prisma` + migrations M1.2/M1.3, không chạm):
+
+| Vùng | Runtime hiện tại | Impact |
+|---|---|---|
+| Roles (6), `ContentStatus` (6), `Cefr` A1–C2, `audioUrl`, `dailyGoalMin`/`streakCount`, `UserProgress`, `UserVocabSrs`, `ReviewLog`, `record_review` RPC | Có sẵn, applied | compatible |
+| `Unit`/`UnitTranslation`/`AuditLog` models | Có trong schema target, migration pending | requires future schema extension (đã biết từ §12.5) |
+| `ExerciseType` | Applied: `MCQ, FILL_BLANK, REORDER` | requires future schema extension (`LISTENING`, `GRAMMAR`, `READING` khi approved) |
+| 10 logical entities D2 (`LearnerProfile`, `SkillProfile`, `AssessmentResult`, `Concept`, `ConceptMastery`, `KnowledgeGap`, `LearningProgress`, `LevelReadiness`, `Recommendation`, `RemedialModule`) | Chưa có physical tables | requires runtime migration later (D3+); hiện tại logical-only, không block design |
+| `SkillProfile.sourceAssessmentResultId`, `Recommendation.inputSnapshot/ruleVersion`, `LevelReadiness.evidenceSummary` typed | Chưa tồn tại ở runtime | requires runtime migration later |
+| Scoring/thresholds/formulas | Không tồn tại ở runtime, giữ PENDING trong design | unresolved theo thiết kế (đúng ý đồ — chờ validation) |

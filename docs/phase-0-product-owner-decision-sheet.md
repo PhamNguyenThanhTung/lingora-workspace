@@ -132,7 +132,7 @@ Dưới đây là 9 nhóm quyết định chi tiết bắt buộc Product Owner 
 - **Khuyến nghị của Agent (`PROPOSAL`):**
   - Jump 1 Unit: Đạt $\ge 80\%$ bài kiểm tra của Unit trước.
   - Jump $\ge 2$ Units: Đạt $\ge 85\%$ bài kiểm tra tích lũy.
-  - Quy tắc mở khóa: Đạt điểm thì mở khóa chính xác Unit đích; các Unit trung gian được đánh dấu hoàn thành theo diện nhảy cóc (`COMPLETED_BY_JUMP`), đồng thời tự động seed từ vựng cốt lõi của các Unit bỏ qua vào hàng đợi SRS để chống hổng kiến thức.
+  - Quy tắc mở khóa: Đạt điểm thì mở khóa chính xác Unit đích; các Unit trung gian được đánh dấu theo diện nhảy cóc [HISTORICAL PROPOSAL TERM: `COMPLETED_BY_JUMP` — đã được chuẩn hóa thành `SKIPPED_BY_JUMP / UNLOCKED_BY_JUMP` (`by_jump = true`), không tương đương với hoàn thành học liệu thực tế], đồng thời tự động seed từ vựng cốt lõi của các Unit bỏ qua vào hàng đợi SRS để chống hổng kiến thức.
 
 ### D6 — Placement Test: Đề xuất 15 Câu Cố định, Lưu Profile
 - **Khuyến nghị của Agent (`PROPOSAL`):**

@@ -1129,6 +1129,85 @@ Approved D3 task designs the full logical flow Assessment → Skill Profile → 
 
 - D3 spec (A–Q) with Q = `READY FOR D4 CONTENT/CURRICULUM DESIGN`; six D3 diagrams mirror prose; `01 §3.4` + `05 §6` cross-references added; T-D3-DESIGN-001 PASS; no freeze claimed.
 
+---
+
+## ADR-017 — D4 Content & Curriculum Design (Logical Design Specification)
+
+### Date
+
+2026-09-24
+
+### Category
+
+scope-ambiguity
+
+### Context
+
+Following human approval of the D4 plan and D3 acceptance for D4, D4 formalizes the complete logical content and curriculum design artifacts inheriting D1/D2/D3 baselines. Constraints: design-only; zero runtime application code, zero database schema mutations or migrations, zero scoring/adaptive/recommendation algorithms, zero UI implementation; no Design Freeze claimed; strict prohibition of ghost entities (`Exam`, `QuestionBank`, `AssessmentSession`).
+
+### Decision
+
+1. **Curriculum Architecture & Hierarchy:** Enforce strict structural containment `Course → Unit → Lesson → Exercise`. Decouple structural containment from semantic knowledge reuse: `Concept` is an independent domain entity referenced across Lessons, Exercises, Assessment Items, `ConceptMastery`, and `KnowledgeGap`; `Concept` is NEVER a child entity of `Exercise`.
+2. **Unit Publication Visibility vs Learner Progression:** A `Unit` is visible in the public catalog if and only if 4/4 child Lessons are `PUBLISHED`. Individual progression is governed by linear prerequisites, diagnostic placement (Mapping A), or Jump (≥95%). Invariant: `Catalog Publication Status ≠ Learner Unlock Status ≠ Learning Completion ≠ Proficiency ≠ Mastery`.
+3. **English A1 Baseline Inventory:** Formalize 6 Units, 24 Lessons, ~200 vocabulary items, and 5 exercises per lesson based on `docs/08-english-a1-curriculum.md`.
+4. **Lesson Blueprint:** Standardized logical template encompassing identity/governance (SoD, Clone-to-Draft v2 `supersedesId`), pedagogical outcomes, multi-skill payloads, 3-stage practice flow (Guided, Independent, Review), controlled retry allowance (`allowance = max(1, floor(5*0.10)) = 1`), and D3 evidence linkage. Invariant: `Practice Evidence vs Assessment Evidence vs Completion Boundary vs Verified Proficiency`.
+5. **Concept Taxonomy:** Standardized `Concept` schema (`conceptId`, hierarchical code `LANG-LEVEL-DOMAIN-TOPIC-SEQ`, domain, prerequisite DAG, lifecycle status, version). Strict prohibition of untyped free-text `conceptTag`. Initial English A1 concept mapping marked `PROPOSED`.
+6. **5 Canonical Logical Content Types:** Authoring envelopes for `MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`. Explicitly designated as D4 logical/target authoring models (Applied DB supports MCQ/FILL/REORDER; LISTENING/GRAMMAR are Target Schema specifications). Zero `MATCHING` canonical; no `AssessmentSession`, `Exam`, or `QuestionBank` ghost entities. `GRAMMAR` exercise payload is deterministic and independent of transient GEC AI service (`/v1/gec/correct`).
+7. **Reading Semantic Boundary:** Maintain strict decoupling: `Reading` = D3 skill/dimension; `READING` compound exercise payload = logical/design candidate (`PROPOSED / DESIGN GAP` per D2 §6.11). Physical database enum/schema is NOT DECIDED / OUT OF SCOPE.
+8. **Remedial Content Model:** `RemedialModule` is governed micro-content targeting specific `Concept` deficits identified by `KnowledgeGap`. Delivery is restricted to `PUBLISHED` status only. Strict invariants: no whole-level downgrade, no forced replay of completed lessons, no reuse of old exercise payloads, no separate runtime `Remediation` entity.
+9. **Assessment Item Bank:** Classify items by stable ID, language, skill dimension, conceptId, descriptive difficulty (Entry/Mid/Upper), and assessment eligibility. Decouple purpose (`assessmentType`) from execution mode (`deliveryMode`).
+10. **Multi-Language 4-Tier Chain:** Declarative parameterization (`Common Content Model → Language Config → Content/Item Bank → Language-specific Rules`). Zero hardcoded language branching. English config accommodates collocations, word families, connected speech; Chinese config enforces `hidePinyin: true` default for Hanzi reading assessment (`E-EXP-04`); HSK framework versioning remains `OPEN / PENDING`.
+
+### Consequences
+
+- Master specification `docs/phase-1-d4-content-curriculum-design.md` (Sections A–T) with status `READY FOR INDEPENDENT REVIEW` and `DESIGN FREEZE: NOT CLAIMED`.
+- 6 D4 PlantUML diagrams authored under `docs/plantuml/` (`curriculum-architecture-d4`, `lesson-blueprint-d4`, `concept-content-evidence-d4`, `item-bank-authoring-d4`, `remedial-content-d4`, `multilanguage-content-d4`).
+- Secondary docs updated: `docs/08-english-a1-curriculum.md`, `docs/01-architecture.md` (§3.5), `docs/05-traceability-matrix.md` (§7), `docs/QUICK-REF.md`.
+- Automated verification: `T-D4-DESIGN-001` PASS (18/18 consistency guards, 17/17 D4 checks, `git diff --check` 0).
+- Zero code, zero migrations, zero UI code, zero git commits created.
+
+---
+
+## ADR-018 — Milestone M2.1 Domain & Logical Data Foundation Final Acceptance
+
+### Date
+
+2026-09-25
+
+### Category
+
+scope-ambiguity
+
+### Context
+
+Milestone M2.1 (`docs/phase-1-m2-1-domain-and-logical-data-foundation.md`) establishes the implementation-independent domain and logical data foundation for Lingora. Following comprehensive revisions addressing initial audit findings (P0-01 through P1-07), M2.1 underwent formal Independent Re-Review to determine readiness for downstream runtime milestones (M2.2+).
+
+### Decision
+
+1. **Formal Gate Acceptance:**
+   - **Gate D-G1 (Domain & Lifecycle Traceability):** `PASS`.
+   - **Gate D-G2 (Data Model & Boundary Integrity):** `PASS`.
+   - **Overall Milestone Verdict:** `M2.1 ACCEPTED FOR M2.2`.
+   - **Evidence Basis:** The Independent Re-Review serves as the authoritative final acceptance evidence.
+2. **Audit Findings Closure:**
+   - **P0-01 CLOSED:** Administrator emergency publish/archive authority is confirmed as an emergency-only bypass strictly for already `APPROVED` content (transition `APPROVED → PUBLISHED` with mandatory justification and `AuditLog`). Normal workflow remains Manager publish; Creator self-approval/publishing and Moderator publishing remain strictly barred.
+   - **P1-05 CLOSED:** Gate D-G1 is formally accepted via independent re-review evidence.
+   - All other findings (P1-01 through P1-07, P2-01) confirmed CLOSED.
+3. **Log Reconciliation & Historical Governance:**
+   - Appended corrections for historical log inaccuracies (F-LOG-01, F-LOG-02, F-LOG-03) across `HANDOFF.md`, `logs/development-log.md`, and `logs/test-log.md` without modifying historical timestamps or deleting past records.
+4. **Boundary & Implementation Invariants:**
+   - M2.1 remains strictly design-only. Zero runtime application code, zero database schema mutations or migrations, zero UI code were introduced.
+   - Downstream milestone state: `M2.2 PLAN: NOT STARTED`.
+
+### Consequences
+
+- Milestone M2.1 is officially `ACCEPTED FOR M2.2`.
+- `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` metadata reflects accepted state.
+- Governance logs and handoff records are fully reconciled and consistent with independent review findings.
+- Implementation of Milestone M2.2 remains separately gated and cannot proceed until an implementation plan is formally submitted and approved.
+
+---
+
 ## ADR-019 — Milestone M2.2 System Behavior, Use Cases, Activity & State Machine Design Foundation
 
 ### Date
@@ -1233,6 +1312,8 @@ Milestone M2.2 completed implementation, Independent Final Review (`FAIL`: 16 P1
 - M2.2 behavior layer is the accepted baseline for M2.3 Sequence + API / Service Boundary design.
 - Implementation remains out of scope: zero runtime/schema/API/UI/security work; D3/D4/M2.1 unmodified.
 - `COMMIT: NOT CREATED` in this task.
+
+---
 
 ## ADR-022 — Milestone M2.3 Sequence, API Contract & Service Boundary Modeling
 

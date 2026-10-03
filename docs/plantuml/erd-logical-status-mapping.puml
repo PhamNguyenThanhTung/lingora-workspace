@@ -37,8 +37,12 @@ entity "profiles" as Profile APPLIED_COLOR {
   display_name : text
   role : Role <<Applied: LEARNER, ADMIN | Target: 6 roles>>
   assigned_roles : Role[] <<Target>>
+  ui_locale : varchar(8)
+  native_lang_code : varchar(8)
   daily_goal_min : int
   streak_count : int
+  timezone : text
+  last_qualifying_activity_date : date
   starting_unit : int <<Target Design Candidate DD-06>>
   placement_history : jsonb <<Target Design Candidate DD-06>>
   .. [Scope: CORE | Status: CURRENT_APPLIED_DATABASE] ..
@@ -93,11 +97,13 @@ entity "lessons" as Lesson APPLIED_COLOR {
   order_index : int
   is_published : boolean <<Applied>>
   status : ContentStatus <<Target Schema>>
-  objective : text
+  objective : text <<Target Schema>>
   creator_id : uuid <<FK, Target>>
   reviewer_id : uuid <<FK, Target>>
   assignment_brief : text <<Target Candidate DD-04>>
   supersedes_id : uuid <<FK, Target Candidate DD-02>>
+  created_at : timestamp
+  updated_at : timestamp
   .. [Scope: CORE | Status: CURRENT_APPLIED_DATABASE] ..
 }
 
@@ -117,6 +123,8 @@ entity "exercises" as Exercise APPLIED_COLOR {
   type : ExerciseType <<Applied: MCQ, FILL_BLANK, REORDER | Target: LISTENING, GRAMMAR>>
   payload : jsonb <<ADR-006 payloadVersion>>
   order_index : int
+  created_at : timestamp
+  updated_at : timestamp
   .. [Scope: CORE | Status: CURRENT_APPLIED_DATABASE] ..
 }
 
@@ -125,7 +133,12 @@ entity "vocabularies" as Vocabulary APPLIED_COLOR {
   --
   language_code : varchar(8) <<FK>>
   term : text
-  audio_path : text
+  normalized_term : text
+  phonetic : text
+  audio_url : text
+  cefr : Cefr
+  created_at : timestamp
+  updated_at : timestamp
   .. [Scope: CORE | Status: CURRENT_APPLIED_DATABASE] ..
 }
 
@@ -152,6 +165,7 @@ entity "user_progress" as UserProgress APPLIED_COLOR {
   status : ProgressStatus
   score : int
   completed_at : timestamp
+  updated_at : timestamp
   .. [Scope: CORE | Status: CURRENT_APPLIED_DATABASE] ..
 }
 
@@ -162,8 +176,12 @@ entity "user_vocab_srs" as UserVocabSrs APPLIED_COLOR {
   vocabulary_id : uuid <<FK>>
   ease_factor : float
   interval_days : float
+  recall_probability : float
   next_review_at : timestamp
+  last_reviewed_at : timestamp
   review_count : int
+  lapse_count : int
+  created_at : timestamp
   .. [Scope: CORE | Status: CURRENT_APPLIED_DATABASE] ..
 }
 
@@ -218,8 +236,10 @@ entity "chat_scenarios" as ChatScenario APPLIED_COLOR {
   * id : uuid <<PK>>
   --
   code : text <<UQ>>
+  is_published : boolean
   system_prompt : text
-  .. [Scope: CORE (Supporting) | Status: CURRENT_APPLIED_DATABASE] ..
+  created_at : timestamp
+  .. [Scope: CORE | Status: CURRENT_APPLIED_DATABASE] ..
 }
 
 entity "chat_scenario_translations" as ChatScenarioTranslation APPLIED_COLOR {
@@ -228,7 +248,7 @@ entity "chat_scenario_translations" as ChatScenarioTranslation APPLIED_COLOR {
   --
   title : text
   description : text
-  .. [Scope: CORE (Supporting) | Status: CURRENT_APPLIED_DATABASE] ..
+  .. [Scope: CORE | Status: CURRENT_APPLIED_DATABASE] ..
 }
 
 ' Applied Relationships

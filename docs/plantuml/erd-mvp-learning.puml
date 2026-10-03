@@ -57,7 +57,7 @@ entity Vocabulary #DCFCE7 {
   --
   language_code : varchar <<FK>>
   term : text
-  audio_path : text
+  audio_url : text
 }
 
 entity UserProgress #FAF5FF {

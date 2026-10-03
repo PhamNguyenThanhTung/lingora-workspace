@@ -107,7 +107,7 @@ Khảo sát định lượng ghi nhận các kết quả thực chứng:
 - **Trace:** `UC-08`.
 
 ### US-09 - Kiểm tra trình độ đầu vào (Placement Test)
-- **Story:** Với tư cách Learner mới, tôi muốn làm bài kiểm tra ngắn gồm 15–20 câu hỏi đa kỹ năng để hệ thống tự động xác định trình độ CEFR (A1–B2) và phân bổ lộ trình học phù hợp.
+- **Story:** Với tư cách Learner mới, tôi muốn làm bài kiểm tra ngắn gồm 15–20 câu hỏi đa kỹ năng để hệ thống tự động xác định trình độ CEFR (A1–B2) [HISTORICAL / SUPERSEDED: CEFR là khung tham chiếu năng lực; placement test xếp Starting Unit trên curriculum theo Placement Mapping A] và phân bổ lộ trình học phù hợp.
 - **Acceptance Criteria:** Ngân hàng câu hỏi phân bố đều các cấp độ; tự động chấm điểm và xác định trình độ ngay khi hoàn thành; lưu kết quả vào hồ sơ và gợi ý bài học xuất phát tương ứng.
 - **Trace:** `UC-09`.
 
@@ -136,7 +136,7 @@ Khảo sát định lượng ghi nhận các kết quả thực chứng:
 ### 4.2 Yêu cầu Phi chức năng (NFR)
 
 - **Security:** Người học chỉ truy cập dữ liệu của chính mình thông qua RLS; quyền Admin được kiểm tra phía Server/Database; Route Handler trung gian bảo vệ backend.
-- **Performance:** Tải bài học và Flashcard < 500ms; Route Handler timeout tối đa 8 giây.
+- **Performance:** Tải bài học và Flashcard < 500ms `[PROPOSED TARGET / TBD — NOT BENCHMARKED]`; Route Handler timeout tối đa 8 giây.
 - **Reliability:** Các luồng học bài và ôn tập SRS hoạt động độc lập ngay cả khi mô-đun kiểm tra ngữ pháp gặp sự cố; xử lý lỗi an toàn và có trạng thái phục hồi.
 - **Usability:** Giao diện Responsive trên mọi thiết bị; đầy đủ trạng thái Loading/Empty/Error/Success.
 - **Privacy:** Kết quả sửa lỗi ngữ pháp xử lý transient; hệ thống huy hiệu cá nhân (Private by default) không áp lực bảng xếp hạng công khai.

@@ -89,7 +89,7 @@ Phát hành theo từng đợt trong cùng MVP: English trước để kiểm ch
 | MVP-03 | Placement hoặc chọn cấp độ | Learner | Có thể bỏ qua test và chọn cấp độ; kết quả test tạo đề xuất có giải thích |
 | MVP-04 | Lộ trình học | Lesson Creator | Hiển thị Course → Unit → Lesson, trạng thái khóa/mở và lesson tiếp theo |
 | MVP-05 | Lesson ngắn | Lesson Creator | Lesson có mục tiêu, thời lượng 5–10 phút, nội dung và điều kiện hoàn thành |
-| MVP-06 | Ba dạng exercise | Lesson Creator | MCQ, FILL_BLANK, REORDER chấm đúng/sai ổn định và không ghi tiến độ lặp |
+| MVP-06 | Ba dạng exercise [HISTORICAL — superseded by ADR-006 five types] | Lesson Creator | MCQ, FILL_BLANK, REORDER chấm đúng/sai ổn định và không ghi tiến độ lặp |
 | MVP-07 | Phản hồi tức thời | Moderator | Mỗi câu có kết quả, đáp án đúng và giải thích ngắn đã được duyệt |
 | MVP-08 | Tiến độ học | Learner | Lưu lesson đang học, hoàn thành, điểm và lần hoạt động gần nhất |
 | MVP-09 | Ôn tập nội dung yếu | Learner | Nội dung sai hoặc đến hạn xuất hiện trong review; hoàn thành review cập nhật lịch |

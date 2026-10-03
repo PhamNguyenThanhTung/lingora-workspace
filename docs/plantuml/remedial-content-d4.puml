@@ -1,0 +1,99 @@
+@startuml
+!theme plain
+skinparam roundCorner 8
+skinparam defaultFontName "Segoe UI"
+skinparam monochrome false
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title Lingora — Remedial Content Architecture & Governance Flow (D4)
+
+package "Deficit Identification" as Deficit #FEE2E2 {
+  class Concept #FEF3C7 {
+    +UUID id
+    +String code
+    +String name
+  }
+
+  class KnowledgeGap #FCA5A5 {
+    +UUID id
+    +UUID userId
+    +UUID conceptId
+    +GapSeverity severity
+    +GapStatus status (ACTIVE, RESOLVED, ARCHIVED)
+    +DateTime detectedAt
+  }
+
+  Concept "1" <-- "0..*" KnowledgeGap : targets
+}
+
+package "Remedial Content Governance & Authoring" as Governance #F8FAFC {
+  class RemedialModule #FEF9C3 {
+    +UUID id
+    +UUID conceptId (FK)
+    +UUID unitId (FK)
+    +UUID creatorId (FK)
+    +UUID reviewerId (FK)
+    +Integer version
+    +ContentStatus status
+    +DateTime publishedAt
+    -- Fresh Payload Structure --
+    +String remedialObjective
+    +JSONB freshContext (New narrative scenario)
+    +List<Vocabulary> freshVocabulary (Alternative words)
+    +List<Exercise> freshExercises (New questions)
+    +String pedagogicalExplanation
+  }
+
+  actor "Lesson Creator" as Creator #DBEAFE
+  actor "Moderator" as Moderator #E0E7FF
+
+  Creator --> RemedialModule : Authors (DRAFT -> IN_REVIEW)
+  Moderator --> RemedialModule : Reviews (APPROVED)
+}
+
+package "Adaptive Delivery Engine" as Delivery #F0FDF4 {
+  class Recommendation #F3E8FF {
+    +UUID id
+    +UUID userId
+    +RecommendationType type (REMEDIAL)
+    +UUID remedialModuleId
+    +String rationale
+  }
+
+  rectangle "Published-Only Delivery Rule" as PubRule #DCFCE7 {
+    label "CRITICAL INVARIANT:\nRemedialModule delivered to learner\nONLY when status = PUBLISHED"
+  }
+
+  KnowledgeGap ..> Recommendation : triggers
+  Recommendation ..> RemedialModule : links to
+  RemedialModule --> PubRule : enforces
+}
+
+package "Learner Execution & Re-Assessment Flow" as LearnerFlow #FFFFFF {
+  rectangle "Fresh Context & Practice" as Practice #EFF6FF {
+    label "Learner studies fresh scenario\nAttempts targeted fresh exercises\n(NEVER replays old failed lesson)"
+  }
+
+  rectangle "New Evidence Captured" as Evidence #DCFCE7 {
+    label "ConceptMastery evidenceCount updated\nKnowledgeGap marked RESOLVED on success"
+  }
+
+  rectangle "Readiness Gate Re-evaluation" as Gate #F8FAFC {
+    label "LevelReadiness re-evaluated:\n* ADVANCE (Gap resolved)\n* ADVANCE_WITH_SUPPORT (Minor gap remaining)"
+  }
+
+  PubRule --> Practice : dispatches
+  Practice --> Evidence : emits
+  Evidence --> Gate : updates
+}
+
+note bottom of Practice #FFFFFF
+  <b>REMEDIAL BOUNDARY INVARIANTS:</b>
+  1. No whole-level downgrade (never demotes learner).
+  2. No forced replay of completed lessons.
+  3. No reuse of identical old exercise payloads.
+  4. No separate 'Remediation' runtime entity (uses RemedialModule).
+end note
+
+@enduml
