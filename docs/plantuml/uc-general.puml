@@ -1,0 +1,102 @@
+@startuml
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 20
+skinparam titleFontSize 26
+skinparam ArrowFontSize 16
+skinparam UsecaseFontSize 18
+skinparam ActorFontSize 20
+skinparam shadowing false
+skinparam nodesep 25
+skinparam ranksep 80
+
+left to right direction
+title Sơ đồ Use Case Tổng quan - Hệ thống Lingora (14 Use Cases)
+
+actor "Người học" as Learner
+actor "Giáo viên" as Teacher
+actor "Admin" as Admin
+
+Learner -[hidden]right-> Teacher
+Teacher -[hidden]right-> Admin
+
+rectangle "Phân hệ Người học" as P_Learner {
+    usecase "UC-02: Kiểm tra trình độ đầu vào" as UC_02
+    usecase "UC-03: Nhắc học qua Email" as UC_03
+    usecase "UC-04: Khám phá Lộ trình học" as UC_04
+    usecase "UC-05: Thi lên cấp" as UC_05
+    usecase "UC-06: Học bài & Làm bài tập tương tác" as UC_06
+    usecase "UC-07: Học từ vựng Flashcard & Ôn tập" as UC_07
+    usecase "UC-08: Theo dõi Tiến độ & Chuỗi ngày học" as UC_08
+}
+
+rectangle "Phân hệ Đề cương & Biên soạn" as P_Content {
+    usecase "UC-09: Lập đề cương, ma trận đề thi & Phân công" as UC_09
+    usecase "UC-10: Soạn bài học & Câu hỏi đề thi theo phân công" as UC_10
+    usecase "UC-11: Nộp bài & Nộp lại sau chỉnh sửa" as UC_11
+    usecase "UC-12: Thẩm định & Xuất bản nội dung" as UC_12
+}
+
+rectangle "Phân hệ Quản trị & Vận hành" as P_Admin {
+    usecase "UC-13: Quản lý Người dùng & Tài khoản Giáo viên" as UC_13
+    usecase "UC-14: Xem Báo cáo & Thống kê toàn hệ thống" as UC_14
+}
+
+usecase "UC-01: Xác thực, Đăng nhập & Quản lý hồ sơ" as UC_01
+
+' Khóa cứng thứ tự dọc từ UC-02 đến UC-14 thành một chuỗi duy nhất
+UC_02 -[hidden]right-> UC_03
+UC_03 -[hidden]right-> UC_04
+UC_04 -[hidden]right-> UC_05
+UC_05 -[hidden]right-> UC_06
+UC_06 -[hidden]right-> UC_07
+UC_07 -[hidden]right-> UC_08
+UC_08 -[hidden]right-> UC_09
+UC_09 -[hidden]right-> UC_10
+UC_10 -[hidden]right-> UC_11
+UC_11 -[hidden]right-> UC_12
+UC_12 -[hidden]right-> UC_13
+UC_13 -[hidden]right-> UC_14
+
+' Đẩy UC-01 sang bên phải
+UC_06 -[hidden]down-> UC_01
+
+' Liên kết Actor với Use Case (đường nét liền, KHÔNG mũi tên)
+Learner -- UC_01
+Learner -- UC_02
+Learner -- UC_03
+Learner -- UC_04
+Learner -- UC_05
+Learner -- UC_06
+Learner -- UC_07
+Learner -- UC_08
+
+Teacher -- UC_01
+Teacher -- UC_10
+Teacher -- UC_11
+
+Admin -- UC_01
+Admin -- UC_09
+Admin -- UC_10
+Admin -- UC_12
+Admin -- UC_13
+Admin -- UC_14
+
+' Mũi tên include từ tất cả 13 UC tới UC-01
+UC_02 .[#94A3B8].> UC_01 : <<include>>
+UC_03 .[#94A3B8].> UC_01 : <<include>>
+UC_04 .[#94A3B8].> UC_01 : <<include>>
+UC_05 .[#94A3B8].> UC_01 : <<include>>
+UC_06 .[#94A3B8].> UC_01 : <<include>>
+UC_07 .[#94A3B8].> UC_01 : <<include>>
+UC_08 .[#94A3B8].> UC_01 : <<include>>
+
+UC_09 .[#94A3B8].> UC_01 : <<include>>
+UC_10 .[#94A3B8].> UC_01 : <<include>>
+UC_11 .[#94A3B8].> UC_01 : <<include>>
+UC_12 .[#94A3B8].> UC_01 : <<include>>
+
+UC_13 .[#94A3B8].> UC_01 : <<include>>
+UC_14 .[#94A3B8].> UC_01 : <<include>>
+
+@enduml
