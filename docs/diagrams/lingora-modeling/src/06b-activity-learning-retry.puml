@@ -1,0 +1,31 @@
+@startuml
+!include _style.puml
+
+|#FFFFFF|System|
+start
+:Nhận sự kiện Trả lời Sai;
+
+repeat
+  :Hiển thị Show Explanation;
+  if (Lượt retry < max(1, floor(N * 0.10))?) then (Còn hạn mức)
+    |#EFF6FF|Learner|
+    :Làm lại câu vừa sai;
+    |#FFFFFF|System|
+    :Chấm điểm lượt làm lại;
+    if (Kết quả retry?) then (Đúng)
+      :Ghi nhận điểm (<= 70% credit);
+      break
+    else (Sai)
+      :Tăng số lượt đã retry;
+    endif
+  else (Hết hạn mức)
+    :Nhãn "No quota";
+    :Ghi nhận 0 điểm;
+    break
+  endif
+repeat while (Còn hạn mức retry?)
+
+:Chuyển tiếp câu hỏi kế tiếp;
+stop
+
+@enduml

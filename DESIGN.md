@@ -1,172 +1,105 @@
-# Lingora Design System
+# Lingora Design System & UI/UX Index
 
-## Document status
+## Document Status & Scope
 
-- Status: SKELETON — design direction not approved
-- Product: Lingora
-- Applies to: Web learner app and Web Admin where relevant
-- Document role: this file is the durable visual authority once design decisions are approved
+- **Document Role:** Primary entry-point and visual/interaction index for Lingora UI/UX.
+- **Current Status:** `ACTIVE INDEX / CANONICAL DESIGN ENTRY-POINT`. Visual tokens and screen flows are anchored in the approved Phase 1 & Phase 2 baselines.
+- **Architectural Baseline:** Web platform (`lingora-web` for Learner; `lingora-admin` for Content & Operations).
+- **Controlling Plans & Specifications:**
+  - Overall Execution: [`plans/master-implementation-and-report-plan.md`](plans/master-implementation-and-report-plan.md)
+  - Screen-Flow Inventory: [`docs/phase-1-m2-2-behavior-uc-activity-state.md`](docs/phase-1-m2-2-behavior-uc-activity-state.md) §8 (Artifact #19) & [`docs/plantuml/screen-flow-inventory-m22.puml`](docs/plantuml/screen-flow-inventory-m22.puml)
+  - Interaction Sequences: [`docs/phase-1-m2-3-sequence-api-service-boundary.md`](docs/phase-1-m2-3-sequence-api-service-boundary.md)
+  - Curriculum & Content Blueprint: [`docs/phase-1-d4-content-curriculum-design.md`](docs/phase-1-d4-content-curriculum-design.md) & [`docs/08-english-a1-curriculum.md`](docs/08-english-a1-curriculum.md)
 
-This document controls UI/UX decisions only. It does not define backend, database, API, or service architecture.
+---
 
-## Product identity
+## Canonical Learner Navigation & Screen Flow Index
 
-- Product promise: `[TO DEFINE]`
-- Primary audiences: English learners and content administrators
-- Brand attributes: `[TO DEFINE WITH USER]`
-- Voice and tone: `[TO DEFINE]`
-- Visual references / anti-references: `[TO DEFINE]`
+The learner experience is structured into 14 logical screen flows (`SCR-L-01` through `SCR-L-14`):
 
-No logo, palette, typeface, imagery style, or visual motif is approved yet.
+```text
+[SCR-L-01: Auth & Welcome] ──> [SCR-L-02: Onboarding Goals] ──> [SCR-L-03: Entry Choice]
+                                                                       │
+           ┌───────────────────────────────────────────────────────────┴──────────────────────────┐
+           ▼                                                                                      ▼
+[SCR-L-04: Diagnostic Runner] ──> [SCR-L-05: Placement Summary]                                [Skip Pathway: U1]
+           │                                                                                      │
+           └──────────────────────────────────────────┬───────────────────────────────────────────┘
+                                                      ▼
+                                       [SCR-L-06: Curriculum Dashboard]
+                                                      │
+                                                      ▼
+                                         [LESSON LEARNING FLOW]
+                                                      │
+                                                      ▼
+                                       [SCR-L-07A: Lesson Content Viewer]
+                                       (Vocabulary, Transcription, Vietnamese Meaning,
+                                        Contextual Examples, Standard Audio, Grammar Summary)
+                                                      │
+                                                      ▼
+                                       [SCR-L-07B: Exercise Execution Runner]
+                                       (5 Unified Types: MCQ, Fill, Reorder, Listening, Grammar)
+                                                      │
+                                                      ▼
+                                       [SCR-L-08: Controlled Retry Modal]
+                                       (max(1, floor(N*0.10)), 70% Credit)
+                                                      │
+                                                      ▼
+                                       [SCR-L-09: Lesson Completion Summary]
+                                                      │
+                    ┌─────────────────────────────────┴─────────────────────────────────┐
+                    ▼                                                                   ▼
+       [SCR-L-10: SRS Review Session]                                      [SCR-L-14: Profile & Streak View]
+```
 
-## Design principles
+### Approved Learner Core Flow (Design Closure)
+$$\text{Open Lesson} \longrightarrow \text{Lesson Content Viewer} \longrightarrow \text{Start Exercises} \longrightarrow \text{Exercise Sequence} \longrightarrow \text{Lesson Result / Progress}$$
+- **Content Before Practice:** Learner reviews lesson vocabulary, translations, audio, and grammar patterns before engaging in assessment exercises.
+- **Non-AI Content Delivery:** All learning assets in the Lesson Content Viewer are static curriculum data from database and Supabase Storage; no generative AI is used.
+- **Invariants:** Lesson content viewing does NOT mark lesson completion; completion requires exercise execution and retry allowance processing per `UC-05` / `BF-10`.
 
-1. Learning progress and the next useful action must be immediately clear.
-2. Feedback must support learning without shaming or overwhelming the learner.
-3. Repeated study interactions must remain efficient and predictable.
-4. Admin workflows prioritize scanability, validation, and safe content editing.
-5. Accessibility, internationalization, and resilient states are first-class requirements.
-6. Visual expression must be intentional and documented, not inferred from framework defaults.
+---
 
-## Surface modes
+## Canonical Authoring & Operations Screen Flow Index
 
-- Web learner experience: `Operate`
-- Web Admin: `Operate`
-- Future marketing/landing surface: `Persuade` only if separately approved
+Content governance is structured into 11 operational screen flows (`SCR-A-01` through `SCR-A-11`):
 
-Surface-specific briefs may be added later without changing technical architecture.
+| Screen ID | Logical Screen Name | Canonical Role | Key Responsibility |
+|---|---|---|---|
+| `SCR-A-01` | Admin Authentication | All Staff Roles | Session sign-in, MFA/cookie session handling |
+| `SCR-A-02` | Curriculum Planning & Assignment | Organizational Manager | Plan units, assign lessons to creators |
+| `SCR-A-03` | Lesson Authoring & Editor | Lesson Creator | Draft vocabulary, grammar patterns, 5 exercise payloads |
+| `SCR-A-04` | Moderation Review Queue | Moderator | Review submissions, evaluate English A1 pedagogical quality |
+| `SCR-A-05` | Review Detail & Feedback Modal | Moderator | Approve (`APPROVED`) or request changes (`CHANGES_REQUESTED`) |
+| `SCR-A-06` | Publication Management | Organizational Manager | Verify Unit 4/4 condition; publish approved lessons |
+| `SCR-A-07` | Emergency Publish Modal | Administrator | Emergency publication of APPROVED content with mandatory justification |
+| `SCR-A-08` | Revision & Clone Management | Creator / Manager | Clone published lesson to Draft v2 (`supersedes_id`) |
+| `SCR-A-09` | User & Role Administration | Administrator | Manage accounts, assign canonical roles, column-level security |
+| `SCR-A-10` | Audit Log Explorer | Administrator | Inspect immutable system audit trail (11 audit event types) |
+| `SCR-A-11` | Operations Support Console | Operations Staff | Coordinate learner support tickets (UC-14 business flow) |
 
-## Typography
+---
 
-- Primary typeface: `[UNDECIDED]`
-- Secondary/display typeface: `[UNDECIDED / NOT REQUIRED]`
-- Learner web fallback stack: `[TO DEFINE]`
-- Web fallback stack: `[TO DEFINE]`
-- Type scale: `[TO DEFINE]`
-- Line height and readable measure: `[TO DEFINE]`
-- Numeric/tabular treatment for scores and analytics: `[TO DEFINE]`
+## Visual Design System & Foundation Tokens
 
-### M1.6W foundation baseline
+The current runtime implements a functional light theme via Tailwind CSS 4 and shadcn/ui primitives (`lingora-web` and `lingora-admin`). Detailed brand token hardening follows milestone planning:
 
-- The learner foundation uses the system sans stack with Vietnamese/English glyph coverage.
-- M1.6W is light-theme only, neutral, and functional; brand colors, custom fonts, dark theme, imagery, and
-  marketing composition remain undecided.
-- Focus indicators, semantic labels/live regions, keyboard reachability, and 44px minimum interactive targets
-  are required for the foundation routes.
+### Typography
+- **Current Runtime Stack:** System sans-serif font stack with Vietnamese and English glyph coverage (`Inter`, `-apple-system`, `BlinkMacSystemFont`, `Segoe UI`, `Roboto`, `sans-serif`).
+- **Detailed Type Scale / Custom Font Licensing:** `PENDING / TO BE RESOLVED IN M3.1`
 
-Do not select a font merely because it is a framework default. Font licensing and Vietnamese/English glyph support must be checked before approval.
+### Color System
+- **Current Runtime Palette:** Tailwind neutral scale, semantic indicators (success: green-600, error: red-600, warning: amber-500, info: blue-600).
+- **Custom Brand Identity Palette / Dark Mode:** `PENDING / TO BE RESOLVED IN M3.1`
+- **Accessibility Invariant:** Minimum WCAG AA contrast ratio ($\ge 4.5:1$ for normal text, $\ge 3:1$ for large text/controls).
 
-## Color system
+### Spacing & Layout
+- **Base Grid:** 4px base unit (`rem`-based scale).
+- **Touch Targets:** Minimum 44px $\times$ 44px interactive hit area for learner controls.
+- **Responsive Breakpoints:** Mobile (360px+), Tablet (768px+), Desktop (1024px+). Single-column auth and stacked exercise controls on mobile.
 
-- Brand colors: `[UNDECIDED]`
-- Neutral scale: `[UNDECIDED]`
-- Semantic colors: success, warning, error, information `[UNDECIDED]`
-- Learning/progress visualization colors: `[UNDECIDED]`
-- Light/dark theme support: `[DECISION NEEDED]`
-- Minimum contrast: WCAG AA for applicable text and controls
+---
 
-Do not assign concrete color values until a design direction is approved.
+## [HISTORICAL / SUPERSEDED CONTEXT] Early Skeletons
 
-## Spacing
-
-- Base unit: `[UNDECIDED]`
-- Spacing scale: `[TO DEFINE]`
-- Content widths, gutters, and safe areas: `[TO DEFINE PER PLATFORM]`
-- Dense Admin tables and touch-friendly learner controls require separate approved guidance.
-
-## Border radius
-
-- Radius scale: `[UNDECIDED]`
-- Component usage rules: `[TO DEFINE]`
-- Avoid applying rounded cards to every grouping by default.
-
-## Components
-
-- Design token source: `[TO DEFINE]`
-- Component ownership and naming: `[TO DEFINE]`
-- Variants must represent real states, not decorative duplication.
-- Learner and Admin web components may differ in implementation while sharing intent and tokens where practical.
-
-## Buttons
-
-- Hierarchy: primary / secondary / tertiary / destructive `[TO DEFINE]`
-- States: default, pressed, focused, disabled, loading
-- Touch target and keyboard behavior: `[TO DEFINE PER PLATFORM]`
-- Labels use clear actions rather than vague confirmation text.
-
-## Cards
-
-- Approved purposes: `[TO DEFINE]`
-- Content hierarchy: `[TO DEFINE]`
-- Avoid nested-card layouts and unnecessary containers.
-- Learning cards/flashcards may have domain-specific interaction rules documented separately.
-
-## Forms
-
-- Label, help, validation, error, disabled, and success patterns: `[TO DEFINE]`
-- Validation must explain how to recover.
-- Preserve user input after recoverable errors.
-- Admin destructive actions require explicit safeguards.
-
-## Navigation
-
-- Learner information architecture: `[TO DEFINE]`
-- Admin information architecture: `[TO DEFINE]`
-- Back/up behavior: `[TO DEFINE PER PLATFORM]`
-- Current location and primary next action must remain clear.
-
-## Loading states
-
-- Use progress indicators or skeletons according to expected wait and content shape.
-- Prevent duplicate actions during submission.
-- Long AI operations must communicate progress, timeout, and fallback behavior without exposing internal model details.
-
-## Empty states
-
-- Explain why the state is empty.
-- Provide a useful next action where one exists.
-- Distinguish first-use, filtered-empty, completed, and unavailable states.
-
-## Error states
-
-- Use plain language and recovery actions.
-- Distinguish validation, authorization, connectivity, timeout, and server/model availability errors.
-- Never expose secrets, raw stack traces, or internal prompts.
-
-## Success states
-
-- Confirm meaningful completion without interrupting repeated learning flows unnecessarily.
-- Reward feedback must align with the approved gamification model.
-- Avoid celebratory effects until motion and tone are approved.
-
-## Accessibility
-
-- WCAG AA contrast where applicable
-- Keyboard and visible focus support for Web Admin
-- Screen-reader labels and semantic structure
-- Touch-target sizing and accessibility semantics at mobile breakpoints
-- Do not rely on color alone
-- Support text scaling and localization expansion
-- Motion reduction behavior if motion is introduced
-
-## Responsive behavior
-
-- Web learner: define supported breakpoints and adaptive layout rules before UI implementation.
-- Web Admin: define breakpoints from content needs, not framework defaults.
-- Tables require an approved small-screen strategy.
-- Loading, empty, error, and modal states must be verified at supported sizes.
-
-For M1.6W, verify `/login`, `/register`, and `/foundation` at 360x800, 768x1024, and 1440x900 in `vi` and
-`en`, with no horizontal overflow or overlapping content. Auth remains single-column and foundation controls
-stack on small screens.
-
-## Approval checklist
-
-- [ ] Product identity approved
-- [ ] Typography approved and licensed
-- [ ] Color system approved and contrast-checked
-- [ ] Spacing/radius tokens approved
-- [ ] Learner navigation and core component rules approved
-- [ ] Admin navigation/table/form rules approved
-- [ ] Accessibility baseline approved
-- [ ] Responsive targets approved
+> **Historical Context Note:** Early design drafts assumed a 2-actor model (`Student`/`Teacher`) and separate experimental AI chat surfaces. These are completely superseded by the 6-canonical-role architecture, deterministic exercise engine, and closed-loop learner cycle documented above.

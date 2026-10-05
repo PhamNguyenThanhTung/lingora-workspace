@@ -1,16 +1,19 @@
 # 02 - Lingora Requirements and Report Scope
 
-> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
-> The controlling requirements baseline is [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md), supported by [`docs/phase-0-survey-requirements.md`](phase-0-survey-requirements.md).
-> The system encompasses **6 canonical roles** and **19 MVP functions (`MVP-01` to `MVP-19`)** spanning 5 languages (English, Vietnamese, French, Chinese, Japanese) with English pilot first.
-> Product architecture is unified: **Software Engineering is the CORE system**, and **AI is a SUPPORTING CAPABILITY** (GEC feedback for scenario writing).
-> All legacy 3-faculty breakdown text (DKT-LSTM, HLR, MultiWOZ dialogue) is **SUPERSEDED** and retained strictly as historical context.
+> **[CANONICAL PHASE 2 REQUIREMENTS SUMMARY / CURRENT SOURCE OF TRUTH]**
+> **Controlling Implementation Source:** [`plans/master-implementation-and-report-plan.md`](../plans/master-implementation-and-report-plan.md) and [`docs/phase-1-m2-6-design-handoff.md`](phase-1-m2-6-design-handoff.md).
+> **Platform:** Web (`lingora-web` for Learner; `lingora-admin` for Content Governance).
+> **Canonical Roles (6 roles):** `Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager`. (Historical roles `Student` / `Teacher` are strictly SUPERSEDED).
+> **Phase 2 Scope:** Software Engineering CORE platform with deterministic algorithms (Placement/Mapping A, Lesson Content Viewer + 5 exercise types, Controlled Retry D7, SRS Policy B D8, Jump D5, Streak D9, 6-state content governance with SoD, RLS).
+> **AI Scope Status in Phase 2:** AI / ML / GEC is retained strictly for historical context and canonical traceability (`ML-GEC-*`, `P1-FR-007`); it is **OUT OF CURRENT PHASE 2 IMPLEMENTATION, TESTING, DEMO, AND ACCEPTANCE**.
+> **Sections below marked `[SUPERSEDED / HISTORICAL REFERENCE]` are preserved solely for academic report evolution and traceability.**
 
 ---
 
 ## [SUPERSEDED / HISTORICAL REFERENCE] Migrated source: three-faculty breakdown (v3)
 
-> **Historical Context Note:** The section below reflects the earlier academic division into 3 independent tracks before ADR-010 consolidated the scope into Software Engineering + Transformer GEC and Phase 0 established the 19 MVP functions.
+> **Historical Context Note:** The section below reflects the earlier academic division into 3 independent tracks before ADR-010 consolidated the scope into Software Engineering + Transformer GEC, and Phase 2 established the deterministic 6-role core. This section is NOT current implementation guidance.
+
 
 ### 2.1. Đồ án Kỹ nghệ Phần mềm
 
@@ -251,13 +254,15 @@ This section contains the detailed technical engineering requirements (`P1-FR-*`
 | ID | Priority | Requirement | Acceptance criteria | Evidence |
 |---|---|---|---|---|
 | P1-FR-001 | Must | Learner can register, log in, recover password (reset flow [PENDING / DESIGN SPEC ONLY]), refresh an expired access token, and log out through Supabase Auth. | Valid credentials create an authenticated session; invalid credentials show an error; one expired-token refresh retries once; logout clears the local session. Password recovery design flow: user requests password reset via registered email -> system issues recovery verification token/link -> user validates token and establishes new password -> system updates credentials and invalidates prior recovery state/sessions [Status: PENDING / DESIGN SPEC ONLY — runtime implementation scheduled]. | Auth use case, Web E2E |
-| P1-FR-002 | Must | Learner can browse published courses, lessons, and vocabulary and play available vocabulary audio. | Only published content is shown; lesson/vocabulary ordering is stable; available audio can be played; unavailable content/audio produces a recoverable empty/error state without a crash. This does not imply search, favorites, pronunciation scoring, separate mastery state, or an additional standalone flashcard mode. | Supabase query test, Web E2E |
-| P1-FR-003 | Must | Learner can complete MCQ, FILL_BLANK, REORDER, GRAMMAR, and word-level LISTENING exercises. | Each type validates its approved payload; correct/incorrect result is shown; progress is updated once per submission. A “Quiz” label, if used, refers to this sequence and does not imply separate Quiz/Attempt persistence. GRAMMAR and LISTENING detail is specified in `P1-FR-012` and `P1-FR-013`. | Exercise unit/E2E tests |
+| P1-FR-002 | Must | Learner can browse published curriculum and view lesson content (Lesson Content Viewer) prior to starting exercises. | Only published content (fulfilling Unit 4/4 Published rule) is accessible; learner views learning content (vocabulary, transcription, Vietnamese meaning, contextual examples, standard static audio playback, grammar summary) before starting practice; unavailable content/audio produces a recoverable empty/error state without crashing. This does not imply CMS/entity proliferation or dynamic AI content generation. | Supabase query test, Web E2E |
+| P1-FR-003 | Must | Learner can complete MCQ, FILL_BLANK, REORDER, GRAMMAR, and word-level LISTENING exercises following lesson content viewing. | Each type validates its approved payload; exercises test content introduced in the Lesson Content Viewer; correct/incorrect result is shown; progress is updated once per submission. A “Quiz” label, if used, refers to this sequence and does not imply separate Quiz/Attempt persistence. GRAMMAR and LISTENING detail is specified in `P1-FR-012` and `P1-FR-013`. | Exercise unit/E2E tests |
+
 | P1-FR-004 | Must | Learner can view and update lesson progress. | Status transitions are `NOT_STARTED → IN_PROGRESS → COMPLETED`; repeated completion is idempotent; progress is scoped to the authenticated learner. | Data/RLS tests |
 | P1-FR-005 | Must | Learner can review vocabulary using the approved deterministic SRS policy. | Due cards are selected from learner-owned state using `nextReviewAt <= now`; a completed review updates one SRS card and one immutable review log through the trusted RPC boundary. The policy is not called SM-2 until the RPC audit proves compatibility. | SRS/RPC integration and policy tests |
 | P1-FR-006 | Must | Review submission is recorded atomically. | `record_review` rejects a card not owned by `auth.uid()`; valid calls insert one review log and update one SRS card in one transaction. | RPC/RLS integration test |
 | P1-FR-007 | Must | Learner can complete scenario-based English writing practice and receive GEC feedback. | The application presents an ordered scenario prompt; valid English input returns `corrected_text`; unavailable optional suggestions/explanations do not fail correction; scenario-not-found, invalid-input, unauthorized and model-unavailable cases use documented errors. Dialogue generation is not implied. | GEC API and scenario-writing E2E |
-| P1-FR-008 | Must | Admin can authenticate with ADMIN role and manage published learning content and chat scenarios. | STUDENT cannot write content; ADMIN can create/update/publish/unpublish approved entities; unauthorized writes are rejected. | Admin checklist, RLS tests |
+| P1-FR-008 | Must | Admin can authenticate with ADMIN role and manage published learning content and chat scenarios. | LEARNER cannot write content; ADMIN can create/update/publish/unpublish approved entities; unauthorized writes are rejected. | Admin checklist, RLS tests |
+
 | P1-FR-009 | Must | Admin can upload approved media through Supabase Storage. | Only ADMIN can write media; stored paths are associated with the owning content record; invalid type/size is rejected. | Storage policy test |
 | P1-FR-010 | Must | The product supports approved UI/content locale behavior. | UI supports `vi` and `en`, defaults/falls back to `vi`; `ja` is P2; content follows requested locale → supported native locale → `vi` → `en` → explicit unavailable state. | Locale checklist |
 | P1-FR-011 | Must | Product provides daily streak gamification. | A lesson-exercise session or vocabulary review qualifies; increment occurs at most once per local day using stored IANA timezone and `lastQualifyingActivityDate`; missed days reset the next qualifying streak to 1. | Profile/gamification tests |

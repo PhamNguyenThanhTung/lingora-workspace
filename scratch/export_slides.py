@@ -1,21 +1,21 @@
 import win32com.client
 import os
 
-ppt_path = os.path.abspath("docs/project-1/Lingora-Project-1-Requirements-Presentation.pptx")
-out_dir = os.path.abspath("scratch/exported_v3")
+pptx_abs = os.path.abspath(r"docs/diagrams/lingora-modeling/deck/Lingora-System-Modeling-Presentation-v13.pptx")
+out_dir = os.path.abspath(r"scratch/slides_export")
 os.makedirs(out_dir, exist_ok=True)
 
-ppt_app = win32com.client.Dispatch("PowerPoint.Application")
-# ppt_app.Visible = 1
-pres = ppt_app.Presentations.Open(ppt_path, WithWindow=False)
+powerpoint = win32com.client.Dispatch("PowerPoint.Application")
+# don't make it visible if not necessary, but PowerPoint might require it or run fine in background
+prs = powerpoint.Presentations.Open(pptx_abs, WithWindow=False)
 
-print(f"Total slides: {pres.Slides.Count}")
-for s_num in [15, 16, 17, 18]:
-    if s_num <= pres.Slides.Count:
-        slide = pres.Slides(s_num)
-        out_file = os.path.join(out_dir, f"slide_{s_num}.png")
-        slide.Export(out_file, "PNG", 1920, 1080)
-        print(f"Exported slide {s_num} to {out_file}")
+slide_numbers = [7, 11, 14, 15]
+for sn in slide_numbers:
+    slide = prs.Slides(sn)
+    export_path = os.path.join(out_dir, f"Slide_{sn}.png")
+    slide.Export(export_path, "PNG", 1920, 1080)
+    print(f"Exported Slide {sn} to {export_path}")
 
-pres.Close()
+prs.Close()
+powerpoint.Quit()
 print("Done exporting slides!")

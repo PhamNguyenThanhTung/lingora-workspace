@@ -1,0 +1,42 @@
+@startuml
+!include _style.puml
+
+|#F8FAFC|Org Manager|
+start
+:Giao bài học & phân công (DRAFT);
+
+|#F8FAFC|Lesson Creator|
+repeat
+  :Soạn nội dung & bộ bài tập;
+  :Gửi kiểm duyệt (SUBMITTED);
+
+  |#FFFFFF|Moderator|
+  :Thẩm định chất lượng nội dung;
+  if (Nội dung đạt chuẩn?) then (Đạt)
+    :Phê duyệt bài học;
+    :Chuyển trạng thái APPROVED;
+
+    |#F8FAFC|Org Manager|
+    :Kiểm tra điều kiện Unit (đủ 4/4 bài);
+    :Chọn bài học APPROVED;
+    :Thực hiện Xuất bản (Publish);
+
+    |#FFFFFF|System|
+    :Chuyển trạng thái PUBLISHED;
+    :Ghi nhận AuditLog xuất bản;
+    stop
+
+  else (Yêu cầu sửa)
+    :Yêu cầu chỉnh sửa;
+    :Chuyển CHANGES_REQUESTED;
+    note right
+      Kèm phản hồi góp ý chi tiết,
+      không dùng REJECTED
+    end note
+
+    |#F8FAFC|Lesson Creator|
+    :Chỉnh sửa bài học theo góp ý;
+  endif
+repeat while (Tiếp tục nộp duyệt lại)
+
+@enduml

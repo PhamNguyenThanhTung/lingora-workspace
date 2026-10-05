@@ -1,0 +1,41 @@
+@startuml
+!include _style.puml
+left to right direction
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 60
+
+actor "Learner" as Learner
+
+rectangle "Lingora Learning Subsystem" {
+  usecase "UC-02 Configure Goals & Study Time" as UC02
+  usecase "UC-03 Take Placement Test" as UC03
+  usecase "UC-04 Browse Learning Path & Conditional Jump" as UC04
+  usecase "UC-05 Complete Lesson Exercises & Controlled Retry" as UC05
+  usecase "UC-06 Spaced Repetition Review (SRS)" as UC06
+  usecase "UC-07 Track Progress, Mastery & Streak" as UC07
+
+  ' Sub-flows and extensions
+  usecase "Skip Placement Assessment" as SkipPlacement
+  usecase "Retake Placement Assessment" as RetakePlacement
+  usecase "View Lesson Content" as ViewContent
+  usecase "Attempt Controlled Retry" as RetryExercise
+  usecase "Conditional Jump Challenge\n(Capability)" as JumpChallenge
+
+  ' Relationships
+  SkipPlacement .> UC03 : <<extend>>
+  RetakePlacement .> UC03 : <<extend>>
+
+  UC05 ..> ViewContent : <<include>>
+  RetryExercise .> UC05 : <<extend>>
+  JumpChallenge .> UC04 : <<extend>>
+}
+
+Learner --> UC02
+Learner --> UC03
+Learner --> UC04
+Learner --> UC05
+Learner --> UC06
+Learner --> UC07
+
+@enduml

@@ -1,0 +1,105 @@
+@startuml
+!include _style.puml
+hide empty members
+' skinparam linetype ortho
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 70
+
+skinparam class {
+  BackgroundColor<<CURRENT>> #FFFFFF
+  BorderColor<<CURRENT>> #334155
+  BorderThickness<<CURRENT>> 1.5
+
+  BackgroundColor<<TARGET>> #F8FAFC
+  BorderColor<<TARGET>> #475569
+  BorderThickness<<TARGET>> 1.5
+  BorderStyle<<TARGET>> dashed
+}
+
+skinparam enum {
+  BackgroundColor #FFFFFF
+  BorderColor #334155
+  BorderThickness 1.5
+  HeaderBackgroundColor #F8FAFC
+}
+
+enum Cefr <<enumeration>> {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+class Course <<CURRENT>> {
+  + id: UUID
+  + language_code: String
+  + cefr: Cefr
+  + order_index: Integer
+}
+note top of Course
+  Mỗi Course đại diện cho 1 CEFR Level.
+  Curriculum gồm 1..N Units hữu hạn
+  (Pilot English A1 hiện gồm 6 Units).
+end note
+
+class Unit <<CURRENT>> {
+  + id: UUID
+  + course_id: UUID
+  + order_index: Integer
+}
+note bottom of Unit
+  {Unit hiển thị khi
+  đủ 4/4 Lesson Published}
+end note
+
+class Lesson <<CURRENT>> {
+  + id: UUID
+  + course_id: UUID
+  + unit_id: UUID
+  + order_index: Integer
+  + is_published: Boolean
+}
+
+class LessonRevision <<TARGET>> {
+  + id: UUID
+  + lesson_id: UUID
+  + version: Integer
+  + status: ContentStatus
+  + creator_id: UUID
+  + reviewer_id: UUID
+}
+
+class Exercise <<CURRENT>> {
+  + id: UUID
+  + lesson_id: UUID [CURRENT]
+  + type: ExerciseType
+  + payload: Json
+  + order_index: Integer
+}
+
+class Vocabulary <<CURRENT>> {
+  + id: UUID
+  + term: String
+  + phonetic: String
+  + audio_url: String
+  + cefr: Cefr
+}
+
+class LessonVocabulary <<CURRENT>> {
+  + lesson_id: UUID
+  + vocabulary_id: UUID
+  + order_index: Integer
+}
+
+Course "1" *-- "1..*" Unit
+Unit "1" *-- "4" Lesson
+Lesson "1" *-- "1..*" LessonRevision : "versions\n[TARGET]"
+LessonRevision "1" *-- "1..*" Exercise : "contains\n[TARGET]"
+Lesson "1" o-- "0..*" LessonVocabulary
+Vocabulary "1" o-- "0..*" LessonVocabulary
+Course ..> Cefr : cefr level
+
+@enduml

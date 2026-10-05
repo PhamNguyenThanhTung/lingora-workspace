@@ -15,8 +15,9 @@
 > - `ADR-014` & `ADR-029` (SE Core + AI Supporting Capability; M2.6 Formal Acceptance)  
 > **Ranh giới nghiêm ngặt:**  
 > 1. **KẾ HOẠCH DUY NHẤT (SINGLE MASTER PLAN):** Tài liệu này là kế hoạch tổng thể chỉ đạo toàn bộ quá trình lập trình (Implementation), kiểm thử (Testing), chuẩn bị dữ liệu & kịch bản trình diễn (Demo), và thu thập bằng chứng báo cáo học thuật (Report Evidence) cho Giai đoạn 2.  
-> 2. **ZERO IMPLEMENTATION IN THIS TASK:** Tuyệt đối KHÔNG viết mã nguồn ứng dụng, KHÔNG chạy migration, KHÔNG thay đổi schema thực tế, KHÔNG triển khai RLS, KHÔNG sửa hợp đồng `docs/03-api-contract.md`, KHÔNG tạo commit code trong task này.  
-> 3. **PHÂN ĐỊNH TRẠNG THÁI CHUẨN TẮC:** Phân biệt tuyệt đối giữa `CURRENT` (hệ thống/code/db đang tồn tại thực tế), `TARGET` (thiết kế đã chốt tại M2.2–M2.6), `FUTURE` (mở rộng chưa thuộc MVP), và `PROPOSED` (mục tiêu cần triển khai trong Phase 2). Tuyệt đối không mô tả target design như hệ thống đã chạy trên production.
+> 2. **PHẠM VI ĐỒ ÁN VÀ QUY CÁCH PHI-AI (PHASE 2 SCOPE NOTE):** Lingora là đồ án phát triển nền tảng học ngoại ngữ trực tuyến theo chuẩn kỹ nghệ phần mềm, không phải đồ án AI. Phase 2 chỉ tập trung triển khai các chức năng nghiệp vụ cốt lõi và thuật toán tất định (Placement/Mapping A, Learning Progress, Controlled Retry, Spaced Repetition SRS, Conditional Jump, Streak, Content Governance, RBAC/RLS/SoD, Lesson/Exercise Player). AI/ML/GEC không thuộc phạm vi implementation, testing, demo hoặc acceptance của Phase 2. Các tài liệu M2 có đề cập AI được giữ làm historical/supporting architecture reference và không được hiểu là workstream cần triển khai.
+> 3. **ZERO IMPLEMENTATION IN THIS TASK:** Tuyệt đối KHÔNG viết mã nguồn ứng dụng, KHÔNG chạy migration, KHÔNG thay đổi schema thực tế, KHÔNG triển khai RLS, KHÔNG sửa hợp đồng `docs/03-api-contract.md`, KHÔNG tạo commit code trong task này.
+> 4. **PHÂN ĐỊNH TRẠNG THÁI CHUẨN TẮC:** Phân biệt tuyệt đối giữa `CURRENT` (hệ thống/code/db đang tồn tại thực tế), `TARGET` (thiết kế đã chốt tại M2.2–M2.6), `FUTURE` (mở rộng chưa thuộc MVP), và `PROPOSED` (mục tiêu cần triển khai trong Phase 2). Tuyệt đối không mô tả target design như hệ thống đã chạy trên production.
 
 ---
 
@@ -58,15 +59,13 @@
   - **Thực tế vắng mặt:** Hoàn toàn chưa có giao diện học bài (Lesson Player), chưa có trình làm bài tập tương tác (Exercise Engine), chưa có màn hình chẩn đoán (Diagnostic Placement), chưa có giao diện nhảy cóc (Jump), chưa có màn hình ôn tập ngắt quãng (SRS Review), chưa có bảng theo dõi chuỗi học tập (Streak View), chưa có hồ sơ năng lực (Skill Profile).
 - **Ứng dụng Quản trị & Cơ sở dữ liệu (`lingora-admin`):**
   - Khung công nghệ: Prisma ORM 6.2.1 kết nối PostgreSQL trên Supabase.
-  - Lược đồ hiện tại (`prisma/schema.prisma`): Chứa 17 mô hình dữ liệu từ Phase 0 (`Language`, `Profile`, `Course`, `CourseTranslation`, `Unit`, `UnitTranslation`, `Lesson`, `LessonTranslation`, `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary`, `Exercise`, `UserProgress`, `UserVocabSrs`, `ReviewLog`, `ChatScenario`, `ChatScenarioTranslation`, `AuditLog`).
+  - Lược đồ hiện tại (`prisma/schema.prisma`): Chứa 18 mô hình dữ liệu từ Phase 0 (`Language`, `Profile`, `Course`, `CourseTranslation`, `Unit`, `UnitTranslation`, `Lesson`, `LessonTranslation`, `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary`, `Exercise`, `UserProgress`, `UserVocabSrs`, `ReviewLog`, `ChatScenario`, `ChatScenarioTranslation`, `AuditLog`).
   - Enum hiện tại: `Role` (6 giá trị), `ContentStatus` (6 giá trị), `Cefr` (6 giá trị), `ExerciseType` (chỉ có 3 giá trị: `MCQ`, `FILL_BLANK`, `REORDER`), `ProgressStatus` (`NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`).
   - Dữ liệu di chuyển: Thư mục `prisma/migrations` chứa 3 file migration lịch sử M1 (`init`, `profile_triggers`, `security_policies`).
   - **Thực tế vắng mặt:** Hoàn toàn chưa có bảng phiên bản bài học `lesson_revisions` (DD-02), chưa có bảng kết quả chẩn đoán `assessment_results` (DD-06), chưa có bảng hồ sơ kỹ năng `skill_profiles` (DD-06), chưa có bảng quản lý phân công bài học, thiếu 2 loại bài tập mục tiêu (`LISTENING`, `GRAMMAR`) trong enum `ExerciseType`, thiếu trạng thái `LOCKED` và `SKIPPED_BY_JUMP` trong `ProgressStatus`. Chưa có bất kỳ giao diện biên soạn hay kiểm duyệt nào trong `lingora-admin`.
-- **Dịch vụ Trí tuệ Nhân tạo (`lingora-ai/api`):**
-  - Khung công nghệ: FastAPI 0.115.6, Python 3.11, Pydantic v2.
-  - Endpoint hiện có: `/health/live`, `/health/ready`, `/health`, `/v1/model/info`, và 2 endpoint tương thích ngược cũ `/v1/srs/schedule`, `/v1/chat/roleplay`.
-  - Kiểm thử hiện có: 37/37 bài test Pytest chạy đạt (`tests/`).
-  - **Thực tế vắng mặt:** Endpoint mục tiêu sửa lỗi ngữ pháp `/v1/gec/correct` (đặc tả tại `docs/03-api-contract.md`) HOÀN TOÀN CHƯA ĐƯỢC TRIỂN KHAI.
+- **Các thành phần kho lưu trữ liên quan AI (`lingora-ai`):**
+  - **Quy chế hiện trạng & phạm vi (Current & Scope Note):** Các thành phần kho lưu trữ liên quan AI, khi xuất hiện, chỉ được lưu giữ dưới dạng bề mặt tương thích và tham chiếu lịch sử (AI-related repository artifacts, when present, are retained only as historical/compatibility surfaces and are outside Phase 2 implementation, testing, demo, and acceptance).
+  - Endpoint mục tiêu `/v1/gec/correct` (được nhắc tại `docs/03-api-contract.md` như một hợp đồng tham chiếu) hoàn toàn không thuộc phạm vi triển khai, kiểm thử hay nghiệm thu của Phase 2.
 - **Hạ tầng Dữ liệu & An ninh Supabase:**
   - Cơ sở dữ liệu Postgres 15 tại vùng `ap-southeast-1`. Đã thiết lập 2 storage bucket (`lingora-avatars`, `lingora-media`).
   - Chính sách RLS hiện có trên database chỉ là phiên bản sơ khai M1 (kiểm tra 2 vai trò nhị phân `USER`/`ADMIN`), chưa triển khai ma trận RLS cho 6 vai trò và chưa cài đặt các hàm chặn vi phạm phân tách nhiệm vụ (SoD).
@@ -78,24 +77,33 @@
 - **Vòng đời nội dung 6 trạng thái bất biến:** `Draft → In Review → Changes Requested → Draft → In Review → Approved → Published → Archived`, cơ chế nhân bản bản thảo (Clone-to-Draft v2 qua `supersedes_id`), điều kiện đơn vị hiển thị (Unit 4/4 Published).
 - **Quy tắc phân tách nhiệm vụ (SoD):** Creator không tự duyệt, Moderator không xuất bản, Manager xuất bản thông thường, Administrator xuất bản khẩn cấp kèm lý do bắt buộc và ghi log kiểm toán `CONTENT_EMERGENCY_PUB`.
 - **Động cơ học tập & bài tập hợp nhất (Unified Exercise):** 5 dạng bài tập (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`), hạn mức làm lại có kiểm soát `max(1, floor(N * 0.10))` theo từng lượt làm bài, bảo lưu điểm trần 70%.
-- **Động cơ đánh giá năng lực & xuất phát điểm:** Bài chẩn đoán ~25–30 câu hỏi theo thiết kế, Mapping A tất định (0–30 điểm thô ra Unit 1–6), Skip chuyển về Unit 1 `UNVERIFIED` (0 AssessmentResult, 0 SkillProfile), thi lại tạo bản ghi `AssessmentResult` bất biến mới. Thử thách nhảy cóc (Jump) ngưỡng ≥95%, hồi chiêu 24h, gán cờ `by_jump = true` (`SKIPPED_BY_JUMP`), không tính hoàn thành Unit.
+- **Động cơ đánh giá năng lực & xuất phát điểm:** Bài chẩn đoán 30 câu hỏi (Human-Selected Design Decision; canonical M2 docs still require formal status sync before/with next design update), mỗi câu trả lời đúng nhận 1 điểm thô (0–30 điểm thô), Mapping A tất định (0–30 điểm thô ra Unit 1–6), Skip chuyển về Unit 1 `UNVERIFIED` (0 AssessmentResult, 0 SkillProfile), thi lại tạo bản ghi `AssessmentResult` bất biến mới. Thử thách nhảy cóc (Jump) ngưỡng ≥95%, hồi chiêu 24h, gán cờ `by_jump = true` (`SKIPPED_BY_JUMP`), không tính hoàn thành Unit.
 - **Thuật toán ôn tập ngắt quãng (SRS):** Chu kỳ tất định Policy B `[1, 3, 7, 14, 30]`, trả lời sai đặt lại về Stage 1 (+1 ngày), chạy độc lập qua RPC cơ sở dữ liệu `record_review`.
 - **Chuỗi ngày học liên tục (Streak):** Tính toán theo ngày dương lịch cục bộ thuộc múi giờ IANA của học viên, bỏ lỡ 1 ngày đặt lại về 1, không có cơ chế đóng băng (freeze) trong Core MVP.
-- **Dịch vụ AI hỗ trợ:** Stateless FastAPI proxy qua Next.js Route Handler, thời gian ngắt kết nối nghiêm ngặt 8.0s, mạch ngắt dự phòng luật cơ sở khi AI quá tải hoặc gặp lỗi.
+- **Dịch vụ AI hỗ trợ (Historical / Supporting Reference):** Thiết kế M2 coi AI là năng lực hỗ trợ phi trạng thái. Trong Phase 2, toàn bộ các chức năng và endpoint AI đều nằm ngoài phạm vi triển khai và nghiệm thu; hệ thống vận hành 100% dựa trên các thuật toán nghiệp vụ tất định (deterministic business algorithms).
 - **Kiểm toán an ninh:** 11 sự kiện kiểm toán chuẩn tắc ghi vào bảng append-only `audit_logs`.
 
-### 1.3. Bảng Đối Soát Khoảng Trống Triển Khai (Gap Analysis Matrix)
+### 1.3. Bảng Tái Thiết Hiện Trạng Kho Lưu Trữ & Khoảng Trống Triển Khai (Current Reality Reconstruct & Gap Matrix)
 
-| Lĩnh vực | Hiện trạng (CURRENT) | Thiết kế mục tiêu (TARGET) | Khoảng trống triển khai (GAP) | Phân loại |
+Bảng đối soát 15 lĩnh vực kỹ thuật phân định tuyệt đối giữa hiện trạng thực tế trong mã nguồn/database (`CURRENT`) và thiết kế mục tiêu đã duyệt (`TARGET`), kèm bằng chứng kiểm chứng khách quan:
+
+| Lĩnh Vực (Area) | Hiện Trạng Thực Tế (CURRENT) | Thiết Kế Mục Tiêu (TARGET) | Bằng Chứng Thực Tế (Evidence) | Xung Đột / Khoảng Trống Triển Khai (Conflict / Gap) |
 |---|---|---|---|---|
-| **Database Schema** | 17 models Phase 0; enum 3 ExerciseType; không có bảng versioning. | 5 dạng bài tập; thực thể `lesson_revisions`, `assessment_results`, `skill_profiles`. | Cần migration mở rộng (Expand phase) tạo 3 bảng mới, sửa đổi 4 bảng hiện có, cập nhật 2 enum. | `CORE GAP` |
-| **Auth & Authorization** | Supabase Auth sơ khai; RLS kiểm tra nhị phân 2 vai trò (`USER`, `ADMIN`). | Mô hình 6 vai trò chuẩn tắc; kiểm tra kép App AuthZ và Database RLS; SoD triggers. | Nâng cấp toàn diện ma trận chính sách RLS cho 6 vai trò; viết trigger chặn tự duyệt/tự xuất bản. | `SECURITY GAP` |
-| **Learner Core UI** | Chỉ có trang chủ trống và form đăng nhập/đăng ký. | Luồng học trọn vẹn: cây giáo trình, trình phát bài học, 5 dạng tương tác bài tập. | Xây dựng toàn bộ giao diện và logic client-side của phân hệ học tập trong `lingora-web`. | `FEATURE GAP` |
-| **Assessment Engine** | Chưa có logic chẩn đoán hay bài tập kiểm tra đầu vào. | Khung chẩn đoán ~25–30 câu; Mapping A; lưu kết quả bất biến; Jump ≥95% kèm hồi chiêu 24h. | Triển khai domain service đánh giá năng lực, quản lý phiên làm bài Jump và tính toán điểm xuất phát. | `CORE GAP` |
-| **Learning Intelligence** | SRS mock ở tầng AI (legacy `/v1/srs/schedule`); chưa có streak logic. | SRS tất định Policy B chạy bằng RPC Postgres; Streak tính theo múi giờ IANA người dùng. | Viết RPC `record_review` trên database; chuyển logic SRS về Core; lập trình bộ tính toán Streak. | `CORE GAP` |
-| **Content Management** | Chưa có giao diện biên soạn hay kiểm duyệt nội dung. | Luồng 6 trạng thái: giao việc, soạn thảo, nộp duyệt, yêu cầu sửa, phê duyệt, xuất bản. | Xây dựng toàn bộ phân hệ quản trị nội dung trong `lingora-admin` tuân thủ nghiêm ngặt SoD. | `GOVERNANCE GAP` |
-| **AI / GEC Service** | Chỉ có mock SRS và roleplay cũ; `/v1/gec/correct` chưa tồn tại. | Dịch vụ AI sửa lỗi ngữ pháp tiếng Anh T5-small phi trạng thái; timeout 8.0s; fallback. | Lập trình endpoint `/v1/gec/correct` trong `lingora-ai`; cấu hình client proxy và fallback tại BFF. | `INTEGRATION GAP` |
-| **Audit & Governance** | Bảng `audit_logs` có cấu trúc cũ (chứa `entity_type`, `entity_id`). | Chuẩn 4 trường bất biến + `metadata JSONB`; ghi nhận 11 sự kiện kiểm toán chuẩn tắc. | Chuyển đổi cấu trúc bảng `audit_logs` theo DD-03; tích hợp phát thải log tại BFF và database. | `AUDIT GAP` |
+| **1. DB Schema** | 18 models trong `schema.prisma`; Migration 1 tạo 18 bảng; thiếu 3 bảng mới, thiếu 2 enum values. | 18 models + 3 bảng mới (`lesson_revisions`, `assessment_results`, `skill_profiles`); 2 enum nâng cấp. | `lingora-admin/prisma/schema.prisma`; `prisma/migrations/202608140001_init/migration.sql`. | Cần migration mở rộng (Expand Phase M3.1) tạo 3 bảng mới, sửa đổi 4 bảng hiện có, cập nhật 2 enum. Không có xung đột cấu trúc. |
+| **2. Role Enum** | Enum `Role` trong DB đã nạp chỉ có 2 giá trị (`LEARNER`, `ADMIN`). `schema.prisma` khai báo 6 giá trị. | 6 vai trò chuẩn tắc: `LEARNER`, `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `ORGANIZATIONAL_MANAGER`, `ADMINISTRATOR`. | `202608140001_init/migration.sql` dòng 5: `CREATE TYPE "Role" AS ENUM ('LEARNER', 'ADMIN');`. | XUNG ĐỘT THỰC TẾ: M3.2 bắt buộc thực hiện migration mở rộng enum `Role` từ 2 lên 6 giá trị trong PostgreSQL trước khi triển khai RBAC. |
+| **3. RLS Policies** | RLS sơ khai M1.3; kiểm tra nhị phân `is_admin() = (role == 'ADMIN')`. Cột `role` bị khóa không cho learner tự sửa qua `GRANT UPDATE`. | Ma trận RLS kép 6 vai trò chuẩn tắc; kiểm tra phân tách nhiệm vụ SoD tại database layer. | `202608140002_auth_rls_storage.../migration.sql` dòng 107–120, 316–317. | Cần viết lại toàn diện bộ chính sách RLS cho 6 vai trò và trigger kiểm soát SoD tại M3.2. Cột `role` trong PostgreSQL migration 2 đã áp dụng `GRANT UPDATE` chỉ cho 6 cột cá nhân, không cấp cho learner. |
+| **4. Profile** | CURRENT APPLIED trong DB đã có: `display_name`, `avatar_url`, `ui_locale`, `native_lang_code`, `daily_goal_min`, `timezone`, `streak_count`, `last_qualifying_activity_date`, `role`. | TARGET EXTENSION: Bổ sung cột `verified_starting_unit INT DEFAULT 1` lưu xuất phát điểm đã kiểm định; bảng `skill_profiles`. | `schema.prisma` dòng 79–105; `migration.sql` dòng 31–48. | Cần bổ sung cột `verified_starting_unit` trong M3.1. Các trường đặc quyền (`role`, `verified_starting_unit`, `streak_count`, `last_qualifying_activity_date`) bắt buộc do server/DB kiểm soát, không cấp quyền UPDATE cho role Learner. |
+| **5. Exercise** | 3 loại bài tập (`MCQ`, `FILL_BLANK`, `REORDER`); trường `payload` chưa chuẩn hóa; trỏ thẳng về `lesson_id`. | 5 loại bài tập (+`LISTENING`, +`GRAMMAR`); trỏ về `lesson_revision_id UUID NULL`; cấm lộ đáp án đúng ở payload learner. | `schema.prisma` dòng 43, 252–270; `migration.sql` dòng 11. | Cần thêm 2 enum values, thêm FK revision; tách biệt tuyệt đối giữa payload làm bài và bí mật đáp án chấm điểm tại M3.1/M3.3 (`Learner payload != grading secret`). |
+| **6. Content Lifecycle** | Bảng `lessons` phẳng có trường `status ContentStatus @default(DRAFT)`, `is_published`. Chưa có giao diện biên soạn. | Vòng đời 6 trạng thái qua `lesson_revisions`; Clone-to-Draft v2 (`supersedes_id`); Unit 4/4 Published rule. | `schema.prisma` dòng 175–203; thư mục `lingora-admin` chưa có UI biên soạn. | Toàn bộ phân hệ quản trị và kiểm duyệt nội dung cần được lập trình mới trong `lingora-admin` tại M3.6. |
+| **7. Assessment** | Chưa có logic chẩn đoán đầu vào, chưa có bảng lưu lịch sử thi hay hồ sơ kỹ năng. | Động cơ chẩn đoán 30 câu (1 câu = 1 điểm thô, raw score 0–30); Mapping A (0–30 ra Unit 1–6); lưu bất biến `assessment_results`, `skill_profiles`. | `docs/09-placement-and-jump-specification.md`; mã nguồn `lingora-web` chưa có assessment. | Cần triển khai mới domain assessment tại M3.4 theo quyết định đã chốt: Diagnostic 30 câu, 0–30 điểm thô. (Canonical M2 docs vẫn ghi `~25–30 items / PROPOSED` và cần đồng bộ trạng thái chính thức ở lần cập nhật thiết kế kế tiếp). |
+| **8. Retry (D7)** | Chưa có logic hạn mức làm lại có kiểm soát. | $\max(1, \lfloor N \times 0.10 \rfloor)$ tính theo lượt làm bài; làm lại đúng nhận tối đa 70% điểm; kiểm soát ở server. | `docs/02-requirements.md` D7; `lingora-web` chưa có retry engine. | TARGET STATE REPRESENTATION: Persistent attempt/retry state representation must be finalized before M3.1 schema implementation. |
+| **9. SRS (D8)** | RPC `record_review` nhận tham số liên tục `p_recall_probability`, `p_recommended_interval_days`. | Chu kỳ tất định Policy B `[1, 3, 7, 14, 30]` ngày; `stage` quy ước 0 là mầm, 1..5 tương ứng chu kỳ. | `202608140002_auth_rls_storage.../migration.sql` dòng 192–274. | Cần cập nhật RPC `record_review` để tự động tính chu kỳ Policy B trực tiếp trong database, loại bỏ tính toán mock tại M3.5. |
+| **10. Jump (D5)** | Chưa có logic nhảy cóc hay bài tập kiểm tra vượt cấp. | Điểm $\ge 95\%$ mở Unit liền kề, gán cờ `by_jump = true` (`SKIPPED_BY_JUMP`); trượt kích hoạt hồi chiêu 24 giờ. | `docs/09-placement-and-jump-specification.md` §3; chưa có code Jump. | TARGET: Server-authoritative cooldown state. Biểu diễn vật lý cụ thể (Physical representation): TO BE FINALIZED DURING M3.1/M3.5. |
+| **11. Streak (D9)**| Đã có logic cộng streak trong RPC `record_review` theo ngày lịch và múi giờ IANA của profile. | Tính toán chuỗi liên tục theo múi giờ IANA học viên; bỏ lỡ 1 ngày đặt lại về 1; kích hoạt bởi cả bài học và SRS. | `202608140002_auth_rls.../migration.sql` dòng 256–268. | Logic streak hiện chỉ gắn với SRS; cần tích hợp thêm sự kiện hoàn thành bài học (Lesson completion) tại M3.5. |
+| **12. API Surface** | Chỉ có Next.js auth basic (`/login`, `/register`) và proxy AI (`/api/ai/chat`, `/api/ai/srs`). | Toàn bộ BFF API route handlers cho học viên và quản trị viên phủ đủ 15 Use Cases; gắn nhãn `[NOT LOCKED]`. | Thư mục `lingora-web/src/app/(auth)` và `src/app/api`. | Cần xây dựng toàn bộ BFF handlers trong M3.2–M3.6; các route cụ thể mang tính minh họa, không khóa hợp đồng. |
+| **13. Test Suites** | 14 test unit Vitest tại `lingora-web`; 1 seed test tại `lingora-admin`; 37 test pytest tại `lingora-ai/api`. | 18 khung kiểm thử khả thi M2.6; Frames 1–16 thực thi trong Phase 2, Frames 17–18 lưu vết lịch sử. | `lingora-web/package.json`, `lingora-admin/package.json`. | Chuẩn hóa bảng runner kiểm thử theo package: dùng `npx vitest run` và `playwright test`; không gọi lệnh npm chưa khai báo. |
+| **14. Seed Data** | Script `prisma/seed.js` tạo dữ liệu mầm cơ bản cho M1. | Phân định rạch ròi 2 nhóm: `Learning Demo Fixture` (Unit 3 4/4 Published) và `Content Governance Fixture`. | `lingora-admin/prisma/seed.js`; Mục 13 kế hoạch. | TARGET DESIGN: Phân tách 2 fixture mầm độc lập (Learning Fixture & Content Governance Fixture) để bảo đảm tính nhất quán khi kiểm chứng điều kiện Unit 4/4. |
+| **15. Live Demo** | Chưa có kịch bản chạy thử nghiệm thực tế. | 4 Màn trình diễn liên tục (Hành trình học viên, Quản trị nội dung, Phòng thủ SoD, Cá nhân hóa quy tắc). | Mục 14 kế hoạch tổng thể. | Kịch bản demo ánh xạ chính xác vào 2 nhóm fixture mầm đã phân tách, bảo đảm chạy thực nghiệm thông suốt 100%. |
 
 ---
 
@@ -112,21 +120,73 @@ Mọi hoạt động triển khai trong Phase 2 bắt buộc phải tuân thủ 
    - **D3:** Cấm sửa đè nội dung đã xuất bản; bắt buộc nhân bản tạo bản thảo mới (Clone-to-Draft v2 qua `supersedes_id`).
    - **D4:** Mô hình bài tập hợp nhất (Unified Exercise); cấm tạo bảng `Exam` hay `QuestionBank`.
    - **D5:** Thử thách nhảy cóc (Jump) áp dụng cho đơn vị liền kề; đạt khi điểm ≥95%; trượt bị khóa hồi chiêu 24 giờ.
-   - **D6:** Đánh giá chẩn đoán (Diagnostic) có độ dài ~25–30 câu hỏi theo thiết kế; Mapping A tính điểm thô 0–30 ra Đơn vị xuất phát (Unit 1–6); không cấp chứng chỉ CEFR.
+   - **D6:** Đánh giá chẩn đoán (Diagnostic): 4 khía cạnh cốt lõi (Vocabulary, Grammar, Reading, Listening) và thuật toán Mapping A (0–30 điểm thô ra Unit 1–6) là thiết kế đã khóa (CANONICAL LOCKED DECISION); không cấp chứng chỉ CEFR.
+     - **Quyết định thiết kế con người đã chốt chính thức (HUMAN-SELECTED DESIGN DECISION):**
+       - Số lượng câu hỏi bài chẩn đoán: **chính xác 30 câu hỏi** (`Diagnostic item count = 30`).
+       - Thang điểm thô: **0 đến 30 điểm** (`Raw score = 0..30`).
+       - Quy tắc tính điểm: **1 câu trả lời đúng = 1 điểm thô** (`1 correct answer = 1 raw point`). Không sử dụng công thức chuẩn hóa điểm.
+       - Ánh xạ phân lớp Mapping A chuẩn tắc:
+         - $0–7 \rightarrow \textbf{Unit 1}$
+         - $8–12 \rightarrow \textbf{Unit 2}$
+         - $13–17 \rightarrow \textbf{Unit 3}$
+         - $18–22 \rightarrow \textbf{Unit 4}$
+         - $23–26 \rightarrow \textbf{Unit 5}$
+         - $27–30 \rightarrow \textbf{Unit 6}$
+     - **Lưu ý đồng bộ tài liệu:** *MASTER PLAN: 30 questions = HUMAN-SELECTED DESIGN DECISION. CANONICAL M2 DOCUMENTS: still require formal status synchronization before/with the next approved design update.* Không giả định canonical `docs/*` đã tự động cập nhật và không tạo ADR mới trong task này.
    - **D7:** Hạn mức làm lại có kiểm soát `max(1, floor(N * 0.10))` tính theo từng lượt làm bài; làm lại đúng nhận tối đa 70% điểm; hoàn thành bài học không phụ thuộc trần điểm 80%.
-   - **D8:** Ôn tập ngắt quãng (SRS) tuân thủ Policy B tất định `[1, 3, 7, 14, 30]` ngày; độc lập hoàn toàn với AI; chạy qua RPC cơ sở dữ liệu.
+   - **D8:** Ôn tập ngắt quãng (SRS) tuân thủ Policy B tất định `[1, 3, 7, 14, 30]` ngày; độc lập hoàn toàn với AI; chạy qua RPC cơ sở dữ liệu `record_review`; quy ước `stage = 0` là thẻ mới, `stage = 1..5` ứng với các khoảng cách ngày.
    - **D9:** Chuỗi ngày học liên tục (Streak) tính theo ngày lịch cục bộ thuộc múi giờ IANA của học viên; bỏ lỡ 1 ngày đặt lại về 1; không có tính năng cứu chuỗi (freeze) trong MVP.
 4. **Bất Biến Năng Lực & Tiến Độ:**
    $$\text{LearningProgress} \ne \text{Proficiency} \ne \text{Mastery} \ne \text{LevelReadiness}$$
    - Khảo sát tự khai (Self-report) $\rightarrow$ trạng thái `UNVERIFIED`.
    - Chuỗi chuyển hóa năng lực kiểm định: $\text{Diagnostic} \rightarrow \text{AssessmentResult (Bất biến)} \rightarrow \text{SkillProfile} \rightarrow \text{verifiedProficiency} \rightarrow \text{curriculumStartingPoint}$.
-5. **Điều Kiện Hiển Thị Đơn Vị Học (Unit 4/4 Published):** Một Unit chỉ hiển thị cho học viên khi và chỉ khi toàn bộ 4 bài học cấu thành trong Unit đó đều đã ở trạng thái `PUBLISHED`.
-6. **Ranh Giới An Ninh & AI Phi Trạng Thái:**
+5. **Điều Kiện Hiển Thị Đơn Vị Học (Unit 4/4 Published Rule):** Một Unit chỉ hiển thị cho học viên khi và chỉ khi toàn bộ 4 bài học cấu thành trong Unit đó đều đã ở trạng thái `PUBLISHED`.
+   - **Ràng buộc an ninh mục tiêu (TARGET SECURITY REQUIREMENT):** Hệ thống bắt buộc phải bảo đảm học viên truy cập trực tiếp bằng ID bài học không thể vượt qua quy tắc xuất bản của Unit (`learner direct access cannot bypass Unit publication rule`). Điều kiện này bắt buộc phải được cưỡng chế tại ranh giới có thẩm quyền phân quyền (authorization-capable boundary: RLS helper / database view / server-side domain authorization tại BFF), tuyệt đối không chỉ ẩn nút trên giao diện người dùng (`UI hiding != authorization`).
+   - **Trạng thái triển khai:** `TARGET SECURITY REQUIREMENT`; `Implementation + negative verification = M3.2 / M3.3`. Không khẳng định cơ sở dữ liệu hiện tại đã cưỡng chế điều kiện này.
+6. **Ranh Giới An Ninh & Phân Định Trạng Thái AI:**
    - 6 Ranh giới (B1: Learner Web, B2: Admin Web, B3: Supabase RLS, B4: Privileged Service Role, B5: AI Server, B6: Audit Store).
    - Kiểm tra tầng ứng dụng (App AuthZ) không bao giờ thay thế RLS; RLS là bắt buộc tại database.
-   - Ẩn nút trên UI không phải là giải pháp bảo mật (`UI hiding != authorization`).
-   - Dịch vụ AI phi trạng thái (Stateless), không kết nối DB, ngắt kết nối tại 8.0s, có fallback an toàn.
-   - Hợp đồng `docs/03-api-contract.md` là tài liệu chỉ đọc (read-only) và giữ nguyên 100% byte-identical.
+   - Các thành phần và ranh giới liên quan AI (`COMP-DOM-08`, `COMP-EXT-02`, Zone 4, B5) là tham chiếu kiến trúc lịch sử/năng lực hỗ trợ kế thừa từ thiết kế M2, **HOÀN TOÀN NGOÀI PHẠM VI TRIỂN KHAI CỦA PHASE 2**. Không có bất kỳ workstream, API endpoint hay kiểm thử AI nào được thực thi trong Phase 2.
+   - Hợp đồng `docs/03-api-contract.md` duy trì nguyên vẹn tính chất chỉ đọc (read-only) và 100% byte-identical.
+7. **Ranh Giới Nghiệp Vụ Viết Tình Huống (`P1-FR-007` / Scenario Writing with GEC):**
+   - Yêu cầu `P1-FR-007 / Scenario Writing with GEC` được bảo toàn như một yêu cầu chuẩn tắc và tham chiếu thiết kế phục vụ truy vết (CANONICAL REQUIREMENT RETAINED — OUT OF PHASE 2 IMPLEMENTATION SCOPE). Trong Phase 2, không có kế hoạch hay tiêu chí nghiệm thu nào liên quan đến việc triển khai AI/GEC. Tuyệt đối không tự ý phát minh thuật toán sửa lỗi ngữ pháp bằng luật (rule-based grammar correction) hoặc chế tác giải thuật mới thay thế GEC khi chưa có quyết định thiết kế được phê duyệt.
+8. **Bối Cảnh Xác Thực & Lan Truyền Định Danh (Auth Context & Actor Identity Propagation):**
+   - Đột biến dữ liệu thông thường: đi qua BFF và sử dụng JWT của người dùng để `auth.uid()` phản ánh chính xác danh tính người thực hiện.
+   - Tác vụ đặc quyền backend bắt buộc dùng `service_role`: do `auth.uid()` khi đó mang giá trị rỗng/service_role, lời gọi database/RPC bắt buộc phải truyền tường minh định danh người thực hiện (explicit actor identity: ví dụ tham số `p_actor_id UUID`) vào trigger và sổ cái `audit_logs`. Tuyệt đối không đánh đồng `service_role` với `auth.uid()`.
+   - **Phân loại trạng thái:** Đây là `TARGET SECURITY DESIGN`. Kế hoạch triển khai mã nguồn tại `M3.2`, bằng chứng bảo mật (`SECURITY PROOF`) sẽ được xác nhận thông qua bộ kiểm thử phủ định (`negative tests`). Tuyệt đối không gọi đây là một bất biến bảo mật đã được chứng minh ở runtime hiện tại.
+9. **Mô Hình Vai Trò Đơn (Single-Role Model) & Kiểm Định SoD Chuẩn Tắc:**
+   - Bảng `profiles` áp dụng mô hình vai trò đơn (single role: `role Role` với 1 giá trị duy nhất trên mỗi tài khoản). Do mỗi người dùng chỉ có một vai trò duy nhất, Creator và Moderator là hai danh tính hoàn toàn tách biệt.
+   - Kiểm thử phân tách nhiệm vụ (SoD) trong Phase 2 là kiểm thử từ chối phân quyền (authorization denial):
+     - **Creator cấm phê duyệt bài học:** Creator cố tình gọi lệnh phê duyệt $\rightarrow$ Bị từ chối với lỗi phân quyền chuẩn tắc `403 Forbidden` / `ROLE_UNAUTHORIZED` (không tồn tại ca "self-review" vì một tài khoản không thể vừa là Creator vừa là Moderator).
+     - **Moderator cấm xuất bản bài học:** Moderator gọi lệnh xuất bản $\rightarrow$ Bị từ chối với lỗi `403 Forbidden`.
+     - **Manager cấm phê duyệt bài học:** Manager gọi lệnh duyệt bài $\rightarrow$ Bị từ chối với lỗi `403 Forbidden`.
+     - **Admin xuất bản khẩn cấp có điều kiện:** Chỉ được xuất bản bài đã `APPROVED` và bắt buộc có lý do giải trình ghi vào `audit_logs`.
+10. **Bảo Vệ Thuộc Tính Hồ Sơ Học Viên (Profile Security & Privilege Guard):**
+    - **CURRENT APPLIED (Migration 2):** Quyền UPDATE trên bảng `profiles` được kiểm soát nghiêm ngặt ở cấp độ cột (PostgreSQL Column-Level Grants): học viên chỉ được phép sửa 6 trường an toàn cá nhân (`display_name`, `avatar_url`, `ui_locale`, `native_lang_code`, `daily_goal_min`, `timezone`).
+    - **TARGET EXTENSION:** Bổ sung cột `verified_starting_unit INT DEFAULT 1` và bảng `skill_profiles`.
+    - Các trường đặc quyền gồm `role`, `streak_count`, `last_qualifying_activity_date` và trường mới `verified_starting_unit` bắt buộc phải do máy chủ / database kiểm soát, tuyệt đối không cấp quyền UPDATE trực tiếp cho role Learner/Authenticated, ngăn chặn hoàn toàn gian lận cấp độ hoặc chuỗi học tập. Riêng trường `longestStreak` nằm ngoài phạm vi MVP (`OUT OF CURRENT MVP SCOPE / UI-only persona`), không tự ý thêm cột vật lý vào database.
+11. **Bảo Vệ Bí Mật Đề Bài & Đáp Án Chấm Điểm (Exercise Answer Security):**
+    - Nguyên tắc: `Learner payload != grading secret`. Client chỉ nhận nội dung đề bài và danh sách lựa chọn; server/BFF nắm giữ bí mật chấm điểm và logic so khớp đáp án.
+    - Đáp án đúng (correct answers), regex kiểm tra, và bí mật chấm điểm tuyệt đối không được gửi về trong payload của học viên trước khi nộp bài.
+    - **Phân loại trạng thái:** Đây là `TARGET DESIGN REQUIREMENT`. Hiện tại mã nguồn chưa triển khai hoàn tất (`NOT YET IMPLEMENTED`), sẽ được lập trình và xác minh tại M3.1/M3.3.
+12. **Đặc Tả Vòng Đời Nhân Bản Bản Thảo (Clone-to-Draft Lifecycle Semantic):**
+    - Quy trình chuẩn tắc: `Published v1 → Clone → Draft v2 (supersedes_id = v1.id) → In Review → Approved → Publish v2 → v1 archived`.
+    - *Quy tắc nguyên tử:* Publish v2 and retire v1 must be handled consistently/atomically. Target implementation requires an atomic mechanism to publish v2 and retire v1 consistently. The exact DB/application mechanism is to be verified during M3.1/M3.6 implementation.
+    - *Ràng buộc bản thảo duy nhất:* Target design dự kiến quy định mỗi bài học chỉ có tối đa 1 bản thảo/bản duyệt đang hoạt động (Unique active revision constraint — đây là `TARGET DESIGN`, hiện tại DB thực tế chưa có ràng buộc này).
+13. **Ngữ Nghĩa Trạng Thái Đánh Giá & Điểm Xuất Phát (Placement / Skip Semantics):**
+    - Phân định rõ 3 trạng thái ngữ nghĩa trong hệ thống:
+      - `NOT_DECIDED`: Học viên mới đăng ký, chưa thực hiện bài kiểm tra chẩn đoán và chưa chọn bỏ qua.
+      - `SKIPPED / UNVERIFIED`: Học viên chọn Bỏ qua (Skip), được gán xuất phát điểm Unit 1, trạng thái năng lực chưa kiểm định (`UNVERIFIED`), tuyệt đối không tạo bản ghi `assessment_results` hay `skill_profiles`.
+      - `DIAGNOSTIC / VERIFIED`: Học viên hoàn thành bài chẩn đoán 30 câu, tạo bản ghi `AssessmentResult` bất biến và cập nhật `SkillProfile` cùng xuất phát điểm đã kiểm định.
+    - *Quy định triển khai:* *The physical representation of placement status must be finalized before schema implementation in M3.1.*
+    - *Quy trình thi lại (Retake):* Tạo bản ghi `AssessmentResult` bất biến mới, cập nhật hồ sơ năng lực nhưng bảo lưu toàn bộ tiến độ học tập các bài học đã hoàn thành trước đó.
+14. **Trạng Thái Phiên Làm Lại (Retry State) & Hồi Chiêu Nhảy Cóc (Jump Cooldown):**
+    - *Hạn mức làm lại có kiểm soát (D7):* *Persistent attempt/retry state is required for server-enforced D7 behavior. Its physical representation must be finalized in M3.1 before implementation.* M3.1 deliverable bắt buộc bao gồm quyết định biểu diễn trạng thái attempt/retry state này (không tự ý bịa tên bảng khi chưa chốt).
+    - *Hồi chiêu nhảy cóc (D5):* `TARGET DESIGN: server-authoritative cooldown state`. Biểu diễn vật lý cụ thể (*Physical state representation*) được chốt trong M3.1 trước khi bắt đầu lập trình M3.5.
+15. **Quy Chuẩn Âm Thanh, Nhắc Nhở Học Tập & Phân Trách Operations Staff:**
+    - *Đường ống âm thanh (Audio Pipeline):* Lựa chọn duy nhất: Supabase Storage (bucket `lingora-media`). Toàn bộ bài tập kỹ năng Listening sử dụng các tệp âm thanh MP3 do con người chuẩn bị sẵn (pre-produced MP3 assets) thông qua quy trình: Creator tải lên (`upload`) $\rightarrow$ Moderator kiểm duyệt (`moderation`) $\rightarrow$ Học viên nghe bài tập (`learner playback`). Tuyệt đối không sử dụng Text-to-Speech (TTS) thời gian thực và không sử dụng AI trong Phase 2.
+    - *Nhắc nhở học tập (Reminders per ADR-006 / ADR-007 Option 6d):* Duy trì yêu cầu chuẩn tắc `P1-FR-015` ở cấp độ giao diện học viên thông qua **nhắc nhở nội ứng dụng (In-app reminder)**: hiển thị banner kiên định và huy hiệu (badge) thông báo khi học viên truy cập ứng dụng nếu chưa hoàn thành mục tiêu ngày trong khung giờ đã chọn; lưu trữ cục bộ phía client đi kèm `Profile.dailyGoalMin`, tuyệt đối không tạo bảng mới, không dùng scheduler nền hay background service worker. Cơ chế gửi thông báo nền qua mạng (Web Push / Email scheduler / background delivery) tiếp tục ở trạng thái hoãn lại (**DEFERRED**) theo đúng quyết định kiến trúc chuẩn tắc `ADR-007` và không thuộc phạm vi triển khai của Phase 2.
+    - *Nhân sự vận hành (Operations Staff):* Phân định rõ `UC-14 business scope` (điều phối và xử lý hỗ trợ người dùng theo ca sử dụng UC-14 qua giao diện và API route B2 $\rightarrow$ B3) thuộc phạm vi triển khai Phase 2; trong khi `ticket persistence implementation` (lược đồ cơ sở dữ liệu quản lý ticket đa tầng nâng cao) là tính năng mở rộng tương lai (`FUTURE_EXTENSION`). Operations Staff không có quyền xem nhật ký kiểm toán `audit_logs`.
 
 ### 2.2. Nguyên Tắc Giải Quyết Xung Đột Tài Liệu (Conflict Resolution)
 Khi phát sinh sự không nhất quán giữa các tài liệu cũ và tài liệu mới trong kho lưu trữ, các kỹ sư triển khai bắt buộc phải áp dụng quy tắc thứ bậc ưu tiên sau:
@@ -162,7 +222,7 @@ Hệ thống triển khai Phase 2 được phân rã thành **9 nhóm phân hệ
 |   - COMP-DOM-05: Lesson Execution & Controlled Retry Domain Service (Unified Exercise, 70% Credit) |
 |   - COMP-DOM-06: Content Lifecycle & Moderation Domain Service (6 States, SoD Rules, Clone-to-Draft)|
 |   - COMP-DOM-07: Admin Governance & Security Audit Domain Service (Emergency Operations & Audit)   |
-|   - COMP-DOM-08: AI Integration & Proxy Domain Service (Circuit Breaker, 8.0s Timeout, Fallback)   |
+|   - COMP-DOM-08: AI Integration & Proxy Domain Service [OUT OF CURRENT PHASE 2 IMPLEMENTATION SCOPE]|
 +----------------------------------------------------------------------------------------------------+
 | TẦNG HẠ TẦNG DỮ LIỆU & AN NINH (Infrastructure Layer):                                             |
 |   - COMP-INFRA-01: PostgreSQL Relational Database Engine (Supabase Hosted)                         |
@@ -173,7 +233,7 @@ Hệ thống triển khai Phase 2 được phân rã thành **9 nhóm phân hệ
 +----------------------------------------------------------------------------------------------------+
 | TẦNG DỊCH VỤ NGOẠI VI (External Services Layer):                                                   |
 |   - COMP-EXT-01: Supabase GoTrue Authentication Provider (OAuth & JWT Issuer)                      |
-|   - COMP-EXT-02: Stateless AI Compute Service (FastAPI GEC Microservice in lingora-ai)              |
+|   - COMP-EXT-02: Stateless AI Compute Service [OUT OF CURRENT PHASE 2 IMPLEMENTATION SCOPE]       |
 +----------------------------------------------------------------------------------------------------+
 ```
 
@@ -187,11 +247,12 @@ Hệ thống triển khai Phase 2 được phân rã thành **9 nhóm phân hệ
 
 ### 3.3. Nhóm Học Tập Cốt Lõi (Learner Core Engine)
 - **Thành phần sở hữu:** `COMP-PRES-01` (Learner UI), `COMP-APP-01` (Learner BFF), `COMP-DOM-02` (Curriculum Service), `COMP-DOM-05` (Lesson Execution Service).
-- **Phạm vi triển khai:** Trình diễn cây giáo trình 6 Unit theo điều kiện mở khóa; trình phát bài học tương tác hỗ trợ 5 dạng bài tập (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`); thuật toán hạn mức làm lại có kiểm soát `max(1, floor(N * 0.10))` bảo lưu điểm trần 70%; cập nhật tiến độ học tập nguyên tử (`UserProgress`).
+- **Phạm vi triển khai:** Trình diễn cây giáo trình 6 Unit theo điều kiện mở khóa; giao diện đọc/xem nội dung bài học (Lesson Content Viewer) trước khi làm bài tập (từ vựng, phiên âm, giải nghĩa tiếng Việt, câu ví dụ ngữ cảnh, audio chuẩn từ Storage, tóm tắt ngữ pháp bài học); trình phát bài tập tương tác hỗ trợ 5 dạng bài tập (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`); thuật toán hạn mức làm lại có kiểm soát `max(1, floor(N * 0.10))` bảo lưu điểm trần 70%; cập nhật tiến độ học tập nguyên tử (`UserProgress`).
+
 
 ### 3.4. Nhóm Đánh Giá Năng Lực (Assessment & Progression)
 - **Thành phần sở hữu:** `COMP-DOM-03` (Assessment Service), `COMP-APP-01` (Assessment BFF).
-- **Phạm vi triển khai:** Phiên thi chẩn đoán năng lực đầu vào (~25–30 câu hỏi); thuật toán ánh xạ điểm thô 0–30 ra Unit 1–6 theo Mapping A; nhánh Skip (vào thẳng Unit 1 với trạng thái `UNVERIFIED`, 0 AssessmentResult, 0 SkillProfile); tính năng thi lại (Retake) tạo bản ghi `AssessmentResult` bất biến mới và cập nhật `SkillProfile`.
+- **Phạm vi triển khai:** Phiên thi chẩn đoán năng lực đầu vào (30 câu hỏi, 1 điểm thô/câu, raw score 0–30); thuật toán ánh xạ điểm thô 0–30 ra Unit 1–6 theo Mapping A; nhánh Skip (vào thẳng Unit 1 với trạng thái `UNVERIFIED`, 0 AssessmentResult, 0 SkillProfile); tính năng thi lại (Retake) tạo bản ghi `AssessmentResult` bất biến mới và cập nhật `SkillProfile`.
 
 ### 3.5. Nhóm Trí Tuệ Học Tập (Learning Intelligence: Jump, Retry, SRS, Streak)
 - **Thành phần sở hữu:** `COMP-DOM-04` (SRS Service), `COMP-DOM-02` (Streak & Progression), `COMP-INFRA-03` (RPC Engine).
@@ -201,9 +262,13 @@ Hệ thống triển khai Phase 2 được phân rã thành **9 nhóm phân hệ
 - **Thành phần sở hữu:** `COMP-PRES-02` (Admin Portal), `COMP-APP-02` (Admin Server Actions), `COMP-DOM-06` (Content Lifecycle Service).
 - **Phạm vi triển khai:** Giao diện phân công biên soạn của Manager; không gian soạn bài của Creator; hàng đợi kiểm duyệt độc lập của Moderator; quy trình xuất bản chính thức của Manager; cơ chế nhân bản bản thảo bất biến (Clone-to-Draft v2 qua `supersedes_id`); quy tắc hiển thị Unit 4/4 Published; chức năng xuất bản khẩn cấp của Admin kèm lý do giải trình bắt buộc và phát thải sự kiện kiểm toán `CONTENT_EMERGENCY_PUB`.
 
-### 3.7. Nhóm Tích Hợp AI & Sửa Lỗi Ngữ Pháp (AI / GEC Service)
-- **Thành phần sở hữu:** `COMP-DOM-08` (AI Proxy Service), `COMP-EXT-02` (Stateless AI Service `lingora-ai`).
-- **Phạm vi triển khai:** Lập trình endpoint `/v1/gec/correct` trong FastAPI tuân thủ nghiêm ngặt hợp đồng `docs/03-api-contract.md`; xây dựng Next.js Route Handler proxy tin cậy bảo vệ bằng JWT; cài đặt cơ chế ngắt mạch (circuit breaker) với thời gian chờ tối đa 8.0 giây; cơ chế fallback trả về kết quả luật cơ sở khi microservice AI gặp sự cố.
+### 3.7. Nhóm Tiện Ích Dùng Chung & Hỗ Trợ Ứng Dụng (Cross-Cutting Supporting Infrastructure)
+- **Thành phần sở hữu:** `COMP-APP-01` (BFF Coordinator), `COMP-DOM-01` (Identity & Profile Helpers), `COMP-PRES-01/02` (UI Layout & Locales).
+- **Phạm vi triển khai:**
+  1. Triển khai hành vi song ngữ giao diện theo đúng yêu cầu chuẩn tắc `P1-FR-010` / `YC-EXT-06` (Next.js Locale Catalog `vi`/`en`, fallback an toàn `vi`).
+  2. Các tiện ích điều phối dùng chung tầng Client/BFF (chuẩn hóa định dạng phản hồi và mã lỗi API framework-neutral) hỗ trợ cho việc tích hợp hệ thống M3.8.
+  3. Mọi tiện ích kỹ thuật chi tiết khác (nếu phát sinh từ phụ thuộc thực thi) sẽ được xác định cụ thể theo trạng thái `TBD / TO BE DETERMINED FROM IMPLEMENTATION DEPENDENCIES` tại kế hoạch chi tiết của M3.7; tuyệt đối không tự tạo requirement mới.
+- **Ranh giới kiến trúc:** `COMP-DOM-08` (AI Proxy) và `COMP-EXT-02` (FastAPI AI) là các thành phần chuẩn tắc kế thừa từ thiết kế M2 nhưng được đánh dấu chính thức: **`OUT OF CURRENT PHASE 2 IMPLEMENTATION SCOPE`**. Tuyệt đối không lập trình mã nguồn, không dựng proxy, không thiết lập circuit breaker và không triển khai endpoint AI trong Phase 2.
 
 ### 3.8. Nhóm Quản Trị Hệ Thống & Kiểm Toán (Administration & Audit)
 - **Thành phần sở hữu:** `COMP-DOM-07` (Admin Governance Service), `COMP-INFRA-05` (Audit Store).
@@ -225,7 +290,7 @@ flowchart TD
     M3_3 --> M3_4["M3.4: Assessment & Progression (Placement)"]
     M3_3 --> M3_5["M3.5: Intelligence (Retry, SRS, Jump, Streak)"]
     M3_2 --> M3_6["M3.6: Content Governance & Moderation"]
-    M3_3 --> M3_7["M3.7: AI / GEC Service Integration"]
+    M3_3 --> M3_7["M3.7: Supporting Infrastructure & i18n"]
     M3_4 --> M3_8["M3.8: System Integration & E2E Journey"]
     M3_5 --> M3_8
     M3_6 --> M3_8
@@ -248,8 +313,8 @@ flowchart TD
    - Bài kiểm tra chẩn đoán (Placement) và bài kiểm tra nhảy cóc (Jump) thực chất là các chế độ đánh giá (`context.mode`) tái sử dụng trình phát bài tập hợp nhất (Unified Exercise Engine). Do đó, bộ khung thực thi bài tập cốt lõi của M3.3 phải hoàn thành trước để làm nền tảng cho M3.4 và M3.5.
 4. **Tại sao M3.6 (Content Governance) có thể triển khai song song hoặc ngay sau M3.2?**
    - Phân hệ quản trị nội dung hoạt động độc lập ở ứng dụng `lingora-admin`, chỉ phụ thuộc vào hạ tầng DB và mô hình SoD của M3.2. Việc hoàn thành M3.6 giúp đội ngũ sớm có công cụ biên soạn và xuất bản bài học phục vụ cho việc tích hợp hệ thống.
-5. **Tại sao M3.7 (AI / GEC) triển khai độc lập trước M3.8?**
-   - Microservice AI là dịch vụ phi trạng thái (stateless) độc lập. Nó chỉ cần hoàn thành và kiểm thử hợp đồng tại container Zone 4 trước khi được lắp ghép vào luồng bài tập viết tình huống tại M3.8.
+5. **Tại sao M3.7 (Cross-Cutting Supporting Infrastructure) triển khai trước M3.8?**
+   - Hành vi đa ngữ giao diện theo chuẩn `P1-FR-010` (`vi`/`en`) và các tiện ích điều phối dùng chung giữa Client và BFF cần được kiểm chứng sẵn sàng trước khi tiến hành lắp ghép toàn diện trong kịch bản E2E tại M3.8.
 
 ---
 
@@ -265,7 +330,7 @@ Lộ trình di chuyển dữ liệu trong Phase 2 hiện thực hóa 8 giai đo�
 | `profiles` | Chỉnh sửa | Bổ sung cột: `verified_starting_unit INT DEFAULT 1`, nâng cấp enum `role` thành 6 giá trị chuẩn tắc. | Chứa con trỏ đệm điểm xuất phát đã kiểm định (DD-06, DD-10). |
 | `courses` | Chỉnh sửa | Bổ sung chỉ mục tối ưu tìm kiếm theo ngôn ngữ và thứ tự. | Giữ nguyên quan hệ phân cấp giáo trình. |
 | `course_translations` | Giữ nguyên | Không thay đổi | Đa ngôn ngữ tiêu đề và mô tả khóa học. |
-| `units` | Tạo mới | Tạo bảng mới: `id UUID PK`, `course_id UUID FK`, `order_index INT`, `created_at`. | Phân cấp Course -> Unit -> Lesson bất biến (DD-01). |
+| `units` | Tiền kiểm / Tạo mới | Preflight DB check: nếu bảng đã tồn tại (từ Prisma schema Phase 0), thực hiện đối soát/reconcile/alter; nếu chưa tồn tại, tạo bảng mới: `id UUID PK`, `course_id UUID FK`, `order_index INT`, `created_at`. | Phân cấp Course -> Unit -> Lesson bất biến (DD-01). |
 | `unit_translations` | Giữ nguyên | Cập nhật khóa ngoại trỏ chính xác về bảng `units` mới. | Đa ngôn ngữ tiêu đề và mô tả đơn vị học (DD-01). |
 | `lessons` | Chỉnh sửa | Thêm cột `unit_id UUID NULL FK(units.id)`. Chuyển vai trò thành thực thể quản lý logic bài học ổn định. | Tách biệt định danh logic và phiên bản nội dung (DD-01, DD-02). |
 | `lesson_translations` | Chỉnh sửa | Giữ làm bản dịch tiêu đề bài học logic hoặc chuyển dần sang phiên bản. | Đảm bảo tương thích ngược trong giai đoạn chuyển đổi. |
@@ -279,11 +344,16 @@ Lộ trình di chuyển dữ liệu trong Phase 2 hiện thực hóa 8 giai đo�
 | `skill_profiles` | Tạo mới | Tạo bảng mới: `id UUID PK`, `user_id UUID UNIQUE FK`, `verified_proficiency JSONB`, `updated_at TIMESTAMPTZ`. | Lưu hồ sơ năng lực chi tiết của học viên phục vụ cá nhân hóa (DD-06). |
 | `user_vocab_srs` | Chỉnh sửa | Cập nhật cấu trúc hỗ trợ Policy B: `stage INT DEFAULT 0`, `next_review_at TIMESTAMPTZ`. | Động cơ ôn tập ngắt quãng tất định Policy B (D8). |
 | `review_logs` | Giữ nguyên | Giữ nguyên bảng nhật ký ôn tập. | Phục vụ truy vết lịch sử ôn tập từ vựng. |
-| `chat_scenarios` | Giữ nguyên | Giữ nguyên danh mục tình huống viết ngữ pháp. | Phục vụ bài tập luyện viết tình huống GEC. |
-| `chat_scenario_translations`| Giữ nguyên | Không thay đổi | Tiêu đề và mô tả tình huống viết. |
-| `audit_logs` | Chỉnh sửa | Cấu trúc lại theo chuẩn DD-03: `id UUID PK`, `actor_id UUID`, `action VARCHAR(64)`, `target_id VARCHAR(128)`, `timestamp TIMESTAMPTZ`, `metadata JSONB`, `ip_address INET`, `user_agent TEXT`. RLS Append-Only. | Sổ cái kiểm toán an ninh bất biến, ghi nhận 11 sự kiện chuẩn tắc (DD-03). |
+| `chat_scenarios` | Giữ nguyên | Mô hình tương thích kế thừa từ Phase 0. | Bảng dữ liệu tương thích; P1-FR-007 được bảo toàn là yêu cầu chuẩn tắc nhưng nằm ngoài phạm vi triển khai của Phase 2 (CANONICAL REQUIREMENT RETAINED — OUT OF PHASE 2 IMPLEMENTATION SCOPE). |
+| `chat_scenario_translations`| Giữ nguyên | Không thay đổi | Tiêu đề và mô tả tình huống viết tương thích Phase 0; ngoài phạm vi Phase 2. |
+| `audit_logs` | Chỉnh sửa | Cấu trúc lại theo chuẩn DD-03: bảo đảm 4 trường bất biến (`actor_id`, `action`, `target_id`, `timestamp`) + `metadata JSONB`; các trường vật lý mở rộng (như IP, user agent, retention) là đặc tả vật lý MỞ (OPEN physical spec) do M3.1 hoàn thiện chi tiết DDL. RLS Append-Only. | Sổ cái kiểm toán an ninh bất biến, ghi nhận 11 sự kiện chuẩn tắc (DD-03). |
 
 ### 5.2. Đặc Tả Chi Tiết 8 Giai Đoạn Di Chuyển Dữ Liệu (Migration Plan Phases)
+
+> **Lưu ý chuẩn hóa quy mô triển khai đồ án tốt nghiệp (Student Project Right-Sizing & Pedagogical Distinction):**
+> Kế hoạch di chuyển dữ liệu 8 giai đoạn chi tiết dưới đây được thiết kế theo chuẩn kiến trúc doanh nghiệp không gián đoạn (Enterprise Zero-Downtime Migration) áp dụng mô hình Expand/Contract kết hợp PITR Snapshot, Dual-write, Traffic Flip và thời gian theo dõi hợp đồng 14 ngày.
+> 1. **Mục đích học thuật & bảo vệ luận văn (Pedagogical Defense Specification):** Đóng vai trò là đặc tả kiến trúc di chuyển dữ liệu chuẩn mực phục vụ trình bày phương pháp luận kỹ thuật trong Báo cáo tốt nghiệp (Chương 3 & 4), chứng minh khả năng thiết kế hệ thống chịu tải cao và an toàn dữ liệu cấp doanh nghiệp.
+> 2. **Thực thi vận hành trong môi trường Local / Preview (M3.1 – M3.2 Practical Execution):** Đối với môi trường phát triển cục bộ và máy chủ kiểm thử Supabase (0 người dùng trực tiếp trong quá trình dev), quy trình di chuyển được thực thi tuần tự, dứt điểm bằng các migration script chuẩn (`prisma migrate dev` / `supabase migration up`) kèm theo tiền kiểm (Preflight Check), UP script và hậu kiểm (Postflight Verification). Các bước vận hành trực tiếp như *thời gian theo dõi 14 ngày (14-day bake period)* hoặc *chuyển đổi lưu lượng zero-downtime trực tiếp trên production (live traffic flip)* được định danh rõ là `[OPTIONAL / FUTURE PRODUCTION PRACTICE]` để làm sáng tỏ lý thuyết luận văn mà không biến thành điểm nghẽn cản trở việc nghiệm thu các mốc M3.1–M3.2.
 
 #### Giai Đoạn 1: Kiểm Tra Tiền Điều Kiện & Tạo Điểm Sao Lưu (Pre-Migration Checks & Snapshot)
 - **UP:** Kiểm tra kết nối cơ sở dữ liệu Supabase, xác nhận quyền Zone 5; tạo bản sao lưu vật lý toàn bộ cơ sở dữ liệu và thiết lập điểm khôi phục thời gian thực (PITR Snapshot).
@@ -295,9 +365,9 @@ Lộ trình di chuyển dữ liệu trong Phase 2 hiện thực hóa 8 giai đo�
 #### Giai Đoạn 2: Mở Rộng Lược Đồ Dạng Cộng Dồn (Compatibility / Expand Phase)
 - **UP:** 
   1. Tạo enum mới hoặc thêm giá trị: `ExerciseType` bổ sung `LISTENING`, `GRAMMAR`; `ProgressStatus` bổ sung `LOCKED`, `SKIPPED_BY_JUMP`.
-  2. Tạo các bảng mới với các cột nullable hoặc default: `units`, `lesson_revisions`, `assessment_results`, `skill_profiles`.
+  2. Thực hiện tiền kiểm tra (Preflight DB check) cho bảng `units`: nếu đã tồn tại thì đối soát/reconcile, nếu chưa tồn tại thì `CREATE TABLE units`. Tạo các bảng mới với các cột nullable hoặc default: `lesson_revisions`, `assessment_results`, `skill_profiles`.
   3. Thêm các cột mới dạng nullable vào bảng hiện có: `lessons.unit_id`, `exercises.lesson_revision_id`, `profiles.verified_starting_unit`.
-- **DOWN / ROLLBACK:** Chạy script `.down.sql`: `DROP TABLE` các bảng mới tạo; `ALTER TABLE DROP COLUMN` các cột mới thêm; khôi phục định nghĩa enum cũ.
+- **DOWN / ROLLBACK:** Chạy script `.down.sql`: `DROP TABLE` các bảng mới tạo; `ALTER TABLE DROP COLUMN` các cột mới thêm. **Chiến lược an toàn di chuyển enum:** *Rollback of enum removals is not assumed to be a simple DOWN migration. Rollback strategy must preserve backward compatibility and avoid destructive enum-value removal.* Phương án thực thi cụ thể do M3.1 quyết định sau khi kiểm tra hành vi migration thực tế của PostgreSQL.
 - **DATA SAFETY:** Tuyệt đối không thêm cột `NOT NULL` thiếu `DEFAULT`; không xóa hoặc sửa đổi bất kỳ cột hiện có nào đang phục vụ truy vấn.
 - **BACKFILL:** Không có.
 - **TEST PLAN:** Chạy lệnh `npx prisma validate`, kiểm tra catalog `pg_tables` xác nhận bảng mới đã xuất hiện và các bảng cũ hoạt động bình thường.
@@ -315,12 +385,12 @@ Lộ trình di chuyển dữ liệu trong Phase 2 hiện thực hóa 8 giai đo�
 
 #### Giai Đoạn 4: Chuyển Đổi Vai Trò & Thiết Lập Chính Sách RLS (Role & RLS Transition Phase)
 - **UP:**
-  1. Nâng cấp cột `profiles.role` lên 6 giá trị chuẩn tắc (chuyển đổi: `USER` cũ $\rightarrow$ `LEARNER`, `ADMIN` cũ $\rightarrow$ `ADMINISTRATOR`).
+  1. Nâng cấp enum `Role` trong PostgreSQL từ 2 giá trị hiện tại (`LEARNER`, `ADMIN`) lên 6 giá trị chuẩn tắc: bổ sung `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `ORGANIZATIONAL_MANAGER` và đồng bộ `ADMIN` $\rightarrow$ `ADMINISTRATOR`.
   2. Triển khai toàn bộ ma trận chính sách PostgreSQL Row Level Security (RLS) trên tất cả các bảng nghiệp vụ.
-  3. Tạo các trigger cơ sở dữ liệu chặn vi phạm Phân tách nhiệm vụ (SoD) và trigger ghi log kiểm toán bất biến.
-- **DOWN / ROLLBACK:** Khôi phục lại chính sách RLS 2 vai trò ban đầu; gỡ bỏ các trigger SoD; chuyển đổi giá trị role về lại `USER` hoặc `ADMIN`.
+  3. Cài đặt các cơ chế phân quyền bảo đảm Phân tách nhiệm vụ (SoD) và ghi log kiểm toán bất biến.
+- **DOWN / ROLLBACK:** Khôi phục lại chính sách RLS và enum 2 vai trò ban đầu (`LEARNER`, `ADMIN`).
 - **DATA SAFETY:** Áp dụng chế độ kiểm tra kép (dual-read check); đảm bảo tài khoản quản trị hiện tại không bị mất quyền truy cập.
-- **TEST PLAN:** Thực thi bộ kiểm thử tự động `tests/security/test_rls_isolation.py` và `test_rbac_matrix.py` với 6 token JWT giả lập đại diện cho 6 vai trò.
+- **TEST PLAN:** Thực thi bộ kiểm thử tự động trong `lingora-web`: `npx vitest run tests/security/rls_isolation.test.ts` và `npx vitest run tests/security/rbac_matrix.test.ts` với 6 token JWT giả lập đại diện cho 6 vai trò (Frames 12–16).
 
 #### Giai Đoạn 5: Chuyển Đổi Lưu Lượng Ứng Dụng (Application Cutover Phase)
 - **UP:** Triển khai bản dựng ứng dụng Phase 2 cho `lingora-web` và `lingora-admin`. Chuyển hướng toàn bộ các thao tác đọc/ghi sang cấu trúc `units`, `lesson_revisions`, `assessment_results`.
@@ -348,7 +418,36 @@ Lộ trình di chuyển dữ liệu trong Phase 2 hiện thực hóa 8 giai đo�
 - **DOWN / ROLLBACK:** Không hoàn nguyên sau khi đã đóng hợp đồng (Contract Phase); dữ liệu cũ đã được lưu trữ trong bản sao lưu vĩnh viễn.
 - **DATA SAFETY:** Xác nhận tuyệt đối không còn bất kỳ truy vấn nào trong mã nguồn ứng dụng hay báo cáo tham chiếu đến các cột cũ trong 14 ngày liên tục.
 - **BACKFILL:** Không có.
-- **TEST PLAN:** Chạy công cụ rà soát toàn bộ codebase quét các từ khóa cột cũ; chạy kiểm thử hồi quy toàn diện.
+### 5.3. Tiêu Chí Đầu Ra & Cổng Nghiệm Thu Bắt Buộc Của Milestone M3.1 (M3.1 Mandatory Exit Criteria)
+
+Để đảm bảo an toàn tuyệt đối trước khi bắt tay vào triển khai mã nguồn các phân hệ tiếp theo (M3.2 đến M3.10), Milestone M3.1 bắt buộc phải hoàn thành và khóa nghiệm thu các tiêu chí sau:
+
+1. **Bảo Mật Barem Chấm Điểm & Phân Tách Dữ Liệu Bài Tập (Exercise Answer Security):**
+   - **Nguyên tắc kiến trúc:** `Learner-readable exercise payload != grading secret / correct answer`.
+   - **Quyết định biểu diễn vật lý (Physical representation decision):** Xác định rõ phương án tách biệt giữa nội dung bài tập gửi cho học viên (không chứa đáp án đúng / regex chấm điểm) và barem chấm điểm máy chủ.
+   - **Ranh giới phân quyền & cấp phép (Permission / Grant boundary):** Thiết lập cơ chế phân quyền (PostgreSQL Column-Level Grants, Views hoặc RLS projection) bảo đảm tài khoản học viên không thể truy vấn barem đáp án.
+   - **Bộ kiểm thử phủ định bắt buộc:**
+     - *Learner negative test:* Kiểm chứng API phản hồi payload bài tập cho học viên không bao giờ chứa trường đáp án đúng hoặc bí mật chấm điểm.
+     - *Direct data-access negative test:* Kiểm chứng học viên gửi truy vấn trực tiếp vào cơ sở dữ liệu bị từ chối đọc barem đáp án.
+2. **Kiểm Soát Truy Cập Trực Tiếp Đơn Vị Giáo Trình (Unit 4/4 Direct Access & Visibility):**
+   - **Nguyên tắc:** `UI hiding != Authorization`. Việc ẩn Unit chưa đủ 4/4 bài trên giao diện danh mục không thay thế cho việc kiểm soát phân quyền.
+   - **Bộ kiểm thử bắt buộc:**
+     - Unit có 3/4 bài `PUBLISHED` và 1 bài `DRAFT` $\rightarrow$ Tự động ẩn trên danh mục Unit của học viên.
+     - Kiểm thử truy cập trực tiếp bài học/bài tập thuộc Unit 3/4 Published: Gửi request trực tiếp đến API route bài học $\rightarrow$ Bị chặn với lỗi `403 Forbidden` hoặc `404 Not Found`.
+     - Tuyệt đối không tạo cơ chế tự động chuyển hướng hoặc fallback sang Unit gần nhất.
+3. **Mô Hình Hóa Dữ Liệu Bài Chẩn Đoán & Thử Thách Nhảy Cóc (Placement & Jump Data Representation):**
+   - **Nguyên tắc:** Chốt biểu diễn vật lý cho 30 câu hỏi Placement Test và câu hỏi Jump Challenge trong khuôn khổ Mô hình Bài tập Hợp nhất (Unified Exercise / Assessment model).
+   - **Cấm thực thể ma (Zero Ghost Entities):** Tuyệt đối KHÔNG tạo các thực thể `Exam`, `QuestionBank`, `AssessmentSession`.
+   - **Đánh dấu thiết kế:** *M3.1 DESIGN DECISION REQUIRED: Physical representation of Placement and Jump items within Unified Exercise/Assessment model must be finalized during M3.1 schema design.*
+4. **Biểu Diễn Vật Lý Trạng Thái Phiên & Hạn Mức Làm Lại (Attempt / Retry State Representation):**
+   - Đảm bảo cưỡng chế quy tắc D7 từ phía máy chủ: $\text{allowance} = \max(1, \lfloor N \times 0.10 \rfloor)$, bảo lưu điểm trần 70%.
+   - **Tiêu chí:** *Physical attempt/retry state representation is defined and verified before M3.3/M3.5 implementation.* Không giả định trạng thái chỉ lưu ở client.
+5. **Biểu Diễn Vật Lý Thời Gian Hồi Chiêu Nhảy Cóc (Jump Cooldown Physical Representation):**
+   - Đảm bảo cưỡng chế ngưỡng $\ge 95\%$, cờ `by_jump = true` (`SKIPPED_BY_JUMP`), và khóa hồi chiêu 24 giờ của D5 từ server time.
+   - **Tiêu chí:** *Physical state representation for 24h Jump cooldown lockout is finalized in M3.1 without premature column locking.*
+6. **Biểu Diễn Vật Lý Trạng Thái Đánh Giá & Bỏ Qua (Skip / Placement Status Semantics):**
+   - Phân biệt rõ ràng 3 trạng thái ngữ nghĩa: `NOT_DECIDED` (mới đăng ký), `SKIPPED / UNVERIFIED` (bỏ qua, xuất phát Unit 1, chưa kiểm định), `DIAGNOSTIC / VERIFIED` (hoàn thành 30 câu, điểm thô $0..30$, Mapping A).
+   - **Tiêu chí:** *Physical representation of placement status is finalized before schema implementation.*
 
 ---
 
@@ -367,11 +466,11 @@ Hệ thống bảo mật của Lingora tuân thủ nguyên tắc **Phòng vệ k
 +------------------------+---------------------------------------------------------------------------+
 | 2. Lesson Creator      | Đọc các bài học được phân công (assigned_creator_id = auth.uid()).        |
 |                        | Tạo/sửa bản thảo (DRAFT, CHANGES_REQUESTED); nộp duyệt (IN_REVIEW).       |
-|                        | CẤM: Tự phê duyệt bài của mình; xuất bản bài học ra học viên.             |
+|                        | CẤM: Phê duyệt bài học (bị từ chối phân quyền 403 ROLE_UNAUTHORIZED); xuất bản bài học ra học viên. |
 +------------------------+---------------------------------------------------------------------------+
 | 3. Moderator           | Đọc hàng đợi kiểm duyệt (status = 'IN_REVIEW').                           |
 |                        | Phê duyệt (APPROVED) hoặc Yêu cầu sửa (CHANGES_REQUESTED).                |
-|                        | CẤM: Phê duyệt bài do chính mình biên soạn; xuất bản (PUBLISHED).         |
+|                        | CẤM: Xuất bản bài học ra học viên (thuộc thẩm quyền dành riêng cho Org Manager). |
 +------------------------+---------------------------------------------------------------------------+
 | 4. Org Manager         | Tạo kế hoạch bài học, phân công biên soạn (gán assigned_creator_id).       |
 |                        | Xuất bản bài học đã duyệt (chuyển APPROVED -> PUBLISHED).                 |
@@ -380,15 +479,20 @@ Hệ thống bảo mật của Lingora tuân thủ nguyên tắc **Phòng vệ k
 | 5. Administrator       | Quản lý tài khoản, gán vai trò người dùng (ROLE_ASSIGNED).                |
 |                        | Tra cứu nhật ký kiểm toán hệ thống (AUDIT_LOG_INSPECTED).                  |
 |                        | Xuất bản khẩn cấp bài học đã APPROVED kèm lý do bắt buộc và ghi log kiểm toán.|
-+------------------------+---------------------------------------------------------------------------+
-| 6. Operations Staff    | Tra cứu hồ sơ học viên, xem trạng thái hệ thống và log kỹ thuật.          |
-|                        | Không có quyền can thiệp vào nội dung giáo trình hoặc phê duyệt bài học.  |
+| 6. Operations Staff    | Xử lý / điều phối support theo phạm vi được cấp (hỗ trợ vận hành,         |
+|                        | giải đáp thắc mắc học viên, tiếp nhận sự cố kỹ thuật).                    |
+|                        | CẤM: Can thiệp nội dung giáo trình, phê duyệt bài học, hoặc tra cứu       |
+|                        | nhật ký kiểm toán hệ thống (audit logs - thẩm quyền dành riêng cho Admin).|
 +------------------------+---------------------------------------------------------------------------+
 ```
 
 ### 6.2. Thiết Kế Ma Trận Chính Sách Supabase Row Level Security (RLS)
 
 Mọi bảng trong cơ sở dữ liệu đều bắt buộc phải kích hoạt RLS: `ALTER TABLE <table_name> ENABLE ROW LEVEL SECURITY;`.
+
+> **Yêu cầu an ninh phân quyền vai trò tại tầng RLS (RLS Role Authorization Requirement):**
+> *Role authorization must be secure without recursive/self-referencing RLS dependency.*
+> Tài liệu Kế hoạch Tổng thể không áp đặt trước cơ chế kỹ thuật cụ thể (không bắt buộc `SECURITY DEFINER` function hay `JWT claim`). Milestone M3.2 sẽ đánh giá và lựa chọn cơ chế thực thi tối ưu nhất trong quá trình cài đặt thực tế.
 
 ```sql
 -- Ví dụ minh họa kiến trúc chính sách RLS cho bảng tiến độ học tập (user_progress)
@@ -428,29 +532,27 @@ WITH CHECK (
 ```
 
 ### 6.3. Quy Tắc Chặn Vi Phạm Phân Tách Nhiệm Vụ (SoD Enforcement)
-Các quy tắc phân tách nhiệm vụ được bảo vệ bằng cơ chế 2 lớp: Tầng ứng dụng (BFF) kiểm tra điều kiện nghiệp vụ và trả về mã lỗi HTTP 403 ngữ nghĩa; đồng thời Tầng cơ sở dữ liệu cài đặt các **Database Triggers** độc lập để từ chối giao dịch ngay cả khi ứng dụng BFF bị tấn công bypass.
+Các quy tắc phân tách nhiệm vụ được bảo vệ bằng nguyên tắc phòng vệ kép (Dual-Presence Security): Tầng ứng dụng (BFF) kiểm tra vai trò người dùng và trả về mã lỗi HTTP 403 ngữ nghĩa; đồng thời Tầng cơ sở dữ liệu (RLS / Triggers) độc lập từ chối giao dịch trái phép ngay cả khi tầng ứng dụng bị vượt qua.
 
-1. **Cấm Lesson Creator Tự Duyệt Bài Của Chính Mình:**
-   - **Tầng ứng dụng (BFF):** Nếu `revision.assigned_creator_id == session.user.id` và hành động là duyệt bài $\rightarrow$ Trả về mã lỗi `403 Forbidden` (`403 SOD_VIOLATION_SELF_REVIEW`).
-   - **Tầng DB Trigger:**
-     ```sql
-     CREATE OR REPLACE FUNCTION check_sod_self_review() RETURNS TRIGGER AS $$
-     BEGIN
-       IF NEW.status = 'APPROVED' AND NEW.assigned_creator_id = auth.uid() THEN
-         RAISE EXCEPTION 'SoD Violation: Lesson Creator cannot approve their own lesson revision.'
-           USING ERRCODE = 'P0403';
-       END IF;
-       RETURN NEW;
-     END;
-     $$ LANGUAGE plpgsql SECURITY DEFINER;
+1. **Lesson Creator Cấm Phê Duyệt Bài Học (Creator Cannot Approve):**
+   - **Tầng ứng dụng (BFF):** Do mô hình áp dụng 1 vai trò duy nhất trên mỗi tài khoản (`profiles.role`), Creator và Moderator là 2 danh tính độc lập. Nếu người dùng có vai trò `LESSON_CREATOR` gửi yêu cầu duyệt bài học (`status = 'APPROVED'`) $\rightarrow$ Bị từ chối phân quyền với mã lỗi `403 Forbidden` / `ROLE_UNAUTHORIZED` (không tồn tại ca "self-review" vì tài khoản Creator không thể mang vai trò Moderator).
+   - **Mô hình tác tử đặc quyền (Conceptual Privileged Operation):**
+     ```text
+     privileged operation (e.g. approve / publish)
+     → explicit actor identity (p_actor_id UUID: TARGET DESIGN / PROPOSED IMPLEMENTATION DETAIL)
+     → role authorization check (SELECT role FROM profiles WHERE id = p_actor_id)
+     → state transition (reject if actor.role = 'LESSON_CREATOR')
+     → audit record (append-only log entry)
      ```
-2. **Cấm Moderator Xuất Bản Bài Học Ra Môi Trường Học Tập:**
-   - **Tầng ứng dụng (BFF):** Nếu vai trò là `MODERATOR` và yêu cầu chuyển trạng thái sang `PUBLISHED` $\rightarrow$ Trả về mã lỗi `403 Forbidden` (`403 SOD_VIOLATION_MODERATOR_PUBLISH`).
-   - **Tầng DB RLS:** Chính sách RLS chỉ cho phép vai trò `ORGANIZATIONAL_MANAGER` và `ADMINISTRATOR` thực thi lệnh `UPDATE` chuyển trạng thái sang `PUBLISHED`.
-3. **Ràng Buộc Nghiêm Ngặt Khi Admin Xuất Bản Khẩn Cấp:**
+2. **Moderator Cấm Xuất Bản Bài Học Ra Học Viên (Moderator Cannot Publish):**
+   - **Tầng ứng dụng (BFF):** Nếu người dùng có vai trò `MODERATOR` gửi yêu cầu chuyển trạng thái sang `PUBLISHED` $\rightarrow$ Bị từ chối với mã lỗi `403 Forbidden`.
+   - **Tầng DB RLS:** Chính sách RLS chỉ cho phép vai trò `ORGANIZATIONAL_MANAGER` và `ADMINISTRATOR` thực thi lệnh chuyển trạng thái sang `PUBLISHED`.
+3. **Organizational Manager Cấm Phê Duyệt Bài Học (Manager Cannot Approve):**
+   - **Tầng ứng dụng (BFF):** Nếu người dùng có vai trò `ORGANIZATIONAL_MANAGER` gửi yêu cầu duyệt bài $\rightarrow$ Bị từ chối với mã lỗi `403 Forbidden` (thẩm quyền phê duyệt chuyên môn dành riêng cho `MODERATOR`).
+4. **Ràng Buộc Nghiêm Ngặt Khi Admin Xuất Bản Khẩn Cấp:**
    - **Tầng ứng dụng (BFF):**
-     - Kịch bản A: Nếu bài học đang ở trạng thái `IN_REVIEW` $\rightarrow$ Từ chối với mã lỗi `403 Forbidden` (`403 SOD_VIOLATION_EMERGENCY_UNAPPROVED`).
-     - Kịch bản B: Nếu bài học đã `APPROVED` nhưng trường lý do giải trình `reason` rỗng hoặc null $\rightarrow$ Từ chối với mã lỗi `403 Forbidden` (`403 SOD_VIOLATION_MISSING_JUSTIFICATION`).
+     - Kịch bản A: Nếu bài học đang ở trạng thái `IN_REVIEW` hoặc chưa qua kiểm duyệt $\rightarrow$ Từ chối với mã lỗi `403 Forbidden` (`403 EMERGENCY_UNAPPROVED`).
+     - Kịch bản B: Nếu bài học đã `APPROVED` nhưng trường lý do giải trình `reason` rỗng hoặc null $\rightarrow$ Từ chối với mã lỗi `403 Forbidden` (`403 MISSING_JUSTIFICATION`).
      - Kịch bản C: Bài học đã `APPROVED` kèm `reason` hợp lệ $\rightarrow$ Chấp nhận chuyển sang `PUBLISHED`, đồng thời phát thải bản ghi kiểm toán chuẩn tắc `CONTENT_EMERGENCY_PUB` vào bảng `audit_logs`.
 
 ---
@@ -461,7 +563,7 @@ Phân hệ học viên hiện thực hóa trọn vẹn **Vòng lặp học tập
 
 ```text
 +---------------------------------------------------------------------------------------------------+
-|                                  CLOSED-LOOP LEARNER CYCLE (9 STEPS)                              |
+|                                  CLOSED-LOOP LEARNER CYCLE (10 STEPS)                             |
 +---------------------------------------------------------------------------------------------------+
 | [1. SIGN IN]                                                                                      |
 |       |                                                                                           |
@@ -473,22 +575,25 @@ Phân hệ học viên hiện thực hóa trọn vẹn **Vòng lặp học tập
 | [3. LEARN (Curriculum)] ──> [Chọn Unit khả dụng (4/4 Published)] ──> [Chọn Lesson]                |
 |       |                                                                                           |
 |       v                                                                                           |
-| [4. EXERCISE EXECUTION] ──> [Tương tác 5 dạng: MCQ, FILL, REORDER, LISTENING, GRAMMAR]            |
+| [4. LESSON CONTENT VIEWER] ──> [Xem từ vựng, audio phát âm, ví dụ, tóm tắt ngữ pháp bài học]     |
 |       |                                                                                           |
 |       v                                                                                           |
-| [5. FEEDBACK & SCORING] ──> [Phản hồi đúng/sai, giải thích chi tiết, chấm điểm cơ sở]             |
+| [5. START EXERCISES] ──> [Tương tác 5 dạng: MCQ, FILL, REORDER, LISTENING, GRAMMAR]               |
 |       |                                                                                           |
 |       v                                                                                           |
-| [6. CONTROLLED RETRY] ──(Làm sai & còn lượt)──> [max(1, floor(N*0.10)) / Tối đa 70% điểm]        |
+| [6. FEEDBACK & SCORING] ──> [Phản hồi đúng/sai, giải thích chi tiết, chấm điểm cơ sở]             |
 |       |                                                                                           |
 |       v                                                                                           |
-| [7. PROGRESS PERSISTENCE] ──> [Cập nhật UserProgress nguyên tử: status, score, completedAt]       |
+| [7. CONTROLLED RETRY] ──(Làm sai & còn lượt)──> [max(1, floor(N*0.10)) / Tối đa 70% điểm]        |
 |       |                                                                                           |
 |       v                                                                                           |
-| [8. SRS PRACTICE QUEUE] ──> [Đẩy từ vựng vào hàng đợi ôn tập ngắt quãng Policy B: 1,3,7,14,30]    |
+| [8. PROGRESS PERSISTENCE] ──> [Cập nhật UserProgress nguyên tử: status, score, completedAt]       |
 |       |                                                                                           |
 |       v                                                                                           |
-| [9. STREAK EVALUATION] ──> [Tính toán chuỗi ngày học theo múi giờ IANA, cập nhật kỷ lục]         |
+| [9. SRS PRACTICE QUEUE] ──> [Đẩy từ vựng vào hàng đợi ôn tập ngắt quãng Policy B: 1,3,7,14,30]    |
+|       |                                                                                           |
+|       v                                                                                           |
+| [10. STREAK EVALUATION] ──> [Tính toán chuỗi ngày học theo múi giờ IANA, cập nhật kỷ lục]        |
 +---------------------------------------------------------------------------------------------------+
 ```
 
@@ -498,13 +603,15 @@ Phân hệ học viên hiện thực hóa trọn vẹn **Vòng lặp học tập
 |---|---|---|---|---|---|---|---|
 | **1** | **Sign In** | Supabase GoTrue Auth | Xử lý phiên cookie HttpOnly, xác thực JWT | `COMP-DOM-01`: Đọc hồ sơ người dùng, phân loại vai trò | Đọc bảng `profiles`, `auth.users` | Token hết hạn / sai mật khẩu $\rightarrow$ Trả về mã lỗi 401 | `test_auth_signin` |
 | **2** | **Starting Point** | `profiles.verified_starting_unit` | Điều hướng giao diện dựa trên cờ trạng thái kiểm định | `COMP-DOM-03`: Kiểm tra học viên mới, kích hoạt chẩn đoán nếu chưa làm | Đọc `profiles.verified_starting_unit`, `assessment_results` | Mất kết nối DB $\rightarrow$ Mặc định gán Unit 1 an toàn | `test_placement_routing` |
-| **3** | **Learn** | Bảng `units` & `lesson_revisions` | Lấy danh sách Unit và Lesson hiển thị cho học viên | `COMP-DOM-02`: Áp dụng luật Unit 4/4 Published; lọc bài khóa | Truy vấn `units` JOIN `lesson_revisions` qua RLS | Cố tình truy cập bài chưa xuất bản $\rightarrow$ 404/403 | `test_curriculum_visible` |
-| **4** | **Exercise** | Bảng `exercises` (Unified Model) | Tải nội dung bài tập theo thứ tự `order_index` | `COMP-DOM-05`: Khởi tạo phiên làm bài học, tính số bài tập N | Đọc bảng `exercises` theo `lesson_revision_id` | Bài tập lỗi cấu trúc payload $\rightarrow$ Ghi log, bỏ qua câu | `test_exercise_render` |
-| **5** | **Feedback** | Logic kiểm tra đáp án | Tiếp nhận câu trả lời, so khớp đáp án | `COMP-DOM-05`: So khớp chính xác; tính điểm thô bài tập | Không lưu DB (tạm giữ ở phiên làm bài) | Gian lận gửi đáp án sai cấu trúc $\rightarrow$ 400 Invalid | `test_exercise_eval` |
-| **6** | **Controlled Retry** | Luật D7: `max(1, floor(N*0.10))` | Tiếp nhận yêu cầu làm lại câu sai trong lượt học | `COMP-DOM-05`: Kiểm tra hạn mức lượt; áp trần 70% điểm | Ghi nhận cờ `isRetry = true` trong phiên làm bài | Vượt quá hạn mức làm lại $\rightarrow$ 403 RETRY_EXCEEDED | `TEST-FRAME-RETRY-ALLOWANCE` |
-| **7** | **Progress** | Bảng `user_progress` | Gửi gói tổng kết bài học sau khi hoàn thành | `COMP-DOM-02`: Đánh giá hoàn thành bài học; tính điểm cuối | `user_progress`: `COMPLETED`, `score`, `completed_at` | Rớt mạng khi nộp điểm $\rightarrow$ Client tự động thử lại có idempotent key | `test_progress_atomic` |
-| **8** | **SRS Review** | Bảng `user_vocab_srs`, Policy B | Lấy hàng đợi từ vựng đến hạn ôn tập trong ngày | `COMP-DOM-04`: Gọi RPC `record_review` cập nhật khoảng cách ngày | Bảng `user_vocab_srs`, `review_logs` qua RPC | Lỗi RPC $\rightarrow$ Giữ nguyên trạng thái thẻ, không làm mất dữ liệu | `TEST-FRAME-SRS-POLICY-B` |
-| **9** | **Streak** | `profiles.last_qualifying_activity_date`| Đọc và hiển thị số ngày học liên tục | `COMP-DOM-02`: Quy đổi giờ UTC sang múi giờ IANA của user | Cập nhật `profiles.streak_count`, `last_qualifying_activity_date`| Lệch múi giờ client $\rightarrow$ Luôn dùng thư viện IANA chuẩn trên server | `TEST-FRAME-STREAK-TIMEZONE` |
+| **3** | **Learn (Curriculum)** | Bảng `units` & `lesson_revisions` | Lấy danh sách Unit và Lesson hiển thị cho học viên | `COMP-DOM-02`: Áp dụng luật Unit 4/4 Published; lọc bài khóa | Truy vấn `units` JOIN `lesson_revisions` qua RLS | Cố tình truy cập bài chưa xuất bản hoặc bài thuộc Unit chưa đủ 4/4 Published $\rightarrow$ Chặn 404/403 (`UI hiding != Authorization`) | `test_curriculum_visible`, `test_direct_lesson_access_denial` |
+| **4** | **Lesson Content Viewer** | `lesson_revisions`, `vocabularies`, `lesson_vocabularies` | Tải nội dung học liệu bài học (từ vựng, phiên âm, giải nghĩa tiếng Việt, câu ví dụ, audio MP3 chuẩn qua Storage RLS, tóm tắt ngữ pháp) | `COMP-DOM-02` / `COMP-DOM-05`: Chuẩn bị giao diện tiếp thu kiến thức trước khi làm bài tập; không tạo nội dung AI | Đọc `lesson_revisions`, `vocabularies` qua RLS | Lỗi tải audio $\rightarrow$ Vẫn hiển thị text/nghĩa/phiên âm an toàn; không chặn đọc bài | `test_lesson_content_view` |
+| **5** | **Start Exercises** | Bảng `exercises` (Unified Model) | Tải nội dung bài tập theo thứ tự `order_index` (giấu barem đáp án) | `COMP-DOM-05`: Khởi tạo phiên làm bài học, tính số bài tập N | Đọc bảng `exercises` theo `lesson_revision_id` (không trả barem đáp án) | Bài tập lỗi cấu trúc payload $\rightarrow$ Ghi log, bỏ qua câu | `test_exercise_render` |
+| **6** | **Feedback** | Barem chấm điểm máy chủ (`Learner payload != grading secret`) | Tiếp nhận câu trả lời, so khớp đáp án | `COMP-DOM-05`: So khớp chính xác trên server; tính điểm thô bài tập | Lưu trạng thái phiên làm bài có thẩm quyền từ máy chủ (chốt tại M3.1) | Gian lận gửi đáp án sai cấu trúc $\rightarrow$ 400 Invalid | `test_exercise_eval` |
+| **7** | **Controlled Retry** | Luật D7: `max(1, floor(N*0.10))` | Tiếp nhận yêu cầu làm lại câu sai trong lượt học | `COMP-DOM-05`: Kiểm tra hạn mức lượt; áp trần 70% điểm | Quản lý trạng thái attempt/retry state kiên định từ máy chủ (chốt tại M3.1) | Vượt quá hạn mức làm lại $\rightarrow$ 403 RETRY_ALLOWANCE_EXCEEDED | `TEST-FRAME-RETRY-ALLOWANCE` |
+| **8** | **Progress** | Bảng `user_progress` | Gửi gói tổng kết bài học sau khi hoàn thành | `COMP-DOM-02`: Đánh giá hoàn thành bài học; tính điểm cuối | `user_progress`: `COMPLETED`, `score`, `completed_at` | Rớt mạng khi nộp điểm $\rightarrow$ Client tự động thử lại có idempotent key | `test_progress_atomic` |
+| **9** | **SRS Review** | Bảng `user_vocab_srs`, Policy B | Lấy hàng đợi từ vựng đến hạn ôn tập trong ngày | `COMP-DOM-04`: Gọi RPC `record_review` cập nhật khoảng cách ngày | Bảng `user_vocab_srs`, `review_logs` qua RPC | Lỗi RPC $\rightarrow$ Giữ nguyên trạng thái thẻ, không làm mất dữ liệu | `TEST-FRAME-SRS-POLICY-B` |
+| **10**| **Streak** | `profiles.last_qualifying_activity_date`| Đọc và hiển thị số ngày học liên tục | `COMP-DOM-02`: Quy đổi giờ UTC sang múi giờ IANA của user | Cập nhật `profiles.streak_count`, `last_qualifying_activity_date`| Lệch múi giờ client $\rightarrow$ Luôn dùng thư viện IANA chuẩn trên server | `TEST-FRAME-STREAK-TIMEZONE` |
+
 
 ---
 
@@ -513,14 +620,17 @@ Phân hệ học viên hiện thực hóa trọn vẹn **Vòng lặp học tập
 Phân hệ đánh giá năng lực bảo toàn tuyệt đối bất biến: **Tự khai không phải là năng lực kiểm định (`Self-report != verified proficiency`)** và **Điểm xuất phát giáo trình không phải là chứng chỉ năng lực CEFR**.
 
 ### 8.1. Quy Chuẩn Bài Kiểm Tra Chẩn Đoán (Placement / Diagnostic Test)
-- **Quy mô bộ câu hỏi:** Được thiết kế với số lượng **`~25–30 câu hỏi theo đề xuất (proposed)`**, phân bổ đều qua các kỹ năng Từ vựng, Ngữ pháp, và Đọc hiểu cơ bản. Tuyệt đối không tự ý viết cứng thành "chính xác 30 câu".
-- **Thang điểm thô và Thuật toán Mapping A:** Điểm số thô (Raw Score) nằm trong dải $0 \le \text{Raw Score} \le 30$, được ánh xạ tất định sang Đơn vị xuất phát giáo trình (Starting Unit 1..6) theo bảng quy chuẩn đã được phê duyệt:
-  - $\text{Score } 0 - 7 \rightarrow \textbf{Unit 1}$ (Beginner Foundation)
-  - $\text{Score } 8 - 12 \rightarrow \textbf{Unit 2}$ (Elementary Communication)
-  - $\text{Score } 13 - 17 \rightarrow \textbf{Unit 3}$ (Pre-Intermediate Core)
-  - $\text{Score } 18 - 22 \rightarrow \textbf{Unit 4}$ (Intermediate Transition)
-  - $\text{Score } 23 - 26 \rightarrow \textbf{Unit 5}$ (Upper-Intermediate Fluency)
-  - $\text{Score } 27 - 30 \rightarrow \textbf{Unit 6}$ (Advanced Mastery)
+- **Quy mô bộ câu hỏi & Thang điểm (Human-Selected Design Decision):**
+  - **Số lượng câu hỏi bài chẩn đoán:** Chính thức chốt **30 câu hỏi** (`Diagnostic item count = 30`), phân bổ qua 4 khía cạnh cốt lõi: Vocabulary, Grammar, Reading và Listening. Không sử dụng dải câu hỏi mở `~25–30` câu.
+  - **Thang điểm thô (Raw Score):** Áp dụng nguyên tắc **1 câu trả lời đúng = 1 điểm thô** (`1 correct answer = 1 raw point`), dải điểm số thô nằm trong khoảng $0 \le \text{Raw Score} \le 30$. Tuyệt đối không đề xuất công thức chuẩn hóa điểm số tuyến tính.
+  - **Lưu ý đồng bộ tài liệu:** *MASTER PLAN: 30 questions = HUMAN-SELECTED DESIGN DECISION. CANONICAL M2 DOCUMENTS: still require formal status synchronization before/with the next approved design update.* Không giả định canonical `docs/*` đã tự động cập nhật và không tạo ADR mới trong task này.
+- **Thuật toán phân lớp Mapping A:** Điểm số thô được ánh xạ tất định sang Đơn vị xuất phát giáo trình (Starting Unit 1..6) theo bảng quy chuẩn đã được phê duyệt:
+  - $\text{Score } 0 - 7 \rightarrow \textbf{Unit 1}$
+  - $\text{Score } 8 - 12 \rightarrow \textbf{Unit 2}$
+  - $\text{Score } 13 - 17 \rightarrow \textbf{Unit 3}$
+  - $\text{Score } 18 - 22 \rightarrow \textbf{Unit 4}$
+  - $\text{Score } 23 - 26 \rightarrow \textbf{Unit 5}$
+  - $\text{Score } 27 - 30 \rightarrow \textbf{Unit 6}$
 
 ### 8.2. Nhánh Bỏ Qua Chẩn Đoán (Branch A: Skip Diagnostic)
 - Khi học viên chọn "Bỏ qua bài kiểm tra chẩn đoán":
@@ -589,7 +699,7 @@ stateDiagram-v2
     DRAFT --> IN_REVIEW : Creator nộp duyệt bài
     IN_REVIEW --> CHANGES_REQUESTED : Moderator yêu cầu chỉnh sửa
     CHANGES_REQUESTED --> DRAFT : Creator tiếp nhận & chỉnh sửa
-    IN_REVIEW --> APPROVED : Moderator phê duyệt (Cấm tự duyệt)
+    IN_REVIEW --> APPROVED : Moderator phê duyệt (Creator cấm duyệt)
     APPROVED --> PUBLISHED : Manager xuất bản ra công chúng
     APPROVED --> PUBLISHED : Admin xuất bản khẩn cấp (Kèm lý do + Audit)
     PUBLISHED --> ARCHIVED : Manager lưu trữ
@@ -602,7 +712,7 @@ stateDiagram-v2
 1. **Khởi tạo bản thảo (`DRAFT`):** Organizational Manager tạo nhiệm vụ bài học và gán `assigned_creator_id`. Lesson Creator được phân công tiến hành soạn thảo mục tiêu, từ vựng và bài tập.
 2. **Nộp bài kiểm duyệt (`DRAFT → IN_REVIEW`):** Creator nộp bài khi đã hoàn thiện nội dung. Bài học chuyển vào hàng đợi kiểm duyệt tập trung.
 3. **Yêu cầu chỉnh sửa (`IN_REVIEW → CHANGES_REQUESTED`):** Moderator đánh giá bài học, nếu chưa đạt chuẩn chất lượng sẽ gửi kèm ghi chú yêu cầu chỉnh sửa (`review_notes`). Trạng thái chuyển về để Creator cập nhật.
-4. **Phê duyệt bài học (`IN_REVIEW → APPROVED`):** Moderator đánh giá đạt chất lượng và nhấn phê duyệt. **Ràng buộc SoD:** Hệ thống từ chối nếu Moderator chính là Creator của bài học đó (`403 SOD_VIOLATION_SELF_REVIEW`).
+4. **Phê duyệt bài học (`IN_REVIEW → APPROVED`):** Moderator đánh giá đạt chất lượng và nhấn phê duyệt. **Ràng buộc SoD:** Thẩm quyền phê duyệt dành riêng cho `MODERATOR`. Nếu tài khoản mang vai trò `LESSON_CREATOR` hoặc vai trò không có thẩm quyền gửi yêu cầu duyệt bài, hệ thống từ chối với lỗi phân quyền chuẩn tắc `403 Forbidden` / `ROLE_UNAUTHORIZED`.
 5. **Xuất bản bài học (`APPROVED → PUBLISHED`):**
    - **Luồng thông thường:** Do Organizational Manager thực hiện sau khi rà soát kế hoạch giáo trình.
    - **Luồng khẩn cấp của Quản trị viên (Admin Emergency):** Administrator chỉ được xuất bản khẩn cấp khi bài học **đã ở trạng thái `APPROVED`**, bắt buộc phải nhập lý do giải trình trong form, và hệ thống tự động ghi nhật ký kiểm toán `CONTENT_EMERGENCY_PUB`. Tuyệt đối cấm xuất bản khẩn cấp từ `IN_REVIEW`.
@@ -614,6 +724,7 @@ stateDiagram-v2
 Để đảm bảo trải nghiệm học tập không bị đứt đoạn, tầng ứng dụng (`COMP-DOM-02`) và chính sách cơ sở dữ liệu thực thi nghiêm ngặt:
 $$\text{Unit Visible to Learner} \iff \sum \text{Published Lessons in Unit} = 4$$
 - Nếu một Unit chỉ mới có 1, 2 hoặc 3 bài học đạt trạng thái `PUBLISHED`, toàn bộ Unit đó vẫn ở trạng thái ẩn đối với học viên.
+- **Chốt chặn phân quyền trực tiếp (Direct Access Denial — `UI hiding != Authorization`):** Việc ẩn Unit trên giao diện danh mục không thay thế cho kiểm soát phân quyền. Mọi truy vấn trực tiếp (direct access) từ phía học viên nhắm vào bài học hoặc bài tập thuộc một Unit chưa đủ 4/4 bài xuất bản đều bị tầng BFF và RLS từ chối với mã lỗi `404 Not Found` hoặc `403 Forbidden`. Tuyệt đối không tạo cơ chế tự động chuyển hướng hoặc fallback sang Unit gần nhất.
 
 ---
 
@@ -622,6 +733,7 @@ $$\text{Unit Visible to Learner} \iff \sum \text{Published Lessons in Unit} = 4$
 ### 11.1. Căn Cứ Hợp Đồng & Quy Ước Route Minh Họa
 - **Hợp đồng AI `docs/03-api-contract.md`:** Là tài liệu chuẩn tắc đóng băng, **100% byte-identical và chỉ đọc**. Mọi thay đổi trên tệp này đều bị hệ thống phát hiện và coi là vi phạm kỷ luật kiến trúc.
 - **Cú pháp Route minh họa:** Toàn bộ các định dạng URL cụ thể xuất hiện dưới đây đều được gắn nhãn: **`[ILLUSTRATIVE ROUTE EXAMPLE — NOT LOCKED]`**. Định danh giao tiếp chuẩn tắc và có thẩm quyền duy nhất giữa các thành phần kiến trúc là các mã định danh bề mặt API (`API-AUTH-*`, `API-LEARN-*`, `API-ASSESS-*`, `API-PRACT-*`, `API-AUTHZ-*`, `API-AI-*`, `API-AUDIT-*`).
+- **Chính sách ranh giới đối với các route AI kế thừa (Legacy AI Surface Policy):** Các route liên quan đến AI đang tồn tại trong repository (như `/api/ai/chat`, `/api/ai/srs` trong `lingora-web`) là các bề mặt kế thừa/tương thích (*legacy/compatibility surfaces*). Chúng không được gọi bởi bất kỳ luồng học viên nào trong Phase 2 và hoàn toàn bị loại trừ khỏi phạm vi nghiệm thu của Phase 2 (*excluded from Phase 2 acceptance*). Việc gỡ bỏ hoặc vô hiệu hóa các route này là một quyết định kỹ thuật độc lập nếu được yêu cầu bởi đợt rà soát an ninh mã nguồn.
 
 ### 11.2. Danh Mục Bề Mặt API Chi Tiết (API Surface Register)
 
@@ -629,21 +741,34 @@ $$\text{Unit Visible to Learner} \iff \sum \text{Published Lessons in Unit} = 4$
 |---|---|---|---|---|---|---|---|
 | **API-AUTH-01** | `POST /api/auth/register` | `COMP-DOM-01` | B1 / B3 | Công khai (Public) | Tạo bản ghi `profiles` qua GoTrue | `INVALID_INPUT`, `USER_ALREADY_EXISTS` | Không có |
 | **API-AUTH-02** | `POST /api/auth/login` | `COMP-DOM-01` | B1 / B3 | Công khai (Public) | Đọc `profiles` | `INVALID_CREDENTIALS` | `AUTH_LOGIN_FAILED` (nếu sai) |
-| **API-LEARN-01**| `GET /api/curriculum/units` | `COMP-DOM-02` | B1 / B3 | Bearer JWT (Learner) | Đọc `units` thỏa mãn luật 4/4 | `UNAUTHORIZED` | Không có |
-| **API-LEARN-02**| `GET /api/curriculum/lessons/{id}` | `COMP-DOM-05` | B1 / B3 | Bearer JWT (Learner) | Đọc `lesson_revisions` status `PUBLISHED` | `LESSON_NOT_FOUND`, `LESSON_LOCKED` | Không có |
-| **API-LEARN-03**| `POST /api/learning/lesson/submit`| `COMP-DOM-05` | B1 / B3 | Bearer JWT (Learner) | Ghi nguyên tử `user_progress` | `RETRY_ALLOWANCE_EXCEEDED` | Không có |
+| **API-AUTH-03** | `POST /api/auth/recover-password` | `COMP-DOM-01` | B1 / B3 | Công khai (Public) | Khởi tạo đặt lại mật khẩu qua Supabase Auth (P1-FR-001) | `INVALID_EMAIL` | `AUTH_PASSWORD_RECOVERY_REQ` |
+| **API-AUTH-04** | `GET /api/auth/session` | `COMP-DOM-01` | B1 / B3 | Bearer JWT (Authenticated) | Đọc phiên làm việc và hồ sơ vai trò | `UNAUTHORIZED` | Không có |
+| **API-LEARN-01**| `GET /api/curriculum/units` | `COMP-DOM-02` | B1 / B3 | Bearer JWT (Learner) | Đọc `units` thỏa mãn luật 4/4 Published | `UNAUTHORIZED` | Không có |
+| **API-LEARN-02**| `GET /api/curriculum/lessons/{id}` | `COMP-DOM-05` | B1 / B3 | Bearer JWT (Learner) | Đọc `lesson_revisions` status `PUBLISHED` (giấu đáp án) | `LESSON_NOT_FOUND`, `LESSON_LOCKED` | Không có |
+| **API-LEARN-03**| `POST /api/learning/lesson/submit`| `COMP-DOM-05` | B1 / B3 | Bearer JWT (Learner) | Ghi nguyên tử `user_progress` (xác thực retry D7) | `RETRY_ALLOWANCE_EXCEEDED` | Không có |
 | **API-ASSESS-01**|`POST /api/assessment/placement/start`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Kiểm tra `profiles.verified_starting_unit` | `ASSESSMENT_ALREADY_COMPLETED` | Không có |
-| **API-ASSESS-02**|`POST /api/assessment/placement/submit`| `COMP-DOM-03`| B1 / B3 | Bearer JWT (Learner) | Ghi `assessment_results`, cập nhật `profiles` | `INVALID_INPUT` (ngoài dải 0–30) | `DIAGNOSTIC_COMPLETED` |
-| **API-ASSESS-03**|`POST /api/assessment/placement/skip`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Cập nhật `profiles.verified_starting_unit = 1` | `ALREADY_VERIFIED` | Không có |
+| **API-ASSESS-02**|`POST /api/assessment/placement/submit`| `COMP-DOM-03`| B1 / B3 | Bearer JWT (Learner) | Ghi `assessment_results`, cập nhật `profiles` (Mapping A) | `INVALID_INPUT` (ngoài dải 0–30) | `DIAGNOSTIC_COMPLETED` |
+| **API-ASSESS-03**|`POST /api/assessment/placement/skip`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Cập nhật `profiles.verified_starting_unit = 1` (UNVERIFIED) | `ALREADY_VERIFIED` | Không có |
 | **API-ASSESS-04**|`POST /api/assessment/jump/start` | `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Kiểm tra thời gian hồi chiêu 24h | `429 JUMP_COOLDOWN_ACTIVE` | `JUMP_LOCKOUT_TRIGGERED` (nếu trượt) |
 | **API-ASSESS-05**|`POST /api/assessment/jump/submit`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Ghi `by_jump = true` trong `user_progress` | `INVALID_INPUT` | Không có |
+| **API-ASSESS-06**|`POST /api/assessment/placement/retake`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Tạo mới `assessment_results` bất biến, cập nhật starting unit | `ALREADY_IN_PROGRESS` | `DIAGNOSTIC_RETAKEN` |
 | **API-PRACT-01**| `GET /api/practice/srs/queue` | `COMP-DOM-04` | B1 / B3 | Bearer JWT (Learner) | Đọc `user_vocab_srs` đến hạn | `UNAUTHORIZED` | Không có |
-| **API-PRACT-02**| `POST /api/practice/srs/review` | `COMP-DOM-04` | B1 / B3 | Bearer JWT (Learner) | Thực thi RPC `record_review` Policy B | `INVALID_STAGE` | Không có |
-| **API-AUTHZ-01**| `POST /api/admin/content/review`| `COMP-DOM-06` | B2 / B3 | JWT (Moderator) | Cập nhật `status = APPROVED/CHANGES_REQ` | `403 SOD_VIOLATION_SELF_REVIEW` | `CONTENT_APPROVED`, `CONTENT_CHANGES_REQ` |
-| **API-AUTHZ-02**| `POST /api/admin/content/publish`| `COMP-DOM-06` | B2 / B3 | JWT (Manager) | Cập nhật `status = PUBLISHED` | `403 SOD_VIOLATION_MODERATOR_PUBLISH` | `CONTENT_PUBLISHED` |
-| **API-AUTHZ-03**| `POST /api/admin/content/emergency-publish`| `COMP-DOM-07` | B2 / B3 / B6 | JWT (Administrator)| Cập nhật `status = PUBLISHED`, kèm reason | `403 SOD_VIOLATION_EMERGENCY_UNAPPROVED`, `403 SOD_VIOLATION_MISSING_JUSTIFICATION` | `CONTENT_EMERGENCY_PUB` |
-| **API-AI-GEC-01**|`POST /v1/gec/correct` (Nội bộ) | `COMP-EXT-02` | B1 $\rightarrow$ B5 | JWT Header qua Trusted BFF Proxy | Stateless (Zero DB access) | `INVALID_INPUT`, `TEXT_TOO_LONG`, `MODEL_UNAVAILABLE` | Không có |
-| **API-AUDIT-01**| `GET /api/admin/audit-logs` | `COMP-DOM-07` | B2 / B6 | JWT (Administrator/Staff)| Đọc bảng `audit_logs` Append-Only | `UNAUTHORIZED`, `FORBIDDEN` | `AUDIT_LOG_INSPECTED` |
+| **API-PRACT-02**| `POST /api/practice/srs/review` | `COMP-DOM-04` | B1 / B3 | Bearer JWT (Learner) | Thực thi RPC `record_review` Policy B [1,3,7,14,30] | `INVALID_STAGE` | Không có |
+| **API-GOV-01** | `POST /api/admin/content/assign` | `COMP-DOM-06` | B2 / B3 | JWT (Manager) | Tạo bản ghi phân công trong `lesson_revisions` | `CREATOR_NOT_FOUND` | `CONTENT_ASSIGNED` |
+| **API-GOV-02** | `POST /api/admin/content/submit` | `COMP-DOM-06` | B2 / B3 | JWT (Creator) | Cập nhật revision từ `DRAFT` sang `IN_REVIEW` | `NOT_ASSIGNED_CREATOR` | `CONTENT_SUBMITTED` |
+| **API-AUTHZ-01**| `POST /api/admin/content/review`| `COMP-DOM-06` | B2 / B3 | JWT (Moderator) | Cập nhật `status = APPROVED/CHANGES_REQ` | `403 ROLE_UNAUTHORIZED` | `CONTENT_APPROVED`, `CONTENT_CHANGES_REQ` |
+| **API-AUTHZ-02**| `POST /api/admin/content/publish`| `COMP-DOM-06` | B2 / B3 | JWT (Manager) | Cập nhật `status = PUBLISHED` | `403 FORBIDDEN` | `CONTENT_PUBLISHED` |
+| **API-GOV-03** | `POST /api/admin/content/clone` | `COMP-DOM-06` | B2 / B3 | JWT (Creator/Manager)| Nhân bản bài học published sang revision v2 (`supersedes_id`) | `LESSON_NOT_PUBLISHED` | `CONTENT_CLONED` |
+| **API-GOV-04** | `POST /api/admin/content/archive` | `COMP-DOM-06` | B2 / B3 | JWT (Manager/Admin) | Chuyển trạng thái revision sang `ARCHIVED` | `CANNOT_ARCHIVE_ACTIVE` | `CONTENT_ARCHIVED` |
+| **API-GOV-05** | `POST /api/admin/content/draft` | `COMP-DOM-06` | B2 / B3 | JWT (Creator) | Lưu bản thảo bài học tạm thời (Draft Save) trước khi nộp duyệt | `FORBIDDEN` | `CONTENT_DRAFT_SAVED` |
+| **API-GOV-06** | `GET /api/admin/content/review-queue` | `COMP-DOM-06` | B2 / B3 | JWT (Moderator) | Tra cứu danh sách bài học đang chờ duyệt (`status = 'IN_REVIEW'`) | `FORBIDDEN` | Không có |
+| **API-USER-01** | `PATCH /api/user/profile` | `COMP-DOM-01` | B1 / B3 | Bearer JWT (Learner) | Cập nhật thông tin cho phép (múi giờ IANA, uiLocale, nativeLangCode per SEC-D3) | `INVALID_TIMEZONE` | `USER_PROFILE_UPDATED` |
+| **API-USER-02** | `GET /api/user/streak` | `COMP-DOM-02` | B1 / B3 | Bearer JWT (Learner) | Đọc chuỗi ngày học hiện tại (`currentStreak`) và ngày đủ điều kiện | `UNAUTHORIZED` | Không có |
+| **API-AUTHZ-03**| `POST /api/admin/content/emergency-publish`| `COMP-DOM-07` | B2 / B3 / B6 | JWT (Administrator)| Cập nhật `status = PUBLISHED`, kèm reason bắt buộc | `403 EMERGENCY_UNAPPROVED`, `403 MISSING_JUSTIFICATION` | `CONTENT_EMERGENCY_PUB` |
+| **API-ADMIN-ROLE-01**| `POST /api/admin/users/{id}/role` | `COMP-DOM-07` | B2 / B3 | JWT (Administrator)| Quản trị vai trò tài khoản người dùng trong `profiles` | `FORBIDDEN` | `USER_ROLE_CHANGED` |
+| **API-SUPPORT-01** | `GET /api/support/tickets` | `COMP-DOM-07` | B2 / B3 | JWT (Operations Staff / Admin)| Tra cứu và điều phối hỗ trợ người dùng theo ca sử dụng UC-14 | `FORBIDDEN` | `SUPPORT_TICKET_INSPECTED` |
+| **API-AI-GEC-01** [OUT OF PHASE 2 SCOPE]| `POST /v1/gec/correct` (Nội bộ) | `COMP-EXT-02` [OUT OF SCOPE] | B1 $\rightarrow$ B5 | Tham chiếu hỗ trợ hợp đồng 03 | Stateless (Không gọi trong Phase 2) | N/A (Không triển khai Phase 2) | Không có |
+| **API-AUDIT-01**| `GET /api/admin/audit-logs` | `COMP-DOM-07` | B2 / B6 | JWT (Administrator)| Đọc bảng `audit_logs` Append-Only (chỉ Admin) | `UNAUTHORIZED`, `FORBIDDEN` | `AUDIT_LOG_INSPECTED` |
 
 ---
 
@@ -658,7 +783,7 @@ Chiến lược kiểm thử của Phase 2 được xây dựng theo mô hình *
             /-------\
            / Security\           -> RLS Multi-Role Matrix, SoD Denial & Abuse Penetration
           /-----------\
-         / Integration \         -> BFF API Route Handlers, Database RPC & AI Proxy
+         / Integration \         -> BFF API Route Handlers, Database RPC & Service Integration
         /---------------\
        / Domain & Logic  \       -> Mapping A, Retry Math, SRS Policy B, Streak Timezone
       /-------------------\
@@ -666,28 +791,62 @@ Chiến lược kiểm thử của Phase 2 được xây dựng theo mô hình *
     /-----------------------\
 ```
 
-### 12.1. Chuyển Đổi 18 Khung Kịch Bản M2.6 Thành Bộ Kiểm Thử Khả Thi (Executable Test Specs)
+### 12.1. Quy Chuẩn Công Cụ Thực Thi Kiểm Thử Theo Gói Mã Nguồn (Test Runner Normalization)
+
+| Phân Vùng Kiểm Thử (Area) | Gói Sở Hữu (Package) | Công Cụ Chạy (Runner) | Lệnh Thực Thi Thực Tế (Executable Command) | Phạm Vi Kiểm Thử (Covers) |
+|---|---|---|---|---|
+| **Learner Core & Domain Logic** | `lingora-web` | Vitest 4.x | `npx vitest run tests/unit/domain/<file>` | Mapping A, Retry math D7, SRS Policy B client logic, Streak timezone D9. |
+| **BFF Handlers & Integration** | `lingora-web` | Vitest 4.x | `npx vitest run tests/integration/api/<file>` | BFF Route Handlers, Placement start/skip/submit, Jump cooldown, SRS review. |
+| **Multi-Role Security & SoD** | `lingora-web` | Vitest 4.x | `npx vitest run tests/security/<file>` | 6-Role token auth, Cross-user RLS isolation, SoD Creator approval denial and Moderator publish denial. |
+| **Database Schema & Prisma Migrations**| `lingora-admin` | Prisma CLI | `npx prisma validate --schema prisma/schema.prisma` | Kiểm tra tính toàn vẹn 18+ models, quan hệ khóa ngoại và enum vật lý. |
+| **End-to-End User Journeys** | `lingora-web` | Playwright 1.x| `npx playwright test tests/e2e/<file>` | 14 Use Cases cốt lõi (UC-01..UC-14), luồng liên kết nhiều người dùng, chuyển trang. |
+| **AI Service Stubs (Historical)** | `lingora-ai/api` | Pytest 8.x | `pytest tests/` | `[HISTORICAL / OUT OF PHASE 2 TEST EXECUTION SCOPE]` |
+
+### 12.2. Chuyển Đổi 18 Khung Kịch Bản M2.6 Thành Bộ Kiểm Thử Khả Thi (Executable Test Specs)
 
 | Khung Test M2.6 | Tên Kịch Bản Kiểm Thử | Tệp Mã Nguồn Kiểm Thử Dự Kiến | Lệnh Thực Thi Kiểm Thử Tương Ứng | Điều Kiện Đạt Khách Quan (Pass Assertion) |
 |---|---|---|---|---|
 | **Frame 1** | `TEST-MAPPING-A` | `lingora-web/tests/unit/domain/mapping_a.test.ts` | `npx vitest run tests/unit/domain/mapping_a.test.ts` | 12 vector điểm biên (0..30) ánh xạ chính xác 100% ra Unit 1..6; không tạo nhãn CEFR. |
 | **Frame 2** | `TEST-DIAG-SKIP` | `lingora-web/tests/integration/api/placement_skip.test.ts` | `npx vitest run tests/integration/api/placement_skip.test.ts` | Trả về `startingUnit = 1`, `UNVERIFIED`; `COUNT(assessment_results) == 0`. |
-| **Frame 3** | `TEST-DIAG-RETAKE` | `lingora-admin/tests/integration/assessment_immutable.test.ts` | `npm run test:assessment` | Bản ghi cũ giữ nguyên; tạo bản ghi mới với UUID mới; `verified_starting_unit` cập nhật. |
+| **Frame 3** | `TEST-DIAG-RETAKE` | `lingora-web/tests/integration/api/placement_retake.test.ts`| `npx vitest run tests/integration/api/placement_retake.test.ts` | Bản ghi cũ giữ nguyên; tạo bản ghi mới với UUID mới; `verified_starting_unit` cập nhật. |
 | **Frame 4** | `TEST-JUMP-PASS` | `lingora-web/tests/unit/domain/jump_threshold.test.ts` | `npx vitest run tests/unit/domain/jump_threshold.test.ts` | Điểm 94.9% $\rightarrow$ FAIL (`isPassed = false`); điểm 95.0% $\rightarrow$ PASS (`isPassed = true`). |
 | **Frame 5** | `TEST-JUMP-COOLDOWN`| `lingora-web/tests/integration/api/jump_cooldown.test.ts` | `npx vitest run tests/integration/api/jump_cooldown.test.ts` | Gọi Jump lúc $T_0 + 23h59m \rightarrow 403 / 429$; gọi lúc $T_0 + 24h01m \rightarrow 200 OK$. |
 | **Frame 6** | `TEST-JUMP-NON-COMP`| `lingora-web/tests/integration/domain/jump_progression.test.ts` | `npx vitest run tests/integration/domain/jump_progression.test.ts` | Bài học bị nhảy có `by_jump = true`, status `SKIPPED_BY_JUMP`; không tính hoàn thành. |
 | **Frame 7** | `TEST-RETRY-ALLOW` | `lingora-web/tests/unit/domain/retry_allowance.test.ts` | `npx vitest run tests/unit/domain/retry_allowance.test.ts` | Bài 15 câu $\rightarrow$ 1 lượt; bài 25 câu $\rightarrow$ 2 lượt; vượt quá lượt $\rightarrow 403 RETRY_EXCEEDED$. |
 | **Frame 8** | `TEST-RETRY-CREDIT` | `lingora-web/tests/unit/domain/retry_credit.test.ts` | `npx vitest run tests/unit/domain/retry_credit.test.ts` | Bài 10 điểm làm lại đúng $\rightarrow$ Nhận chính xác $7.0$ điểm ($70\%$); không bao giờ vượt 70%. |
-| **Frame 9** | `TEST-SRS-POLICY-B` | `lingora-admin/tests/integration/srs_policy_b.test.ts` | `npm run test:srs` | RPC `record_review` trả về khoảng cách đúng: 1, 3, 7, 14, 30; sai $\rightarrow$ reset về 1 ngày. |
+| **Frame 9** | `TEST-SRS-POLICY-B` | `lingora-web/tests/integration/api/srs_policy_b.test.ts` | `npx vitest run tests/integration/api/srs_policy_b.test.ts` | RPC `record_review` trả về khoảng cách đúng: 1, 3, 7, 14, 30; sai $\rightarrow$ reset về 1 ngày. |
 | **Frame 10**| `TEST-STREAK-TZ` | `lingora-web/tests/unit/domain/streak_timezone.test.ts` | `npx vitest run tests/unit/domain/streak_timezone.test.ts` | Bài hoàn thành 23:30 UTC ngày 26 $\rightarrow$ Ghi nhận thuộc ngày 27 theo giờ Việt Nam (UTC+7). |
 | **Frame 11**| `TEST-STREAK-RESET` | `lingora-web/tests/unit/domain/streak_reset.test.ts` | `npx vitest run tests/unit/domain/streak_reset.test.ts` | Bỏ học ngày D+1, học ngày D+2 $\rightarrow currentStreak = 1$, $longestStreak$ bảo lưu. |
 | **Frame 12**| `TEST-RBAC-MATRIX` | `lingora-web/tests/security/rbac_matrix.test.ts` | `npx vitest run tests/security/rbac_matrix.test.ts` | Quét 15 thao tác nghiệp vụ trên 6 token vai trò; 100% yêu cầu trái phép trả về 403. |
-| **Frame 13**| `TEST-RLS-ISOLATE` | `lingora-admin/tests/security/rls_isolation.test.ts` | `npm run test:security` | User A gửi truy vấn trực tiếp nhắm vào User B $\rightarrow$ Kết quả trả về rỗng (0 bản ghi). |
-| **Frame 14**| `TEST-SOD-SELF-REV` | `lingora-admin/tests/security/sod_self_review.test.ts` | `npm run test:security` | Creator duyệt bài của chính mình $\rightarrow$ Bị chặn với lỗi `403 SOD_VIOLATION_SELF_REVIEW`. |
-| **Frame 15**| `TEST-SOD-MOD-PUB` | `lingora-admin/tests/security/sod_moderator_publish.test.ts`| `npm run test:security` | Moderator xuất bản bài học $\rightarrow$ Bị chặn với lỗi `403 SOD_VIOLATION_MODERATOR_PUBLISH`. |
-| **Frame 16**| `TEST-ADMIN-EMERG` | `lingora-admin/tests/security/admin_emergency_publish.test.ts`| `npm run test:security` | Chưa duyệt $\rightarrow 403$; thiếu reason $\rightarrow 403$; duyệt + reason $\rightarrow 200$ + log `CONTENT_EMERGENCY_PUB`. |
-| **Frame 17**| `TEST-GEC-TIMEOUT` | `lingora-web/tests/integration/ai/gec_timeout.test.ts` | `npx vitest run tests/integration/ai/gec_timeout.test.ts` | AI phản hồi trễ > 8.0s $\rightarrow$ BFF ngắt kết nối tại 8.0s, trả fallback luật cơ sở. |
-| **Frame 18**| `TEST-AI-ISOLATE` | `lingora-ai/api/tests/test_network_isolation.py` | `pytest tests/test_network_isolation.py` | Quét biến môi trường container AI; xác nhận không có chuỗi kết nối DB, không có secret. |
+| **Frame 13**| `TEST-RLS-ISOLATE` | `lingora-web/tests/security/rls_isolation.test.ts` | `npx vitest run tests/security/rls_isolation.test.ts` | User A gửi truy vấn trực tiếp nhắm vào User B $\rightarrow$ Kết quả trả về rỗng (0 bản ghi). |
+| **Frame 14**| `TEST-SOD-CREATOR-APP`| `lingora-web/tests/security/sod_creator_approve.test.ts`| `npx vitest run tests/security/sod_creator_approve.test.ts`| Creator cố tình gọi lệnh duyệt bài $\rightarrow$ Bị từ chối phân quyền với lỗi `403 Forbidden` / `ROLE_UNAUTHORIZED`. |
+| **Frame 15**| `TEST-SOD-MOD-PUB` | `lingora-web/tests/security/sod_moderator_publish.test.ts`| `npx vitest run tests/security/sod_moderator_publish.test.ts` | Moderator cố tình xuất bản bài học $\rightarrow$ Bị chặn với lỗi `403 SOD_VIOLATION_MODERATOR_PUBLISH`. |
+| **Frame 16**| `TEST-SOD-EMERGENCY-PUB`| `lingora-web/tests/security/sod_emergency_publish.test.ts`| `npx vitest run tests/security/sod_emergency_publish.test.ts`| Admin xuất bản bài Approved thiếu lý do $\rightarrow$ 403 MISSING_JUSTIFICATION; xuất bản bài chưa Approved $\rightarrow$ 403 EMERGENCY_UNAPPROVED. |
+| **Frame 17** [Historical M2.6]| `TEST-GEC-TIMEOUT` | `lingora-web/tests/integration/ai/gec_timeout.test.ts` | `[OUT OF PHASE 2 SCOPE]` | Khung kiểm thử AI M2.6; không thuộc phạm vi thực thi kiểm thử Phase 2. |
+| **Frame 18** [Historical M2.6]| `TEST-AI-ISOLATE` | `lingora-ai/api/tests/test_network_isolation.py` | `[OUT OF PHASE 2 SCOPE]` | Khung kiểm thử AI M2.6; không thuộc phạm vi thực thi kiểm thử Phase 2. |
+
+> **Phân bổ khung kiểm thử theo mốc triển khai (Canonical Test Frame Mapping):**
+> - **M3.2 (Security / Auth / RLS / SoD):** Bao trùm **Frames 12–16** (RBAC, RLS Isolation, Creator Approval Denial, Moderator Publish Denial, Admin Emergency Publish).
+> - **M3.4 (Assessment & Placement Engine):** Bao trùm **Frames 1–3** (Mapping A 12 boundary points, Skip Diagnostic 0-record, Retake Immutability).
+> - **M3.5 (Learning Intelligence Engine):** Bao trùm **Frames 4–11** (Jump Threshold, Jump Cooldown, Jump Non-Completing, Retry Allowance, Retry Credit Cap, SRS Policy B, Streak Timezone, Streak Reset).
+> - **Frames 17–18:** Khung kiểm thử AI M2.6 được lưu vết ở mức tham chiếu lịch sử, hoàn toàn không thuộc phạm vi nghiệm thu Phase 2.
+
+### 12.3. Lộ Trình Kiểm Thử Khói Tích Hợp Sớm (Progressive Smoke Verification)
+
+Nhằm phát hiện sớm lỗi tích hợp giữa các tầng trước khi bước vào kiểm thử E2E tổng thể tại M3.8, các mốc nền tảng bắt buộc phải vượt qua các bài kiểm thử khói (Smoke Tests):
+
+| Mốc Triển Khai | Bài Kiểm Thử Khói (Smoke Journey) | Kịch Bản Kiểm Tra Tối Thiểu | Điều Kiện Vượt Cổng (Gate Exit) |
+|---|---|---|---|
+| **M3.2** | Auth & 6-Role Token Smoke | Đăng nhập lần lượt 6 tài khoản mẫu, nhận JWT chứa đúng role claim | 6/6 tokens hợp lệ, giải mã đúng role |
+| **M3.3** | Learner Lesson Player Smoke | Mở bài học thuộc Unit 3 đã Published, tải 5 câu hỏi, trả lời 1 câu | Render 5 dạng bài tập, nhận phản hồi chấm điểm |
+| **M3.4** | Placement & Starting Unit Smoke | Học viên mới làm 30 câu placement, tính điểm Mapping A, gán Unit xuất phát | Cập nhật `verified_starting_unit`, tạo `AssessmentResult` |
+| **M3.5** | Intelligence & SRS Smoke | Trả lời sai kích hoạt retry (trần 70%), gọi RPC `record_review` cập nhật Policy B | Retry credit 70% PASS, SRS card nhảy ngày PASS |
+| **M3.6** | Content Lifecycle Smoke | Manager phân công $\rightarrow$ Creator soạn Draft $\rightarrow$ nộp Review $\rightarrow$ Moderator Approve $\rightarrow$ Publish | Chu trình 6 trạng thái và Clone-to-Draft v2 PASS |
+| **M3.8** | Full End-to-End Learner Journey | Toàn bộ 14 Ca sử dụng cốt lõi (UC-01 đến UC-14) liên kết không đứt gãy | 100% Playwright E2E suites PASS |
+| **M3.9** | Security & Performance Hardening Smoke | Chạy k6 API benchmark (P95 latency), quét an ninh JWT & RLS bypass | P95 < 500ms, 0 lỗi Sev-1/Sev-2, secret scan clean |
+
+> **Nguyên tắc liêm chính trong kiểm thử (Test Integrity Principle):**
+> Tuyệt đối không tuyên bố các kịch bản kiểm thử đã đạt (`PASS`) chỉ vì câu lệnh kiểm thử đã được liệt kê trong bảng đặc tả. Mỗi bài kiểm thử chỉ được công nhận vượt qua cổng nghiệm thu khi có **bằng chứng thực thi thực tế (Command output & exit code 0)** được ghi nhận trực tiếp vào `logs/test-log.md` trong quá trình thực hiện mốc tương ứng. Mọi câu lệnh kiểm thử trong tài liệu đều phải thuộc về các gói mã nguồn thực tế và công cụ runner đã được cài đặt trong repository.
 
 ---
 
@@ -697,14 +856,18 @@ Chiến lược kiểm thử của Phase 2 được xây dựng theo mô hình *
 
 ### 13.1. Danh Sách Tài Khoản Mẫu Đại Diện 6 Vai Trò Chuẩn Tắc
 
-| Vai Trò Chuẩn Tắc | Email Đăng Nhập | Mật Khẩu Mẫu | Mục Đích Sử Dụng |
+> **Nguyên tắc an toàn mật thực & quản lý tài khoản mẫu (Security Hygiene):**
+> *Demo account credentials are seed-only and must be injected through environment variables / local secret configuration. Không commit production credentials vào repository.*
+> Toàn bộ mật khẩu tài khoản mầm chỉ phục vụ môi trường kiểm thử/seed cục bộ và được nạp qua cấu hình biến môi trường cục bộ (ví dụ: `SEED_DEFAULT_PASSWORD`), tuyệt đối không coi các thông tin này là thông tin đăng nhập production.
+
+| Vai Trò Chuẩn Tắc | Email Đại Diện (Demo Persona) | Phương Thức Xác Thực Mầm | Mục Đích Sử Dụng |
 |---|---|---|---|
-| **Administrator** | `admin.demo@lingora.edu.vn` | `Lingora@2026!Admin` | Trình diễn quản trị tài khoản, kiểm tra audit log, xuất bản khẩn cấp có lý do. |
-| **Organizational Manager** | `manager.demo@lingora.edu.vn` | `Lingora@2026!Mgr` | Trình diễn lập kế hoạch bài học, phân công biên soạn, xuất bản bài học chính thức. |
-| **Lesson Creator** | `creator.demo@lingora.edu.vn` | `Lingora@2026!Create` | Trình diễn tiếp nhận phân công, soạn thảo bài học bản thảo (Draft), nộp bài kiểm duyệt. |
-| **Moderator** | `moderator.demo@lingora.edu.vn` | `Lingora@2026!Mod` | Trình diễn hàng đợi kiểm duyệt, yêu cầu sửa bài, phê duyệt bài học (Approved). |
-| **Learner** (Đã kiểm định)| `learner.demo@lingora.edu.vn` | `Lingora@2026!Learn` | Trình diễn luồng học bài, tương tác bài tập, làm lại, ôn tập SRS, chuỗi ngày học. |
-| **Operations Staff** | `staff.demo@lingora.edu.vn` | `Lingora@2026!Staff` | Trình diễn tra cứu trạng thái hệ thống và hỗ trợ người dùng theo thẩm quyền. |
+| **Administrator** | `admin.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn quản trị tài khoản, kiểm tra audit log, xuất bản khẩn cấp có lý do. |
+| **Organizational Manager** | `manager.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn lập kế hoạch bài học, phân công biên soạn, xuất bản bài học chính thức. |
+| **Lesson Creator** | `creator.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn tiếp nhận phân công, soạn thảo bài học bản thảo (Draft), nộp bài kiểm duyệt. |
+| **Moderator** | `moderator.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn hàng đợi kiểm duyệt, yêu cầu sửa bài, phê duyệt bài học (Approved). |
+| **Learner** (Đã kiểm định)| `learner.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn luồng học bài, tương tác bài tập, làm lại, ôn tập SRS, chuỗi ngày học. |
+| **Operations Staff** | `staff.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn xử lý / điều phối hỗ trợ vận hành người dùng theo thẩm quyền được cấp. |
 
 ### 13.2. Danh Sách 7 Hồ Sơ Học Viên Mẫu (Learner Personas for Test & Demo)
 1. `learner.new@lingora.edu.vn`: Học viên mới tinh, chưa làm bài chẩn đoán (sẵn sàng demo luồng Diagnostic và luồng Skip).
@@ -715,16 +878,30 @@ Chiến lược kiểm thử của Phase 2 được xây dựng theo mô hình *
 6. `learner.jump@lingora.edu.vn`: Học viên đã hoàn thành Unit 1, đủ điều kiện làm bài Jump sang Unit 2 (sẵn sàng demo luồng Jump đạt ≥95% và luồng Jump trượt khóa hồi chiêu 24h).
 7. `learner.streakreset@lingora.edu.vn`: Học viên có kỷ lục `longestStreak = 15`, ngày học gần nhất là 2 ngày trước (sẵn sàng demo việc đặt lại `currentStreak = 1` do bỏ lỡ 1 ngày).
 
-### 13.3. Dữ Liệu Mẫu Giáo Trình & Vòng Đời Nội Dung
-- **Khóa học tiếng Anh A1 (English A1 Pilot):**
-  - **Unit 1 (Greetings & Personal Details):** Đầy đủ 4/4 bài học ở trạng thái `PUBLISHED` $\rightarrow$ Đơn vị hiển thị bình thường cho học viên.
-  - **Unit 2 (Family & Daily Routines):** Có 3 bài học `PUBLISHED` và 1 bài học `APPROVED` (chưa xuất bản) $\rightarrow$ Đơn vị tự động ẩn đối với học viên theo đúng luật Unit 4/4 Published.
-  - **Unit 3 (Food & Dining):** Chứa các bài học đang trong quá trình vòng đời:
-    - Bài học 3.1: Trạng thái `DRAFT` (Creator đang biên soạn).
-    - Bài học 3.2: Trạng thái `IN_REVIEW` (Đang nằm trong hàng đợi của Moderator).
-    - Bài học 3.3: Trạng thái `CHANGES_REQUESTED` (Kèm ghi chú yêu cầu chỉnh sửa).
-    - Bài học 3.4: Trạng thái `APPROVED` (Sẵn sàng cho Manager xuất bản hoặc Admin xuất bản khẩn cấp).
-  - **Bản thảo nhân bản (Clone-to-Draft):** Một bài học phiên bản 2 (`version = 2`, `status = 'DRAFT'`) có trường `supersedes_id` trỏ về bài học phiên bản 1 đang `PUBLISHED` trong Unit 1.
+### 13.3. Dữ Liệu Mẫu Giáo Trình & Chiến Lược Phân Tách Fixture (Bifurcated Seed Strategy)
+
+Để triệt tiêu hoàn toàn xung đột giữa **Điều kiện hiển thị đơn vị học (Unit 4/4 Published Rule)** và **Vòng đời nội dung đa trạng thái (Content Lifecycle)**, dữ liệu mầm giáo trình tiếng Anh A1 được phân tách thành 2 nhóm fixture độc lập:
+
+#### Nhóm 1: Dữ Liệu Mầm Trình Diễn Học Viên (Learning Demo Fixture — Phục vụ Màn 1 & Màn 4)
+Khóa học tiếng Anh A1 chuẩn (`English A1 Foundation` — tham chiếu chi tiết tại `docs/08-english-a1-curriculum.md`):
+- Toàn bộ **6 Units (24 bài học)** thuộc giáo trình thử nghiệm tiếng Anh A1 đều đạt chuẩn **4/4 bài học ở trạng thái `PUBLISHED`**:
+  - `Unit 1`: 4/4 Published
+  - `Unit 2`: 4/4 Published
+  - `Unit 3`: 4/4 Published
+  - `Unit 4`: 4/4 Published
+  - `Unit 5`: 4/4 Published
+  - `Unit 6`: 4/4 Published
+- **Tính khả dụng toàn diện:** Nhờ toàn bộ 6 Units đều thỏa mãn điều kiện hiển thị Unit 4/4 Published, mọi điểm số chẩn đoán đầu vào từ $0$ đến $30$ điểm thô đều xếp học viên vào đúng xuất phát điểm giáo trình tương ứng (U1 đến U6 theo Mapping A) mà không bao giờ gặp tình trạng Unit bị ẩn hay cần bất kỳ cơ chế fallback nào.
+
+#### Nhóm 2: Dữ Liệu Mầm Quản Trị & Kiểm Thử Kiểm Duyệt (Governance & Negative Test Fixture — Phục vụ Màn 2 & Màn 3)
+Được cấu hình trên một khóa học / đơn vị kiểm thử riêng biệt để phục vụ kiểm thử vòng đời và kiểm định phủ định (negative testing):
+- **Bộ dữ liệu vòng đời nội dung (Content Lifecycle Fixture):** Bao gồm các bài học đại diện cho đầy đủ các trạng thái biên soạn và kiểm duyệt:
+  - Bản thảo mới phân công: trạng thái `DRAFT` do Manager gán cho Creator (`creator.demo`).
+  - Bài học đang trong hàng đợi kiểm duyệt: trạng thái `IN_REVIEW` chờ Moderator thẩm định.
+  - Bài học yêu cầu chỉnh sửa: trạng thái `CHANGES_REQUESTED` kèm ghi chú nhận xét.
+  - Bài học đã duyệt: trạng thái `APPROVED`, sẵn sàng xuất bản thông thường hoặc xuất bản khẩn cấp có lý do.
+  - Bản thảo nâng cấp nhân bản (Clone-to-Draft v2): bản ghi phiên bản mới kế thừa nội dung bản cũ thông qua trường `supersedes_id`.
+- **Kịch bản kiểm thử phủ định hiển thị Unit (Negative Unit Visibility Case):** Một Unit thử nghiệm chỉ có 3/4 bài học `PUBLISHED` và 1 bài học `DRAFT` $\rightarrow$ Tự động ẩn đối với học viên để kiểm chứng điều kiện cưỡng chế Unit 4/4 Published.
 
 ---
 
@@ -738,15 +915,15 @@ Kịch bản trình diễn được thiết kế thành **một câu chuyện li
 +----------------------------------------------------------------------------------------------------+
 | MÀN 1: HÀNH TRÌNH HỌC VIÊN TOÀN DIỆN (LEARNER JOURNEY)                                             |
 |   1. Đăng nhập tài khoản học viên mới (learner.new) -> Hiển thị lời nhắc chẩn đoán năng lực.       |
-|   2. Làm bài Placement Test -> Đạt 15/30 điểm thô -> Mapping A tự động xếp vào xuất phát điểm Unit 3|
-|   3. Vào Unit 3 -> Vào Bài học -> Trình phát bài tập tương tác (MCQ, Fill, Reorder, Listening).    |
+|   2. Làm bài Placement Test (30 câu) -> Đạt 15/30 điểm thô -> Mapping A tự động xếp vào Unit 3.    |
+|   3. Vào Unit 3 -> Vào Bài học L9 -> Trình phát bài tập tương tác (MCQ, Fill, Reorder, Listening). |
 |   4. Cố tình làm sai 1 câu -> Hệ thống giải thích ngữ pháp -> Kích hoạt Controlled Retry.          |
 |   5. Làm lại chính xác câu sai -> Điểm số cộng tối đa 70% -> Hoàn thành bài học nguyên tử.         |
 |   6. Chuyển sang màn hình SRS -> Ôn tập 5 thẻ từ vựng đến hạn -> Chu kỳ Policy B nhảy bước.        |
 |   7. Kiểm tra Streak -> Chuỗi ngày học tăng 1 ngày theo đúng múi giờ Việt Nam.                     |
 +----------------------------------------------------------------------------------------------------+
 | MÀN 2: HÀNH TRÌNH QUẢN TRỊ VÀ KIỂM DUYỆT NỘI DUNG (CONTENT GOVERNANCE)                             |
-|   1. Manager đăng nhập -> Tạo nhiệm vụ biên soạn Bài 10, phân công cho Creator (creator.demo).     |
+|   1. Manager đăng nhập -> Tạo nhiệm vụ biên soạn Bài học mới, phân công cho Creator (creator.demo). |
 |   2. Creator đăng nhập -> Nhận thông báo nhiệm vụ -> Vào soạn nội dung và bài tập -> Nộp duyệt bài.|
 |   3. Moderator đăng nhập -> Thấy bài trong hàng đợi -> Yêu cầu sửa đổi kèm lý do.                  |
 |   4. Creator nhận phản hồi -> Chỉnh sửa và nộp duyệt lại.                                          |
@@ -754,18 +931,19 @@ Kịch bản trình diễn được thiết kế thành **một câu chuyện li
 |   6. Manager đăng nhập -> Nhìn thấy bài học đã Approved -> Bấm Xuất bản (Published).               |
 +----------------------------------------------------------------------------------------------------+
 | MÀN 3: KIỂM CHỨNG BẢO MẬT & PHÂN TÁCH NHIỆM VỤ (SECURITY & SOD DEFENSE)                           |
-|   1. Creator cố tình tự duyệt bài do chính mình biên soạn -> Hệ thống chặn, báo lỗi 403 Forbidden. |
+|   1. Creator cố tình gọi lệnh duyệt bài -> Bị từ chối phân quyền (403 Forbidden / ROLE_UNAUTHORIZED)|
 |   2. Moderator cố tình xuất bản bài học ra học viên -> Hệ thống chặn, báo lỗi 403 Forbidden.       |
-|   3. Admin cố tình xuất bản bài chưa duyệt -> Bị chặn (403 SOD_VIOLATION_EMERGENCY_UNAPPROVED).    |
+|   3. Admin cố tình xuất bản bài chưa duyệt -> Bị chặn (403 EMERGENCY_UNAPPROVED).                  |
 |   4. Admin xuất bản bài đã Approved nhưng không nhập lý do -> Bị chặn (403 MISSING_JUSTIFICATION). |
 |   5. Admin xuất bản khẩn cấp bài Approved có nhập lý do -> Thành công.                             |
 |   6. Mở màn hình Audit Log -> Hiển thị bản ghi CONTENT_EMERGENCY_PUB kèm lý do giải trình.         |
 +----------------------------------------------------------------------------------------------------+
-| MÀN 4: RANH GIỚI TRÍ TUỆ NHÂN TẠO PHI TRẠNG THÁI (AI & GEC FALLBACK BOUNDARY)                      |
-|   1. Học viên vào bài tập viết tình huống -> Gõ câu sai ngữ pháp -> Gửi chấm điểm.                 |
-|   2. Microservice AI phản hồi phân tích sửa lỗi trực quan (T5-small corrected text diff).          |
-|   3. Giả lập microservice AI gặp sự cố (ngắt kết nối hoặc trễ > 8s) -> Mạch ngắt BFF kích hoạt.    |
-|   4. Hệ thống tự động chuyển sang chế độ Fallback luật cơ sở -> Giao diện học viên không bị treo.  |
+| MÀN 4: TỔNG HỢP TIẾN ĐỘ HỌC VIÊN & CÁ NHÂN HÓA THEO QUY TẮC (LEARNER STATE & RULE PERSONALIZATION)  |
+|   1. Đăng nhập học viên có lịch sử học tập (learner.diagnosed) -> Bảng điều khiển cá nhân hiển thị |
+|      trình độ đã kiểm định (verifiedProficiency), điểm xuất phát Unit 3, và chuỗi ngày học Streak.  |
+|   2. Mở hàng đợi ôn tập ngắt quãng (SRS Review Queue) -> Hiển thị từ vựng đến hạn theo Policy B.   |
+|   3. Hoàn thành 1 bài học hợp lệ trong Unit -> Hệ thống tự động cập nhật chuỗi Streak theo múi giờ. |
+|   4. Kiểm tra điều kiện đơn vị giáo trình: Unit đủ 4/4 Published mở; Unit 3/4 Published khóa ẩn.   |
 +----------------------------------------------------------------------------------------------------+
 ```
 
@@ -777,9 +955,9 @@ Kịch bản trình diễn được thiết kế thành **một câu chuyện li
 | `DEMO-ACT1-02` | Trình phát bài tập & Làm lại 70% | Khóa học A1 Unit 3 | Câu sai làm lại nhận 7.0/10 điểm; thanh tiến độ tăng | Video MP4 / Ảnh chụp màn hình |
 | `DEMO-ACT1-03` | Ôn tập ngắt quãng SRS Policy B | `learner.srsdue` | Thẻ đúng nhảy chu kỳ +1 ngày; RPC trả về thành công | Video MP4 / Ảnh chụp màn hình |
 | `DEMO-ACT2-01` | Vòng đời biên soạn & Kiểm duyệt | Bài học phân công mới | Chuyển dịch DRAFT $\rightarrow$ IN_REVIEW $\rightarrow$ APPROVED $\rightarrow$ PUBLISHED | Video MP4 / Ảnh chụp màn hình |
-| `DEMO-ACT3-01` | Chặn vi phạm SoD & Tự duyệt | `creator.demo` | Thông báo lỗi đỏ `403 SOD_VIOLATION_SELF_REVIEW` | Video MP4 / Ảnh chụp màn hình |
+| `DEMO-ACT3-01` | Chặn Creator duyệt bài học | `creator.demo` | Thông báo lỗi đỏ `403 Forbidden` / `ROLE_UNAUTHORIZED` | Video MP4 / Ảnh chụp màn hình |
 | `DEMO-ACT3-02` | Xuất bản khẩn cấp & Nhật ký Audit| `admin.demo` | Modal nhập lý do; Bảng audit hiển thị sự kiện | Video MP4 / Ảnh chụp màn hình |
-| `DEMO-ACT4-01` | Sửa lỗi GEC & Fallback khi AI trễ| Bài viết tình huống | Phản hồi diff ngữ pháp; Fallback kích hoạt tại 8.0s | Video MP4 / Ảnh chụp màn hình |
+| `DEMO-ACT4-01` | Tổng hợp tiến độ & cá nhân hóa quy tắc | `learner.diagnosed` | Bảng điều khiển hiển thị Streak, SRS due cards, trạng thái Unit theo quy tắc chuẩn tắc | Video MP4 / Ảnh chụp màn hình |
 
 ---
 
@@ -789,19 +967,19 @@ Nhằm phục vụ trực tiếp cho Báo cáo Học thuật Tốt nghiệp, m�
 
 | (1) Tuyên Bố Báo Cáo (Report Claim) | (2) Bằng Chứng Khách Quan (Evidence Artifact) | (3) Nguồn Bằng Chứng (Source of Truth) | (4) Phương Thức Thu Thập (How Captured) | (5) Mốc Hoàn Thành (Milestone) |
 |---|---|---|---|---|
-| **RC-01:** Hệ thống hỗ trợ đầy đủ 6 vai trò chuẩn tắc với phân quyền RLS độc lập | Kết quả test phân quyền 6 vai trò; Log RLS PostgreSQL | `lingora-admin/tests/security/` | Chạy lệnh `npm run test:security`, trích xuất stdout exit code 0 | M3.2 |
-| **RC-02:** Thuật toán Mapping A ánh xạ điểm thô 0–30 ra Unit 1–6 tất định | Bảng kết quả chạy 12 vector điểm biên; Unit test log | `lingora-web/tests/unit/domain/mapping_a.test.ts` | Chạy lệnh `npx vitest run mapping_a`, xuất log kiểm thử | M3.4 |
+| **RC-01:** Hệ thống hỗ trợ đầy đủ 6 vai trò chuẩn tắc với phân quyền RLS độc lập | Kết quả test phân quyền 6 vai trò; Log RLS PostgreSQL | `lingora-web/tests/security/rbac_matrix.test.ts` | Chạy lệnh `npx vitest run tests/security/rbac_matrix.test.ts`, trích xuất stdout exit code 0 | M3.2 |
+| **RC-02:** Thuật toán Mapping A ánh xạ điểm thô 0–30 ra Unit 1–6 tất định | Bảng kết quả chạy 12 vector điểm biên; Unit test log | `lingora-web/tests/unit/domain/mapping_a.test.ts` | Chạy lệnh `npx vitest run tests/unit/domain/mapping_a.test.ts`, xuất log kiểm thử | M3.4 |
 | **RC-03:** Nhánh Skip chẩn đoán không phát sinh kết quả đánh giá giả mạo | Truy vấn SQL kiểm toán đối soát: số lượng bản ghi = 0 | Cơ sở dữ liệu Supabase Postgres | Chạy script kiểm tra DB sau khi nhấn Skip: `COUNT(*) == 0` | M3.4 |
 | **RC-04:** Thử thách nhảy cóc đạt ngưỡng ≥95% và áp dụng hồi chiêu 24h | Kết quả chạy test biên 94.9% vs 95.0% và test hồi chiêu | `lingora-web/tests/unit/domain/jump_threshold.test.ts` | Chạy Vitest kiểm thử logic ngưỡng và mock đồng hồ server | M3.5 |
 | **RC-05:** Hạn mức làm lại `max(1, floor(N*0.10))` áp dụng trần điểm 70% | Kết quả kiểm thử tính điểm làm lại và chặn lượt thứ N+1 | `lingora-web/tests/unit/domain/retry_allowance.test.ts` | Chạy Vitest kiểm thử logic làm lại có kiểm soát | M3.5 |
-| **RC-06:** Thuật toán SRS Policy B tuân thủ nghiêm ngặt mảng `[1,3,7,14,30]` | Log thực thi hàm RPC PostgreSQL `record_review` | `lingora-admin/tests/integration/srs_policy_b.test.ts` | Thực thi test gọi trực tiếp RPC trên cơ sở dữ liệu test | M3.5 |
+| **RC-06:** Thuật toán SRS Policy B tuân thủ nghiêm ngặt mảng `[1,3,7,14,30]` | Log thực thi hàm RPC PostgreSQL `record_review` | `lingora-web/tests/integration/api/srs_policy_b.test.ts` | Thực thi test gọi trực tiếp RPC trên cơ sở dữ liệu test qua Vitest | M3.5 |
 | **RC-07:** Chuỗi ngày học Streak tính chính xác theo múi giờ IANA của học viên | Kết quả kiểm thử chuyển đổi múi giờ qua các thời điểm biên | `lingora-web/tests/unit/domain/streak_timezone.test.ts` | Chạy Vitest với các trường hợp lệch giờ giữa UTC và UTC+7 | M3.5 |
-| **RC-08:** Phân tách nhiệm vụ SoD ngăn chặn hoàn toàn việc Creator tự duyệt bài | Bản ghi phản hồi HTTP 403 và thông báo chặn từ DB Trigger | `lingora-admin/tests/security/sod_self_review.test.ts` | Chạy test giả lập Creator gửi request duyệt bài chính mình | M3.6 |
+| **RC-08:** Phân tách nhiệm vụ SoD ngăn chặn Creator phê duyệt bài học | Bản ghi phản hồi HTTP 403 Forbidden / ROLE_UNAUTHORIZED | `lingora-web/tests/security/sod_creator_approve.test.ts` | Chạy test giả lập Creator gửi request duyệt bài | M3.2 |
 | **RC-09:** Cơ chế Clone-to-Draft v2 bảo tồn nguyên vẹn bài học đã xuất bản | Bản ghi cơ sở dữ liệu bảng `lesson_revisions` liên kết cha con | Cơ sở dữ liệu Supabase Postgres | Truy vấn cây phả hệ qua trường `supersedes_id` | M3.6 |
-| **RC-10:** Đơn vị học chỉ hiển thị khi có đủ 4/4 bài học xuất bản | Kết quả test truy vấn danh sách Unit với các trạng thái bài | `lingora-web/tests/integration/api/curriculum.test.ts` | Test API lấy curriculum: Unit 3 bài published không xuất hiện | M3.3 |
+| **RC-10:** Đơn vị học chỉ hiển thị khi có đủ 4/4 bài học xuất bản | Kết quả test truy vấn danh sách Unit với các trạng thái bài | `lingora-web/tests/integration/api/curriculum.test.ts` | Test API lấy curriculum: Unit chưa đủ 4/4 bài published bị ẩn | M3.3 |
 | **RC-11:** Admin xuất bản khẩn cấp bắt buộc có lý do và phát sinh log kiểm toán | Bản ghi nhật ký kiểm toán có action `CONTENT_EMERGENCY_PUB` | Bảng `audit_logs` trong Supabase | Truy vấn bản ghi log sau khi Admin thực hiện xuất bản khẩn cấp | M3.6 |
-| **RC-12:** Microservice AI phi trạng thái ngắt kết nối tại 8.0s và có fallback | Log ghi nhận thời gian ngắt kết nối và phản hồi fallback | `lingora-web/tests/integration/ai/gec_timeout.test.ts` | Test mock AI delay 10s: BFF ngắt đúng 8.0s, trả kết quả fallback | M3.7 |
-| **RC-13:** Độc lập ranh giới mạng: AI container không thể truy cập trực tiếp DB | Kết quả quét mã nguồn cấu hình mạng và biến môi trường | `lingora-ai/api/tests/test_network_isolation.py` | Pytest kiểm tra cấu hình mạng và biến môi trường container | M3.7 |
+| **RC-12:** Cơ chế chuyển đổi ngôn ngữ i18n lưu trữ trạng thái người dùng đồng bộ | Kết quả kiểm thử chuyển đổi locale `vi`/`en`; Unit test log | `lingora-web/tests/unit/infrastructure/i18n_locale.test.ts` | Chạy Vitest kiểm thử chuyển đổi ngôn ngữ và đọc cookie/profile | M3.7 |
+| **RC-13:** Cách ly truy cập dữ liệu chéo học viên tại tầng lưu trữ và RLS | Kết quả kiểm thử truy vấn chéo người dùng trả về 0 bản ghi | `lingora-web/tests/security/rls_isolation.test.ts` | Thực thi test kiểm thử tấn công dữ liệu chéo người dùng qua PostgREST | M3.2 |
 | **RC-14:** Toàn bộ hệ thống vượt qua bộ kiểm thử hồi quy và an ninh | Báo cáo tổng hợp kiểm thử toàn hệ thống (Test Summary) | Toàn bộ các thư mục kiểm thử | Script chạy toàn bộ test suites và xuất báo cáo tỷ lệ đạt 100% | M3.9 |
 
 ---
@@ -812,14 +990,14 @@ Nhằm phục vụ trực tiếp cho Báo cáo Học thuật Tốt nghiệp, m�
 
 ### 16.1. Bảng Đối Soát Tiêu Chí Phi Chức Năng (NFR Target vs Measured Framework)
 
-| Mã NFR | Tiêu Chí Phi Chức Năng | Mục Tiêu Thiết Kế (TARGET) | Phương Pháp Đo Lường Thực Nghiệm (Methodology) | Môi Trường Đo Đạc (Environment) | Kết Quả Thực Đo (MEASURED) | Ngưỡng Chấp Thuận (Acceptance Threshold) |
+| Mã Chỉ Số | Tiêu Chí Phi Chức Năng | Mục Tiêu Thiết Kế (TARGET) | Phương Pháp Đo Lường Thực Nghiệm (Methodology) | Môi Trường Đo Đạc (Environment) | Kết Quả Thực Đo (MEASURED) | Ngưỡng Chấp Thuận (Acceptance Threshold) |
 |---|---|---|---|---|---|---|
-| **NFR-01** | Thời gian phản hồi API BFF | $< 200 \text{ ms}$ (p95 cho các truy vấn đọc) | Kịch bản k6 đo lường 50 người dùng đồng thời trong 5 phút | Local / Staging Server (Node.js 20) | `CHỜ ĐO ĐẠC TẠI M3.9` | p95 $< 300 \text{ ms}$ |
-| **NFR-02** | Thời gian ngắt kết nối AI | $\le 8.0 \text{ giây}$ (Hard timeout) | Giả lập microservice AI phản hồi sau 15 giây | Local Docker Container | `CHỜ ĐO ĐẠC TẠI M3.9` | Ngắt kết nối trong khoảng $8.0 \pm 0.2 \text{ s}$ |
-| **NFR-03** | Thời gian suy luận GEC CPU | $\le 2,000 \text{ ms}$ (Warm CPU, văn bản $< 200$ ký tự) | Pytest benchmark chạy 100 câu mẫu văn bản tiếng Anh | Python 3.11, CPU x86_64 4 Cores | `CHỜ ĐO ĐẠC TẠI M3.9` | Trung bình $< 2,500 \text{ ms}$ |
-| **NFR-04** | Thời gian tải trang ban đầu (FCP)| $< 1.5 \text{ giây}$ trên đường truyền mạng 4G | Google Lighthouse Audit trên trình duyệt Chrome | Headless Chrome, Network Throttling | `CHỜ ĐO ĐẠC TẠI M3.9` | FCP $< 2.0 \text{ s}$, LCP $< 2.5 \text{ s}$ |
-| **NFR-05** | Hiệu năng đánh giá RLS Database | $< 50 \text{ ms}$ (p95 trên tập dữ liệu 10,000 bản ghi) | EXPLAIN ANALYZE trên các câu lệnh SELECT có RLS | PostgreSQL 15 Supabase Instance | `CHỜ ĐO ĐẠC TẠI M3.9` | Execution Time $< 80 \text{ ms}$ |
-| **NFR-06** | Khả năng chịu tải đồng thời | 50 phiên học viên tương tác đồng thời | k6 Virtual Users chạy kịch bản làm bài tập liên tục | Staging Environment | `CHỜ ĐO ĐẠC TẠI M3.9` | Tỷ lệ lỗi $< 0.1\%$, CPU $< 80\%$ |
+| **VAL-NFR-01** | Thời gian phản hồi API BFF | $< 200 \text{ ms}$ (p95 cho các truy vấn đọc) | Kịch bản k6 đo lường 50 người dùng đồng thời trong 5 phút | Local / Staging Server (Node.js 20) | `CHỜ ĐO ĐẠC TẠI M3.9` | p95 $< 300 \text{ ms}$ |
+| **VAL-NFR-02** | Thời gian tải trang ban đầu (FCP)| $< 1.5 \text{ giây}$ trên đường truyền mạng 4G | Google Lighthouse Audit trên trình duyệt Chrome | Headless Chrome, Network Throttling | `CHỜ ĐO ĐẠC TẠI M3.9` | FCP $< 2.0 \text{ s}$, LCP $< 2.5 \text{ s}$ |
+| **VAL-NFR-03** | Hiệu năng đánh giá RLS Database | $< 50 \text{ ms}$ (p95 trên tập dữ liệu 10,000 bản ghi) | EXPLAIN ANALYZE trên các câu lệnh SELECT có RLS | PostgreSQL 15 Supabase Instance | `CHỜ ĐO ĐẠC TẠI M3.9` | Execution Time $< 80 \text{ ms}$ |
+| **VAL-NFR-04** | Khả năng chịu tải đồng thời | 50 phiên học viên tương tác đồng thời | k6 Virtual Users chạy kịch bản làm bài tập liên tục | Staging Environment | `CHỜ ĐO ĐẠC TẠI M3.9` | Tỷ lệ lỗi $< 0.1\%$, CPU $< 80\%$ |
+
+> **Ghi chú về mã hóa chỉ số:** Các mã `VAL-NFR-01` đến `VAL-NFR-04` là các mục tiêu kiểm định nội bộ của Kế hoạch Tổng thể (Master-Plan Validation Targets), phục vụ trực tiếp cho việc đánh giá thực nghiệm tại M3.9 và đối soát trong Chương 5 Báo cáo tốt nghiệp; không tự tiện định nghĩa lại hay gây xung đột với hệ thống mã yêu cầu chuẩn tắc `P1-NFR` trong tài liệu kiến trúc M2.
 
 ---
 
@@ -873,8 +1051,11 @@ Toàn bộ quá trình thực thi Phase 2 bắt buộc phải tuân thủ nghiê
 |                         ACADEMIC REPORT CHAPTER-TO-MILESTONE MAPPING MATRIX                        |
 +----------------------------------------------------------------------------------------------------+
 | CHƯƠNG 1: GIỚI THIỆU & NGHIÊN CỨU NHU CẦU NGƯỜI DÙNG                                               |
-|   - Nội dung báo cáo: Kết quả khảo sát thực nghiệm N=15, 8 điểm đau, phân tích đối thủ cạnh tranh. |
-|   - Bằng chứng thu thập: Biểu đồ khảo sát thực tế, ma trận Pain Points, căn cứ quyết định D1–D9.   |
+|   - Nội dung báo cáo: Kết quả nghiên cứu thực nghiệm: N=15 (baseline learner research),             |
+|                       N=35 (supplementary design survey), N=3 (phỏng vấn sâu định tính),           |
+|                       1 bài học (thử nghiệm nội dung nội bộ), 8 điểm đau, phân tích đối thủ.       |
+|   - Bằng chứng thu thập: Biểu đồ khảo sát thực tế (N=15 baseline & N=35 survey), biên bản phỏng vấn |
+|                          N=3, ma trận Pain Points, tài liệu thử nghiệm bài học, căn cứ D1–D9.      |
 |   - Mốc cung cấp bằng chứng: Kế thừa từ Phase 0 & Milestone M2.1.                                  |
 +----------------------------------------------------------------------------------------------------+
 | CHƯƠNG 2: PHÂN TÍCH YÊU CẦU & MÔ HÌNH HÓA NGHIỆP VỤ                                                |
@@ -905,6 +1086,8 @@ Toàn bộ quá trình thực thi Phase 2 bắt buộc phải tuân thủ nghiê
 +----------------------------------------------------------------------------------------------------+
 ```
 
+> **Ghi chú học thuật về phạm vi đồ án:** Đồ án Lingora được định vị chuẩn mực là đề tài Kỹ nghệ Phần mềm xây dựng nền tảng học trực tuyến hoàn chỉnh. Các thành phần AI xuất hiện trong một số tài liệu thiết kế M2 được giữ ở mức tham chiếu kiến trúc/khả năng hỗ trợ và hoàn toàn không thuộc phạm vi triển khai của Phase 2 hay nội dung đánh giá chính của Chương 5.
+
 ---
 
 ## 19. SỔ ĐĂNG KÝ RỦI RO & KHOẢNG TRỐNG KỸ THUẬT (RISK REGISTER)
@@ -914,7 +1097,7 @@ Toàn bộ quá trình thực thi Phase 2 bắt buộc phải tuân thủ nghiê
 | **RSK-01** | Xung đột khóa bảng PostgreSQL khi thực hiện di chuyển dữ liệu lớn | `CAO` (Gây tắc nghẽn truy vấn) | `DEP-TECH-01`, `DEP-TECH-02` | Áp dụng chiến lược chia nhỏ đợt (batching ~500 bản ghi), đặt `lock_timeout = 5s`, tạo chỉ mục bằng `CONCURRENTLY`. | `COMP-INFRA-01` | Cổng M3.1 |
 | **RSK-02** | Lỗ hổng rò rỉ dữ liệu chéo học viên do cấu hình RLS sai sót | `NGHIÊM TRỌNG` (Vi phạm bảo mật) | `DEP-TECH-09` | Bắt buộc chạy bộ test tự động PostgREST giả lập tấn công chéo người dùng trước khi mở lưu lượng; cấm bypass RLS. | `COMP-INFRA-02` | Cổng M3.2 |
 | **RSK-03** | Suy giảm hiệu năng truy vấn bài học do đệ quy kiểm tra trạng thái Unit | `TRUNG BÌNH` (Tăng độ trễ API) | `COMP-DOM-02` | Thiết lập chỉ mục phức hợp trên cặp `(course_id, order_index)` và chỉ mục trên trường `status`; tạo view đệm nếu cần. | `COMP-DOM-02` | Cổng M3.3 |
-| **RSK-04** | Microservice AI phản hồi chậm làm cạn kiệt kết nối của máy chủ BFF | `CAO` (Gây sập dịch vụ web) | `DEP-TECH-06`, `DEP-TECH-07` | Cài đặt mạch ngắt (circuit breaker) với timeout cứng 8.0s; trả ngay kết quả dự phòng fallback luật cơ sở. | `COMP-DOM-08` | Cổng M3.7 |
+| **RSK-04** | Tắc nghẽn hiệu năng truy vấn tiến độ học tập và bài tập khi tải đồng thời tăng | `TRUNG BÌNH` (Tăng độ trễ API bài học) | `DEP-TECH-02` | Tối ưu chỉ mục truy vấn trên `user_progress` và trạng thái bài học, thực thi truy vấn tối ưu tại `COMP-DOM-05` | `COMP-DOM-05` | Cổng M3.3 |
 | **RSK-05** | Gian lận điểm chuỗi học tập (Streak) bằng cách thao túng đồng hồ client | `TRUNG BÌNH` (Ảnh hưởng gamification)| `COMP-DOM-02` | Tuyệt đối sử dụng đồng hồ máy chủ UTC làm gốc, chỉ dùng múi giờ IANA của học viên trên server để quy đổi ngày lịch. | `COMP-DOM-02` | Cổng M3.5 |
 | **RSK-06** | Creator tự phê duyệt bài học thông qua gọi trực tiếp API bỏ qua UI | `CAO` (Vi phạm phân tách nhiệm vụ) | `COMP-DOM-06` | Cài đặt trigger cơ sở dữ liệu độc lập ở tầng PostgreSQL từ chối giao dịch; không phụ thuộc vào kiểm tra UI. | `COMP-INFRA-02` | Cổng M3.6 |
 | **RSK-07** | Thiếu dữ liệu thực nghiệm phục vụ viết Chương 5 của Luận văn | `TRUNG BÌNH` (Chậm tiến độ báo cáo) | `DEP-GOV-04` | Thu thập bằng chứng liên tục tại từng mốc (Code đến đâu thu test log, benchmark và ảnh chụp đến đó). | Toàn bộ hệ thống | Cổng M3.10 |
@@ -923,7 +1106,7 @@ Toàn bộ quá trình thực thi Phase 2 bắt buộc phải tuân thủ nghiê
 
 ## 20. LỘ TRÌNH TỔNG THỂ GIAI ĐOẠN 2 (MASTER ROADMAP M3.1..M3.10)
 
-Lộ trình tổng thể Giai đoạn 2 bao gồm **10 mốc triển khai chuẩn tắc (M3.1 đến M3.10)**, được thiết kế nối tiếp nhau theo thứ bậc phụ thuộc kiến trúc, kế thừa trọn vẹn từ M2.6 và dẫn dắt toàn bộ dự án đến đích bàn giao và bảo vệ thành công:
+Lộ trình tổng thể Giai đoạn 2 bao gồm **10 mốc triển khai chuẩn tắc (M3.1 đến M3.10)**, được thiết kế nối tiếp nhau theo thứ bậc phụ thuộc kiến trúc, kế thừa trọn vẹn từ M2.6 và dẫn dắt toàn bộ dự án đến đích sẵn sàng trình diễn và hoàn thiện hồ sơ báo cáo/bảo vệ:
 
 ```text
 ====================================================================================================
@@ -935,45 +1118,77 @@ Lộ trình tổng thể Giai đoạn 2 bao gồm **10 mốc triển khai chuẩ
 ┌─────────────────────────────────────────────────────┘
 │
 ├── M3.1: Foundation (Database & Schema Migration Strategy)
-│   ├── Mục tiêu: Triển khai lược đồ vật lý, bảng units, lesson_revisions, assessment_results, seed A1.
+│   ├── Mục tiêu: Triển khai lược đồ vật lý, bảng units, lesson_revisions, assessment_results, seed A1 qua WP-CONTENT.
 │   └── Cổng nghiệm thu: Schema validation PASS, Migration UP/DOWN verified, Seed 6 Units A1 complete.
 │
 ├── M3.2: Authentication, RBAC, RLS & SoD Engine
 │   ├── Mục tiêu: Nâng cấp 6 vai trò, ma trận chính sách RLS kép, triggers chặn vi phạm SoD, audit logs.
-│   └── Cổng nghiệm thu: 6-Role JWT auth PASS, Cross-user RLS isolation PASS, SoD denial tests PASS.
+│   └── Cổng nghiệm thu: 6-Role JWT auth PASS, Cross-user RLS isolation PASS, SoD denial tests PASS (Frames 12–16).
 │
 ├── M3.3: Learner Core (Lesson & Exercise Execution Engine)
-│   ├── Mục tiêu: Trình phát bài học, 5 dạng tương tác bài tập (MCQ, Fill, Reorder, Listening, Grammar).
-│   └── Cổng nghiệm thu: 5 Exercise types interactive PASS, Unit 4/4 Published condition verified.
+│   ├── Mục tiêu: Trình phát bài học, 5 dạng tương tác bài tập (MCQ, Fill, Reorder, Listening, Grammar), nền tảng locale i18n sơ bộ.
+│   └── Cổng nghiệm thu: 5 Exercise types interactive PASS, Unit 4/4 Published condition verified, i18n locale foundation PASS.
 │
 ├── M3.4: Assessment & Progression Engine (Placement, Starting Point, Skip, Retake)
-│   ├── Mục tiêu: Động cơ chẩn đoán ~25–30 câu, Mapping A (0–30), Skip Branch A, Retake bất biến.
-│   └── Cổng nghiệm thu: Mapping A 12 boundary vectors PASS, Skip 0-record PASS, Retake immutable PASS.
+│   ├── Mục tiêu: Động cơ chẩn đoán 30 câu (1 điểm thô/câu, raw score 0–30), Mapping A (0–30 ra Unit 1–6), Skip Branch A, Retake bất biến.
+│   └── Cổng nghiệm thu: Mapping A 12 boundary vectors PASS (Frames 1–3), Skip 0-record PASS, Retake immutable PASS.
 │
 ├── M3.5: Learning Intelligence (Controlled Retry, SRS Policy B, Jump Challenge, Streak)
 │   ├── Mục tiêu: Hạn mức retry max(1, floor(N*0.10)) trần 70%, SRS Policy B [1,3,7,14,30], Jump >=95%, Streak IANA.
-│   └── Cổng nghiệm thu: Retry credit 70% PASS, SRS RPC determinism PASS, Jump 24h lockout PASS, Streak PASS.
+│   └── Cổng nghiệm thu: Retry credit 70% PASS, SRS RPC determinism PASS, Jump 24h lockout PASS, Streak PASS (Frames 4–11).
 │
 ├── M3.6: Content Governance & Moderation (Authoring, Review, Publish, Emergency, Clone-to-Draft)
 │   ├── Mục tiêu: Phân công Manager, soạn thảo Creator, duyệt bài Moderator, xuất bản, Admin khẩn cấp kèm lý do.
 │   └── Cổng nghiệm thu: Vòng đời 6 trạng thái PASS, Creator no self-approve PASS, Clone-to-Draft v2 PASS.
 │
-├── M3.7: AI / GEC Service Integration (Stateless Proxy, Timeout 8.0s, Fallback)
-│   ├── Mục tiêu: Lập trình /v1/gec/correct trong FastAPI theo hợp đồng 03, Next.js proxy, mạch ngắt 8.0s, fallback.
-│   └── Cổng nghiệm thu: Contract 03 byte-identical PASS, Timeout 8.0s circuit-breaker PASS, Fallback PASS.
+├── M3.7: Cross-Cutting Supporting Infrastructure (i18n Completion & Shared BFF Utilities)
+│   ├── Mục tiêu: Hoàn thiện hỗ trợ song ngữ giao diện i18n (vi/en) theo P1-FR-010/YC-EXT-06, bilingual sync toàn diện và tiện ích BFF dùng chung phục vụ M3.8.
+│   └── Cổng nghiệm thu: i18n locale switching PASS, UI catalog fallback PASS, Shared BFF helpers PASS.
 │
 ├── M3.8: System Integration & End-to-End Learner Journey
-│   ├── Mục tiêu: Lắp ghép toàn bộ các phân hệ thành luồng học tập và quản trị hoàn chỉnh; kiểm thử E2E Playwright.
-│   └── Cổng nghiệm thu: 15 Use Cases & 15 Behavioral Families E2E pass, Zero broken routes.
+│   ├── Mục tiêu: Lắp ghép toàn bộ các phân hệ thành luồng học tập và quản trị hoàn chỉnh; kiểm thử E2E Playwright cho 14 Core Use Cases (loại trừ UC-15 là Future Extension).
+│   └── Cổng nghiệm thu: 14 Core Use Cases (UC-01..UC-14) E2E pass (UC-15 excluded from MVP E2E), Zero broken routes.
 │
 ├── M3.9: System Hardening, Performance & Security Verification
 │   ├── Mục tiêu: Rà soát an ninh toàn diện, đo lường tiêu chí phi chức năng NFR (k6 benchmark, Lighthouse).
 │   └── Cổng nghiệm thu: NFR Measured recorded, Security audit clean, Zero P0/P1 issues.
 │
-└── M3.10: Demo Readiness & Academic Report Evidence Consolidation
+└── M3.10: Academic Closure & Academic Report Evidence Consolidation
     ├── Mục tiêu: Thu thập toàn bộ bằng chứng cho 5 chương báo cáo học thuật, đóng gói kịch bản demo 4 Acts.
-    └── Cổng nghiệm thu: Báo cáo Word/Markdown đồng bộ 100%, 4 Acts demo hoàn chỉnh, sẵn sàng bảo vệ.
+    └── Cổng nghiệm thu: Báo cáo Word/Markdown đồng bộ 100%, 4 Acts demo hoàn chỉnh, sẵn sàng trình diễn và hoàn thiện hồ sơ báo cáo/bảo vệ.
 ```
+
+### 20.1. Gói Công Việc Chuẩn Bị Nội Dung & Dữ Liệu Mầm (WP-CONTENT: Content Preparation & Data Seeding Work Package)
+
+Để đảm bảo tính liên tục và loại bỏ rủi ro thiếu dữ liệu kiểm thử giữa các mốc triển khai độc lập, toàn bộ tài nguyên học liệu và dữ liệu mầm được quản lý thành một **Gói Công Việc Chuẩn Bị Nội Dung Xuyên Suốt (WP-CONTENT)** phục vụ từ M3.1 tới M3.10:
+
+1. **24 Bài học Chuẩn tắc CEFR A1 (6 Units $\times$ 4 Lessons):** Dữ liệu giáo trình hoàn chỉnh tuân thủ `docs/08-english-a1-curriculum.md`, bao gồm tiêu đề, mô tả, nội dung bài học ngữ cảnh theo chủ đề đời sống và giao tiếp hàng ngày.
+2. **Bộ Từ điển Song ngữ (Bilingual Vocabulary Catalog):** Danh mục từ vựng tiếng Anh kèm phiên âm, nghĩa tiếng Việt, câu ví dụ song ngữ gắn liền với từng bài học và bài kiểm tra chẩn đoán.
+3. **Tệp Âm thanh Tĩnh Chuẩn (Static Audio MP3 Assets):** Toàn bộ tệp âm thanh tĩnh phục vụ bài tập dạng Listening và phát âm từ vựng (đặt trong thư mục tĩnh/public/CDN media, phục vụ trực tiếp không qua dịch vụ TTS động thời gian thực).
+4. **Bộ Dữ liệu 5 Dạng Bài tập Tương tác (Interactive Exercise Fixtures):** Bộ câu hỏi và đáp án cho 5 dạng bài tập cốt lõi (Multiple Choice, Fill-in-the-Blank, Word Reordering, Listening Comprehension, Grammar Selection) tích hợp trong từng bài học.
+5. **Bộ 30 Câu hỏi Đánh giá Năng lực (Diagnostic Placement Items):** 30 câu hỏi chuẩn hóa raw score 0..30 bao quát 4 kỹ năng cốt lõi (Vocabulary, Grammar, Reading, Listening), đi kèm barem đáp án máy chủ để phân lớp Mapping A ra Units 1–6.
+6. **Bộ Đề Kiểm tra Vượt cấp (Jump Challenge Content Fixtures):** Ngân hàng đề kiểm tra vượt cấp toàn diện cho từng Unit, phục vụ xác thực ngưỡng điểm $\ge 95\%$ của tính năng Jump Challenge.
+7. **Dữ liệu Mầm Phân tách Thẩm quyền Nội dung (Governance Lifecycle & SoD Fixtures):** Các bản ghi bài học bản thảo (Draft), chờ duyệt (In Review), yêu cầu chỉnh sửa (Changes Requested), đã duyệt (Approved), đã xuất bản (Published), bản ghi nhân bản v2 (Clone-to-Draft v2 với con trỏ `supersedes_id`), và kịch bản Unit âm tính (3/4 bài Published) phục vụ kiểm thử phân quyền và demo Admin.
+
+---
+
+### 20.2. Ma Trận Kế Hoạch, Nỗ Lực, Phân Trách & Cổng Nghiệm Thu Từng Mốc (Milestone Schedule & Exit Criteria)
+
+| Mốc | Tên Phân Hệ & Trọng Tâm Triển Khai | Điểm Story (SP) | Nỗ Lực (person-days) | Người Phụ Trách (Owner) | Hạn Định (Deadline) | Phân Hệ Sở Hữu | Điều Kiện Tiền Đề (Inbound Deps) | Sản Phẩm Chuyển Giao Chính (Primary Deliverables) | Tiêu Chí Đầu Ra & Cổng Nghiệm Thu Cụ Thể (Concrete Exit Criteria) |
+|---|---|---|---|---|---|---|---|---|---|
+| **M3.1** | **Foundation: Cơ Sở Dữ Liệu & Lược Đồ Vật Lý** | 3 SP | 2.5 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-admin` (Prisma DDL), PostgreSQL | M2.6 Design Sign-off (`commit 4c8a7db`), `schema.prisma`, `WP-CONTENT` | • Bảng `units`, `lesson_revisions`, `assessment_results`, `skill_profiles`<br>• Nâng cấp enum Role lên 6 giá trị vật lý<br>• Script seed 6 Units A1 (Learning & Governance fixtures qua `WP-CONTENT`)<br>• Quyết định biểu diễn vật lý (§5.3): Barem đáp án (Answer Security), Placement/Jump (Unified Model), Attempt/Retry (D7), Cooldown 24h, Skip status | • `npx prisma validate` PASS<br>• Script migration UP/DOWN kiểm chứng thành công<br>• Catalog DB xác nhận 6 Units & 24 bài học đúng cấu trúc<br>• Cổng nghiệm thu §5.3 đạt: Quyết định phân tách bí mật chấm điểm & test phủ định; Chốt chặn trực tiếp Unit 4/4; Khóa biểu diễn Placement 30 câu & Jump (không entity ma); Khóa biểu diễn Retry & Cooldown & Skip |
+| **M3.2** | **Security: Xác Thực, RBAC, RLS & Phân Tách Nhiệm Vụ (SoD)** | 5 SP | 3.5 person-days | TBD — Human Assignment | TBD — Human Deadline | PostgreSQL (RLS/Triggers), Supabase Auth, BFF Layer | M3.1 (Lược đồ DB) | • 6-Role JWT helper & Context propagation<br>• PostgreSQL Column-Level Grant trên `profiles`<br>• Ma trận RLS kép trên toàn bộ các bảng nghiệp vụ (không đệ quy)<br>• Triggers chặn vi phạm SoD & Audit Log Append-Only | • Vitest Security Suite PASS (Frames 12–16)<br>• Kiểm thử cô lập dữ liệu chéo (Cross-tenant/Cross-user) PASS<br>• Thao tác phê duyệt từ tài khoản Creator bị từ chối `403 Forbidden` / `ROLE_UNAUTHORIZED` |
+| **M3.3** | **Learner Core: Giao Diện Nội Dung Bài Học, Trình Phát & Động Cơ 5 Dạng Bài Tập** | 5 SP | 4.5 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-web` (App Router), `lingora-media` | M3.1 (Cấu trúc Unit/Lesson), M3.2 (RLS Learner read), `WP-CONTENT` | • Giao diện xem nội dung bài học (Lesson Content Viewer): hiển thị từ vựng, phiên âm, giải nghĩa tiếng Việt, câu ví dụ, audio phát âm chuẩn từ Storage, tóm tắt ngữ pháp trước khi vào bài tập<br>• Giao diện trình phát bài học tương tác<br>• Bộ 5 components bài tập: MCQ, Fill-in-Blank, Reorder, Listening (MP3 tĩnh), Grammar Selection<br>• Chốt chặn điều kiện Unit 4/4 Published tại tầng BFF/DB (Direct Access Denial: `UI hiding != Authorization`)<br>• Nền tảng cấu trúc đa ngữ i18n sơ bộ (vi/en locale foundation) | • Vitest Component & Runner Suite PASS (Lesson Content Viewer render đúng học liệu trước bài tập; 5 Exercise Types tương tác không lỗi; Unit 4/4 Rule: Unit 3/4 Published tự động ẩn và chặn truy cập trực tiếp 403/404; i18n locale foundation)<br>• Flow học viên xác nhận: Open Lesson $\rightarrow$ Lesson Content Viewer $\rightarrow$ Start Exercises $\rightarrow$ Exercise Sequence $\rightarrow$ Lesson Result / Progress<br>• Trả về payload không chứa barem đáp án máy chủ PASS |
+
+| **M3.4** | **Assessment: Đánh Giá Năng Lực, Xác Định Điểm Bắt Đầu & Nhánh Rẽ** | 5 SP | 3.5 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-web` (BFF & UI), PostgreSQL (`assessment_results`) | M3.1 (Lược đồ khảo sát), M3.3 (Cấu trúc bài học), `WP-CONTENT` (30 items) | • Bài kiểm tra chẩn đoán 30 câu (1 câu = 1 điểm thô, raw score 0–30) phủ 4 kỹ năng (Vocab, Grammar, Reading, Listening)<br>• Động cơ phân lớp Mapping A (0–30 điểm thô $\rightarrow$ Units 1–6)<br>• Luồng Skip (bắt đầu Unit 1, UNVERIFIED, 0 bản ghi kết quả)<br>• Luồng Retake (lưu lịch sử bất biến, bảo lưu mốc xuất phát) | • Vitest Assessment Suite PASS (Frames 1–3)<br>• 12 Test Vectors biên của Mapping A PASS 100%<br>• Kiểm thử Skip không tạo bản ghi rác PASS<br>• Kiểm thử Retake ghi nhận đúng bản ghi mới PASS |
+| **M3.5** | **Intelligence: Controlled Retry, SRS Policy B, Jump & Streak** | 5 SP | 4.5 person-days | TBD — Human Assignment | TBD — Human Deadline | PostgreSQL (RPCs), `lingora-web` (BFF & Client) | M3.3 (Lesson Engine), M3.4 (Tiến độ học), `WP-CONTENT` (Jump sets) | • Động cơ Controlled Retry: $\max(1, \lfloor N \times 0.10 \rfloor)$, trần điểm 70%<br>• PostgreSQL RPC `record_review`: SRS Policy B $[1, 3, 7, 14, 30]$ ngày tất định<br>• Động cơ Jump Challenge: ngưỡng $\ge 95\%$, khóa 24h, gán `by_jump = true`<br>• Động cơ Daily Streak: tính theo múi giờ IANA, reset về 1 khi đứt chuỗi | • Vitest / RPC Test Suite PASS (Frames 4–11)<br>• Hạn mức retry vượt ngưỡng bị chặn 403 Forbidden<br>• RPC SRS trả đúng chu kỳ tất định khi đúng/sai<br>• Jump khóa 24h hoạt động chính xác theo server time |
+| **M3.6** | **Governance: Quản Trị Nội Dung, Duyệt Bài & Xuất Bản Khẩn Cấp** | 5 SP | 4.0 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-admin` (Next.js Dashboard & API routes), PostgreSQL | M3.1 (Lược đồ Revisions), M3.2 (RBAC / SoD), `WP-CONTENT` | • Giao diện soạn thảo & nộp duyệt bài học (Creator)<br>• Hàng đợi kiểm duyệt & phê duyệt (Moderator)<br>• Hành động xuất bản & lưu trữ (Org Manager)<br>• Luồng Admin xuất bản khẩn cấp (kèm lý do bắt buộc & ghi log kiểm toán)<br>• Quy trình Clone-to-Draft v2 với con trỏ `supersedes_id` | • Admin Governance Test Suite PASS (Frames 13, 14, 15, 16 SoD / Governance)<br>• Kiểm thử chuyển trạng thái 6 bước chuẩn xác<br>• Admin xuất bản khẩn cấp ghi nhận đúng sự kiện vào `audit_logs`<br>• Clone-to-Draft v2 tạo bản ghi mới kế thừa nội dung v1 |
+| **M3.7** | **Cross-Cutting: Hoàn Thiện Đa Ngữ (i18n) & Tiện Ích BFF Dùng Chung** | 3 SP | 2.5 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-web` & `lingora-admin` (Shared Layer) | M3.3 (i18n locale foundation), M3.5, M3.6, `WP-CONTENT` | • Hoàn thiện bộ từ điển song ngữ giao diện (vi/en) theo P1-FR-010 / YC-EXT-06 và đồng bộ catalog song ngữ<br>• Component chuyển đổi ngôn ngữ hiển thị giao diện tức thì và lưu trữ tùy chọn ngôn ngữ người dùng<br>• Các hàm tiện ích dùng chung tầng BFF (chuẩn hóa lỗi, phong bì API, xử lý retry mạng phía client) phục vụ M3.8 | • Kiểm thử chuyển đổi ngôn ngữ UI không làm vỡ layout PASS<br>• Không còn chuỗi văn bản cứng thiếu khóa đa ngữ trong luồng học viên<br>• Bộ hàm tiện ích BFF vượt qua unit test độc lập |
+| **M3.8** | **Integration: Tích Hợp Hệ Thống Toàn Diện & Luồng Người Dùng E2E** | 5 SP | 4.5 person-days | TBD — Human Assignment | TBD — Human Deadline | Full-stack (`lingora-web`, `lingora-admin`, Supabase) | M3.1 đến M3.7 | • Tích hợp liên thông toàn bộ 14 Core Use Cases (UC-01 đến UC-14; UC-15 ngoại lệ Extension)<br>• Bộ kịch bản kiểm thử tự động Playwright E2E chạy trên dữ liệu mầm thật | • Playwright E2E Suite PASS trên 14 Use Cases cốt lõi<br>• Không có trang nào bị lỗi 404/500 trên đường đi của người dùng<br>• Chuyển tiếp mượt mà từ Đăng ký $\rightarrow$ Placement $\rightarrow$ Bài học $\rightarrow$ Ôn tập SRS $\rightarrow$ Admin duyệt bài |
+| **M3.9** | **Hardening: Tối Ưu Hiệu Năng, Đo Lường NFR & Rà Soát An Ninh** | 3 SP | 2.5 person-days | TBD — Human Assignment | TBD — Human Deadline | Hạ tầng, Bảo mật & Kiểm thử tải | M3.8 (Hệ thống đã tích hợp) | • Kịch bản kiểm thử tải k6 đo lường thông lượng & độ trễ API<br>• Đánh giá hiệu năng giao diện Lighthouse<br>• Quét an ninh tĩnh (Secret scan) & kiểm thử thâm nhập OWASP cơ bản | • Chỉ số NFR đạt chuẩn ghi nhận vào test log (P95 latency < 500ms, Lighthouse > 80)<br>• Không có lỗ hổng bảo mật cấp nghiêm trọng (Sev-1/Sev-2)<br>• Không rò rỉ mã bí mật hoặc thông tin nhạy cảm trong mã nguồn và log |
+| **M3.10** | **Academic Closure: Đóng Gói Kịch Bản Demo & Đồng Bộ Báo Cáo Luận Văn** | 3 SP | 2.5 person-days | TBD — Human Assignment | TBD — Human Deadline | Quản lý dự án, Tài liệu học thuật & Thuyết trình | M3.8, M3.9 | • Báo cáo học thuật 5 chương (Word & Markdown) đồng bộ 100% với thực tế hệ thống đã cài đặt<br>• Kịch bản trình diễn 4 Acts kèm script reset dữ liệu demo phát lại được<br>• Slide thuyết trình bảo vệ đồ án kèm các bằng chứng trích xuất trực tiếp | • Báo cáo luận văn hoàn chỉnh, số liệu kiểm thử và kiến trúc ăn khớp 100%<br>• 4 Acts Demo diễn tập trơn tru trong thời lượng 12–15 phút không phát sinh lỗi<br>• Đủ điều kiện xuất xưởng và bảo vệ trước Hội đồng chấm luận văn |
+| **TỔNG** | **TOÀN BỘ GIAI ĐOẠN 2 (PHASE 2 MASTER PLAN)** | **42 SP** | **34.5 person-days** | **TBD — Human Assignment** | **TBD — Human Deadline** | **Toàn bộ Subsystems** | **M2.6 Acceptance** | **Hệ thống hoàn chỉnh + Báo cáo học thuật 5 chương sẵn sàng bảo vệ** | **100% Cổng kiểm soát từ M3.1 đến M3.10 đạt PASS** |
+
 
 ---
 

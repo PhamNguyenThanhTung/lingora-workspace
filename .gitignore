@@ -13,7 +13,8 @@ Thumbs.db
 # Node / Next.js
 node_modules/
 .next/
-out/
+/out/
+!docs/diagrams/**/out/
 coverage/
 test-results/
 playwright-report/

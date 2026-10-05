@@ -1,0 +1,41 @@
+@startuml
+!include _style.puml
+
+|#FFFFFF|System|
+start
+:Nhận kết quả bài thi Jump;
+:Lưu AssessmentResult (Loại: JUMP);
+
+if (Tỷ lệ đúng >= 95.0%?) then (Đạt - Pass)
+  :Gán SKIPPED_BY_JUMP (by_jump = true)
+  cho các Unit/Lesson được vượt qua;
+  :Mở khóa Unit mục tiêu trong Course;
+  note right
+    * Unit-level bypass trong cùng Course
+    * CEFR Level KHÔNG thay đổi
+    * Bypassed, không phải Completed
+    * Cấm gán COMPLETED_BY_JUMP
+  end note
+
+  |#F8FAFC|Learner|
+  :Nhận kết quả Bỏ qua Unit thành công;
+  :Bắt đầu học tại Unit mục tiêu;
+  stop
+
+else (Trượt - Fail)
+  |#FFFFFF|System|
+  :Kích hoạt Cooldown khóa 24 giờ;
+  :Giữ nguyên vị trí học tập hiện tại;
+  note right
+    * Cooldown 24h trên tài khoản Learner
+    * Khóa tính năng Jump trong 24 giờ
+    * CEFR Level KHÔNG thay đổi
+  end note
+
+  |#F8FAFC|Learner|
+  :Nhận thông báo Cooldown 24h;
+  :Tiếp tục học tuyến tính bình thường;
+  stop
+endif
+
+@enduml

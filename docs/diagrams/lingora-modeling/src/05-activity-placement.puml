@@ -1,0 +1,31 @@
+@startuml
+!include _style.puml
+
+|#EFF6FF|Learner|
+start
+:Choose Starting Route in Onboarding;
+
+if (Route Selection?) then (Take Placement Test)
+  :Answer Exactly 30 Questions;
+  |#FFFFFF|System|
+  :Calculate Raw Score (0 to 30);
+  :Record Immutable AssessmentResult;
+  :Generate SkillProfile (Vocab, Grammar, Reading, Listening);
+  :Apply Mapping A (Units 1 to 6);
+  :Assign Verified Starting Unit;
+  :Mark Provenance DIAGNOSTIC_START;
+else (Self-Report / Skip)
+  |#FFFFFF|System|
+  :Record selfReportedLevel as UNVERIFIED;
+  :Assign Default Starting Unit 1;
+  :Mark Provenance ONBOARDING_DEFAULT;
+  note right
+    No AssessmentResult created
+    No SkillProfile created
+  end note
+endif
+
+|#EFF6FF|Learner|
+:Enter Curriculum at Assigned Starting Unit;
+stop
+@enduml

@@ -1,0 +1,63 @@
+@startuml
+!include _style.puml
+top to bottom direction
+skinparam nodesep 25
+skinparam ranksep 25
+
+' Actors in horizontal row
+together {
+  actor "Authenticated User" as AuthUser
+  actor "Learner" as Learner
+  actor "Lesson Creator" as Creator
+  actor "Moderator" as Moderator
+  actor "Org Manager" as OrgMgr
+  actor "Operations Staff" as OpsStaff
+  actor "Administrator" as Admin
+}
+
+Learner -up-|> AuthUser
+Creator -up-|> AuthUser
+Moderator -up-|> AuthUser
+OrgMgr -up-|> AuthUser
+OpsStaff -up-|> AuthUser
+Admin -up-|> AuthUser
+
+rectangle "System Boundary: Lingora Platform" {
+  package "LEARNING SUBSYSTEM" #FAFAFA {
+    usecase "UC-01 Login & Session" as UC01
+    usecase "UC-03 Placement Assessment" as UC03
+    usecase "UC-04 Browse Learning Path & Conditional Jump" as UC04
+    usecase "UC-05 Lesson & Exercises" as UC05
+    usecase "UC-06/07 SRS & Streak Track" as UC06_07
+  }
+
+  package "CONTENT SUBSYSTEM" #FAFAFA {
+    usecase "UC-08 Draft Lesson & Items" as UC08
+    usecase "UC-09 Review & Moderate" as UC09
+    usecase "UC-10 Publish Approved Content" as UC10
+  }
+
+  package "ADMINISTRATION & OPS" #FAFAFA {
+    usecase "UC-11 Manage Accounts & Roles" as UC11
+    usecase "UC-13 Audit Security Logs" as UC13
+    usecase "UC-14 Support Coordination" as UC14
+  }
+}
+
+AuthUser --> UC01
+
+Learner --> UC03
+Learner --> UC04
+Learner --> UC05
+Learner --> UC06_07
+
+Creator --> UC08
+Moderator --> UC09
+OrgMgr --> UC10
+
+Admin --> UC11
+Admin --> UC13
+Admin ..> UC10 : <<emergency>>
+OpsStaff --> UC14
+
+@enduml

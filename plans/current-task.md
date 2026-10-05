@@ -2,11 +2,12 @@
 
 ## Status
 
-`READY FOR HUMAN REVIEW` (Master Plan Created post M2.6 Acceptance; Implementation NOT STARTED)
+`READY FOR HUMAN REVIEW` (Master Plan Re-scoped to Pure SE Core; Implementation NOT STARTED)
 - `TASK = master-implementation-and-report-plan`
 - `PLAN STATUS = DRAFT / READY FOR HUMAN REVIEW`
 - `HUMAN APPROVAL = PENDING`
 - `IMPLEMENTATION = NOT STARTED`
+- `AI IMPLEMENTATION = OUT OF PHASE 2 SCOPE`
 - `PRIMARY DELIVERABLE = plans/master-implementation-and-report-plan.md`
 - `COMMIT = NOT CREATED`
 

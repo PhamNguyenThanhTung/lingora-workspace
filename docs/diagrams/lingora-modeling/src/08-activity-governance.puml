@@ -1,0 +1,41 @@
+@startuml
+!include _style.puml
+
+|#FFF7ED|Lesson Creator|
+start
+:Create Draft Revision or Clone-to-Draft;
+:Author Lesson Content & Exercises;
+:Submit Lesson Revision for Review;
+
+|#F0FDF4|Moderator|
+:Inspect Lesson Revision Content;
+if (Meets Quality Guidelines?) then (Approved)
+  :Approve Revision (status=APPROVED);
+  
+  |#FAF5FF|Organizational Manager|
+  :Check Unit Completeness (4/4 Published?);
+  if (Ready to Publish?) then (Publish)
+    :Publish Lesson Revision (status=PUBLISHED);
+    |#FFFFFF|System|
+    :Make Active to Learners;
+    :Log State Change to AuditLog;
+  else (Hold)
+    :Hold Revision in Approved State;
+  endif
+else (Changes Requested)
+  :Reject with Feedback (status=REJECTED);
+  |#FFF7ED|Lesson Creator|
+  :Revise Content based on Feedback;
+endif
+
+|#FFFFFF|System|
+stop
+
+|#FFF1F2|Administrator|
+note
+  <b>Emergency Publish Flow:</b>
+  Admin can directly publish
+  APPROVED revision with
+  mandatory justification & AuditLog.
+end note
+@enduml

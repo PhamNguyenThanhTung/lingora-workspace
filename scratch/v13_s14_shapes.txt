@@ -1,0 +1,7 @@
+Shape 0: Sơ đồ lớp: khóa học, cấp CEFR, nội dung
+Shape 1: 14 / 17
+Shape 2: 
+Shape 4: 
+Shape 5: Chú giải: CURRENT = nét liền (đã có trong schema.prisma)  ·  <<TARGET>> = nét đứt (dự kiến Phase 2)
+Course.cefr dùng enum Cefr (A1–C2). Mỗi Course có 1..N Unit; bản thí điểm English A1 có 6 Unit, không áp cho cấp khác.
+LessonRevision có 6 trạng thái (TARGET). Unit chỉ hiện cho học viên khi đủ 4/4 bài Published.

@@ -1,0 +1,53 @@
+@startuml
+!include _style.puml
+
+|#F8FAFC|Lesson Creator|
+start
+:Yêu cầu sửa bài PUBLISHED (v1);
+
+|#FFFFFF|System|
+:Clone-to-Draft: tạo bản ghi mới (v2, DRAFT);
+note right
+  Giữ nguyên bản v1 PUBLISHED
+  để học viên không bị gián đoạn
+end note
+
+|#F8FAFC|Lesson Creator|
+:Chỉnh sửa bài học trên bản v2;
+:Gửi kiểm duyệt v2 (SUBMITTED);
+
+|#FFFFFF|Moderator|
+:Thẩm định nội dung bản v2;
+:Phê duyệt v2 (status = APPROVED);
+
+if (Phương thức xuất bản v2?) then (Quy trình chuẩn)
+  |#F8FAFC|Org Manager|
+  :Chọn bản v2 đã APPROVED;
+  :Thực hiện Xuất bản (Publish v2);
+
+  |#FFFFFF|System|
+  :Chuyển v2 sang PUBLISHED;
+  :Lưu trữ bản cũ (Archive v1);
+  note right
+    Bắt buộc Archive v1
+    sau khi Publish v2
+  end note
+  :Ghi nhận AuditLog xuất bản;
+  stop
+
+else (Tình huống khẩn cấp)
+  |#F8FAFC|Administrator|
+  :Chọn bản v2 đã APPROVED;
+  :Emergency Publish kèm lý do giải trình;
+  note right
+    Chỉ áp dụng cho bài đã APPROVED;
+    không tự duyệt bài nháp
+  end note
+
+  |#FFFFFF|System|
+  :Chuyển v2 sang PUBLISHED & Archive v1;
+  :Bắt buộc ghi nhận AuditLog khẩn cấp;
+  stop
+endif
+
+@enduml

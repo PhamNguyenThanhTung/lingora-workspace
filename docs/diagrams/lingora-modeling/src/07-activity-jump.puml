@@ -1,0 +1,41 @@
+@startuml
+!include _style.puml
+
+|#EFF6FF|Learner|
+start
+:Request Jump Challenge to Target Unit;
+
+|#FFFFFF|System|
+:Check Eligibility & 24h Cooldown;
+if (Cooldown Active or Target Non-Adjacent?) then (Blocked)
+  :Display Cooldown Notice / Rejection;
+  stop
+else (Eligible)
+  :Generate Unit Jump Assessment;
+  |#EFF6FF|Learner|
+  :Complete Jump Assessment Questions;
+  |#FFFFFF|System|
+  :Evaluate Score Deterministically;
+  :Record Immutable AssessmentResult (type=JUMP);
+
+  if (Jump Score >= 95%?) then (PASS)
+    :Mark Bypassed Units & Lessons as\nSKIPPED_BY_JUMP (by_jump=true);
+    :Unlock Target Unit (status=UNLOCKED);
+    :Set Lesson 1 of Target Unit to IN_PROGRESS;
+    note right
+      Invariant: Bypassed content is
+      SKIPPED_BY_JUMP, never COMPLETED.
+      No CEFR certificate awarded.
+    end note
+    |#EFF6FF|Learner|
+    :Receive Jump Success & Enter Target Unit;
+  else (FAIL [< 95%])
+    :Record Failed Jump Attempt;
+    :Set 24-Hour Cooldown Timestamp;
+    :Retain Current Curriculum Position;
+    |#EFF6FF|Learner|
+    :Receive Jump Failure Notice & Cooldown Info;
+  endif
+endif
+stop
+@enduml
