@@ -1,0 +1,42 @@
+@startuml 04-usecase-quan-tri-van-hanh
+title Lingora - Use Case: nhóm Quản trị & Vận hành
+left to right direction
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 24
+skinparam titleFontSize 30
+skinparam ArrowFontSize 20
+skinparam ActorFontSize 24
+skinparam UsecaseFontSize 22
+skinparam shadowing false
+skinparam nodesep 30
+skinparam ranksep 110
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #334155
+skinparam UsecaseBorderColor #334155
+skinparam UsecaseBackgroundColor #F8FAFC
+
+actor "Quản trị viên" as Admin
+actor "Nhân viên vận hành" as Ops
+
+rectangle "Lingora Platform System" {
+  usecase "UC-01\nĐăng nhập & Phiên làm việc" as UC01 #E0F2FE
+  usecase "UC-11\nTài khoản & 6 Vai trò" as UC11
+  usecase "UC-12\nBáo cáo vận hành" as UC12
+  usecase "UC-13\nKiểm toán an ninh" as UC13
+  usecase "UC-14\nPhiếu hỗ trợ kỹ thuật" as UC14
+}
+
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Ops --> UC14
+UC11 ..> UC01 : <<include>>
+UC12 ..> UC01 : <<include>>
+UC13 ..> UC01 : <<include>>
+UC14 ..> UC01 : <<include>>
+
+legend bottom
+  <<include>>: phải đăng nhập (UC-01) trước khi thực hiện.
+end legend
+@enduml

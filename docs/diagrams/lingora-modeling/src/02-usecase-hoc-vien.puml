@@ -1,0 +1,47 @@
+@startuml 02-usecase-hoc-vien
+title Lingora - Use Case: nhóm Học viên
+left to right direction
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 24
+skinparam titleFontSize 30
+skinparam ArrowFontSize 20
+skinparam ActorFontSize 24
+skinparam UsecaseFontSize 22
+skinparam shadowing false
+skinparam nodesep 30
+skinparam ranksep 110
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #334155
+skinparam UsecaseBorderColor #334155
+skinparam UsecaseBackgroundColor #F8FAFC
+
+actor "Học viên" as Learner
+
+rectangle "Lingora Platform System" {
+  usecase "UC-01\nĐăng nhập & Phiên làm việc" as UC01 #E0F2FE
+  usecase "UC-02\nMục tiêu & Thời gian học" as UC02
+  usecase "UC-03\nXếp lớp & Điểm xuất phát" as UC03
+  usecase "UC-04\nLộ trình & Nhảy cấp" as UC04
+  usecase "UC-05\nHọc bài & Làm lại" as UC05
+  usecase "UC-06\nÔn tập ngắt quãng (SRS)" as UC06
+  usecase "UC-07\nTiến độ, Năng lực & Chuỗi" as UC07
+}
+
+Learner --> UC02
+Learner --> UC03
+Learner --> UC04
+Learner --> UC05
+Learner --> UC06
+Learner --> UC07
+UC02 ..> UC01 : <<include>>
+UC03 ..> UC01 : <<include>>
+UC04 ..> UC01 : <<include>>
+UC05 ..> UC01 : <<include>>
+UC06 ..> UC01 : <<include>>
+UC07 ..> UC01 : <<include>>
+
+legend bottom
+  <<include>>: phải đăng nhập (UC-01) trước khi thực hiện.
+end legend
+@enduml

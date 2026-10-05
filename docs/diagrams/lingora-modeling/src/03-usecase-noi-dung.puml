@@ -1,0 +1,50 @@
+@startuml 03-usecase-noi-dung
+title Lingora - Use Case: nhóm Nội dung
+left to right direction
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 24
+skinparam titleFontSize 30
+skinparam ArrowFontSize 20
+skinparam ActorFontSize 24
+skinparam UsecaseFontSize 22
+skinparam shadowing false
+skinparam nodesep 30
+skinparam ranksep 110
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #334155
+skinparam UsecaseBorderColor #334155
+skinparam UsecaseBackgroundColor #F8FAFC
+
+actor "Người soạn bài" as Creator
+actor "Quản lý tổ chức" as OrgMgr
+actor "Kiểm duyệt viên" as Mod
+actor "Quản trị viên" as Admin
+
+rectangle "Lingora Platform System" {
+  usecase "UC-01\nĐăng nhập & Phiên làm việc" as UC01 #E0F2FE
+  usecase "UC-08\nLập đề cương, Giao bài\n& Soạn bài" as UC08
+  usecase "UC-09\nKiểm duyệt nội dung" as UC09
+  usecase "UC-10\nXuất bản nội dung" as UC10
+  usecase "UC-15\nQuản lý nhóm học viên\n(mở rộng)" as UC15 #EEF2FF
+}
+
+Creator --> UC08
+OrgMgr --> UC08
+Mod --> UC09
+OrgMgr --> UC10
+Admin --> UC10
+OrgMgr --> UC15
+UC08 ..> UC01 : <<include>>
+UC09 ..> UC01 : <<include>>
+UC10 ..> UC01 : <<include>>
+UC15 ..> UC01 : <<include>>
+note right of UC10
+  Quản trị viên chỉ xuất bản
+  trong trường hợp khẩn cấp
+end note
+
+legend bottom
+  <<include>>: phải đăng nhập (UC-01) trước khi thực hiện.
+end legend
+@enduml
