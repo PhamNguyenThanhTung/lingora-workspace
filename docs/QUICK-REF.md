@@ -29,41 +29,36 @@ The Phase 2 Learner experience follows a closed-loop flow with deterministic bus
 2. **Lesson Content Viewer:** Learner reviews lesson learning content (vocabulary, phonetic transcription, Vietnamese meaning, contextual examples, standard static audio playback from Supabase Storage `lingora-media`, grammar summary) **BEFORE** starting exercises.
 3. **Interactive Exercises (5 types):** `MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING` (word-level static MP3 audio), `GRAMMAR`. (No TTS, no AI generation).
 4. **Immediate Feedback & Scoring:** Server-authoritative grading (`Learner payload != grading secret`).
-5. **Controlled Retry (D7):** Allowance $= \max(1, \lfloor N \times 0.10 \rfloor)$ per lesson session; retry items receive at most 70% credit. Completion does not require an 80% score floor.
+5. **Unlimited Retry (D7 Relaxed):** Learners can retry exercises unlimited times until correct. No punitive score reduction. Completion is based on passing the lesson, keeping the UX formative and encouraging.
 6. **Progress Persistence:** Atomic updates to `UserProgress` (`status`, `score`, `completedAt`).
 7. **Diagnostic Starting Point (D6):**
    - MVP placement / starting-point mechanism (NOT a psychometric or CEFR certified exam).
    - 30 HUMAN-SELECTED questions (1 correct answer = 1 raw point; raw score 0–30).
-   - Mapping A: $0–7 \rightarrow \text{Unit 1}$, $8–12 \rightarrow \text{Unit 2}$, $13–17 \rightarrow \text{Unit 3}$, $18–22 \rightarrow \text{Unit 4}$, $23–26 \rightarrow \text{Unit 5}$, $27–30 \rightarrow \text{Unit 6}$.
+   - In pilot phase, all assessment results route the learner to start at **A1 Unit 1**.
    - Skip option: routes to Unit 1 with `UNVERIFIED` status; generates exactly 0 `AssessmentResult` and 0 `SkillProfile` records.
    - Retake from Profile: generates a new immutable `AssessmentResult` without deleting past progress.
-8. **Conditional Jump (D5):** Adjacent Unit jump challenge; requires $\ge 95\%$ score; failure activates a 24-hour server cooldown; pass marks skipped units with `SKIPPED_BY_JUMP` (`by_jump = true`); jump is NOT curriculum completion.
-9. **Spaced Repetition System (SRS - D8):** Deterministic Policy B with fixed interval stages $[1, 3, 7, 14, 30]$ days executed via database RPC `record_review`. Incorrect answers reset to Stage 1 (1 day).
-10. **Daily Streak (D9):** Evaluated lazily across calendar date boundaries using learner-local IANA timezone (`Asia/Ho_Chi_Minh`). Missing $\ge 1$ day resets streak to 1. No streak freeze in MVP core.
-11. **Profile & Basic Learner Settings:** Managed via PostgreSQL column-level grants. Learners can update personal fields; privileged fields (`role`, `streakCount`, `verifiedStartingUnit`) are server-protected.
+8. **Level-up Exam (Thi lên cấp - D5):** Replaces Conditional Jump. At the end of the A1 curriculum, after 100% of lessons are completed, learners take a final exam. Requires $\ge 80\%$ score to pass and unlock A2. Unlimited immediate retries allowed.
+9. **Spaced Repetition System (SRS - D8):** Deterministic Policy B with fixed interval stages $[1, 3, 7, 14, 30]$ days executed via **Application Layer (Next.js Backend)**. Incorrect answers reset to Stage 1 (1 day).
+10. **Daily Streak (D9):** Evaluated lazily across calendar date boundaries using learner-local IANA timezone (`Asia/Ho_Chi_Minh`) via Application API. Missing $\ge 1$ day resets streak to 1. No streak freeze in MVP core.
+11. **Profile & Basic Learner Settings:** Managed via PostgreSQL with simplified RLS. Learners can update personal fields; privileged fields (`role`, `streakCount`, `verifiedStartingUnit`) are protected by Application-level Role-Based Access Control.
 12. **i18n Foundation:** Locale switching between `vi` (default) and `en` per Master Plan.
 
 ---
 
-## 3. Content Governance & Separation of Duties (SoD)
+## 3. Content Governance (Agile SoD)
 
-The content lifecycle enforces strict role boundaries without unnecessary enterprise complexity:
+The content lifecycle allows flexible publishing for speed of development:
 
 ```text
-Manager (Plan & Assign)
-  ──> Creator (Author Draft & Submit)
-  ──> Moderator (Review: Approve or Request Changes)
-  ──> Manager (Publish to Learner Web)
-  [Emergency Path]: Administrator Emergency Publish (APPROVED content only, requires justification + AuditLog)
+Creator (Author Draft) 
+  ──> Manager / Admin (One-Click Publish to Learner Web)
+  [Optional]: Moderator Review path exists but is not strictly enforced for MVP.
 ```
 
-- **Separation of Duties (SoD):**
-  - Creator CANNOT approve lessons (`403 Forbidden / ROLE_UNAUTHORIZED`).
-  - Moderator CANNOT publish lessons to learners (`403 Forbidden`).
-  - Manager CANNOT approve lessons.
-  - Admin emergency publish is restricted strictly to already `APPROVED` lessons with mandatory reason logged to `audit_logs` (`CONTENT_EMERGENCY_PUB`).
+- **Agile Publishing:**
+  - Manager and Admin can directly publish lessons.
 - **Clone-to-Draft v2 (D3):** Published lessons are never edited in place; edits clone to a new `DRAFT` revision with `supersedes_id` pointing to the active revision.
-- **Unit 4/4 Published Invariant:** A Unit is accessible to learners if and only if all 4 child lessons are in `PUBLISHED` status. Direct access to lessons in incomplete units is rejected at the server/RLS boundary (`UI hiding != authorization`).
+- **Strict Unit Visibility:** A Unit is accessible to learners only if ALL mandatory lessons within it are in `PUBLISHED` status. Direct access to unpublished lessons is rejected.
 
 ---
 
@@ -79,7 +74,7 @@ Manager (Plan & Assign)
   - AI runtime execution, LLM prompts, GEC inference pipelines.
   - Speech recognition, automated pronunciation assessment, real-time TTS.
   - Commercial payment gateways, public leaderboards, social gamification.
-  - Background Web Push / SMS notification daemons (in-app reminder is client-local per ADR-006/ADR-007).
+  - Background Web Push / SMS notification daemons (Email reminders to registered emails are ALLOWED and in-scope).
   - Multi-stage enterprise workflow orchestration engines.
 
 ---

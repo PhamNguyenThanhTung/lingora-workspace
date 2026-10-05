@@ -1,220 +1,220 @@
-# MASTER IMPLEMENTATION, TEST, DEMO & REPORT PLAN (PHASE 2)
+﻿# MASTER IMPLEMENTATION, TEST, DEMO & REPORT PLAN (PHASE 2)
 
-> **Mã tài liệu:** `plans/master-implementation-and-report-plan.md`  
-> **Giai đoạn:** Phase 2 — System Implementation, Verification, Demonstration & Academic Reporting  
-> **Trạng thái:** `READY FOR HUMAN REVIEW` (Draft completed post M2.6 Acceptance; Implementation NOT STARTED)  
-> **Căn cứ gốc:**  
+> **MÃ£ tÃ i liá»‡u:** `plans/master-implementation-and-report-plan.md`  
+> **Giai Ä‘oáº¡n:** Phase 2 â€” System Implementation, Verification, Demonstration & Academic Reporting  
+> **Tráº¡ng thÃ¡i:** `READY FOR HUMAN REVIEW` (Draft completed post M2.6 Acceptance; Implementation NOT STARTED)  
+> **CÄƒn cá»© gá»‘c:**  
 > - `HANDOFF.md` (M2.6 Accepted, Checkpoint `4c8a7dbd48c8c1a90c8a3e194b267916700bad2b`)  
 > - `docs/phase-1-m2-6-design-handoff.md` (Design-to-Implementation Handoff Specification)  
 > - `docs/phase-1-m2-5-design-validation.md` (Artifact #20 Design Validation Report)  
 > - `docs/phase-1-m2-4-architecture-security.md` (19 Components, 5 Zones, 6 Boundaries, 11 Audit Events)  
 > - `docs/phase-1-m2-3-sequence-api-service-boundary.md` (Sequences SEQ-01..10, API Surfaces)  
-> - `docs/phase-1-m2-2-behavior-uc-activity-state.md` (15 UCs, 15 BFs, D1–D9 Rules, State Machines)  
+> - `docs/phase-1-m2-2-behavior-uc-activity-state.md` (15 UCs, 15 BFs, D1â€“D9 Rules, State Machines)  
 > - `docs/phase-1-m2-1-domain-and-logical-data-foundation.md` (Artifacts #1..#5)  
 > - `docs/03-api-contract.md` (Read-only Canonical AI Service Contract)  
 > - `ADR-014` & `ADR-029` (SE Core + AI Supporting Capability; M2.6 Formal Acceptance)  
-> **Ranh giới nghiêm ngặt:**  
-> 1. **KẾ HOẠCH DUY NHẤT (SINGLE MASTER PLAN):** Tài liệu này là kế hoạch tổng thể chỉ đạo toàn bộ quá trình lập trình (Implementation), kiểm thử (Testing), chuẩn bị dữ liệu & kịch bản trình diễn (Demo), và thu thập bằng chứng báo cáo học thuật (Report Evidence) cho Giai đoạn 2.  
-> 2. **PHẠM VI ĐỒ ÁN VÀ QUY CÁCH PHI-AI (PHASE 2 SCOPE NOTE):** Lingora là đồ án phát triển nền tảng học ngoại ngữ trực tuyến theo chuẩn kỹ nghệ phần mềm, không phải đồ án AI. Phase 2 chỉ tập trung triển khai các chức năng nghiệp vụ cốt lõi và thuật toán tất định (Placement/Mapping A, Learning Progress, Controlled Retry, Spaced Repetition SRS, Conditional Jump, Streak, Content Governance, RBAC/RLS/SoD, Lesson/Exercise Player). AI/ML/GEC không thuộc phạm vi implementation, testing, demo hoặc acceptance của Phase 2. Các tài liệu M2 có đề cập AI được giữ làm historical/supporting architecture reference và không được hiểu là workstream cần triển khai.
-> 3. **ZERO IMPLEMENTATION IN THIS TASK:** Tuyệt đối KHÔNG viết mã nguồn ứng dụng, KHÔNG chạy migration, KHÔNG thay đổi schema thực tế, KHÔNG triển khai RLS, KHÔNG sửa hợp đồng `docs/03-api-contract.md`, KHÔNG tạo commit code trong task này.
-> 4. **PHÂN ĐỊNH TRẠNG THÁI CHUẨN TẮC:** Phân biệt tuyệt đối giữa `CURRENT` (hệ thống/code/db đang tồn tại thực tế), `TARGET` (thiết kế đã chốt tại M2.2–M2.6), `FUTURE` (mở rộng chưa thuộc MVP), và `PROPOSED` (mục tiêu cần triển khai trong Phase 2). Tuyệt đối không mô tả target design như hệ thống đã chạy trên production.
+> **Ranh giá»›i nghiÃªm ngáº·t:**  
+> 1. **Káº¾ HOáº CH DUY NHáº¤T (SINGLE MASTER PLAN):** TÃ i liá»‡u nÃ y lÃ  káº¿ hoáº¡ch tá»•ng thá»ƒ chá»‰ Ä‘áº¡o toÃ n bá»™ quÃ¡ trÃ¬nh láº­p trÃ¬nh (Implementation), kiá»ƒm thá»­ (Testing), chuáº©n bá»‹ dá»¯ liá»‡u & ká»‹ch báº£n trÃ¬nh diá»…n (Demo), vÃ  thu tháº­p báº±ng chá»©ng bÃ¡o cÃ¡o há»c thuáº­t (Report Evidence) cho Giai Ä‘oáº¡n 2.  
+> 2. **PHáº M VI Äá»’ ÃN VÃ€ QUY CÃCH PHI-AI (PHASE 2 SCOPE NOTE):** Lingora lÃ  Ä‘á»“ Ã¡n phÃ¡t triá»ƒn ná»n táº£ng há»c ngoáº¡i ngá»¯ trá»±c tuyáº¿n theo chuáº©n ká»¹ nghá»‡ pháº§n má»m, khÃ´ng pháº£i Ä‘á»“ Ã¡n AI. Phase 2 chá»‰ táº­p trung triá»ƒn khai cÃ¡c chá»©c nÄƒng nghiá»‡p vá»¥ cá»‘t lÃµi vÃ  thuáº­t toÃ¡n táº¥t Ä‘á»‹nh (Placement/Mapping A, Learning Progress, Controlled Retry, Spaced Repetition SRS, Conditional Jump, Streak, Content Governance, RBAC/RLS/SoD, Lesson/Exercise Player). AI/ML/GEC khÃ´ng thuá»™c pháº¡m vi implementation, testing, demo hoáº·c acceptance cá»§a Phase 2. CÃ¡c tÃ i liá»‡u M2 cÃ³ Ä‘á» cáº­p AI Ä‘Æ°á»£c giá»¯ lÃ m historical/supporting architecture reference vÃ  khÃ´ng Ä‘Æ°á»£c hiá»ƒu lÃ  workstream cáº§n triá»ƒn khai.
+> 3. **ZERO IMPLEMENTATION IN THIS TASK:** Tuyá»‡t Ä‘á»‘i KHÃ”NG viáº¿t mÃ£ nguá»“n á»©ng dá»¥ng, KHÃ”NG cháº¡y migration, KHÃ”NG thay Ä‘á»•i schema thá»±c táº¿, KHÃ”NG triá»ƒn khai RLS, KHÃ”NG sá»­a há»£p Ä‘á»“ng `docs/03-api-contract.md`, KHÃ”NG táº¡o commit code trong task nÃ y.
+> 4. **PHÃ‚N Äá»ŠNH TRáº NG THÃI CHUáº¨N Táº®C:** PhÃ¢n biá»‡t tuyá»‡t Ä‘á»‘i giá»¯a `CURRENT` (há»‡ thá»‘ng/code/db Ä‘ang tá»“n táº¡i thá»±c táº¿), `TARGET` (thiáº¿t káº¿ Ä‘Ã£ chá»‘t táº¡i M2.2â€“M2.6), `FUTURE` (má»Ÿ rá»™ng chÆ°a thuá»™c MVP), vÃ  `PROPOSED` (má»¥c tiÃªu cáº§n triá»ƒn khai trong Phase 2). Tuyá»‡t Ä‘á»‘i khÃ´ng mÃ´ táº£ target design nhÆ° há»‡ thá»‘ng Ä‘Ã£ cháº¡y trÃªn production.
 
 ---
 
-## MỤC LỤC TỔNG THỂ
+## Má»¤C Lá»¤C Tá»”NG THá»‚
 
-1. [AUDIT HIỆN TRẠNG KHO LƯU TRỮ (CURRENT VS TARGET VS GAP)](#1-audit-hiện-trạng-kho-lưu-trữ-current-vs-target-vs-gap)
-2. [CĂN CỨ THIẾT KẾ CHUẨN TẮC & NGUYÊN TẮC GIẢI QUYẾT XUNG ĐỘT](#2-căn-cứ-thiết-kế-chuẩn-tắc--nguyên-tắc-giải-quyết-xung-đột)
-3. [PHÂN RÃ HỆ THỐNG MỤC TIÊU THEO THÀNH PHẦN KIẾN TRÚC](#3-phân-rã-hệ-thống-mục-tiêu-theo-thành-phần-kiến-trúc)
-4. [THỨ TỰ THỰC THI & KIẾN TRÚC PHỤ THUỘC TRIỂN KHAI](#4-thứ-tự-thực-thi--kiến-trúc-phụ-thuộc-triển-khai)
-5. [KẾ HOẠCH TRIỂN KHAI CƠ SỞ DỮ LIỆU & LỘ TRÌNH MIGRATION](#5-kế-hoạch-triển-khai-cơ-sở-dữ-liệu--lộ-trình-migration)
-6. [KẾ HOẠCH TRIỂN KHAI AUTH, RBAC, RLS & PHÂN TÁCH NHIỆM VỤ (SOD)](#6-kế-hoạch-triển-khai-auth-rbac-rls--phân-tách-nhiệm-vụ-sod)
-7. [KẾ HOẠCH TRIỂN KHAI VÒNG ĐỜI HỌC VIÊN (LEARNER CORE ENGINE)](#7-kế-hoạch-triển-khai-vòng-đời-học-viên-learner-core-engine)
-8. [KẾ HOẠCH TRIỂN KHAI ĐÁNH GIÁ NĂNG LỰC & ĐIỂM XUẤT PHÁT (ASSESSMENT)](#8-kế-hoạch-triển-khai-đánh-giá-năng-lực--điểm-xuất-phát-assessment)
-9. [KẾ HOẠCH TRIỂN KHAI THỬ THÁCH NHẢY CÓC, LÀM LẠI, SRS & CHUỖI HỌC (INTELLIGENCE)](#9-kế-hoạch-triển-khai-thử-thách-nhảy-cóc-làm-lại-srs--chuỗi-học-intelligence)
-10. [KẾ HOẠCH TRIỂN KHAI QUẢN TRỊ NỘI DUNG & DUYỆT BÀI HỌC (CONTENT GOVERNANCE)](#10-kế-hoạch-triển-khai-quản-trị-nội-dung--duyệt-bài-học-content-governance)
-11. [QUY CHUẨN GIAO DIỆN LẬP TRÌNH API & LỚP ĐIỀU PHỐI BFF](#11-quy-chuẩn-giao-diện-lập-trình-api--lớp-điều-phối-bff)
-12. [CHIẾN LƯỢC KIỂM THỬ TỰ ĐỘNG & BỘ KHUNG KIỂM THỬ KHẢ THI](#12-chiến-lược-kiểm-thử-tự-động--bộ-khung-kiểm-thử-khả-thi)
-13. [BỘ DỮ LIỆU KIỂM THỬ & DỮ LIỆU MẪU TRÌNH DIỄN (SEED DATA)](#13-bộ-dữ-liệu-kiểm-thử--dữ-liệu-mẫu-trình-diễn-seed-data)
-14. [KỊCH BẢN TRÌNH DIỄN HỆ THỐNG LIÊN TỤC (DEMO PLAN)](#14-kịch-bản-trình-diễn-hệ-thống-liên-tục-demo-plan)
-15. [MA TRẬN BẰNG CHỨNG BÁO CÁO HỌC THUẬT (REPORT EVIDENCE MATRIX)](#15-ma-trận-bằng-chứng-báo-cáo-học-thuật-report-evidence-matrix)
-16. [KHUNG KIỂM ĐỊNH HIỆU NĂNG & TIÊU CHÍ PHI CHỨC NĂNG (NFR VALIDATION)](#16-khung-kiểm-định-hiệu-năng--tiêu-chí-phi-chức-năng-nfr-validation)
-17. [MÔ HÌNH QUẢN TRỊ MỐC & CỔNG NGHIỆM THU (GATED MILESTONE MODEL)](#17-mô-hình-quản-trị-mốc--cổng-nghiệm-thu-gated-milestone-model)
-18. [ÁNH XẠ TRIỂN KHAI VÀO CẤU TRÚC BÁO CÁO HỌC THUẬT](#18-ánh-xạ-triển-khai-vào-cấu-trúc-báo-cáo-học-thuật)
-19. [SỔ ĐĂNG KÝ RỦI RO & KHOẢNG TRỐNG KỸ THUẬT (RISK REGISTER)](#19-sổ-đăng-ký-rủi-ro--khoảng-trống-kỹ-thuật-risk-register)
-20. [LỘ TRÌNH TỔNG THỂ GIAI ĐOẠN 2 (MASTER ROADMAP M3.1..M3.10)](#20-lộ-trình-tổng-thể-giai-đoạn-2-master-roadmap-m31m310)
-21. [RÀNG BUỘC CỨNG VÀ KỶ LUẬT THỰC THI (HARD CONSTRAINTS)](#21-ràng-buộc-cứng-và-kỷ-luật-thực-thi-hard-constraints)
+1. [AUDIT HIá»†N TRáº NG KHO LÆ¯U TRá»® (CURRENT VS TARGET VS GAP)](#1-audit-hiá»‡n-tráº¡ng-kho-lÆ°u-trá»¯-current-vs-target-vs-gap)
+2. [CÄ‚N Cá»¨ THIáº¾T Káº¾ CHUáº¨N Táº®C & NGUYÃŠN Táº®C GIáº¢I QUYáº¾T XUNG Äá»˜T](#2-cÄƒn-cá»©-thiáº¿t-káº¿-chuáº©n-táº¯c--nguyÃªn-táº¯c-giáº£i-quyáº¿t-xung-Ä‘á»™t)
+3. [PHÃ‚N RÃƒ Há»† THá»NG Má»¤C TIÃŠU THEO THÃ€NH PHáº¦N KIáº¾N TRÃšC](#3-phÃ¢n-rÃ£-há»‡-thá»‘ng-má»¥c-tiÃªu-theo-thÃ nh-pháº§n-kiáº¿n-trÃºc)
+4. [THá»¨ Tá»° THá»°C THI & KIáº¾N TRÃšC PHá»¤ THUá»˜C TRIá»‚N KHAI](#4-thá»©-tá»±-thá»±c-thi--kiáº¿n-trÃºc-phá»¥-thuá»™c-triá»ƒn-khai)
+5. [Káº¾ HOáº CH TRIá»‚N KHAI CÆ  Sá»ž Dá»® LIá»†U & Lá»˜ TRÃŒNH MIGRATION](#5-káº¿-hoáº¡ch-triá»ƒn-khai-cÆ¡-sá»Ÿ-dá»¯-liá»‡u--lá»™-trÃ¬nh-migration)
+6. [Káº¾ HOáº CH TRIá»‚N KHAI AUTH, RBAC, RLS & PHÃ‚N TÃCH NHIá»†M Vá»¤ (SOD)](#6-káº¿-hoáº¡ch-triá»ƒn-khai-auth-rbac-rls--phÃ¢n-tÃ¡ch-nhiá»‡m-vá»¥-sod)
+7. [Káº¾ HOáº CH TRIá»‚N KHAI VÃ’NG Äá»œI Há»ŒC VIÃŠN (LEARNER CORE ENGINE)](#7-káº¿-hoáº¡ch-triá»ƒn-khai-vÃ²ng-Ä‘á»i-há»c-viÃªn-learner-core-engine)
+8. [Káº¾ HOáº CH TRIá»‚N KHAI ÄÃNH GIÃ NÄ‚NG Lá»°C & ÄIá»‚M XUáº¤T PHÃT (ASSESSMENT)](#8-káº¿-hoáº¡ch-triá»ƒn-khai-Ä‘Ã¡nh-giÃ¡-nÄƒng-lá»±c--Ä‘iá»ƒm-xuáº¥t-phÃ¡t-assessment)
+9. [Káº¾ HOáº CH TRIá»‚N KHAI THá»¬ THÃCH NHáº¢Y CÃ“C, LÃ€M Láº I, SRS & CHUá»–I Há»ŒC (INTELLIGENCE)](#9-káº¿-hoáº¡ch-triá»ƒn-khai-thá»­-thÃ¡ch-nháº£y-cÃ³c-lÃ m-láº¡i-srs--chuá»—i-há»c-intelligence)
+10. [Káº¾ HOáº CH TRIá»‚N KHAI QUáº¢N TRá»Š Ná»˜I DUNG & DUYá»†T BÃ€I Há»ŒC (CONTENT GOVERNANCE)](#10-káº¿-hoáº¡ch-triá»ƒn-khai-quáº£n-trá»‹-ná»™i-dung--duyá»‡t-bÃ i-há»c-content-governance)
+11. [QUY CHUáº¨N GIAO DIá»†N Láº¬P TRÃŒNH API & Lá»šP ÄIá»€U PHá»I BFF](#11-quy-chuáº©n-giao-diá»‡n-láº­p-trÃ¬nh-api--lá»›p-Ä‘iá»u-phá»‘i-bff)
+12. [CHIáº¾N LÆ¯á»¢C KIá»‚M THá»¬ Tá»° Äá»˜NG & Bá»˜ KHUNG KIá»‚M THá»¬ KHáº¢ THI](#12-chiáº¿n-lÆ°á»£c-kiá»ƒm-thá»­-tá»±-Ä‘á»™ng--bá»™-khung-kiá»ƒm-thá»­-kháº£-thi)
+13. [Bá»˜ Dá»® LIá»†U KIá»‚M THá»¬ & Dá»® LIá»†U MáºªU TRÃŒNH DIá»„N (SEED DATA)](#13-bá»™-dá»¯-liá»‡u-kiá»ƒm-thá»­--dá»¯-liá»‡u-máº«u-trÃ¬nh-diá»…n-seed-data)
+14. [Ká»ŠCH Báº¢N TRÃŒNH DIá»„N Há»† THá»NG LIÃŠN Tá»¤C (DEMO PLAN)](#14-ká»‹ch-báº£n-trÃ¬nh-diá»…n-há»‡-thá»‘ng-liÃªn-tá»¥c-demo-plan)
+15. [MA TRáº¬N Báº°NG CHá»¨NG BÃO CÃO Há»ŒC THUáº¬T (REPORT EVIDENCE MATRIX)](#15-ma-tráº­n-báº±ng-chá»©ng-bÃ¡o-cÃ¡o-há»c-thuáº­t-report-evidence-matrix)
+16. [KHUNG KIá»‚M Äá»ŠNH HIá»†U NÄ‚NG & TIÃŠU CHÃ PHI CHá»¨C NÄ‚NG (NFR VALIDATION)](#16-khung-kiá»ƒm-Ä‘á»‹nh-hiá»‡u-nÄƒng--tiÃªu-chÃ­-phi-chá»©c-nÄƒng-nfr-validation)
+17. [MÃ” HÃŒNH QUáº¢N TRá»Š Má»C & Cá»”NG NGHIá»†M THU (GATED MILESTONE MODEL)](#17-mÃ´-hÃ¬nh-quáº£n-trá»‹-má»‘c--cá»•ng-nghiá»‡m-thu-gated-milestone-model)
+18. [ÃNH Xáº  TRIá»‚N KHAI VÃ€O Cáº¤U TRÃšC BÃO CÃO Há»ŒC THUáº¬T](#18-Ã¡nh-xáº¡-triá»ƒn-khai-vÃ o-cáº¥u-trÃºc-bÃ¡o-cÃ¡o-há»c-thuáº­t)
+19. [Sá»” ÄÄ‚NG KÃ Rá»¦I RO & KHOáº¢NG TRá»NG Ká»¸ THUáº¬T (RISK REGISTER)](#19-sá»•-Ä‘Äƒng-kÃ½-rá»§i-ro--khoáº£ng-trá»‘ng-ká»¹-thuáº­t-risk-register)
+20. [Lá»˜ TRÃŒNH Tá»”NG THá»‚ GIAI ÄOáº N 2 (MASTER ROADMAP M3.1..M3.10)](#20-lá»™-trÃ¬nh-tá»•ng-thá»ƒ-giai-Ä‘oáº¡n-2-master-roadmap-m31m310)
+21. [RÃ€NG BUá»˜C Cá»¨NG VÃ€ Ká»¶ LUáº¬T THá»°C THI (HARD CONSTRAINTS)](#21-rÃ ng-buá»™c-cá»©ng-vÃ -ká»·-luáº­t-thá»±c-thi-hard-constraints)
 
 ---
 
-## 1. AUDIT HIỆN TRẠNG KHO LƯU TRỮ (CURRENT VS TARGET VS GAP)
+## 1. AUDIT HIá»†N TRáº NG KHO LÆ¯U TRá»® (CURRENT VS TARGET VS GAP)
 
-Để đảm bảo tính trung thực tuyệt đối, bảng audit này đối soát chi tiết giữa **mã nguồn/hạ tầng thực tế đang chạy (CURRENT)** và **thiết kế đã được chấp thuận tại M2.2–M2.6 (TARGET)**.
+Äá»ƒ Ä‘áº£m báº£o tÃ­nh trung thá»±c tuyá»‡t Ä‘á»‘i, báº£ng audit nÃ y Ä‘á»‘i soÃ¡t chi tiáº¿t giá»¯a **mÃ£ nguá»“n/háº¡ táº§ng thá»±c táº¿ Ä‘ang cháº¡y (CURRENT)** vÃ  **thiáº¿t káº¿ Ä‘Ã£ Ä‘Æ°á»£c cháº¥p thuáº­n táº¡i M2.2â€“M2.6 (TARGET)**.
 
-### 1.1. Hiện Trạng Thực Tế (CURRENT)
-- **Ứng dụng Web Học viên (`lingora-web`):**
-  - Khung công nghệ: Next.js 15.1.0, React 19, TypeScript 5, Tailwind CSS 4, shadcn/ui.
-  - Mã nguồn hiện có: Vỏ ứng dụng cơ bản (`src/app/page.tsx`), trang xác thực đăng nhập/đăng ký (`src/app/(auth)/login`, `(auth)/register`), proxy định tuyến AI (`src/app/api/ai/chat/route.ts`, `api/ai/srs/route.ts`), gói ngôn ngữ i18n (`vi`, `en`), tiện ích Supabase client/server (`src/lib/supabase/`).
-  - Kiểm thử hiện có: 14/14 bài test Vitest chạy đạt (`tests/unit/`).
-  - **Thực tế vắng mặt:** Hoàn toàn chưa có giao diện học bài (Lesson Player), chưa có trình làm bài tập tương tác (Exercise Engine), chưa có màn hình chẩn đoán (Diagnostic Placement), chưa có giao diện nhảy cóc (Jump), chưa có màn hình ôn tập ngắt quãng (SRS Review), chưa có bảng theo dõi chuỗi học tập (Streak View), chưa có hồ sơ năng lực (Skill Profile).
-- **Ứng dụng Quản trị & Cơ sở dữ liệu (`lingora-admin`):**
-  - Khung công nghệ: Prisma ORM 6.2.1 kết nối PostgreSQL trên Supabase.
-  - Lược đồ hiện tại (`prisma/schema.prisma`): Chứa 18 mô hình dữ liệu từ Phase 0 (`Language`, `Profile`, `Course`, `CourseTranslation`, `Unit`, `UnitTranslation`, `Lesson`, `LessonTranslation`, `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary`, `Exercise`, `UserProgress`, `UserVocabSrs`, `ReviewLog`, `ChatScenario`, `ChatScenarioTranslation`, `AuditLog`).
-  - Enum hiện tại: `Role` (6 giá trị), `ContentStatus` (6 giá trị), `Cefr` (6 giá trị), `ExerciseType` (chỉ có 3 giá trị: `MCQ`, `FILL_BLANK`, `REORDER`), `ProgressStatus` (`NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`).
-  - Dữ liệu di chuyển: Thư mục `prisma/migrations` chứa 3 file migration lịch sử M1 (`init`, `profile_triggers`, `security_policies`).
-  - **Thực tế vắng mặt:** Hoàn toàn chưa có bảng phiên bản bài học `lesson_revisions` (DD-02), chưa có bảng kết quả chẩn đoán `assessment_results` (DD-06), chưa có bảng hồ sơ kỹ năng `skill_profiles` (DD-06), chưa có bảng quản lý phân công bài học, thiếu 2 loại bài tập mục tiêu (`LISTENING`, `GRAMMAR`) trong enum `ExerciseType`, thiếu trạng thái `LOCKED` và `SKIPPED_BY_JUMP` trong `ProgressStatus`. Chưa có bất kỳ giao diện biên soạn hay kiểm duyệt nào trong `lingora-admin`.
-- **Các thành phần kho lưu trữ liên quan AI (`lingora-ai`):**
-  - **Quy chế hiện trạng & phạm vi (Current & Scope Note):** Các thành phần kho lưu trữ liên quan AI, khi xuất hiện, chỉ được lưu giữ dưới dạng bề mặt tương thích và tham chiếu lịch sử (AI-related repository artifacts, when present, are retained only as historical/compatibility surfaces and are outside Phase 2 implementation, testing, demo, and acceptance).
-  - Endpoint mục tiêu `/v1/gec/correct` (được nhắc tại `docs/03-api-contract.md` như một hợp đồng tham chiếu) hoàn toàn không thuộc phạm vi triển khai, kiểm thử hay nghiệm thu của Phase 2.
-- **Hạ tầng Dữ liệu & An ninh Supabase:**
-  - Cơ sở dữ liệu Postgres 15 tại vùng `ap-southeast-1`. Đã thiết lập 2 storage bucket (`lingora-avatars`, `lingora-media`).
-  - Chính sách RLS hiện có trên database chỉ là phiên bản sơ khai M1 (kiểm tra 2 vai trò nhị phân `USER`/`ADMIN`), chưa triển khai ma trận RLS cho 6 vai trò và chưa cài đặt các hàm chặn vi phạm phân tách nhiệm vụ (SoD).
+### 1.1. Hiá»‡n Tráº¡ng Thá»±c Táº¿ (CURRENT)
+- **á»¨ng dá»¥ng Web Há»c viÃªn (`lingora-web`):**
+  - Khung cÃ´ng nghá»‡: Next.js 15.1.0, React 19, TypeScript 5, Tailwind CSS 4, shadcn/ui.
+  - MÃ£ nguá»“n hiá»‡n cÃ³: Vá» á»©ng dá»¥ng cÆ¡ báº£n (`src/app/page.tsx`), trang xÃ¡c thá»±c Ä‘Äƒng nháº­p/Ä‘Äƒng kÃ½ (`src/app/(auth)/login`, `(auth)/register`), proxy Ä‘á»‹nh tuyáº¿n AI (`src/app/api/ai/chat/route.ts`, `api/ai/srs/route.ts`), gÃ³i ngÃ´n ngá»¯ i18n (`vi`, `en`), tiá»‡n Ã­ch Supabase client/server (`src/lib/supabase/`).
+  - Kiá»ƒm thá»­ hiá»‡n cÃ³: 14/14 bÃ i test Vitest cháº¡y Ä‘áº¡t (`tests/unit/`).
+  - **Thá»±c táº¿ váº¯ng máº·t:** HoÃ n toÃ n chÆ°a cÃ³ giao diá»‡n há»c bÃ i (Lesson Player), chÆ°a cÃ³ trÃ¬nh lÃ m bÃ i táº­p tÆ°Æ¡ng tÃ¡c (Exercise Engine), chÆ°a cÃ³ mÃ n hÃ¬nh cháº©n Ä‘oÃ¡n (Diagnostic Placement), chÆ°a cÃ³ giao diá»‡n nháº£y cÃ³c (Jump), chÆ°a cÃ³ mÃ n hÃ¬nh Ã´n táº­p ngáº¯t quÃ£ng (SRS Review), chÆ°a cÃ³ báº£ng theo dÃµi chuá»—i há»c táº­p (Streak View), chÆ°a cÃ³ há»“ sÆ¡ nÄƒng lá»±c (Skill Profile).
+- **á»¨ng dá»¥ng Quáº£n trá»‹ & CÆ¡ sá»Ÿ dá»¯ liá»‡u (`lingora-admin`):**
+  - Khung cÃ´ng nghá»‡: Prisma ORM 6.2.1 káº¿t ná»‘i PostgreSQL trÃªn Supabase.
+  - LÆ°á»£c Ä‘á»“ hiá»‡n táº¡i (`prisma/schema.prisma`): Chá»©a 18 mÃ´ hÃ¬nh dá»¯ liá»‡u tá»« Phase 0 (`Language`, `Profile`, `Course`, `CourseTranslation`, `Unit`, `UnitTranslation`, `Lesson`, `LessonTranslation`, `Vocabulary`, `VocabularyTranslation`, `LessonVocabulary`, `Exercise`, `UserProgress`, `UserVocabSrs`, `ReviewLog`, `ChatScenario`, `ChatScenarioTranslation`, `AuditLog`).
+  - Enum hiá»‡n táº¡i: `Role` (6 giÃ¡ trá»‹), `ContentStatus` (6 giÃ¡ trá»‹), `Cefr` (6 giÃ¡ trá»‹), `ExerciseType` (chá»‰ cÃ³ 3 giÃ¡ trá»‹: `MCQ`, `FILL_BLANK`, `REORDER`), `ProgressStatus` (`NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`).
+  - Dá»¯ liá»‡u di chuyá»ƒn: ThÆ° má»¥c `prisma/migrations` chá»©a 3 file migration lá»‹ch sá»­ M1 (`init`, `profile_triggers`, `security_policies`).
+  - **Thá»±c táº¿ váº¯ng máº·t:** HoÃ n toÃ n chÆ°a cÃ³ báº£ng phiÃªn báº£n bÃ i há»c `lesson_revisions` (DD-02), chÆ°a cÃ³ báº£ng káº¿t quáº£ cháº©n Ä‘oÃ¡n `assessment_results` (DD-06), chÆ°a cÃ³ báº£ng há»“ sÆ¡ ká»¹ nÄƒng `skill_profiles` (DD-06), chÆ°a cÃ³ báº£ng quáº£n lÃ½ phÃ¢n cÃ´ng bÃ i há»c, thiáº¿u 2 loáº¡i bÃ i táº­p má»¥c tiÃªu (`LISTENING`, `GRAMMAR`) trong enum `ExerciseType`, thiáº¿u tráº¡ng thÃ¡i `LOCKED` vÃ  `SKIPPED_BY_JUMP` trong `ProgressStatus`. ChÆ°a cÃ³ báº¥t ká»³ giao diá»‡n biÃªn soáº¡n hay kiá»ƒm duyá»‡t nÃ o trong `lingora-admin`.
+- **CÃ¡c thÃ nh pháº§n kho lÆ°u trá»¯ liÃªn quan AI (`lingora-ai`):**
+  - **Quy cháº¿ hiá»‡n tráº¡ng & pháº¡m vi (Current & Scope Note):** CÃ¡c thÃ nh pháº§n kho lÆ°u trá»¯ liÃªn quan AI, khi xuáº¥t hiá»‡n, chá»‰ Ä‘Æ°á»£c lÆ°u giá»¯ dÆ°á»›i dáº¡ng bá» máº·t tÆ°Æ¡ng thÃ­ch vÃ  tham chiáº¿u lá»‹ch sá»­ (AI-related repository artifacts, when present, are retained only as historical/compatibility surfaces and are outside Phase 2 implementation, testing, demo, and acceptance).
+  - Endpoint má»¥c tiÃªu `/v1/gec/correct` (Ä‘Æ°á»£c nháº¯c táº¡i `docs/03-api-contract.md` nhÆ° má»™t há»£p Ä‘á»“ng tham chiáº¿u) hoÃ n toÃ n khÃ´ng thuá»™c pháº¡m vi triá»ƒn khai, kiá»ƒm thá»­ hay nghiá»‡m thu cá»§a Phase 2.
+- **Háº¡ táº§ng Dá»¯ liá»‡u & An ninh Supabase:**
+  - CÆ¡ sá»Ÿ dá»¯ liá»‡u Postgres 15 táº¡i vÃ¹ng `ap-southeast-1`. ÄÃ£ thiáº¿t láº­p 2 storage bucket (`lingora-avatars`, `lingora-media`).
+  - ChÃ­nh sÃ¡ch RLS hiá»‡n cÃ³ trÃªn database chá»‰ lÃ  phiÃªn báº£n sÆ¡ khai M1 (kiá»ƒm tra 2 vai trÃ² nhá»‹ phÃ¢n `USER`/`ADMIN`), chÆ°a triá»ƒn khai ma tráº­n RLS cho 6 vai trÃ² vÃ  chÆ°a cÃ i Ä‘áº·t cÃ¡c hÃ m cháº·n vi pháº¡m phÃ¢n tÃ¡ch nhiá»‡m vá»¥ (SoD).
 
-### 1.2. Thiết Kế Mục Tiêu (TARGET M2.2–M2.6)
-- **Hệ thống 6 vai trò chuẩn tắc:** `Learner`, `Lesson Creator`, `Moderator`, `Organizational Manager`, `Operations Staff`, `Administrator`.
-- **19 thành phần kiến trúc chuẩn tắc:** Phân rã 5 tầng (`COMP-PRES-01/02`, `COMP-APP-01/02`, `COMP-DOM-01..08`, `COMP-INFRA-01..05`, `COMP-EXT-01/02`).
-- **5 vùng an ninh logic:** Zone 1 Client, Zone 2 Trusted BFF, Zone 3 Supabase Core, Zone 4 Isolated AI, Zone 5 Privileged Ops.
-- **Vòng đời nội dung 6 trạng thái bất biến:** `Draft → In Review → Changes Requested → Draft → In Review → Approved → Published → Archived`, cơ chế nhân bản bản thảo (Clone-to-Draft v2 qua `supersedes_id`), điều kiện đơn vị hiển thị (Unit 4/4 Published).
-- **Quy tắc phân tách nhiệm vụ (SoD):** Creator không tự duyệt, Moderator không xuất bản, Manager xuất bản thông thường, Administrator xuất bản khẩn cấp kèm lý do bắt buộc và ghi log kiểm toán `CONTENT_EMERGENCY_PUB`.
-- **Động cơ học tập & bài tập hợp nhất (Unified Exercise):** 5 dạng bài tập (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`), hạn mức làm lại có kiểm soát `max(1, floor(N * 0.10))` theo từng lượt làm bài, bảo lưu điểm trần 70%.
-- **Động cơ đánh giá năng lực & xuất phát điểm:** Bài chẩn đoán 30 câu hỏi (Human-Selected Design Decision; canonical M2 docs still require formal status sync before/with next design update), mỗi câu trả lời đúng nhận 1 điểm thô (0–30 điểm thô), Mapping A tất định (0–30 điểm thô ra Unit 1–6), Skip chuyển về Unit 1 `UNVERIFIED` (0 AssessmentResult, 0 SkillProfile), thi lại tạo bản ghi `AssessmentResult` bất biến mới. Thử thách nhảy cóc (Jump) ngưỡng ≥95%, hồi chiêu 24h, gán cờ `by_jump = true` (`SKIPPED_BY_JUMP`), không tính hoàn thành Unit.
-- **Thuật toán ôn tập ngắt quãng (SRS):** Chu kỳ tất định Policy B `[1, 3, 7, 14, 30]`, trả lời sai đặt lại về Stage 1 (+1 ngày), chạy độc lập qua RPC cơ sở dữ liệu `record_review`.
-- **Chuỗi ngày học liên tục (Streak):** Tính toán theo ngày dương lịch cục bộ thuộc múi giờ IANA của học viên, bỏ lỡ 1 ngày đặt lại về 1, không có cơ chế đóng băng (freeze) trong Core MVP.
-- **Dịch vụ AI hỗ trợ (Historical / Supporting Reference):** Thiết kế M2 coi AI là năng lực hỗ trợ phi trạng thái. Trong Phase 2, toàn bộ các chức năng và endpoint AI đều nằm ngoài phạm vi triển khai và nghiệm thu; hệ thống vận hành 100% dựa trên các thuật toán nghiệp vụ tất định (deterministic business algorithms).
-- **Kiểm toán an ninh:** 11 sự kiện kiểm toán chuẩn tắc ghi vào bảng append-only `audit_logs`.
+### 1.2. Thiáº¿t Káº¿ Má»¥c TiÃªu (TARGET M2.2â€“M2.6)
+- **Há»‡ thá»‘ng 6 vai trÃ² chuáº©n táº¯c:** `Learner`, `Lesson Creator`, `Moderator`, `Organizational Manager`, `Operations Staff`, `Administrator`.
+- **19 thÃ nh pháº§n kiáº¿n trÃºc chuáº©n táº¯c:** PhÃ¢n rÃ£ 5 táº§ng (`COMP-PRES-01/02`, `COMP-APP-01/02`, `COMP-DOM-01..08`, `COMP-INFRA-01..05`, `COMP-EXT-01/02`).
+- **5 vÃ¹ng an ninh logic:** Zone 1 Client, Zone 2 Trusted BFF, Zone 3 Supabase Core, Zone 4 Isolated AI, Zone 5 Privileged Ops.
+- **VÃ²ng Ä‘á»i ná»™i dung 6 tráº¡ng thÃ¡i báº¥t biáº¿n:** `Draft â†’ In Review â†’ Changes Requested â†’ Draft â†’ In Review â†’ Approved â†’ Published â†’ Archived`, cÆ¡ cháº¿ nhÃ¢n báº£n báº£n tháº£o (Clone-to-Draft v2 qua `supersedes_id`), Ä‘iá»u kiá»‡n Ä‘Æ¡n vá»‹ hiá»ƒn thá»‹ (Unit 4/4 Published).
+- **Quy táº¯c phÃ¢n tÃ¡ch nhiá»‡m vá»¥ (SoD):** Creator khÃ´ng tá»± duyá»‡t, Moderator khÃ´ng xuáº¥t báº£n, Manager xuáº¥t báº£n thÃ´ng thÆ°á»ng, Administrator xuáº¥t báº£n kháº©n cáº¥p kÃ¨m lÃ½ do báº¯t buá»™c vÃ  ghi log kiá»ƒm toÃ¡n `CONTENT_EMERGENCY_PUB`.
+- **Äá»™ng cÆ¡ há»c táº­p & bÃ i táº­p há»£p nháº¥t (Unified Exercise):** 5 dáº¡ng bÃ i táº­p (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`), háº¡n má»©c lÃ m láº¡i cÃ³ kiá»ƒm soÃ¡t `max(1, floor(N * 0.10))` theo tá»«ng lÆ°á»£t lÃ m bÃ i, báº£o lÆ°u Ä‘iá»ƒm tráº§n 70%.
+- **Äá»™ng cÆ¡ Ä‘Ã¡nh giÃ¡ nÄƒng lá»±c & xuáº¥t phÃ¡t Ä‘iá»ƒm:** BÃ i cháº©n Ä‘oÃ¡n 30 cÃ¢u há»i (Human-Selected Design Decision; canonical M2 docs still require formal status sync before/with next design update), má»—i cÃ¢u tráº£ lá»i Ä‘Ãºng nháº­n 1 Ä‘iá»ƒm thÃ´ (0â€“30 Ä‘iá»ƒm thÃ´), Mapping A táº¥t Ä‘á»‹nh (0â€“30 Ä‘iá»ƒm thÃ´ ra Unit 1â€“6), Skip chuyá»ƒn vá» Unit 1 `UNVERIFIED` (0 AssessmentResult, 0 SkillProfile), thi láº¡i táº¡o báº£n ghi `AssessmentResult` báº¥t biáº¿n má»›i. Thá»­ thÃ¡ch nháº£y cÃ³c (Jump) ngÆ°á»¡ng â‰¥95%, há»“i chiÃªu 24h, gÃ¡n cá» `by_jump = true` (`SKIPPED_BY_JUMP`), khÃ´ng tÃ­nh hoÃ n thÃ nh Unit.
+- **Thuáº­t toÃ¡n Ã´n táº­p ngáº¯t quÃ£ng (SRS):** Chu ká»³ táº¥t Ä‘á»‹nh Policy B `[1, 3, 7, 14, 30]`, tráº£ lá»i sai Ä‘áº·t láº¡i vá» Stage 1 (+1 ngÃ y), cháº¡y Ä‘á»™c láº­p qua RPC cÆ¡ sá»Ÿ dá»¯ liá»‡u `record_review`.
+- **Chuá»—i ngÃ y há»c liÃªn tá»¥c (Streak):** TÃ­nh toÃ¡n theo ngÃ y dÆ°Æ¡ng lá»‹ch cá»¥c bá»™ thuá»™c mÃºi giá» IANA cá»§a há»c viÃªn, bá» lá»¡ 1 ngÃ y Ä‘áº·t láº¡i vá» 1, khÃ´ng cÃ³ cÆ¡ cháº¿ Ä‘Ã³ng bÄƒng (freeze) trong Core MVP.
+- **Dá»‹ch vá»¥ AI há»— trá»£ (Historical / Supporting Reference):** Thiáº¿t káº¿ M2 coi AI lÃ  nÄƒng lá»±c há»— trá»£ phi tráº¡ng thÃ¡i. Trong Phase 2, toÃ n bá»™ cÃ¡c chá»©c nÄƒng vÃ  endpoint AI Ä‘á»u náº±m ngoÃ i pháº¡m vi triá»ƒn khai vÃ  nghiá»‡m thu; há»‡ thá»‘ng váº­n hÃ nh 100% dá»±a trÃªn cÃ¡c thuáº­t toÃ¡n nghiá»‡p vá»¥ táº¥t Ä‘á»‹nh (deterministic business algorithms).
+- **Kiá»ƒm toÃ¡n an ninh:** 11 sá»± kiá»‡n kiá»ƒm toÃ¡n chuáº©n táº¯c ghi vÃ o báº£ng append-only `audit_logs`.
 
-### 1.3. Bảng Tái Thiết Hiện Trạng Kho Lưu Trữ & Khoảng Trống Triển Khai (Current Reality Reconstruct & Gap Matrix)
+### 1.3. Báº£ng TÃ¡i Thiáº¿t Hiá»‡n Tráº¡ng Kho LÆ°u Trá»¯ & Khoáº£ng Trá»‘ng Triá»ƒn Khai (Current Reality Reconstruct & Gap Matrix)
 
-Bảng đối soát 15 lĩnh vực kỹ thuật phân định tuyệt đối giữa hiện trạng thực tế trong mã nguồn/database (`CURRENT`) và thiết kế mục tiêu đã duyệt (`TARGET`), kèm bằng chứng kiểm chứng khách quan:
+Báº£ng Ä‘á»‘i soÃ¡t 15 lÄ©nh vá»±c ká»¹ thuáº­t phÃ¢n Ä‘á»‹nh tuyá»‡t Ä‘á»‘i giá»¯a hiá»‡n tráº¡ng thá»±c táº¿ trong mÃ£ nguá»“n/database (`CURRENT`) vÃ  thiáº¿t káº¿ má»¥c tiÃªu Ä‘Ã£ duyá»‡t (`TARGET`), kÃ¨m báº±ng chá»©ng kiá»ƒm chá»©ng khÃ¡ch quan:
 
-| Lĩnh Vực (Area) | Hiện Trạng Thực Tế (CURRENT) | Thiết Kế Mục Tiêu (TARGET) | Bằng Chứng Thực Tế (Evidence) | Xung Đột / Khoảng Trống Triển Khai (Conflict / Gap) |
+| LÄ©nh Vá»±c (Area) | Hiá»‡n Tráº¡ng Thá»±c Táº¿ (CURRENT) | Thiáº¿t Káº¿ Má»¥c TiÃªu (TARGET) | Báº±ng Chá»©ng Thá»±c Táº¿ (Evidence) | Xung Äá»™t / Khoáº£ng Trá»‘ng Triá»ƒn Khai (Conflict / Gap) |
 |---|---|---|---|---|
-| **1. DB Schema** | 18 models trong `schema.prisma`; Migration 1 tạo 18 bảng; thiếu 3 bảng mới, thiếu 2 enum values. | 18 models + 3 bảng mới (`lesson_revisions`, `assessment_results`, `skill_profiles`); 2 enum nâng cấp. | `lingora-admin/prisma/schema.prisma`; `prisma/migrations/202608140001_init/migration.sql`. | Cần migration mở rộng (Expand Phase M3.1) tạo 3 bảng mới, sửa đổi 4 bảng hiện có, cập nhật 2 enum. Không có xung đột cấu trúc. |
-| **2. Role Enum** | Enum `Role` trong DB đã nạp chỉ có 2 giá trị (`LEARNER`, `ADMIN`). `schema.prisma` khai báo 6 giá trị. | 6 vai trò chuẩn tắc: `LEARNER`, `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `ORGANIZATIONAL_MANAGER`, `ADMINISTRATOR`. | `202608140001_init/migration.sql` dòng 5: `CREATE TYPE "Role" AS ENUM ('LEARNER', 'ADMIN');`. | XUNG ĐỘT THỰC TẾ: M3.2 bắt buộc thực hiện migration mở rộng enum `Role` từ 2 lên 6 giá trị trong PostgreSQL trước khi triển khai RBAC. |
-| **3. RLS Policies** | RLS sơ khai M1.3; kiểm tra nhị phân `is_admin() = (role == 'ADMIN')`. Cột `role` bị khóa không cho learner tự sửa qua `GRANT UPDATE`. | Ma trận RLS kép 6 vai trò chuẩn tắc; kiểm tra phân tách nhiệm vụ SoD tại database layer. | `202608140002_auth_rls_storage.../migration.sql` dòng 107–120, 316–317. | Cần viết lại toàn diện bộ chính sách RLS cho 6 vai trò và trigger kiểm soát SoD tại M3.2. Cột `role` trong PostgreSQL migration 2 đã áp dụng `GRANT UPDATE` chỉ cho 6 cột cá nhân, không cấp cho learner. |
-| **4. Profile** | CURRENT APPLIED trong DB đã có: `display_name`, `avatar_url`, `ui_locale`, `native_lang_code`, `daily_goal_min`, `timezone`, `streak_count`, `last_qualifying_activity_date`, `role`. | TARGET EXTENSION: Bổ sung cột `verified_starting_unit INT DEFAULT 1` lưu xuất phát điểm đã kiểm định; bảng `skill_profiles`. | `schema.prisma` dòng 79–105; `migration.sql` dòng 31–48. | Cần bổ sung cột `verified_starting_unit` trong M3.1. Các trường đặc quyền (`role`, `verified_starting_unit`, `streak_count`, `last_qualifying_activity_date`) bắt buộc do server/DB kiểm soát, không cấp quyền UPDATE cho role Learner. |
-| **5. Exercise** | 3 loại bài tập (`MCQ`, `FILL_BLANK`, `REORDER`); trường `payload` chưa chuẩn hóa; trỏ thẳng về `lesson_id`. | 5 loại bài tập (+`LISTENING`, +`GRAMMAR`); trỏ về `lesson_revision_id UUID NULL`; cấm lộ đáp án đúng ở payload learner. | `schema.prisma` dòng 43, 252–270; `migration.sql` dòng 11. | Cần thêm 2 enum values, thêm FK revision; tách biệt tuyệt đối giữa payload làm bài và bí mật đáp án chấm điểm tại M3.1/M3.3 (`Learner payload != grading secret`). |
-| **6. Content Lifecycle** | Bảng `lessons` phẳng có trường `status ContentStatus @default(DRAFT)`, `is_published`. Chưa có giao diện biên soạn. | Vòng đời 6 trạng thái qua `lesson_revisions`; Clone-to-Draft v2 (`supersedes_id`); Unit 4/4 Published rule. | `schema.prisma` dòng 175–203; thư mục `lingora-admin` chưa có UI biên soạn. | Toàn bộ phân hệ quản trị và kiểm duyệt nội dung cần được lập trình mới trong `lingora-admin` tại M3.6. |
-| **7. Assessment** | Chưa có logic chẩn đoán đầu vào, chưa có bảng lưu lịch sử thi hay hồ sơ kỹ năng. | Động cơ chẩn đoán 30 câu (1 câu = 1 điểm thô, raw score 0–30); Mapping A (0–30 ra Unit 1–6); lưu bất biến `assessment_results`, `skill_profiles`. | `docs/09-placement-and-jump-specification.md`; mã nguồn `lingora-web` chưa có assessment. | Cần triển khai mới domain assessment tại M3.4 theo quyết định đã chốt: Diagnostic 30 câu, 0–30 điểm thô. (Canonical M2 docs vẫn ghi `~25–30 items / PROPOSED` và cần đồng bộ trạng thái chính thức ở lần cập nhật thiết kế kế tiếp). |
-| **8. Retry (D7)** | Chưa có logic hạn mức làm lại có kiểm soát. | $\max(1, \lfloor N \times 0.10 \rfloor)$ tính theo lượt làm bài; làm lại đúng nhận tối đa 70% điểm; kiểm soát ở server. | `docs/02-requirements.md` D7; `lingora-web` chưa có retry engine. | TARGET STATE REPRESENTATION: Persistent attempt/retry state representation must be finalized before M3.1 schema implementation. |
-| **9. SRS (D8)** | RPC `record_review` nhận tham số liên tục `p_recall_probability`, `p_recommended_interval_days`. | Chu kỳ tất định Policy B `[1, 3, 7, 14, 30]` ngày; `stage` quy ước 0 là mầm, 1..5 tương ứng chu kỳ. | `202608140002_auth_rls_storage.../migration.sql` dòng 192–274. | Cần cập nhật RPC `record_review` để tự động tính chu kỳ Policy B trực tiếp trong database, loại bỏ tính toán mock tại M3.5. |
-| **10. Jump (D5)** | Chưa có logic nhảy cóc hay bài tập kiểm tra vượt cấp. | Điểm $\ge 95\%$ mở Unit liền kề, gán cờ `by_jump = true` (`SKIPPED_BY_JUMP`); trượt kích hoạt hồi chiêu 24 giờ. | `docs/09-placement-and-jump-specification.md` §3; chưa có code Jump. | TARGET: Server-authoritative cooldown state. Biểu diễn vật lý cụ thể (Physical representation): TO BE FINALIZED DURING M3.1/M3.5. |
-| **11. Streak (D9)**| Đã có logic cộng streak trong RPC `record_review` theo ngày lịch và múi giờ IANA của profile. | Tính toán chuỗi liên tục theo múi giờ IANA học viên; bỏ lỡ 1 ngày đặt lại về 1; kích hoạt bởi cả bài học và SRS. | `202608140002_auth_rls.../migration.sql` dòng 256–268. | Logic streak hiện chỉ gắn với SRS; cần tích hợp thêm sự kiện hoàn thành bài học (Lesson completion) tại M3.5. |
-| **12. API Surface** | Chỉ có Next.js auth basic (`/login`, `/register`) và proxy AI (`/api/ai/chat`, `/api/ai/srs`). | Toàn bộ BFF API route handlers cho học viên và quản trị viên phủ đủ 15 Use Cases; gắn nhãn `[NOT LOCKED]`. | Thư mục `lingora-web/src/app/(auth)` và `src/app/api`. | Cần xây dựng toàn bộ BFF handlers trong M3.2–M3.6; các route cụ thể mang tính minh họa, không khóa hợp đồng. |
-| **13. Test Suites** | 14 test unit Vitest tại `lingora-web`; 1 seed test tại `lingora-admin`; 37 test pytest tại `lingora-ai/api`. | 18 khung kiểm thử khả thi M2.6; Frames 1–16 thực thi trong Phase 2, Frames 17–18 lưu vết lịch sử. | `lingora-web/package.json`, `lingora-admin/package.json`. | Chuẩn hóa bảng runner kiểm thử theo package: dùng `npx vitest run` và `playwright test`; không gọi lệnh npm chưa khai báo. |
-| **14. Seed Data** | Script `prisma/seed.js` tạo dữ liệu mầm cơ bản cho M1. | Phân định rạch ròi 2 nhóm: `Learning Demo Fixture` (Unit 3 4/4 Published) và `Content Governance Fixture`. | `lingora-admin/prisma/seed.js`; Mục 13 kế hoạch. | TARGET DESIGN: Phân tách 2 fixture mầm độc lập (Learning Fixture & Content Governance Fixture) để bảo đảm tính nhất quán khi kiểm chứng điều kiện Unit 4/4. |
-| **15. Live Demo** | Chưa có kịch bản chạy thử nghiệm thực tế. | 4 Màn trình diễn liên tục (Hành trình học viên, Quản trị nội dung, Phòng thủ SoD, Cá nhân hóa quy tắc). | Mục 14 kế hoạch tổng thể. | Kịch bản demo ánh xạ chính xác vào 2 nhóm fixture mầm đã phân tách, bảo đảm chạy thực nghiệm thông suốt 100%. |
+| **1. DB Schema** | 18 models trong `schema.prisma`; Migration 1 táº¡o 18 báº£ng; thiáº¿u 3 báº£ng má»›i, thiáº¿u 2 enum values. | 18 models + 3 báº£ng má»›i (`lesson_revisions`, `assessment_results`, `skill_profiles`); 2 enum nÃ¢ng cáº¥p. | `lingora-admin/prisma/schema.prisma`; `prisma/migrations/202608140001_init/migration.sql`. | Cáº§n migration má»Ÿ rá»™ng (Expand Phase M3.1) táº¡o 3 báº£ng má»›i, sá»­a Ä‘á»•i 4 báº£ng hiá»‡n cÃ³, cáº­p nháº­t 2 enum. KhÃ´ng cÃ³ xung Ä‘á»™t cáº¥u trÃºc. |
+| **2. Role Enum** | Enum `Role` trong DB Ä‘Ã£ náº¡p chá»‰ cÃ³ 2 giÃ¡ trá»‹ (`LEARNER`, `ADMIN`). `schema.prisma` khai bÃ¡o 6 giÃ¡ trá»‹. | 6 vai trÃ² chuáº©n táº¯c: `LEARNER`, `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `ORGANIZATIONAL_MANAGER`, `ADMINISTRATOR`. | `202608140001_init/migration.sql` dÃ²ng 5: `CREATE TYPE "Role" AS ENUM ('LEARNER', 'ADMIN');`. | XUNG Äá»˜T THá»°C Táº¾: M3.2 báº¯t buá»™c thá»±c hiá»‡n migration má»Ÿ rá»™ng enum `Role` tá»« 2 lÃªn 6 giÃ¡ trá»‹ trong PostgreSQL trÆ°á»›c khi triá»ƒn khai RBAC. |
+| **3. RLS Policies** | RLS sÆ¡ khai M1.3; kiá»ƒm tra nhá»‹ phÃ¢n `is_admin() = (role == 'ADMIN')`. Cá»™t `role` bá»‹ khÃ³a khÃ´ng cho learner tá»± sá»­a qua `GRANT UPDATE`. | Ma tráº­n RLS kÃ©p 6 vai trÃ² chuáº©n táº¯c; kiá»ƒm tra phÃ¢n tÃ¡ch nhiá»‡m vá»¥ SoD táº¡i database layer. | `202608140002_auth_rls_storage.../migration.sql` dÃ²ng 107â€“120, 316â€“317. | Cáº§n viáº¿t láº¡i toÃ n diá»‡n bá»™ chÃ­nh sÃ¡ch RLS cho 6 vai trÃ² vÃ  trigger kiá»ƒm soÃ¡t SoD táº¡i M3.2. Cá»™t `role` trong PostgreSQL migration 2 Ä‘Ã£ Ã¡p dá»¥ng `GRANT UPDATE` chá»‰ cho 6 cá»™t cÃ¡ nhÃ¢n, khÃ´ng cáº¥p cho learner. |
+| **4. Profile** | CURRENT APPLIED trong DB Ä‘Ã£ cÃ³: `display_name`, `avatar_url`, `ui_locale`, `native_lang_code`, `daily_goal_min`, `timezone`, `streak_count`, `last_qualifying_activity_date`, `role`. | TARGET EXTENSION: Bá»• sung cá»™t `verified_starting_unit INT DEFAULT 1` lÆ°u xuáº¥t phÃ¡t Ä‘iá»ƒm Ä‘Ã£ kiá»ƒm Ä‘á»‹nh; báº£ng `skill_profiles`. | `schema.prisma` dÃ²ng 79â€“105; `migration.sql` dÃ²ng 31â€“48. | Cáº§n bá»• sung cá»™t `verified_starting_unit` trong M3.1. CÃ¡c trÆ°á»ng Ä‘áº·c quyá»n (`role`, `verified_starting_unit`, `streak_count`, `last_qualifying_activity_date`) báº¯t buá»™c do server/DB kiá»ƒm soÃ¡t, khÃ´ng cáº¥p quyá»n UPDATE cho role Learner. |
+| **5. Exercise** | 3 loáº¡i bÃ i táº­p (`MCQ`, `FILL_BLANK`, `REORDER`); trÆ°á»ng `payload` chÆ°a chuáº©n hÃ³a; trá» tháº³ng vá» `lesson_id`. | 5 loáº¡i bÃ i táº­p (+`LISTENING`, +`GRAMMAR`); trá» vá» `lesson_revision_id UUID NULL`; cáº¥m lá»™ Ä‘Ã¡p Ã¡n Ä‘Ãºng á»Ÿ payload learner. | `schema.prisma` dÃ²ng 43, 252â€“270; `migration.sql` dÃ²ng 11. | Cáº§n thÃªm 2 enum values, thÃªm FK revision; tÃ¡ch biá»‡t tuyá»‡t Ä‘á»‘i giá»¯a payload lÃ m bÃ i vÃ  bÃ­ máº­t Ä‘Ã¡p Ã¡n cháº¥m Ä‘iá»ƒm táº¡i M3.1/M3.3 (`Learner payload != grading secret`). |
+| **6. Content Lifecycle** | Báº£ng `lessons` pháº³ng cÃ³ trÆ°á»ng `status ContentStatus @default(DRAFT)`, `is_published`. ChÆ°a cÃ³ giao diá»‡n biÃªn soáº¡n. | VÃ²ng Ä‘á»i 6 tráº¡ng thÃ¡i qua `lesson_revisions`; Clone-to-Draft v2 (`supersedes_id`); Unit 4/4 Published rule. | `schema.prisma` dÃ²ng 175â€“203; thÆ° má»¥c `lingora-admin` chÆ°a cÃ³ UI biÃªn soáº¡n. | ToÃ n bá»™ phÃ¢n há»‡ quáº£n trá»‹ vÃ  kiá»ƒm duyá»‡t ná»™i dung cáº§n Ä‘Æ°á»£c láº­p trÃ¬nh má»›i trong `lingora-admin` táº¡i M3.6. |
+| **7. Assessment** | ChÆ°a cÃ³ logic cháº©n Ä‘oÃ¡n Ä‘áº§u vÃ o, chÆ°a cÃ³ báº£ng lÆ°u lá»‹ch sá»­ thi hay há»“ sÆ¡ ká»¹ nÄƒng. | Äá»™ng cÆ¡ cháº©n Ä‘oÃ¡n 30 cÃ¢u (1 cÃ¢u = 1 Ä‘iá»ƒm thÃ´, raw score 0â€“30); Mapping A (0â€“30 ra Unit 1â€“6); lÆ°u báº¥t biáº¿n `assessment_results`, `skill_profiles`. | `docs/09-placement-and-jump-specification.md`; mÃ£ nguá»“n `lingora-web` chÆ°a cÃ³ assessment. | Cáº§n triá»ƒn khai má»›i domain assessment táº¡i M3.4 theo quyáº¿t Ä‘á»‹nh Ä‘Ã£ chá»‘t: Diagnostic 30 cÃ¢u, 0â€“30 Ä‘iá»ƒm thÃ´. (Canonical M2 docs váº«n ghi `~25â€“30 items / PROPOSED` vÃ  cáº§n Ä‘á»“ng bá»™ tráº¡ng thÃ¡i chÃ­nh thá»©c á»Ÿ láº§n cáº­p nháº­t thiáº¿t káº¿ káº¿ tiáº¿p). |
+| **8. Retry (D7)** | ChÆ°a cÃ³ logic háº¡n má»©c lÃ m láº¡i cÃ³ kiá»ƒm soÃ¡t. | $\max(1, \lfloor N \times 0.10 \rfloor)$ tÃ­nh theo lÆ°á»£t lÃ m bÃ i; lÃ m láº¡i Ä‘Ãºng nháº­n tá»‘i Ä‘a 70% Ä‘iá»ƒm; kiá»ƒm soÃ¡t á»Ÿ server. | `docs/02-requirements.md` D7; `lingora-web` chÆ°a cÃ³ retry engine. | TARGET STATE REPRESENTATION: Persistent attempt/retry state representation must be finalized before M3.1 schema implementation. |
+| **9. SRS (D8)** | RPC `record_review` nháº­n tham sá»‘ liÃªn tá»¥c `p_recall_probability`, `p_recommended_interval_days`. | Chu ká»³ táº¥t Ä‘á»‹nh Policy B `[1, 3, 7, 14, 30]` ngÃ y; `stage` quy Æ°á»›c 0 lÃ  máº§m, 1..5 tÆ°Æ¡ng á»©ng chu ká»³. | `202608140002_auth_rls_storage.../migration.sql` dÃ²ng 192â€“274. | Cáº§n cáº­p nháº­t RPC `record_review` Ä‘á»ƒ tá»± Ä‘á»™ng tÃ­nh chu ká»³ Policy B trá»±c tiáº¿p trong database, loáº¡i bá» tÃ­nh toÃ¡n mock táº¡i M3.5. |
+| **10. Jump (D5)** | ChÆ°a cÃ³ logic nháº£y cÃ³c hay bÃ i táº­p kiá»ƒm tra vÆ°á»£t cáº¥p. | Äiá»ƒm $\ge 95\%$ má»Ÿ Unit liá»n ká», gÃ¡n cá» `by_jump = true` (`SKIPPED_BY_JUMP`); trÆ°á»£t kÃ­ch hoáº¡t há»“i chiÃªu 24 giá». | `docs/09-placement-and-jump-specification.md` Â§3; chÆ°a cÃ³ code Jump. | TARGET: Server-authoritative cooldown state. Biá»ƒu diá»…n váº­t lÃ½ cá»¥ thá»ƒ (Physical representation): TO BE FINALIZED DURING M3.1/M3.5. |
+| **11. Streak (D9)**| ÄÃ£ cÃ³ logic cá»™ng streak trong RPC `record_review` theo ngÃ y lá»‹ch vÃ  mÃºi giá» IANA cá»§a profile. | TÃ­nh toÃ¡n chuá»—i liÃªn tá»¥c theo mÃºi giá» IANA há»c viÃªn; bá» lá»¡ 1 ngÃ y Ä‘áº·t láº¡i vá» 1; kÃ­ch hoáº¡t bá»Ÿi cáº£ bÃ i há»c vÃ  SRS. | `202608140002_auth_rls.../migration.sql` dÃ²ng 256â€“268. | Logic streak hiá»‡n chá»‰ gáº¯n vá»›i SRS; cáº§n tÃ­ch há»£p thÃªm sá»± kiá»‡n hoÃ n thÃ nh bÃ i há»c (Lesson completion) táº¡i M3.5. |
+| **12. API Surface** | Chá»‰ cÃ³ Next.js auth basic (`/login`, `/register`) vÃ  proxy AI (`/api/ai/chat`, `/api/ai/srs`). | ToÃ n bá»™ BFF API route handlers cho há»c viÃªn vÃ  quáº£n trá»‹ viÃªn phá»§ Ä‘á»§ 15 Use Cases; gáº¯n nhÃ£n `[NOT LOCKED]`. | ThÆ° má»¥c `lingora-web/src/app/(auth)` vÃ  `src/app/api`. | Cáº§n xÃ¢y dá»±ng toÃ n bá»™ BFF handlers trong M3.2â€“M3.6; cÃ¡c route cá»¥ thá»ƒ mang tÃ­nh minh há»a, khÃ´ng khÃ³a há»£p Ä‘á»“ng. |
+| **13. Test Suites** | 14 test unit Vitest táº¡i `lingora-web`; 1 seed test táº¡i `lingora-admin`; 37 test pytest táº¡i `lingora-ai/api`. | 18 khung kiá»ƒm thá»­ kháº£ thi M2.6; Frames 1â€“16 thá»±c thi trong Phase 2, Frames 17â€“18 lÆ°u váº¿t lá»‹ch sá»­. | `lingora-web/package.json`, `lingora-admin/package.json`. | Chuáº©n hÃ³a báº£ng runner kiá»ƒm thá»­ theo package: dÃ¹ng `npx vitest run` vÃ  `playwright test`; khÃ´ng gá»i lá»‡nh npm chÆ°a khai bÃ¡o. |
+| **14. Seed Data** | Script `prisma/seed.js` táº¡o dá»¯ liá»‡u máº§m cÆ¡ báº£n cho M1. | PhÃ¢n Ä‘á»‹nh ráº¡ch rÃ²i 2 nhÃ³m: `Learning Demo Fixture` (Unit 3 4/4 Published) vÃ  `Content Governance Fixture`. | `lingora-admin/prisma/seed.js`; Má»¥c 13 káº¿ hoáº¡ch. | TARGET DESIGN: PhÃ¢n tÃ¡ch 2 fixture máº§m Ä‘á»™c láº­p (Learning Fixture & Content Governance Fixture) Ä‘á»ƒ báº£o Ä‘áº£m tÃ­nh nháº¥t quÃ¡n khi kiá»ƒm chá»©ng Ä‘iá»u kiá»‡n Unit 4/4. |
+| **15. Live Demo** | ChÆ°a cÃ³ ká»‹ch báº£n cháº¡y thá»­ nghiá»‡m thá»±c táº¿. | 4 MÃ n trÃ¬nh diá»…n liÃªn tá»¥c (HÃ nh trÃ¬nh há»c viÃªn, Quáº£n trá»‹ ná»™i dung, PhÃ²ng thá»§ SoD, CÃ¡ nhÃ¢n hÃ³a quy táº¯c). | Má»¥c 14 káº¿ hoáº¡ch tá»•ng thá»ƒ. | Ká»‹ch báº£n demo Ã¡nh xáº¡ chÃ­nh xÃ¡c vÃ o 2 nhÃ³m fixture máº§m Ä‘Ã£ phÃ¢n tÃ¡ch, báº£o Ä‘áº£m cháº¡y thá»±c nghiá»‡m thÃ´ng suá»‘t 100%. |
 
 ---
 
-## 2. CĂN CỨ THIẾT KẾ CHUẨN TẮC & NGUYÊN TẮC GIẢI QUYẾT XUNG ĐỘT
+## 2. CÄ‚N Cá»¨ THIáº¾T Káº¾ CHUáº¨N Táº®C & NGUYÃŠN Táº®C GIáº¢I QUYáº¾T XUNG Äá»˜T
 
-Mọi hoạt động triển khai trong Phase 2 bắt buộc phải tuân thủ nghiêm ngặt các quyết định chuẩn tắc đã được đóng băng. Tuyệt đối không tự ý phát minh hoặc tái thiết kế.
+Má»i hoáº¡t Ä‘á»™ng triá»ƒn khai trong Phase 2 báº¯t buá»™c pháº£i tuÃ¢n thá»§ nghiÃªm ngáº·t cÃ¡c quyáº¿t Ä‘á»‹nh chuáº©n táº¯c Ä‘Ã£ Ä‘Æ°á»£c Ä‘Ã³ng bÄƒng. Tuyá»‡t Ä‘á»‘i khÃ´ng tá»± Ã½ phÃ¡t minh hoáº·c tÃ¡i thiáº¿t káº¿.
 
-### 2.1. Danh Mục Các Bất Biến Thiết Kế Không Thể Thương Lượng
-1. **6 Vai trò Chuẩn tắc:** `Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager` (Không coi khóa kỹ thuật `service_role` là vai trò thứ 7).
-2. **15 Ca Sử Dụng & 15 Luồng Nghiệp Vụ:** `UC-01` đến `UC-15` và `BF-01` đến `BF-15`. Trong đó, `UC-15` (Quản lý Nhóm học & Cohort) là ranh giới mở rộng tương lai (`FUTURE_EXTENSION`), không thuộc MVP.
-3. **9 Quyết Định Sản Phẩm Đóng Băng (D1–D9):**
-   - **D1:** Kế hoạch bài học do Quản lý (Manager) chỉ định phân công; Creator chỉ biên soạn bài được giao.
-   - **D2:** Phân tách nhiệm vụ tuyệt đối: Creator không tự duyệt; Moderator không xuất bản; Manager xuất bản thông thường; Admin xuất bản khẩn cấp có lý do.
-   - **D3:** Cấm sửa đè nội dung đã xuất bản; bắt buộc nhân bản tạo bản thảo mới (Clone-to-Draft v2 qua `supersedes_id`).
-   - **D4:** Mô hình bài tập hợp nhất (Unified Exercise); cấm tạo bảng `Exam` hay `QuestionBank`.
-   - **D5:** Thử thách nhảy cóc (Jump) áp dụng cho đơn vị liền kề; đạt khi điểm ≥95%; trượt bị khóa hồi chiêu 24 giờ.
-   - **D6:** Đánh giá chẩn đoán (Diagnostic): 4 khía cạnh cốt lõi (Vocabulary, Grammar, Reading, Listening) và thuật toán Mapping A (0–30 điểm thô ra Unit 1–6) là thiết kế đã khóa (CANONICAL LOCKED DECISION); không cấp chứng chỉ CEFR.
-     - **Quyết định thiết kế con người đã chốt chính thức (HUMAN-SELECTED DESIGN DECISION):**
-       - Số lượng câu hỏi bài chẩn đoán: **chính xác 30 câu hỏi** (`Diagnostic item count = 30`).
-       - Thang điểm thô: **0 đến 30 điểm** (`Raw score = 0..30`).
-       - Quy tắc tính điểm: **1 câu trả lời đúng = 1 điểm thô** (`1 correct answer = 1 raw point`). Không sử dụng công thức chuẩn hóa điểm.
-       - Ánh xạ phân lớp Mapping A chuẩn tắc:
-         - $0–7 \rightarrow \textbf{Unit 1}$
-         - $8–12 \rightarrow \textbf{Unit 2}$
-         - $13–17 \rightarrow \textbf{Unit 3}$
-         - $18–22 \rightarrow \textbf{Unit 4}$
-         - $23–26 \rightarrow \textbf{Unit 5}$
-         - $27–30 \rightarrow \textbf{Unit 6}$
-     - **Lưu ý đồng bộ tài liệu:** *MASTER PLAN: 30 questions = HUMAN-SELECTED DESIGN DECISION. CANONICAL M2 DOCUMENTS: still require formal status synchronization before/with the next approved design update.* Không giả định canonical `docs/*` đã tự động cập nhật và không tạo ADR mới trong task này.
-   - **D7:** Hạn mức làm lại có kiểm soát `max(1, floor(N * 0.10))` tính theo từng lượt làm bài; làm lại đúng nhận tối đa 70% điểm; hoàn thành bài học không phụ thuộc trần điểm 80%.
-   - **D8:** Ôn tập ngắt quãng (SRS) tuân thủ Policy B tất định `[1, 3, 7, 14, 30]` ngày; độc lập hoàn toàn với AI; chạy qua RPC cơ sở dữ liệu `record_review`; quy ước `stage = 0` là thẻ mới, `stage = 1..5` ứng với các khoảng cách ngày.
-   - **D9:** Chuỗi ngày học liên tục (Streak) tính theo ngày lịch cục bộ thuộc múi giờ IANA của học viên; bỏ lỡ 1 ngày đặt lại về 1; không có tính năng cứu chuỗi (freeze) trong MVP.
-4. **Bất Biến Năng Lực & Tiến Độ:**
+### 2.1. Danh Má»¥c CÃ¡c Báº¥t Biáº¿n Thiáº¿t Káº¿ KhÃ´ng Thá»ƒ ThÆ°Æ¡ng LÆ°á»£ng
+1. **6 Vai trÃ² Chuáº©n táº¯c:** `Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager` (KhÃ´ng coi khÃ³a ká»¹ thuáº­t `service_role` lÃ  vai trÃ² thá»© 7).
+2. **15 Ca Sá»­ Dá»¥ng & 15 Luá»“ng Nghiá»‡p Vá»¥:** `UC-01` Ä‘áº¿n `UC-15` vÃ  `BF-01` Ä‘áº¿n `BF-15`. Trong Ä‘Ã³, `UC-15` (Quáº£n lÃ½ NhÃ³m há»c & Cohort) lÃ  ranh giá»›i má»Ÿ rá»™ng tÆ°Æ¡ng lai (`FUTURE_EXTENSION`), khÃ´ng thuá»™c MVP.
+3. **9 Quyáº¿t Äá»‹nh Sáº£n Pháº©m ÄÃ³ng BÄƒng (D1â€“D9):**
+   - **D1:** Káº¿ hoáº¡ch bÃ i há»c do Quáº£n lÃ½ (Manager) chá»‰ Ä‘á»‹nh phÃ¢n cÃ´ng; Creator chá»‰ biÃªn soáº¡n bÃ i Ä‘Æ°á»£c giao.
+   - **D2:** PhÃ¢n tÃ¡ch nhiá»‡m vá»¥ tuyá»‡t Ä‘á»‘i: Creator khÃ´ng tá»± duyá»‡t; Moderator khÃ´ng xuáº¥t báº£n; Manager xuáº¥t báº£n thÃ´ng thÆ°á»ng; Admin xuáº¥t báº£n kháº©n cáº¥p cÃ³ lÃ½ do.
+   - **D3:** Cáº¥m sá»­a Ä‘Ã¨ ná»™i dung Ä‘Ã£ xuáº¥t báº£n; báº¯t buá»™c nhÃ¢n báº£n táº¡o báº£n tháº£o má»›i (Clone-to-Draft v2 qua `supersedes_id`).
+   - **D4:** MÃ´ hÃ¬nh bÃ i táº­p há»£p nháº¥t (Unified Exercise); cáº¥m táº¡o báº£ng `Exam` hay `QuestionBank`.
+   - **D5:** Thá»­ thÃ¡ch nháº£y cÃ³c (Jump) Ã¡p dá»¥ng cho Ä‘Æ¡n vá»‹ liá»n ká»; Ä‘áº¡t khi Ä‘iá»ƒm â‰¥95%; trÆ°á»£t bá»‹ khÃ³a há»“i chiÃªu 24 giá».
+   - **D6:** ÄÃ¡nh giÃ¡ cháº©n Ä‘oÃ¡n (Diagnostic): 4 khÃ­a cáº¡nh cá»‘t lÃµi (Vocabulary, Grammar, Reading, Listening) vÃ  thuáº­t toÃ¡n Mapping A (0â€“30 Ä‘iá»ƒm thÃ´ ra Unit 1â€“6) lÃ  thiáº¿t káº¿ Ä‘Ã£ khÃ³a (CANONICAL LOCKED DECISION); khÃ´ng cáº¥p chá»©ng chá»‰ CEFR.
+     - **Quyáº¿t Ä‘á»‹nh thiáº¿t káº¿ con ngÆ°á»i Ä‘Ã£ chá»‘t chÃ­nh thá»©c (HUMAN-SELECTED DESIGN DECISION):**
+       - Sá»‘ lÆ°á»£ng cÃ¢u há»i bÃ i cháº©n Ä‘oÃ¡n: **chÃ­nh xÃ¡c 30 cÃ¢u há»i** (`Diagnostic item count = 30`).
+       - Thang Ä‘iá»ƒm thÃ´: **0 Ä‘áº¿n 30 Ä‘iá»ƒm** (`Raw score = 0..30`).
+       - Quy táº¯c tÃ­nh Ä‘iá»ƒm: **1 cÃ¢u tráº£ lá»i Ä‘Ãºng = 1 Ä‘iá»ƒm thÃ´** (`1 correct answer = 1 raw point`). KhÃ´ng sá»­ dá»¥ng cÃ´ng thá»©c chuáº©n hÃ³a Ä‘iá»ƒm.
+       - Ãnh xáº¡ phÃ¢n lá»›p Mapping A chuáº©n táº¯c:
+         - $0â€“7 \rightarrow \textbf{Unit 1}$
+         - $8â€“12 \rightarrow \textbf{Unit 2}$
+         - $13â€“17 \rightarrow \textbf{Unit 3}$
+         - $18â€“22 \rightarrow \textbf{Unit 4}$
+         - $23â€“26 \rightarrow \textbf{Unit 5}$
+         - $27â€“30 \rightarrow \textbf{Unit 6}$
+     - **LÆ°u Ã½ Ä‘á»“ng bá»™ tÃ i liá»‡u:** *MASTER PLAN: 30 questions = HUMAN-SELECTED DESIGN DECISION. CANONICAL M2 DOCUMENTS: still require formal status synchronization before/with the next approved design update.* KhÃ´ng giáº£ Ä‘á»‹nh canonical `docs/*` Ä‘Ã£ tá»± Ä‘á»™ng cáº­p nháº­t vÃ  khÃ´ng táº¡o ADR má»›i trong task nÃ y.
+   - **D7:** Háº¡n má»©c lÃ m láº¡i cÃ³ kiá»ƒm soÃ¡t `max(1, floor(N * 0.10))` tÃ­nh theo tá»«ng lÆ°á»£t lÃ m bÃ i; lÃ m láº¡i Ä‘Ãºng nháº­n tá»‘i Ä‘a 70% Ä‘iá»ƒm; hoÃ n thÃ nh bÃ i há»c khÃ´ng phá»¥ thuá»™c tráº§n Ä‘iá»ƒm 80%.
+   - **D8:** Ã”n táº­p ngáº¯t quÃ£ng (SRS) tuÃ¢n thá»§ Policy B táº¥t Ä‘á»‹nh `[1, 3, 7, 14, 30]` ngÃ y; Ä‘á»™c láº­p hoÃ n toÃ n vá»›i AI; cháº¡y qua RPC cÆ¡ sá»Ÿ dá»¯ liá»‡u `record_review`; quy Æ°á»›c `stage = 0` lÃ  tháº» má»›i, `stage = 1..5` á»©ng vá»›i cÃ¡c khoáº£ng cÃ¡ch ngÃ y.
+   - **D9:** Chuá»—i ngÃ y há»c liÃªn tá»¥c (Streak) tÃ­nh theo ngÃ y lá»‹ch cá»¥c bá»™ thuá»™c mÃºi giá» IANA cá»§a há»c viÃªn; bá» lá»¡ 1 ngÃ y Ä‘áº·t láº¡i vá» 1; khÃ´ng cÃ³ tÃ­nh nÄƒng cá»©u chuá»—i (freeze) trong MVP.
+4. **Báº¥t Biáº¿n NÄƒng Lá»±c & Tiáº¿n Äá»™:**
    $$\text{LearningProgress} \ne \text{Proficiency} \ne \text{Mastery} \ne \text{LevelReadiness}$$
-   - Khảo sát tự khai (Self-report) $\rightarrow$ trạng thái `UNVERIFIED`.
-   - Chuỗi chuyển hóa năng lực kiểm định: $\text{Diagnostic} \rightarrow \text{AssessmentResult (Bất biến)} \rightarrow \text{SkillProfile} \rightarrow \text{verifiedProficiency} \rightarrow \text{curriculumStartingPoint}$.
-5. **Điều Kiện Hiển Thị Đơn Vị Học (Unit 4/4 Published Rule):** Một Unit chỉ hiển thị cho học viên khi và chỉ khi toàn bộ 4 bài học cấu thành trong Unit đó đều đã ở trạng thái `PUBLISHED`.
-   - **Ràng buộc an ninh mục tiêu (TARGET SECURITY REQUIREMENT):** Hệ thống bắt buộc phải bảo đảm học viên truy cập trực tiếp bằng ID bài học không thể vượt qua quy tắc xuất bản của Unit (`learner direct access cannot bypass Unit publication rule`). Điều kiện này bắt buộc phải được cưỡng chế tại ranh giới có thẩm quyền phân quyền (authorization-capable boundary: RLS helper / database view / server-side domain authorization tại BFF), tuyệt đối không chỉ ẩn nút trên giao diện người dùng (`UI hiding != authorization`).
-   - **Trạng thái triển khai:** `TARGET SECURITY REQUIREMENT`; `Implementation + negative verification = M3.2 / M3.3`. Không khẳng định cơ sở dữ liệu hiện tại đã cưỡng chế điều kiện này.
-6. **Ranh Giới An Ninh & Phân Định Trạng Thái AI:**
-   - 6 Ranh giới (B1: Learner Web, B2: Admin Web, B3: Supabase RLS, B4: Privileged Service Role, B5: AI Server, B6: Audit Store).
-   - Kiểm tra tầng ứng dụng (App AuthZ) không bao giờ thay thế RLS; RLS là bắt buộc tại database.
-   - Các thành phần và ranh giới liên quan AI (`COMP-DOM-08`, `COMP-EXT-02`, Zone 4, B5) là tham chiếu kiến trúc lịch sử/năng lực hỗ trợ kế thừa từ thiết kế M2, **HOÀN TOÀN NGOÀI PHẠM VI TRIỂN KHAI CỦA PHASE 2**. Không có bất kỳ workstream, API endpoint hay kiểm thử AI nào được thực thi trong Phase 2.
-   - Hợp đồng `docs/03-api-contract.md` duy trì nguyên vẹn tính chất chỉ đọc (read-only) và 100% byte-identical.
-7. **Ranh Giới Nghiệp Vụ Viết Tình Huống (`P1-FR-007` / Scenario Writing with GEC):**
-   - Yêu cầu `P1-FR-007 / Scenario Writing with GEC` được bảo toàn như một yêu cầu chuẩn tắc và tham chiếu thiết kế phục vụ truy vết (CANONICAL REQUIREMENT RETAINED — OUT OF PHASE 2 IMPLEMENTATION SCOPE). Trong Phase 2, không có kế hoạch hay tiêu chí nghiệm thu nào liên quan đến việc triển khai AI/GEC. Tuyệt đối không tự ý phát minh thuật toán sửa lỗi ngữ pháp bằng luật (rule-based grammar correction) hoặc chế tác giải thuật mới thay thế GEC khi chưa có quyết định thiết kế được phê duyệt.
-8. **Bối Cảnh Xác Thực & Lan Truyền Định Danh (Auth Context & Actor Identity Propagation):**
-   - Đột biến dữ liệu thông thường: đi qua BFF và sử dụng JWT của người dùng để `auth.uid()` phản ánh chính xác danh tính người thực hiện.
-   - Tác vụ đặc quyền backend bắt buộc dùng `service_role`: do `auth.uid()` khi đó mang giá trị rỗng/service_role, lời gọi database/RPC bắt buộc phải truyền tường minh định danh người thực hiện (explicit actor identity: ví dụ tham số `p_actor_id UUID`) vào trigger và sổ cái `audit_logs`. Tuyệt đối không đánh đồng `service_role` với `auth.uid()`.
-   - **Phân loại trạng thái:** Đây là `TARGET SECURITY DESIGN`. Kế hoạch triển khai mã nguồn tại `M3.2`, bằng chứng bảo mật (`SECURITY PROOF`) sẽ được xác nhận thông qua bộ kiểm thử phủ định (`negative tests`). Tuyệt đối không gọi đây là một bất biến bảo mật đã được chứng minh ở runtime hiện tại.
-9. **Mô Hình Vai Trò Đơn (Single-Role Model) & Kiểm Định SoD Chuẩn Tắc:**
-   - Bảng `profiles` áp dụng mô hình vai trò đơn (single role: `role Role` với 1 giá trị duy nhất trên mỗi tài khoản). Do mỗi người dùng chỉ có một vai trò duy nhất, Creator và Moderator là hai danh tính hoàn toàn tách biệt.
-   - Kiểm thử phân tách nhiệm vụ (SoD) trong Phase 2 là kiểm thử từ chối phân quyền (authorization denial):
-     - **Creator cấm phê duyệt bài học:** Creator cố tình gọi lệnh phê duyệt $\rightarrow$ Bị từ chối với lỗi phân quyền chuẩn tắc `403 Forbidden` / `ROLE_UNAUTHORIZED` (không tồn tại ca "self-review" vì một tài khoản không thể vừa là Creator vừa là Moderator).
-     - **Moderator cấm xuất bản bài học:** Moderator gọi lệnh xuất bản $\rightarrow$ Bị từ chối với lỗi `403 Forbidden`.
-     - **Manager cấm phê duyệt bài học:** Manager gọi lệnh duyệt bài $\rightarrow$ Bị từ chối với lỗi `403 Forbidden`.
-     - **Admin xuất bản khẩn cấp có điều kiện:** Chỉ được xuất bản bài đã `APPROVED` và bắt buộc có lý do giải trình ghi vào `audit_logs`.
-10. **Bảo Vệ Thuộc Tính Hồ Sơ Học Viên (Profile Security & Privilege Guard):**
-    - **CURRENT APPLIED (Migration 2):** Quyền UPDATE trên bảng `profiles` được kiểm soát nghiêm ngặt ở cấp độ cột (PostgreSQL Column-Level Grants): học viên chỉ được phép sửa 6 trường an toàn cá nhân (`display_name`, `avatar_url`, `ui_locale`, `native_lang_code`, `daily_goal_min`, `timezone`).
-    - **TARGET EXTENSION:** Bổ sung cột `verified_starting_unit INT DEFAULT 1` và bảng `skill_profiles`.
-    - Các trường đặc quyền gồm `role`, `streak_count`, `last_qualifying_activity_date` và trường mới `verified_starting_unit` bắt buộc phải do máy chủ / database kiểm soát, tuyệt đối không cấp quyền UPDATE trực tiếp cho role Learner/Authenticated, ngăn chặn hoàn toàn gian lận cấp độ hoặc chuỗi học tập. Riêng trường `longestStreak` nằm ngoài phạm vi MVP (`OUT OF CURRENT MVP SCOPE / UI-only persona`), không tự ý thêm cột vật lý vào database.
-11. **Bảo Vệ Bí Mật Đề Bài & Đáp Án Chấm Điểm (Exercise Answer Security):**
-    - Nguyên tắc: `Learner payload != grading secret`. Client chỉ nhận nội dung đề bài và danh sách lựa chọn; server/BFF nắm giữ bí mật chấm điểm và logic so khớp đáp án.
-    - Đáp án đúng (correct answers), regex kiểm tra, và bí mật chấm điểm tuyệt đối không được gửi về trong payload của học viên trước khi nộp bài.
-    - **Phân loại trạng thái:** Đây là `TARGET DESIGN REQUIREMENT`. Hiện tại mã nguồn chưa triển khai hoàn tất (`NOT YET IMPLEMENTED`), sẽ được lập trình và xác minh tại M3.1/M3.3.
-12. **Đặc Tả Vòng Đời Nhân Bản Bản Thảo (Clone-to-Draft Lifecycle Semantic):**
-    - Quy trình chuẩn tắc: `Published v1 → Clone → Draft v2 (supersedes_id = v1.id) → In Review → Approved → Publish v2 → v1 archived`.
-    - *Quy tắc nguyên tử:* Publish v2 and retire v1 must be handled consistently/atomically. Target implementation requires an atomic mechanism to publish v2 and retire v1 consistently. The exact DB/application mechanism is to be verified during M3.1/M3.6 implementation.
-    - *Ràng buộc bản thảo duy nhất:* Target design dự kiến quy định mỗi bài học chỉ có tối đa 1 bản thảo/bản duyệt đang hoạt động (Unique active revision constraint — đây là `TARGET DESIGN`, hiện tại DB thực tế chưa có ràng buộc này).
-13. **Ngữ Nghĩa Trạng Thái Đánh Giá & Điểm Xuất Phát (Placement / Skip Semantics):**
-    - Phân định rõ 3 trạng thái ngữ nghĩa trong hệ thống:
-      - `NOT_DECIDED`: Học viên mới đăng ký, chưa thực hiện bài kiểm tra chẩn đoán và chưa chọn bỏ qua.
-      - `SKIPPED / UNVERIFIED`: Học viên chọn Bỏ qua (Skip), được gán xuất phát điểm Unit 1, trạng thái năng lực chưa kiểm định (`UNVERIFIED`), tuyệt đối không tạo bản ghi `assessment_results` hay `skill_profiles`.
-      - `DIAGNOSTIC / VERIFIED`: Học viên hoàn thành bài chẩn đoán 30 câu, tạo bản ghi `AssessmentResult` bất biến và cập nhật `SkillProfile` cùng xuất phát điểm đã kiểm định.
-    - *Quy định triển khai:* *The physical representation of placement status must be finalized before schema implementation in M3.1.*
-    - *Quy trình thi lại (Retake):* Tạo bản ghi `AssessmentResult` bất biến mới, cập nhật hồ sơ năng lực nhưng bảo lưu toàn bộ tiến độ học tập các bài học đã hoàn thành trước đó.
-14. **Trạng Thái Phiên Làm Lại (Retry State) & Hồi Chiêu Nhảy Cóc (Jump Cooldown):**
-    - *Hạn mức làm lại có kiểm soát (D7):* *Persistent attempt/retry state is required for server-enforced D7 behavior. Its physical representation must be finalized in M3.1 before implementation.* M3.1 deliverable bắt buộc bao gồm quyết định biểu diễn trạng thái attempt/retry state này (không tự ý bịa tên bảng khi chưa chốt).
-    - *Hồi chiêu nhảy cóc (D5):* `TARGET DESIGN: server-authoritative cooldown state`. Biểu diễn vật lý cụ thể (*Physical state representation*) được chốt trong M3.1 trước khi bắt đầu lập trình M3.5.
-15. **Quy Chuẩn Âm Thanh, Nhắc Nhở Học Tập & Phân Trách Operations Staff:**
-    - *Đường ống âm thanh (Audio Pipeline):* Lựa chọn duy nhất: Supabase Storage (bucket `lingora-media`). Toàn bộ bài tập kỹ năng Listening sử dụng các tệp âm thanh MP3 do con người chuẩn bị sẵn (pre-produced MP3 assets) thông qua quy trình: Creator tải lên (`upload`) $\rightarrow$ Moderator kiểm duyệt (`moderation`) $\rightarrow$ Học viên nghe bài tập (`learner playback`). Tuyệt đối không sử dụng Text-to-Speech (TTS) thời gian thực và không sử dụng AI trong Phase 2.
-    - *Nhắc nhở học tập (Reminders per ADR-006 / ADR-007 Option 6d):* Duy trì yêu cầu chuẩn tắc `P1-FR-015` ở cấp độ giao diện học viên thông qua **nhắc nhở nội ứng dụng (In-app reminder)**: hiển thị banner kiên định và huy hiệu (badge) thông báo khi học viên truy cập ứng dụng nếu chưa hoàn thành mục tiêu ngày trong khung giờ đã chọn; lưu trữ cục bộ phía client đi kèm `Profile.dailyGoalMin`, tuyệt đối không tạo bảng mới, không dùng scheduler nền hay background service worker. Cơ chế gửi thông báo nền qua mạng (Web Push / Email scheduler / background delivery) tiếp tục ở trạng thái hoãn lại (**DEFERRED**) theo đúng quyết định kiến trúc chuẩn tắc `ADR-007` và không thuộc phạm vi triển khai của Phase 2.
-    - *Nhân sự vận hành (Operations Staff):* Phân định rõ `UC-14 business scope` (điều phối và xử lý hỗ trợ người dùng theo ca sử dụng UC-14 qua giao diện và API route B2 $\rightarrow$ B3) thuộc phạm vi triển khai Phase 2; trong khi `ticket persistence implementation` (lược đồ cơ sở dữ liệu quản lý ticket đa tầng nâng cao) là tính năng mở rộng tương lai (`FUTURE_EXTENSION`). Operations Staff không có quyền xem nhật ký kiểm toán `audit_logs`.
+   - Kháº£o sÃ¡t tá»± khai (Self-report) $\rightarrow$ tráº¡ng thÃ¡i `UNVERIFIED`.
+   - Chuá»—i chuyá»ƒn hÃ³a nÄƒng lá»±c kiá»ƒm Ä‘á»‹nh: $\text{Diagnostic} \rightarrow \text{AssessmentResult (Báº¥t biáº¿n)} \rightarrow \text{SkillProfile} \rightarrow \text{verifiedProficiency} \rightarrow \text{curriculumStartingPoint}$.
+5. **Äiá»u Kiá»‡n Hiá»ƒn Thá»‹ ÄÆ¡n Vá»‹ Há»c (Unit 4/4 Published Rule):** Má»™t Unit chá»‰ hiá»ƒn thá»‹ cho há»c viÃªn khi vÃ  chá»‰ khi toÃ n bá»™ 4 bÃ i há»c cáº¥u thÃ nh trong Unit Ä‘Ã³ Ä‘á»u Ä‘Ã£ á»Ÿ tráº¡ng thÃ¡i `PUBLISHED`.
+   - **RÃ ng buá»™c an ninh má»¥c tiÃªu (TARGET SECURITY REQUIREMENT):** Há»‡ thá»‘ng báº¯t buá»™c pháº£i báº£o Ä‘áº£m há»c viÃªn truy cáº­p trá»±c tiáº¿p báº±ng ID bÃ i há»c khÃ´ng thá»ƒ vÆ°á»£t qua quy táº¯c xuáº¥t báº£n cá»§a Unit (`learner direct access cannot bypass Unit publication rule`). Äiá»u kiá»‡n nÃ y báº¯t buá»™c pháº£i Ä‘Æ°á»£c cÆ°á»¡ng cháº¿ táº¡i ranh giá»›i cÃ³ tháº©m quyá»n phÃ¢n quyá»n (authorization-capable boundary: RLS helper / database view / server-side domain authorization táº¡i BFF), tuyá»‡t Ä‘á»‘i khÃ´ng chá»‰ áº©n nÃºt trÃªn giao diá»‡n ngÆ°á»i dÃ¹ng (`UI hiding != authorization`).
+   - **Tráº¡ng thÃ¡i triá»ƒn khai:** `TARGET SECURITY REQUIREMENT`; `Implementation + negative verification = M3.2 / M3.3`. KhÃ´ng kháº³ng Ä‘á»‹nh cÆ¡ sá»Ÿ dá»¯ liá»‡u hiá»‡n táº¡i Ä‘Ã£ cÆ°á»¡ng cháº¿ Ä‘iá»u kiá»‡n nÃ y.
+6. **Ranh Giá»›i An Ninh & PhÃ¢n Äá»‹nh Tráº¡ng ThÃ¡i AI:**
+   - 6 Ranh giá»›i (B1: Learner Web, B2: Admin Web, B3: Supabase RLS, B4: Privileged Service Role, B5: AI Server, B6: Audit Store).
+   - Kiá»ƒm tra táº§ng á»©ng dá»¥ng (App AuthZ) khÃ´ng bao giá» thay tháº¿ RLS; RLS lÃ  báº¯t buá»™c táº¡i database.
+   - CÃ¡c thÃ nh pháº§n vÃ  ranh giá»›i liÃªn quan AI (`COMP-DOM-08`, `COMP-EXT-02`, Zone 4, B5) lÃ  tham chiáº¿u kiáº¿n trÃºc lá»‹ch sá»­/nÄƒng lá»±c há»— trá»£ káº¿ thá»«a tá»« thiáº¿t káº¿ M2, **HOÃ€N TOÃ€N NGOÃ€I PHáº M VI TRIá»‚N KHAI Cá»¦A PHASE 2**. KhÃ´ng cÃ³ báº¥t ká»³ workstream, API endpoint hay kiá»ƒm thá»­ AI nÃ o Ä‘Æ°á»£c thá»±c thi trong Phase 2.
+   - Há»£p Ä‘á»“ng `docs/03-api-contract.md` duy trÃ¬ nguyÃªn váº¹n tÃ­nh cháº¥t chá»‰ Ä‘á»c (read-only) vÃ  100% byte-identical.
+7. **Ranh Giá»›i Nghiá»‡p Vá»¥ Viáº¿t TÃ¬nh Huá»‘ng (`P1-FR-007` / Scenario Writing with GEC):**
+   - YÃªu cáº§u `P1-FR-007 / Scenario Writing with GEC` Ä‘Æ°á»£c báº£o toÃ n nhÆ° má»™t yÃªu cáº§u chuáº©n táº¯c vÃ  tham chiáº¿u thiáº¿t káº¿ phá»¥c vá»¥ truy váº¿t (CANONICAL REQUIREMENT RETAINED â€” OUT OF PHASE 2 IMPLEMENTATION SCOPE). Trong Phase 2, khÃ´ng cÃ³ káº¿ hoáº¡ch hay tiÃªu chÃ­ nghiá»‡m thu nÃ o liÃªn quan Ä‘áº¿n viá»‡c triá»ƒn khai AI/GEC. Tuyá»‡t Ä‘á»‘i khÃ´ng tá»± Ã½ phÃ¡t minh thuáº­t toÃ¡n sá»­a lá»—i ngá»¯ phÃ¡p báº±ng luáº­t (rule-based grammar correction) hoáº·c cháº¿ tÃ¡c giáº£i thuáº­t má»›i thay tháº¿ GEC khi chÆ°a cÃ³ quyáº¿t Ä‘á»‹nh thiáº¿t káº¿ Ä‘Æ°á»£c phÃª duyá»‡t.
+8. **Bá»‘i Cáº£nh XÃ¡c Thá»±c & Lan Truyá»n Äá»‹nh Danh (Auth Context & Actor Identity Propagation):**
+   - Äá»™t biáº¿n dá»¯ liá»‡u thÃ´ng thÆ°á»ng: Ä‘i qua BFF vÃ  sá»­ dá»¥ng JWT cá»§a ngÆ°á»i dÃ¹ng Ä‘á»ƒ `auth.uid()` pháº£n Ã¡nh chÃ­nh xÃ¡c danh tÃ­nh ngÆ°á»i thá»±c hiá»‡n.
+   - TÃ¡c vá»¥ Ä‘áº·c quyá»n backend báº¯t buá»™c dÃ¹ng `service_role`: do `auth.uid()` khi Ä‘Ã³ mang giÃ¡ trá»‹ rá»—ng/service_role, lá»i gá»i database/RPC báº¯t buá»™c pháº£i truyá»n tÆ°á»ng minh Ä‘á»‹nh danh ngÆ°á»i thá»±c hiá»‡n (explicit actor identity: vÃ­ dá»¥ tham sá»‘ `p_actor_id UUID`) vÃ o trigger vÃ  sá»• cÃ¡i `audit_logs`. Tuyá»‡t Ä‘á»‘i khÃ´ng Ä‘Ã¡nh Ä‘á»“ng `service_role` vá»›i `auth.uid()`.
+   - **PhÃ¢n loáº¡i tráº¡ng thÃ¡i:** ÄÃ¢y lÃ  `TARGET SECURITY DESIGN`. Káº¿ hoáº¡ch triá»ƒn khai mÃ£ nguá»“n táº¡i `M3.2`, báº±ng chá»©ng báº£o máº­t (`SECURITY PROOF`) sáº½ Ä‘Æ°á»£c xÃ¡c nháº­n thÃ´ng qua bá»™ kiá»ƒm thá»­ phá»§ Ä‘á»‹nh (`negative tests`). Tuyá»‡t Ä‘á»‘i khÃ´ng gá»i Ä‘Ã¢y lÃ  má»™t báº¥t biáº¿n báº£o máº­t Ä‘Ã£ Ä‘Æ°á»£c chá»©ng minh á»Ÿ runtime hiá»‡n táº¡i.
+9. **MÃ´ HÃ¬nh Vai TrÃ² ÄÆ¡n (Single-Role Model) & Kiá»ƒm Äá»‹nh SoD Chuáº©n Táº¯c:**
+   - Báº£ng `profiles` Ã¡p dá»¥ng mÃ´ hÃ¬nh vai trÃ² Ä‘Æ¡n (single role: `role Role` vá»›i 1 giÃ¡ trá»‹ duy nháº¥t trÃªn má»—i tÃ i khoáº£n). Do má»—i ngÆ°á»i dÃ¹ng chá»‰ cÃ³ má»™t vai trÃ² duy nháº¥t, Creator vÃ  Moderator lÃ  hai danh tÃ­nh hoÃ n toÃ n tÃ¡ch biá»‡t.
+   - Kiá»ƒm thá»­ phÃ¢n tÃ¡ch nhiá»‡m vá»¥ (SoD) trong Phase 2 lÃ  kiá»ƒm thá»­ tá»« chá»‘i phÃ¢n quyá»n (authorization denial):
+     - **Creator cáº¥m phÃª duyá»‡t bÃ i há»c:** Creator cá»‘ tÃ¬nh gá»i lá»‡nh phÃª duyá»‡t $\rightarrow$ Bá»‹ tá»« chá»‘i vá»›i lá»—i phÃ¢n quyá»n chuáº©n táº¯c `403 Forbidden` / `ROLE_UNAUTHORIZED` (khÃ´ng tá»“n táº¡i ca "self-review" vÃ¬ má»™t tÃ i khoáº£n khÃ´ng thá»ƒ vá»«a lÃ  Creator vá»«a lÃ  Moderator).
+     - **Moderator cáº¥m xuáº¥t báº£n bÃ i há»c:** Moderator gá»i lá»‡nh xuáº¥t báº£n $\rightarrow$ Bá»‹ tá»« chá»‘i vá»›i lá»—i `403 Forbidden`.
+     - **Manager cáº¥m phÃª duyá»‡t bÃ i há»c:** Manager gá»i lá»‡nh duyá»‡t bÃ i $\rightarrow$ Bá»‹ tá»« chá»‘i vá»›i lá»—i `403 Forbidden`.
+     - **Admin xuáº¥t báº£n kháº©n cáº¥p cÃ³ Ä‘iá»u kiá»‡n:** Chá»‰ Ä‘Æ°á»£c xuáº¥t báº£n bÃ i Ä‘Ã£ `APPROVED` vÃ  báº¯t buá»™c cÃ³ lÃ½ do giáº£i trÃ¬nh ghi vÃ o `audit_logs`.
+10. **Báº£o Vá»‡ Thuá»™c TÃ­nh Há»“ SÆ¡ Há»c ViÃªn (Profile Security & Privilege Guard):**
+    - **CURRENT APPLIED (Migration 2):** Quyá»n UPDATE trÃªn báº£ng `profiles` Ä‘Æ°á»£c kiá»ƒm soÃ¡t nghiÃªm ngáº·t á»Ÿ cáº¥p Ä‘á»™ cá»™t (PostgreSQL Column-Level Grants): há»c viÃªn chá»‰ Ä‘Æ°á»£c phÃ©p sá»­a 6 trÆ°á»ng an toÃ n cÃ¡ nhÃ¢n (`display_name`, `avatar_url`, `ui_locale`, `native_lang_code`, `daily_goal_min`, `timezone`).
+    - **TARGET EXTENSION:** Bá»• sung cá»™t `verified_starting_unit INT DEFAULT 1` vÃ  báº£ng `skill_profiles`.
+    - CÃ¡c trÆ°á»ng Ä‘áº·c quyá»n gá»“m `role`, `streak_count`, `last_qualifying_activity_date` vÃ  trÆ°á»ng má»›i `verified_starting_unit` báº¯t buá»™c pháº£i do mÃ¡y chá»§ / database kiá»ƒm soÃ¡t, tuyá»‡t Ä‘á»‘i khÃ´ng cáº¥p quyá»n UPDATE trá»±c tiáº¿p cho role Learner/Authenticated, ngÄƒn cháº·n hoÃ n toÃ n gian láº­n cáº¥p Ä‘á»™ hoáº·c chuá»—i há»c táº­p. RiÃªng trÆ°á»ng `longestStreak` náº±m ngoÃ i pháº¡m vi MVP (`OUT OF CURRENT MVP SCOPE / UI-only persona`), khÃ´ng tá»± Ã½ thÃªm cá»™t váº­t lÃ½ vÃ o database.
+11. **Báº£o Vá»‡ BÃ­ Máº­t Äá» BÃ i & ÄÃ¡p Ãn Cháº¥m Äiá»ƒm (Exercise Answer Security):**
+    - NguyÃªn táº¯c: `Learner payload != grading secret`. Client chá»‰ nháº­n ná»™i dung Ä‘á» bÃ i vÃ  danh sÃ¡ch lá»±a chá»n; server/BFF náº¯m giá»¯ bÃ­ máº­t cháº¥m Ä‘iá»ƒm vÃ  logic so khá»›p Ä‘Ã¡p Ã¡n.
+    - ÄÃ¡p Ã¡n Ä‘Ãºng (correct answers), regex kiá»ƒm tra, vÃ  bÃ­ máº­t cháº¥m Ä‘iá»ƒm tuyá»‡t Ä‘á»‘i khÃ´ng Ä‘Æ°á»£c gá»­i vá» trong payload cá»§a há»c viÃªn trÆ°á»›c khi ná»™p bÃ i.
+    - **PhÃ¢n loáº¡i tráº¡ng thÃ¡i:** ÄÃ¢y lÃ  `TARGET DESIGN REQUIREMENT`. Hiá»‡n táº¡i mÃ£ nguá»“n chÆ°a triá»ƒn khai hoÃ n táº¥t (`NOT YET IMPLEMENTED`), sáº½ Ä‘Æ°á»£c láº­p trÃ¬nh vÃ  xÃ¡c minh táº¡i M3.1/M3.3.
+12. **Äáº·c Táº£ VÃ²ng Äá»i NhÃ¢n Báº£n Báº£n Tháº£o (Clone-to-Draft Lifecycle Semantic):**
+    - Quy trÃ¬nh chuáº©n táº¯c: `Published v1 â†’ Clone â†’ Draft v2 (supersedes_id = v1.id) â†’ In Review â†’ Approved â†’ Publish v2 â†’ v1 archived`.
+    - *Quy táº¯c nguyÃªn tá»­:* Publish v2 and retire v1 must be handled consistently/atomically. Target implementation requires an atomic mechanism to publish v2 and retire v1 consistently. The exact DB/application mechanism is to be verified during M3.1/M3.6 implementation.
+    - *RÃ ng buá»™c báº£n tháº£o duy nháº¥t:* Target design dá»± kiáº¿n quy Ä‘á»‹nh má»—i bÃ i há»c chá»‰ cÃ³ tá»‘i Ä‘a 1 báº£n tháº£o/báº£n duyá»‡t Ä‘ang hoáº¡t Ä‘á»™ng (Unique active revision constraint â€” Ä‘Ã¢y lÃ  `TARGET DESIGN`, hiá»‡n táº¡i DB thá»±c táº¿ chÆ°a cÃ³ rÃ ng buá»™c nÃ y).
+13. **Ngá»¯ NghÄ©a Tráº¡ng ThÃ¡i ÄÃ¡nh GiÃ¡ & Äiá»ƒm Xuáº¥t PhÃ¡t (Placement / Skip Semantics):**
+    - PhÃ¢n Ä‘á»‹nh rÃµ 3 tráº¡ng thÃ¡i ngá»¯ nghÄ©a trong há»‡ thá»‘ng:
+      - `NOT_DECIDED`: Há»c viÃªn má»›i Ä‘Äƒng kÃ½, chÆ°a thá»±c hiá»‡n bÃ i kiá»ƒm tra cháº©n Ä‘oÃ¡n vÃ  chÆ°a chá»n bá» qua.
+      - `SKIPPED / UNVERIFIED`: Há»c viÃªn chá»n Bá» qua (Skip), Ä‘Æ°á»£c gÃ¡n xuáº¥t phÃ¡t Ä‘iá»ƒm Unit 1, tráº¡ng thÃ¡i nÄƒng lá»±c chÆ°a kiá»ƒm Ä‘á»‹nh (`UNVERIFIED`), tuyá»‡t Ä‘á»‘i khÃ´ng táº¡o báº£n ghi `assessment_results` hay `skill_profiles`.
+      - `DIAGNOSTIC / VERIFIED`: Há»c viÃªn hoÃ n thÃ nh bÃ i cháº©n Ä‘oÃ¡n 30 cÃ¢u, táº¡o báº£n ghi `AssessmentResult` báº¥t biáº¿n vÃ  cáº­p nháº­t `SkillProfile` cÃ¹ng xuáº¥t phÃ¡t Ä‘iá»ƒm Ä‘Ã£ kiá»ƒm Ä‘á»‹nh.
+    - *Quy Ä‘á»‹nh triá»ƒn khai:* *The physical representation of placement status must be finalized before schema implementation in M3.1.*
+    - *Quy trÃ¬nh thi láº¡i (Retake):* Táº¡o báº£n ghi `AssessmentResult` báº¥t biáº¿n má»›i, cáº­p nháº­t há»“ sÆ¡ nÄƒng lá»±c nhÆ°ng báº£o lÆ°u toÃ n bá»™ tiáº¿n Ä‘á»™ há»c táº­p cÃ¡c bÃ i há»c Ä‘Ã£ hoÃ n thÃ nh trÆ°á»›c Ä‘Ã³.
+14. **Tráº¡ng ThÃ¡i PhiÃªn LÃ m Láº¡i (Retry State) & Há»“i ChiÃªu Nháº£y CÃ³c (Jump Cooldown):**
+    - *Háº¡n má»©c lÃ m láº¡i cÃ³ kiá»ƒm soÃ¡t (D7):* *Persistent attempt/retry state is required for server-enforced D7 behavior. Its physical representation must be finalized in M3.1 before implementation.* M3.1 deliverable báº¯t buá»™c bao gá»“m quyáº¿t Ä‘á»‹nh biá»ƒu diá»…n tráº¡ng thÃ¡i attempt/retry state nÃ y (khÃ´ng tá»± Ã½ bá»‹a tÃªn báº£ng khi chÆ°a chá»‘t).
+    - *Há»“i chiÃªu nháº£y cÃ³c (D5):* `TARGET DESIGN: server-authoritative cooldown state`. Biá»ƒu diá»…n váº­t lÃ½ cá»¥ thá»ƒ (*Physical state representation*) Ä‘Æ°á»£c chá»‘t trong M3.1 trÆ°á»›c khi báº¯t Ä‘áº§u láº­p trÃ¬nh M3.5.
+15. **Quy Chuáº©n Ã‚m Thanh, Nháº¯c Nhá»Ÿ Há»c Táº­p & PhÃ¢n TrÃ¡ch Operations Staff:**
+    - *ÄÆ°á»ng á»‘ng Ã¢m thanh (Audio Pipeline):* Lá»±a chá»n duy nháº¥t: Supabase Storage (bucket `lingora-media`). ToÃ n bá»™ bÃ i táº­p ká»¹ nÄƒng Listening sá»­ dá»¥ng cÃ¡c tá»‡p Ã¢m thanh MP3 do con ngÆ°á»i chuáº©n bá»‹ sáºµn (pre-produced MP3 assets) thÃ´ng qua quy trÃ¬nh: Creator táº£i lÃªn (`upload`) $\rightarrow$ Moderator kiá»ƒm duyá»‡t (`moderation`) $\rightarrow$ Há»c viÃªn nghe bÃ i táº­p (`learner playback`). Tuyá»‡t Ä‘á»‘i khÃ´ng sá»­ dá»¥ng Text-to-Speech (TTS) thá»i gian thá»±c vÃ  khÃ´ng sá»­ dá»¥ng AI trong Phase 2.
+    - *Nháº¯c nhá»Ÿ há»c táº­p (Reminders per ADR-006 / ADR-007 Option 6d):* Duy trÃ¬ yÃªu cáº§u chuáº©n táº¯c `P1-FR-015` á»Ÿ cáº¥p Ä‘á»™ giao diá»‡n há»c viÃªn thÃ´ng qua **nháº¯c nhá»Ÿ ná»™i á»©ng dá»¥ng (In-app reminder)**: hiá»ƒn thá»‹ banner kiÃªn Ä‘á»‹nh vÃ  huy hiá»‡u (badge) thÃ´ng bÃ¡o khi há»c viÃªn truy cáº­p á»©ng dá»¥ng náº¿u chÆ°a hoÃ n thÃ nh má»¥c tiÃªu ngÃ y trong khung giá» Ä‘Ã£ chá»n; lÆ°u trá»¯ cá»¥c bá»™ phÃ­a client Ä‘i kÃ¨m `Profile.dailyGoalMin`, tuyá»‡t Ä‘á»‘i khÃ´ng táº¡o báº£ng má»›i, khÃ´ng dÃ¹ng scheduler ná»n hay background service worker. CÆ¡ cháº¿ gá»­i thÃ´ng bÃ¡o ná»n qua máº¡ng (Web Push / Email scheduler / background delivery) tiáº¿p tá»¥c á»Ÿ tráº¡ng thÃ¡i hoÃ£n láº¡i (**DEFERRED**) theo Ä‘Ãºng quyáº¿t Ä‘á»‹nh kiáº¿n trÃºc chuáº©n táº¯c `ADR-007` vÃ  khÃ´ng thuá»™c pháº¡m vi triá»ƒn khai cá»§a Phase 2.
+    - *NhÃ¢n sá»± váº­n hÃ nh (Operations Staff):* PhÃ¢n Ä‘á»‹nh rÃµ `UC-14 business scope` (Ä‘iá»u phá»‘i vÃ  xá»­ lÃ½ há»— trá»£ ngÆ°á»i dÃ¹ng theo ca sá»­ dá»¥ng UC-14 qua giao diá»‡n vÃ  API route B2 $\rightarrow$ B3) thuá»™c pháº¡m vi triá»ƒn khai Phase 2; trong khi `ticket persistence implementation` (lÆ°á»£c Ä‘á»“ cÆ¡ sá»Ÿ dá»¯ liá»‡u quáº£n lÃ½ ticket Ä‘a táº§ng nÃ¢ng cao) lÃ  tÃ­nh nÄƒng má»Ÿ rá»™ng tÆ°Æ¡ng lai (`FUTURE_EXTENSION`). Operations Staff khÃ´ng cÃ³ quyá»n xem nháº­t kÃ½ kiá»ƒm toÃ¡n `audit_logs`.
 
-### 2.2. Nguyên Tắc Giải Quyết Xung Đột Tài Liệu (Conflict Resolution)
-Khi phát sinh sự không nhất quán giữa các tài liệu cũ và tài liệu mới trong kho lưu trữ, các kỹ sư triển khai bắt buộc phải áp dụng quy tắc thứ bậc ưu tiên sau:
-1. **Ưu tiên tối cao:** Các biên bản nghiệm thu và quyết định quản trị mới nhất (`ADR-029`, `ADR-028`, `ADR-026`, `ADR-014`).
-2. **Ưu tiên thứ hai:** Bản đặc tả bàn giao thiết kế sang triển khai `docs/phase-1-m2-6-design-handoff.md`.
-3. **Ưu tiên thứ ba:** Báo cáo kiểm định thiết kế tổng thể `docs/phase-1-m2-5-design-validation.md` (Artifact #20).
-4. **Ưu tiên thứ tư:** Các tài liệu thiết kế kiến trúc chuẩn tắc M2.1–M2.4 (`docs/phase-1-m2-4-architecture-security.md`, `docs/phase-1-m2-3-sequence-api-service-boundary.md`, `docs/phase-1-m2-2-behavior-uc-activity-state.md`, `docs/phase-1-m2-1-domain-and-logical-data-foundation.md`).
-5. **Tài liệu tham chiếu cũ:** Mọi thông tin trong `docs/00` đến `docs/07` xung đột với M2.6 đều bị coi là thông tin lịch sử đã bị ghi đè. Mọi mâu thuẫn phải được ghi nhận vào `logs/decision-log.md` theo mẫu ADR trước khi thực hiện code.
+### 2.2. NguyÃªn Táº¯c Giáº£i Quyáº¿t Xung Äá»™t TÃ i Liá»‡u (Conflict Resolution)
+Khi phÃ¡t sinh sá»± khÃ´ng nháº¥t quÃ¡n giá»¯a cÃ¡c tÃ i liá»‡u cÅ© vÃ  tÃ i liá»‡u má»›i trong kho lÆ°u trá»¯, cÃ¡c ká»¹ sÆ° triá»ƒn khai báº¯t buá»™c pháº£i Ã¡p dá»¥ng quy táº¯c thá»© báº­c Æ°u tiÃªn sau:
+1. **Æ¯u tiÃªn tá»‘i cao:** CÃ¡c biÃªn báº£n nghiá»‡m thu vÃ  quyáº¿t Ä‘á»‹nh quáº£n trá»‹ má»›i nháº¥t (`ADR-029`, `ADR-028`, `ADR-026`, `ADR-014`).
+2. **Æ¯u tiÃªn thá»© hai:** Báº£n Ä‘áº·c táº£ bÃ n giao thiáº¿t káº¿ sang triá»ƒn khai `docs/phase-1-m2-6-design-handoff.md`.
+3. **Æ¯u tiÃªn thá»© ba:** BÃ¡o cÃ¡o kiá»ƒm Ä‘á»‹nh thiáº¿t káº¿ tá»•ng thá»ƒ `docs/phase-1-m2-5-design-validation.md` (Artifact #20).
+4. **Æ¯u tiÃªn thá»© tÆ°:** CÃ¡c tÃ i liá»‡u thiáº¿t káº¿ kiáº¿n trÃºc chuáº©n táº¯c M2.1â€“M2.4 (`docs/phase-1-m2-4-architecture-security.md`, `docs/phase-1-m2-3-sequence-api-service-boundary.md`, `docs/phase-1-m2-2-behavior-uc-activity-state.md`, `docs/phase-1-m2-1-domain-and-logical-data-foundation.md`).
+5. **TÃ i liá»‡u tham chiáº¿u cÅ©:** Má»i thÃ´ng tin trong `docs/00` Ä‘áº¿n `docs/07` xung Ä‘á»™t vá»›i M2.6 Ä‘á»u bá»‹ coi lÃ  thÃ´ng tin lá»‹ch sá»­ Ä‘Ã£ bá»‹ ghi Ä‘Ã¨. Má»i mÃ¢u thuáº«n pháº£i Ä‘Æ°á»£c ghi nháº­n vÃ o `logs/decision-log.md` theo máº«u ADR trÆ°á»›c khi thá»±c hiá»‡n code.
 
 ---
 
-## 3. PHÂN RÃ HỆ THỐNG MỤC TIÊU THEO THÀNH PHẦN KIẾN TRÚC
+## 3. PHÃ‚N RÃƒ Há»† THá»NG Má»¤C TIÃŠU THEO THÃ€NH PHáº¦N KIáº¾N TRÃšC
 
-Hệ thống triển khai Phase 2 được phân rã thành **9 nhóm phân hệ chức năng**, ánh xạ trực tiếp và đầy đủ vào **19 thành phần kiến trúc chuẩn tắc (Canonical Components)** đã được phê chuẩn tại M2.4:
+Há»‡ thá»‘ng triá»ƒn khai Phase 2 Ä‘Æ°á»£c phÃ¢n rÃ£ thÃ nh **9 nhÃ³m phÃ¢n há»‡ chá»©c nÄƒng**, Ã¡nh xáº¡ trá»±c tiáº¿p vÃ  Ä‘áº§y Ä‘á»§ vÃ o **19 thÃ nh pháº§n kiáº¿n trÃºc chuáº©n táº¯c (Canonical Components)** Ä‘Ã£ Ä‘Æ°á»£c phÃª chuáº©n táº¡i M2.4:
 
 ```
 +----------------------------------------------------------------------------------------------------+
 |                                    19 CANONICAL COMPONENTS IN PHASE 2                              |
 +----------------------------------------------------------------------------------------------------+
-| TẦNG TRÌNH DIỄN (Presentation Layer):                                                              |
+| Táº¦NG TRÃŒNH DIá»„N (Presentation Layer):                                                              |
 |   - COMP-PRES-01: Learner Web Client (Next.js 15 SPA/SSR Pages in lingora-web)                     |
 |   - COMP-PRES-02: Admin & Moderation Web Client (Next.js 15 Admin Portal in lingora-admin)         |
 +----------------------------------------------------------------------------------------------------+
-| TẦNG ĐIỀU PHỐI ỨNG DỤNG (Application / BFF Layer):                                                 |
+| Táº¦NG ÄIá»€U PHá»I á»¨NG Dá»¤NG (Application / BFF Layer):                                                 |
 |   - COMP-APP-01: Learner Application Coordinator & BFF API Handlers (Next.js Route Handlers)       |
 |   - COMP-APP-02: Admin Application Coordinator & Server Actions (Next.js Server Actions)           |
 +----------------------------------------------------------------------------------------------------+
-| TẦNG NGHIỆP VỤ CỐT LÕI (Core Domain Layer):                                                        |
+| Táº¦NG NGHIá»†P Vá»¤ Cá»T LÃ•I (Core Domain Layer):                                                        |
 |   - COMP-DOM-01: Auth & Identity Domain Service (Session, Roles & Profiles)                        |
 |   - COMP-DOM-02: Curriculum & Progression Domain Service (Courses, Units, Lessons & Streak)        |
 |   - COMP-DOM-03: Assessment & Diagnostic Domain Service (Placement Test, Mapping A, Jump)          |
@@ -224,64 +224,64 @@ Hệ thống triển khai Phase 2 được phân rã thành **9 nhóm phân hệ
 |   - COMP-DOM-07: Admin Governance & Security Audit Domain Service (Emergency Operations & Audit)   |
 |   - COMP-DOM-08: AI Integration & Proxy Domain Service [OUT OF CURRENT PHASE 2 IMPLEMENTATION SCOPE]|
 +----------------------------------------------------------------------------------------------------+
-| TẦNG HẠ TẦNG DỮ LIỆU & AN NINH (Infrastructure Layer):                                             |
+| Táº¦NG Háº  Táº¦NG Dá»® LIá»†U & AN NINH (Infrastructure Layer):                                             |
 |   - COMP-INFRA-01: PostgreSQL Relational Database Engine (Supabase Hosted)                         |
 |   - COMP-INFRA-02: Row Level Security (RLS) Policy Engine (PostgreSQL Security Core)               |
 |   - COMP-INFRA-03: Stored Procedure / RPC Execution Engine (Deterministic Functions: record_review)|
 |   - COMP-INFRA-04: Encrypted Object Media Storage Engine (Supabase Storage: Media & Avatars)       |
 |   - COMP-INFRA-05: Immutable Security Audit Log Store (Append-Only audit_logs Table)               |
 +----------------------------------------------------------------------------------------------------+
-| TẦNG DỊCH VỤ NGOẠI VI (External Services Layer):                                                   |
+| Táº¦NG Dá»ŠCH Vá»¤ NGOáº I VI (External Services Layer):                                                   |
 |   - COMP-EXT-01: Supabase GoTrue Authentication Provider (OAuth & JWT Issuer)                      |
 |   - COMP-EXT-02: Stateless AI Compute Service [OUT OF CURRENT PHASE 2 IMPLEMENTATION SCOPE]       |
 +----------------------------------------------------------------------------------------------------+
 ```
 
-### 3.1. Nhóm Nền Tảng Cơ Sở Dữ Liệu (Foundation)
-- **Thành phần sở hữu:** `COMP-INFRA-01` (Postgres DB), `COMP-INFRA-04` (Storage), `COMP-INFRA-05` (Audit Store).
-- **Phạm vi triển khai:** Quản lý vòng đời lược đồ dữ liệu qua Prisma và Supabase CLI; triển khai các bảng nền tảng, tạo storage buckets có phân quyền, nạp dữ liệu mầm giáo trình chuẩn tắc tiếng Anh A1.
+### 3.1. NhÃ³m Ná»n Táº£ng CÆ¡ Sá»Ÿ Dá»¯ Liá»‡u (Foundation)
+- **ThÃ nh pháº§n sá»Ÿ há»¯u:** `COMP-INFRA-01` (Postgres DB), `COMP-INFRA-04` (Storage), `COMP-INFRA-05` (Audit Store).
+- **Pháº¡m vi triá»ƒn khai:** Quáº£n lÃ½ vÃ²ng Ä‘á»i lÆ°á»£c Ä‘á»“ dá»¯ liá»‡u qua Prisma vÃ  Supabase CLI; triá»ƒn khai cÃ¡c báº£ng ná»n táº£ng, táº¡o storage buckets cÃ³ phÃ¢n quyá»n, náº¡p dá»¯ liá»‡u máº§m giÃ¡o trÃ¬nh chuáº©n táº¯c tiáº¿ng Anh A1.
 
-### 3.2. Nhóm Xác Thực & Phân Quyền (Authentication & Authorization)
-- **Thành phần sở hữu:** `COMP-EXT-01` (GoTrue), `COMP-APP-01/02` (BFF Auth Middleware), `COMP-DOM-01` (Identity Service), `COMP-INFRA-02` (RLS Policy Engine).
-- **Phạm vi triển khai:** Xác thực phiên làm việc qua HttpOnly cookie; cấp phát và kiểm tra JWT; chuyển đổi mô hình 2 vai trò sang 6 vai trò chuẩn tắc; thiết lập chính sách RLS kép độc lập trên toàn bộ các bảng; lập trình các trigger ngăn chặn vi phạm SoD.
+### 3.2. NhÃ³m XÃ¡c Thá»±c & PhÃ¢n Quyá»n (Authentication & Authorization)
+- **ThÃ nh pháº§n sá»Ÿ há»¯u:** `COMP-EXT-01` (GoTrue), `COMP-APP-01/02` (BFF Auth Middleware), `COMP-DOM-01` (Identity Service), `COMP-INFRA-02` (RLS Policy Engine).
+- **Pháº¡m vi triá»ƒn khai:** XÃ¡c thá»±c phiÃªn lÃ m viá»‡c qua HttpOnly cookie; cáº¥p phÃ¡t vÃ  kiá»ƒm tra JWT; chuyá»ƒn Ä‘á»•i mÃ´ hÃ¬nh 2 vai trÃ² sang 6 vai trÃ² chuáº©n táº¯c; thiáº¿t láº­p chÃ­nh sÃ¡ch RLS kÃ©p Ä‘á»™c láº­p trÃªn toÃ n bá»™ cÃ¡c báº£ng; láº­p trÃ¬nh cÃ¡c trigger ngÄƒn cháº·n vi pháº¡m SoD.
 
-### 3.3. Nhóm Học Tập Cốt Lõi (Learner Core Engine)
-- **Thành phần sở hữu:** `COMP-PRES-01` (Learner UI), `COMP-APP-01` (Learner BFF), `COMP-DOM-02` (Curriculum Service), `COMP-DOM-05` (Lesson Execution Service).
-- **Phạm vi triển khai:** Trình diễn cây giáo trình 6 Unit theo điều kiện mở khóa; giao diện đọc/xem nội dung bài học (Lesson Content Viewer) trước khi làm bài tập (từ vựng, phiên âm, giải nghĩa tiếng Việt, câu ví dụ ngữ cảnh, audio chuẩn từ Storage, tóm tắt ngữ pháp bài học); trình phát bài tập tương tác hỗ trợ 5 dạng bài tập (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`); thuật toán hạn mức làm lại có kiểm soát `max(1, floor(N * 0.10))` bảo lưu điểm trần 70%; cập nhật tiến độ học tập nguyên tử (`UserProgress`).
+### 3.3. NhÃ³m Há»c Táº­p Cá»‘t LÃµi (Learner Core Engine)
+- **ThÃ nh pháº§n sá»Ÿ há»¯u:** `COMP-PRES-01` (Learner UI), `COMP-APP-01` (Learner BFF), `COMP-DOM-02` (Curriculum Service), `COMP-DOM-05` (Lesson Execution Service).
+- **Pháº¡m vi triá»ƒn khai:** TrÃ¬nh diá»…n cÃ¢y giÃ¡o trÃ¬nh 6 Unit theo Ä‘iá»u kiá»‡n má»Ÿ khÃ³a; giao diá»‡n Ä‘á»c/xem ná»™i dung bÃ i há»c (Lesson Content Viewer) trÆ°á»›c khi lÃ m bÃ i táº­p (tá»« vá»±ng, phiÃªn Ã¢m, giáº£i nghÄ©a tiáº¿ng Viá»‡t, cÃ¢u vÃ­ dá»¥ ngá»¯ cáº£nh, audio chuáº©n tá»« Storage, tÃ³m táº¯t ngá»¯ phÃ¡p bÃ i há»c); trÃ¬nh phÃ¡t bÃ i táº­p tÆ°Æ¡ng tÃ¡c há»— trá»£ 5 dáº¡ng bÃ i táº­p (`MCQ`, `FILL_BLANK`, `REORDER`, `LISTENING`, `GRAMMAR`); thuáº­t toÃ¡n háº¡n má»©c lÃ m láº¡i cÃ³ kiá»ƒm soÃ¡t `max(1, floor(N * 0.10))` báº£o lÆ°u Ä‘iá»ƒm tráº§n 70%; cáº­p nháº­t tiáº¿n Ä‘á»™ há»c táº­p nguyÃªn tá»­ (`UserProgress`).
 
 
-### 3.4. Nhóm Đánh Giá Năng Lực (Assessment & Progression)
-- **Thành phần sở hữu:** `COMP-DOM-03` (Assessment Service), `COMP-APP-01` (Assessment BFF).
-- **Phạm vi triển khai:** Phiên thi chẩn đoán năng lực đầu vào (30 câu hỏi, 1 điểm thô/câu, raw score 0–30); thuật toán ánh xạ điểm thô 0–30 ra Unit 1–6 theo Mapping A; nhánh Skip (vào thẳng Unit 1 với trạng thái `UNVERIFIED`, 0 AssessmentResult, 0 SkillProfile); tính năng thi lại (Retake) tạo bản ghi `AssessmentResult` bất biến mới và cập nhật `SkillProfile`.
+### 3.4. NhÃ³m ÄÃ¡nh GiÃ¡ NÄƒng Lá»±c (Assessment & Progression)
+- **ThÃ nh pháº§n sá»Ÿ há»¯u:** `COMP-DOM-03` (Assessment Service), `COMP-APP-01` (Assessment BFF).
+- **Pháº¡m vi triá»ƒn khai:** PhiÃªn thi cháº©n Ä‘oÃ¡n nÄƒng lá»±c Ä‘áº§u vÃ o (30 cÃ¢u há»i, 1 Ä‘iá»ƒm thÃ´/cÃ¢u, raw score 0â€“30); thuáº­t toÃ¡n Ã¡nh xáº¡ Ä‘iá»ƒm thÃ´ 0â€“30 ra Unit 1â€“6 theo Mapping A; nhÃ¡nh Skip (vÃ o tháº³ng Unit 1 vá»›i tráº¡ng thÃ¡i `UNVERIFIED`, 0 AssessmentResult, 0 SkillProfile); tÃ­nh nÄƒng thi láº¡i (Retake) táº¡o báº£n ghi `AssessmentResult` báº¥t biáº¿n má»›i vÃ  cáº­p nháº­t `SkillProfile`.
 
-### 3.5. Nhóm Trí Tuệ Học Tập (Learning Intelligence: Jump, Retry, SRS, Streak)
-- **Thành phần sở hữu:** `COMP-DOM-04` (SRS Service), `COMP-DOM-02` (Streak & Progression), `COMP-INFRA-03` (RPC Engine).
-- **Phạm vi triển khai:** Thử thách nhảy cóc (Jump) cho đơn vị liền kề với ngưỡng đạt ≥95%, khóa hồi chiêu 24h khi trượt, gán nhãn `SKIPPED_BY_JUMP` (`by_jump = true`) và không tính hoàn thành Unit; thuật toán SRS tất định Policy B `[1, 3, 7, 14, 30]` ngày thực thi qua RPC `record_review`; bộ tính toán Streak theo ngày lịch cục bộ múi giờ IANA (`Asia/Ho_Chi_Minh`), tự động đặt lại về 1 khi bỏ lỡ ngày học.
+### 3.5. NhÃ³m TrÃ­ Tuá»‡ Há»c Táº­p (Learning Intelligence: Jump, Retry, SRS, Streak)
+- **ThÃ nh pháº§n sá»Ÿ há»¯u:** `COMP-DOM-04` (SRS Service), `COMP-DOM-02` (Streak & Progression), `COMP-INFRA-03` (RPC Engine).
+- **Pháº¡m vi triá»ƒn khai:** Thá»­ thÃ¡ch nháº£y cÃ³c (Jump) cho Ä‘Æ¡n vá»‹ liá»n ká» vá»›i ngÆ°á»¡ng Ä‘áº¡t â‰¥95%, khÃ³a há»“i chiÃªu 24h khi trÆ°á»£t, gÃ¡n nhÃ£n `SKIPPED_BY_JUMP` (`by_jump = true`) vÃ  khÃ´ng tÃ­nh hoÃ n thÃ nh Unit; thuáº­t toÃ¡n SRS táº¥t Ä‘á»‹nh Policy B `[1, 3, 7, 14, 30]` ngÃ y thá»±c thi qua RPC `record_review`; bá»™ tÃ­nh toÃ¡n Streak theo ngÃ y lá»‹ch cá»¥c bá»™ mÃºi giá» IANA (`Asia/Ho_Chi_Minh`), tá»± Ä‘á»™ng Ä‘áº·t láº¡i vá» 1 khi bá» lá»¡ ngÃ y há»c.
 
-### 3.6. Nhóm Quản Trị & Kiểm Duyệt Nội Dung (Content Management & Governance)
-- **Thành phần sở hữu:** `COMP-PRES-02` (Admin Portal), `COMP-APP-02` (Admin Server Actions), `COMP-DOM-06` (Content Lifecycle Service).
-- **Phạm vi triển khai:** Giao diện phân công biên soạn của Manager; không gian soạn bài của Creator; hàng đợi kiểm duyệt độc lập của Moderator; quy trình xuất bản chính thức của Manager; cơ chế nhân bản bản thảo bất biến (Clone-to-Draft v2 qua `supersedes_id`); quy tắc hiển thị Unit 4/4 Published; chức năng xuất bản khẩn cấp của Admin kèm lý do giải trình bắt buộc và phát thải sự kiện kiểm toán `CONTENT_EMERGENCY_PUB`.
+### 3.6. NhÃ³m Quáº£n Trá»‹ & Kiá»ƒm Duyá»‡t Ná»™i Dung (Content Management & Governance)
+- **ThÃ nh pháº§n sá»Ÿ há»¯u:** `COMP-PRES-02` (Admin Portal), `COMP-APP-02` (Admin Server Actions), `COMP-DOM-06` (Content Lifecycle Service).
+- **Pháº¡m vi triá»ƒn khai:** Giao diá»‡n phÃ¢n cÃ´ng biÃªn soáº¡n cá»§a Manager; khÃ´ng gian soáº¡n bÃ i cá»§a Creator; hÃ ng Ä‘á»£i kiá»ƒm duyá»‡t Ä‘á»™c láº­p cá»§a Moderator; quy trÃ¬nh xuáº¥t báº£n chÃ­nh thá»©c cá»§a Manager; cÆ¡ cháº¿ nhÃ¢n báº£n báº£n tháº£o báº¥t biáº¿n (Clone-to-Draft v2 qua `supersedes_id`); quy táº¯c hiá»ƒn thá»‹ Unit 4/4 Published; chá»©c nÄƒng xuáº¥t báº£n kháº©n cáº¥p cá»§a Admin kÃ¨m lÃ½ do giáº£i trÃ¬nh báº¯t buá»™c vÃ  phÃ¡t tháº£i sá»± kiá»‡n kiá»ƒm toÃ¡n `CONTENT_EMERGENCY_PUB`.
 
-### 3.7. Nhóm Tiện Ích Dùng Chung & Hỗ Trợ Ứng Dụng (Cross-Cutting Supporting Infrastructure)
-- **Thành phần sở hữu:** `COMP-APP-01` (BFF Coordinator), `COMP-DOM-01` (Identity & Profile Helpers), `COMP-PRES-01/02` (UI Layout & Locales).
-- **Phạm vi triển khai:**
-  1. Triển khai hành vi song ngữ giao diện theo đúng yêu cầu chuẩn tắc `P1-FR-010` / `YC-EXT-06` (Next.js Locale Catalog `vi`/`en`, fallback an toàn `vi`).
-  2. Các tiện ích điều phối dùng chung tầng Client/BFF (chuẩn hóa định dạng phản hồi và mã lỗi API framework-neutral) hỗ trợ cho việc tích hợp hệ thống M3.8.
-  3. Mọi tiện ích kỹ thuật chi tiết khác (nếu phát sinh từ phụ thuộc thực thi) sẽ được xác định cụ thể theo trạng thái `TBD / TO BE DETERMINED FROM IMPLEMENTATION DEPENDENCIES` tại kế hoạch chi tiết của M3.7; tuyệt đối không tự tạo requirement mới.
-- **Ranh giới kiến trúc:** `COMP-DOM-08` (AI Proxy) và `COMP-EXT-02` (FastAPI AI) là các thành phần chuẩn tắc kế thừa từ thiết kế M2 nhưng được đánh dấu chính thức: **`OUT OF CURRENT PHASE 2 IMPLEMENTATION SCOPE`**. Tuyệt đối không lập trình mã nguồn, không dựng proxy, không thiết lập circuit breaker và không triển khai endpoint AI trong Phase 2.
+### 3.7. NhÃ³m Tiá»‡n Ãch DÃ¹ng Chung & Há»— Trá»£ á»¨ng Dá»¥ng (Cross-Cutting Supporting Infrastructure)
+- **ThÃ nh pháº§n sá»Ÿ há»¯u:** `COMP-APP-01` (BFF Coordinator), `COMP-DOM-01` (Identity & Profile Helpers), `COMP-PRES-01/02` (UI Layout & Locales).
+- **Pháº¡m vi triá»ƒn khai:**
+  1. Triá»ƒn khai hÃ nh vi song ngá»¯ giao diá»‡n theo Ä‘Ãºng yÃªu cáº§u chuáº©n táº¯c `P1-FR-010` / `YC-EXT-06` (Next.js Locale Catalog `vi`/`en`, fallback an toÃ n `vi`).
+  2. CÃ¡c tiá»‡n Ã­ch Ä‘iá»u phá»‘i dÃ¹ng chung táº§ng Client/BFF (chuáº©n hÃ³a Ä‘á»‹nh dáº¡ng pháº£n há»“i vÃ  mÃ£ lá»—i API framework-neutral) há»— trá»£ cho viá»‡c tÃ­ch há»£p há»‡ thá»‘ng M3.8.
+  3. Má»i tiá»‡n Ã­ch ká»¹ thuáº­t chi tiáº¿t khÃ¡c (náº¿u phÃ¡t sinh tá»« phá»¥ thuá»™c thá»±c thi) sáº½ Ä‘Æ°á»£c xÃ¡c Ä‘á»‹nh cá»¥ thá»ƒ theo tráº¡ng thÃ¡i `TBD / TO BE DETERMINED FROM IMPLEMENTATION DEPENDENCIES` táº¡i káº¿ hoáº¡ch chi tiáº¿t cá»§a M3.7; tuyá»‡t Ä‘á»‘i khÃ´ng tá»± táº¡o requirement má»›i.
+- **Ranh giá»›i kiáº¿n trÃºc:** `COMP-DOM-08` (AI Proxy) vÃ  `COMP-EXT-02` (FastAPI AI) lÃ  cÃ¡c thÃ nh pháº§n chuáº©n táº¯c káº¿ thá»«a tá»« thiáº¿t káº¿ M2 nhÆ°ng Ä‘Æ°á»£c Ä‘Ã¡nh dáº¥u chÃ­nh thá»©c: **`OUT OF CURRENT PHASE 2 IMPLEMENTATION SCOPE`**. Tuyá»‡t Ä‘á»‘i khÃ´ng láº­p trÃ¬nh mÃ£ nguá»“n, khÃ´ng dá»±ng proxy, khÃ´ng thiáº¿t láº­p circuit breaker vÃ  khÃ´ng triá»ƒn khai endpoint AI trong Phase 2.
 
-### 3.8. Nhóm Quản Trị Hệ Thống & Kiểm Toán (Administration & Audit)
-- **Thành phần sở hữu:** `COMP-DOM-07` (Admin Governance Service), `COMP-INFRA-05` (Audit Store).
-- **Phạm vi triển khai:** Bảng điều khiển quản trị tài khoản người dùng; phân bổ vai trò; màn hình tra cứu nhật ký kiểm toán hệ thống an toàn hỗ trợ lọc theo 11 sự kiện kiểm toán chuẩn tắc; cơ chế ghi log bất biến không thể xóa sửa.
+### 3.8. NhÃ³m Quáº£n Trá»‹ Há»‡ Thá»‘ng & Kiá»ƒm ToÃ¡n (Administration & Audit)
+- **ThÃ nh pháº§n sá»Ÿ há»¯u:** `COMP-DOM-07` (Admin Governance Service), `COMP-INFRA-05` (Audit Store).
+- **Pháº¡m vi triá»ƒn khai:** Báº£ng Ä‘iá»u khiá»ƒn quáº£n trá»‹ tÃ i khoáº£n ngÆ°á»i dÃ¹ng; phÃ¢n bá»• vai trÃ²; mÃ n hÃ¬nh tra cá»©u nháº­t kÃ½ kiá»ƒm toÃ¡n há»‡ thá»‘ng an toÃ n há»— trá»£ lá»c theo 11 sá»± kiá»‡n kiá»ƒm toÃ¡n chuáº©n táº¯c; cÆ¡ cháº¿ ghi log báº¥t biáº¿n khÃ´ng thá»ƒ xÃ³a sá»­a.
 
-### 3.9. Ranh Giới Mở Rộng Tương Lai (Optional / Future Boundary)
-- **Các thành phần/tính năng cách ly khỏi MVP:** Quản lý nhóm học viên & Cohort (`UC-15`), Hệ thống Ticket hỗ trợ người dùng nâng cao (`UC-14` mở rộng), Thông báo đẩy trình duyệt Web Push (`6a/6b` deferred), Đóng băng chuỗi học tập (Streak Freeze), Cấp chứng chỉ ngoại ngữ CEFR. Toàn bộ các thành phần này được đánh dấu `FUTURE_EXTENSION`, tuyệt đối không đưa vào phạm vi nghiệm thu cốt lõi của Phase 2.
+### 3.9. Ranh Giá»›i Má»Ÿ Rá»™ng TÆ°Æ¡ng Lai (Optional / Future Boundary)
+- **CÃ¡c thÃ nh pháº§n/tÃ­nh nÄƒng cÃ¡ch ly khá»i MVP:** Quáº£n lÃ½ nhÃ³m há»c viÃªn & Cohort (`UC-15`), Há»‡ thá»‘ng Ticket há»— trá»£ ngÆ°á»i dÃ¹ng nÃ¢ng cao (`UC-14` má»Ÿ rá»™ng), ThÃ´ng bÃ¡o Ä‘áº©y trÃ¬nh duyá»‡t Web Push (`6a/6b` deferred), ÄÃ³ng bÄƒng chuá»—i há»c táº­p (Streak Freeze), Cáº¥p chá»©ng chá»‰ ngoáº¡i ngá»¯ CEFR. ToÃ n bá»™ cÃ¡c thÃ nh pháº§n nÃ y Ä‘Æ°á»£c Ä‘Ã¡nh dáº¥u `FUTURE_EXTENSION`, tuyá»‡t Ä‘á»‘i khÃ´ng Ä‘Æ°a vÃ o pháº¡m vi nghiá»‡m thu cá»‘t lÃµi cá»§a Phase 2.
 
 ---
 
-## 4. THỨ TỰ THỰC THI & KIẾN TRÚC PHỤ THUỘC TRIỂN KHAI
+## 4. THá»¨ Tá»° THá»°C THI & KIáº¾N TRÃšC PHá»¤ THUá»˜C TRIá»‚N KHAI
 
-Thứ tự triển khai trong Phase 2 được xây dựng dựa trên **nguyên tắc phụ thuộc kiến trúc nghiêm ngặt (Dependency-Driven Implementation Order)**: Tầng dữ liệu và an ninh phải đi trước tầng dịch vụ; tầng dịch vụ nghiệp vụ phải đi trước giao diện người dùng; và các phân hệ độc lập được tích hợp theo luồng từ dưới lên.
+Thá»© tá»± triá»ƒn khai trong Phase 2 Ä‘Æ°á»£c xÃ¢y dá»±ng dá»±a trÃªn **nguyÃªn táº¯c phá»¥ thuá»™c kiáº¿n trÃºc nghiÃªm ngáº·t (Dependency-Driven Implementation Order)**: Táº§ng dá»¯ liá»‡u vÃ  an ninh pháº£i Ä‘i trÆ°á»›c táº§ng dá»‹ch vá»¥; táº§ng dá»‹ch vá»¥ nghiá»‡p vá»¥ pháº£i Ä‘i trÆ°á»›c giao diá»‡n ngÆ°á»i dÃ¹ng; vÃ  cÃ¡c phÃ¢n há»‡ Ä‘á»™c láº­p Ä‘Æ°á»£c tÃ­ch há»£p theo luá»“ng tá»« dÆ°á»›i lÃªn.
 
 ```mermaid
 flowchart TD
@@ -304,199 +304,199 @@ flowchart TD
     style M3_10 fill:#dcfce7,stroke:#16a34a,stroke-width:2px
 ```
 
-### Phân Tích Tính Hợp Lý Của Chuỗi Phụ Thuộc Triển Khai:
-1. **Tại sao M3.1 (Foundation) bắt buộc phải là mốc đầu tiên?**
-   - Không thể lập trình phân quyền hay lưu trữ bài học nếu lược đồ bảng `units`, `lesson_revisions`, `assessment_results` và enum 6 vai trò chưa tồn tại trong cơ sở dữ liệu.
-2. **Tại sao M3.2 (Auth/RBAC/RLS) phải hoàn thành trước khi viết tính năng học tập?**
-   - Theo nguyên tắc phòng vệ theo chiều sâu (Defense-in-depth), mọi bảng nghiệp vụ phát sinh sau này bắt buộc phải chịu sự kiểm soát của RLS ngay từ thời điểm tạo ra. Tuyệt đối không viết code ứng dụng trên một cơ sở dữ liệu mở toang rồi mới vá RLS sau cùng.
-3. **Tại sao M3.3 (Learner Core) đi trước M3.4 (Assessment) và M3.5 (Intelligence)?**
-   - Bài kiểm tra chẩn đoán (Placement) và bài kiểm tra nhảy cóc (Jump) thực chất là các chế độ đánh giá (`context.mode`) tái sử dụng trình phát bài tập hợp nhất (Unified Exercise Engine). Do đó, bộ khung thực thi bài tập cốt lõi của M3.3 phải hoàn thành trước để làm nền tảng cho M3.4 và M3.5.
-4. **Tại sao M3.6 (Content Governance) có thể triển khai song song hoặc ngay sau M3.2?**
-   - Phân hệ quản trị nội dung hoạt động độc lập ở ứng dụng `lingora-admin`, chỉ phụ thuộc vào hạ tầng DB và mô hình SoD của M3.2. Việc hoàn thành M3.6 giúp đội ngũ sớm có công cụ biên soạn và xuất bản bài học phục vụ cho việc tích hợp hệ thống.
-5. **Tại sao M3.7 (Cross-Cutting Supporting Infrastructure) triển khai trước M3.8?**
-   - Hành vi đa ngữ giao diện theo chuẩn `P1-FR-010` (`vi`/`en`) và các tiện ích điều phối dùng chung giữa Client và BFF cần được kiểm chứng sẵn sàng trước khi tiến hành lắp ghép toàn diện trong kịch bản E2E tại M3.8.
+### PhÃ¢n TÃ­ch TÃ­nh Há»£p LÃ½ Cá»§a Chuá»—i Phá»¥ Thuá»™c Triá»ƒn Khai:
+1. **Táº¡i sao M3.1 (Foundation) báº¯t buá»™c pháº£i lÃ  má»‘c Ä‘áº§u tiÃªn?**
+   - KhÃ´ng thá»ƒ láº­p trÃ¬nh phÃ¢n quyá»n hay lÆ°u trá»¯ bÃ i há»c náº¿u lÆ°á»£c Ä‘á»“ báº£ng `units`, `lesson_revisions`, `assessment_results` vÃ  enum 6 vai trÃ² chÆ°a tá»“n táº¡i trong cÆ¡ sá»Ÿ dá»¯ liá»‡u.
+2. **Táº¡i sao M3.2 (Auth/RBAC/RLS) pháº£i hoÃ n thÃ nh trÆ°á»›c khi viáº¿t tÃ­nh nÄƒng há»c táº­p?**
+   - Theo nguyÃªn táº¯c phÃ²ng vá»‡ theo chiá»u sÃ¢u (Defense-in-depth), má»i báº£ng nghiá»‡p vá»¥ phÃ¡t sinh sau nÃ y báº¯t buá»™c pháº£i chá»‹u sá»± kiá»ƒm soÃ¡t cá»§a RLS ngay tá»« thá»i Ä‘iá»ƒm táº¡o ra. Tuyá»‡t Ä‘á»‘i khÃ´ng viáº¿t code á»©ng dá»¥ng trÃªn má»™t cÆ¡ sá»Ÿ dá»¯ liá»‡u má»Ÿ toang rá»“i má»›i vÃ¡ RLS sau cÃ¹ng.
+3. **Táº¡i sao M3.3 (Learner Core) Ä‘i trÆ°á»›c M3.4 (Assessment) vÃ  M3.5 (Intelligence)?**
+   - BÃ i kiá»ƒm tra cháº©n Ä‘oÃ¡n (Placement) vÃ  bÃ i kiá»ƒm tra nháº£y cÃ³c (Jump) thá»±c cháº¥t lÃ  cÃ¡c cháº¿ Ä‘á»™ Ä‘Ã¡nh giÃ¡ (`context.mode`) tÃ¡i sá»­ dá»¥ng trÃ¬nh phÃ¡t bÃ i táº­p há»£p nháº¥t (Unified Exercise Engine). Do Ä‘Ã³, bá»™ khung thá»±c thi bÃ i táº­p cá»‘t lÃµi cá»§a M3.3 pháº£i hoÃ n thÃ nh trÆ°á»›c Ä‘á»ƒ lÃ m ná»n táº£ng cho M3.4 vÃ  M3.5.
+4. **Táº¡i sao M3.6 (Content Governance) cÃ³ thá»ƒ triá»ƒn khai song song hoáº·c ngay sau M3.2?**
+   - PhÃ¢n há»‡ quáº£n trá»‹ ná»™i dung hoáº¡t Ä‘á»™ng Ä‘á»™c láº­p á»Ÿ á»©ng dá»¥ng `lingora-admin`, chá»‰ phá»¥ thuá»™c vÃ o háº¡ táº§ng DB vÃ  mÃ´ hÃ¬nh SoD cá»§a M3.2. Viá»‡c hoÃ n thÃ nh M3.6 giÃºp Ä‘á»™i ngÅ© sá»›m cÃ³ cÃ´ng cá»¥ biÃªn soáº¡n vÃ  xuáº¥t báº£n bÃ i há»c phá»¥c vá»¥ cho viá»‡c tÃ­ch há»£p há»‡ thá»‘ng.
+5. **Táº¡i sao M3.7 (Cross-Cutting Supporting Infrastructure) triá»ƒn khai trÆ°á»›c M3.8?**
+   - HÃ nh vi Ä‘a ngá»¯ giao diá»‡n theo chuáº©n `P1-FR-010` (`vi`/`en`) vÃ  cÃ¡c tiá»‡n Ã­ch Ä‘iá»u phá»‘i dÃ¹ng chung giá»¯a Client vÃ  BFF cáº§n Ä‘Æ°á»£c kiá»ƒm chá»©ng sáºµn sÃ ng trÆ°á»›c khi tiáº¿n hÃ nh láº¯p ghÃ©p toÃ n diá»‡n trong ká»‹ch báº£n E2E táº¡i M3.8.
 
 ---
 
-## 5. KẾ HOẠCH TRIỂN KHAI CƠ SỞ DỮ LIỆU & LỘ TRÌNH MIGRATION
+## 5. Káº¾ HOáº CH TRIá»‚N KHAI CÆ  Sá»ž Dá»® LIá»†U & Lá»˜ TRÃŒNH MIGRATION
 
-Lộ trình di chuyển dữ liệu trong Phase 2 hiện thực hóa 8 giai đoạn thiết kế đã được duyệt tại M2.6 Output 1, tuân thủ chiến lược **Mở rộng trước, Thu hẹp sau (Expand and Contract Pattern)** để đảm bảo an toàn dữ liệu tuyệt đối và khả năng hoàn nguyên (Rollback) từng bước.
+Lá»™ trÃ¬nh di chuyá»ƒn dá»¯ liá»‡u trong Phase 2 hiá»‡n thá»±c hÃ³a 8 giai Ä‘oáº¡n thiáº¿t káº¿ Ä‘Ã£ Ä‘Æ°á»£c duyá»‡t táº¡i M2.6 Output 1, tuÃ¢n thá»§ chiáº¿n lÆ°á»£c **Má»Ÿ rá»™ng trÆ°á»›c, Thu háº¹p sau (Expand and Contract Pattern)** Ä‘á»ƒ Ä‘áº£m báº£o an toÃ n dá»¯ liá»‡u tuyá»‡t Ä‘á»‘i vÃ  kháº£ nÄƒng hoÃ n nguyÃªn (Rollback) tá»«ng bÆ°á»›c.
 
-### 5.1. Bảng Phân Loại Mô Hình Dữ Liệu Mục Tiêu
+### 5.1. Báº£ng PhÃ¢n Loáº¡i MÃ´ HÃ¬nh Dá»¯ Liá»‡u Má»¥c TiÃªu
 
-| Tên Bảng Vật Lý | Tình Trạng | Thao Tác Lược Đồ (Schema Operation) | Ghi Chú Kỹ Thuật & Quyết Định Liên Quan |
+| TÃªn Báº£ng Váº­t LÃ½ | TÃ¬nh Tráº¡ng | Thao TÃ¡c LÆ°á»£c Äá»“ (Schema Operation) | Ghi ChÃº Ká»¹ Thuáº­t & Quyáº¿t Äá»‹nh LiÃªn Quan |
 |---|---|---|---|
-| `languages` | Giữ nguyên | Không thay đổi | Lưu trữ mã ngôn ngữ chuẩn ISO (`vi`, `en`, `zh`, `ja`, `fr`). |
-| `profiles` | Chỉnh sửa | Bổ sung cột: `verified_starting_unit INT DEFAULT 1`, nâng cấp enum `role` thành 6 giá trị chuẩn tắc. | Chứa con trỏ đệm điểm xuất phát đã kiểm định (DD-06, DD-10). |
-| `courses` | Chỉnh sửa | Bổ sung chỉ mục tối ưu tìm kiếm theo ngôn ngữ và thứ tự. | Giữ nguyên quan hệ phân cấp giáo trình. |
-| `course_translations` | Giữ nguyên | Không thay đổi | Đa ngôn ngữ tiêu đề và mô tả khóa học. |
-| `units` | Tiền kiểm / Tạo mới | Preflight DB check: nếu bảng đã tồn tại (từ Prisma schema Phase 0), thực hiện đối soát/reconcile/alter; nếu chưa tồn tại, tạo bảng mới: `id UUID PK`, `course_id UUID FK`, `order_index INT`, `created_at`. | Phân cấp Course -> Unit -> Lesson bất biến (DD-01). |
-| `unit_translations` | Giữ nguyên | Cập nhật khóa ngoại trỏ chính xác về bảng `units` mới. | Đa ngôn ngữ tiêu đề và mô tả đơn vị học (DD-01). |
-| `lessons` | Chỉnh sửa | Thêm cột `unit_id UUID NULL FK(units.id)`. Chuyển vai trò thành thực thể quản lý logic bài học ổn định. | Tách biệt định danh logic và phiên bản nội dung (DD-01, DD-02). |
-| `lesson_translations` | Chỉnh sửa | Giữ làm bản dịch tiêu đề bài học logic hoặc chuyển dần sang phiên bản. | Đảm bảo tương thích ngược trong giai đoạn chuyển đổi. |
-| `lesson_revisions` | Tạo mới | Tạo bảng mới: `id UUID PK`, `lesson_id UUID FK`, `version INT`, `supersedes_id UUID NULL FK`, `status VARCHAR(32)`, `content JSONB`, `assigned_creator_id UUID NULL`, `assigned_by_id UUID NULL`, `assignment_deadline TIMESTAMPTZ NULL`, `assignment_brief JSONB NULL`. | Quản lý vòng đời 6 trạng thái, phân công biên soạn, nhân bản bất biến Clone-to-Draft v2 (DD-02, DD-04). |
-| `vocabularies` | Giữ nguyên | Bổ sung chỉ mục tra cứu chuẩn hóa. | Kho từ vựng trung tâm của hệ thống. |
-| `vocabulary_translations`| Giữ nguyên | Không thay đổi | Nghĩa và ví dụ từ vựng đa ngữ. |
-| `lesson_vocabulary` | Giữ nguyên | Khóa ngoại có thể liên kết với bài học logic hoặc phiên bản. | Danh mục từ vựng trọng tâm bài học. |
-| `exercises` | Chỉnh sửa | Thêm cột `lesson_revision_id UUID NULL FK`, nâng cấp enum `ExerciseType` (+`LISTENING`, +`GRAMMAR`), chuẩn hóa JSON schema `payload`. | Mô hình bài tập hợp nhất (Unified Exercise D4, DD-05). |
-| `user_progress` | Chỉnh sửa | Bổ sung cờ `by_jump BOOLEAN DEFAULT FALSE`, thêm trạng thái `LOCKED`, `SKIPPED_BY_JUMP` vào `status`. | Quản lý tiến độ học tập bài học; phân biệt rõ bài học hoàn thành thật với bài bị nhảy cóc (D5, M2.2). |
-| `assessment_results` | Tạo mới | Tạo bảng mới: `id UUID PK`, `user_id UUID FK`, `assessment_type VARCHAR(32)`, `raw_score INT`, `starting_unit INT`, `answers JSONB`, `completed_at TIMESTAMPTZ`. RLS Append-Only. | Lưu lịch sử kiểm tra chẩn đoán năng lực bất biến (DD-06). |
-| `skill_profiles` | Tạo mới | Tạo bảng mới: `id UUID PK`, `user_id UUID UNIQUE FK`, `verified_proficiency JSONB`, `updated_at TIMESTAMPTZ`. | Lưu hồ sơ năng lực chi tiết của học viên phục vụ cá nhân hóa (DD-06). |
-| `user_vocab_srs` | Chỉnh sửa | Cập nhật cấu trúc hỗ trợ Policy B: `stage INT DEFAULT 0`, `next_review_at TIMESTAMPTZ`. | Động cơ ôn tập ngắt quãng tất định Policy B (D8). |
-| `review_logs` | Giữ nguyên | Giữ nguyên bảng nhật ký ôn tập. | Phục vụ truy vết lịch sử ôn tập từ vựng. |
-| `chat_scenarios` | Giữ nguyên | Mô hình tương thích kế thừa từ Phase 0. | Bảng dữ liệu tương thích; P1-FR-007 được bảo toàn là yêu cầu chuẩn tắc nhưng nằm ngoài phạm vi triển khai của Phase 2 (CANONICAL REQUIREMENT RETAINED — OUT OF PHASE 2 IMPLEMENTATION SCOPE). |
-| `chat_scenario_translations`| Giữ nguyên | Không thay đổi | Tiêu đề và mô tả tình huống viết tương thích Phase 0; ngoài phạm vi Phase 2. |
-| `audit_logs` | Chỉnh sửa | Cấu trúc lại theo chuẩn DD-03: bảo đảm 4 trường bất biến (`actor_id`, `action`, `target_id`, `timestamp`) + `metadata JSONB`; các trường vật lý mở rộng (như IP, user agent, retention) là đặc tả vật lý MỞ (OPEN physical spec) do M3.1 hoàn thiện chi tiết DDL. RLS Append-Only. | Sổ cái kiểm toán an ninh bất biến, ghi nhận 11 sự kiện chuẩn tắc (DD-03). |
+| `languages` | Giá»¯ nguyÃªn | KhÃ´ng thay Ä‘á»•i | LÆ°u trá»¯ mÃ£ ngÃ´n ngá»¯ chuáº©n ISO (`vi`, `en`, `zh`, `ja`, `fr`). |
+| `profiles` | Chá»‰nh sá»­a | Bá»• sung cá»™t: `verified_starting_unit INT DEFAULT 1`, nÃ¢ng cáº¥p enum `role` thÃ nh 6 giÃ¡ trá»‹ chuáº©n táº¯c. | Chá»©a con trá» Ä‘á»‡m Ä‘iá»ƒm xuáº¥t phÃ¡t Ä‘Ã£ kiá»ƒm Ä‘á»‹nh (DD-06, DD-10). |
+| `courses` | Chá»‰nh sá»­a | Bá»• sung chá»‰ má»¥c tá»‘i Æ°u tÃ¬m kiáº¿m theo ngÃ´n ngá»¯ vÃ  thá»© tá»±. | Giá»¯ nguyÃªn quan há»‡ phÃ¢n cáº¥p giÃ¡o trÃ¬nh. |
+| `course_translations` | Giá»¯ nguyÃªn | KhÃ´ng thay Ä‘á»•i | Äa ngÃ´n ngá»¯ tiÃªu Ä‘á» vÃ  mÃ´ táº£ khÃ³a há»c. |
+| `units` | Tiá»n kiá»ƒm / Táº¡o má»›i | Preflight DB check: náº¿u báº£ng Ä‘Ã£ tá»“n táº¡i (tá»« Prisma schema Phase 0), thá»±c hiá»‡n Ä‘á»‘i soÃ¡t/reconcile/alter; náº¿u chÆ°a tá»“n táº¡i, táº¡o báº£ng má»›i: `id UUID PK`, `course_id UUID FK`, `order_index INT`, `created_at`. | PhÃ¢n cáº¥p Course -> Unit -> Lesson báº¥t biáº¿n (DD-01). |
+| `unit_translations` | Giá»¯ nguyÃªn | Cáº­p nháº­t khÃ³a ngoáº¡i trá» chÃ­nh xÃ¡c vá» báº£ng `units` má»›i. | Äa ngÃ´n ngá»¯ tiÃªu Ä‘á» vÃ  mÃ´ táº£ Ä‘Æ¡n vá»‹ há»c (DD-01). |
+| `lessons` | Chá»‰nh sá»­a | ThÃªm cá»™t `unit_id UUID NULL FK(units.id)`. Chuyá»ƒn vai trÃ² thÃ nh thá»±c thá»ƒ quáº£n lÃ½ logic bÃ i há»c á»•n Ä‘á»‹nh. | TÃ¡ch biá»‡t Ä‘á»‹nh danh logic vÃ  phiÃªn báº£n ná»™i dung (DD-01, DD-02). |
+| `lesson_translations` | Chá»‰nh sá»­a | Giá»¯ lÃ m báº£n dá»‹ch tiÃªu Ä‘á» bÃ i há»c logic hoáº·c chuyá»ƒn dáº§n sang phiÃªn báº£n. | Äáº£m báº£o tÆ°Æ¡ng thÃ­ch ngÆ°á»£c trong giai Ä‘oáº¡n chuyá»ƒn Ä‘á»•i. |
+| `lesson_revisions` | Táº¡o má»›i | Táº¡o báº£ng má»›i: `id UUID PK`, `lesson_id UUID FK`, `version INT`, `supersedes_id UUID NULL FK`, `status VARCHAR(32)`, `content JSONB`, `assigned_creator_id UUID NULL`, `assigned_by_id UUID NULL`, `assignment_deadline TIMESTAMPTZ NULL`, `assignment_brief JSONB NULL`. | Quáº£n lÃ½ vÃ²ng Ä‘á»i 6 tráº¡ng thÃ¡i, phÃ¢n cÃ´ng biÃªn soáº¡n, nhÃ¢n báº£n báº¥t biáº¿n Clone-to-Draft v2 (DD-02, DD-04). |
+| `vocabularies` | Giá»¯ nguyÃªn | Bá»• sung chá»‰ má»¥c tra cá»©u chuáº©n hÃ³a. | Kho tá»« vá»±ng trung tÃ¢m cá»§a há»‡ thá»‘ng. |
+| `vocabulary_translations`| Giá»¯ nguyÃªn | KhÃ´ng thay Ä‘á»•i | NghÄ©a vÃ  vÃ­ dá»¥ tá»« vá»±ng Ä‘a ngá»¯. |
+| `lesson_vocabulary` | Giá»¯ nguyÃªn | KhÃ³a ngoáº¡i cÃ³ thá»ƒ liÃªn káº¿t vá»›i bÃ i há»c logic hoáº·c phiÃªn báº£n. | Danh má»¥c tá»« vá»±ng trá»ng tÃ¢m bÃ i há»c. |
+| `exercises` | Chá»‰nh sá»­a | ThÃªm cá»™t `lesson_revision_id UUID NULL FK`, nÃ¢ng cáº¥p enum `ExerciseType` (+`LISTENING`, +`GRAMMAR`), chuáº©n hÃ³a JSON schema `payload`. | MÃ´ hÃ¬nh bÃ i táº­p há»£p nháº¥t (Unified Exercise D4, DD-05). |
+| `user_progress` | Chá»‰nh sá»­a | Bá»• sung cá» `by_jump BOOLEAN DEFAULT FALSE`, thÃªm tráº¡ng thÃ¡i `LOCKED`, `SKIPPED_BY_JUMP` vÃ o `status`. | Quáº£n lÃ½ tiáº¿n Ä‘á»™ há»c táº­p bÃ i há»c; phÃ¢n biá»‡t rÃµ bÃ i há»c hoÃ n thÃ nh tháº­t vá»›i bÃ i bá»‹ nháº£y cÃ³c (D5, M2.2). |
+| `assessment_results` | Táº¡o má»›i | Táº¡o báº£ng má»›i: `id UUID PK`, `user_id UUID FK`, `assessment_type VARCHAR(32)`, `raw_score INT`, `starting_unit INT`, `answers JSONB`, `completed_at TIMESTAMPTZ`. RLS Append-Only. | LÆ°u lá»‹ch sá»­ kiá»ƒm tra cháº©n Ä‘oÃ¡n nÄƒng lá»±c báº¥t biáº¿n (DD-06). |
+| `skill_profiles` | Táº¡o má»›i | Táº¡o báº£ng má»›i: `id UUID PK`, `user_id UUID UNIQUE FK`, `verified_proficiency JSONB`, `updated_at TIMESTAMPTZ`. | LÆ°u há»“ sÆ¡ nÄƒng lá»±c chi tiáº¿t cá»§a há»c viÃªn phá»¥c vá»¥ cÃ¡ nhÃ¢n hÃ³a (DD-06). |
+| `user_vocab_srs` | Chá»‰nh sá»­a | Cáº­p nháº­t cáº¥u trÃºc há»— trá»£ Policy B: `stage INT DEFAULT 0`, `next_review_at TIMESTAMPTZ`. | Äá»™ng cÆ¡ Ã´n táº­p ngáº¯t quÃ£ng táº¥t Ä‘á»‹nh Policy B (D8). |
+| `review_logs` | Giá»¯ nguyÃªn | Giá»¯ nguyÃªn báº£ng nháº­t kÃ½ Ã´n táº­p. | Phá»¥c vá»¥ truy váº¿t lá»‹ch sá»­ Ã´n táº­p tá»« vá»±ng. |
+| `chat_scenarios` | Giá»¯ nguyÃªn | MÃ´ hÃ¬nh tÆ°Æ¡ng thÃ­ch káº¿ thá»«a tá»« Phase 0. | Báº£ng dá»¯ liá»‡u tÆ°Æ¡ng thÃ­ch; P1-FR-007 Ä‘Æ°á»£c báº£o toÃ n lÃ  yÃªu cáº§u chuáº©n táº¯c nhÆ°ng náº±m ngoÃ i pháº¡m vi triá»ƒn khai cá»§a Phase 2 (CANONICAL REQUIREMENT RETAINED â€” OUT OF PHASE 2 IMPLEMENTATION SCOPE). |
+| `chat_scenario_translations`| Giá»¯ nguyÃªn | KhÃ´ng thay Ä‘á»•i | TiÃªu Ä‘á» vÃ  mÃ´ táº£ tÃ¬nh huá»‘ng viáº¿t tÆ°Æ¡ng thÃ­ch Phase 0; ngoÃ i pháº¡m vi Phase 2. |
+| `audit_logs` | Chá»‰nh sá»­a | Cáº¥u trÃºc láº¡i theo chuáº©n DD-03: báº£o Ä‘áº£m 4 trÆ°á»ng báº¥t biáº¿n (`actor_id`, `action`, `target_id`, `timestamp`) + `metadata JSONB`; cÃ¡c trÆ°á»ng váº­t lÃ½ má»Ÿ rá»™ng (nhÆ° IP, user agent, retention) lÃ  Ä‘áº·c táº£ váº­t lÃ½ Má»ž (OPEN physical spec) do M3.1 hoÃ n thiá»‡n chi tiáº¿t DDL. RLS Append-Only. | Sá»• cÃ¡i kiá»ƒm toÃ¡n an ninh báº¥t biáº¿n, ghi nháº­n 11 sá»± kiá»‡n chuáº©n táº¯c (DD-03). |
 
-### 5.2. Đặc Tả Chi Tiết 8 Giai Đoạn Di Chuyển Dữ Liệu (Migration Plan Phases)
+### 5.2. Äáº·c Táº£ Chi Tiáº¿t 8 Giai Äoáº¡n Di Chuyá»ƒn Dá»¯ Liá»‡u (Migration Plan Phases)
 
-> **Lưu ý chuẩn hóa quy mô triển khai đồ án tốt nghiệp (Student Project Right-Sizing & Pedagogical Distinction):**
-> Kế hoạch di chuyển dữ liệu 8 giai đoạn chi tiết dưới đây được thiết kế theo chuẩn kiến trúc doanh nghiệp không gián đoạn (Enterprise Zero-Downtime Migration) áp dụng mô hình Expand/Contract kết hợp PITR Snapshot, Dual-write, Traffic Flip và thời gian theo dõi hợp đồng 14 ngày.
-> 1. **Mục đích học thuật & bảo vệ luận văn (Pedagogical Defense Specification):** Đóng vai trò là đặc tả kiến trúc di chuyển dữ liệu chuẩn mực phục vụ trình bày phương pháp luận kỹ thuật trong Báo cáo tốt nghiệp (Chương 3 & 4), chứng minh khả năng thiết kế hệ thống chịu tải cao và an toàn dữ liệu cấp doanh nghiệp.
-> 2. **Thực thi vận hành trong môi trường Local / Preview (M3.1 – M3.2 Practical Execution):** Đối với môi trường phát triển cục bộ và máy chủ kiểm thử Supabase (0 người dùng trực tiếp trong quá trình dev), quy trình di chuyển được thực thi tuần tự, dứt điểm bằng các migration script chuẩn (`prisma migrate dev` / `supabase migration up`) kèm theo tiền kiểm (Preflight Check), UP script và hậu kiểm (Postflight Verification). Các bước vận hành trực tiếp như *thời gian theo dõi 14 ngày (14-day bake period)* hoặc *chuyển đổi lưu lượng zero-downtime trực tiếp trên production (live traffic flip)* được định danh rõ là `[OPTIONAL / FUTURE PRODUCTION PRACTICE]` để làm sáng tỏ lý thuyết luận văn mà không biến thành điểm nghẽn cản trở việc nghiệm thu các mốc M3.1–M3.2.
+> **LÆ°u Ã½ chuáº©n hÃ³a quy mÃ´ triá»ƒn khai Ä‘á»“ Ã¡n tá»‘t nghiá»‡p (Student Project Right-Sizing & Pedagogical Distinction):**
+> Káº¿ hoáº¡ch di chuyá»ƒn dá»¯ liá»‡u 8 giai Ä‘oáº¡n chi tiáº¿t dÆ°á»›i Ä‘Ã¢y Ä‘Æ°á»£c thiáº¿t káº¿ theo chuáº©n kiáº¿n trÃºc doanh nghiá»‡p khÃ´ng giÃ¡n Ä‘oáº¡n (Enterprise Zero-Downtime Migration) Ã¡p dá»¥ng mÃ´ hÃ¬nh Expand/Contract káº¿t há»£p PITR Snapshot, Dual-write, Traffic Flip vÃ  thá»i gian theo dÃµi há»£p Ä‘á»“ng 14 ngÃ y.
+> 1. **Má»¥c Ä‘Ã­ch há»c thuáº­t & báº£o vá»‡ luáº­n vÄƒn (Pedagogical Defense Specification):** ÄÃ³ng vai trÃ² lÃ  Ä‘áº·c táº£ kiáº¿n trÃºc di chuyá»ƒn dá»¯ liá»‡u chuáº©n má»±c phá»¥c vá»¥ trÃ¬nh bÃ y phÆ°Æ¡ng phÃ¡p luáº­n ká»¹ thuáº­t trong BÃ¡o cÃ¡o tá»‘t nghiá»‡p (ChÆ°Æ¡ng 3 & 4), chá»©ng minh kháº£ nÄƒng thiáº¿t káº¿ há»‡ thá»‘ng chá»‹u táº£i cao vÃ  an toÃ n dá»¯ liá»‡u cáº¥p doanh nghiá»‡p.
+> 2. **Thá»±c thi váº­n hÃ nh trong mÃ´i trÆ°á»ng Local / Preview (M3.1 â€“ M3.2 Practical Execution):** Äá»‘i vá»›i mÃ´i trÆ°á»ng phÃ¡t triá»ƒn cá»¥c bá»™ vÃ  mÃ¡y chá»§ kiá»ƒm thá»­ Supabase (0 ngÆ°á»i dÃ¹ng trá»±c tiáº¿p trong quÃ¡ trÃ¬nh dev), quy trÃ¬nh di chuyá»ƒn Ä‘Æ°á»£c thá»±c thi tuáº§n tá»±, dá»©t Ä‘iá»ƒm báº±ng cÃ¡c migration script chuáº©n (`prisma migrate dev` / `supabase migration up`) kÃ¨m theo tiá»n kiá»ƒm (Preflight Check), UP script vÃ  háº­u kiá»ƒm (Postflight Verification). CÃ¡c bÆ°á»›c váº­n hÃ nh trá»±c tiáº¿p nhÆ° *thá»i gian theo dÃµi 14 ngÃ y (14-day bake period)* hoáº·c *chuyá»ƒn Ä‘á»•i lÆ°u lÆ°á»£ng zero-downtime trá»±c tiáº¿p trÃªn production (live traffic flip)* Ä‘Æ°á»£c Ä‘á»‹nh danh rÃµ lÃ  `[OPTIONAL / FUTURE PRODUCTION PRACTICE]` Ä‘á»ƒ lÃ m sÃ¡ng tá» lÃ½ thuyáº¿t luáº­n vÄƒn mÃ  khÃ´ng biáº¿n thÃ nh Ä‘iá»ƒm ngháº½n cáº£n trá»Ÿ viá»‡c nghiá»‡m thu cÃ¡c má»‘c M3.1â€“M3.2.
 
-#### Giai Đoạn 1: Kiểm Tra Tiền Điều Kiện & Tạo Điểm Sao Lưu (Pre-Migration Checks & Snapshot)
-- **UP:** Kiểm tra kết nối cơ sở dữ liệu Supabase, xác nhận quyền Zone 5; tạo bản sao lưu vật lý toàn bộ cơ sở dữ liệu và thiết lập điểm khôi phục thời gian thực (PITR Snapshot).
-- **DOWN / ROLLBACK:** Không áp dụng (không có thay đổi lược đồ).
-- **DATA SAFETY:** Xác nhận 100% dữ liệu hiện tại được sao lưu an toàn; kiểm tra dung lượng ổ đĩa khả dụng > 20%.
-- **BACKFILL:** Không có.
-- **TEST PLAN:** Chạy script `scratch/check_db_health.py` kiểm tra toàn vẹn bảng hiện tại và xác nhận snapshot hợp lệ.
+#### Giai Äoáº¡n 1: Kiá»ƒm Tra Tiá»n Äiá»u Kiá»‡n & Táº¡o Äiá»ƒm Sao LÆ°u (Pre-Migration Checks & Snapshot)
+- **UP:** Kiá»ƒm tra káº¿t ná»‘i cÆ¡ sá»Ÿ dá»¯ liá»‡u Supabase, xÃ¡c nháº­n quyá»n Zone 5; táº¡o báº£n sao lÆ°u váº­t lÃ½ toÃ n bá»™ cÆ¡ sá»Ÿ dá»¯ liá»‡u vÃ  thiáº¿t láº­p Ä‘iá»ƒm khÃ´i phá»¥c thá»i gian thá»±c (PITR Snapshot).
+- **DOWN / ROLLBACK:** KhÃ´ng Ã¡p dá»¥ng (khÃ´ng cÃ³ thay Ä‘á»•i lÆ°á»£c Ä‘á»“).
+- **DATA SAFETY:** XÃ¡c nháº­n 100% dá»¯ liá»‡u hiá»‡n táº¡i Ä‘Æ°á»£c sao lÆ°u an toÃ n; kiá»ƒm tra dung lÆ°á»£ng á»• Ä‘Ä©a kháº£ dá»¥ng > 20%.
+- **BACKFILL:** KhÃ´ng cÃ³.
+- **TEST PLAN:** Cháº¡y script `scratch/check_db_health.py` kiá»ƒm tra toÃ n váº¹n báº£ng hiá»‡n táº¡i vÃ  xÃ¡c nháº­n snapshot há»£p lá»‡.
 
-#### Giai Đoạn 2: Mở Rộng Lược Đồ Dạng Cộng Dồn (Compatibility / Expand Phase)
+#### Giai Äoáº¡n 2: Má»Ÿ Rá»™ng LÆ°á»£c Äá»“ Dáº¡ng Cá»™ng Dá»“n (Compatibility / Expand Phase)
 - **UP:** 
-  1. Tạo enum mới hoặc thêm giá trị: `ExerciseType` bổ sung `LISTENING`, `GRAMMAR`; `ProgressStatus` bổ sung `LOCKED`, `SKIPPED_BY_JUMP`.
-  2. Thực hiện tiền kiểm tra (Preflight DB check) cho bảng `units`: nếu đã tồn tại thì đối soát/reconcile, nếu chưa tồn tại thì `CREATE TABLE units`. Tạo các bảng mới với các cột nullable hoặc default: `lesson_revisions`, `assessment_results`, `skill_profiles`.
-  3. Thêm các cột mới dạng nullable vào bảng hiện có: `lessons.unit_id`, `exercises.lesson_revision_id`, `profiles.verified_starting_unit`.
-- **DOWN / ROLLBACK:** Chạy script `.down.sql`: `DROP TABLE` các bảng mới tạo; `ALTER TABLE DROP COLUMN` các cột mới thêm. **Chiến lược an toàn di chuyển enum:** *Rollback of enum removals is not assumed to be a simple DOWN migration. Rollback strategy must preserve backward compatibility and avoid destructive enum-value removal.* Phương án thực thi cụ thể do M3.1 quyết định sau khi kiểm tra hành vi migration thực tế của PostgreSQL.
-- **DATA SAFETY:** Tuyệt đối không thêm cột `NOT NULL` thiếu `DEFAULT`; không xóa hoặc sửa đổi bất kỳ cột hiện có nào đang phục vụ truy vấn.
-- **BACKFILL:** Không có.
-- **TEST PLAN:** Chạy lệnh `npx prisma validate`, kiểm tra catalog `pg_tables` xác nhận bảng mới đã xuất hiện và các bảng cũ hoạt động bình thường.
+  1. Táº¡o enum má»›i hoáº·c thÃªm giÃ¡ trá»‹: `ExerciseType` bá»• sung `LISTENING`, `GRAMMAR`; `ProgressStatus` bá»• sung `LOCKED`, `SKIPPED_BY_JUMP`.
+  2. Thá»±c hiá»‡n tiá»n kiá»ƒm tra (Preflight DB check) cho báº£ng `units`: náº¿u Ä‘Ã£ tá»“n táº¡i thÃ¬ Ä‘á»‘i soÃ¡t/reconcile, náº¿u chÆ°a tá»“n táº¡i thÃ¬ `CREATE TABLE units`. Táº¡o cÃ¡c báº£ng má»›i vá»›i cÃ¡c cá»™t nullable hoáº·c default: `lesson_revisions`, `assessment_results`, `skill_profiles`.
+  3. ThÃªm cÃ¡c cá»™t má»›i dáº¡ng nullable vÃ o báº£ng hiá»‡n cÃ³: `lessons.unit_id`, `exercises.lesson_revision_id`, `profiles.verified_starting_unit`.
+- **DOWN / ROLLBACK:** Cháº¡y script `.down.sql`: `DROP TABLE` cÃ¡c báº£ng má»›i táº¡o; `ALTER TABLE DROP COLUMN` cÃ¡c cá»™t má»›i thÃªm. **Chiáº¿n lÆ°á»£c an toÃ n di chuyá»ƒn enum:** *Rollback of enum removals is not assumed to be a simple DOWN migration. Rollback strategy must preserve backward compatibility and avoid destructive enum-value removal.* PhÆ°Æ¡ng Ã¡n thá»±c thi cá»¥ thá»ƒ do M3.1 quyáº¿t Ä‘á»‹nh sau khi kiá»ƒm tra hÃ nh vi migration thá»±c táº¿ cá»§a PostgreSQL.
+- **DATA SAFETY:** Tuyá»‡t Ä‘á»‘i khÃ´ng thÃªm cá»™t `NOT NULL` thiáº¿u `DEFAULT`; khÃ´ng xÃ³a hoáº·c sá»­a Ä‘á»•i báº¥t ká»³ cá»™t hiá»‡n cÃ³ nÃ o Ä‘ang phá»¥c vá»¥ truy váº¥n.
+- **BACKFILL:** KhÃ´ng cÃ³.
+- **TEST PLAN:** Cháº¡y lá»‡nh `npx prisma validate`, kiá»ƒm tra catalog `pg_tables` xÃ¡c nháº­n báº£ng má»›i Ä‘Ã£ xuáº¥t hiá»‡n vÃ  cÃ¡c báº£ng cÅ© hoáº¡t Ä‘á»™ng bÃ¬nh thÆ°á»ng.
 
-#### Giai Đoạn 3: Chuyển Đổi Dữ Liệu & Nạp Dữ Liệu Mầm (Data Transformation & Backfill Phase)
+#### Giai Äoáº¡n 3: Chuyá»ƒn Äá»•i Dá»¯ Liá»‡u & Náº¡p Dá»¯ Liá»‡u Máº§m (Data Transformation & Backfill Phase)
 - **UP:**
-  1. Chạy script backfill tạo 6 Unit chuẩn tắc cho khóa học tiếng Anh A1 trong bảng `units`.
-  2. Cập nhật khóa ngoại `lessons.unit_id` cho 24 bài học hiện có theo đúng cấu trúc 4 bài học/Unit.
-  3. Trích xuất nội dung từ bảng `lessons` hiện tại để tạo bản ghi phiên bản đầu tiên trong `lesson_revisions` (`version = 1, status = 'PUBLISHED', supersedes_id = NULL`).
-  4. Cập nhật `exercises.lesson_revision_id` trỏ về revision tương ứng; chuẩn hóa trường `exercises.payload` sang JSON Schema mới.
-- **DOWN / ROLLBACK:** `TRUNCATE TABLE lesson_revisions`; đặt giá trị `lessons.unit_id = NULL`; khôi phục dữ liệu payload cũ từ bảng sao lưu.
-- **DATA SAFETY:** Thực hiện cập nhật theo từng đợt (batching ~500 bản ghi/lượt) trong các giao dịch có kiểm soát thời gian chờ (lock_timeout = 5s).
-- **BACKFILL:** Kiểm tra đối soát sau khi chạy: 100% bài học có `unit_id` hợp lệ; 100% bài học xuất bản có bản ghi `lesson_revisions` tương ứng.
-- **TEST PLAN:** Chạy truy vấn SQL kiểm toán đối chiếu số lượng bản ghi giữa bảng cũ và bảng mới (`COUNT(*)` khớp 100%).
+  1. Cháº¡y script backfill táº¡o 6 Unit chuáº©n táº¯c cho khÃ³a há»c tiáº¿ng Anh A1 trong báº£ng `units`.
+  2. Cáº­p nháº­t khÃ³a ngoáº¡i `lessons.unit_id` cho 24 bÃ i há»c hiá»‡n cÃ³ theo Ä‘Ãºng cáº¥u trÃºc 4 bÃ i há»c/Unit.
+  3. TrÃ­ch xuáº¥t ná»™i dung tá»« báº£ng `lessons` hiá»‡n táº¡i Ä‘á»ƒ táº¡o báº£n ghi phiÃªn báº£n Ä‘áº§u tiÃªn trong `lesson_revisions` (`version = 1, status = 'PUBLISHED', supersedes_id = NULL`).
+  4. Cáº­p nháº­t `exercises.lesson_revision_id` trá» vá» revision tÆ°Æ¡ng á»©ng; chuáº©n hÃ³a trÆ°á»ng `exercises.payload` sang JSON Schema má»›i.
+- **DOWN / ROLLBACK:** `TRUNCATE TABLE lesson_revisions`; Ä‘áº·t giÃ¡ trá»‹ `lessons.unit_id = NULL`; khÃ´i phá»¥c dá»¯ liá»‡u payload cÅ© tá»« báº£ng sao lÆ°u.
+- **DATA SAFETY:** Thá»±c hiá»‡n cáº­p nháº­t theo tá»«ng Ä‘á»£t (batching ~500 báº£n ghi/lÆ°á»£t) trong cÃ¡c giao dá»‹ch cÃ³ kiá»ƒm soÃ¡t thá»i gian chá» (lock_timeout = 5s).
+- **BACKFILL:** Kiá»ƒm tra Ä‘á»‘i soÃ¡t sau khi cháº¡y: 100% bÃ i há»c cÃ³ `unit_id` há»£p lá»‡; 100% bÃ i há»c xuáº¥t báº£n cÃ³ báº£n ghi `lesson_revisions` tÆ°Æ¡ng á»©ng.
+- **TEST PLAN:** Cháº¡y truy váº¥n SQL kiá»ƒm toÃ¡n Ä‘á»‘i chiáº¿u sá»‘ lÆ°á»£ng báº£n ghi giá»¯a báº£ng cÅ© vÃ  báº£ng má»›i (`COUNT(*)` khá»›p 100%).
 
-#### Giai Đoạn 4: Chuyển Đổi Vai Trò & Thiết Lập Chính Sách RLS (Role & RLS Transition Phase)
+#### Giai Äoáº¡n 4: Chuyá»ƒn Äá»•i Vai TrÃ² & Thiáº¿t Láº­p ChÃ­nh SÃ¡ch RLS (Role & RLS Transition Phase)
 - **UP:**
-  1. Nâng cấp enum `Role` trong PostgreSQL từ 2 giá trị hiện tại (`LEARNER`, `ADMIN`) lên 6 giá trị chuẩn tắc: bổ sung `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `ORGANIZATIONAL_MANAGER` và đồng bộ `ADMIN` $\rightarrow$ `ADMINISTRATOR`.
-  2. Triển khai toàn bộ ma trận chính sách PostgreSQL Row Level Security (RLS) trên tất cả các bảng nghiệp vụ.
-  3. Cài đặt các cơ chế phân quyền bảo đảm Phân tách nhiệm vụ (SoD) và ghi log kiểm toán bất biến.
-- **DOWN / ROLLBACK:** Khôi phục lại chính sách RLS và enum 2 vai trò ban đầu (`LEARNER`, `ADMIN`).
-- **DATA SAFETY:** Áp dụng chế độ kiểm tra kép (dual-read check); đảm bảo tài khoản quản trị hiện tại không bị mất quyền truy cập.
-- **TEST PLAN:** Thực thi bộ kiểm thử tự động trong `lingora-web`: `npx vitest run tests/security/rls_isolation.test.ts` và `npx vitest run tests/security/rbac_matrix.test.ts` với 6 token JWT giả lập đại diện cho 6 vai trò (Frames 12–16).
+  1. NÃ¢ng cáº¥p enum `Role` trong PostgreSQL tá»« 2 giÃ¡ trá»‹ hiá»‡n táº¡i (`LEARNER`, `ADMIN`) lÃªn 6 giÃ¡ trá»‹ chuáº©n táº¯c: bá»• sung `LESSON_CREATOR`, `MODERATOR`, `OPERATIONS_STAFF`, `ORGANIZATIONAL_MANAGER` vÃ  Ä‘á»“ng bá»™ `ADMIN` $\rightarrow$ `ADMINISTRATOR`.
+  2. Triá»ƒn khai toÃ n bá»™ ma tráº­n chÃ­nh sÃ¡ch PostgreSQL Row Level Security (RLS) trÃªn táº¥t cáº£ cÃ¡c báº£ng nghiá»‡p vá»¥.
+  3. CÃ i Ä‘áº·t cÃ¡c cÆ¡ cháº¿ phÃ¢n quyá»n báº£o Ä‘áº£m PhÃ¢n tÃ¡ch nhiá»‡m vá»¥ (SoD) vÃ  ghi log kiá»ƒm toÃ¡n báº¥t biáº¿n.
+- **DOWN / ROLLBACK:** KhÃ´i phá»¥c láº¡i chÃ­nh sÃ¡ch RLS vÃ  enum 2 vai trÃ² ban Ä‘áº§u (`LEARNER`, `ADMIN`).
+- **DATA SAFETY:** Ãp dá»¥ng cháº¿ Ä‘á»™ kiá»ƒm tra kÃ©p (dual-read check); Ä‘áº£m báº£o tÃ i khoáº£n quáº£n trá»‹ hiá»‡n táº¡i khÃ´ng bá»‹ máº¥t quyá»n truy cáº­p.
+- **TEST PLAN:** Thá»±c thi bá»™ kiá»ƒm thá»­ tá»± Ä‘á»™ng trong `lingora-web`: `npx vitest run tests/security/rls_isolation.test.ts` vÃ  `npx vitest run tests/security/rbac_matrix.test.ts` vá»›i 6 token JWT giáº£ láº­p Ä‘áº¡i diá»‡n cho 6 vai trÃ² (Frames 12â€“16).
 
-#### Giai Đoạn 5: Chuyển Đổi Lưu Lượng Ứng Dụng (Application Cutover Phase)
-- **UP:** Triển khai bản dựng ứng dụng Phase 2 cho `lingora-web` và `lingora-admin`. Chuyển hướng toàn bộ các thao tác đọc/ghi sang cấu trúc `units`, `lesson_revisions`, `assessment_results`.
-- **DOWN / ROLLBACK:** Chuyển đổi lưu lượng (traffic flip) quay trở lại bản dựng ứng dụng Phase 1 hỗ trợ lược đồ cũ trên Vercel.
-- **DATA SAFETY:** Theo dõi tỷ lệ lỗi API; nếu phát hiện tỷ lệ lỗi > 1% trong 15 phút đầu, kích hoạt hoàn nguyên ngay lập tức.
-- **BACKFILL:** Không có.
-- **TEST PLAN:** Thực hiện kiểm tra sức khỏe tự động (health check) trên 15 luồng BF; xác nhận giao dịch đăng nhập, xem bài và làm bài tập diễn ra trơn tru.
+#### Giai Äoáº¡n 5: Chuyá»ƒn Äá»•i LÆ°u LÆ°á»£ng á»¨ng Dá»¥ng (Application Cutover Phase)
+- **UP:** Triá»ƒn khai báº£n dá»±ng á»©ng dá»¥ng Phase 2 cho `lingora-web` vÃ  `lingora-admin`. Chuyá»ƒn hÆ°á»›ng toÃ n bá»™ cÃ¡c thao tÃ¡c Ä‘á»c/ghi sang cáº¥u trÃºc `units`, `lesson_revisions`, `assessment_results`.
+- **DOWN / ROLLBACK:** Chuyá»ƒn Ä‘á»•i lÆ°u lÆ°á»£ng (traffic flip) quay trá»Ÿ láº¡i báº£n dá»±ng á»©ng dá»¥ng Phase 1 há»— trá»£ lÆ°á»£c Ä‘á»“ cÅ© trÃªn Vercel.
+- **DATA SAFETY:** Theo dÃµi tá»· lá»‡ lá»—i API; náº¿u phÃ¡t hiá»‡n tá»· lá»‡ lá»—i > 1% trong 15 phÃºt Ä‘áº§u, kÃ­ch hoáº¡t hoÃ n nguyÃªn ngay láº­p tá»©c.
+- **BACKFILL:** KhÃ´ng cÃ³.
+- **TEST PLAN:** Thá»±c hiá»‡n kiá»ƒm tra sá»©c khá»e tá»± Ä‘á»™ng (health check) trÃªn 15 luá»“ng BF; xÃ¡c nháº­n giao dá»‹ch Ä‘Äƒng nháº­p, xem bÃ i vÃ  lÃ m bÃ i táº­p diá»…n ra trÆ¡n tru.
 
-#### Giai Đoạn 6: Kiểm Định Hệ Thống Vận Hành (System Audit & Validation Checkpoint)
-- **UP:** Hệ thống vận hành ổn định trên môi trường mới; giám sát hiệu năng truy vấn RLS và cơ chế ghi log kiểm toán.
-- **DOWN / ROLLBACK:** Kích hoạt Giai đoạn 7 nếu phát hiện lỗi bảo mật nghiêm trọng (Sev-1).
-- **DATA SAFETY:** Toàn bộ dữ liệu người dùng phát sinh mới trong giai đoạn này được bảo vệ bởi RLS và sao lưu liên tục.
-- **BACKFILL:** Không có.
-- **TEST PLAN:** Thực thi trọn vẹn bộ 18 kịch bản Test Frames của M2.6; xác nhận nhật ký kiểm toán ghi nhận đầy đủ 11 loại sự kiện.
+#### Giai Äoáº¡n 6: Kiá»ƒm Äá»‹nh Há»‡ Thá»‘ng Váº­n HÃ nh (System Audit & Validation Checkpoint)
+- **UP:** Há»‡ thá»‘ng váº­n hÃ nh á»•n Ä‘á»‹nh trÃªn mÃ´i trÆ°á»ng má»›i; giÃ¡m sÃ¡t hiá»‡u nÄƒng truy váº¥n RLS vÃ  cÆ¡ cháº¿ ghi log kiá»ƒm toÃ¡n.
+- **DOWN / ROLLBACK:** KÃ­ch hoáº¡t Giai Ä‘oáº¡n 7 náº¿u phÃ¡t hiá»‡n lá»—i báº£o máº­t nghiÃªm trá»ng (Sev-1).
+- **DATA SAFETY:** ToÃ n bá»™ dá»¯ liá»‡u ngÆ°á»i dÃ¹ng phÃ¡t sinh má»›i trong giai Ä‘oáº¡n nÃ y Ä‘Æ°á»£c báº£o vá»‡ bá»Ÿi RLS vÃ  sao lÆ°u liÃªn tá»¥c.
+- **BACKFILL:** KhÃ´ng cÃ³.
+- **TEST PLAN:** Thá»±c thi trá»n váº¹n bá»™ 18 ká»‹ch báº£n Test Frames cá»§a M2.6; xÃ¡c nháº­n nháº­t kÃ½ kiá»ƒm toÃ¡n ghi nháº­n Ä‘áº§y Ä‘á»§ 11 loáº¡i sá»± kiá»‡n.
 
-#### Giai Đoạn 7: Kế Hoạch Ứng Phó Khẩn Cấp (Rollback Strategy & Emergency Plan)
-- **UP:** Kích hoạt quy trình hoàn nguyên có kiểm soát khi xảy ra lỗi Sev-1 (mất dữ liệu, rò rỉ phân quyền RLS, đứt gãy toàn bộ API). Khôi phục trạng thái ổn định gần nhất từ điểm sao lưu PITR.
-- **DOWN / ROLLBACK:** Không áp dụng.
-- **DATA SAFETY:** Trích xuất phần dữ liệu học tập mới phát sinh trong thời gian cutover vào bảng đệm tạm trước khi hoàn nguyên PITR để nạp lại sau.
-- **BACKFILL:** Chạy script bù trừ dữ liệu học viên từ bảng đệm tạm sau khi hệ thống ổn định.
-- **TEST PLAN:** Thực hành diễn tập kịch bản hoàn nguyên dry-run trên môi trường staging trước khi chạy cutover thật.
+#### Giai Äoáº¡n 7: Káº¿ Hoáº¡ch á»¨ng PhÃ³ Kháº©n Cáº¥p (Rollback Strategy & Emergency Plan)
+- **UP:** KÃ­ch hoáº¡t quy trÃ¬nh hoÃ n nguyÃªn cÃ³ kiá»ƒm soÃ¡t khi xáº£y ra lá»—i Sev-1 (máº¥t dá»¯ liá»‡u, rÃ² rá»‰ phÃ¢n quyá»n RLS, Ä‘á»©t gÃ£y toÃ n bá»™ API). KhÃ´i phá»¥c tráº¡ng thÃ¡i á»•n Ä‘á»‹nh gáº§n nháº¥t tá»« Ä‘iá»ƒm sao lÆ°u PITR.
+- **DOWN / ROLLBACK:** KhÃ´ng Ã¡p dá»¥ng.
+- **DATA SAFETY:** TrÃ­ch xuáº¥t pháº§n dá»¯ liá»‡u há»c táº­p má»›i phÃ¡t sinh trong thá»i gian cutover vÃ o báº£ng Ä‘á»‡m táº¡m trÆ°á»›c khi hoÃ n nguyÃªn PITR Ä‘á»ƒ náº¡p láº¡i sau.
+- **BACKFILL:** Cháº¡y script bÃ¹ trá»« dá»¯ liá»‡u há»c viÃªn tá»« báº£ng Ä‘á»‡m táº¡m sau khi há»‡ thá»‘ng á»•n Ä‘á»‹nh.
+- **TEST PLAN:** Thá»±c hÃ nh diá»…n táº­p ká»‹ch báº£n hoÃ n nguyÃªn dry-run trÃªn mÃ´i trÆ°á»ng staging trÆ°á»›c khi cháº¡y cutover tháº­t.
 
-#### Giai Đoạn 8: Thu Hẹp Lược Đồ & Dọn Dẹp Sau Chuyển Đổi (Post-Migration Cleanup / Contract Phase)
-- **UP:** Sau khi hệ thống vận hành ổn định tối thiểu 14 ngày trên môi trường mục tiêu: tiến hành gỡ bỏ các cột dữ liệu cũ không còn sử dụng trên bảng `lessons` và `exercises`.
-- **DOWN / ROLLBACK:** Không hoàn nguyên sau khi đã đóng hợp đồng (Contract Phase); dữ liệu cũ đã được lưu trữ trong bản sao lưu vĩnh viễn.
-- **DATA SAFETY:** Xác nhận tuyệt đối không còn bất kỳ truy vấn nào trong mã nguồn ứng dụng hay báo cáo tham chiếu đến các cột cũ trong 14 ngày liên tục.
-- **BACKFILL:** Không có.
-### 5.3. Tiêu Chí Đầu Ra & Cổng Nghiệm Thu Bắt Buộc Của Milestone M3.1 (M3.1 Mandatory Exit Criteria)
+#### Giai Äoáº¡n 8: Thu Háº¹p LÆ°á»£c Äá»“ & Dá»n Dáº¹p Sau Chuyá»ƒn Äá»•i (Post-Migration Cleanup / Contract Phase)
+- **UP:** Sau khi há»‡ thá»‘ng váº­n hÃ nh á»•n Ä‘á»‹nh tá»‘i thiá»ƒu 14 ngÃ y trÃªn mÃ´i trÆ°á»ng má»¥c tiÃªu: tiáº¿n hÃ nh gá»¡ bá» cÃ¡c cá»™t dá»¯ liá»‡u cÅ© khÃ´ng cÃ²n sá»­ dá»¥ng trÃªn báº£ng `lessons` vÃ  `exercises`.
+- **DOWN / ROLLBACK:** KhÃ´ng hoÃ n nguyÃªn sau khi Ä‘Ã£ Ä‘Ã³ng há»£p Ä‘á»“ng (Contract Phase); dá»¯ liá»‡u cÅ© Ä‘Ã£ Ä‘Æ°á»£c lÆ°u trá»¯ trong báº£n sao lÆ°u vÄ©nh viá»…n.
+- **DATA SAFETY:** XÃ¡c nháº­n tuyá»‡t Ä‘á»‘i khÃ´ng cÃ²n báº¥t ká»³ truy váº¥n nÃ o trong mÃ£ nguá»“n á»©ng dá»¥ng hay bÃ¡o cÃ¡o tham chiáº¿u Ä‘áº¿n cÃ¡c cá»™t cÅ© trong 14 ngÃ y liÃªn tá»¥c.
+- **BACKFILL:** KhÃ´ng cÃ³.
+### 5.3. TiÃªu ChÃ­ Äáº§u Ra & Cá»•ng Nghiá»‡m Thu Báº¯t Buá»™c Cá»§a Milestone M3.1 (M3.1 Mandatory Exit Criteria)
 
-Để đảm bảo an toàn tuyệt đối trước khi bắt tay vào triển khai mã nguồn các phân hệ tiếp theo (M3.2 đến M3.10), Milestone M3.1 bắt buộc phải hoàn thành và khóa nghiệm thu các tiêu chí sau:
+Äá»ƒ Ä‘áº£m báº£o an toÃ n tuyá»‡t Ä‘á»‘i trÆ°á»›c khi báº¯t tay vÃ o triá»ƒn khai mÃ£ nguá»“n cÃ¡c phÃ¢n há»‡ tiáº¿p theo (M3.2 Ä‘áº¿n M3.10), Milestone M3.1 báº¯t buá»™c pháº£i hoÃ n thÃ nh vÃ  khÃ³a nghiá»‡m thu cÃ¡c tiÃªu chÃ­ sau:
 
-1. **Bảo Mật Barem Chấm Điểm & Phân Tách Dữ Liệu Bài Tập (Exercise Answer Security):**
-   - **Nguyên tắc kiến trúc:** `Learner-readable exercise payload != grading secret / correct answer`.
-   - **Quyết định biểu diễn vật lý (Physical representation decision):** Xác định rõ phương án tách biệt giữa nội dung bài tập gửi cho học viên (không chứa đáp án đúng / regex chấm điểm) và barem chấm điểm máy chủ.
-   - **Ranh giới phân quyền & cấp phép (Permission / Grant boundary):** Thiết lập cơ chế phân quyền (PostgreSQL Column-Level Grants, Views hoặc RLS projection) bảo đảm tài khoản học viên không thể truy vấn barem đáp án.
-   - **Bộ kiểm thử phủ định bắt buộc:**
-     - *Learner negative test:* Kiểm chứng API phản hồi payload bài tập cho học viên không bao giờ chứa trường đáp án đúng hoặc bí mật chấm điểm.
-     - *Direct data-access negative test:* Kiểm chứng học viên gửi truy vấn trực tiếp vào cơ sở dữ liệu bị từ chối đọc barem đáp án.
-2. **Kiểm Soát Truy Cập Trực Tiếp Đơn Vị Giáo Trình (Unit 4/4 Direct Access & Visibility):**
-   - **Nguyên tắc:** `UI hiding != Authorization`. Việc ẩn Unit chưa đủ 4/4 bài trên giao diện danh mục không thay thế cho việc kiểm soát phân quyền.
-   - **Bộ kiểm thử bắt buộc:**
-     - Unit có 3/4 bài `PUBLISHED` và 1 bài `DRAFT` $\rightarrow$ Tự động ẩn trên danh mục Unit của học viên.
-     - Kiểm thử truy cập trực tiếp bài học/bài tập thuộc Unit 3/4 Published: Gửi request trực tiếp đến API route bài học $\rightarrow$ Bị chặn với lỗi `403 Forbidden` hoặc `404 Not Found`.
-     - Tuyệt đối không tạo cơ chế tự động chuyển hướng hoặc fallback sang Unit gần nhất.
-3. **Mô Hình Hóa Dữ Liệu Bài Chẩn Đoán & Thử Thách Nhảy Cóc (Placement & Jump Data Representation):**
-   - **Nguyên tắc:** Chốt biểu diễn vật lý cho 30 câu hỏi Placement Test và câu hỏi Jump Challenge trong khuôn khổ Mô hình Bài tập Hợp nhất (Unified Exercise / Assessment model).
-   - **Cấm thực thể ma (Zero Ghost Entities):** Tuyệt đối KHÔNG tạo các thực thể `Exam`, `QuestionBank`, `AssessmentSession`.
-   - **Đánh dấu thiết kế:** *M3.1 DESIGN DECISION REQUIRED: Physical representation of Placement and Jump items within Unified Exercise/Assessment model must be finalized during M3.1 schema design.*
-4. **Biểu Diễn Vật Lý Trạng Thái Phiên & Hạn Mức Làm Lại (Attempt / Retry State Representation):**
-   - Đảm bảo cưỡng chế quy tắc D7 từ phía máy chủ: $\text{allowance} = \max(1, \lfloor N \times 0.10 \rfloor)$, bảo lưu điểm trần 70%.
-   - **Tiêu chí:** *Physical attempt/retry state representation is defined and verified before M3.3/M3.5 implementation.* Không giả định trạng thái chỉ lưu ở client.
-5. **Biểu Diễn Vật Lý Thời Gian Hồi Chiêu Nhảy Cóc (Jump Cooldown Physical Representation):**
-   - Đảm bảo cưỡng chế ngưỡng $\ge 95\%$, cờ `by_jump = true` (`SKIPPED_BY_JUMP`), và khóa hồi chiêu 24 giờ của D5 từ server time.
-   - **Tiêu chí:** *Physical state representation for 24h Jump cooldown lockout is finalized in M3.1 without premature column locking.*
-6. **Biểu Diễn Vật Lý Trạng Thái Đánh Giá & Bỏ Qua (Skip / Placement Status Semantics):**
-   - Phân biệt rõ ràng 3 trạng thái ngữ nghĩa: `NOT_DECIDED` (mới đăng ký), `SKIPPED / UNVERIFIED` (bỏ qua, xuất phát Unit 1, chưa kiểm định), `DIAGNOSTIC / VERIFIED` (hoàn thành 30 câu, điểm thô $0..30$, Mapping A).
-   - **Tiêu chí:** *Physical representation of placement status is finalized before schema implementation.*
+1. **Báº£o Máº­t Barem Cháº¥m Äiá»ƒm & PhÃ¢n TÃ¡ch Dá»¯ Liá»‡u BÃ i Táº­p (Exercise Answer Security):**
+   - **NguyÃªn táº¯c kiáº¿n trÃºc:** `Learner-readable exercise payload != grading secret / correct answer`.
+   - **Quyáº¿t Ä‘á»‹nh biá»ƒu diá»…n váº­t lÃ½ (Physical representation decision):** XÃ¡c Ä‘á»‹nh rÃµ phÆ°Æ¡ng Ã¡n tÃ¡ch biá»‡t giá»¯a ná»™i dung bÃ i táº­p gá»­i cho há»c viÃªn (khÃ´ng chá»©a Ä‘Ã¡p Ã¡n Ä‘Ãºng / regex cháº¥m Ä‘iá»ƒm) vÃ  barem cháº¥m Ä‘iá»ƒm mÃ¡y chá»§.
+   - **Ranh giá»›i phÃ¢n quyá»n & cáº¥p phÃ©p (Permission / Grant boundary):** Thiáº¿t láº­p cÆ¡ cháº¿ phÃ¢n quyá»n (PostgreSQL Column-Level Grants, Views hoáº·c RLS projection) báº£o Ä‘áº£m tÃ i khoáº£n há»c viÃªn khÃ´ng thá»ƒ truy váº¥n barem Ä‘Ã¡p Ã¡n.
+   - **Bá»™ kiá»ƒm thá»­ phá»§ Ä‘á»‹nh báº¯t buá»™c:**
+     - *Learner negative test:* Kiá»ƒm chá»©ng API pháº£n há»“i payload bÃ i táº­p cho há»c viÃªn khÃ´ng bao giá» chá»©a trÆ°á»ng Ä‘Ã¡p Ã¡n Ä‘Ãºng hoáº·c bÃ­ máº­t cháº¥m Ä‘iá»ƒm.
+     - *Direct data-access negative test:* Kiá»ƒm chá»©ng há»c viÃªn gá»­i truy váº¥n trá»±c tiáº¿p vÃ o cÆ¡ sá»Ÿ dá»¯ liá»‡u bá»‹ tá»« chá»‘i Ä‘á»c barem Ä‘Ã¡p Ã¡n.
+2. **Kiá»ƒm SoÃ¡t Truy Cáº­p Trá»±c Tiáº¿p ÄÆ¡n Vá»‹ GiÃ¡o TrÃ¬nh (Unit 4/4 Direct Access & Visibility):**
+   - **NguyÃªn táº¯c:** `UI hiding != Authorization`. Viá»‡c áº©n Unit chÆ°a Ä‘á»§ 4/4 bÃ i trÃªn giao diá»‡n danh má»¥c khÃ´ng thay tháº¿ cho viá»‡c kiá»ƒm soÃ¡t phÃ¢n quyá»n.
+   - **Bá»™ kiá»ƒm thá»­ báº¯t buá»™c:**
+     - Unit cÃ³ 3/4 bÃ i `PUBLISHED` vÃ  1 bÃ i `DRAFT` $\rightarrow$ Tá»± Ä‘á»™ng áº©n trÃªn danh má»¥c Unit cá»§a há»c viÃªn.
+     - Kiá»ƒm thá»­ truy cáº­p trá»±c tiáº¿p bÃ i há»c/bÃ i táº­p thuá»™c Unit 3/4 Published: Gá»­i request trá»±c tiáº¿p Ä‘áº¿n API route bÃ i há»c $\rightarrow$ Bá»‹ cháº·n vá»›i lá»—i `403 Forbidden` hoáº·c `404 Not Found`.
+     - Tuyá»‡t Ä‘á»‘i khÃ´ng táº¡o cÆ¡ cháº¿ tá»± Ä‘á»™ng chuyá»ƒn hÆ°á»›ng hoáº·c fallback sang Unit gáº§n nháº¥t.
+3. **MÃ´ HÃ¬nh HÃ³a Dá»¯ Liá»‡u BÃ i Cháº©n ÄoÃ¡n & Thá»­ ThÃ¡ch Nháº£y CÃ³c (Placement & Jump Data Representation):**
+   - **NguyÃªn táº¯c:** Chá»‘t biá»ƒu diá»…n váº­t lÃ½ cho 30 cÃ¢u há»i Placement Test vÃ  cÃ¢u há»i Jump Challenge trong khuÃ´n khá»• MÃ´ hÃ¬nh BÃ i táº­p Há»£p nháº¥t (Unified Exercise / Assessment model).
+   - **Cáº¥m thá»±c thá»ƒ ma (Zero Ghost Entities):** Tuyá»‡t Ä‘á»‘i KHÃ”NG táº¡o cÃ¡c thá»±c thá»ƒ `Exam`, `QuestionBank`, `AssessmentSession`.
+   - **ÄÃ¡nh dáº¥u thiáº¿t káº¿:** *M3.1 DESIGN DECISION REQUIRED: Physical representation of Placement and Jump items within Unified Exercise/Assessment model must be finalized during M3.1 schema design.*
+4. **Biá»ƒu Diá»…n Váº­t LÃ½ Tráº¡ng ThÃ¡i PhiÃªn & Háº¡n Má»©c LÃ m Láº¡i (Attempt / Retry State Representation):**
+   - Äáº£m báº£o cÆ°á»¡ng cháº¿ quy táº¯c D7 tá»« phÃ­a mÃ¡y chá»§: $\text{allowance} = \max(1, \lfloor N \times 0.10 \rfloor)$, báº£o lÆ°u Ä‘iá»ƒm tráº§n 70%.
+   - **TiÃªu chÃ­:** *Physical attempt/retry state representation is defined and verified before M3.3/M3.5 implementation.* KhÃ´ng giáº£ Ä‘á»‹nh tráº¡ng thÃ¡i chá»‰ lÆ°u á»Ÿ client.
+5. **Biá»ƒu Diá»…n Váº­t LÃ½ Thá»i Gian Há»“i ChiÃªu Nháº£y CÃ³c (Jump Cooldown Physical Representation):**
+   - Äáº£m báº£o cÆ°á»¡ng cháº¿ ngÆ°á»¡ng $\ge 95\%$, cá» `by_jump = true` (`SKIPPED_BY_JUMP`), vÃ  khÃ³a há»“i chiÃªu 24 giá» cá»§a D5 tá»« server time.
+   - **TiÃªu chÃ­:** *Physical state representation for 24h Jump cooldown lockout is finalized in M3.1 without premature column locking.*
+6. **Biá»ƒu Diá»…n Váº­t LÃ½ Tráº¡ng ThÃ¡i ÄÃ¡nh GiÃ¡ & Bá» Qua (Skip / Placement Status Semantics):**
+   - PhÃ¢n biá»‡t rÃµ rÃ ng 3 tráº¡ng thÃ¡i ngá»¯ nghÄ©a: `NOT_DECIDED` (má»›i Ä‘Äƒng kÃ½), `SKIPPED / UNVERIFIED` (bá» qua, xuáº¥t phÃ¡t Unit 1, chÆ°a kiá»ƒm Ä‘á»‹nh), `DIAGNOSTIC / VERIFIED` (hoÃ n thÃ nh 30 cÃ¢u, Ä‘iá»ƒm thÃ´ $0..30$, Mapping A).
+   - **TiÃªu chÃ­:** *Physical representation of placement status is finalized before schema implementation.*
 
 ---
 
-## 6. KẾ HOẠCH TRIỂN KHAI AUTH, RBAC, RLS & PHÂN TÁCH NHIỆM VỤ (SOD)
+## 6. Káº¾ HOáº CH TRIá»‚N KHAI AUTH, RBAC, RLS & PHÃ‚N TÃCH NHIá»†M Vá»¤ (SOD)
 
-Hệ thống bảo mật của Lingora tuân thủ nguyên tắc **Phòng vệ kép (Dual-Presence Security Model)**: Kiểm soát tầng ứng dụng (Application AuthZ) mang lại trải nghiệm mượt mà và tối ưu hóa truy vấn; nhưng **chính sách bảo mật cấp dòng (Database RLS) tại PostgreSQL là chốt chặn bắt buộc tối hậu** bảo vệ dữ liệu chống lại mọi hành vi vượt quyền hay tấn công trực tiếp.
+Há»‡ thá»‘ng báº£o máº­t cá»§a Lingora tuÃ¢n thá»§ nguyÃªn táº¯c **PhÃ²ng vá»‡ kÃ©p (Dual-Presence Security Model)**: Kiá»ƒm soÃ¡t táº§ng á»©ng dá»¥ng (Application AuthZ) mang láº¡i tráº£i nghiá»‡m mÆ°á»£t mÃ  vÃ  tá»‘i Æ°u hÃ³a truy váº¥n; nhÆ°ng **chÃ­nh sÃ¡ch báº£o máº­t cáº¥p dÃ²ng (Database RLS) táº¡i PostgreSQL lÃ  chá»‘t cháº·n báº¯t buá»™c tá»‘i háº­u** báº£o vá»‡ dá»¯ liá»‡u chá»‘ng láº¡i má»i hÃ nh vi vÆ°á»£t quyá»n hay táº¥n cÃ´ng trá»±c tiáº¿p.
 
-### 6.1. Mô Hình 6 Vai Trò & Phân Bổ Quyền Hạn
+### 6.1. MÃ´ HÃ¬nh 6 Vai TrÃ² & PhÃ¢n Bá»• Quyá»n Háº¡n
 
 ```text
 +------------------------+---------------------------------------------------------------------------+
-| VAI TRÒ CHUẨN TẮC      | PHẠM VI TRUY CẬP VÀ QUYỀN HẠN HỆ THỐNG                                    |
+| VAI TRÃ’ CHUáº¨N Táº®C      | PHáº M VI TRUY Cáº¬P VÃ€ QUYá»€N Háº N Há»† THá»NG                                    |
 +------------------------+---------------------------------------------------------------------------+
-| 1. Learner             | Chỉ đọc/ghi tiến độ của chính mình (auth.uid() = user_id).                |
-|                        | Chỉ đọc các nội dung đã xuất bản (status = 'PUBLISHED').                  |
+| 1. Learner             | Chá»‰ Ä‘á»c/ghi tiáº¿n Ä‘á»™ cá»§a chÃ­nh mÃ¬nh (auth.uid() = user_id).                |
+|                        | Chá»‰ Ä‘á»c cÃ¡c ná»™i dung Ä‘Ã£ xuáº¥t báº£n (status = 'PUBLISHED').                  |
 +------------------------+---------------------------------------------------------------------------+
-| 2. Lesson Creator      | Đọc các bài học được phân công (assigned_creator_id = auth.uid()).        |
-|                        | Tạo/sửa bản thảo (DRAFT, CHANGES_REQUESTED); nộp duyệt (IN_REVIEW).       |
-|                        | CẤM: Phê duyệt bài học (bị từ chối phân quyền 403 ROLE_UNAUTHORIZED); xuất bản bài học ra học viên. |
+| 2. Lesson Creator      | Äá»c cÃ¡c bÃ i há»c Ä‘Æ°á»£c phÃ¢n cÃ´ng (assigned_creator_id = auth.uid()).        |
+|                        | Táº¡o/sá»­a báº£n tháº£o (DRAFT, CHANGES_REQUESTED); ná»™p duyá»‡t (IN_REVIEW).       |
+|                        | Cáº¤M: PhÃª duyá»‡t bÃ i há»c (bá»‹ tá»« chá»‘i phÃ¢n quyá»n 403 ROLE_UNAUTHORIZED); xuáº¥t báº£n bÃ i há»c ra há»c viÃªn. |
 +------------------------+---------------------------------------------------------------------------+
-| 3. Moderator           | Đọc hàng đợi kiểm duyệt (status = 'IN_REVIEW').                           |
-|                        | Phê duyệt (APPROVED) hoặc Yêu cầu sửa (CHANGES_REQUESTED).                |
-|                        | CẤM: Xuất bản bài học ra học viên (thuộc thẩm quyền dành riêng cho Org Manager). |
+| 3. Moderator           | Äá»c hÃ ng Ä‘á»£i kiá»ƒm duyá»‡t (status = 'IN_REVIEW').                           |
+|                        | PhÃª duyá»‡t (APPROVED) hoáº·c YÃªu cáº§u sá»­a (CHANGES_REQUESTED).                |
+|                        | Cáº¤M: Xuáº¥t báº£n bÃ i há»c ra há»c viÃªn (thuá»™c tháº©m quyá»n dÃ nh riÃªng cho Org Manager). |
 +------------------------+---------------------------------------------------------------------------+
-| 4. Org Manager         | Tạo kế hoạch bài học, phân công biên soạn (gán assigned_creator_id).       |
-|                        | Xuất bản bài học đã duyệt (chuyển APPROVED -> PUBLISHED).                 |
-|                        | Lưu trữ bài học (PUBLISHED -> ARCHIVED).                                  |
+| 4. Org Manager         | Táº¡o káº¿ hoáº¡ch bÃ i há»c, phÃ¢n cÃ´ng biÃªn soáº¡n (gÃ¡n assigned_creator_id).       |
+|                        | Xuáº¥t báº£n bÃ i há»c Ä‘Ã£ duyá»‡t (chuyá»ƒn APPROVED -> PUBLISHED).                 |
+|                        | LÆ°u trá»¯ bÃ i há»c (PUBLISHED -> ARCHIVED).                                  |
 +------------------------+---------------------------------------------------------------------------+
-| 5. Administrator       | Quản lý tài khoản, gán vai trò người dùng (ROLE_ASSIGNED).                |
-|                        | Tra cứu nhật ký kiểm toán hệ thống (AUDIT_LOG_INSPECTED).                  |
-|                        | Xuất bản khẩn cấp bài học đã APPROVED kèm lý do bắt buộc và ghi log kiểm toán.|
-| 6. Operations Staff    | Xử lý / điều phối support theo phạm vi được cấp (hỗ trợ vận hành,         |
-|                        | giải đáp thắc mắc học viên, tiếp nhận sự cố kỹ thuật).                    |
-|                        | CẤM: Can thiệp nội dung giáo trình, phê duyệt bài học, hoặc tra cứu       |
-|                        | nhật ký kiểm toán hệ thống (audit logs - thẩm quyền dành riêng cho Admin).|
+| 5. Administrator       | Quáº£n lÃ½ tÃ i khoáº£n, gÃ¡n vai trÃ² ngÆ°á»i dÃ¹ng (ROLE_ASSIGNED).                |
+|                        | Tra cá»©u nháº­t kÃ½ kiá»ƒm toÃ¡n há»‡ thá»‘ng (AUDIT_LOG_INSPECTED).                  |
+|                        | Xuáº¥t báº£n kháº©n cáº¥p bÃ i há»c Ä‘Ã£ APPROVED kÃ¨m lÃ½ do báº¯t buá»™c vÃ  ghi log kiá»ƒm toÃ¡n.|
+| 6. Operations Staff    | Xá»­ lÃ½ / Ä‘iá»u phá»‘i support theo pháº¡m vi Ä‘Æ°á»£c cáº¥p (há»— trá»£ váº­n hÃ nh,         |
+|                        | giáº£i Ä‘Ã¡p tháº¯c máº¯c há»c viÃªn, tiáº¿p nháº­n sá»± cá»‘ ká»¹ thuáº­t).                    |
+|                        | Cáº¤M: Can thiá»‡p ná»™i dung giÃ¡o trÃ¬nh, phÃª duyá»‡t bÃ i há»c, hoáº·c tra cá»©u       |
+|                        | nháº­t kÃ½ kiá»ƒm toÃ¡n há»‡ thá»‘ng (audit logs - tháº©m quyá»n dÃ nh riÃªng cho Admin).|
 +------------------------+---------------------------------------------------------------------------+
 ```
 
-### 6.2. Thiết Kế Ma Trận Chính Sách Supabase Row Level Security (RLS)
+### 6.2. Thiáº¿t Káº¿ Ma Tráº­n ChÃ­nh SÃ¡ch Supabase Row Level Security (RLS)
 
-Mọi bảng trong cơ sở dữ liệu đều bắt buộc phải kích hoạt RLS: `ALTER TABLE <table_name> ENABLE ROW LEVEL SECURITY;`.
+Má»i báº£ng trong cÆ¡ sá»Ÿ dá»¯ liá»‡u Ä‘á»u báº¯t buá»™c pháº£i kÃ­ch hoáº¡t RLS: `ALTER TABLE <table_name> ENABLE ROW LEVEL SECURITY;`.
 
-> **Yêu cầu an ninh phân quyền vai trò tại tầng RLS (RLS Role Authorization Requirement):**
+> **YÃªu cáº§u an ninh phÃ¢n quyá»n vai trÃ² táº¡i táº§ng RLS (RLS Role Authorization Requirement):**
 > *Role authorization must be secure without recursive/self-referencing RLS dependency.*
-> Tài liệu Kế hoạch Tổng thể không áp đặt trước cơ chế kỹ thuật cụ thể (không bắt buộc `SECURITY DEFINER` function hay `JWT claim`). Milestone M3.2 sẽ đánh giá và lựa chọn cơ chế thực thi tối ưu nhất trong quá trình cài đặt thực tế.
+> TÃ i liá»‡u Káº¿ hoáº¡ch Tá»•ng thá»ƒ khÃ´ng Ã¡p Ä‘áº·t trÆ°á»›c cÆ¡ cháº¿ ká»¹ thuáº­t cá»¥ thá»ƒ (khÃ´ng báº¯t buá»™c `SECURITY DEFINER` function hay `JWT claim`). Milestone M3.2 sáº½ Ä‘Ã¡nh giÃ¡ vÃ  lá»±a chá»n cÆ¡ cháº¿ thá»±c thi tá»‘i Æ°u nháº¥t trong quÃ¡ trÃ¬nh cÃ i Ä‘áº·t thá»±c táº¿.
 
 ```sql
--- Ví dụ minh họa kiến trúc chính sách RLS cho bảng tiến độ học tập (user_progress)
--- Đảm bảo cách ly tuyệt đối giữa các học viên: Người dùng A không thể đọc/sửa Người dùng B
+-- VÃ­ dá»¥ minh há»a kiáº¿n trÃºc chÃ­nh sÃ¡ch RLS cho báº£ng tiáº¿n Ä‘á»™ há»c táº­p (user_progress)
+-- Äáº£m báº£o cÃ¡ch ly tuyá»‡t Ä‘á»‘i giá»¯a cÃ¡c há»c viÃªn: NgÆ°á»i dÃ¹ng A khÃ´ng thá»ƒ Ä‘á»c/sá»­a NgÆ°á»i dÃ¹ng B
 CREATE POLICY "learner_manage_own_progress"
 ON user_progress
 FOR ALL
@@ -504,8 +504,8 @@ TO authenticated
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
--- Ví dụ minh họa chính sách RLS cho bảng phiên bản bài học (lesson_revisions)
--- Học viên chỉ đọc bài đã xuất bản
+-- VÃ­ dá»¥ minh há»a chÃ­nh sÃ¡ch RLS cho báº£ng phiÃªn báº£n bÃ i há»c (lesson_revisions)
+-- Há»c viÃªn chá»‰ Ä‘á»c bÃ i Ä‘Ã£ xuáº¥t báº£n
 CREATE POLICY "learner_read_published_revisions"
 ON lesson_revisions
 FOR SELECT
@@ -515,7 +515,7 @@ USING (
   AND EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'LEARNER')
 );
 
--- Creator chỉ xem và sửa bài thảo được phân công cho chính mình
+-- Creator chá»‰ xem vÃ  sá»­a bÃ i tháº£o Ä‘Æ°á»£c phÃ¢n cÃ´ng cho chÃ­nh mÃ¬nh
 CREATE POLICY "creator_manage_assigned_revisions"
 ON lesson_revisions
 FOR ALL
@@ -531,35 +531,35 @@ WITH CHECK (
 );
 ```
 
-### 6.3. Quy Tắc Chặn Vi Phạm Phân Tách Nhiệm Vụ (SoD Enforcement)
-Các quy tắc phân tách nhiệm vụ được bảo vệ bằng nguyên tắc phòng vệ kép (Dual-Presence Security): Tầng ứng dụng (BFF) kiểm tra vai trò người dùng và trả về mã lỗi HTTP 403 ngữ nghĩa; đồng thời Tầng cơ sở dữ liệu (RLS / Triggers) độc lập từ chối giao dịch trái phép ngay cả khi tầng ứng dụng bị vượt qua.
+### 6.3. Quy Táº¯c Cháº·n Vi Pháº¡m PhÃ¢n TÃ¡ch Nhiá»‡m Vá»¥ (SoD Enforcement)
+CÃ¡c quy táº¯c phÃ¢n tÃ¡ch nhiá»‡m vá»¥ Ä‘Æ°á»£c báº£o vá»‡ báº±ng nguyÃªn táº¯c phÃ²ng vá»‡ kÃ©p (Dual-Presence Security): Táº§ng á»©ng dá»¥ng (BFF) kiá»ƒm tra vai trÃ² ngÆ°á»i dÃ¹ng vÃ  tráº£ vá» mÃ£ lá»—i HTTP 403 ngá»¯ nghÄ©a; Ä‘á»“ng thá»i Táº§ng cÆ¡ sá»Ÿ dá»¯ liá»‡u (RLS / Triggers) Ä‘á»™c láº­p tá»« chá»‘i giao dá»‹ch trÃ¡i phÃ©p ngay cáº£ khi táº§ng á»©ng dá»¥ng bá»‹ vÆ°á»£t qua.
 
-1. **Lesson Creator Cấm Phê Duyệt Bài Học (Creator Cannot Approve):**
-   - **Tầng ứng dụng (BFF):** Do mô hình áp dụng 1 vai trò duy nhất trên mỗi tài khoản (`profiles.role`), Creator và Moderator là 2 danh tính độc lập. Nếu người dùng có vai trò `LESSON_CREATOR` gửi yêu cầu duyệt bài học (`status = 'APPROVED'`) $\rightarrow$ Bị từ chối phân quyền với mã lỗi `403 Forbidden` / `ROLE_UNAUTHORIZED` (không tồn tại ca "self-review" vì tài khoản Creator không thể mang vai trò Moderator).
-   - **Mô hình tác tử đặc quyền (Conceptual Privileged Operation):**
+1. **Lesson Creator Cáº¥m PhÃª Duyá»‡t BÃ i Há»c (Creator Cannot Approve):**
+   - **Táº§ng á»©ng dá»¥ng (BFF):** Do mÃ´ hÃ¬nh Ã¡p dá»¥ng 1 vai trÃ² duy nháº¥t trÃªn má»—i tÃ i khoáº£n (`profiles.role`), Creator vÃ  Moderator lÃ  2 danh tÃ­nh Ä‘á»™c láº­p. Náº¿u ngÆ°á»i dÃ¹ng cÃ³ vai trÃ² `LESSON_CREATOR` gá»­i yÃªu cáº§u duyá»‡t bÃ i há»c (`status = 'APPROVED'`) $\rightarrow$ Bá»‹ tá»« chá»‘i phÃ¢n quyá»n vá»›i mÃ£ lá»—i `403 Forbidden` / `ROLE_UNAUTHORIZED` (khÃ´ng tá»“n táº¡i ca "self-review" vÃ¬ tÃ i khoáº£n Creator khÃ´ng thá»ƒ mang vai trÃ² Moderator).
+   - **MÃ´ hÃ¬nh tÃ¡c tá»­ Ä‘áº·c quyá»n (Conceptual Privileged Operation):**
      ```text
      privileged operation (e.g. approve / publish)
-     → explicit actor identity (p_actor_id UUID: TARGET DESIGN / PROPOSED IMPLEMENTATION DETAIL)
-     → role authorization check (SELECT role FROM profiles WHERE id = p_actor_id)
-     → state transition (reject if actor.role = 'LESSON_CREATOR')
-     → audit record (append-only log entry)
+     â†’ explicit actor identity (p_actor_id UUID: TARGET DESIGN / PROPOSED IMPLEMENTATION DETAIL)
+     â†’ role authorization check (SELECT role FROM profiles WHERE id = p_actor_id)
+     â†’ state transition (reject if actor.role = 'LESSON_CREATOR')
+     â†’ audit record (append-only log entry)
      ```
-2. **Moderator Cấm Xuất Bản Bài Học Ra Học Viên (Moderator Cannot Publish):**
-   - **Tầng ứng dụng (BFF):** Nếu người dùng có vai trò `MODERATOR` gửi yêu cầu chuyển trạng thái sang `PUBLISHED` $\rightarrow$ Bị từ chối với mã lỗi `403 Forbidden`.
-   - **Tầng DB RLS:** Chính sách RLS chỉ cho phép vai trò `ORGANIZATIONAL_MANAGER` và `ADMINISTRATOR` thực thi lệnh chuyển trạng thái sang `PUBLISHED`.
-3. **Organizational Manager Cấm Phê Duyệt Bài Học (Manager Cannot Approve):**
-   - **Tầng ứng dụng (BFF):** Nếu người dùng có vai trò `ORGANIZATIONAL_MANAGER` gửi yêu cầu duyệt bài $\rightarrow$ Bị từ chối với mã lỗi `403 Forbidden` (thẩm quyền phê duyệt chuyên môn dành riêng cho `MODERATOR`).
-4. **Ràng Buộc Nghiêm Ngặt Khi Admin Xuất Bản Khẩn Cấp:**
-   - **Tầng ứng dụng (BFF):**
-     - Kịch bản A: Nếu bài học đang ở trạng thái `IN_REVIEW` hoặc chưa qua kiểm duyệt $\rightarrow$ Từ chối với mã lỗi `403 Forbidden` (`403 EMERGENCY_UNAPPROVED`).
-     - Kịch bản B: Nếu bài học đã `APPROVED` nhưng trường lý do giải trình `reason` rỗng hoặc null $\rightarrow$ Từ chối với mã lỗi `403 Forbidden` (`403 MISSING_JUSTIFICATION`).
-     - Kịch bản C: Bài học đã `APPROVED` kèm `reason` hợp lệ $\rightarrow$ Chấp nhận chuyển sang `PUBLISHED`, đồng thời phát thải bản ghi kiểm toán chuẩn tắc `CONTENT_EMERGENCY_PUB` vào bảng `audit_logs`.
+2. **Moderator Cáº¥m Xuáº¥t Báº£n BÃ i Há»c Ra Há»c ViÃªn (Moderator Cannot Publish):**
+   - **Táº§ng á»©ng dá»¥ng (BFF):** Náº¿u ngÆ°á»i dÃ¹ng cÃ³ vai trÃ² `MODERATOR` gá»­i yÃªu cáº§u chuyá»ƒn tráº¡ng thÃ¡i sang `PUBLISHED` $\rightarrow$ Bá»‹ tá»« chá»‘i vá»›i mÃ£ lá»—i `403 Forbidden`.
+   - **Táº§ng DB RLS:** ChÃ­nh sÃ¡ch RLS chá»‰ cho phÃ©p vai trÃ² `ORGANIZATIONAL_MANAGER` vÃ  `ADMINISTRATOR` thá»±c thi lá»‡nh chuyá»ƒn tráº¡ng thÃ¡i sang `PUBLISHED`.
+3. **Organizational Manager Cáº¥m PhÃª Duyá»‡t BÃ i Há»c (Manager Cannot Approve):**
+   - **Táº§ng á»©ng dá»¥ng (BFF):** Náº¿u ngÆ°á»i dÃ¹ng cÃ³ vai trÃ² `ORGANIZATIONAL_MANAGER` gá»­i yÃªu cáº§u duyá»‡t bÃ i $\rightarrow$ Bá»‹ tá»« chá»‘i vá»›i mÃ£ lá»—i `403 Forbidden` (tháº©m quyá»n phÃª duyá»‡t chuyÃªn mÃ´n dÃ nh riÃªng cho `MODERATOR`).
+4. **RÃ ng Buá»™c NghiÃªm Ngáº·t Khi Admin Xuáº¥t Báº£n Kháº©n Cáº¥p:**
+   - **Táº§ng á»©ng dá»¥ng (BFF):**
+     - Ká»‹ch báº£n A: Náº¿u bÃ i há»c Ä‘ang á»Ÿ tráº¡ng thÃ¡i `IN_REVIEW` hoáº·c chÆ°a qua kiá»ƒm duyá»‡t $\rightarrow$ Tá»« chá»‘i vá»›i mÃ£ lá»—i `403 Forbidden` (`403 EMERGENCY_UNAPPROVED`).
+     - Ká»‹ch báº£n B: Náº¿u bÃ i há»c Ä‘Ã£ `APPROVED` nhÆ°ng trÆ°á»ng lÃ½ do giáº£i trÃ¬nh `reason` rá»—ng hoáº·c null $\rightarrow$ Tá»« chá»‘i vá»›i mÃ£ lá»—i `403 Forbidden` (`403 MISSING_JUSTIFICATION`).
+     - Ká»‹ch báº£n C: BÃ i há»c Ä‘Ã£ `APPROVED` kÃ¨m `reason` há»£p lá»‡ $\rightarrow$ Cháº¥p nháº­n chuyá»ƒn sang `PUBLISHED`, Ä‘á»“ng thá»i phÃ¡t tháº£i báº£n ghi kiá»ƒm toÃ¡n chuáº©n táº¯c `CONTENT_EMERGENCY_PUB` vÃ o báº£ng `audit_logs`.
 
 ---
 
-## 7. KẾ HOẠCH TRIỂN KHAI VÒNG ĐỜI HỌC VIÊN (LEARNER CORE ENGINE)
+## 7. Káº¾ HOáº CH TRIá»‚N KHAI VÃ’NG Äá»œI Há»ŒC VIÃŠN (LEARNER CORE ENGINE)
 
-Phân hệ học viên hiện thực hóa trọn vẹn **Vòng lặp học tập khép kín 9 bước (Closed-Loop Learner Cycle)**, đảm bảo tính liên tục, tính công bằng và sự bảo vệ dữ liệu toàn diện.
+PhÃ¢n há»‡ há»c viÃªn hiá»‡n thá»±c hÃ³a trá»n váº¹n **VÃ²ng láº·p há»c táº­p khÃ©p kÃ­n 9 bÆ°á»›c (Closed-Loop Learner Cycle)**, Ä‘áº£m báº£o tÃ­nh liÃªn tá»¥c, tÃ­nh cÃ´ng báº±ng vÃ  sá»± báº£o vá»‡ dá»¯ liá»‡u toÃ n diá»‡n.
 
 ```text
 +---------------------------------------------------------------------------------------------------+
@@ -568,63 +568,63 @@ Phân hệ học viên hiện thực hóa trọn vẹn **Vòng lặp học tập
 | [1. SIGN IN]                                                                                      |
 |       |                                                                                           |
 |       v                                                                                           |
-| [2. STARTING POINT CHECK] ──(Unverified)──> [Placement Test / Skip] ──> [Gán Starting Unit 1..6] |
+| [2. STARTING POINT CHECK] â”€â”€(Unverified)â”€â”€> [Placement Test / Skip] â”€â”€> [GÃ¡n Starting Unit 1..6] |
 |       |                                                                          |                |
-|       +───────────────────────────(Đã xác thực)──────────────────────────────────+                |
+|       +â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€(ÄÃ£ xÃ¡c thá»±c)â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€+                |
 |       v                                                                                           |
-| [3. LEARN (Curriculum)] ──> [Chọn Unit khả dụng (4/4 Published)] ──> [Chọn Lesson]                |
+| [3. LEARN (Curriculum)] â”€â”€> [Chá»n Unit kháº£ dá»¥ng (4/4 Published)] â”€â”€> [Chá»n Lesson]                |
 |       |                                                                                           |
 |       v                                                                                           |
-| [4. LESSON CONTENT VIEWER] ──> [Xem từ vựng, audio phát âm, ví dụ, tóm tắt ngữ pháp bài học]     |
+| [4. LESSON CONTENT VIEWER] â”€â”€> [Xem tá»« vá»±ng, audio phÃ¡t Ã¢m, vÃ­ dá»¥, tÃ³m táº¯t ngá»¯ phÃ¡p bÃ i há»c]     |
 |       |                                                                                           |
 |       v                                                                                           |
-| [5. START EXERCISES] ──> [Tương tác 5 dạng: MCQ, FILL, REORDER, LISTENING, GRAMMAR]               |
+| [5. START EXERCISES] â”€â”€> [TÆ°Æ¡ng tÃ¡c 5 dáº¡ng: MCQ, FILL, REORDER, LISTENING, GRAMMAR]               |
 |       |                                                                                           |
 |       v                                                                                           |
-| [6. FEEDBACK & SCORING] ──> [Phản hồi đúng/sai, giải thích chi tiết, chấm điểm cơ sở]             |
+| [6. FEEDBACK & SCORING] â”€â”€> [Pháº£n há»“i Ä‘Ãºng/sai, giáº£i thÃ­ch chi tiáº¿t, cháº¥m Ä‘iá»ƒm cÆ¡ sá»Ÿ]             |
 |       |                                                                                           |
 |       v                                                                                           |
-| [7. CONTROLLED RETRY] ──(Làm sai & còn lượt)──> [max(1, floor(N*0.10)) / Tối đa 70% điểm]        |
+| [7. CONTROLLED RETRY] â”€â”€(LÃ m sai & cÃ²n lÆ°á»£t)â”€â”€> [max(1, floor(N*0.10)) / Tá»‘i Ä‘a 70% Ä‘iá»ƒm]        |
 |       |                                                                                           |
 |       v                                                                                           |
-| [8. PROGRESS PERSISTENCE] ──> [Cập nhật UserProgress nguyên tử: status, score, completedAt]       |
+| [8. PROGRESS PERSISTENCE] â”€â”€> [Cáº­p nháº­t UserProgress nguyÃªn tá»­: status, score, completedAt]       |
 |       |                                                                                           |
 |       v                                                                                           |
-| [9. SRS PRACTICE QUEUE] ──> [Đẩy từ vựng vào hàng đợi ôn tập ngắt quãng Policy B: 1,3,7,14,30]    |
+| [9. SRS PRACTICE QUEUE] â”€â”€> [Äáº©y tá»« vá»±ng vÃ o hÃ ng Ä‘á»£i Ã´n táº­p ngáº¯t quÃ£ng Policy B: 1,3,7,14,30]    |
 |       |                                                                                           |
 |       v                                                                                           |
-| [10. STREAK EVALUATION] ──> [Tính toán chuỗi ngày học theo múi giờ IANA, cập nhật kỷ lục]        |
+| [10. STREAK EVALUATION] â”€â”€> [TÃ­nh toÃ¡n chuá»—i ngÃ y há»c theo mÃºi giá» IANA, cáº­p nháº­t ká»· lá»¥c]        |
 +---------------------------------------------------------------------------------------------------+
 ```
 
-### Chi Tiết Kỹ Thuật Từng Bước Trong Vòng Lặp Học Viên:
+### Chi Tiáº¿t Ká»¹ Thuáº­t Tá»«ng BÆ°á»›c Trong VÃ²ng Láº·p Há»c ViÃªn:
 
-| Bước | Tên Bước | Nguồn Chân Lý (Source of Truth) | Trách Nhiệm API / BFF | Trách Nhiệm Tầng Nghiệp Vụ (Domain) | Lưu Trữ Cơ Sở Dữ Liệu | Kịch Bản Thất Bại & Phòng Vệ | Kịch Bản Kiểm Thử |
+| BÆ°á»›c | TÃªn BÆ°á»›c | Nguá»“n ChÃ¢n LÃ½ (Source of Truth) | TrÃ¡ch Nhiá»‡m API / BFF | TrÃ¡ch Nhiá»‡m Táº§ng Nghiá»‡p Vá»¥ (Domain) | LÆ°u Trá»¯ CÆ¡ Sá»Ÿ Dá»¯ Liá»‡u | Ká»‹ch Báº£n Tháº¥t Báº¡i & PhÃ²ng Vá»‡ | Ká»‹ch Báº£n Kiá»ƒm Thá»­ |
 |---|---|---|---|---|---|---|---|
-| **1** | **Sign In** | Supabase GoTrue Auth | Xử lý phiên cookie HttpOnly, xác thực JWT | `COMP-DOM-01`: Đọc hồ sơ người dùng, phân loại vai trò | Đọc bảng `profiles`, `auth.users` | Token hết hạn / sai mật khẩu $\rightarrow$ Trả về mã lỗi 401 | `test_auth_signin` |
-| **2** | **Starting Point** | `profiles.verified_starting_unit` | Điều hướng giao diện dựa trên cờ trạng thái kiểm định | `COMP-DOM-03`: Kiểm tra học viên mới, kích hoạt chẩn đoán nếu chưa làm | Đọc `profiles.verified_starting_unit`, `assessment_results` | Mất kết nối DB $\rightarrow$ Mặc định gán Unit 1 an toàn | `test_placement_routing` |
-| **3** | **Learn (Curriculum)** | Bảng `units` & `lesson_revisions` | Lấy danh sách Unit và Lesson hiển thị cho học viên | `COMP-DOM-02`: Áp dụng luật Unit 4/4 Published; lọc bài khóa | Truy vấn `units` JOIN `lesson_revisions` qua RLS | Cố tình truy cập bài chưa xuất bản hoặc bài thuộc Unit chưa đủ 4/4 Published $\rightarrow$ Chặn 404/403 (`UI hiding != Authorization`) | `test_curriculum_visible`, `test_direct_lesson_access_denial` |
-| **4** | **Lesson Content Viewer** | `lesson_revisions`, `vocabularies`, `lesson_vocabularies` | Tải nội dung học liệu bài học (từ vựng, phiên âm, giải nghĩa tiếng Việt, câu ví dụ, audio MP3 chuẩn qua Storage RLS, tóm tắt ngữ pháp) | `COMP-DOM-02` / `COMP-DOM-05`: Chuẩn bị giao diện tiếp thu kiến thức trước khi làm bài tập; không tạo nội dung AI | Đọc `lesson_revisions`, `vocabularies` qua RLS | Lỗi tải audio $\rightarrow$ Vẫn hiển thị text/nghĩa/phiên âm an toàn; không chặn đọc bài | `test_lesson_content_view` |
-| **5** | **Start Exercises** | Bảng `exercises` (Unified Model) | Tải nội dung bài tập theo thứ tự `order_index` (giấu barem đáp án) | `COMP-DOM-05`: Khởi tạo phiên làm bài học, tính số bài tập N | Đọc bảng `exercises` theo `lesson_revision_id` (không trả barem đáp án) | Bài tập lỗi cấu trúc payload $\rightarrow$ Ghi log, bỏ qua câu | `test_exercise_render` |
-| **6** | **Feedback** | Barem chấm điểm máy chủ (`Learner payload != grading secret`) | Tiếp nhận câu trả lời, so khớp đáp án | `COMP-DOM-05`: So khớp chính xác trên server; tính điểm thô bài tập | Lưu trạng thái phiên làm bài có thẩm quyền từ máy chủ (chốt tại M3.1) | Gian lận gửi đáp án sai cấu trúc $\rightarrow$ 400 Invalid | `test_exercise_eval` |
-| **7** | **Controlled Retry** | Luật D7: `max(1, floor(N*0.10))` | Tiếp nhận yêu cầu làm lại câu sai trong lượt học | `COMP-DOM-05`: Kiểm tra hạn mức lượt; áp trần 70% điểm | Quản lý trạng thái attempt/retry state kiên định từ máy chủ (chốt tại M3.1) | Vượt quá hạn mức làm lại $\rightarrow$ 403 RETRY_ALLOWANCE_EXCEEDED | `TEST-FRAME-RETRY-ALLOWANCE` |
-| **8** | **Progress** | Bảng `user_progress` | Gửi gói tổng kết bài học sau khi hoàn thành | `COMP-DOM-02`: Đánh giá hoàn thành bài học; tính điểm cuối | `user_progress`: `COMPLETED`, `score`, `completed_at` | Rớt mạng khi nộp điểm $\rightarrow$ Client tự động thử lại có idempotent key | `test_progress_atomic` |
-| **9** | **SRS Review** | Bảng `user_vocab_srs`, Policy B | Lấy hàng đợi từ vựng đến hạn ôn tập trong ngày | `COMP-DOM-04`: Gọi RPC `record_review` cập nhật khoảng cách ngày | Bảng `user_vocab_srs`, `review_logs` qua RPC | Lỗi RPC $\rightarrow$ Giữ nguyên trạng thái thẻ, không làm mất dữ liệu | `TEST-FRAME-SRS-POLICY-B` |
-| **10**| **Streak** | `profiles.last_qualifying_activity_date`| Đọc và hiển thị số ngày học liên tục | `COMP-DOM-02`: Quy đổi giờ UTC sang múi giờ IANA của user | Cập nhật `profiles.streak_count`, `last_qualifying_activity_date`| Lệch múi giờ client $\rightarrow$ Luôn dùng thư viện IANA chuẩn trên server | `TEST-FRAME-STREAK-TIMEZONE` |
+| **1** | **Sign In** | Supabase GoTrue Auth | Xá»­ lÃ½ phiÃªn cookie HttpOnly, xÃ¡c thá»±c JWT | `COMP-DOM-01`: Äá»c há»“ sÆ¡ ngÆ°á»i dÃ¹ng, phÃ¢n loáº¡i vai trÃ² | Äá»c báº£ng `profiles`, `auth.users` | Token háº¿t háº¡n / sai máº­t kháº©u $\rightarrow$ Tráº£ vá» mÃ£ lá»—i 401 | `test_auth_signin` |
+| **2** | **Starting Point** | `profiles.verified_starting_unit` | Äiá»u hÆ°á»›ng giao diá»‡n dá»±a trÃªn cá» tráº¡ng thÃ¡i kiá»ƒm Ä‘á»‹nh | `COMP-DOM-03`: Kiá»ƒm tra há»c viÃªn má»›i, kÃ­ch hoáº¡t cháº©n Ä‘oÃ¡n náº¿u chÆ°a lÃ m | Äá»c `profiles.verified_starting_unit`, `assessment_results` | Máº¥t káº¿t ná»‘i DB $\rightarrow$ Máº·c Ä‘á»‹nh gÃ¡n Unit 1 an toÃ n | `test_placement_routing` |
+| **3** | **Learn (Curriculum)** | Báº£ng `units` & `lesson_revisions` | Láº¥y danh sÃ¡ch Unit vÃ  Lesson hiá»ƒn thá»‹ cho há»c viÃªn | `COMP-DOM-02`: Ãp dá»¥ng luáº­t Unit 4/4 Published; lá»c bÃ i khÃ³a | Truy váº¥n `units` JOIN `lesson_revisions` qua RLS | Cá»‘ tÃ¬nh truy cáº­p bÃ i chÆ°a xuáº¥t báº£n hoáº·c bÃ i thuá»™c Unit chÆ°a Ä‘á»§ 4/4 Published $\rightarrow$ Cháº·n 404/403 (`UI hiding != Authorization`) | `test_curriculum_visible`, `test_direct_lesson_access_denial` |
+| **4** | **Lesson Content Viewer** | `lesson_revisions`, `vocabularies`, `lesson_vocabularies` | Táº£i ná»™i dung há»c liá»‡u bÃ i há»c (tá»« vá»±ng, phiÃªn Ã¢m, giáº£i nghÄ©a tiáº¿ng Viá»‡t, cÃ¢u vÃ­ dá»¥, audio MP3 chuáº©n qua Storage RLS, tÃ³m táº¯t ngá»¯ phÃ¡p) | `COMP-DOM-02` / `COMP-DOM-05`: Chuáº©n bá»‹ giao diá»‡n tiáº¿p thu kiáº¿n thá»©c trÆ°á»›c khi lÃ m bÃ i táº­p; khÃ´ng táº¡o ná»™i dung AI | Äá»c `lesson_revisions`, `vocabularies` qua RLS | Lá»—i táº£i audio $\rightarrow$ Váº«n hiá»ƒn thá»‹ text/nghÄ©a/phiÃªn Ã¢m an toÃ n; khÃ´ng cháº·n Ä‘á»c bÃ i | `test_lesson_content_view` |
+| **5** | **Start Exercises** | Báº£ng `exercises` (Unified Model) | Táº£i ná»™i dung bÃ i táº­p theo thá»© tá»± `order_index` (giáº¥u barem Ä‘Ã¡p Ã¡n) | `COMP-DOM-05`: Khá»Ÿi táº¡o phiÃªn lÃ m bÃ i há»c, tÃ­nh sá»‘ bÃ i táº­p N | Äá»c báº£ng `exercises` theo `lesson_revision_id` (khÃ´ng tráº£ barem Ä‘Ã¡p Ã¡n) | BÃ i táº­p lá»—i cáº¥u trÃºc payload $\rightarrow$ Ghi log, bá» qua cÃ¢u | `test_exercise_render` |
+| **6** | **Feedback** | Barem cháº¥m Ä‘iá»ƒm mÃ¡y chá»§ (`Learner payload != grading secret`) | Tiáº¿p nháº­n cÃ¢u tráº£ lá»i, so khá»›p Ä‘Ã¡p Ã¡n | `COMP-DOM-05`: So khá»›p chÃ­nh xÃ¡c trÃªn server; tÃ­nh Ä‘iá»ƒm thÃ´ bÃ i táº­p | LÆ°u tráº¡ng thÃ¡i phiÃªn lÃ m bÃ i cÃ³ tháº©m quyá»n tá»« mÃ¡y chá»§ (chá»‘t táº¡i M3.1) | Gian láº­n gá»­i Ä‘Ã¡p Ã¡n sai cáº¥u trÃºc $\rightarrow$ 400 Invalid | `test_exercise_eval` |
+| **7** | **Controlled Retry** | Luáº­t D7: `max(1, floor(N*0.10))` | Tiáº¿p nháº­n yÃªu cáº§u lÃ m láº¡i cÃ¢u sai trong lÆ°á»£t há»c | `COMP-DOM-05`: Kiá»ƒm tra háº¡n má»©c lÆ°á»£t; Ã¡p tráº§n 70% Ä‘iá»ƒm | Quáº£n lÃ½ tráº¡ng thÃ¡i attempt/retry state kiÃªn Ä‘á»‹nh tá»« mÃ¡y chá»§ (chá»‘t táº¡i M3.1) | VÆ°á»£t quÃ¡ háº¡n má»©c lÃ m láº¡i $\rightarrow$ 403 RETRY_ALLOWANCE_EXCEEDED | `TEST-FRAME-RETRY-ALLOWANCE` |
+| **8** | **Progress** | Báº£ng `user_progress` | Gá»­i gÃ³i tá»•ng káº¿t bÃ i há»c sau khi hoÃ n thÃ nh | `COMP-DOM-02`: ÄÃ¡nh giÃ¡ hoÃ n thÃ nh bÃ i há»c; tÃ­nh Ä‘iá»ƒm cuá»‘i | `user_progress`: `COMPLETED`, `score`, `completed_at` | Rá»›t máº¡ng khi ná»™p Ä‘iá»ƒm $\rightarrow$ Client tá»± Ä‘á»™ng thá»­ láº¡i cÃ³ idempotent key | `test_progress_atomic` |
+| **9** | **SRS Review** | Báº£ng `user_vocab_srs`, Policy B | Láº¥y hÃ ng Ä‘á»£i tá»« vá»±ng Ä‘áº¿n háº¡n Ã´n táº­p trong ngÃ y | `COMP-DOM-04`: Gá»i RPC `record_review` cáº­p nháº­t khoáº£ng cÃ¡ch ngÃ y | Báº£ng `user_vocab_srs`, `review_logs` qua RPC | Lá»—i RPC $\rightarrow$ Giá»¯ nguyÃªn tráº¡ng thÃ¡i tháº», khÃ´ng lÃ m máº¥t dá»¯ liá»‡u | `TEST-FRAME-SRS-POLICY-B` |
+| **10**| **Streak** | `profiles.last_qualifying_activity_date`| Äá»c vÃ  hiá»ƒn thá»‹ sá»‘ ngÃ y há»c liÃªn tá»¥c | `COMP-DOM-02`: Quy Ä‘á»•i giá» UTC sang mÃºi giá» IANA cá»§a user | Cáº­p nháº­t `profiles.streak_count`, `last_qualifying_activity_date`| Lá»‡ch mÃºi giá» client $\rightarrow$ LuÃ´n dÃ¹ng thÆ° viá»‡n IANA chuáº©n trÃªn server | `TEST-FRAME-STREAK-TIMEZONE` |
 
 
 ---
 
-## 8. KẾ HOẠCH TRIỂN KHAI ĐÁNH GIÁ NĂNG LỰC & ĐIỂM XUẤT PHÁT (ASSESSMENT)
+## 8. Káº¾ HOáº CH TRIá»‚N KHAI ÄÃNH GIÃ NÄ‚NG Lá»°C & ÄIá»‚M XUáº¤T PHÃT (ASSESSMENT)
 
-Phân hệ đánh giá năng lực bảo toàn tuyệt đối bất biến: **Tự khai không phải là năng lực kiểm định (`Self-report != verified proficiency`)** và **Điểm xuất phát giáo trình không phải là chứng chỉ năng lực CEFR**.
+PhÃ¢n há»‡ Ä‘Ã¡nh giÃ¡ nÄƒng lá»±c báº£o toÃ n tuyá»‡t Ä‘á»‘i báº¥t biáº¿n: **Tá»± khai khÃ´ng pháº£i lÃ  nÄƒng lá»±c kiá»ƒm Ä‘á»‹nh (`Self-report != verified proficiency`)** vÃ  **Äiá»ƒm xuáº¥t phÃ¡t giÃ¡o trÃ¬nh khÃ´ng pháº£i lÃ  chá»©ng chá»‰ nÄƒng lá»±c CEFR**.
 
-### 8.1. Quy Chuẩn Bài Kiểm Tra Chẩn Đoán (Placement / Diagnostic Test)
-- **Quy mô bộ câu hỏi & Thang điểm (Human-Selected Design Decision):**
-  - **Số lượng câu hỏi bài chẩn đoán:** Chính thức chốt **30 câu hỏi** (`Diagnostic item count = 30`), phân bổ qua 4 khía cạnh cốt lõi: Vocabulary, Grammar, Reading và Listening. Không sử dụng dải câu hỏi mở `~25–30` câu.
-  - **Thang điểm thô (Raw Score):** Áp dụng nguyên tắc **1 câu trả lời đúng = 1 điểm thô** (`1 correct answer = 1 raw point`), dải điểm số thô nằm trong khoảng $0 \le \text{Raw Score} \le 30$. Tuyệt đối không đề xuất công thức chuẩn hóa điểm số tuyến tính.
-  - **Lưu ý đồng bộ tài liệu:** *MASTER PLAN: 30 questions = HUMAN-SELECTED DESIGN DECISION. CANONICAL M2 DOCUMENTS: still require formal status synchronization before/with the next approved design update.* Không giả định canonical `docs/*` đã tự động cập nhật và không tạo ADR mới trong task này.
-- **Thuật toán phân lớp Mapping A:** Điểm số thô được ánh xạ tất định sang Đơn vị xuất phát giáo trình (Starting Unit 1..6) theo bảng quy chuẩn đã được phê duyệt:
+### 8.1. Quy Chuáº©n BÃ i Kiá»ƒm Tra Cháº©n ÄoÃ¡n (Placement / Diagnostic Test)
+- **Quy mÃ´ bá»™ cÃ¢u há»i & Thang Ä‘iá»ƒm (Human-Selected Design Decision):**
+  - **Sá»‘ lÆ°á»£ng cÃ¢u há»i bÃ i cháº©n Ä‘oÃ¡n:** ChÃ­nh thá»©c chá»‘t **30 cÃ¢u há»i** (`Diagnostic item count = 30`), phÃ¢n bá»• qua 4 khÃ­a cáº¡nh cá»‘t lÃµi: Vocabulary, Grammar, Reading vÃ  Listening. KhÃ´ng sá»­ dá»¥ng dáº£i cÃ¢u há»i má»Ÿ `~25â€“30` cÃ¢u.
+  - **Thang Ä‘iá»ƒm thÃ´ (Raw Score):** Ãp dá»¥ng nguyÃªn táº¯c **1 cÃ¢u tráº£ lá»i Ä‘Ãºng = 1 Ä‘iá»ƒm thÃ´** (`1 correct answer = 1 raw point`), dáº£i Ä‘iá»ƒm sá»‘ thÃ´ náº±m trong khoáº£ng $0 \le \text{Raw Score} \le 30$. Tuyá»‡t Ä‘á»‘i khÃ´ng Ä‘á» xuáº¥t cÃ´ng thá»©c chuáº©n hÃ³a Ä‘iá»ƒm sá»‘ tuyáº¿n tÃ­nh.
+  - **LÆ°u Ã½ Ä‘á»“ng bá»™ tÃ i liá»‡u:** *MASTER PLAN: 30 questions = HUMAN-SELECTED DESIGN DECISION. CANONICAL M2 DOCUMENTS: still require formal status synchronization before/with the next approved design update.* KhÃ´ng giáº£ Ä‘á»‹nh canonical `docs/*` Ä‘Ã£ tá»± Ä‘á»™ng cáº­p nháº­t vÃ  khÃ´ng táº¡o ADR má»›i trong task nÃ y.
+- **Thuáº­t toÃ¡n phÃ¢n lá»›p Mapping A:** Äiá»ƒm sá»‘ thÃ´ Ä‘Æ°á»£c Ã¡nh xáº¡ táº¥t Ä‘á»‹nh sang ÄÆ¡n vá»‹ xuáº¥t phÃ¡t giÃ¡o trÃ¬nh (Starting Unit 1..6) theo báº£ng quy chuáº©n Ä‘Ã£ Ä‘Æ°á»£c phÃª duyá»‡t:
   - $\text{Score } 0 - 7 \rightarrow \textbf{Unit 1}$
   - $\text{Score } 8 - 12 \rightarrow \textbf{Unit 2}$
   - $\text{Score } 13 - 17 \rightarrow \textbf{Unit 3}$
@@ -632,149 +632,149 @@ Phân hệ đánh giá năng lực bảo toàn tuyệt đối bất biến: **T�
   - $\text{Score } 23 - 26 \rightarrow \textbf{Unit 5}$
   - $\text{Score } 27 - 30 \rightarrow \textbf{Unit 6}$
 
-### 8.2. Nhánh Bỏ Qua Chẩn Đoán (Branch A: Skip Diagnostic)
-- Khi học viên chọn "Bỏ qua bài kiểm tra chẩn đoán":
-  - Hệ thống tự động gán `startingUnit = 1` và trạng thái năng lực là `UNVERIFIED`.
-  - **Bất biến số lượng bản ghi:** Tuyệt đối phát sinh **đúng 0 bản ghi `AssessmentResult`** và **đúng 0 bản ghi `SkillProfile`**.
-  - Hồ sơ `profiles` chỉ cập nhật trường `verified_starting_unit = 1` với đánh dấu chưa qua kiểm định.
+### 8.2. NhÃ¡nh Bá» Qua Cháº©n ÄoÃ¡n (Branch A: Skip Diagnostic)
+- Khi há»c viÃªn chá»n "Bá» qua bÃ i kiá»ƒm tra cháº©n Ä‘oÃ¡n":
+  - Há»‡ thá»‘ng tá»± Ä‘á»™ng gÃ¡n `startingUnit = 1` vÃ  tráº¡ng thÃ¡i nÄƒng lá»±c lÃ  `UNVERIFIED`.
+  - **Báº¥t biáº¿n sá»‘ lÆ°á»£ng báº£n ghi:** Tuyá»‡t Ä‘á»‘i phÃ¡t sinh **Ä‘Ãºng 0 báº£n ghi `AssessmentResult`** vÃ  **Ä‘Ãºng 0 báº£n ghi `SkillProfile`**.
+  - Há»“ sÆ¡ `profiles` chá»‰ cáº­p nháº­t trÆ°á»ng `verified_starting_unit = 1` vá»›i Ä‘Ã¡nh dáº¥u chÆ°a qua kiá»ƒm Ä‘á»‹nh.
 
-### 8.3. Tính Bất Biến Của Kết Quả & Quy Trình Thi Lại (Retake Protocol)
-- **Tính bất biến (Immutability):** Bảng `assessment_results` được cài đặt chính sách RLS chỉ cho phép chèn mới (`INSERT`), nghiêm cấm hoàn toàn các thao tác chỉnh sửa (`UPDATE`) hoặc xóa (`DELETE`) đối với mọi vai trò.
-- **Quy trình thi lại (Retake from Profile):** Học viên có thể thực hiện thi lại từ màn hình hồ sơ cá nhân:
-  1. Mỗi lần nộp bài thi lại sẽ tạo ra một bản ghi `AssessmentResult` mới độc lập với UUID mới và thời gian `completed_at` thời gian thực. Bản ghi cũ được giữ nguyên vẹn để phục vụ phân tích tiến bộ học tập.
-  2. Dịch vụ ứng dụng (`COMP-DOM-03`) thực hiện giao dịch nguyên tử (atomic database transaction):
-     $$\text{AssessmentResult (Mới)} \longrightarrow \text{SkillProfile (Cập nhật)} \longrightarrow \text{verifiedProficiency} \longrightarrow \text{profiles.verified_starting_unit}$$
-  3. Kết quả chẩn đoán mới nhất luôn được xác định bằng truy vấn: `SELECT * FROM assessment_results WHERE user_id = :uid ORDER BY completed_at DESC LIMIT 1`.
+### 8.3. TÃ­nh Báº¥t Biáº¿n Cá»§a Káº¿t Quáº£ & Quy TrÃ¬nh Thi Láº¡i (Retake Protocol)
+- **TÃ­nh báº¥t biáº¿n (Immutability):** Báº£ng `assessment_results` Ä‘Æ°á»£c cÃ i Ä‘áº·t chÃ­nh sÃ¡ch RLS chá»‰ cho phÃ©p chÃ¨n má»›i (`INSERT`), nghiÃªm cáº¥m hoÃ n toÃ n cÃ¡c thao tÃ¡c chá»‰nh sá»­a (`UPDATE`) hoáº·c xÃ³a (`DELETE`) Ä‘á»‘i vá»›i má»i vai trÃ².
+- **Quy trÃ¬nh thi láº¡i (Retake from Profile):** Há»c viÃªn cÃ³ thá»ƒ thá»±c hiá»‡n thi láº¡i tá»« mÃ n hÃ¬nh há»“ sÆ¡ cÃ¡ nhÃ¢n:
+  1. Má»—i láº§n ná»™p bÃ i thi láº¡i sáº½ táº¡o ra má»™t báº£n ghi `AssessmentResult` má»›i Ä‘á»™c láº­p vá»›i UUID má»›i vÃ  thá»i gian `completed_at` thá»i gian thá»±c. Báº£n ghi cÅ© Ä‘Æ°á»£c giá»¯ nguyÃªn váº¹n Ä‘á»ƒ phá»¥c vá»¥ phÃ¢n tÃ­ch tiáº¿n bá»™ há»c táº­p.
+  2. Dá»‹ch vá»¥ á»©ng dá»¥ng (`COMP-DOM-03`) thá»±c hiá»‡n giao dá»‹ch nguyÃªn tá»­ (atomic database transaction):
+     $$\text{AssessmentResult (Má»›i)} \longrightarrow \text{SkillProfile (Cáº­p nháº­t)} \longrightarrow \text{verifiedProficiency} \longrightarrow \text{profiles.verified_starting_unit}$$
+  3. Káº¿t quáº£ cháº©n Ä‘oÃ¡n má»›i nháº¥t luÃ´n Ä‘Æ°á»£c xÃ¡c Ä‘á»‹nh báº±ng truy váº¥n: `SELECT * FROM assessment_results WHERE user_id = :uid ORDER BY completed_at DESC LIMIT 1`.
 
 ---
 
-## 9. KẾ HOẠCH TRIỂN KHAI THỬ THÁCH NHẢY CÓC, LÀM LẠI, SRS & CHUỖI HỌC (INTELLIGENCE)
+## 9. Káº¾ HOáº CH TRIá»‚N KHAI THá»¬ THÃCH NHáº¢Y CÃ“C, LÃ€M Láº I, SRS & CHUá»–I Há»ŒC (INTELLIGENCE)
 
-### 9.1. Thử Thách Nhảy Cóc Đơn Vị Học (Jump Challenge — D5)
-- **Phạm vi áp dụng:** Chỉ cho phép thực hiện bài Jump đối với **Đơn vị học liền kề tiếp theo** ($\text{Unit}_{\text{current}} + 1$). Cấm tuyệt đối nhảy cóc vượt cấp xa.
-- **Ngưỡng điểm đạt (Pass Threshold):** Bắt buộc phải đạt chính xác từ **$95.0\%$ trở lên** ($\text{score} \ge 0.9500$). Không làm tròn số học từ $94.9\%$ lên $95\%$.
-- **Cơ chế khóa hồi chiêu (Cooldown Lockout):** Nếu học viên làm bài Jump không đạt ($< 95\%$), hệ thống kích hoạt khóa hồi chiêu **bắt buộc 24 giờ** tính theo đồng hồ UTC của máy chủ cơ sở dữ liệu. Mọi yêu cầu làm bài Jump mới trong khoảng thời gian này bị từ chối với mã lỗi `429 / 403 JUMP_COOLDOWN_ACTIVE`.
-- **Hệ quả tiến độ (Non-Completion Invariant):** Vượt qua bài Jump chỉ mở khóa đơn vị tiếp theo. Toàn bộ các bài học trong đơn vị bị nhảy qua được gán cờ `by_jump = true` (hoặc trạng thái `SKIPPED_BY_JUMP`), **TUYỆT ĐỐI KHÔNG đánh dấu là `COMPLETED`** và không làm tăng tổng số bài học hoàn thành trong thống kê.
+### 9.1. Thá»­ ThÃ¡ch Nháº£y CÃ³c ÄÆ¡n Vá»‹ Há»c (Jump Challenge â€” D5)
+- **Pháº¡m vi Ã¡p dá»¥ng:** Chá»‰ cho phÃ©p thá»±c hiá»‡n bÃ i Jump Ä‘á»‘i vá»›i **ÄÆ¡n vá»‹ há»c liá»n ká» tiáº¿p theo** ($\text{Unit}_{\text{current}} + 1$). Cáº¥m tuyá»‡t Ä‘á»‘i nháº£y cÃ³c vÆ°á»£t cáº¥p xa.
+- **NgÆ°á»¡ng Ä‘iá»ƒm Ä‘áº¡t (Pass Threshold):** Báº¯t buá»™c pháº£i Ä‘áº¡t chÃ­nh xÃ¡c tá»« **$95.0\%$ trá»Ÿ lÃªn** ($\text{score} \ge 0.9500$). KhÃ´ng lÃ m trÃ²n sá»‘ há»c tá»« $94.9\%$ lÃªn $95\%$.
+- **CÆ¡ cháº¿ khÃ³a há»“i chiÃªu (Cooldown Lockout):** Náº¿u há»c viÃªn lÃ m bÃ i Jump khÃ´ng Ä‘áº¡t ($< 95\%$), há»‡ thá»‘ng kÃ­ch hoáº¡t khÃ³a há»“i chiÃªu **báº¯t buá»™c 24 giá»** tÃ­nh theo Ä‘á»“ng há»“ UTC cá»§a mÃ¡y chá»§ cÆ¡ sá»Ÿ dá»¯ liá»‡u. Má»i yÃªu cáº§u lÃ m bÃ i Jump má»›i trong khoáº£ng thá»i gian nÃ y bá»‹ tá»« chá»‘i vá»›i mÃ£ lá»—i `429 / 403 JUMP_COOLDOWN_ACTIVE`.
+- **Há»‡ quáº£ tiáº¿n Ä‘á»™ (Non-Completion Invariant):** VÆ°á»£t qua bÃ i Jump chá»‰ má»Ÿ khÃ³a Ä‘Æ¡n vá»‹ tiáº¿p theo. ToÃ n bá»™ cÃ¡c bÃ i há»c trong Ä‘Æ¡n vá»‹ bá»‹ nháº£y qua Ä‘Æ°á»£c gÃ¡n cá» `by_jump = true` (hoáº·c tráº¡ng thÃ¡i `SKIPPED_BY_JUMP`), **TUYá»†T Äá»I KHÃ”NG Ä‘Ã¡nh dáº¥u lÃ  `COMPLETED`** vÃ  khÃ´ng lÃ m tÄƒng tá»•ng sá»‘ bÃ i há»c hoÃ n thÃ nh trong thá»‘ng kÃª.
 
-### 9.2. Hạn Mức Làm Lại Có Kiểm Soát (Controlled Retry — D7)
-- **Công thức tính hạn mức:** Tính toán trên phạm vi **từng lượt làm bài học cụ thể (Per Lesson Attempt/Context)**:
+### 9.2. Háº¡n Má»©c LÃ m Láº¡i CÃ³ Kiá»ƒm SoÃ¡t (Controlled Retry â€” D7)
+- **CÃ´ng thá»©c tÃ­nh háº¡n má»©c:** TÃ­nh toÃ¡n trÃªn pháº¡m vi **tá»«ng lÆ°á»£t lÃ m bÃ i há»c cá»¥ thá»ƒ (Per Lesson Attempt/Context)**:
   $$\text{allowance} = \max(1, \lfloor N \times 0.10 \rfloor)$$
-  *(Trong đó $N$ là tổng số lượng bài tập tương tác trong bài học đó).*
-- **Không có hạn ngạch gộp ngày (No Daily Global Pool):** Hạn mức làm lại gắn chặt với phiên làm bài học, **tuyệt đối KHÔNG phải là hạn ngạch gộp hàng ngày** và không bị đặt lại theo ranh giới nửa đêm.
-- **Bảo lưu điểm trần 70% (70% Score Credit Cap):** Nếu học viên làm sai ở lần đầu (0 điểm) và làm lại chính xác ở lần thứ hai, điểm số ghi nhận thực tế tối đa đạt:
+  *(Trong Ä‘Ã³ $N$ lÃ  tá»•ng sá»‘ lÆ°á»£ng bÃ i táº­p tÆ°Æ¡ng tÃ¡c trong bÃ i há»c Ä‘Ã³).*
+- **KhÃ´ng cÃ³ háº¡n ngáº¡ch gá»™p ngÃ y (No Daily Global Pool):** Háº¡n má»©c lÃ m láº¡i gáº¯n cháº·t vá»›i phiÃªn lÃ m bÃ i há»c, **tuyá»‡t Ä‘á»‘i KHÃ”NG pháº£i lÃ  háº¡n ngáº¡ch gá»™p hÃ ng ngÃ y** vÃ  khÃ´ng bá»‹ Ä‘áº·t láº¡i theo ranh giá»›i ná»­a Ä‘Ãªm.
+- **Báº£o lÆ°u Ä‘iá»ƒm tráº§n 70% (70% Score Credit Cap):** Náº¿u há»c viÃªn lÃ m sai á»Ÿ láº§n Ä‘áº§u (0 Ä‘iá»ƒm) vÃ  lÃ m láº¡i chÃ­nh xÃ¡c á»Ÿ láº§n thá»© hai, Ä‘iá»ƒm sá»‘ ghi nháº­n thá»±c táº¿ tá»‘i Ä‘a Ä‘áº¡t:
   $$\text{effectiveScore} = \text{rawScore} \times 0.70$$
-- **Điều kiện hoàn thành bài học:** Học viên hoàn thành bài học khi đã duyệt qua 100% các bài tập lượt một và xử lý hết hạn mức làm lại cho phép. Hoàn thành bài học không phụ thuộc vào một trần điểm số cố định (ví dụ: không bắt buộc phải đạt 80% điểm mới được coi là hoàn thành).
+- **Äiá»u kiá»‡n hoÃ n thÃ nh bÃ i há»c:** Há»c viÃªn hoÃ n thÃ nh bÃ i há»c khi Ä‘Ã£ duyá»‡t qua 100% cÃ¡c bÃ i táº­p lÆ°á»£t má»™t vÃ  xá»­ lÃ½ háº¿t háº¡n má»©c lÃ m láº¡i cho phÃ©p. HoÃ n thÃ nh bÃ i há»c khÃ´ng phá»¥ thuá»™c vÃ o má»™t tráº§n Ä‘iá»ƒm sá»‘ cá»‘ Ä‘á»‹nh (vÃ­ dá»¥: khÃ´ng báº¯t buá»™c pháº£i Ä‘áº¡t 80% Ä‘iá»ƒm má»›i Ä‘Æ°á»£c coi lÃ  hoÃ n thÃ nh).
 
-### 9.3. Thuật Toán Ôn Tập Ngắt Quãng Tất Định (SRS Policy B — D8)
-- **Chu kỳ giãn cách chuẩn tắc:** Tuân thủ mảng hằng số nguyên ngày:
-  $$\text{Intervals} = [1, 3, 7, 14, 30] \text{ ngày}$$
-- **Quy tắc chuyển cấp:**
-  - Trả lời đúng: Chuyển lên giai đoạn tiếp theo ($\text{Stage } k \rightarrow k+1$).
-  - Trả lời sai ở bất kỳ giai đoạn nào: **Đặt lại ngay lập tức về Stage 1 (+1 ngày)**.
-- **Tính độc lập với AI:** Thuật toán SRS được cài đặt thuần túy bằng hàm lưu trữ nội bộ PostgreSQL (RPC `record_review`), độc lập 100% với container AI và client.
+### 9.3. Thuáº­t ToÃ¡n Ã”n Táº­p Ngáº¯t QuÃ£ng Táº¥t Äá»‹nh (SRS Policy B â€” D8)
+- **Chu ká»³ giÃ£n cÃ¡ch chuáº©n táº¯c:** TuÃ¢n thá»§ máº£ng háº±ng sá»‘ nguyÃªn ngÃ y:
+  $$\text{Intervals} = [1, 3, 7, 14, 30] \text{ ngÃ y}$$
+- **Quy táº¯c chuyá»ƒn cáº¥p:**
+  - Tráº£ lá»i Ä‘Ãºng: Chuyá»ƒn lÃªn giai Ä‘oáº¡n tiáº¿p theo ($\text{Stage } k \rightarrow k+1$).
+  - Tráº£ lá»i sai á»Ÿ báº¥t ká»³ giai Ä‘oáº¡n nÃ o: **Äáº·t láº¡i ngay láº­p tá»©c vá» Stage 1 (+1 ngÃ y)**.
+- **TÃ­nh Ä‘á»™c láº­p vá»›i AI:** Thuáº­t toÃ¡n SRS Ä‘Æ°á»£c cÃ i Ä‘áº·t thuáº§n tÃºy báº±ng hÃ m lÆ°u trá»¯ ná»™i bá»™ PostgreSQL (RPC `record_review`), Ä‘á»™c láº­p 100% vá»›i container AI vÃ  client.
 
-### 9.4. Động Cơ Tính Chuỗi Ngày Học Liên Tục (Daily Streak — D9)
-- **Hành động đủ điều kiện (Qualifying Activity):** Hoàn thành tối thiểu 1 bài học mới hoặc hoàn thành tối thiểu 1 phiên ôn tập từ vựng SRS trong ngày.
-- **Ranh giới múi giờ người dùng:** Tính toán ngày học dựa trên **múi giờ IANA đã đăng ký của học viên** (mặc định `Asia/Ho_Chi_Minh` cho thị trường Việt Nam). Server quy đổi thời điểm hoàn thành UTC sang ngày dương lịch cục bộ của người dùng trước khi so sánh với `lastQualifyingActivityDate`.
-- **Quy tắc đứt gãy chuỗi:** Nếu học viên bỏ lỡ không học trong 1 ngày dương lịch cục bộ, chuỗi hiện tại (`currentStreak`) bị **đặt lại về 1** vào lần học tiếp theo. Chuỗi kỷ lục (`longestStreak`) được bảo lưu nguyên vẹn. MVP không hỗ trợ tính năng đóng băng chuỗi (Streak Freeze).
+### 9.4. Äá»™ng CÆ¡ TÃ­nh Chuá»—i NgÃ y Há»c LiÃªn Tá»¥c (Daily Streak â€” D9)
+- **HÃ nh Ä‘á»™ng Ä‘á»§ Ä‘iá»u kiá»‡n (Qualifying Activity):** HoÃ n thÃ nh tá»‘i thiá»ƒu 1 bÃ i há»c má»›i hoáº·c hoÃ n thÃ nh tá»‘i thiá»ƒu 1 phiÃªn Ã´n táº­p tá»« vá»±ng SRS trong ngÃ y.
+- **Ranh giá»›i mÃºi giá» ngÆ°á»i dÃ¹ng:** TÃ­nh toÃ¡n ngÃ y há»c dá»±a trÃªn **mÃºi giá» IANA Ä‘Ã£ Ä‘Äƒng kÃ½ cá»§a há»c viÃªn** (máº·c Ä‘á»‹nh `Asia/Ho_Chi_Minh` cho thá»‹ trÆ°á»ng Viá»‡t Nam). Server quy Ä‘á»•i thá»i Ä‘iá»ƒm hoÃ n thÃ nh UTC sang ngÃ y dÆ°Æ¡ng lá»‹ch cá»¥c bá»™ cá»§a ngÆ°á»i dÃ¹ng trÆ°á»›c khi so sÃ¡nh vá»›i `lastQualifyingActivityDate`.
+- **Quy táº¯c Ä‘á»©t gÃ£y chuá»—i:** Náº¿u há»c viÃªn bá» lá»¡ khÃ´ng há»c trong 1 ngÃ y dÆ°Æ¡ng lá»‹ch cá»¥c bá»™, chuá»—i hiá»‡n táº¡i (`currentStreak`) bá»‹ **Ä‘áº·t láº¡i vá» 1** vÃ o láº§n há»c tiáº¿p theo. Chuá»—i ká»· lá»¥c (`longestStreak`) Ä‘Æ°á»£c báº£o lÆ°u nguyÃªn váº¹n. MVP khÃ´ng há»— trá»£ tÃ­nh nÄƒng Ä‘Ã³ng bÄƒng chuá»—i (Streak Freeze).
 
-### 9.5. Ma Trận Kiểm Thử Nghiệp Vụ & Phòng Vệ Lạm Dụng
+### 9.5. Ma Tráº­n Kiá»ƒm Thá»­ Nghiá»‡p Vá»¥ & PhÃ²ng Vá»‡ Láº¡m Dá»¥ng
 
-| Chính Sách | Kịch Bản Chuẩn (Happy Path) | Kịch Bản Biên (Boundary Case) | Kịch Bản Lạm Dụng / Tấn Công (Abuse / Negative Case) |
+| ChÃ­nh SÃ¡ch | Ká»‹ch Báº£n Chuáº©n (Happy Path) | Ká»‹ch Báº£n BiÃªn (Boundary Case) | Ká»‹ch Báº£n Láº¡m Dá»¥ng / Táº¥n CÃ´ng (Abuse / Negative Case) |
 |---|---|---|---|
-| **Jump Challenge** | Đạt 96% điểm $\rightarrow$ Mở khóa Unit kế tiếp, gán `by_jump = true`. | Đạt chính xác 95.0% $\rightarrow$ PASS; đạt 94.9% $\rightarrow$ FAIL, khóa 24h. | Gửi yêu cầu Jump khi đang trong 24h hồi chiêu $\rightarrow$ 403 Forbidden; sửa đồng hồ client $\rightarrow$ Bị chặn bởi đồng hồ server. |
-| **Controlled Retry**| Bài học 20 câu ($N=20$) $\rightarrow$ Có 2 lượt làm lại; làm lại đúng nhận 70% điểm. | Bài học 5 câu ($N=5$) $\rightarrow$ $\max(1, \lfloor 0.5 \rfloor) = 1$ lượt làm lại tối thiểu. | Gửi yêu cầu làm lại lần thứ 3 khi hạn mức chỉ có 2 $\rightarrow$ 403 RETRY_ALLOWANCE_EXCEEDED. |
-| **SRS Policy B** | Trả lời đúng qua các mốc $\rightarrow$ Nhận chu kỳ +1, +3, +7, +14, +30 ngày. | Trả lời đúng ở Stage 5 $\rightarrow$ Duy trì mốc ôn tập tối đa 30 ngày. | Trả lời sai ở Stage 4 $\rightarrow$ Bắt buộc reset về Stage 1 (+1 ngày); client gửi interval tùy biến $\rightarrow$ Bị từ chối bởi RPC. |
-| **Daily Streak** | Học đều đặn mỗi ngày lúc 23:00 $\rightarrow$ Tăng chuỗi liên tục. | Học lúc 23:59 ngày D và 00:05 ngày D+1 (giờ VN) $\rightarrow$ Ghi nhận 2 ngày liên tiếp thành công. | Học viên bỏ học ngày D+1, học lại ngày D+2 $\rightarrow$ Reset currentStreak về 1; client gửi ngày giả mạo $\rightarrow$ Bị chặn. |
+| **Jump Challenge** | Äáº¡t 96% Ä‘iá»ƒm $\rightarrow$ Má»Ÿ khÃ³a Unit káº¿ tiáº¿p, gÃ¡n `by_jump = true`. | Äáº¡t chÃ­nh xÃ¡c 95.0% $\rightarrow$ PASS; Ä‘áº¡t 94.9% $\rightarrow$ FAIL, khÃ³a 24h. | Gá»­i yÃªu cáº§u Jump khi Ä‘ang trong 24h há»“i chiÃªu $\rightarrow$ 403 Forbidden; sá»­a Ä‘á»“ng há»“ client $\rightarrow$ Bá»‹ cháº·n bá»Ÿi Ä‘á»“ng há»“ server. |
+| **Controlled Retry**| BÃ i há»c 20 cÃ¢u ($N=20$) $\rightarrow$ CÃ³ 2 lÆ°á»£t lÃ m láº¡i; lÃ m láº¡i Ä‘Ãºng nháº­n 70% Ä‘iá»ƒm. | BÃ i há»c 5 cÃ¢u ($N=5$) $\rightarrow$ $\max(1, \lfloor 0.5 \rfloor) = 1$ lÆ°á»£t lÃ m láº¡i tá»‘i thiá»ƒu. | Gá»­i yÃªu cáº§u lÃ m láº¡i láº§n thá»© 3 khi háº¡n má»©c chá»‰ cÃ³ 2 $\rightarrow$ 403 RETRY_ALLOWANCE_EXCEEDED. |
+| **SRS Policy B** | Tráº£ lá»i Ä‘Ãºng qua cÃ¡c má»‘c $\rightarrow$ Nháº­n chu ká»³ +1, +3, +7, +14, +30 ngÃ y. | Tráº£ lá»i Ä‘Ãºng á»Ÿ Stage 5 $\rightarrow$ Duy trÃ¬ má»‘c Ã´n táº­p tá»‘i Ä‘a 30 ngÃ y. | Tráº£ lá»i sai á»Ÿ Stage 4 $\rightarrow$ Báº¯t buá»™c reset vá» Stage 1 (+1 ngÃ y); client gá»­i interval tÃ¹y biáº¿n $\rightarrow$ Bá»‹ tá»« chá»‘i bá»Ÿi RPC. |
+| **Daily Streak** | Há»c Ä‘á»u Ä‘áº·n má»—i ngÃ y lÃºc 23:00 $\rightarrow$ TÄƒng chuá»—i liÃªn tá»¥c. | Há»c lÃºc 23:59 ngÃ y D vÃ  00:05 ngÃ y D+1 (giá» VN) $\rightarrow$ Ghi nháº­n 2 ngÃ y liÃªn tiáº¿p thÃ nh cÃ´ng. | Há»c viÃªn bá» há»c ngÃ y D+1, há»c láº¡i ngÃ y D+2 $\rightarrow$ Reset currentStreak vá» 1; client gá»­i ngÃ y giáº£ máº¡o $\rightarrow$ Bá»‹ cháº·n. |
 
 ---
 
-## 10. KẾ HOẠCH TRIỂN KHAI QUẢN TRỊ NỘI DUNG & DUYỆT BÀI HỌC (CONTENT GOVERNANCE)
+## 10. Káº¾ HOáº CH TRIá»‚N KHAI QUáº¢N TRá»Š Ná»˜I DUNG & DUYá»†T BÃ€I Há»ŒC (CONTENT GOVERNANCE)
 
-Hệ thống quản trị nội dung trong `lingora-admin` hiện thực hóa quy trình kiểm duyệt khép kín 6 trạng thái, loại bỏ hoàn toàn các lỗ hổng tự phê duyệt và tự xuất bản.
+Há»‡ thá»‘ng quáº£n trá»‹ ná»™i dung trong `lingora-admin` hiá»‡n thá»±c hÃ³a quy trÃ¬nh kiá»ƒm duyá»‡t khÃ©p kÃ­n 6 tráº¡ng thÃ¡i, loáº¡i bá» hoÃ n toÃ n cÃ¡c lá»— há»•ng tá»± phÃª duyá»‡t vÃ  tá»± xuáº¥t báº£n.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> DRAFT : Manager tạo nhiệm vụ & Creator biên soạn
-    DRAFT --> IN_REVIEW : Creator nộp duyệt bài
-    IN_REVIEW --> CHANGES_REQUESTED : Moderator yêu cầu chỉnh sửa
-    CHANGES_REQUESTED --> DRAFT : Creator tiếp nhận & chỉnh sửa
-    IN_REVIEW --> APPROVED : Moderator phê duyệt (Creator cấm duyệt)
-    APPROVED --> PUBLISHED : Manager xuất bản ra công chúng
-    APPROVED --> PUBLISHED : Admin xuất bản khẩn cấp (Kèm lý do + Audit)
-    PUBLISHED --> ARCHIVED : Manager lưu trữ
-    PUBLISHED --> ARCHIVED : Admin gỡ khẩn cấp (Kèm lý do + Audit)
-    PUBLISHED --> DRAFT : Clone-to-Draft v2 (Tạo Revision mới, supersedesId)
+    [*] --> DRAFT : Manager táº¡o nhiá»‡m vá»¥ & Creator biÃªn soáº¡n
+    DRAFT --> IN_REVIEW : Creator ná»™p duyá»‡t bÃ i
+    IN_REVIEW --> CHANGES_REQUESTED : Moderator yÃªu cáº§u chá»‰nh sá»­a
+    CHANGES_REQUESTED --> DRAFT : Creator tiáº¿p nháº­n & chá»‰nh sá»­a
+    IN_REVIEW --> APPROVED : Moderator phÃª duyá»‡t (Creator cáº¥m duyá»‡t)
+    APPROVED --> PUBLISHED : Manager xuáº¥t báº£n ra cÃ´ng chÃºng
+    APPROVED --> PUBLISHED : Admin xuáº¥t báº£n kháº©n cáº¥p (KÃ¨m lÃ½ do + Audit)
+    PUBLISHED --> ARCHIVED : Manager lÆ°u trá»¯
+    PUBLISHED --> ARCHIVED : Admin gá»¡ kháº©n cáº¥p (KÃ¨m lÃ½ do + Audit)
+    PUBLISHED --> DRAFT : Clone-to-Draft v2 (Táº¡o Revision má»›i, supersedesId)
     ARCHIVED --> [*]
 ```
 
-### 10.1. Chi Tiết Các Chuyển Dịch Trạng Thái & Thẩm Quyền Thực Hiện:
-1. **Khởi tạo bản thảo (`DRAFT`):** Organizational Manager tạo nhiệm vụ bài học và gán `assigned_creator_id`. Lesson Creator được phân công tiến hành soạn thảo mục tiêu, từ vựng và bài tập.
-2. **Nộp bài kiểm duyệt (`DRAFT → IN_REVIEW`):** Creator nộp bài khi đã hoàn thiện nội dung. Bài học chuyển vào hàng đợi kiểm duyệt tập trung.
-3. **Yêu cầu chỉnh sửa (`IN_REVIEW → CHANGES_REQUESTED`):** Moderator đánh giá bài học, nếu chưa đạt chuẩn chất lượng sẽ gửi kèm ghi chú yêu cầu chỉnh sửa (`review_notes`). Trạng thái chuyển về để Creator cập nhật.
-4. **Phê duyệt bài học (`IN_REVIEW → APPROVED`):** Moderator đánh giá đạt chất lượng và nhấn phê duyệt. **Ràng buộc SoD:** Thẩm quyền phê duyệt dành riêng cho `MODERATOR`. Nếu tài khoản mang vai trò `LESSON_CREATOR` hoặc vai trò không có thẩm quyền gửi yêu cầu duyệt bài, hệ thống từ chối với lỗi phân quyền chuẩn tắc `403 Forbidden` / `ROLE_UNAUTHORIZED`.
-5. **Xuất bản bài học (`APPROVED → PUBLISHED`):**
-   - **Luồng thông thường:** Do Organizational Manager thực hiện sau khi rà soát kế hoạch giáo trình.
-   - **Luồng khẩn cấp của Quản trị viên (Admin Emergency):** Administrator chỉ được xuất bản khẩn cấp khi bài học **đã ở trạng thái `APPROVED`**, bắt buộc phải nhập lý do giải trình trong form, và hệ thống tự động ghi nhật ký kiểm toán `CONTENT_EMERGENCY_PUB`. Tuyệt đối cấm xuất bản khẩn cấp từ `IN_REVIEW`.
-6. **Nhân bản tạo bản thảo mới (Clone-to-Draft v2 qua `supersedes_id` — D3):**
-   - Tuyệt đối cấm sửa trực tiếp trên bản ghi bài học đã `PUBLISHED`.
-   - Khi cần nâng cấp bài học, hệ thống thực hiện sao chép toàn bộ nội dung của phiên bản đang xuất bản sang một bản ghi mới trong bảng `lesson_revisions` với `version = version_cu + 1`, trạng thái `DRAFT`, và trường `supersedes_id` trỏ về bản ghi đã xuất bản. Bản học cũ vẫn phục vụ học viên bình thường cho đến khi bản mới được duyệt và xuất bản thay thế.
+### 10.1. Chi Tiáº¿t CÃ¡c Chuyá»ƒn Dá»‹ch Tráº¡ng ThÃ¡i & Tháº©m Quyá»n Thá»±c Hiá»‡n:
+1. **Khá»Ÿi táº¡o báº£n tháº£o (`DRAFT`):** Organizational Manager táº¡o nhiá»‡m vá»¥ bÃ i há»c vÃ  gÃ¡n `assigned_creator_id`. Lesson Creator Ä‘Æ°á»£c phÃ¢n cÃ´ng tiáº¿n hÃ nh soáº¡n tháº£o má»¥c tiÃªu, tá»« vá»±ng vÃ  bÃ i táº­p.
+2. **Ná»™p bÃ i kiá»ƒm duyá»‡t (`DRAFT â†’ IN_REVIEW`):** Creator ná»™p bÃ i khi Ä‘Ã£ hoÃ n thiá»‡n ná»™i dung. BÃ i há»c chuyá»ƒn vÃ o hÃ ng Ä‘á»£i kiá»ƒm duyá»‡t táº­p trung.
+3. **YÃªu cáº§u chá»‰nh sá»­a (`IN_REVIEW â†’ CHANGES_REQUESTED`):** Moderator Ä‘Ã¡nh giÃ¡ bÃ i há»c, náº¿u chÆ°a Ä‘áº¡t chuáº©n cháº¥t lÆ°á»£ng sáº½ gá»­i kÃ¨m ghi chÃº yÃªu cáº§u chá»‰nh sá»­a (`review_notes`). Tráº¡ng thÃ¡i chuyá»ƒn vá» Ä‘á»ƒ Creator cáº­p nháº­t.
+4. **PhÃª duyá»‡t bÃ i há»c (`IN_REVIEW â†’ APPROVED`):** Moderator Ä‘Ã¡nh giÃ¡ Ä‘áº¡t cháº¥t lÆ°á»£ng vÃ  nháº¥n phÃª duyá»‡t. **RÃ ng buá»™c SoD:** Tháº©m quyá»n phÃª duyá»‡t dÃ nh riÃªng cho `MODERATOR`. Náº¿u tÃ i khoáº£n mang vai trÃ² `LESSON_CREATOR` hoáº·c vai trÃ² khÃ´ng cÃ³ tháº©m quyá»n gá»­i yÃªu cáº§u duyá»‡t bÃ i, há»‡ thá»‘ng tá»« chá»‘i vá»›i lá»—i phÃ¢n quyá»n chuáº©n táº¯c `403 Forbidden` / `ROLE_UNAUTHORIZED`.
+5. **Xuáº¥t báº£n bÃ i há»c (`APPROVED â†’ PUBLISHED`):**
+   - **Luá»“ng thÃ´ng thÆ°á»ng:** Do Organizational Manager thá»±c hiá»‡n sau khi rÃ  soÃ¡t káº¿ hoáº¡ch giÃ¡o trÃ¬nh.
+   - **Luá»“ng kháº©n cáº¥p cá»§a Quáº£n trá»‹ viÃªn (Admin Emergency):** Administrator chá»‰ Ä‘Æ°á»£c xuáº¥t báº£n kháº©n cáº¥p khi bÃ i há»c **Ä‘Ã£ á»Ÿ tráº¡ng thÃ¡i `APPROVED`**, báº¯t buá»™c pháº£i nháº­p lÃ½ do giáº£i trÃ¬nh trong form, vÃ  há»‡ thá»‘ng tá»± Ä‘á»™ng ghi nháº­t kÃ½ kiá»ƒm toÃ¡n `CONTENT_EMERGENCY_PUB`. Tuyá»‡t Ä‘á»‘i cáº¥m xuáº¥t báº£n kháº©n cáº¥p tá»« `IN_REVIEW`.
+6. **NhÃ¢n báº£n táº¡o báº£n tháº£o má»›i (Clone-to-Draft v2 qua `supersedes_id` â€” D3):**
+   - Tuyá»‡t Ä‘á»‘i cáº¥m sá»­a trá»±c tiáº¿p trÃªn báº£n ghi bÃ i há»c Ä‘Ã£ `PUBLISHED`.
+   - Khi cáº§n nÃ¢ng cáº¥p bÃ i há»c, há»‡ thá»‘ng thá»±c hiá»‡n sao chÃ©p toÃ n bá»™ ná»™i dung cá»§a phiÃªn báº£n Ä‘ang xuáº¥t báº£n sang má»™t báº£n ghi má»›i trong báº£ng `lesson_revisions` vá»›i `version = version_cu + 1`, tráº¡ng thÃ¡i `DRAFT`, vÃ  trÆ°á»ng `supersedes_id` trá» vá» báº£n ghi Ä‘Ã£ xuáº¥t báº£n. Báº£n há»c cÅ© váº«n phá»¥c vá»¥ há»c viÃªn bÃ¬nh thÆ°á»ng cho Ä‘áº¿n khi báº£n má»›i Ä‘Æ°á»£c duyá»‡t vÃ  xuáº¥t báº£n thay tháº¿.
 
-### 10.2. Điều Kiện Hiển Thị Đơn Vị Giáo Trình (Unit 4/4 Published Rule)
-Để đảm bảo trải nghiệm học tập không bị đứt đoạn, tầng ứng dụng (`COMP-DOM-02`) và chính sách cơ sở dữ liệu thực thi nghiêm ngặt:
+### 10.2. Äiá»u Kiá»‡n Hiá»ƒn Thá»‹ ÄÆ¡n Vá»‹ GiÃ¡o TrÃ¬nh (Unit 4/4 Published Rule)
+Äá»ƒ Ä‘áº£m báº£o tráº£i nghiá»‡m há»c táº­p khÃ´ng bá»‹ Ä‘á»©t Ä‘oáº¡n, táº§ng á»©ng dá»¥ng (`COMP-DOM-02`) vÃ  chÃ­nh sÃ¡ch cÆ¡ sá»Ÿ dá»¯ liá»‡u thá»±c thi nghiÃªm ngáº·t:
 $$\text{Unit Visible to Learner} \iff \sum \text{Published Lessons in Unit} = 4$$
-- Nếu một Unit chỉ mới có 1, 2 hoặc 3 bài học đạt trạng thái `PUBLISHED`, toàn bộ Unit đó vẫn ở trạng thái ẩn đối với học viên.
-- **Chốt chặn phân quyền trực tiếp (Direct Access Denial — `UI hiding != Authorization`):** Việc ẩn Unit trên giao diện danh mục không thay thế cho kiểm soát phân quyền. Mọi truy vấn trực tiếp (direct access) từ phía học viên nhắm vào bài học hoặc bài tập thuộc một Unit chưa đủ 4/4 bài xuất bản đều bị tầng BFF và RLS từ chối với mã lỗi `404 Not Found` hoặc `403 Forbidden`. Tuyệt đối không tạo cơ chế tự động chuyển hướng hoặc fallback sang Unit gần nhất.
+- Náº¿u má»™t Unit chá»‰ má»›i cÃ³ 1, 2 hoáº·c 3 bÃ i há»c Ä‘áº¡t tráº¡ng thÃ¡i `PUBLISHED`, toÃ n bá»™ Unit Ä‘Ã³ váº«n á»Ÿ tráº¡ng thÃ¡i áº©n Ä‘á»‘i vá»›i há»c viÃªn.
+- **Chá»‘t cháº·n phÃ¢n quyá»n trá»±c tiáº¿p (Direct Access Denial â€” `UI hiding != Authorization`):** Viá»‡c áº©n Unit trÃªn giao diá»‡n danh má»¥c khÃ´ng thay tháº¿ cho kiá»ƒm soÃ¡t phÃ¢n quyá»n. Má»i truy váº¥n trá»±c tiáº¿p (direct access) tá»« phÃ­a há»c viÃªn nháº¯m vÃ o bÃ i há»c hoáº·c bÃ i táº­p thuá»™c má»™t Unit chÆ°a Ä‘á»§ 4/4 bÃ i xuáº¥t báº£n Ä‘á»u bá»‹ táº§ng BFF vÃ  RLS tá»« chá»‘i vá»›i mÃ£ lá»—i `404 Not Found` hoáº·c `403 Forbidden`. Tuyá»‡t Ä‘á»‘i khÃ´ng táº¡o cÆ¡ cháº¿ tá»± Ä‘á»™ng chuyá»ƒn hÆ°á»›ng hoáº·c fallback sang Unit gáº§n nháº¥t.
 
 ---
 
-## 11. QUY CHUẨN GIAO DIỆN LẬP TRÌNH API & LỚP ĐIỀU PHỐI BFF
+## 11. QUY CHUáº¨N GIAO DIá»†N Láº¬P TRÃŒNH API & Lá»šP ÄIá»€U PHá»I BFF
 
-### 11.1. Căn Cứ Hợp Đồng & Quy Ước Route Minh Họa
-- **Hợp đồng AI `docs/03-api-contract.md`:** Là tài liệu chuẩn tắc đóng băng, **100% byte-identical và chỉ đọc**. Mọi thay đổi trên tệp này đều bị hệ thống phát hiện và coi là vi phạm kỷ luật kiến trúc.
-- **Cú pháp Route minh họa:** Toàn bộ các định dạng URL cụ thể xuất hiện dưới đây đều được gắn nhãn: **`[ILLUSTRATIVE ROUTE EXAMPLE — NOT LOCKED]`**. Định danh giao tiếp chuẩn tắc và có thẩm quyền duy nhất giữa các thành phần kiến trúc là các mã định danh bề mặt API (`API-AUTH-*`, `API-LEARN-*`, `API-ASSESS-*`, `API-PRACT-*`, `API-AUTHZ-*`, `API-AI-*`, `API-AUDIT-*`).
-- **Chính sách ranh giới đối với các route AI kế thừa (Legacy AI Surface Policy):** Các route liên quan đến AI đang tồn tại trong repository (như `/api/ai/chat`, `/api/ai/srs` trong `lingora-web`) là các bề mặt kế thừa/tương thích (*legacy/compatibility surfaces*). Chúng không được gọi bởi bất kỳ luồng học viên nào trong Phase 2 và hoàn toàn bị loại trừ khỏi phạm vi nghiệm thu của Phase 2 (*excluded from Phase 2 acceptance*). Việc gỡ bỏ hoặc vô hiệu hóa các route này là một quyết định kỹ thuật độc lập nếu được yêu cầu bởi đợt rà soát an ninh mã nguồn.
+### 11.1. CÄƒn Cá»© Há»£p Äá»“ng & Quy Æ¯á»›c Route Minh Há»a
+- **Há»£p Ä‘á»“ng AI `docs/03-api-contract.md`:** LÃ  tÃ i liá»‡u chuáº©n táº¯c Ä‘Ã³ng bÄƒng, **100% byte-identical vÃ  chá»‰ Ä‘á»c**. Má»i thay Ä‘á»•i trÃªn tá»‡p nÃ y Ä‘á»u bá»‹ há»‡ thá»‘ng phÃ¡t hiá»‡n vÃ  coi lÃ  vi pháº¡m ká»· luáº­t kiáº¿n trÃºc.
+- **CÃº phÃ¡p Route minh há»a:** ToÃ n bá»™ cÃ¡c Ä‘á»‹nh dáº¡ng URL cá»¥ thá»ƒ xuáº¥t hiá»‡n dÆ°á»›i Ä‘Ã¢y Ä‘á»u Ä‘Æ°á»£c gáº¯n nhÃ£n: **`[ILLUSTRATIVE ROUTE EXAMPLE â€” NOT LOCKED]`**. Äá»‹nh danh giao tiáº¿p chuáº©n táº¯c vÃ  cÃ³ tháº©m quyá»n duy nháº¥t giá»¯a cÃ¡c thÃ nh pháº§n kiáº¿n trÃºc lÃ  cÃ¡c mÃ£ Ä‘á»‹nh danh bá» máº·t API (`API-AUTH-*`, `API-LEARN-*`, `API-ASSESS-*`, `API-PRACT-*`, `API-AUTHZ-*`, `API-AI-*`, `API-AUDIT-*`).
+- **ChÃ­nh sÃ¡ch ranh giá»›i Ä‘á»‘i vá»›i cÃ¡c route AI káº¿ thá»«a (Legacy AI Surface Policy):** CÃ¡c route liÃªn quan Ä‘áº¿n AI Ä‘ang tá»“n táº¡i trong repository (nhÆ° `/api/ai/chat`, `/api/ai/srs` trong `lingora-web`) lÃ  cÃ¡c bá» máº·t káº¿ thá»«a/tÆ°Æ¡ng thÃ­ch (*legacy/compatibility surfaces*). ChÃºng khÃ´ng Ä‘Æ°á»£c gá»i bá»Ÿi báº¥t ká»³ luá»“ng há»c viÃªn nÃ o trong Phase 2 vÃ  hoÃ n toÃ n bá»‹ loáº¡i trá»« khá»i pháº¡m vi nghiá»‡m thu cá»§a Phase 2 (*excluded from Phase 2 acceptance*). Viá»‡c gá»¡ bá» hoáº·c vÃ´ hiá»‡u hÃ³a cÃ¡c route nÃ y lÃ  má»™t quyáº¿t Ä‘á»‹nh ká»¹ thuáº­t Ä‘á»™c láº­p náº¿u Ä‘Æ°á»£c yÃªu cáº§u bá»Ÿi Ä‘á»£t rÃ  soÃ¡t an ninh mÃ£ nguá»“n.
 
-### 11.2. Danh Mục Bề Mặt API Chi Tiết (API Surface Register)
+### 11.2. Danh Má»¥c Bá» Máº·t API Chi Tiáº¿t (API Surface Register)
 
-| Mã Bề Mặt API | Route Minh Họa [NOT LOCKED] | Thành Phần Sở Hữu | Ranh Giới An Ninh | Yêu Cầu Xác Thực & Quyền | RLS / DB Dependency | Mã Lỗi Chuẩn Tắc | Yêu Cầu Phát Thải Kiểm Toán |
+| MÃ£ Bá» Máº·t API | Route Minh Há»a [NOT LOCKED] | ThÃ nh Pháº§n Sá»Ÿ Há»¯u | Ranh Giá»›i An Ninh | YÃªu Cáº§u XÃ¡c Thá»±c & Quyá»n | RLS / DB Dependency | MÃ£ Lá»—i Chuáº©n Táº¯c | YÃªu Cáº§u PhÃ¡t Tháº£i Kiá»ƒm ToÃ¡n |
 |---|---|---|---|---|---|---|---|
-| **API-AUTH-01** | `POST /api/auth/register` | `COMP-DOM-01` | B1 / B3 | Công khai (Public) | Tạo bản ghi `profiles` qua GoTrue | `INVALID_INPUT`, `USER_ALREADY_EXISTS` | Không có |
-| **API-AUTH-02** | `POST /api/auth/login` | `COMP-DOM-01` | B1 / B3 | Công khai (Public) | Đọc `profiles` | `INVALID_CREDENTIALS` | `AUTH_LOGIN_FAILED` (nếu sai) |
-| **API-AUTH-03** | `POST /api/auth/recover-password` | `COMP-DOM-01` | B1 / B3 | Công khai (Public) | Khởi tạo đặt lại mật khẩu qua Supabase Auth (P1-FR-001) | `INVALID_EMAIL` | `AUTH_PASSWORD_RECOVERY_REQ` |
-| **API-AUTH-04** | `GET /api/auth/session` | `COMP-DOM-01` | B1 / B3 | Bearer JWT (Authenticated) | Đọc phiên làm việc và hồ sơ vai trò | `UNAUTHORIZED` | Không có |
-| **API-LEARN-01**| `GET /api/curriculum/units` | `COMP-DOM-02` | B1 / B3 | Bearer JWT (Learner) | Đọc `units` thỏa mãn luật 4/4 Published | `UNAUTHORIZED` | Không có |
-| **API-LEARN-02**| `GET /api/curriculum/lessons/{id}` | `COMP-DOM-05` | B1 / B3 | Bearer JWT (Learner) | Đọc `lesson_revisions` status `PUBLISHED` (giấu đáp án) | `LESSON_NOT_FOUND`, `LESSON_LOCKED` | Không có |
-| **API-LEARN-03**| `POST /api/learning/lesson/submit`| `COMP-DOM-05` | B1 / B3 | Bearer JWT (Learner) | Ghi nguyên tử `user_progress` (xác thực retry D7) | `RETRY_ALLOWANCE_EXCEEDED` | Không có |
-| **API-ASSESS-01**|`POST /api/assessment/placement/start`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Kiểm tra `profiles.verified_starting_unit` | `ASSESSMENT_ALREADY_COMPLETED` | Không có |
-| **API-ASSESS-02**|`POST /api/assessment/placement/submit`| `COMP-DOM-03`| B1 / B3 | Bearer JWT (Learner) | Ghi `assessment_results`, cập nhật `profiles` (Mapping A) | `INVALID_INPUT` (ngoài dải 0–30) | `DIAGNOSTIC_COMPLETED` |
-| **API-ASSESS-03**|`POST /api/assessment/placement/skip`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Cập nhật `profiles.verified_starting_unit = 1` (UNVERIFIED) | `ALREADY_VERIFIED` | Không có |
-| **API-ASSESS-04**|`POST /api/assessment/jump/start` | `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Kiểm tra thời gian hồi chiêu 24h | `429 JUMP_COOLDOWN_ACTIVE` | `JUMP_LOCKOUT_TRIGGERED` (nếu trượt) |
-| **API-ASSESS-05**|`POST /api/assessment/jump/submit`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Ghi `by_jump = true` trong `user_progress` | `INVALID_INPUT` | Không có |
-| **API-ASSESS-06**|`POST /api/assessment/placement/retake`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Tạo mới `assessment_results` bất biến, cập nhật starting unit | `ALREADY_IN_PROGRESS` | `DIAGNOSTIC_RETAKEN` |
-| **API-PRACT-01**| `GET /api/practice/srs/queue` | `COMP-DOM-04` | B1 / B3 | Bearer JWT (Learner) | Đọc `user_vocab_srs` đến hạn | `UNAUTHORIZED` | Không có |
-| **API-PRACT-02**| `POST /api/practice/srs/review` | `COMP-DOM-04` | B1 / B3 | Bearer JWT (Learner) | Thực thi RPC `record_review` Policy B [1,3,7,14,30] | `INVALID_STAGE` | Không có |
-| **API-GOV-01** | `POST /api/admin/content/assign` | `COMP-DOM-06` | B2 / B3 | JWT (Manager) | Tạo bản ghi phân công trong `lesson_revisions` | `CREATOR_NOT_FOUND` | `CONTENT_ASSIGNED` |
-| **API-GOV-02** | `POST /api/admin/content/submit` | `COMP-DOM-06` | B2 / B3 | JWT (Creator) | Cập nhật revision từ `DRAFT` sang `IN_REVIEW` | `NOT_ASSIGNED_CREATOR` | `CONTENT_SUBMITTED` |
-| **API-AUTHZ-01**| `POST /api/admin/content/review`| `COMP-DOM-06` | B2 / B3 | JWT (Moderator) | Cập nhật `status = APPROVED/CHANGES_REQ` | `403 ROLE_UNAUTHORIZED` | `CONTENT_APPROVED`, `CONTENT_CHANGES_REQ` |
-| **API-AUTHZ-02**| `POST /api/admin/content/publish`| `COMP-DOM-06` | B2 / B3 | JWT (Manager) | Cập nhật `status = PUBLISHED` | `403 FORBIDDEN` | `CONTENT_PUBLISHED` |
-| **API-GOV-03** | `POST /api/admin/content/clone` | `COMP-DOM-06` | B2 / B3 | JWT (Creator/Manager)| Nhân bản bài học published sang revision v2 (`supersedes_id`) | `LESSON_NOT_PUBLISHED` | `CONTENT_CLONED` |
-| **API-GOV-04** | `POST /api/admin/content/archive` | `COMP-DOM-06` | B2 / B3 | JWT (Manager/Admin) | Chuyển trạng thái revision sang `ARCHIVED` | `CANNOT_ARCHIVE_ACTIVE` | `CONTENT_ARCHIVED` |
-| **API-GOV-05** | `POST /api/admin/content/draft` | `COMP-DOM-06` | B2 / B3 | JWT (Creator) | Lưu bản thảo bài học tạm thời (Draft Save) trước khi nộp duyệt | `FORBIDDEN` | `CONTENT_DRAFT_SAVED` |
-| **API-GOV-06** | `GET /api/admin/content/review-queue` | `COMP-DOM-06` | B2 / B3 | JWT (Moderator) | Tra cứu danh sách bài học đang chờ duyệt (`status = 'IN_REVIEW'`) | `FORBIDDEN` | Không có |
-| **API-USER-01** | `PATCH /api/user/profile` | `COMP-DOM-01` | B1 / B3 | Bearer JWT (Learner) | Cập nhật thông tin cho phép (múi giờ IANA, uiLocale, nativeLangCode per SEC-D3) | `INVALID_TIMEZONE` | `USER_PROFILE_UPDATED` |
-| **API-USER-02** | `GET /api/user/streak` | `COMP-DOM-02` | B1 / B3 | Bearer JWT (Learner) | Đọc chuỗi ngày học hiện tại (`currentStreak`) và ngày đủ điều kiện | `UNAUTHORIZED` | Không có |
-| **API-AUTHZ-03**| `POST /api/admin/content/emergency-publish`| `COMP-DOM-07` | B2 / B3 / B6 | JWT (Administrator)| Cập nhật `status = PUBLISHED`, kèm reason bắt buộc | `403 EMERGENCY_UNAPPROVED`, `403 MISSING_JUSTIFICATION` | `CONTENT_EMERGENCY_PUB` |
-| **API-ADMIN-ROLE-01**| `POST /api/admin/users/{id}/role` | `COMP-DOM-07` | B2 / B3 | JWT (Administrator)| Quản trị vai trò tài khoản người dùng trong `profiles` | `FORBIDDEN` | `USER_ROLE_CHANGED` |
-| **API-SUPPORT-01** | `GET /api/support/tickets` | `COMP-DOM-07` | B2 / B3 | JWT (Operations Staff / Admin)| Tra cứu và điều phối hỗ trợ người dùng theo ca sử dụng UC-14 | `FORBIDDEN` | `SUPPORT_TICKET_INSPECTED` |
-| **API-AI-GEC-01** [OUT OF PHASE 2 SCOPE]| `POST /v1/gec/correct` (Nội bộ) | `COMP-EXT-02` [OUT OF SCOPE] | B1 $\rightarrow$ B5 | Tham chiếu hỗ trợ hợp đồng 03 | Stateless (Không gọi trong Phase 2) | N/A (Không triển khai Phase 2) | Không có |
-| **API-AUDIT-01**| `GET /api/admin/audit-logs` | `COMP-DOM-07` | B2 / B6 | JWT (Administrator)| Đọc bảng `audit_logs` Append-Only (chỉ Admin) | `UNAUTHORIZED`, `FORBIDDEN` | `AUDIT_LOG_INSPECTED` |
+| **API-AUTH-01** | `POST /api/auth/register` | `COMP-DOM-01` | B1 / B3 | CÃ´ng khai (Public) | Táº¡o báº£n ghi `profiles` qua GoTrue | `INVALID_INPUT`, `USER_ALREADY_EXISTS` | KhÃ´ng cÃ³ |
+| **API-AUTH-02** | `POST /api/auth/login` | `COMP-DOM-01` | B1 / B3 | CÃ´ng khai (Public) | Äá»c `profiles` | `INVALID_CREDENTIALS` | `AUTH_LOGIN_FAILED` (náº¿u sai) |
+| **API-AUTH-03** | `POST /api/auth/recover-password` | `COMP-DOM-01` | B1 / B3 | CÃ´ng khai (Public) | Khá»Ÿi táº¡o Ä‘áº·t láº¡i máº­t kháº©u qua Supabase Auth (P1-FR-001) | `INVALID_EMAIL` | `AUTH_PASSWORD_RECOVERY_REQ` |
+| **API-AUTH-04** | `GET /api/auth/session` | `COMP-DOM-01` | B1 / B3 | Bearer JWT (Authenticated) | Äá»c phiÃªn lÃ m viá»‡c vÃ  há»“ sÆ¡ vai trÃ² | `UNAUTHORIZED` | KhÃ´ng cÃ³ |
+| **API-LEARN-01**| `GET /api/curriculum/units` | `COMP-DOM-02` | B1 / B3 | Bearer JWT (Learner) | Äá»c `units` thá»a mÃ£n luáº­t 4/4 Published | `UNAUTHORIZED` | KhÃ´ng cÃ³ |
+| **API-LEARN-02**| `GET /api/curriculum/lessons/{id}` | `COMP-DOM-05` | B1 / B3 | Bearer JWT (Learner) | Äá»c `lesson_revisions` status `PUBLISHED` (giáº¥u Ä‘Ã¡p Ã¡n) | `LESSON_NOT_FOUND`, `LESSON_LOCKED` | KhÃ´ng cÃ³ |
+| **API-LEARN-03**| `POST /api/learning/lesson/submit`| `COMP-DOM-05` | B1 / B3 | Bearer JWT (Learner) | Ghi nguyÃªn tá»­ `user_progress` (xÃ¡c thá»±c retry D7) | `RETRY_ALLOWANCE_EXCEEDED` | KhÃ´ng cÃ³ |
+| **API-ASSESS-01**|`POST /api/assessment/placement/start`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Kiá»ƒm tra `profiles.verified_starting_unit` | `ASSESSMENT_ALREADY_COMPLETED` | KhÃ´ng cÃ³ |
+| **API-ASSESS-02**|`POST /api/assessment/placement/submit`| `COMP-DOM-03`| B1 / B3 | Bearer JWT (Learner) | Ghi `assessment_results`, cáº­p nháº­t `profiles` (Mapping A) | `INVALID_INPUT` (ngoÃ i dáº£i 0â€“30) | `DIAGNOSTIC_COMPLETED` |
+| **API-ASSESS-03**|`POST /api/assessment/placement/skip`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Cáº­p nháº­t `profiles.verified_starting_unit = 1` (UNVERIFIED) | `ALREADY_VERIFIED` | KhÃ´ng cÃ³ |
+| **API-ASSESS-04**|`POST /api/assessment/jump/start` | `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Kiá»ƒm tra thá»i gian há»“i chiÃªu 24h | `429 JUMP_COOLDOWN_ACTIVE` | `JUMP_LOCKOUT_TRIGGERED` (náº¿u trÆ°á»£t) |
+| **API-ASSESS-05**|`POST /api/assessment/jump/submit`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Ghi `by_jump = true` trong `user_progress` | `INVALID_INPUT` | KhÃ´ng cÃ³ |
+| **API-ASSESS-06**|`POST /api/assessment/placement/retake`| `COMP-DOM-03` | B1 / B3 | Bearer JWT (Learner) | Táº¡o má»›i `assessment_results` báº¥t biáº¿n, cáº­p nháº­t starting unit | `ALREADY_IN_PROGRESS` | `DIAGNOSTIC_RETAKEN` |
+| **API-PRACT-01**| `GET /api/practice/srs/queue` | `COMP-DOM-04` | B1 / B3 | Bearer JWT (Learner) | Äá»c `user_vocab_srs` Ä‘áº¿n háº¡n | `UNAUTHORIZED` | KhÃ´ng cÃ³ |
+| **API-PRACT-02**| `POST /api/practice/srs/review` | `COMP-DOM-04` | B1 / B3 | Bearer JWT (Learner) | Thá»±c thi RPC `record_review` Policy B [1,3,7,14,30] | `INVALID_STAGE` | KhÃ´ng cÃ³ |
+| **API-GOV-01** | `POST /api/admin/content/assign` | `COMP-DOM-06` | B2 / B3 | JWT (Manager) | Táº¡o báº£n ghi phÃ¢n cÃ´ng trong `lesson_revisions` | `CREATOR_NOT_FOUND` | `CONTENT_ASSIGNED` |
+| **API-GOV-02** | `POST /api/admin/content/submit` | `COMP-DOM-06` | B2 / B3 | JWT (Creator) | Cáº­p nháº­t revision tá»« `DRAFT` sang `IN_REVIEW` | `NOT_ASSIGNED_CREATOR` | `CONTENT_SUBMITTED` |
+| **API-AUTHZ-01**| `POST /api/admin/content/review`| `COMP-DOM-06` | B2 / B3 | JWT (Moderator) | Cáº­p nháº­t `status = APPROVED/CHANGES_REQ` | `403 ROLE_UNAUTHORIZED` | `CONTENT_APPROVED`, `CONTENT_CHANGES_REQ` |
+| **API-AUTHZ-02**| `POST /api/admin/content/publish`| `COMP-DOM-06` | B2 / B3 | JWT (Manager) | Cáº­p nháº­t `status = PUBLISHED` | `403 FORBIDDEN` | `CONTENT_PUBLISHED` |
+| **API-GOV-03** | `POST /api/admin/content/clone` | `COMP-DOM-06` | B2 / B3 | JWT (Creator/Manager)| NhÃ¢n báº£n bÃ i há»c published sang revision v2 (`supersedes_id`) | `LESSON_NOT_PUBLISHED` | `CONTENT_CLONED` |
+| **API-GOV-04** | `POST /api/admin/content/archive` | `COMP-DOM-06` | B2 / B3 | JWT (Manager/Admin) | Chuyá»ƒn tráº¡ng thÃ¡i revision sang `ARCHIVED` | `CANNOT_ARCHIVE_ACTIVE` | `CONTENT_ARCHIVED` |
+| **API-GOV-05** | `POST /api/admin/content/draft` | `COMP-DOM-06` | B2 / B3 | JWT (Creator) | LÆ°u báº£n tháº£o bÃ i há»c táº¡m thá»i (Draft Save) trÆ°á»›c khi ná»™p duyá»‡t | `FORBIDDEN` | `CONTENT_DRAFT_SAVED` |
+| **API-GOV-06** | `GET /api/admin/content/review-queue` | `COMP-DOM-06` | B2 / B3 | JWT (Moderator) | Tra cá»©u danh sÃ¡ch bÃ i há»c Ä‘ang chá» duyá»‡t (`status = 'IN_REVIEW'`) | `FORBIDDEN` | KhÃ´ng cÃ³ |
+| **API-USER-01** | `PATCH /api/user/profile` | `COMP-DOM-01` | B1 / B3 | Bearer JWT (Learner) | Cáº­p nháº­t thÃ´ng tin cho phÃ©p (mÃºi giá» IANA, uiLocale, nativeLangCode per SEC-D3) | `INVALID_TIMEZONE` | `USER_PROFILE_UPDATED` |
+| **API-USER-02** | `GET /api/user/streak` | `COMP-DOM-02` | B1 / B3 | Bearer JWT (Learner) | Äá»c chuá»—i ngÃ y há»c hiá»‡n táº¡i (`currentStreak`) vÃ  ngÃ y Ä‘á»§ Ä‘iá»u kiá»‡n | `UNAUTHORIZED` | KhÃ´ng cÃ³ |
+| **API-AUTHZ-03**| `POST /api/admin/content/emergency-publish`| `COMP-DOM-07` | B2 / B3 / B6 | JWT (Administrator)| Cáº­p nháº­t `status = PUBLISHED`, kÃ¨m reason báº¯t buá»™c | `403 EMERGENCY_UNAPPROVED`, `403 MISSING_JUSTIFICATION` | `CONTENT_EMERGENCY_PUB` |
+| **API-ADMIN-ROLE-01**| `POST /api/admin/users/{id}/role` | `COMP-DOM-07` | B2 / B3 | JWT (Administrator)| Quáº£n trá»‹ vai trÃ² tÃ i khoáº£n ngÆ°á»i dÃ¹ng trong `profiles` | `FORBIDDEN` | `USER_ROLE_CHANGED` |
+| **API-SUPPORT-01** | `GET /api/support/tickets` | `COMP-DOM-07` | B2 / B3 | JWT (Operations Staff / Admin)| Tra cá»©u vÃ  Ä‘iá»u phá»‘i há»— trá»£ ngÆ°á»i dÃ¹ng theo ca sá»­ dá»¥ng UC-14 | `FORBIDDEN` | `SUPPORT_TICKET_INSPECTED` |
+| **API-AI-GEC-01** [OUT OF PHASE 2 SCOPE]| `POST /v1/gec/correct` (Ná»™i bá»™) | `COMP-EXT-02` [OUT OF SCOPE] | B1 $\rightarrow$ B5 | Tham chiáº¿u há»— trá»£ há»£p Ä‘á»“ng 03 | Stateless (KhÃ´ng gá»i trong Phase 2) | N/A (KhÃ´ng triá»ƒn khai Phase 2) | KhÃ´ng cÃ³ |
+| **API-AUDIT-01**| `GET /api/admin/audit-logs` | `COMP-DOM-07` | B2 / B6 | JWT (Administrator)| Äá»c báº£ng `audit_logs` Append-Only (chá»‰ Admin) | `UNAUTHORIZED`, `FORBIDDEN` | `AUDIT_LOG_INSPECTED` |
 
 ---
 
-## 12. CHIẾN LƯỢC KIỂM THỬ TỰ ĐỘNG & BỘ KHUNG KIỂM THỬ KHẢ THI
+## 12. CHIáº¾N LÆ¯á»¢C KIá»‚M THá»¬ Tá»° Äá»˜NG & Bá»˜ KHUNG KIá»‚M THá»¬ KHáº¢ THI
 
-Chiến lược kiểm thử của Phase 2 được xây dựng theo mô hình **Kim Tự Tháp Kiểm Thử (Test Pyramid)** hoàn chỉnh, bảo đảm mọi bất biến nghiệp vụ và ranh giới an ninh đều có kiểm thử tự động xác thực khách quan trước khi được chấp thuận.
+Chiáº¿n lÆ°á»£c kiá»ƒm thá»­ cá»§a Phase 2 Ä‘Æ°á»£c xÃ¢y dá»±ng theo mÃ´ hÃ¬nh **Kim Tá»± ThÃ¡p Kiá»ƒm Thá»­ (Test Pyramid)** hoÃ n chá»‰nh, báº£o Ä‘áº£m má»i báº¥t biáº¿n nghiá»‡p vá»¥ vÃ  ranh giá»›i an ninh Ä‘á»u cÃ³ kiá»ƒm thá»­ tá»± Ä‘á»™ng xÃ¡c thá»±c khÃ¡ch quan trÆ°á»›c khi Ä‘Æ°á»£c cháº¥p thuáº­n.
 
 ```text
                / \
@@ -791,413 +791,413 @@ Chiến lược kiểm thử của Phase 2 được xây dựng theo mô hình *
     /-----------------------\
 ```
 
-### 12.1. Quy Chuẩn Công Cụ Thực Thi Kiểm Thử Theo Gói Mã Nguồn (Test Runner Normalization)
+### 12.1. Quy Chuáº©n CÃ´ng Cá»¥ Thá»±c Thi Kiá»ƒm Thá»­ Theo GÃ³i MÃ£ Nguá»“n (Test Runner Normalization)
 
-| Phân Vùng Kiểm Thử (Area) | Gói Sở Hữu (Package) | Công Cụ Chạy (Runner) | Lệnh Thực Thi Thực Tế (Executable Command) | Phạm Vi Kiểm Thử (Covers) |
+| PhÃ¢n VÃ¹ng Kiá»ƒm Thá»­ (Area) | GÃ³i Sá»Ÿ Há»¯u (Package) | CÃ´ng Cá»¥ Cháº¡y (Runner) | Lá»‡nh Thá»±c Thi Thá»±c Táº¿ (Executable Command) | Pháº¡m Vi Kiá»ƒm Thá»­ (Covers) |
 |---|---|---|---|---|
 | **Learner Core & Domain Logic** | `lingora-web` | Vitest 4.x | `npx vitest run tests/unit/domain/<file>` | Mapping A, Retry math D7, SRS Policy B client logic, Streak timezone D9. |
 | **BFF Handlers & Integration** | `lingora-web` | Vitest 4.x | `npx vitest run tests/integration/api/<file>` | BFF Route Handlers, Placement start/skip/submit, Jump cooldown, SRS review. |
 | **Multi-Role Security & SoD** | `lingora-web` | Vitest 4.x | `npx vitest run tests/security/<file>` | 6-Role token auth, Cross-user RLS isolation, SoD Creator approval denial and Moderator publish denial. |
-| **Database Schema & Prisma Migrations**| `lingora-admin` | Prisma CLI | `npx prisma validate --schema prisma/schema.prisma` | Kiểm tra tính toàn vẹn 18+ models, quan hệ khóa ngoại và enum vật lý. |
-| **End-to-End User Journeys** | `lingora-web` | Playwright 1.x| `npx playwright test tests/e2e/<file>` | 14 Use Cases cốt lõi (UC-01..UC-14), luồng liên kết nhiều người dùng, chuyển trang. |
+| **Database Schema & Prisma Migrations**| `lingora-admin` | Prisma CLI | `npx prisma validate --schema prisma/schema.prisma` | Kiá»ƒm tra tÃ­nh toÃ n váº¹n 18+ models, quan há»‡ khÃ³a ngoáº¡i vÃ  enum váº­t lÃ½. |
+| **End-to-End User Journeys** | `lingora-web` | Playwright 1.x| `npx playwright test tests/e2e/<file>` | 14 Use Cases cá»‘t lÃµi (UC-1..UC-14), luá»“ng liÃªn káº¿t nhiá»u ngÆ°á»i dÃ¹ng, chuyá»ƒn trang. |
 | **AI Service Stubs (Historical)** | `lingora-ai/api` | Pytest 8.x | `pytest tests/` | `[HISTORICAL / OUT OF PHASE 2 TEST EXECUTION SCOPE]` |
 
-### 12.2. Chuyển Đổi 18 Khung Kịch Bản M2.6 Thành Bộ Kiểm Thử Khả Thi (Executable Test Specs)
+### 12.2. Chuyá»ƒn Äá»•i 18 Khung Ká»‹ch Báº£n M2.6 ThÃ nh Bá»™ Kiá»ƒm Thá»­ Kháº£ Thi (Executable Test Specs)
 
-| Khung Test M2.6 | Tên Kịch Bản Kiểm Thử | Tệp Mã Nguồn Kiểm Thử Dự Kiến | Lệnh Thực Thi Kiểm Thử Tương Ứng | Điều Kiện Đạt Khách Quan (Pass Assertion) |
+| Khung Test M2.6 | TÃªn Ká»‹ch Báº£n Kiá»ƒm Thá»­ | Tá»‡p MÃ£ Nguá»“n Kiá»ƒm Thá»­ Dá»± Kiáº¿n | Lá»‡nh Thá»±c Thi Kiá»ƒm Thá»­ TÆ°Æ¡ng á»¨ng | Äiá»u Kiá»‡n Äáº¡t KhÃ¡ch Quan (Pass Assertion) |
 |---|---|---|---|---|
-| **Frame 1** | `TEST-MAPPING-A` | `lingora-web/tests/unit/domain/mapping_a.test.ts` | `npx vitest run tests/unit/domain/mapping_a.test.ts` | 12 vector điểm biên (0..30) ánh xạ chính xác 100% ra Unit 1..6; không tạo nhãn CEFR. |
-| **Frame 2** | `TEST-DIAG-SKIP` | `lingora-web/tests/integration/api/placement_skip.test.ts` | `npx vitest run tests/integration/api/placement_skip.test.ts` | Trả về `startingUnit = 1`, `UNVERIFIED`; `COUNT(assessment_results) == 0`. |
-| **Frame 3** | `TEST-DIAG-RETAKE` | `lingora-web/tests/integration/api/placement_retake.test.ts`| `npx vitest run tests/integration/api/placement_retake.test.ts` | Bản ghi cũ giữ nguyên; tạo bản ghi mới với UUID mới; `verified_starting_unit` cập nhật. |
-| **Frame 4** | `TEST-JUMP-PASS` | `lingora-web/tests/unit/domain/jump_threshold.test.ts` | `npx vitest run tests/unit/domain/jump_threshold.test.ts` | Điểm 94.9% $\rightarrow$ FAIL (`isPassed = false`); điểm 95.0% $\rightarrow$ PASS (`isPassed = true`). |
-| **Frame 5** | `TEST-JUMP-COOLDOWN`| `lingora-web/tests/integration/api/jump_cooldown.test.ts` | `npx vitest run tests/integration/api/jump_cooldown.test.ts` | Gọi Jump lúc $T_0 + 23h59m \rightarrow 403 / 429$; gọi lúc $T_0 + 24h01m \rightarrow 200 OK$. |
-| **Frame 6** | `TEST-JUMP-NON-COMP`| `lingora-web/tests/integration/domain/jump_progression.test.ts` | `npx vitest run tests/integration/domain/jump_progression.test.ts` | Bài học bị nhảy có `by_jump = true`, status `SKIPPED_BY_JUMP`; không tính hoàn thành. |
-| **Frame 7** | `TEST-RETRY-ALLOW` | `lingora-web/tests/unit/domain/retry_allowance.test.ts` | `npx vitest run tests/unit/domain/retry_allowance.test.ts` | Bài 15 câu $\rightarrow$ 1 lượt; bài 25 câu $\rightarrow$ 2 lượt; vượt quá lượt $\rightarrow 403 RETRY_EXCEEDED$. |
-| **Frame 8** | `TEST-RETRY-CREDIT` | `lingora-web/tests/unit/domain/retry_credit.test.ts` | `npx vitest run tests/unit/domain/retry_credit.test.ts` | Bài 10 điểm làm lại đúng $\rightarrow$ Nhận chính xác $7.0$ điểm ($70\%$); không bao giờ vượt 70%. |
-| **Frame 9** | `TEST-SRS-POLICY-B` | `lingora-web/tests/integration/api/srs_policy_b.test.ts` | `npx vitest run tests/integration/api/srs_policy_b.test.ts` | RPC `record_review` trả về khoảng cách đúng: 1, 3, 7, 14, 30; sai $\rightarrow$ reset về 1 ngày. |
-| **Frame 10**| `TEST-STREAK-TZ` | `lingora-web/tests/unit/domain/streak_timezone.test.ts` | `npx vitest run tests/unit/domain/streak_timezone.test.ts` | Bài hoàn thành 23:30 UTC ngày 26 $\rightarrow$ Ghi nhận thuộc ngày 27 theo giờ Việt Nam (UTC+7). |
-| **Frame 11**| `TEST-STREAK-RESET` | `lingora-web/tests/unit/domain/streak_reset.test.ts` | `npx vitest run tests/unit/domain/streak_reset.test.ts` | Bỏ học ngày D+1, học ngày D+2 $\rightarrow currentStreak = 1$, $longestStreak$ bảo lưu. |
-| **Frame 12**| `TEST-RBAC-MATRIX` | `lingora-web/tests/security/rbac_matrix.test.ts` | `npx vitest run tests/security/rbac_matrix.test.ts` | Quét 15 thao tác nghiệp vụ trên 6 token vai trò; 100% yêu cầu trái phép trả về 403. |
-| **Frame 13**| `TEST-RLS-ISOLATE` | `lingora-web/tests/security/rls_isolation.test.ts` | `npx vitest run tests/security/rls_isolation.test.ts` | User A gửi truy vấn trực tiếp nhắm vào User B $\rightarrow$ Kết quả trả về rỗng (0 bản ghi). |
-| **Frame 14**| `TEST-SOD-CREATOR-APP`| `lingora-web/tests/security/sod_creator_approve.test.ts`| `npx vitest run tests/security/sod_creator_approve.test.ts`| Creator cố tình gọi lệnh duyệt bài $\rightarrow$ Bị từ chối phân quyền với lỗi `403 Forbidden` / `ROLE_UNAUTHORIZED`. |
-| **Frame 15**| `TEST-SOD-MOD-PUB` | `lingora-web/tests/security/sod_moderator_publish.test.ts`| `npx vitest run tests/security/sod_moderator_publish.test.ts` | Moderator cố tình xuất bản bài học $\rightarrow$ Bị chặn với lỗi `403 SOD_VIOLATION_MODERATOR_PUBLISH`. |
-| **Frame 16**| `TEST-SOD-EMERGENCY-PUB`| `lingora-web/tests/security/sod_emergency_publish.test.ts`| `npx vitest run tests/security/sod_emergency_publish.test.ts`| Admin xuất bản bài Approved thiếu lý do $\rightarrow$ 403 MISSING_JUSTIFICATION; xuất bản bài chưa Approved $\rightarrow$ 403 EMERGENCY_UNAPPROVED. |
-| **Frame 17** [Historical M2.6]| `TEST-GEC-TIMEOUT` | `lingora-web/tests/integration/ai/gec_timeout.test.ts` | `[OUT OF PHASE 2 SCOPE]` | Khung kiểm thử AI M2.6; không thuộc phạm vi thực thi kiểm thử Phase 2. |
-| **Frame 18** [Historical M2.6]| `TEST-AI-ISOLATE` | `lingora-ai/api/tests/test_network_isolation.py` | `[OUT OF PHASE 2 SCOPE]` | Khung kiểm thử AI M2.6; không thuộc phạm vi thực thi kiểm thử Phase 2. |
+| **Frame 1** | `TEST-MAPPING-A` | `lingora-web/tests/unit/domain/mapping_a.test.ts` | `npx vitest run tests/unit/domain/mapping_a.test.ts` | 12 vector Ä‘iá»ƒm biÃªn (0..30) Ã¡nh xáº¡ chÃ­nh xÃ¡c 100% ra Unit 1..6; khÃ´ng táº¡o nhÃ£n CEFR. |
+| **Frame 2** | `TEST-DIAG-SKIP` | `lingora-web/tests/integration/api/placement_skip.test.ts` | `npx vitest run tests/integration/api/placement_skip.test.ts` | Tráº£ vá» `startingUnit = 1`, `UNVERIFIED`; `COUNT(assessment_results) == 0`. |
+| **Frame 3** | `TEST-DIAG-RETAKE` | `lingora-web/tests/integration/api/placement_retake.test.ts`| `npx vitest run tests/integration/api/placement_retake.test.ts` | Báº£n ghi cÅ© giá»¯ nguyÃªn; táº¡o báº£n ghi má»›i vá»›i UUID má»›i; `verified_starting_unit` cáº­p nháº­t. |
+| **Frame 4** | `TEST-JUMP-PASS` | `lingora-web/tests/unit/domain/jump_threshold.test.ts` | `npx vitest run tests/unit/domain/jump_threshold.test.ts` | Äiá»ƒm 94.9% $\rightarrow$ FAIL (`isPassed = false`); Ä‘iá»ƒm 95.0% $\rightarrow$ PASS (`isPassed = true`). |
+| **Frame 5** | `TEST-JUMP-COOLDOWN`| `lingora-web/tests/integration/api/jump_cooldown.test.ts` | `npx vitest run tests/integration/api/jump_cooldown.test.ts` | Gá»i Jump lÃºc $T_0 + 23h59m \rightarrow 403 / 429$; gá»i lÃºc $T_0 + 24h01m \rightarrow 200 OK$. |
+| **Frame 6** | `TEST-JUMP-NON-COMP`| `lingora-web/tests/integration/domain/jump_progression.test.ts` | `npx vitest run tests/integration/domain/jump_progression.test.ts` | BÃ i há»c bá»‹ nháº£y cÃ³ `by_jump = true`, status `SKIPPED_BY_JUMP`; khÃ´ng tÃ­nh hoÃ n thÃ nh. |
+| **Frame 7** | `TEST-RETRY-ALLOW` | `lingora-web/tests/unit/domain/retry_allowance.test.ts` | `npx vitest run tests/unit/domain/retry_allowance.test.ts` | BÃ i 15 cÃ¢u $\rightarrow$ 1 lÆ°á»£t; bÃ i 25 cÃ¢u $\rightarrow$ 2 lÆ°á»£t; vÆ°á»£t quÃ¡ lÆ°á»£t $\rightarrow 403 RETRY_EXCEEDED$. |
+| **Frame 8** | `TEST-RETRY-CREDIT` | `lingora-web/tests/unit/domain/retry_credit.test.ts` | `npx vitest run tests/unit/domain/retry_credit.test.ts` | BÃ i 10 Ä‘iá»ƒm lÃ m láº¡i Ä‘Ãºng $\rightarrow$ Nháº­n chÃ­nh xÃ¡c $7.0$ Ä‘iá»ƒm ($70\%$); khÃ´ng bao giá» vÆ°á»£t 70%. |
+| **Frame 9** | `TEST-SRS-POLICY-B` | `lingora-web/tests/integration/api/srs_policy_b.test.ts` | `npx vitest run tests/integration/api/srs_policy_b.test.ts` | RPC `record_review` tráº£ vá» khoáº£ng cÃ¡ch Ä‘Ãºng: 1, 3, 7, 14, 30; sai $\rightarrow$ reset vá» 1 ngÃ y. |
+| **Frame 10**| `TEST-STREAK-TZ` | `lingora-web/tests/unit/domain/streak_timezone.test.ts` | `npx vitest run tests/unit/domain/streak_timezone.test.ts` | BÃ i hoÃ n thÃ nh 23:30 UTC ngÃ y 26 $\rightarrow$ Ghi nháº­n thuá»™c ngÃ y 27 theo giá» Viá»‡t Nam (UTC+7). |
+| **Frame 11**| `TEST-STREAK-RESET` | `lingora-web/tests/unit/domain/streak_reset.test.ts` | `npx vitest run tests/unit/domain/streak_reset.test.ts` | Bá» há»c ngÃ y D+1, há»c ngÃ y D+2 $\rightarrow currentStreak = 1$, $longestStreak$ báº£o lÆ°u. |
+| **Frame 12**| `TEST-RBAC-MATRIX` | `lingora-web/tests/security/rbac_matrix.test.ts` | `npx vitest run tests/security/rbac_matrix.test.ts` | QuÃ©t 15 thao tÃ¡c nghiá»‡p vá»¥ trÃªn 6 token vai trÃ²; 100% yÃªu cáº§u trÃ¡i phÃ©p tráº£ vá» 403. |
+| **Frame 13**| `TEST-RLS-ISOLATE` | `lingora-web/tests/security/rls_isolation.test.ts` | `npx vitest run tests/security/rls_isolation.test.ts` | User A gá»­i truy váº¥n trá»±c tiáº¿p nháº¯m vÃ o User B $\rightarrow$ Káº¿t quáº£ tráº£ vá» rá»—ng (0 báº£n ghi). |
+| **Frame 14**| `TEST-SOD-CREATOR-APP`| `lingora-web/tests/security/sod_creator_approve.test.ts`| `npx vitest run tests/security/sod_creator_approve.test.ts`| Creator cá»‘ tÃ¬nh gá»i lá»‡nh duyá»‡t bÃ i $\rightarrow$ Bá»‹ tá»« chá»‘i phÃ¢n quyá»n vá»›i lá»—i `403 Forbidden` / `ROLE_UNAUTHORIZED`. |
+| **Frame 15**| `TEST-SOD-MOD-PUB` | `lingora-web/tests/security/sod_moderator_publish.test.ts`| `npx vitest run tests/security/sod_moderator_publish.test.ts` | Moderator cá»‘ tÃ¬nh xuáº¥t báº£n bÃ i há»c $\rightarrow$ Bá»‹ cháº·n vá»›i lá»—i `403 SOD_VIOLATION_MODERATOR_PUBLISH`. |
+| **Frame 16**| `TEST-SOD-EMERGENCY-PUB`| `lingora-web/tests/security/sod_emergency_publish.test.ts`| `npx vitest run tests/security/sod_emergency_publish.test.ts`| Admin xuáº¥t báº£n bÃ i Approved thiáº¿u lÃ½ do $\rightarrow$ 403 MISSING_JUSTIFICATION; xuáº¥t báº£n bÃ i chÆ°a Approved $\rightarrow$ 403 EMERGENCY_UNAPPROVED. |
+| **Frame 17** [Historical M2.6]| `TEST-GEC-TIMEOUT` | `lingora-web/tests/integration/ai/gec_timeout.test.ts` | `[OUT OF PHASE 2 SCOPE]` | Khung kiá»ƒm thá»­ AI M2.6; khÃ´ng thuá»™c pháº¡m vi thá»±c thi kiá»ƒm thá»­ Phase 2. |
+| **Frame 18** [Historical M2.6]| `TEST-AI-ISOLATE` | `lingora-ai/api/tests/test_network_isolation.py` | `[OUT OF PHASE 2 SCOPE]` | Khung kiá»ƒm thá»­ AI M2.6; khÃ´ng thuá»™c pháº¡m vi thá»±c thi kiá»ƒm thá»­ Phase 2. |
 
-> **Phân bổ khung kiểm thử theo mốc triển khai (Canonical Test Frame Mapping):**
-> - **M3.2 (Security / Auth / RLS / SoD):** Bao trùm **Frames 12–16** (RBAC, RLS Isolation, Creator Approval Denial, Moderator Publish Denial, Admin Emergency Publish).
-> - **M3.4 (Assessment & Placement Engine):** Bao trùm **Frames 1–3** (Mapping A 12 boundary points, Skip Diagnostic 0-record, Retake Immutability).
-> - **M3.5 (Learning Intelligence Engine):** Bao trùm **Frames 4–11** (Jump Threshold, Jump Cooldown, Jump Non-Completing, Retry Allowance, Retry Credit Cap, SRS Policy B, Streak Timezone, Streak Reset).
-> - **Frames 17–18:** Khung kiểm thử AI M2.6 được lưu vết ở mức tham chiếu lịch sử, hoàn toàn không thuộc phạm vi nghiệm thu Phase 2.
+> **PhÃ¢n bá»• khung kiá»ƒm thá»­ theo má»‘c triá»ƒn khai (Canonical Test Frame Mapping):**
+> - **M3.2 (Security / Auth / RLS / SoD):** Bao trÃ¹m **Frames 12â€“16** (RBAC, RLS Isolation, Creator Approval Denial, Moderator Publish Denial, Admin Emergency Publish).
+> - **M3.4 (Assessment & Placement Engine):** Bao trÃ¹m **Frames 1â€“3** (Mapping A 12 boundary points, Skip Diagnostic 0-record, Retake Immutability).
+> - **M3.5 (Learning Intelligence Engine):** Bao trÃ¹m **Frames 4â€“11** (Jump Threshold, Jump Cooldown, Jump Non-Completing, Retry Allowance, Retry Credit Cap, SRS Policy B, Streak Timezone, Streak Reset).
+> - **Frames 17â€“18:** Khung kiá»ƒm thá»­ AI M2.6 Ä‘Æ°á»£c lÆ°u váº¿t á»Ÿ má»©c tham chiáº¿u lá»‹ch sá»­, hoÃ n toÃ n khÃ´ng thuá»™c pháº¡m vi nghiá»‡m thu Phase 2.
 
-### 12.3. Lộ Trình Kiểm Thử Khói Tích Hợp Sớm (Progressive Smoke Verification)
+### 12.3. Lá»™ TrÃ¬nh Kiá»ƒm Thá»­ KhÃ³i TÃ­ch Há»£p Sá»›m (Progressive Smoke Verification)
 
-Nhằm phát hiện sớm lỗi tích hợp giữa các tầng trước khi bước vào kiểm thử E2E tổng thể tại M3.8, các mốc nền tảng bắt buộc phải vượt qua các bài kiểm thử khói (Smoke Tests):
+Nháº±m phÃ¡t hiá»‡n sá»›m lá»—i tÃ­ch há»£p giá»¯a cÃ¡c táº§ng trÆ°á»›c khi bÆ°á»›c vÃ o kiá»ƒm thá»­ E2E tá»•ng thá»ƒ táº¡i M3.8, cÃ¡c má»‘c ná»n táº£ng báº¯t buá»™c pháº£i vÆ°á»£t qua cÃ¡c bÃ i kiá»ƒm thá»­ khÃ³i (Smoke Tests):
 
-| Mốc Triển Khai | Bài Kiểm Thử Khói (Smoke Journey) | Kịch Bản Kiểm Tra Tối Thiểu | Điều Kiện Vượt Cổng (Gate Exit) |
+| Má»‘c Triá»ƒn Khai | BÃ i Kiá»ƒm Thá»­ KhÃ³i (Smoke Journey) | Ká»‹ch Báº£n Kiá»ƒm Tra Tá»‘i Thiá»ƒu | Äiá»u Kiá»‡n VÆ°á»£t Cá»•ng (Gate Exit) |
 |---|---|---|---|
-| **M3.2** | Auth & 6-Role Token Smoke | Đăng nhập lần lượt 6 tài khoản mẫu, nhận JWT chứa đúng role claim | 6/6 tokens hợp lệ, giải mã đúng role |
-| **M3.3** | Learner Lesson Player Smoke | Mở bài học thuộc Unit 3 đã Published, tải 5 câu hỏi, trả lời 1 câu | Render 5 dạng bài tập, nhận phản hồi chấm điểm |
-| **M3.4** | Placement & Starting Unit Smoke | Học viên mới làm 30 câu placement, tính điểm Mapping A, gán Unit xuất phát | Cập nhật `verified_starting_unit`, tạo `AssessmentResult` |
-| **M3.5** | Intelligence & SRS Smoke | Trả lời sai kích hoạt retry (trần 70%), gọi RPC `record_review` cập nhật Policy B | Retry credit 70% PASS, SRS card nhảy ngày PASS |
-| **M3.6** | Content Lifecycle Smoke | Manager phân công $\rightarrow$ Creator soạn Draft $\rightarrow$ nộp Review $\rightarrow$ Moderator Approve $\rightarrow$ Publish | Chu trình 6 trạng thái và Clone-to-Draft v2 PASS |
-| **M3.8** | Full End-to-End Learner Journey | Toàn bộ 14 Ca sử dụng cốt lõi (UC-01 đến UC-14) liên kết không đứt gãy | 100% Playwright E2E suites PASS |
-| **M3.9** | Security & Performance Hardening Smoke | Chạy k6 API benchmark (P95 latency), quét an ninh JWT & RLS bypass | P95 < 500ms, 0 lỗi Sev-1/Sev-2, secret scan clean |
+| **M3.2** | Auth & 6-Role Token Smoke | ÄÄƒng nháº­p láº§n lÆ°á»£t 6 tÃ i khoáº£n máº«u, nháº­n JWT chá»©a Ä‘Ãºng role claim | 6/6 tokens há»£p lá»‡, giáº£i mÃ£ Ä‘Ãºng role |
+| **M3.3** | Learner Lesson Player Smoke | Má»Ÿ bÃ i há»c thuá»™c Unit 3 Ä‘Ã£ Published, táº£i 5 cÃ¢u há»i, tráº£ lá»i 1 cÃ¢u | Render 5 dáº¡ng bÃ i táº­p, nháº­n pháº£n há»“i cháº¥m Ä‘iá»ƒm |
+| **M3.4** | Placement & Starting Unit Smoke | Há»c viÃªn má»›i lÃ m 30 cÃ¢u placement, tÃ­nh Ä‘iá»ƒm Mapping A, gÃ¡n Unit xuáº¥t phÃ¡t | Cáº­p nháº­t `verified_starting_unit`, táº¡o `AssessmentResult` |
+| **M3.5** | Intelligence & SRS Smoke | Tráº£ lá»i sai kÃ­ch hoáº¡t retry (tráº§n 70%), gá»i RPC `record_review` cáº­p nháº­t Policy B | Retry credit 70% PASS, SRS card nháº£y ngÃ y PASS |
+| **M3.6** | Content Lifecycle Smoke | Manager phÃ¢n cÃ´ng $\rightarrow$ Creator soáº¡n Draft $\rightarrow$ ná»™p Review $\rightarrow$ Moderator Approve $\rightarrow$ Publish | Chu trÃ¬nh 6 tráº¡ng thÃ¡i vÃ  Clone-to-Draft v2 PASS |
+| **M3.8** | Full End-to-End Learner Journey | ToÃ n bá»™ 14 Ca sá»­ dá»¥ng cá»‘t lÃµi (UC-01 Ä‘áº¿n UC-14) liÃªn káº¿t khÃ´ng Ä‘á»©t gÃ£y | 100% Playwright E2E suites PASS |
+| **M3.9** | Security & Performance Hardening Smoke | Cháº¡y k6 API benchmark (P95 latency), quÃ©t an ninh JWT & RLS bypass | P95 < 500ms, 0 lá»—i Sev-1/Sev-2, secret scan clean |
 
-> **Nguyên tắc liêm chính trong kiểm thử (Test Integrity Principle):**
-> Tuyệt đối không tuyên bố các kịch bản kiểm thử đã đạt (`PASS`) chỉ vì câu lệnh kiểm thử đã được liệt kê trong bảng đặc tả. Mỗi bài kiểm thử chỉ được công nhận vượt qua cổng nghiệm thu khi có **bằng chứng thực thi thực tế (Command output & exit code 0)** được ghi nhận trực tiếp vào `logs/test-log.md` trong quá trình thực hiện mốc tương ứng. Mọi câu lệnh kiểm thử trong tài liệu đều phải thuộc về các gói mã nguồn thực tế và công cụ runner đã được cài đặt trong repository.
+> **NguyÃªn táº¯c liÃªm chÃ­nh trong kiá»ƒm thá»­ (Test Integrity Principle):**
+> Tuyá»‡t Ä‘á»‘i khÃ´ng tuyÃªn bá»‘ cÃ¡c ká»‹ch báº£n kiá»ƒm thá»­ Ä‘Ã£ Ä‘áº¡t (`PASS`) chá»‰ vÃ¬ cÃ¢u lá»‡nh kiá»ƒm thá»­ Ä‘Ã£ Ä‘Æ°á»£c liá»‡t kÃª trong báº£ng Ä‘áº·c táº£. Má»—i bÃ i kiá»ƒm thá»­ chá»‰ Ä‘Æ°á»£c cÃ´ng nháº­n vÆ°á»£t qua cá»•ng nghiá»‡m thu khi cÃ³ **báº±ng chá»©ng thá»±c thi thá»±c táº¿ (Command output & exit code 0)** Ä‘Æ°á»£c ghi nháº­n trá»±c tiáº¿p vÃ o `logs/test-log.md` trong quÃ¡ trÃ¬nh thá»±c hiá»‡n má»‘c tÆ°Æ¡ng á»©ng. Má»i cÃ¢u lá»‡nh kiá»ƒm thá»­ trong tÃ i liá»‡u Ä‘á»u pháº£i thuá»™c vá» cÃ¡c gÃ³i mÃ£ nguá»“n thá»±c táº¿ vÃ  cÃ´ng cá»¥ runner Ä‘Ã£ Ä‘Æ°á»£c cÃ i Ä‘áº·t trong repository.
 
 ---
 
-## 13. BỘ DỮ LIỆU KIỂM THỬ & DỮ LIỆU MẪU TRÌNH DIỄN (SEED DATA)
+## 13. Bá»˜ Dá»® LIá»†U KIá»‚M THá»¬ & Dá»® LIá»†U MáºªU TRÃŒNH DIá»„N (SEED DATA)
 
-Để đảm bảo khả năng tái lặp (reproducibility) trong kiểm thử, ghi hình trình diễn (demo) và thu thập bằng chứng báo cáo, toàn bộ dữ liệu mẫu được chuẩn hóa tất định thông qua tệp kịch bản nạp dữ liệu mầm `prisma/seed.ts`.
+Äá»ƒ Ä‘áº£m báº£o kháº£ nÄƒng tÃ¡i láº·p (reproducibility) trong kiá»ƒm thá»­, ghi hÃ¬nh trÃ¬nh diá»…n (demo) vÃ  thu tháº­p báº±ng chá»©ng bÃ¡o cÃ¡o, toÃ n bá»™ dá»¯ liá»‡u máº«u Ä‘Æ°á»£c chuáº©n hÃ³a táº¥t Ä‘á»‹nh thÃ´ng qua tá»‡p ká»‹ch báº£n náº¡p dá»¯ liá»‡u máº§m `prisma/seed.ts`.
 
-### 13.1. Danh Sách Tài Khoản Mẫu Đại Diện 6 Vai Trò Chuẩn Tắc
+### 13.1. Danh SÃ¡ch TÃ i Khoáº£n Máº«u Äáº¡i Diá»‡n 6 Vai TrÃ² Chuáº©n Táº¯c
 
-> **Nguyên tắc an toàn mật thực & quản lý tài khoản mẫu (Security Hygiene):**
-> *Demo account credentials are seed-only and must be injected through environment variables / local secret configuration. Không commit production credentials vào repository.*
-> Toàn bộ mật khẩu tài khoản mầm chỉ phục vụ môi trường kiểm thử/seed cục bộ và được nạp qua cấu hình biến môi trường cục bộ (ví dụ: `SEED_DEFAULT_PASSWORD`), tuyệt đối không coi các thông tin này là thông tin đăng nhập production.
+> **NguyÃªn táº¯c an toÃ n máº­t thá»±c & quáº£n lÃ½ tÃ i khoáº£n máº«u (Security Hygiene):**
+> *Demo account credentials are seed-only and must be injected through environment variables / local secret configuration. KhÃ´ng commit production credentials vÃ o repository.*
+> ToÃ n bá»™ máº­t kháº©u tÃ i khoáº£n máº§m chá»‰ phá»¥c vá»¥ mÃ´i trÆ°á»ng kiá»ƒm thá»­/seed cá»¥c bá»™ vÃ  Ä‘Æ°á»£c náº¡p qua cáº¥u hÃ¬nh biáº¿n mÃ´i trÆ°á»ng cá»¥c bá»™ (vÃ­ dá»¥: `SEED_DEFAULT_PASSWORD`), tuyá»‡t Ä‘á»‘i khÃ´ng coi cÃ¡c thÃ´ng tin nÃ y lÃ  thÃ´ng tin Ä‘Äƒng nháº­p production.
 
-| Vai Trò Chuẩn Tắc | Email Đại Diện (Demo Persona) | Phương Thức Xác Thực Mầm | Mục Đích Sử Dụng |
+| Vai TrÃ² Chuáº©n Táº¯c | Email Äáº¡i Diá»‡n (Demo Persona) | PhÆ°Æ¡ng Thá»©c XÃ¡c Thá»±c Máº§m | Má»¥c ÄÃ­ch Sá»­ Dá»¥ng |
 |---|---|---|---|
-| **Administrator** | `admin.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn quản trị tài khoản, kiểm tra audit log, xuất bản khẩn cấp có lý do. |
-| **Organizational Manager** | `manager.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn lập kế hoạch bài học, phân công biên soạn, xuất bản bài học chính thức. |
-| **Lesson Creator** | `creator.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn tiếp nhận phân công, soạn thảo bài học bản thảo (Draft), nộp bài kiểm duyệt. |
-| **Moderator** | `moderator.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn hàng đợi kiểm duyệt, yêu cầu sửa bài, phê duyệt bài học (Approved). |
-| **Learner** (Đã kiểm định)| `learner.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn luồng học bài, tương tác bài tập, làm lại, ôn tập SRS, chuỗi ngày học. |
-| **Operations Staff** | `staff.demo@lingora.edu.vn` | Biến môi trường / Secret cục bộ | Trình diễn xử lý / điều phối hỗ trợ vận hành người dùng theo thẩm quyền được cấp. |
+| **Administrator** | `admin.demo@lingora.edu.vn` | Biáº¿n mÃ´i trÆ°á»ng / Secret cá»¥c bá»™ | TrÃ¬nh diá»…n quáº£n trá»‹ tÃ i khoáº£n, kiá»ƒm tra audit log, xuáº¥t báº£n kháº©n cáº¥p cÃ³ lÃ½ do. |
+| **Organizational Manager** | `manager.demo@lingora.edu.vn` | Biáº¿n mÃ´i trÆ°á»ng / Secret cá»¥c bá»™ | TrÃ¬nh diá»…n láº­p káº¿ hoáº¡ch bÃ i há»c, phÃ¢n cÃ´ng biÃªn soáº¡n, xuáº¥t báº£n bÃ i há»c chÃ­nh thá»©c. |
+| **Lesson Creator** | `creator.demo@lingora.edu.vn` | Biáº¿n mÃ´i trÆ°á»ng / Secret cá»¥c bá»™ | TrÃ¬nh diá»…n tiáº¿p nháº­n phÃ¢n cÃ´ng, soáº¡n tháº£o bÃ i há»c báº£n tháº£o (Draft), ná»™p bÃ i kiá»ƒm duyá»‡t. |
+| **Moderator** | `moderator.demo@lingora.edu.vn` | Biáº¿n mÃ´i trÆ°á»ng / Secret cá»¥c bá»™ | TrÃ¬nh diá»…n hÃ ng Ä‘á»£i kiá»ƒm duyá»‡t, yÃªu cáº§u sá»­a bÃ i, phÃª duyá»‡t bÃ i há»c (Approved). |
+| **Learner** (ÄÃ£ kiá»ƒm Ä‘á»‹nh)| `learner.demo@lingora.edu.vn` | Biáº¿n mÃ´i trÆ°á»ng / Secret cá»¥c bá»™ | TrÃ¬nh diá»…n luá»“ng há»c bÃ i, tÆ°Æ¡ng tÃ¡c bÃ i táº­p, lÃ m láº¡i, Ã´n táº­p SRS, chuá»—i ngÃ y há»c. |
+| **Operations Staff** | `staff.demo@lingora.edu.vn` | Biáº¿n mÃ´i trÆ°á»ng / Secret cá»¥c bá»™ | TrÃ¬nh diá»…n xá»­ lÃ½ / Ä‘iá»u phá»‘i há»— trá»£ váº­n hÃ nh ngÆ°á»i dÃ¹ng theo tháº©m quyá»n Ä‘Æ°á»£c cáº¥p. |
 
-### 13.2. Danh Sách 7 Hồ Sơ Học Viên Mẫu (Learner Personas for Test & Demo)
-1. `learner.new@lingora.edu.vn`: Học viên mới tinh, chưa làm bài chẩn đoán (sẵn sàng demo luồng Diagnostic và luồng Skip).
-2. `learner.skip@lingora.edu.vn`: Học viên đã chọn Skip chẩn đoán, xuất phát điểm Unit 1 với trạng thái `UNVERIFIED` (0 AssessmentResult, 0 SkillProfile).
-3. `learner.diagnosed@lingora.edu.vn`: Học viên đã làm bài chẩn đoán đạt 15 điểm, xuất phát điểm được xếp vào Unit 3 theo Mapping A, có bản ghi `AssessmentResult` và `SkillProfile` đầy đủ.
-4. `learner.srsdue@lingora.edu.vn`: Học viên có 10 thẻ từ vựng đến hạn ôn tập trong ngày hôm nay (sẵn sàng demo luồng SRS Review).
-5. `learner.retry@lingora.edu.vn`: Học viên đang trong một bài học có 20 bài tập, đã sử dụng 1 lượt làm lại và còn 1 lượt làm lại (sẵn sàng demo luồng Controlled Retry và trần điểm 70%).
-6. `learner.jump@lingora.edu.vn`: Học viên đã hoàn thành Unit 1, đủ điều kiện làm bài Jump sang Unit 2 (sẵn sàng demo luồng Jump đạt ≥95% và luồng Jump trượt khóa hồi chiêu 24h).
-7. `learner.streakreset@lingora.edu.vn`: Học viên có kỷ lục `longestStreak = 15`, ngày học gần nhất là 2 ngày trước (sẵn sàng demo việc đặt lại `currentStreak = 1` do bỏ lỡ 1 ngày).
+### 13.2. Danh SÃ¡ch 7 Há»“ SÆ¡ Há»c ViÃªn Máº«u (Learner Personas for Test & Demo)
+1. `learner.new@lingora.edu.vn`: Há»c viÃªn má»›i tinh, chÆ°a lÃ m bÃ i cháº©n Ä‘oÃ¡n (sáºµn sÃ ng demo luá»“ng Diagnostic vÃ  luá»“ng Skip).
+2. `learner.skip@lingora.edu.vn`: Há»c viÃªn Ä‘Ã£ chá»n Skip cháº©n Ä‘oÃ¡n, xuáº¥t phÃ¡t Ä‘iá»ƒm Unit 1 vá»›i tráº¡ng thÃ¡i `UNVERIFIED` (0 AssessmentResult, 0 SkillProfile).
+3. `learner.diagnosed@lingora.edu.vn`: Há»c viÃªn Ä‘Ã£ lÃ m bÃ i cháº©n Ä‘oÃ¡n Ä‘áº¡t 15 Ä‘iá»ƒm, xuáº¥t phÃ¡t Ä‘iá»ƒm Ä‘Æ°á»£c xáº¿p vÃ o Unit 3 theo Mapping A, cÃ³ báº£n ghi `AssessmentResult` vÃ  `SkillProfile` Ä‘áº§y Ä‘á»§.
+4. `learner.srsdue@lingora.edu.vn`: Há»c viÃªn cÃ³ 10 tháº» tá»« vá»±ng Ä‘áº¿n háº¡n Ã´n táº­p trong ngÃ y hÃ´m nay (sáºµn sÃ ng demo luá»“ng SRS Review).
+5. `learner.retry@lingora.edu.vn`: Há»c viÃªn Ä‘ang trong má»™t bÃ i há»c cÃ³ 20 bÃ i táº­p, Ä‘Ã£ sá»­ dá»¥ng 1 lÆ°á»£t lÃ m láº¡i vÃ  cÃ²n 1 lÆ°á»£t lÃ m láº¡i (sáºµn sÃ ng demo luá»“ng Controlled Retry vÃ  tráº§n Ä‘iá»ƒm 70%).
+6. `learner.jump@lingora.edu.vn`: Há»c viÃªn Ä‘Ã£ hoÃ n thÃ nh Unit 1, Ä‘á»§ Ä‘iá»u kiá»‡n lÃ m bÃ i Jump sang Unit 2 (sáºµn sÃ ng demo luá»“ng Jump Ä‘áº¡t â‰¥95% vÃ  luá»“ng Jump trÆ°á»£t khÃ³a há»“i chiÃªu 24h).
+7. `learner.streakreset@lingora.edu.vn`: Há»c viÃªn cÃ³ ká»· lá»¥c `longestStreak = 15`, ngÃ y há»c gáº§n nháº¥t lÃ  2 ngÃ y trÆ°á»›c (sáºµn sÃ ng demo viá»‡c Ä‘áº·t láº¡i `currentStreak = 1` do bá» lá»¡ 1 ngÃ y).
 
-### 13.3. Dữ Liệu Mẫu Giáo Trình & Chiến Lược Phân Tách Fixture (Bifurcated Seed Strategy)
+### 13.3. Dá»¯ Liá»‡u Máº«u GiÃ¡o TrÃ¬nh & Chiáº¿n LÆ°á»£c PhÃ¢n TÃ¡ch Fixture (Bifurcated Seed Strategy)
 
-Để triệt tiêu hoàn toàn xung đột giữa **Điều kiện hiển thị đơn vị học (Unit 4/4 Published Rule)** và **Vòng đời nội dung đa trạng thái (Content Lifecycle)**, dữ liệu mầm giáo trình tiếng Anh A1 được phân tách thành 2 nhóm fixture độc lập:
+Äá»ƒ triá»‡t tiÃªu hoÃ n toÃ n xung Ä‘á»™t giá»¯a **Äiá»u kiá»‡n hiá»ƒn thá»‹ Ä‘Æ¡n vá»‹ há»c (Unit 4/4 Published Rule)** vÃ  **VÃ²ng Ä‘á»i ná»™i dung Ä‘a tráº¡ng thÃ¡i (Content Lifecycle)**, dá»¯ liá»‡u máº§m giÃ¡o trÃ¬nh tiáº¿ng Anh A1 Ä‘Æ°á»£c phÃ¢n tÃ¡ch thÃ nh 2 nhÃ³m fixture Ä‘á»™c láº­p:
 
-#### Nhóm 1: Dữ Liệu Mầm Trình Diễn Học Viên (Learning Demo Fixture — Phục vụ Màn 1 & Màn 4)
-Khóa học tiếng Anh A1 chuẩn (`English A1 Foundation` — tham chiếu chi tiết tại `docs/08-english-a1-curriculum.md`):
-- Toàn bộ **6 Units (24 bài học)** thuộc giáo trình thử nghiệm tiếng Anh A1 đều đạt chuẩn **4/4 bài học ở trạng thái `PUBLISHED`**:
+#### NhÃ³m 1: Dá»¯ Liá»‡u Máº§m TrÃ¬nh Diá»…n Há»c ViÃªn (Learning Demo Fixture â€” Phá»¥c vá»¥ MÃ n 1 & MÃ n 4)
+KhÃ³a há»c tiáº¿ng Anh A1 chuáº©n (`English A1 Foundation` â€” tham chiáº¿u chi tiáº¿t táº¡i `docs/08-english-a1-curriculum.md`):
+- ToÃ n bá»™ **6 Units (24 bÃ i há»c)** thuá»™c giÃ¡o trÃ¬nh thá»­ nghiá»‡m tiáº¿ng Anh A1 Ä‘á»u Ä‘áº¡t chuáº©n **4/4 bÃ i há»c á»Ÿ tráº¡ng thÃ¡i `PUBLISHED`**:
   - `Unit 1`: 4/4 Published
   - `Unit 2`: 4/4 Published
   - `Unit 3`: 4/4 Published
   - `Unit 4`: 4/4 Published
   - `Unit 5`: 4/4 Published
   - `Unit 6`: 4/4 Published
-- **Tính khả dụng toàn diện:** Nhờ toàn bộ 6 Units đều thỏa mãn điều kiện hiển thị Unit 4/4 Published, mọi điểm số chẩn đoán đầu vào từ $0$ đến $30$ điểm thô đều xếp học viên vào đúng xuất phát điểm giáo trình tương ứng (U1 đến U6 theo Mapping A) mà không bao giờ gặp tình trạng Unit bị ẩn hay cần bất kỳ cơ chế fallback nào.
+- **TÃ­nh kháº£ dá»¥ng toÃ n diá»‡n:** Nhá» toÃ n bá»™ 6 Units Ä‘á»u thá»a mÃ£n Ä‘iá»u kiá»‡n hiá»ƒn thá»‹ Unit 4/4 Published, má»i Ä‘iá»ƒm sá»‘ cháº©n Ä‘oÃ¡n Ä‘áº§u vÃ o tá»« $0$ Ä‘áº¿n $30$ Ä‘iá»ƒm thÃ´ Ä‘á»u xáº¿p há»c viÃªn vÃ o Ä‘Ãºng xuáº¥t phÃ¡t Ä‘iá»ƒm giÃ¡o trÃ¬nh tÆ°Æ¡ng á»©ng (U1 Ä‘áº¿n U6 theo Mapping A) mÃ  khÃ´ng bao giá» gáº·p tÃ¬nh tráº¡ng Unit bá»‹ áº©n hay cáº§n báº¥t ká»³ cÆ¡ cháº¿ fallback nÃ o.
 
-#### Nhóm 2: Dữ Liệu Mầm Quản Trị & Kiểm Thử Kiểm Duyệt (Governance & Negative Test Fixture — Phục vụ Màn 2 & Màn 3)
-Được cấu hình trên một khóa học / đơn vị kiểm thử riêng biệt để phục vụ kiểm thử vòng đời và kiểm định phủ định (negative testing):
-- **Bộ dữ liệu vòng đời nội dung (Content Lifecycle Fixture):** Bao gồm các bài học đại diện cho đầy đủ các trạng thái biên soạn và kiểm duyệt:
-  - Bản thảo mới phân công: trạng thái `DRAFT` do Manager gán cho Creator (`creator.demo`).
-  - Bài học đang trong hàng đợi kiểm duyệt: trạng thái `IN_REVIEW` chờ Moderator thẩm định.
-  - Bài học yêu cầu chỉnh sửa: trạng thái `CHANGES_REQUESTED` kèm ghi chú nhận xét.
-  - Bài học đã duyệt: trạng thái `APPROVED`, sẵn sàng xuất bản thông thường hoặc xuất bản khẩn cấp có lý do.
-  - Bản thảo nâng cấp nhân bản (Clone-to-Draft v2): bản ghi phiên bản mới kế thừa nội dung bản cũ thông qua trường `supersedes_id`.
-- **Kịch bản kiểm thử phủ định hiển thị Unit (Negative Unit Visibility Case):** Một Unit thử nghiệm chỉ có 3/4 bài học `PUBLISHED` và 1 bài học `DRAFT` $\rightarrow$ Tự động ẩn đối với học viên để kiểm chứng điều kiện cưỡng chế Unit 4/4 Published.
+#### NhÃ³m 2: Dá»¯ Liá»‡u Máº§m Quáº£n Trá»‹ & Kiá»ƒm Thá»­ Kiá»ƒm Duyá»‡t (Governance & Negative Test Fixture â€” Phá»¥c vá»¥ MÃ n 2 & MÃ n 3)
+ÄÆ°á»£c cáº¥u hÃ¬nh trÃªn má»™t khÃ³a há»c / Ä‘Æ¡n vá»‹ kiá»ƒm thá»­ riÃªng biá»‡t Ä‘á»ƒ phá»¥c vá»¥ kiá»ƒm thá»­ vÃ²ng Ä‘á»i vÃ  kiá»ƒm Ä‘á»‹nh phá»§ Ä‘á»‹nh (negative testing):
+- **Bá»™ dá»¯ liá»‡u vÃ²ng Ä‘á»i ná»™i dung (Content Lifecycle Fixture):** Bao gá»“m cÃ¡c bÃ i há»c Ä‘áº¡i diá»‡n cho Ä‘áº§y Ä‘á»§ cÃ¡c tráº¡ng thÃ¡i biÃªn soáº¡n vÃ  kiá»ƒm duyá»‡t:
+  - Báº£n tháº£o má»›i phÃ¢n cÃ´ng: tráº¡ng thÃ¡i `DRAFT` do Manager gÃ¡n cho Creator (`creator.demo`).
+  - BÃ i há»c Ä‘ang trong hÃ ng Ä‘á»£i kiá»ƒm duyá»‡t: tráº¡ng thÃ¡i `IN_REVIEW` chá» Moderator tháº©m Ä‘á»‹nh.
+  - BÃ i há»c yÃªu cáº§u chá»‰nh sá»­a: tráº¡ng thÃ¡i `CHANGES_REQUESTED` kÃ¨m ghi chÃº nháº­n xÃ©t.
+  - BÃ i há»c Ä‘Ã£ duyá»‡t: tráº¡ng thÃ¡i `APPROVED`, sáºµn sÃ ng xuáº¥t báº£n thÃ´ng thÆ°á»ng hoáº·c xuáº¥t báº£n kháº©n cáº¥p cÃ³ lÃ½ do.
+  - Báº£n tháº£o nÃ¢ng cáº¥p nhÃ¢n báº£n (Clone-to-Draft v2): báº£n ghi phiÃªn báº£n má»›i káº¿ thá»«a ná»™i dung báº£n cÅ© thÃ´ng qua trÆ°á»ng `supersedes_id`.
+- **Ká»‹ch báº£n kiá»ƒm thá»­ phá»§ Ä‘á»‹nh hiá»ƒn thá»‹ Unit (Negative Unit Visibility Case):** Má»™t Unit thá»­ nghiá»‡m chá»‰ cÃ³ 3/4 bÃ i há»c `PUBLISHED` vÃ  1 bÃ i há»c `DRAFT` $\rightarrow$ Tá»± Ä‘á»™ng áº©n Ä‘á»‘i vá»›i há»c viÃªn Ä‘á»ƒ kiá»ƒm chá»©ng Ä‘iá»u kiá»‡n cÆ°á»¡ng cháº¿ Unit 4/4 Published.
 
 ---
 
-## 14. KỊCH BẢN TRÌNH DIỄN HỆ THỐNG LIÊN TỤC (DEMO PLAN)
+## 14. Ká»ŠCH Báº¢N TRÃŒNH DIá»„N Há»† THá»NG LIÃŠN Tá»¤C (DEMO PLAN)
 
-Kịch bản trình diễn được thiết kế thành **một câu chuyện liền mạch (Continuous Storyline)** chia làm 4 màn (Acts), phô diễn trọn vẹn sức mạnh của nền tảng, tính thân thiện của giao diện và tính chặt chẽ của các cơ chế quản trị.
+Ká»‹ch báº£n trÃ¬nh diá»…n Ä‘Æ°á»£c thiáº¿t káº¿ thÃ nh **má»™t cÃ¢u chuyá»‡n liá»n máº¡ch (Continuous Storyline)** chia lÃ m 4 mÃ n (Acts), phÃ´ diá»…n trá»n váº¹n sá»©c máº¡nh cá»§a ná»n táº£ng, tÃ­nh thÃ¢n thiá»‡n cá»§a giao diá»‡n vÃ  tÃ­nh cháº·t cháº½ cá»§a cÃ¡c cÆ¡ cháº¿ quáº£n trá»‹.
 
 ```text
 +----------------------------------------------------------------------------------------------------+
 |                                    LINGORA LIVE DEMONSTRATION WORKFLOW                             |
 +----------------------------------------------------------------------------------------------------+
-| MÀN 1: HÀNH TRÌNH HỌC VIÊN TOÀN DIỆN (LEARNER JOURNEY)                                             |
-|   1. Đăng nhập tài khoản học viên mới (learner.new) -> Hiển thị lời nhắc chẩn đoán năng lực.       |
-|   2. Làm bài Placement Test (30 câu) -> Đạt 15/30 điểm thô -> Mapping A tự động xếp vào Unit 3.    |
-|   3. Vào Unit 3 -> Vào Bài học L9 -> Trình phát bài tập tương tác (MCQ, Fill, Reorder, Listening). |
-|   4. Cố tình làm sai 1 câu -> Hệ thống giải thích ngữ pháp -> Kích hoạt Controlled Retry.          |
-|   5. Làm lại chính xác câu sai -> Điểm số cộng tối đa 70% -> Hoàn thành bài học nguyên tử.         |
-|   6. Chuyển sang màn hình SRS -> Ôn tập 5 thẻ từ vựng đến hạn -> Chu kỳ Policy B nhảy bước.        |
-|   7. Kiểm tra Streak -> Chuỗi ngày học tăng 1 ngày theo đúng múi giờ Việt Nam.                     |
+| MÃ€N 1: HÃ€NH TRÃŒNH Há»ŒC VIÃŠN TOÃ€N DIá»†N (LEARNER JOURNEY)                                             |
+|   1. ÄÄƒng nháº­p tÃ i khoáº£n há»c viÃªn má»›i (learner.new) -> Hiá»ƒn thá»‹ lá»i nháº¯c cháº©n Ä‘oÃ¡n nÄƒng lá»±c.       |
+|   2. LÃ m bÃ i Placement Test (30 cÃ¢u) -> Äáº¡t 15/30 Ä‘iá»ƒm thÃ´ -> Mapping A tá»± Ä‘á»™ng xáº¿p vÃ o Unit 3.    |
+|   3. VÃ o Unit 3 -> VÃ o BÃ i há»c L9 -> TrÃ¬nh phÃ¡t bÃ i táº­p tÆ°Æ¡ng tÃ¡c (MCQ, Fill, Reorder, Listening). |
+|   4. Cá»‘ tÃ¬nh lÃ m sai 1 cÃ¢u -> Há»‡ thá»‘ng giáº£i thÃ­ch ngá»¯ phÃ¡p -> KÃ­ch hoáº¡t Controlled Retry.          |
+|   5. LÃ m láº¡i chÃ­nh xÃ¡c cÃ¢u sai -> Äiá»ƒm sá»‘ cá»™ng tá»‘i Ä‘a 70% -> HoÃ n thÃ nh bÃ i há»c nguyÃªn tá»­.         |
+|   6. Chuyá»ƒn sang mÃ n hÃ¬nh SRS -> Ã”n táº­p 5 tháº» tá»« vá»±ng Ä‘áº¿n háº¡n -> Chu ká»³ Policy B nháº£y bÆ°á»›c.        |
+|   7. Kiá»ƒm tra Streak -> Chuá»—i ngÃ y há»c tÄƒng 1 ngÃ y theo Ä‘Ãºng mÃºi giá» Viá»‡t Nam.                     |
 +----------------------------------------------------------------------------------------------------+
-| MÀN 2: HÀNH TRÌNH QUẢN TRỊ VÀ KIỂM DUYỆT NỘI DUNG (CONTENT GOVERNANCE)                             |
-|   1. Manager đăng nhập -> Tạo nhiệm vụ biên soạn Bài học mới, phân công cho Creator (creator.demo). |
-|   2. Creator đăng nhập -> Nhận thông báo nhiệm vụ -> Vào soạn nội dung và bài tập -> Nộp duyệt bài.|
-|   3. Moderator đăng nhập -> Thấy bài trong hàng đợi -> Yêu cầu sửa đổi kèm lý do.                  |
-|   4. Creator nhận phản hồi -> Chỉnh sửa và nộp duyệt lại.                                          |
-|   5. Moderator kiểm tra -> Phê duyệt bài học (Approved).                                           |
-|   6. Manager đăng nhập -> Nhìn thấy bài học đã Approved -> Bấm Xuất bản (Published).               |
+| MÃ€N 2: HÃ€NH TRÃŒNH QUáº¢N TRá»Š VÃ€ KIá»‚M DUYá»†T Ná»˜I DUNG (CONTENT GOVERNANCE)                             |
+|   1. Manager Ä‘Äƒng nháº­p -> Táº¡o nhiá»‡m vá»¥ biÃªn soáº¡n BÃ i há»c má»›i, phÃ¢n cÃ´ng cho Creator (creator.demo). |
+|   2. Creator Ä‘Äƒng nháº­p -> Nháº­n thÃ´ng bÃ¡o nhiá»‡m vá»¥ -> VÃ o soáº¡n ná»™i dung vÃ  bÃ i táº­p -> Ná»™p duyá»‡t bÃ i.|
+|   3. Moderator Ä‘Äƒng nháº­p -> Tháº¥y bÃ i trong hÃ ng Ä‘á»£i -> YÃªu cáº§u sá»­a Ä‘á»•i kÃ¨m lÃ½ do.                  |
+|   4. Creator nháº­n pháº£n há»“i -> Chá»‰nh sá»­a vÃ  ná»™p duyá»‡t láº¡i.                                          |
+|   5. Moderator kiá»ƒm tra -> PhÃª duyá»‡t bÃ i há»c (Approved).                                           |
+|   6. Manager Ä‘Äƒng nháº­p -> NhÃ¬n tháº¥y bÃ i há»c Ä‘Ã£ Approved -> Báº¥m Xuáº¥t báº£n (Published).               |
 +----------------------------------------------------------------------------------------------------+
-| MÀN 3: KIỂM CHỨNG BẢO MẬT & PHÂN TÁCH NHIỆM VỤ (SECURITY & SOD DEFENSE)                           |
-|   1. Creator cố tình gọi lệnh duyệt bài -> Bị từ chối phân quyền (403 Forbidden / ROLE_UNAUTHORIZED)|
-|   2. Moderator cố tình xuất bản bài học ra học viên -> Hệ thống chặn, báo lỗi 403 Forbidden.       |
-|   3. Admin cố tình xuất bản bài chưa duyệt -> Bị chặn (403 EMERGENCY_UNAPPROVED).                  |
-|   4. Admin xuất bản bài đã Approved nhưng không nhập lý do -> Bị chặn (403 MISSING_JUSTIFICATION). |
-|   5. Admin xuất bản khẩn cấp bài Approved có nhập lý do -> Thành công.                             |
-|   6. Mở màn hình Audit Log -> Hiển thị bản ghi CONTENT_EMERGENCY_PUB kèm lý do giải trình.         |
+| MÃ€N 3: KIá»‚M CHá»¨NG Báº¢O Máº¬T & PHÃ‚N TÃCH NHIá»†M Vá»¤ (SECURITY & SOD DEFENSE)                           |
+|   1. Creator cá»‘ tÃ¬nh gá»i lá»‡nh duyá»‡t bÃ i -> Bá»‹ tá»« chá»‘i phÃ¢n quyá»n (403 Forbidden / ROLE_UNAUTHORIZED)|
+|   2. Moderator cá»‘ tÃ¬nh xuáº¥t báº£n bÃ i há»c ra há»c viÃªn -> Há»‡ thá»‘ng cháº·n, bÃ¡o lá»—i 403 Forbidden.       |
+|   3. Admin cá»‘ tÃ¬nh xuáº¥t báº£n bÃ i chÆ°a duyá»‡t -> Bá»‹ cháº·n (403 EMERGENCY_UNAPPROVED).                  |
+|   4. Admin xuáº¥t báº£n bÃ i Ä‘Ã£ Approved nhÆ°ng khÃ´ng nháº­p lÃ½ do -> Bá»‹ cháº·n (403 MISSING_JUSTIFICATION). |
+|   5. Admin xuáº¥t báº£n kháº©n cáº¥p bÃ i Approved cÃ³ nháº­p lÃ½ do -> ThÃ nh cÃ´ng.                             |
+|   6. Má»Ÿ mÃ n hÃ¬nh Audit Log -> Hiá»ƒn thá»‹ báº£n ghi CONTENT_EMERGENCY_PUB kÃ¨m lÃ½ do giáº£i trÃ¬nh.         |
 +----------------------------------------------------------------------------------------------------+
-| MÀN 4: TỔNG HỢP TIẾN ĐỘ HỌC VIÊN & CÁ NHÂN HÓA THEO QUY TẮC (LEARNER STATE & RULE PERSONALIZATION)  |
-|   1. Đăng nhập học viên có lịch sử học tập (learner.diagnosed) -> Bảng điều khiển cá nhân hiển thị |
-|      trình độ đã kiểm định (verifiedProficiency), điểm xuất phát Unit 3, và chuỗi ngày học Streak.  |
-|   2. Mở hàng đợi ôn tập ngắt quãng (SRS Review Queue) -> Hiển thị từ vựng đến hạn theo Policy B.   |
-|   3. Hoàn thành 1 bài học hợp lệ trong Unit -> Hệ thống tự động cập nhật chuỗi Streak theo múi giờ. |
-|   4. Kiểm tra điều kiện đơn vị giáo trình: Unit đủ 4/4 Published mở; Unit 3/4 Published khóa ẩn.   |
+| MÃ€N 4: Tá»”NG Há»¢P TIáº¾N Äá»˜ Há»ŒC VIÃŠN & CÃ NHÃ‚N HÃ“A THEO QUY Táº®C (LEARNER STATE & RULE PERSONALIZATION)  |
+|   1. ÄÄƒng nháº­p há»c viÃªn cÃ³ lá»‹ch sá»­ há»c táº­p (learner.diagnosed) -> Báº£ng Ä‘iá»u khiá»ƒn cÃ¡ nhÃ¢n hiá»ƒn thá»‹ |
+|      trÃ¬nh Ä‘á»™ Ä‘Ã£ kiá»ƒm Ä‘á»‹nh (verifiedProficiency), Ä‘iá»ƒm xuáº¥t phÃ¡t Unit 3, vÃ  chuá»—i ngÃ y há»c Streak.  |
+|   2. Má»Ÿ hÃ ng Ä‘á»£i Ã´n táº­p ngáº¯t quÃ£ng (SRS Review Queue) -> Hiá»ƒn thá»‹ tá»« vá»±ng Ä‘áº¿n háº¡n theo Policy B.   |
+|   3. HoÃ n thÃ nh 1 bÃ i há»c há»£p lá»‡ trong Unit -> Há»‡ thá»‘ng tá»± Ä‘á»™ng cáº­p nháº­t chuá»—i Streak theo mÃºi giá». |
+|   4. Kiá»ƒm tra Ä‘iá»u kiá»‡n Ä‘Æ¡n vá»‹ giÃ¡o trÃ¬nh: Unit Ä‘á»§ 4/4 Published má»Ÿ; Unit 3/4 Published khÃ³a áº©n.   |
 +----------------------------------------------------------------------------------------------------+
 ```
 
-### Danh Mục Bằng Chứng Ghi Hình Trình Diễn (Demo Evidence Capture Register)
+### Danh Má»¥c Báº±ng Chá»©ng Ghi HÃ¬nh TrÃ¬nh Diá»…n (Demo Evidence Capture Register)
 
-| Mã Bằng Chứng | Tên Phân Đoạn Demo | Trạng Thái Dữ Liệu Cần Seed | Kết Quả Đầu Ra Kỳ Vọng | Định Dạng Thu Thập |
+| MÃ£ Báº±ng Chá»©ng | TÃªn PhÃ¢n Äoáº¡n Demo | Tráº¡ng ThÃ¡i Dá»¯ Liá»‡u Cáº§n Seed | Káº¿t Quáº£ Äáº§u Ra Ká»³ Vá»ng | Äá»‹nh Dáº¡ng Thu Tháº­p |
 |---|---|---|---|---|
-| `DEMO-ACT1-01` | Chẩn đoán năng lực & Mapping A | `learner.new` | Bảng kết quả Mapping A Unit 3; Profile cập nhật | Video MP4 / Ảnh chụp màn hình |
-| `DEMO-ACT1-02` | Trình phát bài tập & Làm lại 70% | Khóa học A1 Unit 3 | Câu sai làm lại nhận 7.0/10 điểm; thanh tiến độ tăng | Video MP4 / Ảnh chụp màn hình |
-| `DEMO-ACT1-03` | Ôn tập ngắt quãng SRS Policy B | `learner.srsdue` | Thẻ đúng nhảy chu kỳ +1 ngày; RPC trả về thành công | Video MP4 / Ảnh chụp màn hình |
-| `DEMO-ACT2-01` | Vòng đời biên soạn & Kiểm duyệt | Bài học phân công mới | Chuyển dịch DRAFT $\rightarrow$ IN_REVIEW $\rightarrow$ APPROVED $\rightarrow$ PUBLISHED | Video MP4 / Ảnh chụp màn hình |
-| `DEMO-ACT3-01` | Chặn Creator duyệt bài học | `creator.demo` | Thông báo lỗi đỏ `403 Forbidden` / `ROLE_UNAUTHORIZED` | Video MP4 / Ảnh chụp màn hình |
-| `DEMO-ACT3-02` | Xuất bản khẩn cấp & Nhật ký Audit| `admin.demo` | Modal nhập lý do; Bảng audit hiển thị sự kiện | Video MP4 / Ảnh chụp màn hình |
-| `DEMO-ACT4-01` | Tổng hợp tiến độ & cá nhân hóa quy tắc | `learner.diagnosed` | Bảng điều khiển hiển thị Streak, SRS due cards, trạng thái Unit theo quy tắc chuẩn tắc | Video MP4 / Ảnh chụp màn hình |
+| `DEMO-ACT1-01` | Cháº©n Ä‘oÃ¡n nÄƒng lá»±c & Mapping A | `learner.new` | Báº£ng káº¿t quáº£ Mapping A Unit 3; Profile cáº­p nháº­t | Video MP4 / áº¢nh chá»¥p mÃ n hÃ¬nh |
+| `DEMO-ACT1-02` | TrÃ¬nh phÃ¡t bÃ i táº­p & LÃ m láº¡i 70% | KhÃ³a há»c A1 Unit 3 | CÃ¢u sai lÃ m láº¡i nháº­n 7.0/10 Ä‘iá»ƒm; thanh tiáº¿n Ä‘á»™ tÄƒng | Video MP4 / áº¢nh chá»¥p mÃ n hÃ¬nh |
+| `DEMO-ACT1-03` | Ã”n táº­p ngáº¯t quÃ£ng SRS Policy B | `learner.srsdue` | Tháº» Ä‘Ãºng nháº£y chu ká»³ +1 ngÃ y; RPC tráº£ vá» thÃ nh cÃ´ng | Video MP4 / áº¢nh chá»¥p mÃ n hÃ¬nh |
+| `DEMO-ACT2-01` | VÃ²ng Ä‘á»i biÃªn soáº¡n & Kiá»ƒm duyá»‡t | BÃ i há»c phÃ¢n cÃ´ng má»›i | Chuyá»ƒn dá»‹ch DRAFT $\rightarrow$ IN_REVIEW $\rightarrow$ APPROVED $\rightarrow$ PUBLISHED | Video MP4 / áº¢nh chá»¥p mÃ n hÃ¬nh |
+| `DEMO-ACT3-01` | Cháº·n Creator duyá»‡t bÃ i há»c | `creator.demo` | ThÃ´ng bÃ¡o lá»—i Ä‘á» `403 Forbidden` / `ROLE_UNAUTHORIZED` | Video MP4 / áº¢nh chá»¥p mÃ n hÃ¬nh |
+| `DEMO-ACT3-02` | Xuáº¥t báº£n kháº©n cáº¥p & Nháº­t kÃ½ Audit| `admin.demo` | Modal nháº­p lÃ½ do; Báº£ng audit hiá»ƒn thá»‹ sá»± kiá»‡n | Video MP4 / áº¢nh chá»¥p mÃ n hÃ¬nh |
+| `DEMO-ACT4-01` | Tá»•ng há»£p tiáº¿n Ä‘á»™ & cÃ¡ nhÃ¢n hÃ³a quy táº¯c | `learner.diagnosed` | Báº£ng Ä‘iá»u khiá»ƒn hiá»ƒn thá»‹ Streak, SRS due cards, tráº¡ng thÃ¡i Unit theo quy táº¯c chuáº©n táº¯c | Video MP4 / áº¢nh chá»¥p mÃ n hÃ¬nh |
 
 ---
 
-## 15. MA TRẬN BẰNG CHỨNG BÁO CÁO HỌC THUẬT (REPORT EVIDENCE MATRIX)
+## 15. MA TRáº¬N Báº°NG CHá»¨NG BÃO CÃO Há»ŒC THUáº¬T (REPORT EVIDENCE MATRIX)
 
-Nhằm phục vụ trực tiếp cho Báo cáo Học thuật Tốt nghiệp, mọi tuyên bố khoa học và kỹ thuật trong báo cáo đều phải được gắn kèm bằng chứng thực nghiệm khách quan theo bảng ma trận chuẩn 5 cột dưới đây:
+Nháº±m phá»¥c vá»¥ trá»±c tiáº¿p cho BÃ¡o cÃ¡o Há»c thuáº­t Tá»‘t nghiá»‡p, má»i tuyÃªn bá»‘ khoa há»c vÃ  ká»¹ thuáº­t trong bÃ¡o cÃ¡o Ä‘á»u pháº£i Ä‘Æ°á»£c gáº¯n kÃ¨m báº±ng chá»©ng thá»±c nghiá»‡m khÃ¡ch quan theo báº£ng ma tráº­n chuáº©n 5 cá»™t dÆ°á»›i Ä‘Ã¢y:
 
-| (1) Tuyên Bố Báo Cáo (Report Claim) | (2) Bằng Chứng Khách Quan (Evidence Artifact) | (3) Nguồn Bằng Chứng (Source of Truth) | (4) Phương Thức Thu Thập (How Captured) | (5) Mốc Hoàn Thành (Milestone) |
+| (1) TuyÃªn Bá»‘ BÃ¡o CÃ¡o (Report Claim) | (2) Báº±ng Chá»©ng KhÃ¡ch Quan (Evidence Artifact) | (3) Nguá»“n Báº±ng Chá»©ng (Source of Truth) | (4) PhÆ°Æ¡ng Thá»©c Thu Tháº­p (How Captured) | (5) Má»‘c HoÃ n ThÃ nh (Milestone) |
 |---|---|---|---|---|
-| **RC-01:** Hệ thống hỗ trợ đầy đủ 6 vai trò chuẩn tắc với phân quyền RLS độc lập | Kết quả test phân quyền 6 vai trò; Log RLS PostgreSQL | `lingora-web/tests/security/rbac_matrix.test.ts` | Chạy lệnh `npx vitest run tests/security/rbac_matrix.test.ts`, trích xuất stdout exit code 0 | M3.2 |
-| **RC-02:** Thuật toán Mapping A ánh xạ điểm thô 0–30 ra Unit 1–6 tất định | Bảng kết quả chạy 12 vector điểm biên; Unit test log | `lingora-web/tests/unit/domain/mapping_a.test.ts` | Chạy lệnh `npx vitest run tests/unit/domain/mapping_a.test.ts`, xuất log kiểm thử | M3.4 |
-| **RC-03:** Nhánh Skip chẩn đoán không phát sinh kết quả đánh giá giả mạo | Truy vấn SQL kiểm toán đối soát: số lượng bản ghi = 0 | Cơ sở dữ liệu Supabase Postgres | Chạy script kiểm tra DB sau khi nhấn Skip: `COUNT(*) == 0` | M3.4 |
-| **RC-04:** Thử thách nhảy cóc đạt ngưỡng ≥95% và áp dụng hồi chiêu 24h | Kết quả chạy test biên 94.9% vs 95.0% và test hồi chiêu | `lingora-web/tests/unit/domain/jump_threshold.test.ts` | Chạy Vitest kiểm thử logic ngưỡng và mock đồng hồ server | M3.5 |
-| **RC-05:** Hạn mức làm lại `max(1, floor(N*0.10))` áp dụng trần điểm 70% | Kết quả kiểm thử tính điểm làm lại và chặn lượt thứ N+1 | `lingora-web/tests/unit/domain/retry_allowance.test.ts` | Chạy Vitest kiểm thử logic làm lại có kiểm soát | M3.5 |
-| **RC-06:** Thuật toán SRS Policy B tuân thủ nghiêm ngặt mảng `[1,3,7,14,30]` | Log thực thi hàm RPC PostgreSQL `record_review` | `lingora-web/tests/integration/api/srs_policy_b.test.ts` | Thực thi test gọi trực tiếp RPC trên cơ sở dữ liệu test qua Vitest | M3.5 |
-| **RC-07:** Chuỗi ngày học Streak tính chính xác theo múi giờ IANA của học viên | Kết quả kiểm thử chuyển đổi múi giờ qua các thời điểm biên | `lingora-web/tests/unit/domain/streak_timezone.test.ts` | Chạy Vitest với các trường hợp lệch giờ giữa UTC và UTC+7 | M3.5 |
-| **RC-08:** Phân tách nhiệm vụ SoD ngăn chặn Creator phê duyệt bài học | Bản ghi phản hồi HTTP 403 Forbidden / ROLE_UNAUTHORIZED | `lingora-web/tests/security/sod_creator_approve.test.ts` | Chạy test giả lập Creator gửi request duyệt bài | M3.2 |
-| **RC-09:** Cơ chế Clone-to-Draft v2 bảo tồn nguyên vẹn bài học đã xuất bản | Bản ghi cơ sở dữ liệu bảng `lesson_revisions` liên kết cha con | Cơ sở dữ liệu Supabase Postgres | Truy vấn cây phả hệ qua trường `supersedes_id` | M3.6 |
-| **RC-10:** Đơn vị học chỉ hiển thị khi có đủ 4/4 bài học xuất bản | Kết quả test truy vấn danh sách Unit với các trạng thái bài | `lingora-web/tests/integration/api/curriculum.test.ts` | Test API lấy curriculum: Unit chưa đủ 4/4 bài published bị ẩn | M3.3 |
-| **RC-11:** Admin xuất bản khẩn cấp bắt buộc có lý do và phát sinh log kiểm toán | Bản ghi nhật ký kiểm toán có action `CONTENT_EMERGENCY_PUB` | Bảng `audit_logs` trong Supabase | Truy vấn bản ghi log sau khi Admin thực hiện xuất bản khẩn cấp | M3.6 |
-| **RC-12:** Cơ chế chuyển đổi ngôn ngữ i18n lưu trữ trạng thái người dùng đồng bộ | Kết quả kiểm thử chuyển đổi locale `vi`/`en`; Unit test log | `lingora-web/tests/unit/infrastructure/i18n_locale.test.ts` | Chạy Vitest kiểm thử chuyển đổi ngôn ngữ và đọc cookie/profile | M3.7 |
-| **RC-13:** Cách ly truy cập dữ liệu chéo học viên tại tầng lưu trữ và RLS | Kết quả kiểm thử truy vấn chéo người dùng trả về 0 bản ghi | `lingora-web/tests/security/rls_isolation.test.ts` | Thực thi test kiểm thử tấn công dữ liệu chéo người dùng qua PostgREST | M3.2 |
-| **RC-14:** Toàn bộ hệ thống vượt qua bộ kiểm thử hồi quy và an ninh | Báo cáo tổng hợp kiểm thử toàn hệ thống (Test Summary) | Toàn bộ các thư mục kiểm thử | Script chạy toàn bộ test suites và xuất báo cáo tỷ lệ đạt 100% | M3.9 |
+| **RC-01:** Há»‡ thá»‘ng há»— trá»£ Ä‘áº§y Ä‘á»§ 6 vai trÃ² chuáº©n táº¯c vá»›i phÃ¢n quyá»n RLS Ä‘á»™c láº­p | Káº¿t quáº£ test phÃ¢n quyá»n 6 vai trÃ²; Log RLS PostgreSQL | `lingora-web/tests/security/rbac_matrix.test.ts` | Cháº¡y lá»‡nh `npx vitest run tests/security/rbac_matrix.test.ts`, trÃ­ch xuáº¥t stdout exit code 0 | M3.2 |
+| **RC-02:** Thuáº­t toÃ¡n Mapping A Ã¡nh xáº¡ Ä‘iá»ƒm thÃ´ 0â€“30 ra Unit 1â€“6 táº¥t Ä‘á»‹nh | Báº£ng káº¿t quáº£ cháº¡y 12 vector Ä‘iá»ƒm biÃªn; Unit test log | `lingora-web/tests/unit/domain/mapping_a.test.ts` | Cháº¡y lá»‡nh `npx vitest run tests/unit/domain/mapping_a.test.ts`, xuáº¥t log kiá»ƒm thá»­ | M3.4 |
+| **RC-03:** NhÃ¡nh Skip cháº©n Ä‘oÃ¡n khÃ´ng phÃ¡t sinh káº¿t quáº£ Ä‘Ã¡nh giÃ¡ giáº£ máº¡o | Truy váº¥n SQL kiá»ƒm toÃ¡n Ä‘á»‘i soÃ¡t: sá»‘ lÆ°á»£ng báº£n ghi = 0 | CÆ¡ sá»Ÿ dá»¯ liá»‡u Supabase Postgres | Cháº¡y script kiá»ƒm tra DB sau khi nháº¥n Skip: `COUNT(*) == 0` | M3.4 |
+| **RC-04:** Thá»­ thÃ¡ch nháº£y cÃ³c Ä‘áº¡t ngÆ°á»¡ng â‰¥95% vÃ  Ã¡p dá»¥ng há»“i chiÃªu 24h | Káº¿t quáº£ cháº¡y test biÃªn 94.9% vs 95.0% vÃ  test há»“i chiÃªu | `lingora-web/tests/unit/domain/jump_threshold.test.ts` | Cháº¡y Vitest kiá»ƒm thá»­ logic ngÆ°á»¡ng vÃ  mock Ä‘á»“ng há»“ server | M3.5 |
+| **RC-05:** Háº¡n má»©c lÃ m láº¡i `max(1, floor(N*0.10))` Ã¡p dá»¥ng tráº§n Ä‘iá»ƒm 70% | Káº¿t quáº£ kiá»ƒm thá»­ tÃ­nh Ä‘iá»ƒm lÃ m láº¡i vÃ  cháº·n lÆ°á»£t thá»© N+1 | `lingora-web/tests/unit/domain/retry_allowance.test.ts` | Cháº¡y Vitest kiá»ƒm thá»­ logic lÃ m láº¡i cÃ³ kiá»ƒm soÃ¡t | M3.5 |
+| **RC-06:** Thuáº­t toÃ¡n SRS Policy B tuÃ¢n thá»§ nghiÃªm ngáº·t máº£ng `[1,3,7,14,30]` | Log thá»±c thi hÃ m RPC PostgreSQL `record_review` | `lingora-web/tests/integration/api/srs_policy_b.test.ts` | Thá»±c thi test gá»i trá»±c tiáº¿p RPC trÃªn cÆ¡ sá»Ÿ dá»¯ liá»‡u test qua Vitest | M3.5 |
+| **RC-07:** Chuá»—i ngÃ y há»c Streak tÃ­nh chÃ­nh xÃ¡c theo mÃºi giá» IANA cá»§a há»c viÃªn | Káº¿t quáº£ kiá»ƒm thá»­ chuyá»ƒn Ä‘á»•i mÃºi giá» qua cÃ¡c thá»i Ä‘iá»ƒm biÃªn | `lingora-web/tests/unit/domain/streak_timezone.test.ts` | Cháº¡y Vitest vá»›i cÃ¡c trÆ°á»ng há»£p lá»‡ch giá» giá»¯a UTC vÃ  UTC+7 | M3.5 |
+| **RC-08:** PhÃ¢n tÃ¡ch nhiá»‡m vá»¥ SoD ngÄƒn cháº·n Creator phÃª duyá»‡t bÃ i há»c | Báº£n ghi pháº£n há»“i HTTP 403 Forbidden / ROLE_UNAUTHORIZED | `lingora-web/tests/security/sod_creator_approve.test.ts` | Cháº¡y test giáº£ láº­p Creator gá»­i request duyá»‡t bÃ i | M3.2 |
+| **RC-09:** CÆ¡ cháº¿ Clone-to-Draft v2 báº£o tá»“n nguyÃªn váº¹n bÃ i há»c Ä‘Ã£ xuáº¥t báº£n | Báº£n ghi cÆ¡ sá»Ÿ dá»¯ liá»‡u báº£ng `lesson_revisions` liÃªn káº¿t cha con | CÆ¡ sá»Ÿ dá»¯ liá»‡u Supabase Postgres | Truy váº¥n cÃ¢y pháº£ há»‡ qua trÆ°á»ng `supersedes_id` | M3.6 |
+| **RC-10:** ÄÆ¡n vá»‹ há»c chá»‰ hiá»ƒn thá»‹ khi cÃ³ Ä‘á»§ 4/4 bÃ i há»c xuáº¥t báº£n | Káº¿t quáº£ test truy váº¥n danh sÃ¡ch Unit vá»›i cÃ¡c tráº¡ng thÃ¡i bÃ i | `lingora-web/tests/integration/api/curriculum.test.ts` | Test API láº¥y curriculum: Unit chÆ°a Ä‘á»§ 4/4 bÃ i published bá»‹ áº©n | M3.3 |
+| **RC-11:** Admin xuáº¥t báº£n kháº©n cáº¥p báº¯t buá»™c cÃ³ lÃ½ do vÃ  phÃ¡t sinh log kiá»ƒm toÃ¡n | Báº£n ghi nháº­t kÃ½ kiá»ƒm toÃ¡n cÃ³ action `CONTENT_EMERGENCY_PUB` | Báº£ng `audit_logs` trong Supabase | Truy váº¥n báº£n ghi log sau khi Admin thá»±c hiá»‡n xuáº¥t báº£n kháº©n cáº¥p | M3.6 |
+| **RC-12:** CÆ¡ cháº¿ chuyá»ƒn Ä‘á»•i ngÃ´n ngá»¯ i18n lÆ°u trá»¯ tráº¡ng thÃ¡i ngÆ°á»i dÃ¹ng Ä‘á»“ng bá»™ | Káº¿t quáº£ kiá»ƒm thá»­ chuyá»ƒn Ä‘á»•i locale `vi`/`en`; Unit test log | `lingora-web/tests/unit/infrastructure/i18n_locale.test.ts` | Cháº¡y Vitest kiá»ƒm thá»­ chuyá»ƒn Ä‘á»•i ngÃ´n ngá»¯ vÃ  Ä‘á»c cookie/profile | M3.7 |
+| **RC-13:** CÃ¡ch ly truy cáº­p dá»¯ liá»‡u chÃ©o há»c viÃªn táº¡i táº§ng lÆ°u trá»¯ vÃ  RLS | Káº¿t quáº£ kiá»ƒm thá»­ truy váº¥n chÃ©o ngÆ°á»i dÃ¹ng tráº£ vá» 0 báº£n ghi | `lingora-web/tests/security/rls_isolation.test.ts` | Thá»±c thi test kiá»ƒm thá»­ táº¥n cÃ´ng dá»¯ liá»‡u chÃ©o ngÆ°á»i dÃ¹ng qua PostgREST | M3.2 |
+| **RC-14:** ToÃ n bá»™ há»‡ thá»‘ng vÆ°á»£t qua bá»™ kiá»ƒm thá»­ há»“i quy vÃ  an ninh | BÃ¡o cÃ¡o tá»•ng há»£p kiá»ƒm thá»­ toÃ n há»‡ thá»‘ng (Test Summary) | ToÃ n bá»™ cÃ¡c thÆ° má»¥c kiá»ƒm thá»­ | Script cháº¡y toÃ n bá»™ test suites vÃ  xuáº¥t bÃ¡o cÃ¡o tá»· lá»‡ Ä‘áº¡t 100% | M3.9 |
 
 ---
 
-## 16. KHUNG KIỂM ĐỊNH HIỆU NĂNG & TIÊU CHÍ PHI CHỨC NĂNG (NFR VALIDATION)
+## 16. KHUNG KIá»‚M Äá»ŠNH HIá»†U NÄ‚NG & TIÃŠU CHÃ PHI CHá»¨C NÄ‚NG (NFR VALIDATION)
 
-Để đảm bảo tính nghiêm ngặt về phương pháp luận khoa học, toàn bộ các chỉ số phi chức năng phải được **phân định tuyệt đối giữa Mục tiêu thiết kế (TARGET) và Kết quả đo lường thực tế (MEASURED)**. Tuyệt đối không sử dụng con số mục tiêu thiết kế để tuyên bố hệ thống đã đạt hiệu năng khi chưa tiến hành đo đạc thực tế.
+Äá»ƒ Ä‘áº£m báº£o tÃ­nh nghiÃªm ngáº·t vá» phÆ°Æ¡ng phÃ¡p luáº­n khoa há»c, toÃ n bá»™ cÃ¡c chá»‰ sá»‘ phi chá»©c nÄƒng pháº£i Ä‘Æ°á»£c **phÃ¢n Ä‘á»‹nh tuyá»‡t Ä‘á»‘i giá»¯a Má»¥c tiÃªu thiáº¿t káº¿ (TARGET) vÃ  Káº¿t quáº£ Ä‘o lÆ°á»ng thá»±c táº¿ (MEASURED)**. Tuyá»‡t Ä‘á»‘i khÃ´ng sá»­ dá»¥ng con sá»‘ má»¥c tiÃªu thiáº¿t káº¿ Ä‘á»ƒ tuyÃªn bá»‘ há»‡ thá»‘ng Ä‘Ã£ Ä‘áº¡t hiá»‡u nÄƒng khi chÆ°a tiáº¿n hÃ nh Ä‘o Ä‘áº¡c thá»±c táº¿.
 
-### 16.1. Bảng Đối Soát Tiêu Chí Phi Chức Năng (NFR Target vs Measured Framework)
+### 16.1. Báº£ng Äá»‘i SoÃ¡t TiÃªu ChÃ­ Phi Chá»©c NÄƒng (NFR Target vs Measured Framework)
 
-| Mã Chỉ Số | Tiêu Chí Phi Chức Năng | Mục Tiêu Thiết Kế (TARGET) | Phương Pháp Đo Lường Thực Nghiệm (Methodology) | Môi Trường Đo Đạc (Environment) | Kết Quả Thực Đo (MEASURED) | Ngưỡng Chấp Thuận (Acceptance Threshold) |
+| MÃ£ Chá»‰ Sá»‘ | TiÃªu ChÃ­ Phi Chá»©c NÄƒng | Má»¥c TiÃªu Thiáº¿t Káº¿ (TARGET) | PhÆ°Æ¡ng PhÃ¡p Äo LÆ°á»ng Thá»±c Nghiá»‡m (Methodology) | MÃ´i TrÆ°á»ng Äo Äáº¡c (Environment) | Káº¿t Quáº£ Thá»±c Äo (MEASURED) | NgÆ°á»¡ng Cháº¥p Thuáº­n (Acceptance Threshold) |
 |---|---|---|---|---|---|---|
-| **VAL-NFR-01** | Thời gian phản hồi API BFF | $< 200 \text{ ms}$ (p95 cho các truy vấn đọc) | Kịch bản k6 đo lường 50 người dùng đồng thời trong 5 phút | Local / Staging Server (Node.js 20) | `CHỜ ĐO ĐẠC TẠI M3.9` | p95 $< 300 \text{ ms}$ |
-| **VAL-NFR-02** | Thời gian tải trang ban đầu (FCP)| $< 1.5 \text{ giây}$ trên đường truyền mạng 4G | Google Lighthouse Audit trên trình duyệt Chrome | Headless Chrome, Network Throttling | `CHỜ ĐO ĐẠC TẠI M3.9` | FCP $< 2.0 \text{ s}$, LCP $< 2.5 \text{ s}$ |
-| **VAL-NFR-03** | Hiệu năng đánh giá RLS Database | $< 50 \text{ ms}$ (p95 trên tập dữ liệu 10,000 bản ghi) | EXPLAIN ANALYZE trên các câu lệnh SELECT có RLS | PostgreSQL 15 Supabase Instance | `CHỜ ĐO ĐẠC TẠI M3.9` | Execution Time $< 80 \text{ ms}$ |
-| **VAL-NFR-04** | Khả năng chịu tải đồng thời | 50 phiên học viên tương tác đồng thời | k6 Virtual Users chạy kịch bản làm bài tập liên tục | Staging Environment | `CHỜ ĐO ĐẠC TẠI M3.9` | Tỷ lệ lỗi $< 0.1\%$, CPU $< 80\%$ |
+| **VAL-NFR-01** | Thá»i gian pháº£n há»“i API BFF | $< 200 \text{ ms}$ (p95 cho cÃ¡c truy váº¥n Ä‘á»c) | Ká»‹ch báº£n k6 Ä‘o lÆ°á»ng 50 ngÆ°á»i dÃ¹ng Ä‘á»“ng thá»i trong 5 phÃºt | Local / Staging Server (Node.js 20) | `CHá»œ ÄO Äáº C Táº I M3.9` | p95 $< 300 \text{ ms}$ |
+| **VAL-NFR-02** | Thá»i gian táº£i trang ban Ä‘áº§u (FCP)| $< 1.5 \text{ giÃ¢y}$ trÃªn Ä‘Æ°á»ng truyá»n máº¡ng 4G | Google Lighthouse Audit trÃªn trÃ¬nh duyá»‡t Chrome | Headless Chrome, Network Throttling | `CHá»œ ÄO Äáº C Táº I M3.9` | FCP $< 2.0 \text{ s}$, LCP $< 2.5 \text{ s}$ |
+| **VAL-NFR-03** | Hiá»‡u nÄƒng Ä‘Ã¡nh giÃ¡ RLS Database | $< 50 \text{ ms}$ (p95 trÃªn táº­p dá»¯ liá»‡u 10,000 báº£n ghi) | EXPLAIN ANALYZE trÃªn cÃ¡c cÃ¢u lá»‡nh SELECT cÃ³ RLS | PostgreSQL 15 Supabase Instance | `CHá»œ ÄO Äáº C Táº I M3.9` | Execution Time $< 80 \text{ ms}$ |
+| **VAL-NFR-04** | Kháº£ nÄƒng chá»‹u táº£i Ä‘á»“ng thá»i | 50 phiÃªn há»c viÃªn tÆ°Æ¡ng tÃ¡c Ä‘á»“ng thá»i | k6 Virtual Users cháº¡y ká»‹ch báº£n lÃ m bÃ i táº­p liÃªn tá»¥c | Staging Environment | `CHá»œ ÄO Äáº C Táº I M3.9` | Tá»· lá»‡ lá»—i $< 0.1\%$, CPU $< 80\%$ |
 
-> **Ghi chú về mã hóa chỉ số:** Các mã `VAL-NFR-01` đến `VAL-NFR-04` là các mục tiêu kiểm định nội bộ của Kế hoạch Tổng thể (Master-Plan Validation Targets), phục vụ trực tiếp cho việc đánh giá thực nghiệm tại M3.9 và đối soát trong Chương 5 Báo cáo tốt nghiệp; không tự tiện định nghĩa lại hay gây xung đột với hệ thống mã yêu cầu chuẩn tắc `P1-NFR` trong tài liệu kiến trúc M2.
+> **Ghi chÃº vá» mÃ£ hÃ³a chá»‰ sá»‘:** CÃ¡c mÃ£ `VAL-NFR-01` Ä‘áº¿n `VAL-NFR-04` lÃ  cÃ¡c má»¥c tiÃªu kiá»ƒm Ä‘á»‹nh ná»™i bá»™ cá»§a Káº¿ hoáº¡ch Tá»•ng thá»ƒ (Master-Plan Validation Targets), phá»¥c vá»¥ trá»±c tiáº¿p cho viá»‡c Ä‘Ã¡nh giÃ¡ thá»±c nghiá»‡m táº¡i M3.9 vÃ  Ä‘á»‘i soÃ¡t trong ChÆ°Æ¡ng 5 BÃ¡o cÃ¡o tá»‘t nghiá»‡p; khÃ´ng tá»± tiá»‡n Ä‘á»‹nh nghÄ©a láº¡i hay gÃ¢y xung Ä‘á»™t vá»›i há»‡ thá»‘ng mÃ£ yÃªu cáº§u chuáº©n táº¯c `P1-NFR` trong tÃ i liá»‡u kiáº¿n trÃºc M2.
 
 ---
 
-## 17. MÔ HÌNH QUẢN TRỊ MỐC & CỔNG NGHIỆM THU (GATED MILESTONE MODEL)
+## 17. MÃ” HÃŒNH QUáº¢N TRá»Š Má»C & Cá»”NG NGHIá»†M THU (GATED MILESTONE MODEL)
 
-Toàn bộ quá trình thực thi Phase 2 bắt buộc phải tuân thủ nghiêm ngặt **Quy trình Quản trị Đóng Cổng 10 Bước (10-Step Gated Workflow)** được quy định trong `AGENTS.md`. Tuyệt đối không cho phép AI coding agent tự động phê duyệt kế hoạch, tự động nghiệm thu hoặc tự ý commit mã nguồn trước khi vượt qua cổng kiểm định.
+ToÃ n bá»™ quÃ¡ trÃ¬nh thá»±c thi Phase 2 báº¯t buá»™c pháº£i tuÃ¢n thá»§ nghiÃªm ngáº·t **Quy trÃ¬nh Quáº£n trá»‹ ÄÃ³ng Cá»•ng 10 BÆ°á»›c (10-Step Gated Workflow)** Ä‘Æ°á»£c quy Ä‘á»‹nh trong `AGENTS.md`. Tuyá»‡t Ä‘á»‘i khÃ´ng cho phÃ©p AI coding agent tá»± Ä‘á»™ng phÃª duyá»‡t káº¿ hoáº¡ch, tá»± Ä‘á»™ng nghiá»‡m thu hoáº·c tá»± Ã½ commit mÃ£ nguá»“n trÆ°á»›c khi vÆ°á»£t qua cá»•ng kiá»ƒm Ä‘á»‹nh.
 
 ```text
 +---------------------------------------------------------------------------------------------------+
 |                                  10-STEP MANDATORY GATED WORKFLOW                                 |
 +---------------------------------------------------------------------------------------------------+
-| 1. PLAN: Soạn thảo hoặc cập nhật kế hoạch chi tiết cho mốc thực thi trong plans/current-task.md   |
+| 1. PLAN: Soáº¡n tháº£o hoáº·c cáº­p nháº­t káº¿ hoáº¡ch chi tiáº¿t cho má»‘c thá»±c thi trong plans/current-task.md   |
 |     |                                                                                             |
 |     v                                                                                             |
-| 2. PLAN REVIEW: Kiểm tra kế hoạch đối chiếu với kiến trúc, an ninh, schema và ranh giới hệ thống  |
+| 2. PLAN REVIEW: Kiá»ƒm tra káº¿ hoáº¡ch Ä‘á»‘i chiáº¿u vá»›i kiáº¿n trÃºc, an ninh, schema vÃ  ranh giá»›i há»‡ thá»‘ng  |
 |     |                                                                                             |
 |     v                                                                                             |
-| 3. HUMAN APPROVAL: Con người (Human Operator) kiểm tra và đổi trạng thái thành APPROVED           |
-|     |               (KỸ SƯ AI TUYỆT ĐỐI KHÔNG TỰ CHUYỂN TRẠNG THÁI SANG APPROVED)                 |
+| 3. HUMAN APPROVAL: Con ngÆ°á»i (Human Operator) kiá»ƒm tra vÃ  Ä‘á»•i tráº¡ng thÃ¡i thÃ nh APPROVED           |
+|     |               (Ká»¸ SÆ¯ AI TUYá»†T Äá»I KHÃ”NG Tá»° CHUYá»‚N TRáº NG THÃI SANG APPROVED)                 |
 |     v                                                                                             |
-| 4. IMPLEMENT: Tiến hành lập trình chính xác theo phạm vi đã được phê duyệt trong kế hoạch          |
+| 4. IMPLEMENT: Tiáº¿n hÃ nh láº­p trÃ¬nh chÃ­nh xÃ¡c theo pháº¡m vi Ä‘Ã£ Ä‘Æ°á»£c phÃª duyá»‡t trong káº¿ hoáº¡ch          |
 |     |                                                                                             |
 |     v                                                                                             |
-| 5. TEST: Thực thi 100% các bài kiểm thử tự động trong kế hoạch và ghi nhận bằng chứng khách quan  |
+| 5. TEST: Thá»±c thi 100% cÃ¡c bÃ i kiá»ƒm thá»­ tá»± Ä‘á»™ng trong káº¿ hoáº¡ch vÃ  ghi nháº­n báº±ng chá»©ng khÃ¡ch quan  |
 |     |                                                                                             |
 |     v                                                                                             |
-| 6. INDEPENDENT REVIEW: Kiểm định viên độc lập (Codex/Human) thực hiện rà soát chất lượng mã nguồn |
+| 6. INDEPENDENT REVIEW: Kiá»ƒm Ä‘á»‹nh viÃªn Ä‘á»™c láº­p (Codex/Human) thá»±c hiá»‡n rÃ  soÃ¡t cháº¥t lÆ°á»£ng mÃ£ nguá»“n |
 |     |                                                                                             |
 |     v                                                                                             |
-| 7. REMEDIATION (nếu có): Khắc phục toàn bộ các lỗi P0, P1 và P2 được phát hiện trong quá trình review|
+| 7. REMEDIATION (náº¿u cÃ³): Kháº¯c phá»¥c toÃ n bá»™ cÃ¡c lá»—i P0, P1 vÃ  P2 Ä‘Æ°á»£c phÃ¡t hiá»‡n trong quÃ¡ trÃ¬nh review|
 |     |                                                                                             |
 |     v                                                                                             |
-| 8. RE-REVIEW: Kiểm định lại độc lập xác nhận 100% các phát hiện đã được khắc phục hoàn toàn       |
+| 8. RE-REVIEW: Kiá»ƒm Ä‘á»‹nh láº¡i Ä‘á»™c láº­p xÃ¡c nháº­n 100% cÃ¡c phÃ¡t hiá»‡n Ä‘Ã£ Ä‘Æ°á»£c kháº¯c phá»¥c hoÃ n toÃ n       |
 |     |                                                                                             |
 |     v                                                                                             |
-| 9. ACCEPTANCE: Con người ghi nhận quyết định chấp thuận nghiệm thu chính thức vào ADR              |
+| 9. ACCEPTANCE: Con ngÆ°á»i ghi nháº­n quyáº¿t Ä‘á»‹nh cháº¥p thuáº­n nghiá»‡m thu chÃ­nh thá»©c vÃ o ADR              |
 |     |                                                                                             |
 |     v                                                                                             |
-| 10. CHECKPOINT COMMIT: Tạo commit git ghi nhận mốc hoàn thành kèm đầy đủ log kiểm thử và quyết định|
+| 10. CHECKPOINT COMMIT: Táº¡o commit git ghi nháº­n má»‘c hoÃ n thÃ nh kÃ¨m Ä‘áº§y Ä‘á»§ log kiá»ƒm thá»­ vÃ  quyáº¿t Ä‘á»‹nh|
 +---------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 18. ÁNH XẠ TRIỂN KHAI VÀO CẤU TRÚC BÁO CÁO HỌC THUẬT
+## 18. ÃNH Xáº  TRIá»‚N KHAI VÃ€O Cáº¤U TRÃšC BÃO CÃO Há»ŒC THUáº¬T
 
-Để tối ưu hóa năng suất và bảo đảm sự đồng bộ tuyệt đối giữa sản phẩm phần mềm và luận văn tốt nghiệp, toàn bộ các mốc triển khai Phase 2 được ánh xạ trực tiếp vào 5 chương chính của Báo cáo Học thuật theo nguyên tắc: **Lập trình một lần $\rightarrow$ Kiểm thử một lần $\rightarrow$ Thu thập bằng chứng một lần $\rightarrow$ Sử dụng đồng thời cho cả Demo và Báo cáo**.
+Äá»ƒ tá»‘i Æ°u hÃ³a nÄƒng suáº¥t vÃ  báº£o Ä‘áº£m sá»± Ä‘á»“ng bá»™ tuyá»‡t Ä‘á»‘i giá»¯a sáº£n pháº©m pháº§n má»m vÃ  luáº­n vÄƒn tá»‘t nghiá»‡p, toÃ n bá»™ cÃ¡c má»‘c triá»ƒn khai Phase 2 Ä‘Æ°á»£c Ã¡nh xáº¡ trá»±c tiáº¿p vÃ o 5 chÆ°Æ¡ng chÃ­nh cá»§a BÃ¡o cÃ¡o Há»c thuáº­t theo nguyÃªn táº¯c: **Láº­p trÃ¬nh má»™t láº§n $\rightarrow$ Kiá»ƒm thá»­ má»™t láº§n $\rightarrow$ Thu tháº­p báº±ng chá»©ng má»™t láº§n $\rightarrow$ Sá»­ dá»¥ng Ä‘á»“ng thá»i cho cáº£ Demo vÃ  BÃ¡o cÃ¡o**.
 
 ```text
 +----------------------------------------------------------------------------------------------------+
 |                         ACADEMIC REPORT CHAPTER-TO-MILESTONE MAPPING MATRIX                        |
 +----------------------------------------------------------------------------------------------------+
-| CHƯƠNG 1: GIỚI THIỆU & NGHIÊN CỨU NHU CẦU NGƯỜI DÙNG                                               |
-|   - Nội dung báo cáo: Kết quả nghiên cứu thực nghiệm: N=15 (baseline learner research),             |
-|                       N=35 (supplementary design survey), N=3 (phỏng vấn sâu định tính),           |
-|                       1 bài học (thử nghiệm nội dung nội bộ), 8 điểm đau, phân tích đối thủ.       |
-|   - Bằng chứng thu thập: Biểu đồ khảo sát thực tế (N=15 baseline & N=35 survey), biên bản phỏng vấn |
-|                          N=3, ma trận Pain Points, tài liệu thử nghiệm bài học, căn cứ D1–D9.      |
-|   - Mốc cung cấp bằng chứng: Kế thừa từ Phase 0 & Milestone M2.1.                                  |
+| CHÆ¯Æ NG 1: GIá»šI THIá»†U & NGHIÃŠN Cá»¨U NHU Cáº¦U NGÆ¯á»œI DÃ™NG                                               |
+|   - Ná»™i dung bÃ¡o cÃ¡o: Káº¿t quáº£ nghiÃªn cá»©u thá»±c nghiá»‡m: N=15 (baseline learner research),             |
+|                       N=35 (supplementary design survey), N=3 (phá»ng váº¥n sÃ¢u Ä‘á»‹nh tÃ­nh),           |
+|                       1 bÃ i há»c (thá»­ nghiá»‡m ná»™i dung ná»™i bá»™), 8 Ä‘iá»ƒm Ä‘au, phÃ¢n tÃ­ch Ä‘á»‘i thá»§.       |
+|   - Báº±ng chá»©ng thu tháº­p: Biá»ƒu Ä‘á»“ kháº£o sÃ¡t thá»±c táº¿ (N=15 baseline & N=35 survey), biÃªn báº£n phá»ng váº¥n |
+|                          N=3, ma tráº­n Pain Points, tÃ i liá»‡u thá»­ nghiá»‡m bÃ i há»c, cÄƒn cá»© D1â€“D9.      |
+|   - Má»‘c cung cáº¥p báº±ng chá»©ng: Káº¿ thá»«a tá»« Phase 0 & Milestone M2.1.                                  |
 +----------------------------------------------------------------------------------------------------+
-| CHƯƠNG 2: PHÂN TÍCH YÊU CẦU & MÔ HÌNH HÓA NGHIỆP VỤ                                                |
-|   - Nội dung báo cáo: 15 Ca sử dụng (UC), 15 Luồng nghiệp vụ (BF), 6 vai trò, quy tắc SoD.         |
-|   - Bằng chứng thu thập: Sơ đồ Use Case, Activity Diagrams, ma trận phân quyền RBAC.               |
-|   - Mốc cung cấp bằng chứng: Kế thừa từ Milestone M2.2 & M3.2.                                     |
+| CHÆ¯Æ NG 2: PHÃ‚N TÃCH YÃŠU Cáº¦U & MÃ” HÃŒNH HÃ“A NGHIá»†P Vá»¤                                                |
+|   - Ná»™i dung bÃ¡o cÃ¡o: 15 Ca sá»­ dá»¥ng (UC), 15 Luá»“ng nghiá»‡p vá»¥ (BF), 6 vai trÃ², quy táº¯c SoD.         |
+|   - Báº±ng chá»©ng thu tháº­p: SÆ¡ Ä‘á»“ Use Case, Activity Diagrams, ma tráº­n phÃ¢n quyá»n RBAC.               |
+|   - Má»‘c cung cáº¥p báº±ng chá»©ng: Káº¿ thá»«a tá»« Milestone M2.2 & M3.2.                                     |
 +----------------------------------------------------------------------------------------------------+
-| CHƯƠNG 3: PHÂN TÍCH & THIẾT KẾ KIẾN TRÚC HỆ THỐNG                                                  |
-|   - Nội dung báo cáo: 19 Thành phần kiến trúc, 5 Vùng an ninh, 6 Ranh giới, Sơ đồ tuần tự SEQ-01..10|
-|   - Bằng chứng thu thập: Sơ đồ Component, Deployment Boundary, Sequence Diagrams, DFD Context/L0/L1.|
-|   - Mốc cung cấp bằng chứng: Kế thừa từ Milestone M2.3, M2.4 & M3.8.                               |
+| CHÆ¯Æ NG 3: PHÃ‚N TÃCH & THIáº¾T Káº¾ KIáº¾N TRÃšC Há»† THá»NG                                                  |
+|   - Ná»™i dung bÃ¡o cÃ¡o: 19 ThÃ nh pháº§n kiáº¿n trÃºc, 5 VÃ¹ng an ninh, 6 Ranh giá»›i, SÆ¡ Ä‘á»“ tuáº§n tá»± SEQ-01..10|
+|   - Báº±ng chá»©ng thu tháº­p: SÆ¡ Ä‘á»“ Component, Deployment Boundary, Sequence Diagrams, DFD Context/L0/L1.|
+|   - Má»‘c cung cáº¥p báº±ng chá»©ng: Káº¿ thá»«a tá»« Milestone M2.3, M2.4 & M3.8.                               |
 +----------------------------------------------------------------------------------------------------+
-| CHƯƠNG 4: THIẾT KẾ & TRIỂN KHAI CƠ SỞ DỮ LIỆU                                                      |
-|   - Nội dung báo cáo: Lược đồ quan hệ thực thể ERD, Từ điển dữ liệu, Chính sách RLS, 8 pha Migration|
-|   - Bằng chứng thu thập: Prisma Schema, DDL Migration files, Mã nguồn chính sách RLS, Test logs RLS|
-|   - Mốc cung cấp bằng chứng: Hình thành trực tiếp từ Milestone M3.1 & M3.2.                         |
+| CHÆ¯Æ NG 4: THIáº¾T Káº¾ & TRIá»‚N KHAI CÆ  Sá»ž Dá»® LIá»†U                                                      |
+|   - Ná»™i dung bÃ¡o cÃ¡o: LÆ°á»£c Ä‘á»“ quan há»‡ thá»±c thá»ƒ ERD, Tá»« Ä‘iá»ƒn dá»¯ liá»‡u, ChÃ­nh sÃ¡ch RLS, 8 pha Migration|
+|   - Báº±ng chá»©ng thu tháº­p: Prisma Schema, DDL Migration files, MÃ£ nguá»“n chÃ­nh sÃ¡ch RLS, Test logs RLS|
+|   - Má»‘c cung cáº¥p báº±ng chá»©ng: HÃ¬nh thÃ nh trá»±c tiáº¿p tá»« Milestone M3.1 & M3.2.                         |
 +----------------------------------------------------------------------------------------------------+
-| CHƯƠNG 5: CÀI ĐẶT HỆ THỐNG, KIỂM THỬ & THỰC NGHIỆM ĐÁNH GIÁ                                        |
-|   - Nội dung báo cáo: Trình bày giao diện Web Learner & Admin, Bộ kiểm thử tự động, Đo lường NFR.   |
-|   - Bằng chứng thu thập: Ảnh chụp giao diện thực tế, Kết quả kiểm thử Vitest/Pytest/Playwright,    |
-|                          Biểu đồ hiệu năng k6 benchmark, Bảng đối soát NFR Target vs Measured.     |
-|   - Mốc cung cấp bằng chứng: Hình thành trực tiếp từ Milestone M3.3 đến M3.10.                      |
+| CHÆ¯Æ NG 5: CÃ€I Äáº¶T Há»† THá»NG, KIá»‚M THá»¬ & THá»°C NGHIá»†M ÄÃNH GIÃ                                        |
+|   - Ná»™i dung bÃ¡o cÃ¡o: TrÃ¬nh bÃ y giao diá»‡n Web Learner & Admin, Bá»™ kiá»ƒm thá»­ tá»± Ä‘á»™ng, Äo lÆ°á»ng NFR.   |
+|   - Báº±ng chá»©ng thu tháº­p: áº¢nh chá»¥p giao diá»‡n thá»±c táº¿, Káº¿t quáº£ kiá»ƒm thá»­ Vitest/Pytest/Playwright,    |
+|                          Biá»ƒu Ä‘á»“ hiá»‡u nÄƒng k6 benchmark, Báº£ng Ä‘á»‘i soÃ¡t NFR Target vs Measured.     |
+|   - Má»‘c cung cáº¥p báº±ng chá»©ng: HÃ¬nh thÃ nh trá»±c tiáº¿p tá»« Milestone M3.3 Ä‘áº¿n M3.10.                      |
 +----------------------------------------------------------------------------------------------------+
-| PHỤ LỤC HỌC THUẬT: HỒ SƠ KIỂM ĐỊNH THIẾT KẾ & NHẬT KÝ QUẢN TRỊ                                     |
-|   - Nội dung báo cáo: Báo cáo kiểm định 10 cổng D-G1..D-G10, Sổ đăng ký quyết định kiến trúc ADR.  |
-|   - Bằng chứng thu thập: Toàn bộ lịch sử logs/decision-log.md, logs/test-log.md, ADR-001..029.     |
-|   - Mốc cung cấp bằng chứng: Kế thừa từ M2.5, M2.6 và hoàn thiện tại M3.10.                         |
+| PHá»¤ Lá»¤C Há»ŒC THUáº¬T: Há»’ SÆ  KIá»‚M Äá»ŠNH THIáº¾T Káº¾ & NHáº¬T KÃ QUáº¢N TRá»Š                                     |
+|   - Ná»™i dung bÃ¡o cÃ¡o: BÃ¡o cÃ¡o kiá»ƒm Ä‘á»‹nh 10 cá»•ng D-G1..D-G10, Sá»• Ä‘Äƒng kÃ½ quyáº¿t Ä‘á»‹nh kiáº¿n trÃºc ADR.  |
+|   - Báº±ng chá»©ng thu tháº­p: ToÃ n bá»™ lá»‹ch sá»­ logs/decision-log.md, logs/test-log.md, ADR-001..029.     |
+|   - Má»‘c cung cáº¥p báº±ng chá»©ng: Káº¿ thá»«a tá»« M2.5, M2.6 vÃ  hoÃ n thiá»‡n táº¡i M3.10.                         |
 +----------------------------------------------------------------------------------------------------+
 ```
 
-> **Ghi chú học thuật về phạm vi đồ án:** Đồ án Lingora được định vị chuẩn mực là đề tài Kỹ nghệ Phần mềm xây dựng nền tảng học trực tuyến hoàn chỉnh. Các thành phần AI xuất hiện trong một số tài liệu thiết kế M2 được giữ ở mức tham chiếu kiến trúc/khả năng hỗ trợ và hoàn toàn không thuộc phạm vi triển khai của Phase 2 hay nội dung đánh giá chính của Chương 5.
+> **Ghi chÃº há»c thuáº­t vá» pháº¡m vi Ä‘á»“ Ã¡n:** Äá»“ Ã¡n Lingora Ä‘Æ°á»£c Ä‘á»‹nh vá»‹ chuáº©n má»±c lÃ  Ä‘á» tÃ i Ká»¹ nghá»‡ Pháº§n má»m xÃ¢y dá»±ng ná»n táº£ng há»c trá»±c tuyáº¿n hoÃ n chá»‰nh. CÃ¡c thÃ nh pháº§n AI xuáº¥t hiá»‡n trong má»™t sá»‘ tÃ i liá»‡u thiáº¿t káº¿ M2 Ä‘Æ°á»£c giá»¯ á»Ÿ má»©c tham chiáº¿u kiáº¿n trÃºc/kháº£ nÄƒng há»— trá»£ vÃ  hoÃ n toÃ n khÃ´ng thuá»™c pháº¡m vi triá»ƒn khai cá»§a Phase 2 hay ná»™i dung Ä‘Ã¡nh giÃ¡ chÃ­nh cá»§a ChÆ°Æ¡ng 5.
 
 ---
 
-## 19. SỔ ĐĂNG KÝ RỦI RO & KHOẢNG TRỐNG KỸ THUẬT (RISK REGISTER)
+## 19. Sá»” ÄÄ‚NG KÃ Rá»¦I RO & KHOáº¢NG TRá»NG Ká»¸ THUáº¬T (RISK REGISTER)
 
-| ID | Tên Rủi Ro / Khoảng Trống | Mức Độ Ảnh Hưởng | Phụ Thuộc Liên Quan | Giải Pháp Giảm Thiểu (Mitigation Strategy) | Thành Phần Sở Hữu | Cổng Kiểm Soát |
+| ID | TÃªn Rá»§i Ro / Khoáº£ng Trá»‘ng | Má»©c Äá»™ áº¢nh HÆ°á»Ÿng | Phá»¥ Thuá»™c LiÃªn Quan | Giáº£i PhÃ¡p Giáº£m Thiá»ƒu (Mitigation Strategy) | ThÃ nh Pháº§n Sá»Ÿ Há»¯u | Cá»•ng Kiá»ƒm SoÃ¡t |
 |---|---|---|---|---|---|---|
-| **RSK-01** | Xung đột khóa bảng PostgreSQL khi thực hiện di chuyển dữ liệu lớn | `CAO` (Gây tắc nghẽn truy vấn) | `DEP-TECH-01`, `DEP-TECH-02` | Áp dụng chiến lược chia nhỏ đợt (batching ~500 bản ghi), đặt `lock_timeout = 5s`, tạo chỉ mục bằng `CONCURRENTLY`. | `COMP-INFRA-01` | Cổng M3.1 |
-| **RSK-02** | Lỗ hổng rò rỉ dữ liệu chéo học viên do cấu hình RLS sai sót | `NGHIÊM TRỌNG` (Vi phạm bảo mật) | `DEP-TECH-09` | Bắt buộc chạy bộ test tự động PostgREST giả lập tấn công chéo người dùng trước khi mở lưu lượng; cấm bypass RLS. | `COMP-INFRA-02` | Cổng M3.2 |
-| **RSK-03** | Suy giảm hiệu năng truy vấn bài học do đệ quy kiểm tra trạng thái Unit | `TRUNG BÌNH` (Tăng độ trễ API) | `COMP-DOM-02` | Thiết lập chỉ mục phức hợp trên cặp `(course_id, order_index)` và chỉ mục trên trường `status`; tạo view đệm nếu cần. | `COMP-DOM-02` | Cổng M3.3 |
-| **RSK-04** | Tắc nghẽn hiệu năng truy vấn tiến độ học tập và bài tập khi tải đồng thời tăng | `TRUNG BÌNH` (Tăng độ trễ API bài học) | `DEP-TECH-02` | Tối ưu chỉ mục truy vấn trên `user_progress` và trạng thái bài học, thực thi truy vấn tối ưu tại `COMP-DOM-05` | `COMP-DOM-05` | Cổng M3.3 |
-| **RSK-05** | Gian lận điểm chuỗi học tập (Streak) bằng cách thao túng đồng hồ client | `TRUNG BÌNH` (Ảnh hưởng gamification)| `COMP-DOM-02` | Tuyệt đối sử dụng đồng hồ máy chủ UTC làm gốc, chỉ dùng múi giờ IANA của học viên trên server để quy đổi ngày lịch. | `COMP-DOM-02` | Cổng M3.5 |
-| **RSK-06** | Creator tự phê duyệt bài học thông qua gọi trực tiếp API bỏ qua UI | `CAO` (Vi phạm phân tách nhiệm vụ) | `COMP-DOM-06` | Cài đặt trigger cơ sở dữ liệu độc lập ở tầng PostgreSQL từ chối giao dịch; không phụ thuộc vào kiểm tra UI. | `COMP-INFRA-02` | Cổng M3.6 |
-| **RSK-07** | Thiếu dữ liệu thực nghiệm phục vụ viết Chương 5 của Luận văn | `TRUNG BÌNH` (Chậm tiến độ báo cáo) | `DEP-GOV-04` | Thu thập bằng chứng liên tục tại từng mốc (Code đến đâu thu test log, benchmark và ảnh chụp đến đó). | Toàn bộ hệ thống | Cổng M3.10 |
+| **RSK-01** | Xung Ä‘á»™t khÃ³a báº£ng PostgreSQL khi thá»±c hiá»‡n di chuyá»ƒn dá»¯ liá»‡u lá»›n | `CAO` (GÃ¢y táº¯c ngháº½n truy váº¥n) | `DEP-TECH-01`, `DEP-TECH-02` | Ãp dá»¥ng chiáº¿n lÆ°á»£c chia nhá» Ä‘á»£t (batching ~500 báº£n ghi), Ä‘áº·t `lock_timeout = 5s`, táº¡o chá»‰ má»¥c báº±ng `CONCURRENTLY`. | `COMP-INFRA-01` | Cá»•ng M3.1 |
+| **RSK-02** | Lá»— há»•ng rÃ² rá»‰ dá»¯ liá»‡u chÃ©o há»c viÃªn do cáº¥u hÃ¬nh RLS sai sÃ³t | `NGHIÃŠM TRá»ŒNG` (Vi pháº¡m báº£o máº­t) | `DEP-TECH-09` | Báº¯t buá»™c cháº¡y bá»™ test tá»± Ä‘á»™ng PostgREST giáº£ láº­p táº¥n cÃ´ng chÃ©o ngÆ°á»i dÃ¹ng trÆ°á»›c khi má»Ÿ lÆ°u lÆ°á»£ng; cáº¥m bypass RLS. | `COMP-INFRA-02` | Cá»•ng M3.2 |
+| **RSK-03** | Suy giáº£m hiá»‡u nÄƒng truy váº¥n bÃ i há»c do Ä‘á»‡ quy kiá»ƒm tra tráº¡ng thÃ¡i Unit | `TRUNG BÃŒNH` (TÄƒng Ä‘á»™ trá»… API) | `COMP-DOM-02` | Thiáº¿t láº­p chá»‰ má»¥c phá»©c há»£p trÃªn cáº·p `(course_id, order_index)` vÃ  chá»‰ má»¥c trÃªn trÆ°á»ng `status`; táº¡o view Ä‘á»‡m náº¿u cáº§n. | `COMP-DOM-02` | Cá»•ng M3.3 |
+| **RSK-04** | Táº¯c ngháº½n hiá»‡u nÄƒng truy váº¥n tiáº¿n Ä‘á»™ há»c táº­p vÃ  bÃ i táº­p khi táº£i Ä‘á»“ng thá»i tÄƒng | `TRUNG BÃŒNH` (TÄƒng Ä‘á»™ trá»… API bÃ i há»c) | `DEP-TECH-02` | Tá»‘i Æ°u chá»‰ má»¥c truy váº¥n trÃªn `user_progress` vÃ  tráº¡ng thÃ¡i bÃ i há»c, thá»±c thi truy váº¥n tá»‘i Æ°u táº¡i `COMP-DOM-05` | `COMP-DOM-05` | Cá»•ng M3.3 |
+| **RSK-05** | Gian láº­n Ä‘iá»ƒm chuá»—i há»c táº­p (Streak) báº±ng cÃ¡ch thao tÃºng Ä‘á»“ng há»“ client | `TRUNG BÃŒNH` (áº¢nh hÆ°á»Ÿng gamification)| `COMP-DOM-02` | Tuyá»‡t Ä‘á»‘i sá»­ dá»¥ng Ä‘á»“ng há»“ mÃ¡y chá»§ UTC lÃ m gá»‘c, chá»‰ dÃ¹ng mÃºi giá» IANA cá»§a há»c viÃªn trÃªn server Ä‘á»ƒ quy Ä‘á»•i ngÃ y lá»‹ch. | `COMP-DOM-02` | Cá»•ng M3.5 |
+| **RSK-06** | Creator tá»± phÃª duyá»‡t bÃ i há»c thÃ´ng qua gá»i trá»±c tiáº¿p API bá» qua UI | `CAO` (Vi pháº¡m phÃ¢n tÃ¡ch nhiá»‡m vá»¥) | `COMP-DOM-06` | CÃ i Ä‘áº·t trigger cÆ¡ sá»Ÿ dá»¯ liá»‡u Ä‘á»™c láº­p á»Ÿ táº§ng PostgreSQL tá»« chá»‘i giao dá»‹ch; khÃ´ng phá»¥ thuá»™c vÃ o kiá»ƒm tra UI. | `COMP-INFRA-02` | Cá»•ng M3.6 |
+| **RSK-07** | Thiáº¿u dá»¯ liá»‡u thá»±c nghiá»‡m phá»¥c vá»¥ viáº¿t ChÆ°Æ¡ng 5 cá»§a Luáº­n vÄƒn | `TRUNG BÃŒNH` (Cháº­m tiáº¿n Ä‘á»™ bÃ¡o cÃ¡o) | `DEP-GOV-04` | Thu tháº­p báº±ng chá»©ng liÃªn tá»¥c táº¡i tá»«ng má»‘c (Code Ä‘áº¿n Ä‘Ã¢u thu test log, benchmark vÃ  áº£nh chá»¥p Ä‘áº¿n Ä‘Ã³). | ToÃ n bá»™ há»‡ thá»‘ng | Cá»•ng M3.10 |
 
 ---
 
-## 20. LỘ TRÌNH TỔNG THỂ GIAI ĐOẠN 2 (MASTER ROADMAP M3.1..M3.10)
+## 20. Lá»˜ TRÃŒNH Tá»”NG THá»‚ GIAI ÄOáº N 2 (MASTER ROADMAP M3.1..M3.10)
 
-Lộ trình tổng thể Giai đoạn 2 bao gồm **10 mốc triển khai chuẩn tắc (M3.1 đến M3.10)**, được thiết kế nối tiếp nhau theo thứ bậc phụ thuộc kiến trúc, kế thừa trọn vẹn từ M2.6 và dẫn dắt toàn bộ dự án đến đích sẵn sàng trình diễn và hoàn thiện hồ sơ báo cáo/bảo vệ:
+Lá»™ trÃ¬nh tá»•ng thá»ƒ Giai Ä‘oáº¡n 2 bao gá»“m **10 má»‘c triá»ƒn khai chuáº©n táº¯c (M3.1 Ä‘áº¿n M3.10)**, Ä‘Æ°á»£c thiáº¿t káº¿ ná»‘i tiáº¿p nhau theo thá»© báº­c phá»¥ thuá»™c kiáº¿n trÃºc, káº¿ thá»«a trá»n váº¹n tá»« M2.6 vÃ  dáº«n dáº¯t toÃ n bá»™ dá»± Ã¡n Ä‘áº¿n Ä‘Ã­ch sáºµn sÃ ng trÃ¬nh diá»…n vÃ  hoÃ n thiá»‡n há»“ sÆ¡ bÃ¡o cÃ¡o/báº£o vá»‡:
 
 ```text
 ====================================================================================================
                         LINGORA PHASE 2 MASTER IMPLEMENTATION ROADMAP
 ====================================================================================================
 
-[PHASE 1: SYSTEM DESIGN] ──(M2.6 Accepted @ 4c8a7db)──┐
-                                                      │
-┌─────────────────────────────────────────────────────┘
-│
-├── M3.1: Foundation (Database & Schema Migration Strategy)
-│   ├── Mục tiêu: Triển khai lược đồ vật lý, bảng units, lesson_revisions, assessment_results, seed A1 qua WP-CONTENT.
-│   └── Cổng nghiệm thu: Schema validation PASS, Migration UP/DOWN verified, Seed 6 Units A1 complete.
-│
-├── M3.2: Authentication, RBAC, RLS & SoD Engine
-│   ├── Mục tiêu: Nâng cấp 6 vai trò, ma trận chính sách RLS kép, triggers chặn vi phạm SoD, audit logs.
-│   └── Cổng nghiệm thu: 6-Role JWT auth PASS, Cross-user RLS isolation PASS, SoD denial tests PASS (Frames 12–16).
-│
-├── M3.3: Learner Core (Lesson & Exercise Execution Engine)
-│   ├── Mục tiêu: Trình phát bài học, 5 dạng tương tác bài tập (MCQ, Fill, Reorder, Listening, Grammar), nền tảng locale i18n sơ bộ.
-│   └── Cổng nghiệm thu: 5 Exercise types interactive PASS, Unit 4/4 Published condition verified, i18n locale foundation PASS.
-│
-├── M3.4: Assessment & Progression Engine (Placement, Starting Point, Skip, Retake)
-│   ├── Mục tiêu: Động cơ chẩn đoán 30 câu (1 điểm thô/câu, raw score 0–30), Mapping A (0–30 ra Unit 1–6), Skip Branch A, Retake bất biến.
-│   └── Cổng nghiệm thu: Mapping A 12 boundary vectors PASS (Frames 1–3), Skip 0-record PASS, Retake immutable PASS.
-│
-├── M3.5: Learning Intelligence (Controlled Retry, SRS Policy B, Jump Challenge, Streak)
-│   ├── Mục tiêu: Hạn mức retry max(1, floor(N*0.10)) trần 70%, SRS Policy B [1,3,7,14,30], Jump >=95%, Streak IANA.
-│   └── Cổng nghiệm thu: Retry credit 70% PASS, SRS RPC determinism PASS, Jump 24h lockout PASS, Streak PASS (Frames 4–11).
-│
-├── M3.6: Content Governance & Moderation (Authoring, Review, Publish, Emergency, Clone-to-Draft)
-│   ├── Mục tiêu: Phân công Manager, soạn thảo Creator, duyệt bài Moderator, xuất bản, Admin khẩn cấp kèm lý do.
-│   └── Cổng nghiệm thu: Vòng đời 6 trạng thái PASS, Creator no self-approve PASS, Clone-to-Draft v2 PASS.
-│
-├── M3.7: Cross-Cutting Supporting Infrastructure (i18n Completion & Shared BFF Utilities)
-│   ├── Mục tiêu: Hoàn thiện hỗ trợ song ngữ giao diện i18n (vi/en) theo P1-FR-010/YC-EXT-06, bilingual sync toàn diện và tiện ích BFF dùng chung phục vụ M3.8.
-│   └── Cổng nghiệm thu: i18n locale switching PASS, UI catalog fallback PASS, Shared BFF helpers PASS.
-│
-├── M3.8: System Integration & End-to-End Learner Journey
-│   ├── Mục tiêu: Lắp ghép toàn bộ các phân hệ thành luồng học tập và quản trị hoàn chỉnh; kiểm thử E2E Playwright cho 14 Core Use Cases (loại trừ UC-15 là Future Extension).
-│   └── Cổng nghiệm thu: 14 Core Use Cases (UC-01..UC-14) E2E pass (UC-15 excluded from MVP E2E), Zero broken routes.
-│
-├── M3.9: System Hardening, Performance & Security Verification
-│   ├── Mục tiêu: Rà soát an ninh toàn diện, đo lường tiêu chí phi chức năng NFR (k6 benchmark, Lighthouse).
-│   └── Cổng nghiệm thu: NFR Measured recorded, Security audit clean, Zero P0/P1 issues.
-│
-└── M3.10: Academic Closure & Academic Report Evidence Consolidation
-    ├── Mục tiêu: Thu thập toàn bộ bằng chứng cho 5 chương báo cáo học thuật, đóng gói kịch bản demo 4 Acts.
-    └── Cổng nghiệm thu: Báo cáo Word/Markdown đồng bộ 100%, 4 Acts demo hoàn chỉnh, sẵn sàng trình diễn và hoàn thiện hồ sơ báo cáo/bảo vệ.
+[PHASE 1: SYSTEM DESIGN] â”€â”€(M2.6 Accepted @ 4c8a7db)â”€â”€â”
+                                                      â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â”‚
+â”œâ”€â”€ M3.1: Foundation (Database & Schema Migration Strategy)
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: Triá»ƒn khai lÆ°á»£c Ä‘á»“ váº­t lÃ½, báº£ng units, lesson_revisions, assessment_results, seed A1 qua WP-CONTENT.
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: Schema validation PASS, Migration UP/DOWN verified, Seed 6 Units A1 complete.
+â”‚
+â”œâ”€â”€ M3.2: Authentication, RBAC, RLS & SoD Engine
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: NÃ¢ng cáº¥p 6 vai trÃ², ma tráº­n chÃ­nh sÃ¡ch RLS kÃ©p, triggers cháº·n vi pháº¡m SoD, audit logs.
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: 6-Role JWT auth PASS, Cross-user RLS isolation PASS, SoD denial tests PASS (Frames 12â€“16).
+â”‚
+â”œâ”€â”€ M3.3: Learner Core (Lesson & Exercise Execution Engine)
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: TrÃ¬nh phÃ¡t bÃ i há»c, 5 dáº¡ng tÆ°Æ¡ng tÃ¡c bÃ i táº­p (MCQ, Fill, Reorder, Listening, Grammar), ná»n táº£ng locale i18n sÆ¡ bá»™.
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: 5 Exercise types interactive PASS, Unit 4/4 Published condition verified, i18n locale foundation PASS.
+â”‚
+â”œâ”€â”€ M3.4: Assessment & Progression Engine (Placement, Starting Point, Skip, Retake)
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: Äá»™ng cÆ¡ cháº©n Ä‘oÃ¡n 30 cÃ¢u (1 Ä‘iá»ƒm thÃ´/cÃ¢u, raw score 0â€“30), Mapping A (0â€“30 ra Unit 1â€“6), Skip Branch A, Retake báº¥t biáº¿n.
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: Mapping A 12 boundary vectors PASS (Frames 1â€“3), Skip 0-record PASS, Retake immutable PASS.
+â”‚
+â”œâ”€â”€ M3.5: Learning Intelligence (Controlled Retry, SRS Policy B, Jump Challenge, Streak)
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: Háº¡n má»©c retry max(1, floor(N*0.10)) tráº§n 70%, SRS Policy B [1,3,7,14,30], Jump >=95%, Streak IANA.
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: Retry credit 70% PASS, SRS RPC determinism PASS, Jump 24h lockout PASS, Streak PASS (Frames 4â€“11).
+â”‚
+â”œâ”€â”€ M3.6: Content Governance & Moderation (Authoring, Review, Publish, Emergency, Clone-to-Draft)
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: PhÃ¢n cÃ´ng Manager, soáº¡n tháº£o Creator, duyá»‡t bÃ i Moderator, xuáº¥t báº£n, Admin kháº©n cáº¥p kÃ¨m lÃ½ do.
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: VÃ²ng Ä‘á»i 6 tráº¡ng thÃ¡i PASS, Creator no self-approve PASS, Clone-to-Draft v2 PASS.
+â”‚
+â”œâ”€â”€ M3.7: Cross-Cutting Supporting Infrastructure (i18n Completion & Shared BFF Utilities)
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: HoÃ n thiá»‡n há»— trá»£ song ngá»¯ giao diá»‡n i18n (vi/en) theo P1-FR-010/YC-EXT-06, bilingual sync toÃ n diá»‡n vÃ  tiá»‡n Ã­ch BFF dÃ¹ng chung phá»¥c vá»¥ M3.8.
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: i18n locale switching PASS, UI catalog fallback PASS, Shared BFF helpers PASS.
+â”‚
+â”œâ”€â”€ M3.8: System Integration & End-to-End Learner Journey
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: Láº¯p ghÃ©p toÃ n bá»™ cÃ¡c phÃ¢n há»‡ thÃ nh luá»“ng há»c táº­p vÃ  quáº£n trá»‹ hoÃ n chá»‰nh; kiá»ƒm thá»­ E2E Playwright cho 14 Core Use Cases (loáº¡i trá»« UC-15 lÃ  Future Extension).
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: 14 Core Use Cases (UC-1..UC-14) E2E pass , Zero broken routes.
+â”‚
+â”œâ”€â”€ M3.9: System Hardening, Performance & Security Verification
+â”‚   â”œâ”€â”€ Má»¥c tiÃªu: RÃ  soÃ¡t an ninh toÃ n diá»‡n, Ä‘o lÆ°á»ng tiÃªu chÃ­ phi chá»©c nÄƒng NFR (k6 benchmark, Lighthouse).
+â”‚   â””â”€â”€ Cá»•ng nghiá»‡m thu: NFR Measured recorded, Security audit clean, Zero P0/P1 issues.
+â”‚
+â””â”€â”€ M3.10: Academic Closure & Academic Report Evidence Consolidation
+    â”œâ”€â”€ Má»¥c tiÃªu: Thu tháº­p toÃ n bá»™ báº±ng chá»©ng cho 5 chÆ°Æ¡ng bÃ¡o cÃ¡o há»c thuáº­t, Ä‘Ã³ng gÃ³i ká»‹ch báº£n demo 4 Acts.
+    â””â”€â”€ Cá»•ng nghiá»‡m thu: BÃ¡o cÃ¡o Word/Markdown Ä‘á»“ng bá»™ 100%, 4 Acts demo hoÃ n chá»‰nh, sáºµn sÃ ng trÃ¬nh diá»…n vÃ  hoÃ n thiá»‡n há»“ sÆ¡ bÃ¡o cÃ¡o/báº£o vá»‡.
 ```
 
-### 20.1. Gói Công Việc Chuẩn Bị Nội Dung & Dữ Liệu Mầm (WP-CONTENT: Content Preparation & Data Seeding Work Package)
+### 20.1. GÃ³i CÃ´ng Viá»‡c Chuáº©n Bá»‹ Ná»™i Dung & Dá»¯ Liá»‡u Máº§m (WP-CONTENT: Content Preparation & Data Seeding Work Package)
 
-Để đảm bảo tính liên tục và loại bỏ rủi ro thiếu dữ liệu kiểm thử giữa các mốc triển khai độc lập, toàn bộ tài nguyên học liệu và dữ liệu mầm được quản lý thành một **Gói Công Việc Chuẩn Bị Nội Dung Xuyên Suốt (WP-CONTENT)** phục vụ từ M3.1 tới M3.10:
+Äá»ƒ Ä‘áº£m báº£o tÃ­nh liÃªn tá»¥c vÃ  loáº¡i bá» rá»§i ro thiáº¿u dá»¯ liá»‡u kiá»ƒm thá»­ giá»¯a cÃ¡c má»‘c triá»ƒn khai Ä‘á»™c láº­p, toÃ n bá»™ tÃ i nguyÃªn há»c liá»‡u vÃ  dá»¯ liá»‡u máº§m Ä‘Æ°á»£c quáº£n lÃ½ thÃ nh má»™t **GÃ³i CÃ´ng Viá»‡c Chuáº©n Bá»‹ Ná»™i Dung XuyÃªn Suá»‘t (WP-CONTENT)** phá»¥c vá»¥ tá»« M3.1 tá»›i M3.10:
 
-1. **24 Bài học Chuẩn tắc CEFR A1 (6 Units $\times$ 4 Lessons):** Dữ liệu giáo trình hoàn chỉnh tuân thủ `docs/08-english-a1-curriculum.md`, bao gồm tiêu đề, mô tả, nội dung bài học ngữ cảnh theo chủ đề đời sống và giao tiếp hàng ngày.
-2. **Bộ Từ điển Song ngữ (Bilingual Vocabulary Catalog):** Danh mục từ vựng tiếng Anh kèm phiên âm, nghĩa tiếng Việt, câu ví dụ song ngữ gắn liền với từng bài học và bài kiểm tra chẩn đoán.
-3. **Tệp Âm thanh Tĩnh Chuẩn (Static Audio MP3 Assets):** Toàn bộ tệp âm thanh tĩnh phục vụ bài tập dạng Listening và phát âm từ vựng (đặt trong thư mục tĩnh/public/CDN media, phục vụ trực tiếp không qua dịch vụ TTS động thời gian thực).
-4. **Bộ Dữ liệu 5 Dạng Bài tập Tương tác (Interactive Exercise Fixtures):** Bộ câu hỏi và đáp án cho 5 dạng bài tập cốt lõi (Multiple Choice, Fill-in-the-Blank, Word Reordering, Listening Comprehension, Grammar Selection) tích hợp trong từng bài học.
-5. **Bộ 30 Câu hỏi Đánh giá Năng lực (Diagnostic Placement Items):** 30 câu hỏi chuẩn hóa raw score 0..30 bao quát 4 kỹ năng cốt lõi (Vocabulary, Grammar, Reading, Listening), đi kèm barem đáp án máy chủ để phân lớp Mapping A ra Units 1–6.
-6. **Bộ Đề Kiểm tra Vượt cấp (Jump Challenge Content Fixtures):** Ngân hàng đề kiểm tra vượt cấp toàn diện cho từng Unit, phục vụ xác thực ngưỡng điểm $\ge 95\%$ của tính năng Jump Challenge.
-7. **Dữ liệu Mầm Phân tách Thẩm quyền Nội dung (Governance Lifecycle & SoD Fixtures):** Các bản ghi bài học bản thảo (Draft), chờ duyệt (In Review), yêu cầu chỉnh sửa (Changes Requested), đã duyệt (Approved), đã xuất bản (Published), bản ghi nhân bản v2 (Clone-to-Draft v2 với con trỏ `supersedes_id`), và kịch bản Unit âm tính (3/4 bài Published) phục vụ kiểm thử phân quyền và demo Admin.
+1. **24 BÃ i há»c Chuáº©n táº¯c CEFR A1 (6 Units $\times$ 4 Lessons):** Dá»¯ liá»‡u giÃ¡o trÃ¬nh hoÃ n chá»‰nh tuÃ¢n thá»§ `docs/08-english-a1-curriculum.md`, bao gá»“m tiÃªu Ä‘á», mÃ´ táº£, ná»™i dung bÃ i há»c ngá»¯ cáº£nh theo chá»§ Ä‘á» Ä‘á»i sá»‘ng vÃ  giao tiáº¿p hÃ ng ngÃ y.
+2. **Bá»™ Tá»« Ä‘iá»ƒn Song ngá»¯ (Bilingual Vocabulary Catalog):** Danh má»¥c tá»« vá»±ng tiáº¿ng Anh kÃ¨m phiÃªn Ã¢m, nghÄ©a tiáº¿ng Viá»‡t, cÃ¢u vÃ­ dá»¥ song ngá»¯ gáº¯n liá»n vá»›i tá»«ng bÃ i há»c vÃ  bÃ i kiá»ƒm tra cháº©n Ä‘oÃ¡n.
+3. **Tá»‡p Ã‚m thanh TÄ©nh Chuáº©n (Static Audio MP3 Assets):** ToÃ n bá»™ tá»‡p Ã¢m thanh tÄ©nh phá»¥c vá»¥ bÃ i táº­p dáº¡ng Listening vÃ  phÃ¡t Ã¢m tá»« vá»±ng (Ä‘áº·t trong thÆ° má»¥c tÄ©nh/public/CDN media, phá»¥c vá»¥ trá»±c tiáº¿p khÃ´ng qua dá»‹ch vá»¥ TTS Ä‘á»™ng thá»i gian thá»±c).
+4. **Bá»™ Dá»¯ liá»‡u 5 Dáº¡ng BÃ i táº­p TÆ°Æ¡ng tÃ¡c (Interactive Exercise Fixtures):** Bá»™ cÃ¢u há»i vÃ  Ä‘Ã¡p Ã¡n cho 5 dáº¡ng bÃ i táº­p cá»‘t lÃµi (Multiple Choice, Fill-in-the-Blank, Word Reordering, Listening Comprehension, Grammar Selection) tÃ­ch há»£p trong tá»«ng bÃ i há»c.
+5. **Bá»™ 30 CÃ¢u há»i ÄÃ¡nh giÃ¡ NÄƒng lá»±c (Diagnostic Placement Items):** 30 cÃ¢u há»i chuáº©n hÃ³a raw score 0..30 bao quÃ¡t 4 ká»¹ nÄƒng cá»‘t lÃµi (Vocabulary, Grammar, Reading, Listening), Ä‘i kÃ¨m barem Ä‘Ã¡p Ã¡n mÃ¡y chá»§ Ä‘á»ƒ phÃ¢n lá»›p Mapping A ra Units 1â€“6.
+6. **Bá»™ Äá» Kiá»ƒm tra VÆ°á»£t cáº¥p (Jump Challenge Content Fixtures):** NgÃ¢n hÃ ng Ä‘á» kiá»ƒm tra vÆ°á»£t cáº¥p toÃ n diá»‡n cho tá»«ng Unit, phá»¥c vá»¥ xÃ¡c thá»±c ngÆ°á»¡ng Ä‘iá»ƒm $\ge 95\%$ cá»§a tÃ­nh nÄƒng Jump Challenge.
+7. **Dá»¯ liá»‡u Máº§m PhÃ¢n tÃ¡ch Tháº©m quyá»n Ná»™i dung (Governance Lifecycle & SoD Fixtures):** CÃ¡c báº£n ghi bÃ i há»c báº£n tháº£o (Draft), chá» duyá»‡t (In Review), yÃªu cáº§u chá»‰nh sá»­a (Changes Requested), Ä‘Ã£ duyá»‡t (Approved), Ä‘Ã£ xuáº¥t báº£n (Published), báº£n ghi nhÃ¢n báº£n v2 (Clone-to-Draft v2 vá»›i con trá» `supersedes_id`), vÃ  ká»‹ch báº£n Unit Ã¢m tÃ­nh (3/4 bÃ i Published) phá»¥c vá»¥ kiá»ƒm thá»­ phÃ¢n quyá»n vÃ  demo Admin.
 
 ---
 
-### 20.2. Ma Trận Kế Hoạch, Nỗ Lực, Phân Trách & Cổng Nghiệm Thu Từng Mốc (Milestone Schedule & Exit Criteria)
+### 20.2. Ma Tráº­n Káº¿ Hoáº¡ch, Ná»— Lá»±c, PhÃ¢n TrÃ¡ch & Cá»•ng Nghiá»‡m Thu Tá»«ng Má»‘c (Milestone Schedule & Exit Criteria)
 
-| Mốc | Tên Phân Hệ & Trọng Tâm Triển Khai | Điểm Story (SP) | Nỗ Lực (person-days) | Người Phụ Trách (Owner) | Hạn Định (Deadline) | Phân Hệ Sở Hữu | Điều Kiện Tiền Đề (Inbound Deps) | Sản Phẩm Chuyển Giao Chính (Primary Deliverables) | Tiêu Chí Đầu Ra & Cổng Nghiệm Thu Cụ Thể (Concrete Exit Criteria) |
+| Má»‘c | TÃªn PhÃ¢n Há»‡ & Trá»ng TÃ¢m Triá»ƒn Khai | Äiá»ƒm Story (SP) | Ná»— Lá»±c (person-days) | NgÆ°á»i Phá»¥ TrÃ¡ch (Owner) | Háº¡n Äá»‹nh (Deadline) | PhÃ¢n Há»‡ Sá»Ÿ Há»¯u | Äiá»u Kiá»‡n Tiá»n Äá» (Inbound Deps) | Sáº£n Pháº©m Chuyá»ƒn Giao ChÃ­nh (Primary Deliverables) | TiÃªu ChÃ­ Äáº§u Ra & Cá»•ng Nghiá»‡m Thu Cá»¥ Thá»ƒ (Concrete Exit Criteria) |
 |---|---|---|---|---|---|---|---|---|---|
-| **M3.1** | **Foundation: Cơ Sở Dữ Liệu & Lược Đồ Vật Lý** | 3 SP | 2.5 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-admin` (Prisma DDL), PostgreSQL | M2.6 Design Sign-off (`commit 4c8a7db`), `schema.prisma`, `WP-CONTENT` | • Bảng `units`, `lesson_revisions`, `assessment_results`, `skill_profiles`<br>• Nâng cấp enum Role lên 6 giá trị vật lý<br>• Script seed 6 Units A1 (Learning & Governance fixtures qua `WP-CONTENT`)<br>• Quyết định biểu diễn vật lý (§5.3): Barem đáp án (Answer Security), Placement/Jump (Unified Model), Attempt/Retry (D7), Cooldown 24h, Skip status | • `npx prisma validate` PASS<br>• Script migration UP/DOWN kiểm chứng thành công<br>• Catalog DB xác nhận 6 Units & 24 bài học đúng cấu trúc<br>• Cổng nghiệm thu §5.3 đạt: Quyết định phân tách bí mật chấm điểm & test phủ định; Chốt chặn trực tiếp Unit 4/4; Khóa biểu diễn Placement 30 câu & Jump (không entity ma); Khóa biểu diễn Retry & Cooldown & Skip |
-| **M3.2** | **Security: Xác Thực, RBAC, RLS & Phân Tách Nhiệm Vụ (SoD)** | 5 SP | 3.5 person-days | TBD — Human Assignment | TBD — Human Deadline | PostgreSQL (RLS/Triggers), Supabase Auth, BFF Layer | M3.1 (Lược đồ DB) | • 6-Role JWT helper & Context propagation<br>• PostgreSQL Column-Level Grant trên `profiles`<br>• Ma trận RLS kép trên toàn bộ các bảng nghiệp vụ (không đệ quy)<br>• Triggers chặn vi phạm SoD & Audit Log Append-Only | • Vitest Security Suite PASS (Frames 12–16)<br>• Kiểm thử cô lập dữ liệu chéo (Cross-tenant/Cross-user) PASS<br>• Thao tác phê duyệt từ tài khoản Creator bị từ chối `403 Forbidden` / `ROLE_UNAUTHORIZED` |
-| **M3.3** | **Learner Core: Giao Diện Nội Dung Bài Học, Trình Phát & Động Cơ 5 Dạng Bài Tập** | 5 SP | 4.5 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-web` (App Router), `lingora-media` | M3.1 (Cấu trúc Unit/Lesson), M3.2 (RLS Learner read), `WP-CONTENT` | • Giao diện xem nội dung bài học (Lesson Content Viewer): hiển thị từ vựng, phiên âm, giải nghĩa tiếng Việt, câu ví dụ, audio phát âm chuẩn từ Storage, tóm tắt ngữ pháp trước khi vào bài tập<br>• Giao diện trình phát bài học tương tác<br>• Bộ 5 components bài tập: MCQ, Fill-in-Blank, Reorder, Listening (MP3 tĩnh), Grammar Selection<br>• Chốt chặn điều kiện Unit 4/4 Published tại tầng BFF/DB (Direct Access Denial: `UI hiding != Authorization`)<br>• Nền tảng cấu trúc đa ngữ i18n sơ bộ (vi/en locale foundation) | • Vitest Component & Runner Suite PASS (Lesson Content Viewer render đúng học liệu trước bài tập; 5 Exercise Types tương tác không lỗi; Unit 4/4 Rule: Unit 3/4 Published tự động ẩn và chặn truy cập trực tiếp 403/404; i18n locale foundation)<br>• Flow học viên xác nhận: Open Lesson $\rightarrow$ Lesson Content Viewer $\rightarrow$ Start Exercises $\rightarrow$ Exercise Sequence $\rightarrow$ Lesson Result / Progress<br>• Trả về payload không chứa barem đáp án máy chủ PASS |
+| **M3.1** | **Foundation: CÆ¡ Sá»Ÿ Dá»¯ Liá»‡u & LÆ°á»£c Äá»“ Váº­t LÃ½** | 3 SP | 2.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | `lingora-admin` (Prisma DDL), PostgreSQL | M2.6 Design Sign-off (`commit 4c8a7db`), `schema.prisma`, `WP-CONTENT` | â€¢ Báº£ng `units`, `lesson_revisions`, `assessment_results`, `skill_profiles`<br>â€¢ NÃ¢ng cáº¥p enum Role lÃªn 6 giÃ¡ trá»‹ váº­t lÃ½<br>â€¢ Script seed 6 Units A1 (Learning & Governance fixtures qua `WP-CONTENT`)<br>â€¢ Quyáº¿t Ä‘á»‹nh biá»ƒu diá»…n váº­t lÃ½ (Â§5.3): Barem Ä‘Ã¡p Ã¡n (Answer Security), Placement/Jump (Unified Model), Attempt/Retry (D7), Cooldown 24h, Skip status | â€¢ `npx prisma validate` PASS<br>â€¢ Script migration UP/DOWN kiá»ƒm chá»©ng thÃ nh cÃ´ng<br>â€¢ Catalog DB xÃ¡c nháº­n 6 Units & 24 bÃ i há»c Ä‘Ãºng cáº¥u trÃºc<br>â€¢ Cá»•ng nghiá»‡m thu Â§5.3 Ä‘áº¡t: Quyáº¿t Ä‘á»‹nh phÃ¢n tÃ¡ch bÃ­ máº­t cháº¥m Ä‘iá»ƒm & test phá»§ Ä‘á»‹nh; Chá»‘t cháº·n trá»±c tiáº¿p Unit 4/4; KhÃ³a biá»ƒu diá»…n Placement 30 cÃ¢u & Jump (khÃ´ng entity ma); KhÃ³a biá»ƒu diá»…n Retry & Cooldown & Skip |
+| **M3.2** | **Security: XÃ¡c Thá»±c, RBAC, RLS & PhÃ¢n TÃ¡ch Nhiá»‡m Vá»¥ (SoD)** | 5 SP | 3.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | PostgreSQL (RLS/Triggers), Supabase Auth, BFF Layer | M3.1 (LÆ°á»£c Ä‘á»“ DB) | â€¢ 6-Role JWT helper & Context propagation<br>â€¢ PostgreSQL Column-Level Grant trÃªn `profiles`<br>â€¢ Ma tráº­n RLS kÃ©p trÃªn toÃ n bá»™ cÃ¡c báº£ng nghiá»‡p vá»¥ (khÃ´ng Ä‘á»‡ quy)<br>â€¢ Triggers cháº·n vi pháº¡m SoD & Audit Log Append-Only | â€¢ Vitest Security Suite PASS (Frames 12â€“16)<br>â€¢ Kiá»ƒm thá»­ cÃ´ láº­p dá»¯ liá»‡u chÃ©o (Cross-tenant/Cross-user) PASS<br>â€¢ Thao tÃ¡c phÃª duyá»‡t tá»« tÃ i khoáº£n Creator bá»‹ tá»« chá»‘i `403 Forbidden` / `ROLE_UNAUTHORIZED` |
+| **M3.3** | **Learner Core: Giao Diá»‡n Ná»™i Dung BÃ i Há»c, TrÃ¬nh PhÃ¡t & Äá»™ng CÆ¡ 5 Dáº¡ng BÃ i Táº­p** | 5 SP | 4.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | `lingora-web` (App Router), `lingora-media` | M3.1 (Cáº¥u trÃºc Unit/Lesson), M3.2 (RLS Learner read), `WP-CONTENT` | â€¢ Giao diá»‡n xem ná»™i dung bÃ i há»c (Lesson Content Viewer): hiá»ƒn thá»‹ tá»« vá»±ng, phiÃªn Ã¢m, giáº£i nghÄ©a tiáº¿ng Viá»‡t, cÃ¢u vÃ­ dá»¥, audio phÃ¡t Ã¢m chuáº©n tá»« Storage, tÃ³m táº¯t ngá»¯ phÃ¡p trÆ°á»›c khi vÃ o bÃ i táº­p<br>â€¢ Giao diá»‡n trÃ¬nh phÃ¡t bÃ i há»c tÆ°Æ¡ng tÃ¡c<br>â€¢ Bá»™ 5 components bÃ i táº­p: MCQ, Fill-in-Blank, Reorder, Listening (MP3 tÄ©nh), Grammar Selection<br>â€¢ Chá»‘t cháº·n Ä‘iá»u kiá»‡n Unit 4/4 Published táº¡i táº§ng BFF/DB (Direct Access Denial: `UI hiding != Authorization`)<br>â€¢ Ná»n táº£ng cáº¥u trÃºc Ä‘a ngá»¯ i18n sÆ¡ bá»™ (vi/en locale foundation) | â€¢ Vitest Component & Runner Suite PASS (Lesson Content Viewer render Ä‘Ãºng há»c liá»‡u trÆ°á»›c bÃ i táº­p; 5 Exercise Types tÆ°Æ¡ng tÃ¡c khÃ´ng lá»—i; Unit 4/4 Rule: Unit 3/4 Published tá»± Ä‘á»™ng áº©n vÃ  cháº·n truy cáº­p trá»±c tiáº¿p 403/404; i18n locale foundation)<br>â€¢ Flow há»c viÃªn xÃ¡c nháº­n: Open Lesson $\rightarrow$ Lesson Content Viewer $\rightarrow$ Start Exercises $\rightarrow$ Exercise Sequence $\rightarrow$ Lesson Result / Progress<br>â€¢ Tráº£ vá» payload khÃ´ng chá»©a barem Ä‘Ã¡p Ã¡n mÃ¡y chá»§ PASS |
 
-| **M3.4** | **Assessment: Đánh Giá Năng Lực, Xác Định Điểm Bắt Đầu & Nhánh Rẽ** | 5 SP | 3.5 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-web` (BFF & UI), PostgreSQL (`assessment_results`) | M3.1 (Lược đồ khảo sát), M3.3 (Cấu trúc bài học), `WP-CONTENT` (30 items) | • Bài kiểm tra chẩn đoán 30 câu (1 câu = 1 điểm thô, raw score 0–30) phủ 4 kỹ năng (Vocab, Grammar, Reading, Listening)<br>• Động cơ phân lớp Mapping A (0–30 điểm thô $\rightarrow$ Units 1–6)<br>• Luồng Skip (bắt đầu Unit 1, UNVERIFIED, 0 bản ghi kết quả)<br>• Luồng Retake (lưu lịch sử bất biến, bảo lưu mốc xuất phát) | • Vitest Assessment Suite PASS (Frames 1–3)<br>• 12 Test Vectors biên của Mapping A PASS 100%<br>• Kiểm thử Skip không tạo bản ghi rác PASS<br>• Kiểm thử Retake ghi nhận đúng bản ghi mới PASS |
-| **M3.5** | **Intelligence: Controlled Retry, SRS Policy B, Jump & Streak** | 5 SP | 4.5 person-days | TBD — Human Assignment | TBD — Human Deadline | PostgreSQL (RPCs), `lingora-web` (BFF & Client) | M3.3 (Lesson Engine), M3.4 (Tiến độ học), `WP-CONTENT` (Jump sets) | • Động cơ Controlled Retry: $\max(1, \lfloor N \times 0.10 \rfloor)$, trần điểm 70%<br>• PostgreSQL RPC `record_review`: SRS Policy B $[1, 3, 7, 14, 30]$ ngày tất định<br>• Động cơ Jump Challenge: ngưỡng $\ge 95\%$, khóa 24h, gán `by_jump = true`<br>• Động cơ Daily Streak: tính theo múi giờ IANA, reset về 1 khi đứt chuỗi | • Vitest / RPC Test Suite PASS (Frames 4–11)<br>• Hạn mức retry vượt ngưỡng bị chặn 403 Forbidden<br>• RPC SRS trả đúng chu kỳ tất định khi đúng/sai<br>• Jump khóa 24h hoạt động chính xác theo server time |
-| **M3.6** | **Governance: Quản Trị Nội Dung, Duyệt Bài & Xuất Bản Khẩn Cấp** | 5 SP | 4.0 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-admin` (Next.js Dashboard & API routes), PostgreSQL | M3.1 (Lược đồ Revisions), M3.2 (RBAC / SoD), `WP-CONTENT` | • Giao diện soạn thảo & nộp duyệt bài học (Creator)<br>• Hàng đợi kiểm duyệt & phê duyệt (Moderator)<br>• Hành động xuất bản & lưu trữ (Org Manager)<br>• Luồng Admin xuất bản khẩn cấp (kèm lý do bắt buộc & ghi log kiểm toán)<br>• Quy trình Clone-to-Draft v2 với con trỏ `supersedes_id` | • Admin Governance Test Suite PASS (Frames 13, 14, 15, 16 SoD / Governance)<br>• Kiểm thử chuyển trạng thái 6 bước chuẩn xác<br>• Admin xuất bản khẩn cấp ghi nhận đúng sự kiện vào `audit_logs`<br>• Clone-to-Draft v2 tạo bản ghi mới kế thừa nội dung v1 |
-| **M3.7** | **Cross-Cutting: Hoàn Thiện Đa Ngữ (i18n) & Tiện Ích BFF Dùng Chung** | 3 SP | 2.5 person-days | TBD — Human Assignment | TBD — Human Deadline | `lingora-web` & `lingora-admin` (Shared Layer) | M3.3 (i18n locale foundation), M3.5, M3.6, `WP-CONTENT` | • Hoàn thiện bộ từ điển song ngữ giao diện (vi/en) theo P1-FR-010 / YC-EXT-06 và đồng bộ catalog song ngữ<br>• Component chuyển đổi ngôn ngữ hiển thị giao diện tức thì và lưu trữ tùy chọn ngôn ngữ người dùng<br>• Các hàm tiện ích dùng chung tầng BFF (chuẩn hóa lỗi, phong bì API, xử lý retry mạng phía client) phục vụ M3.8 | • Kiểm thử chuyển đổi ngôn ngữ UI không làm vỡ layout PASS<br>• Không còn chuỗi văn bản cứng thiếu khóa đa ngữ trong luồng học viên<br>• Bộ hàm tiện ích BFF vượt qua unit test độc lập |
-| **M3.8** | **Integration: Tích Hợp Hệ Thống Toàn Diện & Luồng Người Dùng E2E** | 5 SP | 4.5 person-days | TBD — Human Assignment | TBD — Human Deadline | Full-stack (`lingora-web`, `lingora-admin`, Supabase) | M3.1 đến M3.7 | • Tích hợp liên thông toàn bộ 14 Core Use Cases (UC-01 đến UC-14; UC-15 ngoại lệ Extension)<br>• Bộ kịch bản kiểm thử tự động Playwright E2E chạy trên dữ liệu mầm thật | • Playwright E2E Suite PASS trên 14 Use Cases cốt lõi<br>• Không có trang nào bị lỗi 404/500 trên đường đi của người dùng<br>• Chuyển tiếp mượt mà từ Đăng ký $\rightarrow$ Placement $\rightarrow$ Bài học $\rightarrow$ Ôn tập SRS $\rightarrow$ Admin duyệt bài |
-| **M3.9** | **Hardening: Tối Ưu Hiệu Năng, Đo Lường NFR & Rà Soát An Ninh** | 3 SP | 2.5 person-days | TBD — Human Assignment | TBD — Human Deadline | Hạ tầng, Bảo mật & Kiểm thử tải | M3.8 (Hệ thống đã tích hợp) | • Kịch bản kiểm thử tải k6 đo lường thông lượng & độ trễ API<br>• Đánh giá hiệu năng giao diện Lighthouse<br>• Quét an ninh tĩnh (Secret scan) & kiểm thử thâm nhập OWASP cơ bản | • Chỉ số NFR đạt chuẩn ghi nhận vào test log (P95 latency < 500ms, Lighthouse > 80)<br>• Không có lỗ hổng bảo mật cấp nghiêm trọng (Sev-1/Sev-2)<br>• Không rò rỉ mã bí mật hoặc thông tin nhạy cảm trong mã nguồn và log |
-| **M3.10** | **Academic Closure: Đóng Gói Kịch Bản Demo & Đồng Bộ Báo Cáo Luận Văn** | 3 SP | 2.5 person-days | TBD — Human Assignment | TBD — Human Deadline | Quản lý dự án, Tài liệu học thuật & Thuyết trình | M3.8, M3.9 | • Báo cáo học thuật 5 chương (Word & Markdown) đồng bộ 100% với thực tế hệ thống đã cài đặt<br>• Kịch bản trình diễn 4 Acts kèm script reset dữ liệu demo phát lại được<br>• Slide thuyết trình bảo vệ đồ án kèm các bằng chứng trích xuất trực tiếp | • Báo cáo luận văn hoàn chỉnh, số liệu kiểm thử và kiến trúc ăn khớp 100%<br>• 4 Acts Demo diễn tập trơn tru trong thời lượng 12–15 phút không phát sinh lỗi<br>• Đủ điều kiện xuất xưởng và bảo vệ trước Hội đồng chấm luận văn |
-| **TỔNG** | **TOÀN BỘ GIAI ĐOẠN 2 (PHASE 2 MASTER PLAN)** | **42 SP** | **34.5 person-days** | **TBD — Human Assignment** | **TBD — Human Deadline** | **Toàn bộ Subsystems** | **M2.6 Acceptance** | **Hệ thống hoàn chỉnh + Báo cáo học thuật 5 chương sẵn sàng bảo vệ** | **100% Cổng kiểm soát từ M3.1 đến M3.10 đạt PASS** |
+| **M3.4** | **Assessment: ÄÃ¡nh GiÃ¡ NÄƒng Lá»±c, XÃ¡c Äá»‹nh Äiá»ƒm Báº¯t Äáº§u & NhÃ¡nh Ráº½** | 5 SP | 3.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | `lingora-web` (BFF & UI), PostgreSQL (`assessment_results`) | M3.1 (LÆ°á»£c Ä‘á»“ kháº£o sÃ¡t), M3.3 (Cáº¥u trÃºc bÃ i há»c), `WP-CONTENT` (30 items) | â€¢ BÃ i kiá»ƒm tra cháº©n Ä‘oÃ¡n 30 cÃ¢u (1 cÃ¢u = 1 Ä‘iá»ƒm thÃ´, raw score 0â€“30) phá»§ 4 ká»¹ nÄƒng (Vocab, Grammar, Reading, Listening)<br>â€¢ Äá»™ng cÆ¡ phÃ¢n lá»›p Mapping A (0â€“30 Ä‘iá»ƒm thÃ´ $\rightarrow$ Units 1â€“6)<br>â€¢ Luá»“ng Skip (báº¯t Ä‘áº§u Unit 1, UNVERIFIED, 0 báº£n ghi káº¿t quáº£)<br>â€¢ Luá»“ng Retake (lÆ°u lá»‹ch sá»­ báº¥t biáº¿n, báº£o lÆ°u má»‘c xuáº¥t phÃ¡t) | â€¢ Vitest Assessment Suite PASS (Frames 1â€“3)<br>â€¢ 12 Test Vectors biÃªn cá»§a Mapping A PASS 100%<br>â€¢ Kiá»ƒm thá»­ Skip khÃ´ng táº¡o báº£n ghi rÃ¡c PASS<br>â€¢ Kiá»ƒm thá»­ Retake ghi nháº­n Ä‘Ãºng báº£n ghi má»›i PASS |
+| **M3.5** | **Intelligence: Controlled Retry, SRS Policy B, Jump & Streak** | 5 SP | 4.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | PostgreSQL (RPCs), `lingora-web` (BFF & Client) | M3.3 (Lesson Engine), M3.4 (Tiáº¿n Ä‘á»™ há»c), `WP-CONTENT` (Jump sets) | â€¢ Äá»™ng cÆ¡ Controlled Retry: $\max(1, \lfloor N \times 0.10 \rfloor)$, tráº§n Ä‘iá»ƒm 70%<br>â€¢ PostgreSQL RPC `record_review`: SRS Policy B $[1, 3, 7, 14, 30]$ ngÃ y táº¥t Ä‘á»‹nh<br>â€¢ Äá»™ng cÆ¡ Jump Challenge: ngÆ°á»¡ng $\ge 95\%$, khÃ³a 24h, gÃ¡n `by_jump = true`<br>â€¢ Äá»™ng cÆ¡ Daily Streak: tÃ­nh theo mÃºi giá» IANA, reset vá» 1 khi Ä‘á»©t chuá»—i | â€¢ Vitest / RPC Test Suite PASS (Frames 4â€“11)<br>â€¢ Háº¡n má»©c retry vÆ°á»£t ngÆ°á»¡ng bá»‹ cháº·n 403 Forbidden<br>â€¢ RPC SRS tráº£ Ä‘Ãºng chu ká»³ táº¥t Ä‘á»‹nh khi Ä‘Ãºng/sai<br>â€¢ Jump khÃ³a 24h hoáº¡t Ä‘á»™ng chÃ­nh xÃ¡c theo server time |
+| **M3.6** | **Governance: Quáº£n Trá»‹ Ná»™i Dung, Duyá»‡t BÃ i & Xuáº¥t Báº£n Kháº©n Cáº¥p** | 5 SP | 4.0 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | `lingora-admin` (Next.js Dashboard & API routes), PostgreSQL | M3.1 (LÆ°á»£c Ä‘á»“ Revisions), M3.2 (RBAC / SoD), `WP-CONTENT` | â€¢ Giao diá»‡n soáº¡n tháº£o & ná»™p duyá»‡t bÃ i há»c (Creator)<br>â€¢ HÃ ng Ä‘á»£i kiá»ƒm duyá»‡t & phÃª duyá»‡t (Moderator)<br>â€¢ HÃ nh Ä‘á»™ng xuáº¥t báº£n & lÆ°u trá»¯ (Org Manager)<br>â€¢ Luá»“ng Admin xuáº¥t báº£n kháº©n cáº¥p (kÃ¨m lÃ½ do báº¯t buá»™c & ghi log kiá»ƒm toÃ¡n)<br>â€¢ Quy trÃ¬nh Clone-to-Draft v2 vá»›i con trá» `supersedes_id` | â€¢ Admin Governance Test Suite PASS (Frames 13, 14, 15, 16 SoD / Governance)<br>â€¢ Kiá»ƒm thá»­ chuyá»ƒn tráº¡ng thÃ¡i 6 bÆ°á»›c chuáº©n xÃ¡c<br>â€¢ Admin xuáº¥t báº£n kháº©n cáº¥p ghi nháº­n Ä‘Ãºng sá»± kiá»‡n vÃ o `audit_logs`<br>â€¢ Clone-to-Draft v2 táº¡o báº£n ghi má»›i káº¿ thá»«a ná»™i dung v1 |
+| **M3.7** | **Cross-Cutting: HoÃ n Thiá»‡n Äa Ngá»¯ (i18n) & Tiá»‡n Ãch BFF DÃ¹ng Chung** | 3 SP | 2.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | `lingora-web` & `lingora-admin` (Shared Layer) | M3.3 (i18n locale foundation), M3.5, M3.6, `WP-CONTENT` | â€¢ HoÃ n thiá»‡n bá»™ tá»« Ä‘iá»ƒn song ngá»¯ giao diá»‡n (vi/en) theo P1-FR-010 / YC-EXT-06 vÃ  Ä‘á»“ng bá»™ catalog song ngá»¯<br>â€¢ Component chuyá»ƒn Ä‘á»•i ngÃ´n ngá»¯ hiá»ƒn thá»‹ giao diá»‡n tá»©c thÃ¬ vÃ  lÆ°u trá»¯ tÃ¹y chá»n ngÃ´n ngá»¯ ngÆ°á»i dÃ¹ng<br>â€¢ CÃ¡c hÃ m tiá»‡n Ã­ch dÃ¹ng chung táº§ng BFF (chuáº©n hÃ³a lá»—i, phong bÃ¬ API, xá»­ lÃ½ retry máº¡ng phÃ­a client) phá»¥c vá»¥ M3.8 | â€¢ Kiá»ƒm thá»­ chuyá»ƒn Ä‘á»•i ngÃ´n ngá»¯ UI khÃ´ng lÃ m vá»¡ layout PASS<br>â€¢ KhÃ´ng cÃ²n chuá»—i vÄƒn báº£n cá»©ng thiáº¿u khÃ³a Ä‘a ngá»¯ trong luá»“ng há»c viÃªn<br>â€¢ Bá»™ hÃ m tiá»‡n Ã­ch BFF vÆ°á»£t qua unit test Ä‘á»™c láº­p |
+| **M3.8** | **Integration: TÃ­ch Há»£p Há»‡ Thá»‘ng ToÃ n Diá»‡n & Luá»“ng NgÆ°á»i DÃ¹ng E2E** | 5 SP | 4.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | Full-stack (`lingora-web`, `lingora-admin`, Supabase) | M3.1 Ä‘áº¿n M3.7 | â€¢ TÃ­ch há»£p liÃªn thÃ´ng toÃ n bá»™ 14 Core Use Cases (UC-01 Ä‘áº¿n UC-14; UC-15 ngoáº¡i lá»‡ Extension)<br>â€¢ Bá»™ ká»‹ch báº£n kiá»ƒm thá»­ tá»± Ä‘á»™ng Playwright E2E cháº¡y trÃªn dá»¯ liá»‡u máº§m tháº­t | â€¢ Playwright E2E Suite PASS trÃªn 14 Use Cases cá»‘t lÃµi<br>â€¢ KhÃ´ng cÃ³ trang nÃ o bá»‹ lá»—i 404/500 trÃªn Ä‘Æ°á»ng Ä‘i cá»§a ngÆ°á»i dÃ¹ng<br>â€¢ Chuyá»ƒn tiáº¿p mÆ°á»£t mÃ  tá»« ÄÄƒng kÃ½ $\rightarrow$ Placement $\rightarrow$ BÃ i há»c $\rightarrow$ Ã”n táº­p SRS $\rightarrow$ Admin duyá»‡t bÃ i |
+| **M3.9** | **Hardening: Tá»‘i Æ¯u Hiá»‡u NÄƒng, Äo LÆ°á»ng NFR & RÃ  SoÃ¡t An Ninh** | 3 SP | 2.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | Háº¡ táº§ng, Báº£o máº­t & Kiá»ƒm thá»­ táº£i | M3.8 (Há»‡ thá»‘ng Ä‘Ã£ tÃ­ch há»£p) | â€¢ Ká»‹ch báº£n kiá»ƒm thá»­ táº£i k6 Ä‘o lÆ°á»ng thÃ´ng lÆ°á»£ng & Ä‘á»™ trá»… API<br>â€¢ ÄÃ¡nh giÃ¡ hiá»‡u nÄƒng giao diá»‡n Lighthouse<br>â€¢ QuÃ©t an ninh tÄ©nh (Secret scan) & kiá»ƒm thá»­ thÃ¢m nháº­p OWASP cÆ¡ báº£n | â€¢ Chá»‰ sá»‘ NFR Ä‘áº¡t chuáº©n ghi nháº­n vÃ o test log (P95 latency < 500ms, Lighthouse > 80)<br>â€¢ KhÃ´ng cÃ³ lá»— há»•ng báº£o máº­t cáº¥p nghiÃªm trá»ng (Sev-1/Sev-2)<br>â€¢ KhÃ´ng rÃ² rá»‰ mÃ£ bÃ­ máº­t hoáº·c thÃ´ng tin nháº¡y cáº£m trong mÃ£ nguá»“n vÃ  log |
+| **M3.10** | **Academic Closure: ÄÃ³ng GÃ³i Ká»‹ch Báº£n Demo & Äá»“ng Bá»™ BÃ¡o CÃ¡o Luáº­n VÄƒn** | 3 SP | 2.5 person-days | TBD â€” Human Assignment | TBD â€” Human Deadline | Quáº£n lÃ½ dá»± Ã¡n, TÃ i liá»‡u há»c thuáº­t & Thuyáº¿t trÃ¬nh | M3.8, M3.9 | â€¢ BÃ¡o cÃ¡o há»c thuáº­t 5 chÆ°Æ¡ng (Word & Markdown) Ä‘á»“ng bá»™ 100% vá»›i thá»±c táº¿ há»‡ thá»‘ng Ä‘Ã£ cÃ i Ä‘áº·t<br>â€¢ Ká»‹ch báº£n trÃ¬nh diá»…n 4 Acts kÃ¨m script reset dá»¯ liá»‡u demo phÃ¡t láº¡i Ä‘Æ°á»£c<br>â€¢ Slide thuyáº¿t trÃ¬nh báº£o vá»‡ Ä‘á»“ Ã¡n kÃ¨m cÃ¡c báº±ng chá»©ng trÃ­ch xuáº¥t trá»±c tiáº¿p | â€¢ BÃ¡o cÃ¡o luáº­n vÄƒn hoÃ n chá»‰nh, sá»‘ liá»‡u kiá»ƒm thá»­ vÃ  kiáº¿n trÃºc Äƒn khá»›p 100%<br>â€¢ 4 Acts Demo diá»…n táº­p trÆ¡n tru trong thá»i lÆ°á»£ng 12â€“15 phÃºt khÃ´ng phÃ¡t sinh lá»—i<br>â€¢ Äá»§ Ä‘iá»u kiá»‡n xuáº¥t xÆ°á»Ÿng vÃ  báº£o vá»‡ trÆ°á»›c Há»™i Ä‘á»“ng cháº¥m luáº­n vÄƒn |
+| **Tá»”NG** | **TOÃ€N Bá»˜ GIAI ÄOáº N 2 (PHASE 2 MASTER PLAN)** | **42 SP** | **34.5 person-days** | **TBD â€” Human Assignment** | **TBD â€” Human Deadline** | **ToÃ n bá»™ Subsystems** | **M2.6 Acceptance** | **Há»‡ thá»‘ng hoÃ n chá»‰nh + BÃ¡o cÃ¡o há»c thuáº­t 5 chÆ°Æ¡ng sáºµn sÃ ng báº£o vá»‡** | **100% Cá»•ng kiá»ƒm soÃ¡t tá»« M3.1 Ä‘áº¿n M3.10 Ä‘áº¡t PASS** |
 
 
 ---
 
-## 21. RÀNG BUỘC CỨNG VÀ KỶ LUẬT THỰC THI (HARD CONSTRAINTS)
+## 21. RÃ€NG BUá»˜C Cá»¨NG VÃ€ Ká»¶ LUáº¬T THá»°C THI (HARD CONSTRAINTS)
 
-Để bảo đảm tính toàn vẹn và tuân thủ tuyệt đối quy tắc phát triển phần mềm trong dự án Lingora, toàn bộ các bên tham gia bắt buộc phải tuân thủ nghiêm ngặt các điều khoản sau:
+Äá»ƒ báº£o Ä‘áº£m tÃ­nh toÃ n váº¹n vÃ  tuÃ¢n thá»§ tuyá»‡t Ä‘á»‘i quy táº¯c phÃ¡t triá»ƒn pháº§n má»m trong dá»± Ã¡n Lingora, toÃ n bá»™ cÃ¡c bÃªn tham gia báº¯t buá»™c pháº£i tuÃ¢n thá»§ nghiÃªm ngáº·t cÃ¡c Ä‘iá»u khoáº£n sau:
 
-1. **KHÔNG THỰC THI CODE TRONG TASK NÀY:** Nhiệm vụ của task này thuần túy là xây dựng bản Kế hoạch Tổng thể (Master Planning). Tuyệt đối không chỉnh sửa mã nguồn ứng dụng, không sửa `schema.prisma`, không chạy lệnh migration, không sửa RLS, và không can thiệp vào các tệp tin ngoài danh mục cho phép.
-2. **BẢO TỒN TÍNH BẤT BIẾN CỦA HỢP ĐỒNG API:** Tệp `docs/03-api-contract.md` là hợp đồng giao tiếp chuẩn tắc đã đóng băng, giữ nguyên 100% byte-identical.
-3. **BẢO TỒN CÁC THAY ĐỔI TRÊN WORKTREE HIỆN TẠI:** Toàn bộ các thay đổi chưa commit trên nhánh làm việc hiện tại (các tệp báo cáo học thuật, slide thuyết trình, tài liệu phân tích yêu cầu) thuộc về tiến trình song song và phải được bảo lưu nguyên vẹn, không được phép hoàn nguyên hay xóa bỏ.
-4. **KHÔNG TỰ Ý CHUYỂN TRẠNG THÁI APPROVED:** Kế hoạch này được tạo ra ở trạng thái `READY FOR HUMAN REVIEW`. Chỉ có người dùng (Human Partner) mới có thẩm quyền chuyển trạng thái sang `APPROVED`. Mã nguồn triển khai chỉ được phép bắt đầu khi kế hoạch đã được phê duyệt chính thức.
-5. **KỶ LUẬT CHUYỂN TIẾP MỐC TRIỂN KHAI:** Khi bước vào Giai đoạn 2, mỗi mốc từ M3.1 đến M3.10 bắt buộc phải có một kế hoạch chi tiết độc lập (`plans/current-task.md`), được thẩm định độc lập và kiểm tra đạt 100% các cổng kiểm soát trước khi chuyển sang mốc tiếp theo.
+1. **KHÃ”NG THá»°C THI CODE TRONG TASK NÃ€Y:** Nhiá»‡m vá»¥ cá»§a task nÃ y thuáº§n tÃºy lÃ  xÃ¢y dá»±ng báº£n Káº¿ hoáº¡ch Tá»•ng thá»ƒ (Master Planning). Tuyá»‡t Ä‘á»‘i khÃ´ng chá»‰nh sá»­a mÃ£ nguá»“n á»©ng dá»¥ng, khÃ´ng sá»­a `schema.prisma`, khÃ´ng cháº¡y lá»‡nh migration, khÃ´ng sá»­a RLS, vÃ  khÃ´ng can thiá»‡p vÃ o cÃ¡c tá»‡p tin ngoÃ i danh má»¥c cho phÃ©p.
+2. **Báº¢O Tá»’N TÃNH Báº¤T BIáº¾N Cá»¦A Há»¢P Äá»’NG API:** Tá»‡p `docs/03-api-contract.md` lÃ  há»£p Ä‘á»“ng giao tiáº¿p chuáº©n táº¯c Ä‘Ã£ Ä‘Ã³ng bÄƒng, giá»¯ nguyÃªn 100% byte-identical.
+3. **Báº¢O Tá»’N CÃC THAY Äá»”I TRÃŠN WORKTREE HIá»†N Táº I:** ToÃ n bá»™ cÃ¡c thay Ä‘á»•i chÆ°a commit trÃªn nhÃ¡nh lÃ m viá»‡c hiá»‡n táº¡i (cÃ¡c tá»‡p bÃ¡o cÃ¡o há»c thuáº­t, slide thuyáº¿t trÃ¬nh, tÃ i liá»‡u phÃ¢n tÃ­ch yÃªu cáº§u) thuá»™c vá» tiáº¿n trÃ¬nh song song vÃ  pháº£i Ä‘Æ°á»£c báº£o lÆ°u nguyÃªn váº¹n, khÃ´ng Ä‘Æ°á»£c phÃ©p hoÃ n nguyÃªn hay xÃ³a bá».
+4. **KHÃ”NG Tá»° Ã CHUYá»‚N TRáº NG THÃI APPROVED:** Káº¿ hoáº¡ch nÃ y Ä‘Æ°á»£c táº¡o ra á»Ÿ tráº¡ng thÃ¡i `READY FOR HUMAN REVIEW`. Chá»‰ cÃ³ ngÆ°á»i dÃ¹ng (Human Partner) má»›i cÃ³ tháº©m quyá»n chuyá»ƒn tráº¡ng thÃ¡i sang `APPROVED`. MÃ£ nguá»“n triá»ƒn khai chá»‰ Ä‘Æ°á»£c phÃ©p báº¯t Ä‘áº§u khi káº¿ hoáº¡ch Ä‘Ã£ Ä‘Æ°á»£c phÃª duyá»‡t chÃ­nh thá»©c.
+5. **Ká»¶ LUáº¬T CHUYá»‚N TIáº¾P Má»C TRIá»‚N KHAI:** Khi bÆ°á»›c vÃ o Giai Ä‘oáº¡n 2, má»—i má»‘c tá»« M3.1 Ä‘áº¿n M3.10 báº¯t buá»™c pháº£i cÃ³ má»™t káº¿ hoáº¡ch chi tiáº¿t Ä‘á»™c láº­p (`plans/current-task.md`), Ä‘Æ°á»£c tháº©m Ä‘á»‹nh Ä‘á»™c láº­p vÃ  kiá»ƒm tra Ä‘áº¡t 100% cÃ¡c cá»•ng kiá»ƒm soÃ¡t trÆ°á»›c khi chuyá»ƒn sang má»‘c tiáº¿p theo.

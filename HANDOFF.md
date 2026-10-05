@@ -12,7 +12,7 @@
 - **Execution Authority / Source of Truth:** `plans/master-implementation-and-report-plan.md` (Master Plan M3.1..M3.10) is the sole authoritative implementation roadmap.
 - **Implementation Status:** `NOT STARTED`. Zero feature code, zero migrations, and zero RLS policies have been deployed for Phase 2. The existence of an approved Master Plan does NOT constitute completed runtime implementation.
 - **Phase 2 Scope Boundary:** Strictly **NON-AI / Deterministic Software Engineering Core**. All AI/ML/GEC functions are retained only in canonical traceability/historical context and are excluded from Phase 2 implementation, testing, demo, and acceptance.
-- **Design Invariants:** Frozen product policies (Placement 30 questions Mapping A, Jump $\ge 95\%$ adjacent-only 24h lockout `by_jump=true`, Retry $\max(1, \lfloor N \times 0.10 \rfloor)$ 70% credit, SRS Policy B $[1,3,7,14,30]$, Daily Streak IANA timezone reset to 1 on miss, Unit 4/4 Published visibility) remain fully locked.
+- **Design Invariants:** Product policies have been updated: Unlimited Retry for exercises (no partial credit tracking), Level-up Exam replaces conditional Jump, strict Unit sizing is enforced (all mandatory lessons must be APPROVED to publish), flexible Exercise sizing per lesson, and streamlined Admin "One-click Publish" (though still requiring strict unit completion) during MVP.
 - **Learner UX Flow Closure:** Learner flow is confirmed and closed:
   $$\text{Open Lesson} \longrightarrow \text{Lesson Content Viewer} \longrightarrow \text{Start Exercises} \longrightarrow \text{Exercise Sequence} \longrightarrow \text{Lesson Result / Progress}$$
 - **Worktree Invariant:** All dirty working tree changes preserved untouched; zero commits created without passing test/log gates.
@@ -25,9 +25,9 @@
    - Physical representation choices for M3.1 must be resolved during M3.1 schema design:
      * Exercise Answer Security (`Learner payload != grading secret`).
      * Unit 4/4 Direct Access Denial enforcement mechanism.
-     * Placement 30-item & Jump item representation within Unified Exercise/Assessment model.
+     * Placement 30-item & Level-up Exam representation within Unified Exercise/Assessment model.
      * Server-side attempt/retry state representation for D7.
-     * Server-side 24h Jump cooldown lockout representation for D5.
+     * Exam result validation and passing threshold enforcement (80%).
      * Placement status semantic representation (`NOT_DECIDED`, `SKIPPED / UNVERIFIED`, `DIAGNOSTIC / VERIFIED`).
 2. **AI Surface Isolation:**
    - Legacy AI route handlers in `lingora-web` (`/api/ai/chat`, `/api/ai/srs`) are retained compatibility surfaces and excluded from Phase 2 acceptance.
@@ -36,20 +36,15 @@
 
 ## Do NOT Do Next
 
-- Do NOT begin Phase 2 runtime implementation without an explicit human-approved `plans/current-task.md` for Milestone M3.1.
-- Do NOT self-promote any task from `DRAFT` or `REVIEW` to `APPROVED`.
-- Do NOT write or execute SQL DDL, Prisma migrations, or RLS changes outside an approved milestone plan.
-- Do NOT alter frozen product policies (e.g. do not lower the Jump $\ge 95\%$ threshold or change Diagnostic 30 questions).
+- Do NOT alter frozen product policies (e.g. do not lower the Level-up Exam $\ge 80\%$ threshold or change Diagnostic 30 questions).
 - Do NOT introduce AI runtime features or dynamic AI content generation into Phase 2.
-- Do NOT alter `docs/03-api-contract.md` (must remain 100% byte-identical).
-- Do NOT create git commits before `TEST` and `LOG` gates are verified.
 
 ---
 
 ## Suggested Next Step
 
-Await Human Review and Approval of `plans/master-implementation-and-report-plan.md` and `plans/current-task.md`.
-Once approved, initialize **Milestone M3.1: Foundation (Database & Schema Migration Strategy)**.
+**Milestone M3.1: Foundation (Database & Schema Migration Strategy)** is now unblocked.
+Proceed with implementing the Prisma Schema and Monorepo setup.
 
 ---
 

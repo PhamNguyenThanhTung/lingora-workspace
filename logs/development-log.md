@@ -2637,3 +2637,19 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 - **Governance updated:** `plans/current-task.md` → DONE (`M2.6 ACCEPTED`); `HANDOFF.md` latest accepted milestone → `M2.6 ACCEPTED`; test record `T-M26-ACCEPT-001`.
 - **Boundary preserved:** zero runtime/schema/API/UI/security work; `03` byte-identical; D1–D4/M2.1–M2.5 unmodified; history retained.
 - **Commit:** `NOT CREATED` (per task rule; no Phase 2 work started).
+## [2026-10-05] Sync Master Plan with New Use Cases
+
+**Completed Work:**
+- Reviewed new Use Case specifications (docs/use-case-specifications.md).
+- Aligned docs/QUICK-REF.md with new specs: updated diagnostic starting point to start at A1 Unit 1, replaced Conditional Jump with Level-up Exam (Thi l�n c?p), allowed Email notifications for reminders, and restored strict Unit visibility (must be 100% completed to publish).
+- Updated plans/master-implementation-and-report-plan.md to reference the new 14 Core Use Cases (UC-1 to UC-14) and removed legacy references to UC-15 and Support Tickets.
+- Prepended deprecation notice to docs/phase-1-m2-2-behavior-uc-activity-state.md indicating it is superseded by the new spec.
+- Updated HANDOFF.md invariants to reflect Level-up Exam and strict Unit sizing.
+
+**Problems & Solutions:**
+- **Problem:** New UCs conflicted with QUICK-REF.md (agile publishing, no email daemons, diagnostic mapping).
+- **Solution:** Conferred with user and accepted the new UCs as the source of truth, updating QUICK-REF.md and Master Plan to match.
+
+**Tests & Commit:**
+- Verified documentation synchronization.
+- Commit: N/A (Preparing to commit).
