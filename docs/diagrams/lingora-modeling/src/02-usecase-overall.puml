@@ -1,104 +1,102 @@
 @startuml
-skinparam backgroundColor #FFFFFF
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 20
+skinparam titleFontSize 26
+skinparam ArrowFontSize 16
+skinparam UsecaseFontSize 18
+skinparam ActorFontSize 20
 skinparam shadowing false
-skinparam defaultFontName "Calibri", "Segoe UI", Arial, sans-serif
-skinparam defaultFontSize 14
-skinparam defaultFontColor #0F172A
-skinparam dpi 300
-
-skinparam usecase {
-    BackgroundColor #FFFFFF
-    BorderColor #334155
-    BorderThickness 1.5
-    FontSize 13
-    ArrowColor #475569
-    ArrowFontSize 12
-}
-
-skinparam actor {
-    BackgroundColor #F8FAFC
-    BorderColor #334155
-    BorderThickness 1.5
-    FontSize 13
-}
-
-skinparam rectangle {
-    BorderColor #334155
-    BorderThickness 2
-    FontSize 16
-    FontStyle bold
-}
+skinparam nodesep 25
+skinparam ranksep 80
 
 left to right direction
-skinparam nodesep 18
-skinparam ranksep 45
+title Sơ đồ Use Case Tổng quan - Hệ thống Lingora (14 Use Cases)
 
-' Base authenticated user
-actor "Authenticated User\n(Người dùng xác thực)" as AuthUser
+actor "Người học" as Learner
+actor "Giáo viên" as Teacher
+actor "Admin" as Admin
 
-' Specialized Actors inheriting from Authenticated User
-actor "Learner\n(Học viên)" as Learner
-actor "Lesson Creator\n(Người soạn bài)" as Creator
-actor "Moderator\n(Kiểm duyệt viên)" as Moderator
-actor "Org Manager\n(Quản lý tổ chức)" as OrgMgr
-actor "Administrator\n(Quản trị viên)" as Admin
-actor "Operations Staff\n(Nhân viên vận hành)" as OpsStaff
+Learner -[hidden]right-> Teacher
+Teacher -[hidden]right-> Admin
 
-' Inheritance hierarchy (All 6 roles inherit Authenticated User)
-Learner -up-|> AuthUser
-Creator -up-|> AuthUser
-Moderator -up-|> AuthUser
-OrgMgr -up-|> AuthUser
-Admin -up-|> AuthUser
-OpsStaff -up-|> AuthUser
-
-rectangle "Lingora Platform System" {
-  usecase "UC-01 Login & Session\n(Đăng nhập & Phiên làm việc)" as UC01 #F8FAFC
-
-  usecase "UC-02 Configure Goals & Study Time\n(Mục tiêu & Thời gian học)" as UC02
-  usecase "UC-03 Placement Assessment\n(Xếp lớp & Điểm xuất phát)" as UC03
-  usecase "UC-04 Browse Path & Conditional Jump\n(Lộ trình & Nhảy cấp)" as UC04
-  usecase "UC-05 Complete Lesson & Retry\n(Học bài & Làm lại)" as UC05
-  usecase "UC-06 Spaced Repetition (SRS)\n(Ôn tập ngắt quãng)" as UC06
-  usecase "UC-07 Track Progress, Mastery & Streak\n(Tiến độ, Năng lực & Chuỗi)" as UC07
-
-  usecase "UC-08 Plan, Assign & Create Lesson Draft\n(Lập đề cương, Giao bài & Soạn bài)" as UC08
-  usecase "UC-09 Review & Moderate Content\n(Kiểm duyệt nội dung)" as UC09
-  usecase "UC-10 Publish Approved Content\n(Xuất bản nội dung)" as UC10
-
-  usecase "UC-11 Manage Accounts & Roles\n(Tài khoản & 6 Vai trò)" as UC11
-  usecase "UC-12 View System Reports\n(Báo cáo vận hành)" as UC12
-  usecase "UC-13 View & Audit Security Logs\n(Kiểm toán an ninh)" as UC13
-  usecase "UC-14 Handle Support Tickets\n(Phiếu hỗ trợ kỹ thuật)" as UC14
-  usecase "UC-15 Manage Cohorts & Groups\n(Quản lý nhóm học viên - Mở rộng)" as UC15 #F1F5F9
+rectangle "Phân hệ Người học" as P_Learner {
+    usecase "UC-02: Kiểm tra trình độ đầu vào" as UC_02
+    usecase "UC-03: Nhắc học qua Email" as UC_03
+    usecase "UC-04: Khám phá Lộ trình học" as UC_04
+    usecase "UC-05: Thi lên cấp" as UC_05
+    usecase "UC-06: Học bài & Làm bài tập tương tác" as UC_06
+    usecase "UC-07: Học từ vựng Flashcard & Ôn tập" as UC_07
+    usecase "UC-08: Theo dõi Tiến độ & Chuỗi ngày học" as UC_08
 }
 
-' All authenticated users must login to establish session
-AuthUser --> UC01
+rectangle "Phân hệ Đề cương & Biên soạn" as P_Content {
+    usecase "UC-09: Lập đề cương, ma trận đề thi & Phân công" as UC_09
+    usecase "UC-10: Soạn bài học & Câu hỏi đề thi theo phân công" as UC_10
+    usecase "UC-11: Nộp bài & Nộp lại sau chỉnh sửa" as UC_11
+    usecase "UC-12: Thẩm định & Xuất bản nội dung" as UC_12
+}
 
-' Learner use cases
-Learner --> UC02
-Learner --> UC03
-Learner --> UC04
-Learner --> UC05
-Learner --> UC06
-Learner --> UC07
+rectangle "Phân hệ Quản trị & Vận hành" as P_Admin {
+    usecase "UC-13: Quản lý Người dùng & Tài khoản Giáo viên" as UC_13
+    usecase "UC-14: Xem Báo cáo & Thống kê toàn hệ thống" as UC_14
+}
 
-' Content management use cases
-Creator --> UC08 : <<author>>
-OrgMgr --> UC08 : <<plan & assign>>
-Moderator --> UC09
+usecase "UC-01: Xác thực, Đăng nhập & Quản lý hồ sơ" as UC_01
 
-' Publishing & Governance use cases
-OrgMgr --> UC10
-OrgMgr --> UC15
+' Khóa cứng thứ tự dọc từ UC-02 đến UC-14 thành một chuỗi duy nhất
+UC_02 -[hidden]right-> UC_03
+UC_03 -[hidden]right-> UC_04
+UC_04 -[hidden]right-> UC_05
+UC_05 -[hidden]right-> UC_06
+UC_06 -[hidden]right-> UC_07
+UC_07 -[hidden]right-> UC_08
+UC_08 -[hidden]right-> UC_09
+UC_09 -[hidden]right-> UC_10
+UC_10 -[hidden]right-> UC_11
+UC_11 -[hidden]right-> UC_12
+UC_12 -[hidden]right-> UC_13
+UC_13 -[hidden]right-> UC_14
 
-Admin --> UC11
-Admin --> UC12
-Admin --> UC13
-Admin ..> UC10 : <<emergency>>
+' Đẩy UC-01 sang bên phải
+UC_06 -[hidden]down-> UC_01
 
-' Support use cases
-OpsStaff --> UC14
+' Liên kết Actor với Use Case (đường nét liền, KHÔNG mũi tên)
+Learner -- UC_01
+Learner -- UC_02
+Learner -- UC_03
+Learner -- UC_04
+Learner -- UC_05
+Learner -- UC_06
+Learner -- UC_07
+Learner -- UC_08
+
+Teacher -- UC_01
+Teacher -- UC_10
+Teacher -- UC_11
+
+Admin -- UC_01
+Admin -- UC_09
+Admin -- UC_10
+Admin -- UC_12
+Admin -- UC_13
+Admin -- UC_14
+
+' Mũi tên include từ tất cả 13 UC tới UC-01
+UC_02 .[#94A3B8].> UC_01 : <<include>>
+UC_03 .[#94A3B8].> UC_01 : <<include>>
+UC_04 .[#94A3B8].> UC_01 : <<include>>
+UC_05 .[#94A3B8].> UC_01 : <<include>>
+UC_06 .[#94A3B8].> UC_01 : <<include>>
+UC_07 .[#94A3B8].> UC_01 : <<include>>
+UC_08 .[#94A3B8].> UC_01 : <<include>>
+
+UC_09 .[#94A3B8].> UC_01 : <<include>>
+UC_10 .[#94A3B8].> UC_01 : <<include>>
+UC_11 .[#94A3B8].> UC_01 : <<include>>
+UC_12 .[#94A3B8].> UC_01 : <<include>>
+
+UC_13 .[#94A3B8].> UC_01 : <<include>>
+UC_14 .[#94A3B8].> UC_01 : <<include>>
 
 @enduml

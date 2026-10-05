@@ -1,47 +1,58 @@
-@startuml 02-usecase-hoc-vien
-title Lingora - Use Case: nhóm Học viên
-left to right direction
+@startuml
 skinparam dpi 150
 skinparam defaultFontName Arial
-skinparam defaultFontSize 24
-skinparam titleFontSize 30
-skinparam ArrowFontSize 20
-skinparam ActorFontSize 24
-skinparam UsecaseFontSize 22
+skinparam defaultFontSize 20
+skinparam titleFontSize 26
+skinparam ArrowFontSize 16
+skinparam UsecaseFontSize 18
+skinparam ActorFontSize 20
 skinparam shadowing false
-skinparam nodesep 30
-skinparam ranksep 110
-skinparam ArrowColor #334155
-skinparam ActorBorderColor #334155
-skinparam UsecaseBorderColor #334155
-skinparam UsecaseBackgroundColor #F8FAFC
+skinparam nodesep 25
+skinparam ranksep 80
 
-actor "Học viên" as Learner
+left to right direction
+title Sơ đồ Use Case Phân hệ Người học - Lingora
 
-rectangle "Lingora Platform System" {
-  usecase "UC-01\nĐăng nhập & Phiên làm việc" as UC01 #E0F2FE
-  usecase "UC-02\nMục tiêu & Thời gian học" as UC02
-  usecase "UC-03\nXếp lớp & Điểm xuất phát" as UC03
-  usecase "UC-04\nLộ trình & Nhảy cấp" as UC04
-  usecase "UC-05\nHọc bài & Làm lại" as UC05
-  usecase "UC-06\nÔn tập ngắt quãng (SRS)" as UC06
-  usecase "UC-07\nTiến độ, Năng lực & Chuỗi" as UC07
+actor "Người học" as Learner
+
+rectangle "Phân hệ Người học" as P_Learner {
+    usecase "UC-02: Kiểm tra trình độ đầu vào" as UC_02
+    usecase "UC-03: Nhắc học qua Email" as UC_03
+    usecase "UC-04: Khám phá Lộ trình học" as UC_04
+    usecase "UC-05: Thi lên cấp" as UC_05
+    usecase "UC-06: Học bài & Làm bài tập tương tác" as UC_06
+    usecase "UC-07: Học từ vựng Flashcard & Ôn tập" as UC_07
+    usecase "UC-08: Theo dõi Tiến độ & Chuỗi ngày học" as UC_08
+
+    UC_02 -[hidden]right-> UC_03
+    UC_03 -[hidden]right-> UC_04
+    UC_04 -[hidden]right-> UC_05
+    UC_05 -[hidden]right-> UC_06
+    UC_06 -[hidden]right-> UC_07
+    UC_07 -[hidden]right-> UC_08
 }
 
-Learner --> UC02
-Learner --> UC03
-Learner --> UC04
-Learner --> UC05
-Learner --> UC06
-Learner --> UC07
-UC02 ..> UC01 : <<include>>
-UC03 ..> UC01 : <<include>>
-UC04 ..> UC01 : <<include>>
-UC05 ..> UC01 : <<include>>
-UC06 ..> UC01 : <<include>>
-UC07 ..> UC01 : <<include>>
+usecase "UC-01: Xác thực, Đăng nhập & Quản lý hồ sơ" as UC_01
 
-legend bottom
-  <<include>>: phải đăng nhập (UC-01) trước khi thực hiện.
-end legend
+P_Learner -[hidden]down-> UC_01
+
+' Liên kết Actor với Use Case
+Learner -- UC_01
+Learner -- UC_02
+Learner -- UC_03
+Learner -- UC_04
+Learner -- UC_05
+Learner -- UC_06
+Learner -- UC_07
+Learner -- UC_08
+
+' Quan hệ include
+UC_02 .[#94A3B8].> UC_01 : <<include>>
+UC_03 .[#94A3B8].> UC_01 : <<include>>
+UC_04 .[#94A3B8].> UC_01 : <<include>>
+UC_05 .[#94A3B8].> UC_01 : <<include>>
+UC_06 .[#94A3B8].> UC_01 : <<include>>
+UC_07 .[#94A3B8].> UC_01 : <<include>>
+UC_08 .[#94A3B8].> UC_01 : <<include>>
+
 @enduml

@@ -1,114 +1,102 @@
-@startuml 01-usecase-tong-quat
-title Lingora - Sơ đồ Use Case tổng quát
-left to right direction
-
+@startuml
 skinparam dpi 150
 skinparam defaultFontName Arial
-skinparam defaultFontSize 22
-skinparam titleFontSize 30
-skinparam ArrowFontSize 18
-skinparam ActorFontSize 22
-skinparam UsecaseFontSize 20
-skinparam PackageFontSize 24
+skinparam defaultFontSize 20
+skinparam titleFontSize 26
+skinparam ArrowFontSize 16
+skinparam UsecaseFontSize 18
+skinparam ActorFontSize 20
 skinparam shadowing false
-skinparam roundcorner 20
 skinparam nodesep 25
-skinparam ranksep 110
-skinparam ArrowColor #334155
-skinparam ActorBorderColor #334155
-skinparam UsecaseBorderColor #334155
-skinparam UsecaseBackgroundColor #F8FAFC
-skinparam PackageBorderColor #334155
+skinparam ranksep 80
 
-' ===== Actors =====
-actor "Khách\n(chưa đăng nhập)" as Guest
-actor "Người dùng\nxác thực" as Auth
-actor "Học viên" as Learner
-actor "Người soạn bài" as Creator
-actor "Kiểm duyệt viên" as Mod
-actor "Quản lý tổ chức" as OrgMgr
-actor "Quản trị viên" as Admin
-actor "Nhân viên\nvận hành" as Ops
+left to right direction
+title Sơ đồ Use Case Tổng quan - Hệ thống Lingora (14 Use Cases)
 
-' ===== Kế thừa: 6 vai trò đều là Người dùng xác thực =====
-Auth <|-- Learner
-Auth <|-- Creator
-Auth <|-- Mod
-Auth <|-- OrgMgr
-Auth <|-- Admin
-Auth <|-- Ops
-Guest -[hidden]down- Auth
+actor "Người học" as Learner
+actor "Giáo viên" as Teacher
+actor "Admin" as Admin
 
-rectangle "Lingora Platform System" {
+Learner -[hidden]right-> Teacher
+Teacher -[hidden]right-> Admin
 
-  usecase "UC-01\nĐăng nhập & Phiên làm việc" as UC01 #E0F2FE
-
-  package "Học tập" {
-    usecase "UC-02\nMục tiêu & Thời gian học" as UC02
-    usecase "UC-03\nXếp lớp & Điểm xuất phát" as UC03
-    usecase "UC-04\nLộ trình & Nhảy cấp" as UC04
-    usecase "UC-05\nHọc bài & Làm lại" as UC05
-    usecase "UC-06\nÔn tập ngắt quãng (SRS)" as UC06
-    usecase "UC-07\nTiến độ, Năng lực & Chuỗi" as UC07
-  }
-
-  package "Nội dung" {
-    usecase "UC-08\nLập đề cương, Giao bài\n& Soạn bài" as UC08
-    usecase "UC-09\nKiểm duyệt nội dung" as UC09
-    usecase "UC-10\nXuất bản nội dung" as UC10
-    usecase "UC-15\nQuản lý nhóm học viên\n(mở rộng)" as UC15 #EEF2FF
-  }
-
-  package "Quản trị & Vận hành" {
-    usecase "UC-11\nTài khoản & 6 Vai trò" as UC11
-    usecase "UC-12\nBáo cáo vận hành" as UC12
-    usecase "UC-13\nKiểm toán an ninh" as UC13
-    usecase "UC-14\nPhiếu hỗ trợ kỹ thuật" as UC14
-  }
+rectangle "Phân hệ Người học" as P_Learner {
+    usecase "UC-02: Kiểm tra trình độ đầu vào" as UC_02
+    usecase "UC-03: Nhắc học qua Email" as UC_03
+    usecase "UC-04: Khám phá Lộ trình học" as UC_04
+    usecase "UC-05: Thi lên cấp" as UC_05
+    usecase "UC-06: Học bài & Làm bài tập tương tác" as UC_06
+    usecase "UC-07: Học từ vựng Flashcard & Ôn tập" as UC_07
+    usecase "UC-08: Theo dõi Tiến độ & Chuỗi ngày học" as UC_08
 }
 
-' ===== Khách đăng nhập =====
-Guest --> UC01
+rectangle "Phân hệ Đề cương & Biên soạn" as P_Content {
+    usecase "UC-09: Lập đề cương, ma trận đề thi & Phân công" as UC_09
+    usecase "UC-10: Soạn bài học & Câu hỏi đề thi theo phân công" as UC_10
+    usecase "UC-11: Nộp bài & Nộp lại sau chỉnh sửa" as UC_11
+    usecase "UC-12: Thẩm định & Xuất bản nội dung" as UC_12
+}
 
-' ===== Chức năng của từng vai trò =====
-Learner --> UC02
-Learner --> UC03
-Learner --> UC04
-Learner --> UC05
-Learner --> UC06
-Learner --> UC07
+rectangle "Phân hệ Quản trị & Vận hành" as P_Admin {
+    usecase "UC-13: Quản lý Người dùng & Tài khoản Giáo viên" as UC_13
+    usecase "UC-14: Xem Báo cáo & Thống kê toàn hệ thống" as UC_14
+}
 
-Creator --> UC08
-Mod --> UC09
-OrgMgr --> UC08
-OrgMgr --> UC10
-OrgMgr --> UC15
+usecase "UC-01: Xác thực, Đăng nhập & Quản lý hồ sơ" as UC_01
 
-Admin --> UC10
-Admin --> UC11
-Admin --> UC12
-Admin --> UC13
-Ops --> UC14
+' Khóa cứng thứ tự dọc từ UC-02 đến UC-14 thành một chuỗi duy nhất
+UC_02 -[hidden]right-> UC_03
+UC_03 -[hidden]right-> UC_04
+UC_04 -[hidden]right-> UC_05
+UC_05 -[hidden]right-> UC_06
+UC_06 -[hidden]right-> UC_07
+UC_07 -[hidden]right-> UC_08
+UC_08 -[hidden]right-> UC_09
+UC_09 -[hidden]right-> UC_10
+UC_10 -[hidden]right-> UC_11
+UC_11 -[hidden]right-> UC_12
+UC_12 -[hidden]right-> UC_13
+UC_13 -[hidden]right-> UC_14
 
-' ===== Mọi chức năng đều yêu cầu đăng nhập trước =====
-UC02 ..> UC01 : <<include>>
-UC03 ..> UC01 : <<include>>
-UC04 ..> UC01 : <<include>>
-UC05 ..> UC01 : <<include>>
-UC06 ..> UC01 : <<include>>
-UC07 ..> UC01 : <<include>>
-UC08 ..> UC01 : <<include>>
-UC09 ..> UC01 : <<include>>
-UC10 ..> UC01 : <<include>>
-UC11 ..> UC01 : <<include>>
-UC12 ..> UC01 : <<include>>
-UC13 ..> UC01 : <<include>>
-UC14 ..> UC01 : <<include>>
-UC15 ..> UC01 : <<include>>
+' Đẩy UC-01 sang bên phải
+UC_06 -[hidden]down-> UC_01
 
-legend bottom
-  <<include>>: phải đăng nhập (UC-01) trước khi thực hiện.
-  Khách đăng nhập thành công trở thành Người dùng xác thực.
-  Ô xanh nhạt (UC-15): chức năng mở rộng.
-end legend
+' Liên kết Actor với Use Case (đường nét liền, KHÔNG mũi tên)
+Learner -- UC_01
+Learner -- UC_02
+Learner -- UC_03
+Learner -- UC_04
+Learner -- UC_05
+Learner -- UC_06
+Learner -- UC_07
+Learner -- UC_08
+
+Teacher -- UC_01
+Teacher -- UC_10
+Teacher -- UC_11
+
+Admin -- UC_01
+Admin -- UC_09
+Admin -- UC_10
+Admin -- UC_12
+Admin -- UC_13
+Admin -- UC_14
+
+' Mũi tên include từ tất cả 13 UC tới UC-01
+UC_02 .[#94A3B8].> UC_01 : <<include>>
+UC_03 .[#94A3B8].> UC_01 : <<include>>
+UC_04 .[#94A3B8].> UC_01 : <<include>>
+UC_05 .[#94A3B8].> UC_01 : <<include>>
+UC_06 .[#94A3B8].> UC_01 : <<include>>
+UC_07 .[#94A3B8].> UC_01 : <<include>>
+UC_08 .[#94A3B8].> UC_01 : <<include>>
+
+UC_09 .[#94A3B8].> UC_01 : <<include>>
+UC_10 .[#94A3B8].> UC_01 : <<include>>
+UC_11 .[#94A3B8].> UC_01 : <<include>>
+UC_12 .[#94A3B8].> UC_01 : <<include>>
+
+UC_13 .[#94A3B8].> UC_01 : <<include>>
+UC_14 .[#94A3B8].> UC_01 : <<include>>
+
 @enduml
