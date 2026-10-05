@@ -62,7 +62,7 @@ rectangle "Lingora Platform System" {
   usecase "UC-06 Spaced Repetition (SRS)\n(Ôn tập ngắt quãng)" as UC06
   usecase "UC-07 Track Progress, Mastery & Streak\n(Tiến độ, Năng lực & Chuỗi)" as UC07
 
-  usecase "UC-08 Create & Edit Lesson Draft\n(Soạn bản nháp bài học)" as UC08
+  usecase "UC-08 Plan, Assign & Create Lesson Draft\n(Lập đề cương, Giao bài & Soạn bài)" as UC08
   usecase "UC-09 Review & Moderate Content\n(Kiểm duyệt nội dung)" as UC09
   usecase "UC-10 Publish Approved Content\n(Xuất bản nội dung)" as UC10
 
@@ -70,7 +70,7 @@ rectangle "Lingora Platform System" {
   usecase "UC-12 View System Reports\n(Báo cáo vận hành)" as UC12
   usecase "UC-13 View & Audit Security Logs\n(Kiểm toán an ninh)" as UC13
   usecase "UC-14 Handle Support Tickets\n(Phiếu hỗ trợ kỹ thuật)" as UC14
-  usecase "UC-15 Manage Cohorts & Groups\n[FUTURE EXTENSION / Mở rộng]" as UC15 #F1F5F9
+  usecase "UC-15 Manage Cohorts & Groups\n(Quản lý nhóm học viên - Mở rộng)" as UC15 #F1F5F9
 }
 
 ' All authenticated users must login to establish session
@@ -85,12 +85,13 @@ Learner --> UC06
 Learner --> UC07
 
 ' Content management use cases
-Creator --> UC08
+Creator --> UC08 : <<author>>
+OrgMgr --> UC08 : <<plan & assign>>
 Moderator --> UC09
 
 ' Publishing & Governance use cases
 OrgMgr --> UC10
-OrgMgr ..> UC15 : <<future>>
+OrgMgr --> UC15
 
 Admin --> UC11
 Admin --> UC12

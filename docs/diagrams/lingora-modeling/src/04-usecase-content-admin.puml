@@ -13,7 +13,8 @@ actor "Administrator" as Admin
 
 rectangle "Content & Administration Subsystems" {
   ' Content Governance
-  usecase "UC-08 Create & Edit Draft" as UC08
+  usecase "UC-08 Plan, Assign & Create Draft" as UC08
+  usecase "Plan Curriculum &\nAssign Lesson" as PlanAssign
   usecase "Submit for Review" as SubmitReview
   usecase "Clone-to-Draft v2" as CloneDraft
 
@@ -31,6 +32,7 @@ rectangle "Content & Administration Subsystems" {
   usecase "UC-14 Handle Support Tickets" as UC14
 
   ' Relationships
+  PlanAssign ..> UC08 : <<include>>
   SubmitReview ..> UC08 : <<include>>
   CloneDraft ..> UC08 : <<extend>>
 
@@ -41,6 +43,7 @@ rectangle "Content & Administration Subsystems" {
   EmergencyPublish ..> UC13 : <<include>>
 }
 
+OrgMgr --> UC08
 Creator --> UC08
 Moderator --> UC09
 OrgMgr --> UC10
