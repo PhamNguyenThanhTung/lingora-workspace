@@ -1,0 +1,65 @@
+@startuml
+!include ../style.puml
+' diagram-id: VIEW-UC-04
+' classification: TARGET
+' Maps to UC-01/09/12/13/14; VIEW-UC-04 is not canonical learner-path UC-04.
+' Profile/Login = UC-01; curriculum/blueprint/assignment = UC-09; accounts = UC-13.
+' Review/changes/approval/publication/archive = UC-12; reports/audit = UC-14.
+' Supporting presentation only; no canonical UC added.
+' Authority: ADR-034–036. Admin cannot author content, bypass approval or edit learner evidence.
+' One responsible Teacher per Lesson package; reassignment preserves attribution/history.
+' Support reads necessary identity/status/minimal context summary; account actions audited.
+' Assessment publication requires readiness/review/approval; immutable version pins attempts.
+' Published revision replacement is atomic; privileged actions emit security audit events.
+left to right direction
+title Sơ đồ Use Case của Quản trị viên
+
+actor "Quản trị viên" as Admin
+rectangle "HỆ THỐNG HỌC NGOẠI NGỮ LINGORA" {
+  package "Tài khoản và vận hành" {
+    usecase "Quản lý hồ sơ cá nhân" as Profile
+    usecase "Quản lý tài khoản học viên, giáo viên" as Accounts
+    usecase "Xem báo cáo và nhật ký" as Audit
+    usecase "Đăng nhập / Xác thực" as Login
+  }
+  package "Đề cương và phân công" {
+    usecase "Quản lý cấu trúc và cấu hình khóa học" as Curriculum
+    usecase "Lập đề cương bài đánh giá" as Blueprint
+    usecase "Phân công và phân công lại" as Assign
+  }
+  package "Thẩm định và xuất bản" {
+    usecase "Thẩm định nội dung đã nộp" as Review
+    usecase "Yêu cầu chỉnh sửa" as Changes
+    usecase "Phê duyệt nội dung" as Approve
+    usecase "Xuất bản bài học đã duyệt" as Publish
+    usecase "Xuất bản phiên bản đánh giá đã duyệt" as Assessment
+    usecase "Lưu trữ hoặc thu hồi nội dung" as Archive
+  }
+}
+Admin -- Profile
+Admin -- Accounts
+Admin -- Audit
+Admin -- Login
+Admin -- Curriculum
+Admin -- Blueprint
+Admin -- Assign
+Admin -- Review
+Admin -- Changes
+Admin -- Approve
+Admin -- Publish
+Admin -- Assessment
+Admin -- Archive
+
+Profile ..> Login : <<include>>
+Accounts ..> Login : <<include>>
+Audit ..> Login : <<include>>
+Curriculum ..> Login : <<include>>
+Blueprint ..> Login : <<include>>
+Assign ..> Login : <<include>>
+Review ..> Login : <<include>>
+Changes ..> Login : <<include>>
+Approve ..> Login : <<include>>
+Publish ..> Login : <<include>>
+Assessment ..> Login : <<include>>
+Archive ..> Login : <<include>>
+@enduml

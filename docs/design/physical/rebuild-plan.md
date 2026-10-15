@@ -1,0 +1,190 @@
+# Legacy Inventory, Conditional Rebuild and Future Acceptance Plan
+
+> **PROPOSED PHYSICAL DESIGN — NOT IMPLEMENTED** · 2026-10-11
+> **Recommendation: CLEAN REBUILD.** Execution requires separate approved physical review, Implementation Plan and environment-specific preservation/cutover authorization.
+> **LIVE DB UNVERIFIED:** credentials absent from the process and conventional root/Admin/Web local env files. No DB connection, catalog inspection, learner-content read or mutation occurred. Do not assume an empty database.
+
+This plan uses [approved modeling](../../modeling/current-target/final-review.md), the [proposed physical catalog](README.md) and [security boundary](security-and-rls.md). The [PO request snapshot](../../../plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt) now allows proposing reset/drop/rebuild of legacy structures. It supersedes ADR-035's forward-only preference for this design recommendation only. History/data disposition is still conditional; no destructive execution is authorized by this task.
+
+## Q. Repository audit — artifact evidence only
+
+| Inspected file/surface | Observed fact | Keep / replace later / archive / obsolete after rebuild |
+|---|---|---|
+| [Admin package](../../../lingora-admin/package.json) | Prisma/client 6.19.3 and migration/seed scripts; no Next.js Admin app implementation | Keep Prisma/tooling ownership; build Admin app only after separate plan |
+| [Web package](../../../lingora-web/package.json) | Next 15.5.23/React19/SSR0.12.4/supabase-js2.112.3; learner Auth foundation | Keep stack and useful Auth/i18n UI; add role/status enforcement later |
+| [Prisma schema](../../../lingora-admin/prisma/schema.prisma) | 18 models, six historical roles and assignedRoles; Unit/AuditLog exist in Prisma; no LearningContext, immutable revisions/attempts/assessment packages; CEFR enum; UserProgress score 0–100 aggregate | Replace later from approved physical design; archive exact source/hash first. Do not treat it as deployed/product authority |
+| [Initial migration](../../../lingora-admin/prisma/migrations/202608140001_init/migration.sql) | 17 tables; roles LEARNER/ADMIN; no Unit/AuditLog; chat sessions/messages; exercises payload contains grading keys; percentage aggregate progress; SM-2-shaped SRS fields | Preserve immutable historical migration chain; new environment gets new baseline later |
+| [Auth/RLS/storage migration](../../../lingora-admin/prisma/migrations/202608140002_auth_rls_storage_record_review/migration.sql) | profile FK to auth.users; auth trigger defaults learner; broad Admin curriculum DML; role-only is_admin without status; 17 application-table RLS enables; record_review accepts caller interval/probability and has no operation key | Archive as legacy evidence; helpers/policies/RPC become obsolete in new environment. Never execute its record_review as TARGET scheduling |
+| [Storage corrective migration](../../../lingora-admin/prisma/migrations/202608140003_storage_two_bucket_size_enforcement/migration.sql) | two private buckets; avatar5MiB/audio10MiB; rejects existing avatar objects before bucket separation; no Storage UPDATE policy | Keep private separation/limit concepts; reconcile object inventory and replace policies later; no migration rerun |
+| [Auth service](../../../lingora-web/src/features/auth/auth.service.ts) | server Supabase signIn/signUp/signOut, basic credential validation; no DB account role/status resolution | Keep Auth provider integration; extend only in later implementation |
+| [SSR client](../../../lingora-web/src/lib/supabase/server.ts), [session middleware](../../../lingora-web/src/lib/supabase/middleware.ts), [matcher](../../../lingora-web/src/middleware.ts), [home](../../../lingora-web/src/app/page.tsx) | httpOnly/secure/sameSite cookies, getUser check; home/login redirects only, missing env returns middleware response; no assigned-Teacher/disable domain authorization | Keep useful SSR plumbing; fail-closed protected backend checks required later. No browser Supabase application-table client found in src |
+| [Admin env declarations](../../../lingora-admin/.env.example), [Web env declarations](../../../lingora-web/.env.example), [environment record](../../../ENVIRONMENT.md) | DATABASE_URL/session pooler declaration; service key/JWT-secret names; Web template retains obsolete AI_API_BASE_URL; dated environment record names owner-like pooler login | Keep non-secret names applicable to stack; replace runtime DB principal later; obsolete AI declaration cleanup belongs to later authorized code/config task |
+| [Seed](../../../lingora-admin/prisma/seed.js) | UUIDv5 reproducible legacy English records, A1 example, three exercise types with answerIndex/answers/correctOrder inside payload; chat scenarios; Prisma upserts | Archive fixture content/hash; selectively transform reviewed content only; replace TARGET seed script later; old seed not run |
+| [Security test script](../../../lingora-admin/prisma/m1_3_security_test.js), [seed test](../../../lingora-admin/prisma/m1_4_seed_test.js) | create Auth/test data, invoke legacy RPC, mutate/delete rows and provider users/objects during cleanup | Read-only source inspection only; do not run. Archive evidence; rewrite isolated tests after approval |
+| Auth and Storage provider schemas | referenced in migrations only | Preserve provider-managed schemas unless separately scoped; no blanket public/auth/storage drop |
+| AI/chat residue | Prisma scenario models and SQL chat tables remain; Web template still names AI URL; removed AI runtime/routes are preexisting workspace changes | Obsolete after clean TARGET rebuild; no active AI table/service/query/dependency introduced |
+
+Prisma versus SQL divergence is a **CURRENT artifact mismatch**, not a new product contradiction. Approved TARGET wins. The read-only inventory is repository/artifact evidence only; none of the observations proves which migrations/functions exist in a live Supabase project. Repo topology supports the existing stack; no stack migration recommendation is needed.
+
+## Read-only live inventory protocol for the future gate
+
+An operator must bind credentials to the exact environment/project and a read-only role. Start a transaction with `READ ONLY` and bounded statement/lock timeouts; run catalog SELECTs and ROLLBACK. Do not call user-defined RPCs, old test scripts, seed or migrations. Capture no credentials, passwords, JWTs, raw learner responses or content. This task only probed availability of config, without printing its values.
+
+Metadata sources: `pg_namespace` (schemas); `pg_class`/`pg_attribute`/`pg_type` or `information_schema.columns` (table/column types/nullability/defaults); `pg_constraint` (PK/unique/CHECK/FK and delete actions); `pg_index`/`pg_indexes` (indexes); `pg_class.relrowsecurity/relforcerowsecurity` (RLS); `pg_policies` (policy predicates/roles/commands); `pg_roles` and table/function grants (no password columns); `pg_proc` plus namespace and identity arguments/security-definer/owner/config (RPC metadata, no function invocation). Limit application-related schemas plus provider metadata needed for FKs/storage. Read only bucket id/name/public/size/MIME metadata from storage.buckets, not objects' bytes or learner-linked content. Read migration names/applied timestamps/checksums from `_prisma_migrations` and/or accessible Supabase migration history; exclude logs that could contain secrets. If a metadata category is inaccessible, label it unverified rather than inferring absence.
+
+Compare the inventory to all three migrations and Prisma. Any desired future preserved-data export is a **separately authorized** preservation step, not part of metadata-only inspection. Actual data class/ownership must be verified before reset/cutover; missing credentials does not justify discard.
+
+## R. Forward migration versus clean rebuild
+
+| Criterion | FORWARD MIGRATION | CLEAN REBUILD |
+|---|---|---|
+| Legacy divergence | Split overloaded progress/content/SRS/roles, introduce contexts/revisions; resolve six-role versus two-role drift before ALTER | Build coherent proposed 34-table baseline with three roles and secret separation |
+| Evidence preservation | Existing IDs/history stay in place but meaning may be ambiguous | Explicit export/transform/import for real evidence; old snapshot retained |
+| Complexity | Many transitional backfills, dual representations/policy changes; no evidence all legacy data is meaningful | Simpler initial schema/security, but verified preservation/restore/cutover essential |
+| Development stage | Useful when deployment holds substantial valid evidence and downtime constraints | Repo shows foundations/fixtures, no TARGET learner runtime; PO permits structure replacement |
+| Historical value | Retain chain; annotate transformations | Retain old chain/source/tests/snapshots as historical; independent new baseline |
+| Unknown live data | Cannot safely decide concrete backfill from artifacts alone | Cannot authorize destructive reset until live disposition review |
+
+Recommend **CLEAN REBUILD** in a disposable/new environment first. Preserve provider identity/real data where required rather than dropping the Supabase project. If live preservation review finds substantial data that cannot be safely reconstructed/mapped or unavailable cutover/rollback, revise execution choice to staged forward migration or parallel schema; do not silently lose evidence. The design recommendation is clear; the execution gate remains conditional.
+
+## S. Data preservation classification
+
+| Class | Candidate contents | Disposition before future execution |
+|---|---|---|
+| Must preserve if present | Real auth UUIDs/account identity; real valid completion/assessment/SRS/history; Teacher authorship/review attribution; security audit; referenced media | Snapshot/export with owner-approved mapping; verify referential integrity and restored fidelity; never downgrade evidence into invented TARGET results |
+| Must preserve repository evidence | Historical migration bytes/checksums, approvals/ADRs/test logs/source baseline | Immutable archive/Git history; never rewrite applied migrations |
+| Nice to preserve | Reviewed reusable curriculum text/audio, non-secret profile preferences/configuration | Review licenses/meaning and convert into assigned/reviewed TARGET revisions/config; no blanket auto-publish |
+| Disposable development/test | Confirmed deterministic demo seed, explicitly tagged throwaway accounts/content, isolated old chat test data | Owner marks exact environment/IDs disposable after inventory and backup verification |
+| Unknown until live inspection | Whether real learners/content/history exist; row/role meaning and duplicates; bucket objects and migration state | Hold destructive action; do not equate missing local credentials with empty live DB |
+
+Legacy `UserProgress.score` cannot be converted to approved N/K attempt performance without actual response provenance. Preserve raw legacy record in protected archival evidence with origin/classification; do not manufacture attempts, K, timestamps or certified results. A valid completed legacy logical lesson mapping may support an imported completion only under explicit mapping/preservation review; provenance is marked legacy and requires a separately approved importer schema extension if this proposed first-attempt FK cannot represent it. The current proposed FK deliberately models clean TARGET facts and does not pretend arbitrary legacy completion can be imported unchanged.
+
+Ambiguous old role/assigned-role arrays require per-account owner resolution or re-provisioning; never automatic mapping to ADMIN/TEACHER. Duplicate vocabulary forms need curated sense mapping, not a blind normalized-text merge. Old SRS interval fields cannot prove stage/history; preserve evidence and choose an approved transform/reset of disposable schedules only. No schema/data repair runs now.
+
+## T. Future execution outline — PLAN ONLY
+
+These phases are an execution outline; they are not an approved Implementation Plan and are not delegated to Antigravity here.
+
+| Gate/phase | Future work | Required exit evidence / stop trigger |
+|---|---|---|
+| 0 — Review | FINAL PHYSICAL DESIGN REVIEW; approve/correct schema/security/provision decisions; then write bounded Implementation Plan | Recorded human approval and immutable plan; no implementation while only proposed |
+| 1 — Inventory | Bind project/environment; read-only catalogs; classify data/media; exact preserved/disposable list and role mappings | Dated catalog report and owner-approved disposition. Unknown preservation blocks destructive operation |
+| 2 — Backup/rollback | Snapshot DB including necessary provider/application metadata; inventory/export referenced objects securely; rehearse restore in isolated environment | Restore proof, checksums, retained IDs/object hashes, rollback owner and environment recorded |
+| 3 — New baseline | Preserve old migration chain unchanged; create separately named new baseline/security chain for new database/environment | Reviewed baseline SQL includes tables/FKs/checks/indexes/RLS/grants/guards/functions/provider auth hookup; explicit reset point; no fabricated historical applied entries |
+| 4 — Disposable apply | Apply only to explicitly disposable development project/database; bootstrap restricted runtime/migration principals and private buckets | Dated catalog matches design; runtime cannot DDL/bypass; real connection roles tested |
+| 5 — Configuration seed | Idempotent languages/frameworks/levels/course default/gates; separately approved sample lesson/assessment packages; controlled Admin bootstrap | Deterministic UUIDs/config versions; no password in repo; CEFR/A1 only chosen seed data, not invariants |
+| 6 — Tests | Run auth/integrity/security/secrecy/concurrency/invariant tests below on disposable fixtures | Exact commands/output PASS from actual execution; no live test-user cleanup surprises |
+| 7 — Preserve/import | Only approved data mapping/import; keep auth IDs; restore approved content/media/evidence or protected legacy archive; validate provenance | Reconciled counts/checksums/FKs/role decisions; no synthetic TARGET grading history; importer extension separately approved if needed |
+| 8 — Validate/rehearse | End-to-end smoke, backup restore, rollback rehearsal, migration/security catalog diff | Approved expected query results, no key leaks; rollback feasible before cutover |
+| 9 — Cutover | Separate environment-specific approval; maintenance window/write stop; final delta inventory and switch deployment/config | Verify correct project/URL/config, next-request disable, current publication/history; rollback on failure |
+| 10 — Retain | Keep old snapshot/chain immutable for agreed period; revoke old runtime entry paths after verified cutover | No purge/drop of old evidence without explicit retention/disposition approval |
+
+Rollback: before cutover, old environment remains untouched; discard new disposable environment only under its own authorization. After cutover, stop writes, preserve new evidence before reverting connection/deployment; never restore an old snapshot over newly produced learner history silently. Define delta preservation and rollback transaction window in the future cutover plan. Auth/Storage/database are multiple provider surfaces; schema rollback alone is insufficient. No claim of tested recovery in this design task.
+
+Migration-history policy: retain the existing `202608140001–003` directories and their original applied history as evidence. New rebuilt environment receives a new baseline with accurate creation/application timestamps. Future archival moves happen only in the implementation task and preserve stable references/checksums. Do not edit old migration SQL or mark the new baseline as historically applied. Never run `prisma migrate reset`, `db push`, old seed or an inferred public-schema drop against the unknown live environment.
+
+Seed categories: languages and UI locale dictionaries; framework versions and configured ordered levels; selected shared-core courses/default starting points/readiness configuration; optional disposable development lesson/audio/assessment fixtures with proper Teacher/Admin provenance; separately controlled Admin auth identity/application account. Role/status CHECK/enum values are DDL, not seeded multi-role rows. No seeded learner results, no fixed question count/gate as a platform rule, no plaintext password/key in repository. Existing English content may be converted only after validation/secrecy separation.
+
+### Future acceptance tests with concrete expected behavior
+
+All tests below are **NOT EXECUTED IN THIS DESIGN TASK**. They are the required implementation acceptance scenarios, to become actual unit/integration/security/concurrency tests after approval. Use disposable Postgres/Supabase and at least two Learners/two Teachers/Admin plus PENDING/DISABLED accounts; do not reuse current mutation/cleanup scripts.
+
+| ID | Fixture/action | Expected observed assertion |
+|---|---|---|
+| PD-AUTH-01 | Valid token, account ACTIVE then disable; next query/command/stream with same token | Denied from fresh status; no evidence write/media bytes |
+| PD-AUTH-02 | Learner calls publish; Teacher calls account disable; Admin edits lesson payload/evidence | Role/SoD denied and audited; no mutation |
+| PD-AUTH-03 | Profile update includes role/status; raw metadata claims ADMIN | Trusted DB role unchanged; field rejection; no privilege escalation |
+| PD-AUTH-04 | Concurrent staff/public signup collision, provider timeout then retry, activation before account bind | No duplicate/elevated learner adoption; unresolved/PENDING fail closed; exact operation/UUID reconciliation |
+| PD-CTX-01 | Same learner/language create twice; two concurrent resumes when one ACTIVE exists | Same logical row; at most two ACTIVE, serialized account lock; third activation rejected |
+| PD-CTX-SCOPE | Owned context tries another language/course published lesson or assessment version at start/finalization | Named course/language/framework scope guard denies even with valid revision/version FK |
+| PD-CTX-02 | Mismatched course language/framework level; incomplete Placement after valid self/default | Scope rejected; valid starting point unchanged; no completed result |
+| PD-LESSON-01 | N=3; first answers correct/wrong/wrong; retries correct/wrong | K=2; units=3; denominator5; score3/(2*5)=0.30; completion succeeds despite low score |
+| PD-LESSON-02 | N=2 first both correct; attempt completion | units4/count2/score1.0; no retries; one completion |
+| PD-LESSON-03 | Third response to item; retry before first queue ends; foreign revision member; invalid input | Rejected; no response/queue advance/score effect |
+| PD-LESSON-04 | Same answer/completion key concurrent retry; same key different payload | One response/fact; stable feedback/result; conflict for payload mismatch |
+| PD-LESSON-05 | Redo pinned new revision after first completion | New attempt/latest score; same completion count/first provenance; old attempt unchanged |
+| PD-LESSON-06 | Inject failure after performance write but before core enrollment | All finalize/completion/SRS/day/receipt writes rollback; retry commits once |
+| PD-SRS-01 | Core completion enrolls same concept in two lessons; optional not chosen | One card unchanged schedule; optional absent until explicit choice |
+| PD-SRS-02 | Remember stage1→2→3→4→5→5; forgotten from each stage | Intervals3/7/14/30/30; forgot stage1/+1 day; initial enrollment due+1 day |
+| PD-SRS-03 | Same op concurrent retry versus new intentional op | Same op schedules once/stable history; new op records intentional next event |
+| PD-SRS-04 | Forgotten, same-session reinforcement twice or new session/other card parent | At most one valid reinforcement; no second stage/due update; invalid links rejected |
+| PD-SRS-05 | Pause context then global SRS review | Review works for ACTIVE learner account; legitimate scheduling event qualifies streak |
+| PD-CONTENT-01 | T1 editing then reassigned T2; T1 stale child save/submit | T1 denied after reassignment; creator/history retained; T2 assigned editable workflow |
+| PD-CONTENT-OWN | Package uses assignment for another target; editable item consumed by another parent; frozen shared item edited via consumer | Composite target FK/owner-origin guard rejects; immutable shared reference remains unchanged |
+| PD-CONTENT-02 | Concurrent Teacher edits/submit/review with same row_version | One state transition; stale request conflict; no partially mixed package |
+| PD-CONTENT-03 | Replacement publish failure after old-state change | Rollback retains old active revision; successful retry switches once, history retained |
+| PD-CONTENT-04 | SQL/runtime change published/approved payload, child, key or media bytes | DB/service guard rejects; archive metadata transition alone permitted |
+| PD-CONTENT-05 | New course/unit no active lessons; publish one; planned future lesson | Visibility derived, planned excluded; no whole-Unit publication prerequisite |
+| PD-ASSESS-01 | Generic content/attempt/result/history/media includes attacker asks answerIndex/key/correctness | Only allowed prompt/aggregate; no key/private response/answer-revealing feedback |
+| PD-ASSESS-02 | Start version1; publish version2 and attempt edit version1 item | Attempt remains v1; edit frozen content fails; result reproducible against v1 |
+| PD-ASSESS-03 | Same submission retry versus new attempt; invalid/missing submission | One result for same key/hash; new deliberate result for new attempt; incomplete has none |
+| PD-ASSESS-04 | Copy practice prompt/key to new item UUID; same item revision; genuine changed variant | Exact reused IDs/fingerprints rejected; different eligible variant allowed after review |
+| PD-ASSESS-05 | Concurrent absent equal-fingerprint practice item creation/attachment/exposure and assessment publish, different UUIDs | Shared advisory fingerprint lock and collision recheck reject unsafe second operation; no absent-row race |
+| PD-ASSESS-06 | Level-up pass but configured curriculum gate false; gate true but assessment fail | No working-level promotion; never a universal 100% or default threshold |
+| PD-ASSESS-07 | Finalization failure between result write/progression; concurrent curriculum/context change | Atomic rollback or explicit conflict with preserved prior evidence; no partial progression/result |
+| PD-ASSESS-08 | Select own completed Placement at stale context version or another learner's result | No stale overwrite/cross-owner selection; successful own selection records provenance |
+| PD-PROGRESS-01 | Two published active required lessons, one completed; second progression-locked; one unpublished | Ratio1/2, not1/1 or1/3; unlocking not eligibility |
+| PD-PROGRESS-02 | Withdraw incomplete required lesson then replace completed lesson revision | Withdrawn incomplete excluded; prior completion survives replacement; no forced redo |
+| PD-PROGRESS-03 | Zero eligible lessons/next level no content | unavailable/coming-soon state; no fabricated 100% or missing content unlock |
+| PD-STREAK-01 | Completed redo/SRS across two languages in one local day; assessment only day | One day from union; assessment contributes no day; timezone not hard-coded |
+| PD-STREAK-02 | Change account timezone after recorded qualifying day | Existing stored local-day provenance unchanged; new activities use valid new zone |
+| PD-RLS-01 | Actual runtime role, missing subject, other learner IDs; anon/authenticated REST private schemas | Missing/foreign denied; no exposed schema/table/function access; runtime no owner/bypass/DDL |
+| PD-RLS-HELPER | FORCE RLS enabled; runtime calls helpers with other target/attempt then tries SET ROLE to helper principals | Subject-bound validation rejects escalation; nonrecursive lookup works; role assumption and generic secret SELECT denied |
+| PD-RLS-02 | Admin support query attempts add attempts/results/private responses | Only minimum identity/context summary; no evidence read/write escalation |
+| PD-MEDIA-01 | Draft/assessment object via guessed path/public URL; old Teacher upload; disabled range request | Denied; private bucket; assignment/attempt/status checked; no published overwrite |
+| PD-AUDIT-01 | Privileged success then denied transaction rollback; attempt audit UPDATE/DELETE | Success atomic; denial still append-recorded after rollback; no app mutation/secrets |
+| PD-FK-01 | Delete account/lesson/assessment version with retained evidence | RESTRICT failure; no cascade/history loss |
+| PD-REBUILD-01 | New disposable baseline then isolated restore/import and catalog/security checks | Accurate migration history; preserved IDs/hash/provenance; no synthetic N/K evidence |
+
+### F01–F12 correction acceptance scenarios
+
+These additional acceptance cases cover the exact physical-review counterexamples. They are proposed future disposable-database tests and are **NOT EXECUTED** in this documentation-only correction task.
+
+| ID | Setup | Action | Expected invariant |
+|---|---|---|---|
+| PD-F01-TEACHER-SUBMIT | ACTIVE Teacher owns an assignment; exact package is complete, editable and at row_version n | Teacher submits with expected version and operation key | Only the assigned package moves to IN_REVIEW; generation/scope snapshot, SUBMIT provenance, audit and receipt commit together |
+| PD-F01-UNASSIGNED-DENIED | Teacher T2 has no current assignment to T1's package, or request carries stale row_version | T2 submits, or T1 submits stale version | Denied/conflict; no lifecycle/provenance/receipt mutation; Teacher cannot approve or publish |
+| PD-F02-FIRST-CONTEXT | ACTIVE Learner has no learning_context; language is learnable and has an active configured course | Create context through Placement, self-report or default entry path | Context is created without an existing-context authorization predicate; one learner/language row; no fabricated AssessmentResult |
+| PD-F10-AVAILABILITY-AWARE-DEFAULT | Configured default points to a higher level whose lessons are only PLANNED; a lower level has eligible published AVAILABLE lessons; also prepare a course with zero eligible available levels | Resolve default under the course generation lock, including a concurrent availability/configuration update | The lowest-position level with eligible published AVAILABLE content is selected even when a higher configured default exists; zero eligible levels yields a valid null-level context and coming-soon state without completion/proficiency/result; serialization observes one coherent generation and never mixes configuration |
+| PD-F02-CONTEXT-CAPACITY-RACE | Learner has one ACTIVE context and two requests target different configured languages | Run both create/resume/reactivation transactions concurrently | Account lock serializes the count; final ACTIVE count is at most two; unique learner/language identity is preserved |
+| PD-F05-REMOVE-DRAFT-MEMBER | Current assigned Teacher owns DRAFT and CHANGES_REQUESTED packages containing exercise, vocabulary, media and assessment memberships | Remove each typed membership, then preview/submit; separately try to remove frozen/evidence-referenced membership | Only the draft association disappears; removed member is absent from readiness/publish; content identity and bytes remain; frozen/evidence references reject deletion |
+| PD-F06-CLEANUP-PUBLISH-RACE | Ready unbound asset is a candidate for both cleanup and an assigned Teacher's media binding followed by Admin publication | Race retirement reservation against binding + publish in separate transactions | If reservation wins, bind/publish rejects retired asset. If binding wins, cleanup sees the reference and does not retire/delete bytes. Provider deletion never precedes final DB recheck |
+| PD-F11-BLUEPRINT-CONFIG-AFTER-PUBLISH | Blueprint version v1 is published and an attempt is pinned to it | Admin changes allowed non-scope configuration for v2; then finalize the open v1 attempt | v1 purpose/scope/coverage/grading remains unchanged from its snapshot; attempt finalizes using v1; changed scope on the used identity is rejected and requires a new blueprint |
+| PD-F04-CURRICULUM-ASSIGNMENT-HISTORY | Admin assigns a Teacher with a specific lesson/blueprint requirement and scope; Teacher submits package | Admin changes assignment scope after submission; attempt to publish old approval; also attempt a referenced cross-level Unit move | Scope change appends a new generation/history snapshot; old submission/review remains immutable and cannot publish under new scope; referenced ownership move is rejected; position-only reorder remains allowed |
+| PD-F08-OLD-OPEN-ATTEMPT | Learner has an open v1 attempt and responses but no logical lesson completion | Admin publishes v2; learner finalizes old attempt | Old attempt/responses remain; no first completion, performance, SRS enrollment, qualifying day or receipt is created; learner can start v2 |
+| PD-F08-REPLACEMENT-COMPLETION-RACE | v1 attempt is open and no completion exists; replacement v2 and finalization are ready to race | Run publish and finalization with shared course lock, in each lock order | Finalize-first records valid v1 completion then replacement; publish-first blocks v1 first completion with no partial writes; identical committed retry replays after authorization |
+| PD-F09-DUPLICATE-REINFORCEMENT-RETRY | One FORGOTTEN SCHEDULE operation and valid signed session exist | Send the same reinforcement operation key concurrently twice | One immutable reinforcement row; retry returns stable result; card stage/due and qualifying day do not change |
+| PD-F09-CARD-SESSION-UNIQUE-RACE | Two distinct FORGOTTEN schedule parents exist for the same card and session | Submit two different reinforcement operation keys concurrently | Partial UNIQUE(card_id,session_key) permits at most one reinforcement; parent guard rejects invalid links; no second schedule/stage/day update |
+| PD-F03-MISSING-ACCOUNT-AUDIT | Provider validates an Auth subject for which no application accounts row exists | Call a protected operation | Access is denied; sanitized audit row stores VERIFIED_AUTH_SUBJECT UUID with null account FK; no phantom account or credential/token |
+| PD-F11-VERSION-COVERAGE-SNAPSHOT | Published version contains configured topic/skill coverage and stable labels; attempt pins that version | Edit later blueprint configuration/catalog generation and create a newer version | Old attempt/result still resolves original purpose/scope/coverage labels; tags are checked against the version snapshot, not current mutable blueprint |
+| PD-F12-COVERAGE-TAGS-VALIDATION | Finite active course catalog and blueprint scope include allowed topic/skill IDs; fixture also has invented, other-course, retired/inactive, and catalog-valid but blueprint-uncovered IDs | Submit a lesson revision and assessment version item with allowed tags, then try each invalid tag; edit the catalog after publish | Allowed in-scope tags pass with versioned label/generation snapshots; invented, out-of-course, retired/inactive, and uncovered tags reject; published snapshots stay unchanged after later catalog edits |
+
+Each future concurrency case uses independent database connections/transactions and asserts both the committed rows and absence of side effects on the losing path.
+
+Prisma integration tests must use the real restricted login; owner-connected tests cannot prove RLS. Secrecy tests inspect serialized response bodies, not just HTTP status. Concurrency tests use separate transactions/connections and injected failures. Index usefulness is evaluated later with real EXPLAIN/cardinalities; this task has no benchmark or runtime performance claim.
+
+## Study Focus and F01/F02 final-correction acceptance
+
+Design specifications below are **NOT EXECUTED**. They supplement, rather than replace, the F03–F12 scenarios above. [PERS-01–10](../../study-focus-addendum.md) are required future runtime tests, including the five-value CHECK/default, bias/fallback, independent due selection, no resets/core or secure-assessment injection, invalid values and foreign contexts.
+
+| ID | Setup | Action | Expected invariant |
+|---|---|---|---|
+| PD-F01-AUTHORING-ALLOW | ACTIVE currently assigned Teacher; exact unfrozen item under editable authoring parent; runtime login + FORCE RLS on every table | Call named authoring read/edit, then submit valid package | content_writer's explicit secret SELECT/I/U and policies permit only that item; transition_writer executes content_writer readiness validator; IN_REVIEW + SUBMIT/audit/receipt commit together |
+| PD-F01-OTHER-TEACHER | T2/current reassignment or frozen consumer refers to T1 item | Request authoring grading/read/edit by item ID | Deny without key projection, mutation or role assumption; ownership is authoring parent, not consumer membership |
+| PD-F01-LEARNER-KEY-DENIED | ACTIVE Learner; real runtime login, own assessment and guessed authoring item | Call authoring function or raw secret/helper SELECT/EXECUTE | Deny raw key path; browser/Data API and generic runtime key SELECT denied |
+| PD-F01-PINNED-GRADER | ACTIVE Learner with valid owned pinned attempt; also foreign attempt | Grade through checked function using matching pinned member; try foreign member | Own pinned grading succeeds with bounded practice feedback/assessment aggregate; foreign scope rejected; no Teacher gate on learner grading |
+| PD-F01-FROZEN-REUSE | Current assigned editable consumer package references a frozen published same-origin item; also foreign/removed membership and invalid-key fixtures | Submit through package validator; separately try raw authoring key read | Bounded grader readiness succeeds for exact valid frozen consumer; foreign/stale/removed/invalid key rejects. Frozen key/payload remain immutable and Teacher raw authoring read remains denied |
+| PD-F01-MISSING-KEY | Assigned editable package has missing/invalid required grading schema | Teacher SUBMIT | Readiness rejects before lifecycle/provenance/receipt commit; independent denial/failure audit sanitized |
+| PD-F01-TEACHER-PUBLISH-DENIED | Teacher submitted complete assigned package | Teacher requests approve/publish/Admin review function | Denied; Teacher SUBMIT exception never confers Admin lifecycle privileges |
+| PD-F02-PARENT-LOCK-PRIVILEGES | ACTIVE learner has zero contexts; real runtime login, FORCE RLS; helper roles NOBYPASSRLS | Create through learner_writer; inspect current_user at each definer; separately remove its SELECT/UPDATE privilege in a disposable test | Parent SELECT FOR UPDATE precedes lookup/count; only valid granted path succeeds. Missing principal grant fails; no caller-grant inheritance assumed |
+| PD-F02-LOCKER-CONTEXT-READ | Learner owns existing context; another learner owns a second context | Call checked course locker then resume through writer | Locker uses its own minimal context SELECT/owner policy; own succeeds and foreign denies; first-create branch requires no context |
+| PD-F02-CREATE-RESUME-PAUSE-RACE | One ACTIVE row and two concurrent different-language creates/resumes; also pause concurrent with resume | Run commands on separate connections | All capacity paths take same parent account row lock; max-two ACTIVE, one unique learner/language, preserved progress/preferences/SRS |
+| PD-PERS-SESSION-BOUNDARY | BALANCED session started, later change context focus, stale/forged signed references and retired asset | Answer current prompt/start next session; try invalid reference | Active composition is pinned, next uses new focus; every prompt rechecks ownership/status/access, no list/key leak, no core/assessment evidence mutation |
+
+No production/read-only/live test has been substituted for these cases. Later implementation acceptance must assert committed rows, losing-path absence of writes and serialized DTO fields using the real restricted login.
+
+## U. Execution prerequisites and stop
+
+No new product decision was required to write this proposal. Before implementation, approve physical choices and verify provider/RLS/provisioning mechanics. Before destructive execution, approve exact preservation mapping/environment plus restore proof and rollback/cutover. Unknown data disposition is an execution precondition, not a reason to stop the present design.
+
+**STOP after this correction. Next separate task: FINAL PHYSICAL APPROVAL RECHECK.** No Prisma edits, production migrations, reset/drop/truncate, real seeds, upload, deploy, API or UI implementation, staging or commit in this task.

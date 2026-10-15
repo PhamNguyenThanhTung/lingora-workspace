@@ -1,0 +1,291 @@
+Thực hiện **FINAL 3-POINT MODELING CORRECTION** cho Lingora.
+
+Đây là correction pass cực nhỏ sau Final Modeling Review.
+
+Mục tiêu duy nhất:
+
+> Kiểm tra và sửa đúng 3 điểm còn lệch authority trước khi đóng modeling.
+
+KHÔNG:
+- audit lại toàn bộ dự án;
+- redesign sản phẩm;
+- thêm feature;
+- thay ADR khác;
+- sửa application code;
+- sửa Prisma;
+- viết migration;
+- sửa database;
+- bắt đầu physical design.
+
+Authority:
+PO decisions mới nhất → ADR-036 → ADR-030..035 tương thích → active requirements → active UC → traceability.
+
+---
+
+# 1. Assignment Lifecycle — loại bỏ `CLOSED` nếu không có authority
+
+Final Review hiện mô tả:
+
+`ASSIGNED → IN_PROGRESS → SUBMITTED → REASSIGNED / CLOSED`
+
+Điều này cần đối chiếu lại với:
+- ADR-034;
+- ADR-035;
+- ADR-036;
+- canonical `STA-02`.
+
+Product semantics đã chốt:
+
+- Assignment chủ yếu biểu diễn **current responsibility / ownership**.
+- Một Teacher chịu trách nhiệm tại một thời điểm.
+- Reassignment thay đổi current assignee.
+- Attribution/history phải được giữ.
+- Assignment lifecycle không được trở thành project-management workflow dư thừa.
+- Content Revision lifecycle là lifecycle riêng.
+
+Không được tự thêm terminal state `CLOSED` nếu authority không phê duyệt.
+
+## Required correction
+
+Nếu `STA-02` source hiện có `CLOSED`:
+- loại bỏ nó;
+- chỉnh flow để assignment tiếp tục biểu diễn ownership/history hợp lý;
+- reassignment không phải terminal state.
+
+Nếu source đã không còn `CLOSED` nhưng chỉ `final-review.md`, README, logs hoặc report viết sai:
+- chỉ sửa documentation/report;
+- không sửa diagram vô ích.
+
+Không tự thay `CLOSED` bằng terminal state khác.
+
+---
+
+# 2. Level-up readiness — không hard-code `100% required lessons`
+
+Final Review hiện ghi Level-up có hai cổng:
+
+`100% required lessons completed + pass Level-up assessment`
+
+Cách viết này quá mạnh.
+
+Policy đã approved là:
+
+> `configured curriculum-readiness gate`
+> +
+> `configured Level-up assessment pass rule`
+
+Các giá trị cụ thể là **curriculum/course configuration**, không phải platform invariant.
+
+Một curriculum cụ thể CÓ THỂ cấu hình:
+- 100% required lessons;
+- một threshold khác;
+- các điều kiện readiness khác đã được policy cho phép.
+
+Nhưng platform không được hard-code `100%`.
+
+## Required correction
+
+Sửa tất cả active docs/diagrams nào mô tả `100% required lessons` như invariant.
+
+Dùng semantics:
+
+`Configured curriculum-readiness gate`
+→ `Level-up assessment`
+→ `Configured pass rule`
+
+Không thay đổi logic Placement/Level-up khác.
+
+Không tạo generic rule engine.
+
+---
+
+# 3. Progress denominator — phân biệt LOCKED và UNAVAILABLE
+
+Final Review đang dùng wording:
+
+`locked/coming-soon content excluded from progress denominator`
+
+Điều này đang gộp hai trạng thái khác nhau.
+
+Phải phân biệt:
+
+## A. Unavailable content
+
+Bao gồm:
+- chưa publish;
+- coming soon;
+- đang phát triển;
+- future level chưa available;
+- withdrawn content không còn phục vụ active path.
+
+Loại này:
+
+**KHÔNG tính vào eligible progress denominator.**
+
+## B. Published active content nhưng learner chưa unlock
+
+Ví dụ:
+- Lesson 5 đã publish;
+- nằm trong active curriculum;
+- learner hiện mới ở Lesson 3;
+- Lesson 5 bị khóa do normal sequential progression.
+
+Loại này vẫn là **eligible active curriculum**.
+
+Không được tự loại khỏi denominator chỉ vì learner chưa unlock tới đó.
+
+Nói ngắn gọn:
+
+`unavailable != progression-locked`
+
+Progress denominator dựa trên:
+
+> eligible + published + active curriculum according to policy
+
+không dựa đơn giản vào trạng thái UI lock icon.
+
+## Coming Soon UI
+
+Future/unavailable node vẫn có thể hiển thị:
+
+`🔒 Đang phát triển`
+
+nhưng không ảnh hưởng progress denominator.
+
+Normal progression lock có thể dùng cùng icon ở UI, nhưng semantics khác và phải được model/document phân biệt.
+
+---
+
+# 4. Files cần kiểm tra
+
+Không mặc định sửa tất cả.
+
+Inspect trước rồi chỉ sửa file thực sự bị ảnh hưởng.
+
+Tối thiểu kiểm tra:
+
+- `STA-02-assignment-lifecycle.puml`
+- Level-up activity
+- curriculum/progress activity
+- Learner UC nếu có gate wording
+- relevant sequence
+- DOM-01 nếu có readiness wording
+- DATA-03 nếu có denominator semantics
+- `final-review.md`
+- modeling `README.md`
+- requirements/UC/traceability nếu wording sai tồn tại ở đó
+- task/log/HANDOFF chỉ khi cần cập nhật trạng thái
+
+Không sửa file chỉ để tạo diff.
+
+---
+
+# 5. Cross-check sau correction
+
+Sau khi sửa, xác minh ba statement sau là TRUE:
+
+### Assignment
+`Reassignment changes responsibility and preserves history; no unapproved CLOSED terminal state exists.`
+
+### Level-up
+`Readiness and pass rules are configuration-driven; 100% completion is not a platform invariant.`
+
+### Progress
+`Unavailable/coming-soon content is excluded from denominator; published active content is not excluded merely because normal progression currently locks it.`
+
+---
+
+# 6. Không mở lại các quyết định đã PASS
+
+Không đụng lại:
+
+- 3 roles;
+- Login supporting UC;
+- lesson N/K scoring;
+- `1 / 0.5 / 0`;
+- completion independent of score;
+- SRS `1→3→7→14→30`, rồi 30 ngày/lần;
+- SRS enrollment;
+- Placement;
+- Reassessment deferred;
+- Admin blueprint → Teacher author → Admin review/publish;
+- Admin learner support;
+- Domain vs ERD distinction;
+- report visual style;
+- AI/runtime exclusions.
+
+---
+
+# 7. Render
+
+Chỉ render lại diagram bị thay đổi.
+
+Nếu shared style/source dependency khiến full render cần thiết thì được phép full render.
+
+Phải kiểm tra:
+- zero PlantUML errors;
+- updated PNG/SVG;
+- no stale output.
+
+Manual inspect ảnh bị ảnh hưởng.
+
+---
+
+# 8. Verification
+
+Chạy:
+
+- canonical verifier;
+- search `CLOSED` trong active TARGET modeling;
+- search `100%` / equivalent wording trong Level-up rules;
+- search denominator/locked wording;
+- UC/traceability consistency check nếu file liên quan bị sửa;
+- `git diff --check`;
+- manual diff review.
+
+Không coi text scan một mình là đủ.
+
+---
+
+# 9. Final report
+
+Trả cực ngắn:
+
+## A. Point 1 — Assignment lifecycle
+- source có sai hay chỉ report sai;
+- file sửa;
+- final semantics.
+
+## B. Point 2 — Level-up readiness
+- nơi hard-code 100% tồn tại;
+- file sửa;
+- final semantics.
+
+## C. Point 3 — Progress denominator
+- nơi conflated locked/unavailable;
+- file sửa;
+- final semantics.
+
+## D. Render / verification
+- diagrams rerendered;
+- verifier result;
+- `git diff --check`.
+
+## E. Final verdict
+
+Nếu cả ba đã đúng authority:
+
+# `MODELING APPROVED`
+# `READY FOR PHYSICAL DESIGN`
+
+Sau verdict này:
+**DỪNG.**
+
+Không bắt đầu:
+- Live DB modification;
+- physical schema;
+- migration;
+- reset DB;
+- implementation.
+
+Task physical design phải được mở riêng.

@@ -1,0 +1,152 @@
+--- entry/physical-erd.puml
++++ current/physical-erd.puml
+@@ -10,8 +10,7 @@
+ skinparam ranksep 60
+ hide circle
+ left to right direction
+-title Lingora physical ERD - identity (draft)
+-caption PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED | PK=UUID; FK=RESTRICT; ?=nullable; UQ=unique
++title Sơ đồ dữ liệu vật lý đề xuất – Tài khoản và chương trình
+ entity "app.accounts" as accounts {
+   PK/FK id -> auth.users
+   role / status
+@@ -38,6 +37,7 @@
+   FK language_id / framework_id
+   FK default_start_level_id
+   gate_config / curriculum_generation
++  practice_config (phân bố luyện tập)
+   coverage_catalog / catalog_generation
+   default picks lowest eligible AVAILABLE level
+   scope immutable once referenced
+@@ -62,6 +62,7 @@
+   FK start_result_id?
+   UQ learner + language
+   status / start_source? / row_version
++  study_focus = BALANCED (5 controlled values)
+   null start allowed when no level is available
+ }
+ entity "lesson_revisions" as lesson_revisions <<reference>> {
+@@ -80,11 +81,6 @@
+ courses ||--o{ learning_contexts
+ lessons ||--o{ lesson_revisions
+ assessment_results |o--o| learning_contexts
+-legend bottom
+-Reference boxes reuse existing tables; actor and auxiliary FKs are listed in catalog.
+-Composite scope FKs, XOR owners and partial uniques: see README.
+-No cascade to evidence. Every table retains created_at; mutable rows add updated_at.
+-endlegend
+ @enduml
+ 
+ 
+@@ -100,8 +96,7 @@
+ skinparam ranksep 60
+ hide circle
+ left to right direction
+-title Lingora physical ERD - content (draft)
+-caption PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED | PK=UUID; FK=RESTRICT; ?=nullable; UQ=unique
++title Sơ đồ dữ liệu vật lý đề xuất – Nội dung và phân công
+ entity "app.lesson_revisions" as lesson_revisions {
+   PK id / FK lesson_id / assignment_id
+   FK prior_revision_id?
+@@ -136,6 +131,7 @@
+   FK created_by
+   UQ item + revision_no
+   type / prompt_data / exact_fingerprint
++  practice_skill_ids / practice_coverage_snapshot?
+   FK authoring_lesson_revision_id? OR
+   FK authoring_assessment_version_id? (XOR)
+   frozen_at? / row_version
+@@ -197,11 +193,6 @@
+ media_assets ||--o{ media_bindings
+ lesson_revisions |o--o{ media_bindings
+ item_revisions |o--o{ media_bindings
+-legend bottom
+-Reference boxes reuse existing tables; actor and auxiliary FKs are listed in catalog.
+-Composite scope FKs, XOR owners and partial uniques: see README.
+-No cascade to evidence. Every table retains created_at; mutable rows add updated_at.
+-endlegend
+ @enduml
+ 
+ 
+--- handover/02-requirements.md
++++ current/02-requirements.md
+@@ -21,6 +21,14 @@
+ ### Vocabulary enrollment and SRS
+ 
+ Completing a lesson enrolls its core vocabulary. Optional vocabulary is enrolled only when the learner chooses “Add to review.” One learner has one logical card per Vocabulary identity; later appearances reuse its stage and due date. New cards begin at Policy B stage 1 and are first due after one day. Remembered cards advance through `1 → 3 → 7 → 14 → 30` days and recur every 30 days at the final stage. A forgotten card resets to stage 1/one day and can return to the end of its current session once. That reinforcement does not create a second scheduling operation or change the long-term schedule again. The server remains the scheduling authority under ADR-035.
++
++### Study Focus personalization — ADR-042 (2026-10-12)
++
++Each owned LearningContext has one primary Study Focus: BALANCED default, VOCABULARY, GRAMMAR, READING or LISTENING. Selection/change is optional context/preferences behavior and applies to the next supplementary session only. Preserve existing history/scores/progress/start/working level and all SRS schedules; started session composition is unchanged.
++
++Ordinary supplementary practice combines independently eligible due/overdue SRS with configured focus-biased authored PRACTICE from the context's published AVAILABLE accessible curriculum. Reuse finite active Topic/Skill catalog metadata with four controlled knowledge areas; reject draft/inactive/retired/foreign-scope/secure assessment content. Bias is nonexclusive and configuration-driven, with eligible other-area fallback and no failure from sparse focus content. No fixed platform count/percentage or new taxonomy/history/composition table is required.
++
++Shared core order/unlocks/completion/Level-up gates and N/K contributions 1/0.5/0 with N+K denominator are unchanged. Supplementary responses never enter core score/completion or scored pinned Placement/Level-up composition/results. Grammar focus cannot suppress due vocabulary. Learners see only current prompts after session start, never due-list/pre-browse metadata. Detailed decision and PERS-01–10 design cases: [Study Focus addendum](study-focus-addendum.md). Canonical UCs remain unchanged.
+ 
+ ### SRS interaction and session boundary — ADR-041 (2026-10-12)
+ 
+@@ -232,7 +240,7 @@
+ 
+ ## Phase 0 Canonical Functional Baseline (MVP-01 to MVP-19)
+ 
+-*Source: [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md)*
++*Source: [`docs/phase-0-roles-and-mvp-final.md`](archive/phase-0/phase-0-roles-and-mvp-final.md)*
+ 
+ | ID | Chức năng MVP | Owner chính | Tiêu chí nghiệm thu tối thiểu (Acceptance Criteria) | Liên kết Use Case |
+ |---|---|---|---|---|
+--- handover/use-case-specifications.md
++++ current/use-case-specifications.md
+@@ -146,6 +146,10 @@
+ 
+ ---
+ 
++### Supporting context preferences — Study Focus (ADR-042)
++
++`Chọn/thay đổi trọng tâm học tập` is supporting behavior within UC-04, not a new canonical UC. ACTIVE Learner chooses one of BALANCED (default), VOCABULARY, GRAMMAR, READING, LISTENING for their own context; invalid value/foreign context denies. Creation does not require a choice. Changes affect next supplementary practice only, preserve started composition and never reset start/progress/SRS or rewrite evidence. See [decision/design cases](study-focus-addendum.md).
++
+ ## 5. Thi lên cấp
+ 
+ | Thuộc tính | Chi tiết |
+@@ -172,6 +176,10 @@
+ | **Yêu cầu phi chức năng** | Ghi nhận completion phải tin cậy và nhất quán; chi tiết transaction/schema thuộc quyết định triển khai đã được phê duyệt. |
+ 
+ ---
++
++### Supplementary practice — ADR-042
++
++After valid core completion, learner may start a supplementary block: independent internal due/overdue SRS plus configured focus-biased eligible authored practice. Other-area fallback handles scarce focus material; an empty optional practice pool never fails core completion. Restrict to published AVAILABLE accessible same-context curriculum with active finite practice-skill/area metadata and PRACTICE origin; no secure assessment reuse. Temporary feedback stays outside core N/K, performance/completion/unlocks, secure assessment result and progression. No extra canonical UC or persisted composition/history is required.
+ 
+ ## 7. Học từ vựng Flashcard và Ôn tập
+ 
+@@ -188,6 +196,10 @@
+ | **Yêu cầu phi chức năng** | • Hiệu ứng lật thẻ mượt mà, phản hồi ngay lập tức.<br>• Tệp âm thanh phát âm được tải trước để phát ngay khi bấm nghe. |
+ 
+ ---
++
++### Focus and SRS selection — ADR-042
++
++Focus bias is separate from due selection: GRAMMAR still keeps due VOCABULARY eligible. No learner due list, card preview or stage/date enumeration. One prompt is returned only after ordinary supplementary/dedicated session start; overdue persists until valid review. Policy B, core enrollment/optional Add to Review, account-wide card uniqueness and at-most-once reinforcement without a second schedule remain unchanged. No dynamic SRS/focus practice enters scored Placement/Level-up versions.
+ 
+ ## 8. Theo dõi Tiến độ và Chuỗi ngày học
+ 
+--- handover/05-traceability-matrix.md
++++ current/05-traceability-matrix.md
+@@ -1,4 +1,18 @@
+ # 05 - Lingora Traceability Matrix
++
++## Current Study Focus traceability — ADR-042
++
++| Requirement | Canonical behavior / affected views | Design acceptance |
++|---|---|---|
++| One owned-context focus, default BALANCED; optional change, next session only | UC-04 supporting preferences; VIEW-RUC-02; ACT-01; DOM-01/DATA-03 | PERS-01/05/09/10 |
++| Configured nonexclusive bias, eligible fallback and finite published practice metadata | UC-06; VIEW-RUC-03; ACT-03/SEQ-06; DOM-01/DATA-03 | PERS-02/03/09 |
++| Internal independent due/overdue SRS, no due browsing; unchanged Policy B | UC-07; VIEW-RUC-04; ACT-06/SEQ-08 | PERS-04/05 |
++| Shared core N/K, completion, order/unlocks/gates unchanged | UC-04/06/08; ACT-03/SEQ-06 | PERS-06 |
++| No dynamic focus/SRS in scored pinned secure assessments | UC-02/05; existing secure-assessment views unchanged | PERS-07/08 |
++| Exact Teacher key projection/submit and own-context principal lock path | UC-10/11 and UC-04; proposed physical security correction | PD-F01-AUTHORING-ALLOW/OTHER-TEACHER/LEARNER-KEY-DENIED/PINNED-GRADER/MISSING-KEY/TEACHER-PUBLISH-DENIED; PD-F02-PARENT-LOCK-PRIVILEGES/LOCKER-CONTEXT-READ/CREATE-RESUME-PAUSE-RACE |
++
++Canonical UC-01–14 identity/count is unchanged. [Addendum](study-focus-addendum.md) and [physical correction](design/physical/personalization-and-final-correction.md) contain future design acceptance, **NOT EXECUTED**; no runtime implementation/test status is inferred. Earlier trace rows remain historical where marked.
++
+ 
+ > **HISTORICAL Phase 0 baseline (aligned 2026-09-14 & ADR-014):** This matrix preserves the inherited 19-function/15-use-case trace catalog and its then-reported implementation/test statuses. Those statuses are not evidence of the current checkout or current requirements. Its UC IDs are catalog-local. Use the versioned crosswalk in `docs/use-case-specifications.md` for comparison with the current 14-entry behavior catalog; ADR-034/035 control current business/logical security policy. Physical mappings remain deferred under P0-D07.
+ 

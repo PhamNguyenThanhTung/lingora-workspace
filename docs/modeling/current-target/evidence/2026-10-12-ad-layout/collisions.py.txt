@@ -1,0 +1,24 @@
+import re,xml.etree.ElementTree as E
+from pathlib import Path
+R=Path('C:/Users/PC/lingora');P=R/'docs/modeling/current-target/lingora-all-diagrams.drawio'
+def collisions(d):
+ objs={o.get('id'):o for o in d.findall('.//UserObject')};boxes=[];hits=[]
+ for i,o in objs.items():
+  c=o.find('mxCell');g=c.find('mxGeometry');s=c.get('style','')
+  if c.get('vertex')!='1' or any(a in s for a in ['swimlane;','group;','text;','shape=line;']):continue
+  x,y,w,h=[float(g.get(k,'0')) for k in ['x','y','width','height']];boxes.append((i,x+5,y+5,x+w-5,y+h-5))
+ for i,o in objs.items():
+  c=o.find('mxCell');g=c.find('mxGeometry')
+  if c.get('edge')!='1':continue
+  sp=g.find("mxPoint[@as='sourcePoint']");tp=g.find("mxPoint[@as='targetPoint']")
+  if sp is None or tp is None:continue
+  route=[sp]+list(g.findall('Array/mxPoint'))+[tp];route=[(float(p.get('x','0')),float(p.get('y','0'))) for p in route]
+  for a,b in zip(route,route[1:]):
+   for oid,l,t,r,bt in boxes:
+    if oid in [c.get('source'),c.get('target')]:continue
+    if abs(a[0]-b[0])<.1 and l<a[0]<r and max(min(a[1],b[1]),t)<min(max(a[1],b[1]),bt):hits.append((i,oid))
+    if abs(a[1]-b[1])<.1 and t<a[1]<bt and max(min(a[0],b[0]),l)<min(max(a[0],b[0]),r):hits.append((i,oid))
+ return sorted(set(hits))
+if __name__=='__main__':
+ for d in E.parse(P).getroot():
+  if d.get('id','').startswith('page-ACT-'):print(d.get('id'),collisions(d))

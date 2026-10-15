@@ -1,0 +1,37 @@
+@startuml
+!include ../style.puml
+' diagram-id: SYS-03
+' classification: CURRENT
+' Evidence: lingora-web/src (auth, supabase, i18n, components); package.json.
+' lingora-admin: package.json, schema.prisma, migrations 001/002/003 and seed/test scripts.
+' Prisma: 18 models, six role values; ordered initial SQL: 17 tables, two role values.
+' Storage declarations come from SQL 002/003, not observed live buckets.
+' No Admin UI or learner learning/assessment/SRS runtime exists; deployment/live DB unverified.
+left to right direction
+title Sơ đồ thành phần theo mã nguồn hiện có
+
+package "Ứng dụng web học viên" {
+  component "Khung giao diện" as UI
+  component "Đa ngôn ngữ Việt / Anh" as I18n
+  component "Đăng nhập, đăng ký, đăng xuất" as AuthActions
+  component "Quản lý phiên máy chủ" as Session
+}
+package "Không gian dữ liệu quản trị" {
+  artifact "Mô hình Prisma" as Prisma
+  artifact "SQL migration" as SQL
+  artifact "Script seed và kiểm tra" as Scripts
+}
+package "Khai báo tích hợp Supabase" {
+  component "Xác thực" as Auth
+  database "Kết nối PostgreSQL" as DB
+  storage "Khai báo kho ảnh và tài liệu" as Storage
+}
+UI --> AuthActions : Thao tác tài khoản
+UI --> I18n : Nội dung giao diện
+AuthActions --> Session : Máy khách phía máy chủ
+Session ..> Auth : Tích hợp xác thực
+Prisma ..> DB : Cấu hình nguồn dữ liệu
+Scripts --> Prisma : Sử dụng Prisma Client
+SQL ..> DB : Định nghĩa dữ liệu và quyền
+SQL ..> Storage : Định nghĩa kho và quyền
+@enduml

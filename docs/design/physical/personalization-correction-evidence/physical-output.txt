@@ -1,0 +1,408 @@
+COMMAND C:\Users\PC\AppData\Local\Programs\Python\Python313\python.exe docs/design/physical/verify.py
+PASS 34 unique proposed tables retained
+PASS table inventory, typed definitions and physical ERD entity sets agree
+PASS four proposed physical ERD views remain
+PASS ERD relationship endpoints exist: physical-erd-identity
+PASS ERD relationship endpoints exist: physical-erd-content
+PASS ERD relationship endpoints exist: physical-erd-learning
+PASS ERD relationship endpoints exist: physical-erd-assessment
+PASS ERD still labels design PROPOSED / NOT IMPLEMENTED
+PASS required correction artifact exists: README.md
+PASS local link README.md -> personalization-and-final-correction.md
+PASS local link README.md -> final-recheck.md
+PASS local link README.md -> ../../modeling/current-target/final-review.md
+PASS local link README.md -> ../../modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS local link README.md -> ../../modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS local link README.md -> ../../02-requirements.md
+PASS local link README.md -> ../../use-case-specifications.md
+PASS local link README.md -> ../../../logs/decision-log.md
+PASS local link README.md -> security-and-rls.md
+PASS local link README.md -> rebuild-plan.md
+PASS local link README.md -> review-and-verification.md
+PASS local link README.md -> correction-pass.md
+PASS local link README.md -> physical-erd.puml
+PASS local link README.md -> physical-erd-identity.svg
+PASS local link README.md -> physical-erd-content.svg
+PASS local link README.md -> physical-erd-learning.svg
+PASS local link README.md -> physical-erd-assessment.svg
+PASS local link README.md -> security-and-rls.md
+PASS local link README.md -> rebuild-plan.md
+PASS local link README.md -> correction-pass.md
+PASS local link README.md -> verify.py
+PASS local link README.md -> correction-pass-evidence/verification.md
+PASS local link README.md -> review-and-verification.md
+PASS local link README.md -> ../../study-focus-addendum.md
+PASS local link README.md -> security-and-rls.md
+PASS required correction artifact exists: security-and-rls.md
+PASS local link security-and-rls.md -> ../../../logs/decision-log.md
+PASS local link security-and-rls.md -> ../../02-requirements.md
+PASS local link security-and-rls.md -> ../../use-case-specifications.md
+PASS local link security-and-rls.md -> README.md
+PASS local link security-and-rls.md -> rebuild-plan.md
+PASS required correction artifact exists: rebuild-plan.md
+PASS local link rebuild-plan.md -> ../../modeling/current-target/final-review.md
+PASS local link rebuild-plan.md -> README.md
+PASS local link rebuild-plan.md -> security-and-rls.md
+PASS local link rebuild-plan.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt
+PASS local link rebuild-plan.md -> ../../../lingora-admin/package.json
+PASS local link rebuild-plan.md -> ../../../lingora-web/package.json
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/schema.prisma
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140001_init/migration.sql
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140002_auth_rls_storage_record_review/migration.sql
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140003_storage_two_bucket_size_enforcement/migration.sql
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/features/auth/auth.service.ts
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/lib/supabase/server.ts
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/lib/supabase/middleware.ts
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/middleware.ts
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/app/page.tsx
+PASS local link rebuild-plan.md -> ../../../lingora-admin/.env.example
+PASS local link rebuild-plan.md -> ../../../lingora-web/.env.example
+PASS local link rebuild-plan.md -> ../../../ENVIRONMENT.md
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/seed.js
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/m1_3_security_test.js
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/m1_4_seed_test.js
+PASS local link rebuild-plan.md -> ../../study-focus-addendum.md
+PASS required correction artifact exists: review-and-verification.md
+PASS local link review-and-verification.md -> correction-pass.md
+PASS local link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md
+PASS local link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt
+PASS local link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-BASELINE.json
+PASS local link review-and-verification.md -> README.md
+PASS local link review-and-verification.md -> security-and-rls.md
+PASS local link review-and-verification.md -> rebuild-plan.md
+PASS local link review-and-verification.md -> verification-manifest.json
+PASS local link review-and-verification.md -> verification-output.txt
+PASS local link review-and-verification.md -> git-checks.txt
+PASS local link review-and-verification.md -> unrelated-workspace-observations.json
+PASS required correction artifact exists: correction-pass.md
+PASS local link correction-pass.md -> final-review.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> physical-erd.puml
+PASS local link correction-pass.md -> rebuild-plan.md
+PASS local link correction-pass.md -> ../../../plans/approved/2026-10-11-physical-design-correction-pass-REQUEST.txt
+PASS local link correction-pass.md -> ../../../plans/approved/2026-10-11-physical-design-correction-pass-APPROVED.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> README.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> security-and-rls.md
+PASS local link correction-pass.md -> rebuild-plan.md
+PASS local link correction-pass.md -> final-review-evidence/historical-verify.py
+PASS local link correction-pass.md -> independent-recheck.md
+PASS required correction artifact exists: independent-recheck.md
+LOCAL_LINK_COUNT 95
+PASS physical design and live database status remain explicitly proposed/unverified
+PASS only the three approved business roles and approved account statuses are represented
+PASS active assessment purpose remains Placement/Level-up without Reassessment
+PASS browser/server/Prisma/service-role boundaries and server authorization are explicit
+PASS conditional rebuild and destructive execution gates are preserved
+PASS no AI, mastery, KnowledgeGap, persisted plan or SkillProfile table is introduced
+PASS correction report records no hard-coded level, universal readiness or item-count invariant
+PASS correction report gives exactly one CLOSED/OPEN result for F01-F12
+PASS independent recheck independently reports all twelve findings CLOSED
+PASS capability matrix includes CTX_CREATE
+PASS capability matrix includes LESSON_ANSWER
+PASS capability matrix includes LESSON_COMPLETE
+PASS capability matrix includes SRS_REVIEW
+PASS unchanged pre-existing files outside exact task/concurrent inventory: []
+PASS new artifacts match exact finite task or observed concurrent inventory: []
+PASS preserve exact observed concurrent artifact docs/modeling/current-target/rendered/UC-02-target-learner.png
+PASS preserve exact observed concurrent artifact docs/modeling/current-target/rendered/UC-02-target-learner.svg
+PASS preserve exact observed concurrent artifact docs/modeling/current-target/src/UC-02-target-learner.puml
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/VIEW-RUC-01-auth-profile.puml
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/VIEW-RUC-05-assessment.puml
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/VIEW-RUC-06-progress-history.puml
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/VIEW-RUC-07-teacher-authoring.puml
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/VIEW-RUC-08-admin-governance-support.puml
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/VIEW-RUC-08A-admin-content-governance.puml
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/VIEW-RUC-08B-admin-account-support.puml
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-01-auth-profile.png
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-01-auth-profile.svg
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-05-assessment.png
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-05-assessment.svg
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-06-progress-history.png
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-06-progress-history.svg
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-07-teacher-authoring.png
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-07-teacher-authoring.svg
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-08-admin-governance-support.png
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-08-admin-governance-support.svg
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-08A-admin-content-governance.png
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-08A-admin-content-governance.svg
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-08B-admin-account-support.png
+PASS preserve exact observed concurrent artifact docs/modeling/report-usecases/rendered/VIEW-RUC-08B-admin-account-support.svg
+PASS final externally authored presentation remains untouched
+PASS append-only post-handover log prefix logs/decision-log.md
+PASS append-only post-handover log prefix logs/test-log.md
+PASS append-only post-handover log prefix logs/development-log.md
+PASS HEAD unchanged; no commit
+PASS preexisting index unchanged; no staging
+PASS 330 local Markdown links resolve
+PASS fresh source ACT-01
+PASS fresh svg ACT-01
+PASS fresh png ACT-01
+PASS fresh source ACT-02
+PASS fresh svg ACT-02
+PASS fresh png ACT-02
+PASS fresh source ACT-03
+PASS fresh svg ACT-03
+PASS fresh png ACT-03
+PASS fresh source ACT-04
+PASS fresh svg ACT-04
+PASS fresh png ACT-04
+PASS fresh source ACT-05
+PASS fresh svg ACT-05
+PASS fresh png ACT-05
+PASS fresh source ACT-06
+PASS fresh svg ACT-06
+PASS fresh png ACT-06
+PASS fresh source ACT-07
+PASS fresh svg ACT-07
+PASS fresh png ACT-07
+PASS fresh source ACT-08
+PASS fresh svg ACT-08
+PASS fresh png ACT-08
+PASS fresh source ACT-09
+PASS fresh svg ACT-09
+PASS fresh png ACT-09
+PASS fresh source DATA-01
+PASS fresh svg DATA-01
+PASS fresh png DATA-01
+PASS fresh source DATA-02
+PASS fresh svg DATA-02
+PASS fresh png DATA-02
+PASS fresh source DATA-03
+PASS fresh svg DATA-03
+PASS fresh png DATA-03
+PASS fresh source DEP-01
+PASS fresh svg DEP-01
+PASS fresh png DEP-01
+PASS fresh source DEP-02
+PASS fresh svg DEP-02
+PASS fresh png DEP-02
+PASS fresh source DOM-01
+PASS fresh svg DOM-01
+PASS fresh png DOM-01
+PASS fresh source SEC-01
+PASS fresh svg SEC-01
+PASS fresh png SEC-01
+PASS fresh source SEQ-01
+PASS fresh svg SEQ-01
+PASS fresh png SEQ-01
+PASS fresh source SEQ-02
+PASS fresh svg SEQ-02
+PASS fresh png SEQ-02
+PASS fresh source SEQ-03
+PASS fresh svg SEQ-03
+PASS fresh png SEQ-03
+PASS fresh source SEQ-04
+PASS fresh svg SEQ-04
+PASS fresh png SEQ-04
+PASS fresh source SEQ-05
+PASS fresh svg SEQ-05
+PASS fresh png SEQ-05
+PASS fresh source SEQ-06
+PASS fresh svg SEQ-06
+PASS fresh png SEQ-06
+PASS fresh source SEQ-07
+PASS fresh svg SEQ-07
+PASS fresh png SEQ-07
+PASS fresh source SEQ-08
+PASS fresh svg SEQ-08
+PASS fresh png SEQ-08
+PASS fresh source SEQ-09
+PASS fresh svg SEQ-09
+PASS fresh png SEQ-09
+PASS fresh source STA-01
+PASS fresh svg STA-01
+PASS fresh png STA-01
+PASS fresh source STA-02
+PASS fresh svg STA-02
+PASS fresh png STA-02
+PASS fresh source STA-03
+PASS fresh svg STA-03
+PASS fresh png STA-03
+PASS fresh source SYS-01
+PASS fresh svg SYS-01
+PASS fresh png SYS-01
+PASS fresh source SYS-02
+PASS fresh svg SYS-02
+PASS fresh png SYS-02
+PASS fresh source SYS-03
+PASS fresh svg SYS-03
+PASS fresh png SYS-03
+PASS fresh source SYS-04
+PASS fresh svg SYS-04
+PASS fresh png SYS-04
+PASS fresh source VIEW-UC-01
+PASS fresh svg VIEW-UC-01
+PASS fresh png VIEW-UC-01
+PASS fresh source VIEW-UC-02
+PASS fresh svg VIEW-UC-02
+PASS fresh png VIEW-UC-02
+PASS fresh source VIEW-UC-03
+PASS fresh svg VIEW-UC-03
+PASS fresh png VIEW-UC-03
+PASS fresh source VIEW-UC-04
+PASS fresh svg VIEW-UC-04
+PASS fresh png VIEW-UC-04
+PASS fresh source VIEW-RUC-01
+PASS fresh svg VIEW-RUC-01
+PASS fresh png VIEW-RUC-01
+PASS fresh source VIEW-RUC-02
+PASS fresh svg VIEW-RUC-02
+PASS fresh png VIEW-RUC-02
+PASS fresh source VIEW-RUC-03
+PASS fresh svg VIEW-RUC-03
+PASS fresh png VIEW-RUC-03
+PASS fresh source VIEW-RUC-04
+PASS fresh svg VIEW-RUC-04
+PASS fresh png VIEW-RUC-04
+PASS fresh source VIEW-RUC-05
+PASS fresh svg VIEW-RUC-05
+PASS fresh png VIEW-RUC-05
+PASS fresh source VIEW-RUC-06
+PASS fresh svg VIEW-RUC-06
+PASS fresh png VIEW-RUC-06
+PASS fresh source VIEW-RUC-07
+PASS fresh svg VIEW-RUC-07
+PASS fresh png VIEW-RUC-07
+PASS fresh source VIEW-RUC-08A
+PASS fresh svg VIEW-RUC-08A
+PASS fresh png VIEW-RUC-08A
+PASS fresh source VIEW-RUC-08B
+PASS fresh svg VIEW-RUC-08B
+PASS fresh png VIEW-RUC-08B
+PASS no rendered note/debug footer docs/modeling/current-target/src/ACT-01-learner-onboarding.puml
+PASS no stale role/default/universal readiness docs/modeling/current-target/src/ACT-01-learner-onboarding.puml
+PASS no active deferred/AI/mastery node docs/modeling/current-target/src/ACT-01-learner-onboarding.puml
+PASS no fixed exercise/assessment count docs/modeling/current-target/src/ACT-01-learner-onboarding.puml
+PASS no rendered note/debug footer docs/modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS no stale role/default/universal readiness docs/modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS no active deferred/AI/mastery node docs/modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS no fixed exercise/assessment count docs/modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS no rendered note/debug footer docs/modeling/report-usecases/VIEW-RUC-02-learning-context.puml
+PASS no stale role/default/universal readiness docs/modeling/report-usecases/VIEW-RUC-02-learning-context.puml
+PASS no active deferred/AI/mastery node docs/modeling/report-usecases/VIEW-RUC-02-learning-context.puml
+PASS no fixed exercise/assessment count docs/modeling/report-usecases/VIEW-RUC-02-learning-context.puml
+PASS no rendered note/debug footer docs/modeling/report-usecases/VIEW-RUC-04-srs-review.puml
+PASS no stale role/default/universal readiness docs/modeling/report-usecases/VIEW-RUC-04-srs-review.puml
+PASS no active deferred/AI/mastery node docs/modeling/report-usecases/VIEW-RUC-04-srs-review.puml
+PASS no fixed exercise/assessment count docs/modeling/report-usecases/VIEW-RUC-04-srs-review.puml
+PASS no rendered note/debug footer docs/modeling/current-target/src/SEQ-08-srs-review.puml
+PASS no stale role/default/universal readiness docs/modeling/current-target/src/SEQ-08-srs-review.puml
+PASS no active deferred/AI/mastery node docs/modeling/current-target/src/SEQ-08-srs-review.puml
+PASS no fixed exercise/assessment count docs/modeling/current-target/src/SEQ-08-srs-review.puml
+PASS no rendered note/debug footer docs/modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml
+PASS no stale role/default/universal readiness docs/modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml
+PASS no active deferred/AI/mastery node docs/modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml
+PASS no fixed exercise/assessment count docs/modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml
+PASS no rendered note/debug footer docs/modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS no stale role/default/universal readiness docs/modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS no active deferred/AI/mastery node docs/modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS no fixed exercise/assessment count docs/modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS no rendered note/debug footer docs/modeling/current-target/src/ACT-03-lesson-learning.puml
+PASS no stale role/default/universal readiness docs/modeling/current-target/src/ACT-03-lesson-learning.puml
+PASS no active deferred/AI/mastery node docs/modeling/current-target/src/ACT-03-lesson-learning.puml
+PASS no fixed exercise/assessment count docs/modeling/current-target/src/ACT-03-lesson-learning.puml
+PASS no rendered note/debug footer docs/modeling/current-target/src/SEQ-06-lesson-exercise-submission.puml
+PASS no stale role/default/universal readiness docs/modeling/current-target/src/SEQ-06-lesson-exercise-submission.puml
+PASS no active deferred/AI/mastery node docs/modeling/current-target/src/SEQ-06-lesson-exercise-submission.puml
+PASS no fixed exercise/assessment count docs/modeling/current-target/src/SEQ-06-lesson-exercise-submission.puml
+PASS no rendered note/debug footer docs/modeling/current-target/src/ACT-06-srs-review.puml
+PASS no stale role/default/universal readiness docs/modeling/current-target/src/ACT-06-srs-review.puml
+PASS no active deferred/AI/mastery node docs/modeling/current-target/src/ACT-06-srs-review.puml
+PASS no fixed exercise/assessment count docs/modeling/current-target/src/ACT-06-srs-review.puml
+PASS monochrome valid SVG docs/design/physical/physical-erd-identity.svg
+PASS monochrome valid SVG docs/modeling/current-target/rendered/DOM-01-core-domain-model.svg
+PASS monochrome valid SVG docs/modeling/current-target/rendered/ACT-01-learner-onboarding.svg
+PASS monochrome valid SVG docs/modeling/report-usecases/rendered/VIEW-RUC-02-learning-context.svg
+PASS monochrome valid SVG docs/modeling/current-target/rendered/SEQ-08-srs-review.svg
+PASS monochrome valid SVG docs/modeling/report-usecases/rendered/VIEW-RUC-04-srs-review.svg
+PASS monochrome valid SVG docs/modeling/current-target/rendered/ACT-03-lesson-learning.svg
+PASS monochrome valid SVG docs/modeling/current-target/rendered/ACT-06-srs-review.svg
+PASS monochrome valid SVG docs/design/physical/physical-erd-content.svg
+PASS monochrome valid SVG docs/modeling/current-target/rendered/DATA-03-target-logical-erd.svg
+PASS monochrome valid SVG docs/modeling/report-usecases/rendered/VIEW-RUC-03-lesson-practice.svg
+PASS monochrome valid SVG docs/modeling/current-target/rendered/SEQ-06-lesson-exercise-submission.svg
+PASS canonical UC-01–14 unchanged; heading 15 only limitations
+PASS 34→34 table inventory and ERD agree
+PASS fresh physical source and four output pairs
+PASS unchanged unaffected physical view physical-erd-learning.png
+PASS unchanged unaffected physical view physical-erd-learning.svg
+PASS unchanged unaffected physical view physical-erd-assessment.png
+PASS unchanged unaffected physical view physical-erd-assessment.svg
+TASK SCOPE/FRESHNESS/LINKS PASS
+PASS capability matrix includes ASSESSMENT_FINALIZE
+PASS capability matrix includes TEACHER_EDIT_DRAFT
+PASS capability matrix includes TEACHER_REMOVE_DRAFT_MEMBER
+PASS capability matrix includes TEACHER_SUBMIT
+PASS capability matrix includes ADMIN_REQUEST_CHANGES
+PASS capability matrix includes ADMIN_APPROVE
+PASS capability matrix includes ADMIN_PUBLISH
+PASS capability matrix includes ADMIN_DISABLE
+PASS capability matrix includes ADMIN_REENABLE
+PASS capability matrix includes MEDIA_CLEANUP
+PASS capability matrix names actor, trusted checks, ownership and DB/RLS dependencies
+PASS F01 checked Teacher submission
+PASS F02 first context branch and capacity
+PASS F03 missing-account audit subject
+PASS F04 assignment generation and review pin
+PASS F05 draft-only membership removal
+PASS F06 retirement reservation race
+PASS F07 stable curriculum ownership
+PASS F08 active-revision first completion guard
+PASS F09 card/session reinforcement uniqueness
+PASS F10 availability-aware default start
+PASS F11 immutable blueprint scope and version
+PASS F12 finite topic/skill/purpose mapping
+PASS acceptance scenario is recorded: PD-F01-TEACHER-SUBMIT
+PASS acceptance scenario is recorded: PD-F01-UNASSIGNED-DENIED
+PASS acceptance scenario is recorded: PD-F02-FIRST-CONTEXT
+PASS acceptance scenario is recorded: PD-F02-CONTEXT-CAPACITY-RACE
+PASS acceptance scenario is recorded: PD-F05-REMOVE-DRAFT-MEMBER
+PASS acceptance scenario is recorded: PD-F06-CLEANUP-PUBLISH-RACE
+PASS acceptance scenario is recorded: PD-F11-BLUEPRINT-CONFIG-AFTER-PUBLISH
+PASS acceptance scenario is recorded: PD-F04-CURRICULUM-ASSIGNMENT-HISTORY
+PASS acceptance scenario is recorded: PD-F08-OLD-OPEN-ATTEMPT
+PASS acceptance scenario is recorded: PD-F08-REPLACEMENT-COMPLETION-RACE
+PASS acceptance scenario is recorded: PD-F09-DUPLICATE-REINFORCEMENT-RETRY
+PASS acceptance scenario is recorded: PD-F09-CARD-SESSION-UNIQUE-RACE
+PASS acceptance scenario is recorded: PD-F03-MISSING-ACCOUNT-AUDIT
+PASS acceptance scenario is recorded: PD-F11-VERSION-COVERAGE-SNAPSHOT
+PASS acceptance scenario is recorded: PD-F10-AVAILABILITY-AWARE-DEFAULT
+PASS acceptance scenario is recorded: PD-F12-COVERAGE-TAGS-VALIDATION
+PASS future acceptance cases identify setup, action and expected invariant
+PASS F10 availability/default and F12 positive/negative tag cases are explicit
+PASS historical verifier disposition recorded: preexisting files changed only in authorized pointers
+PASS historical verifier disposition recorded: six separately observed unrelated drawio files
+PASS historical verifier disposition recorded: task new files only authorized physical/task artifacts
+PASS historical verifier disposition recorded: all 139 canonical modeling files unchanged
+PASS verifier now uses current task baseline and current authority
+PASS current exact task inventory / preservation / fresh affected renders
+PASS five-value focus/default and bounded reusable practice metadata
+PASS PERS-01–10 future design acceptance retained
+PASS F01 exact Teacher/validator/Admin/pinned-grader execution chains
+PASS F02 own parent lock and independent locker context reads under FORCE RLS
+PASS current report closes F01/F02 after review
+PASS fresh targeted independent closure / no changed-path regression
+PHYSICAL PERSONALIZATION / FINAL CORRECTION PASS
+
+EXIT 0

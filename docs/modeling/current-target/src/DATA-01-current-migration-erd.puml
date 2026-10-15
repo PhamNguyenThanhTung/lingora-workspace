@@ -1,0 +1,86 @@
+@startuml
+!include ../style.puml
+' diagram-id: DATA-01
+' classification: CURRENT
+title Sơ đồ dữ liệu từ migration trong repository (CURRENT)
+' Appendix scope: Selected 8 of 17 application tables; 2 roles (LEARNER, ADMIN); chat residue; NO units table
+
+entity languages {
+  * code : varchar(8) <<PK>>
+  --
+  name : text
+  is_learnable : boolean
+}
+
+entity profiles {
+  * id : uuid <<PK, FK auth.users>>
+  --
+  role : Role (LEARNER | ADMIN)
+  email : text
+  timezone : text
+  streak_count : int
+}
+
+entity courses {
+  * id : uuid <<PK>>
+  --
+  * language_code : varchar(8) <<FK languages>>
+}
+
+entity lessons {
+  * id : uuid <<PK>>
+  --
+  * course_id : uuid <<FK courses>>
+  order_index : int
+}
+
+entity exercises {
+  * id : uuid <<PK>>
+  --
+  * lesson_id : uuid <<FK lessons>>
+  payload : jsonb
+  order_index : int
+}
+
+entity user_progress {
+  * id : uuid <<PK>>
+  * user_id : uuid <<FK profiles, pair unique>>
+  * lesson_id : uuid <<FK lessons, pair unique>>
+  --
+  status : ProgressStatus
+  score : int
+  completed_at : timestamp(3)
+}
+
+entity user_vocab_srs {
+  * id : uuid <<PK>>
+  * user_id : uuid <<FK profiles, pair unique>>
+  * vocabulary_id : uuid <<FK vocabularies, pair unique>>
+  --
+  interval_days : float
+  ease_factor : float
+  next_review_at : timestamp(3)
+}
+
+entity chat_sessions {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid <<FK profiles>>
+}
+
+courses }o--|| languages
+lessons }o--|| courses
+exercises }o--|| lessons
+user_progress }o--|| profiles
+user_progress }o--|| lessons
+user_vocab_srs }o--|| profiles
+chat_sessions }o--|| profiles
+
+' note bottom of lessons
+'   Repository artifact comparison only; LIVE DB UNVERIFIED.
+'   Titles live in translation tables omitted from this subset.
+'   ARTIFACT GAP:
+'   Migration 001 connects lessons DIRECTLY to courses.
+'   There is NO 'units' table in ordered SQL migrations.
+' end note
+@enduml

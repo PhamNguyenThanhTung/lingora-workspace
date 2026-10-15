@@ -1,0 +1,19 @@
+{
+  "environment": {
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "powershell": "7.6.5",
+    "python": "Python 3.13.2",
+    "node": "v24.11.1",
+    "java": "openjdk version \"17.0.2\" 2022-01-18",
+    "plantuml": "PlantUML version 1.2026.8 / 149874a [2026-09-05 15:59:17 UTC]",
+    "head": "89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737"
+  },
+  "git": {
+    "diff_check_exit": 0,
+    "diff_check_file": "diff-check-output.txt",
+    "diff_stat_exit": 0,
+    "diff_stat_file": "diff-stat-output.txt",
+    "diff_stat_summary": "217 files changed, 1728 insertions(+), 7727 deletions(-)",
+    "preexisting_index_and_head_verified_by": "docs/design/physical/verify.py"
+  }
+}

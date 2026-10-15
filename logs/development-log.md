@@ -1,5 +1,14 @@
 # Development Log
 
+## 2026-10-07 - harness-authority-reconciliation
+
+- Task and authorization: Reconciled documentation authority and active-task state under the user-authorized, documentation/control-only scope in plans/approved/2026-10-07-harness-authority-reconciliation-APPROVED.md.
+- Completed: Set entry order and source hierarchy; labeled current repository evidence, accepted targets, historical/superseded content, and conflicts; replaced the stale active-task pointer; preserved the previous task file in an archive capture; recorded this reconciliation as the sole active task; and added P0-D01..P0-D07 to the existing master-plan decision queue. P0-D01 task-state conflict is resolved; P0-D02..P0-D07 remain open/conflicted. No product decision was inferred.
+- Files: Existing control docs, environment notice, active/approved/archive task records, existing master-plan backlog, and required development/test logs. No application code, Prisma, SQL migration, database, package, or generated diagram was changed by this task.
+- Verification: git diff --check on the 10 tracked control files exited 0. Static path, queue-state, and new-file line-count checks passed. Test evidence: T-HARNESS-RECONCILIATION-001. Application tests: N/A - documentation/control-only; no runtime behavior changed.
+- Outcome: Authority chain is explicit; the Phase 2 roadmap is TARGET / NOT AUTHORIZED FOR IMPLEMENTATION; next permitted task is bounded P0 decision planning and approval before dependent implementation.
+- Commit: Not created; pre-existing user changes remain in the shared dirty worktree for review.
+
 ## 2026-09-24 — d3-assessment-and-learning-engine-design (category: scope-ambiguity)
 
 - **Context & Directive:** Human APPROVED D3 design-only task (chat directive 2026-09-24). Scope: `Assessment → Skill Profile → Learning → Mastery/Knowledge Gap → Readiness → Recommendation/Remediation` from D1/D2 COMPLETE baseline. Constraints: no runtime, no migration, no Prisma/Supabase schema change, no scoring/recommendation/remediation algorithm, no Design Freeze, preserve D2 FROZEN/PROPOSED/PENDING, Mapping A stays D2 compatibility.
@@ -2653,3 +2662,362 @@ Final COMMIT gate uses Conventional Commit message: `docs: vietnamize PlantUML d
 **Tests & Commit:**
 - Verified documentation synchronization.
 - Commit: N/A (Preparing to commit).
+
+## 2026-10-08 - p0-d04-domain-decision-record
+
+- Task and authorization: Recorded the user's explicit acceptance of the revised P0-D04 domain proposal with the three requested clarifications. Scope was limited to decision/control documentation; no product implementation was authorized.
+- Decision: ADR-030 accepts shared curriculum/content; one shared/core Course per learnable Language in MVP by convention; learner-specific per-language LearningContext (at most one per user-language and two active languages); framework-aware levels; context-scoped placement evidence; deterministic LearningPlan with persistence deferred absent stated requirements; current SRS ownership retained; TOEIC deferred; no Track now. P0-D03 remains open for remaining learner-state ownership/persistence.
+- Files: `logs/decision-log.md`, `plans/master-implementation-and-report-plan.md`, `plans/current-task.md`, `docs/QUICK-REF.md`, `docs/README.md`, `docs/01-architecture.md`, `docs/04-data-model.md`, `HANDOFF.md`, and required evidence logs. Historical D3/D4 specifications, Prisma, migrations, seeds, application/API/frontend/test files were not edited by this task.
+- Verification: Static authority assertions and `git diff --check` are recorded in `logs/test-log.md`. Application tests: `N/A — documentation/control-only; no runtime behavior changed`. No files were created.
+- Outcome: P0-D04 is accepted for domain semantics only; current physical schema remains unchanged; no follow-on task is active and product implementation remains unauthorized.
+- Commit: Not created; pre-existing user changes remain in the shared dirty worktree.
+## 2026-10-08 - p0-d03-domain-decision-record
+
+- Task and authorization: The user explicitly accepted the P0-D03 learner-state ownership proposal with fourteen clarifications. Scope is domain decision and authority documentation only; product implementation, physical schema work, and P0-D05 are not authorized by this task.
+- Decision recorded: ADR-031 accepts the (User, learned Language) LearningContext identity, one context per pair, at most two ACTIVE contexts, ACTIVE/PAUSED lifecycle, Profile-global versus context-owned state, evidence-derived verified proficiency without default persisted SkillProfile, context-scoped assessment evidence, logical progress ownership without a required physical context FK, global User+Vocabulary SRS and account streak, deterministic LearningPlan with persistence deferred, no MVP Enrollment, and simple context study preferences.
+- Authority reconciliation: P0-D03 is RESOLVED at domain level in the existing P0 queue; Quick Reference, documentation index, architecture/data-model authority notes, task pointer, and Handoff point to ADR-031. Conflicting M2.1/D3 ownership and unconditional SkillProfile-persistence assumptions are superseded only within the ADR-031 scope; historical specifications remain unchanged.
+- Files: plans/current-task.md, plans/archive/2026-10-08-p0-d04-domain-decision-record-DONE.md, logs/decision-log.md, plans/master-implementation-and-report-plan.md, docs/QUICK-REF.md, docs/README.md, docs/01-architecture.md, docs/04-data-model.md, HANDOFF.md, logs/development-log.md, and logs/test-log.md. Prisma, migrations, seed, application, frontend, API, tests, and P0-D05 materials were not edited.
+- Verification: Static authority checks and git diff --check passed. Application tests are N/A because the task is documentation/control-only.
+- Outcome: P0-D03 accepted for domain semantics only; product implementation remains unauthorized. Pre-existing shared-worktree changes are preserved.
+- Commit: Not created.
+## 2026-10-08 - p0-d05-placement-starting-point-policy
+
+- Task and authorization: The user explicitly accepted P0-D05 with the requested clarifications. Scope is product/domain decision and authority documentation only; no product implementation, physical schema work, or P0-D06 was authorized.
+- Decision recorded: ADR-032 accepts context-scoped onboarding Placement with a framework/curriculum-aware recommended starting level; distinct Placement, self-report, and default-start entry paths; no placement-derived verified proficiency/certification/mastery; no permanent lock or lifetime quota; immutable completed evidence; configuration-owned assessment parameters; deterministic LearningPlan inputs; and stage-adaptive Placement deferred for MVP.
+- Authority reconciliation: P0-D05 is RESOLVED in the P0 queue. Quick Reference, documentation authority index, data-model authority note, task pointer, and Handoff point to ADR-032. Conflicting UC placement behavior is superseded within MVP scope. D3 and Mapping A records are retained; adaptive Placement is deferred and Mapping A remains historical English-specific approval, not a platform-wide default. English configuration values remain unselected.
+- Files: logs/decision-log.md, plans/master-implementation-and-report-plan.md, docs/QUICK-REF.md, docs/README.md, docs/04-data-model.md, HANDOFF.md, plans/current-task.md, plans/archive/2026-10-08-p0-d03-domain-decision-record-DONE.md, and required evidence logs. The D03 task archive was verified byte-identical before replacing the current pointer. Prisma, migrations, seed, application code, frontend, API, tests, D3, UC, and Mapping A source history were not edited by this task.
+- Verification: Authority/status assertions and archive hash/line-count checks passed; git diff --check passed. Application tests are N/A because the task is documentation/control-only.
+- Outcome: P0-D05 accepted for MVP product/domain policy only; P0-D06 was not started; product implementation remains unauthorized. Pre-existing shared-worktree changes remain preserved.
+- Commit: Not created.
+## 2026-10-08 - T-P0-D06-DOC-001
+
+- Scope: User-approved P0-D06 product/domain policy and authority reconciliation only; product implementation remains unauthorized and P0-D07 was not started.
+- Decision: Recorded ADR-033 with the seventeen accepted clarifications. Updated the P0 decision queue, Quick Reference, documentation authority index, task pointer, and Handoff; preserved the completed P0-D05 task record in the archive.
+- Historical evidence: Existing UCs, D3/M2.2 plans, English Jump/Placement specification, physical schema, and migrations were not rewritten. Conflicting MVP behavior is superseded only within ADR-033's stated scope; English configuration remains unselected.
+- Verification: Eight static authority assertions passed; git diff --check exited 0. The archived D05 task contains 49 lines. Product/schema/API/frontend/test implementation paths were not edited during this task.
+- Outcome: P0-D06 is RESOLVED for MVP product/domain policy only; P0-D07 remains open. Application tests are N/A because no runtime behavior changed. The working tree contained pre-existing unrelated changes, which were preserved.
+- Commit: Not created.
+
+
+## 2026-10-10 - p0-d02-three-business-roles-content-responsibilities
+
+- Authorization and scope: The attached user/PO request explicitly authorized documentation-only P0-D02 reconciliation. No product behavior beyond its stated decisions was approved; P0-D07 was expressly left open.
+- Decision recorded: Added ADR-034 with the three-role/one-role-per-account rules, registration/provisioning boundaries, permission matrix, assignment/authorship invariants, Admin review and publish-only-after-approval authority, and versioned UC identity policy. P0-D02 is resolved for business/domain documentation only.
+- Documentation reconciled: Updated the current 14-entry UC specification and crosswalk to the inherited Phase 0 trace catalog and M2.2 15-UC catalog; noted that no separately named authoritative Phase 2A catalog was found. Aligned role/governance authority in README, requirements, traceability addendum, architecture/data-model authority notes, Quick Reference, Handoff, and P0 queue. Corrected the four active UC diagrams; authentication is a precondition, not an included use case. Marked UC-03 reminders deferred and aligned Placement, completion, progress, streak, assignment, review and publication text to ADR-031..034.
+- P0-D07 preserved: Physical role enum/claims/RLS; assignment persistence; publication/version/archive states; answer secrecy and feedback; assessment result/attempt persistence; SRS scheduler boundary; audit event/storage/emission/retention; live database reconciliation; and AI compatibility remain unresolved. No application, API, schema, migration, RLS, seed, or test file was edited. Historical six-role diagrams, M2.2/Phase 0 catalogs, and old reports were retained.
+- Verification: PlantUML validation/render, 19 static authority checks, git diff --check, and unchanged API contract are recorded in logs/test-log.md. Web typecheck and unit-suite diagnostic failed on the pre-existing missing AI contracts and Playwright type mismatch; no fix was attempted because source work is out of scope.
+- Current task result: Documentation reconciliation complete; P0-D02 business scope resolved, P0-D07 remains the implementation blocker. No follow-on implementation is authorized.
+- Commit: Not created; the shared checkout had many pre-existing overlapping changes and staging a safe isolated commit was not possible without including unrelated work.
+
+## 2026-10-10 - T-WEB-STALE-AI-001 - Implementation and review
+
+- Scope: Removed the confirmed AI-only proxy/error helpers and their AI-only unit suite after rechecking for consumers; removed stale AI runtime directions from the web README and clarified the root README capability as target intent with no current runtime.
+- Dependency correction: Added exact `playwright-core@1.62.1` to the web manifest and lock. The active untracked workspace root lock had selected 1.63.0 for axe's open peer range; changed only that lock entry to 1.62.1. A package-lock-only regeneration introduced unrelated web lock churn, which was discarded; the retained web-lock edit is one direct dependency record. No root package manifest or other dependency version changed.
+- Verification: Final web typecheck passed after removing only the ignored stale TypeScript build-info cache; unit suite passed (3 files / 8 tests); npm dependency tree and web lock dry-run resolved cleanly; focused source/test AI scan was clear; `git diff --check` passed.
+- Review boundaries: No AI feature was restored, no non-AI consumer was found, no schema/migration/product decision was changed, and unrelated dirty paths were preserved. No files were staged and no commit was created.
+- Outcome: Task acceptance criteria met; historical/target AI references remain untouched outside the requested current-facing README clarification.
+
+
+## 2026-10-10 - P0-D07-LOGICAL-001 — Product and Security Decision Resolution
+
+- Authorization: The user explicitly approved the seven logical product/security decision packages and authorized documentation-only recording/status reconciliation. No physical schema, API, migration, runtime, live DB, or implementation was authorized.
+- Decision: Added ADR-035. P0-D07 is RESOLVED — LOGICAL PRODUCT/SECURITY TARGET ONLY; ADR-034 remains the authority for the three-role business responsibilities. ADR-035 records trusted auth.uid() identity and server-controlled role/status, next-request disable enforcement, no ambiguous-role auto-map, Lesson-scoped assignment/authorship, separate content lifecycle and revision publication semantics, assessment answer secrecy and aggregate outcomes, Policy B server/RPC trust and idempotency, and minimum append-only logical audit policy.
+- Reconciliation: Updated the P0 decision queue, current Quick Reference, documentation authority index, requirements, architecture/data-model authority notes, traceability addendum, and the affected current UC clauses. Older ADRs and historical catalogs/design documents were not rewritten. AI runtime/compatibility is outside this P0-D07 decision.
+- Physical/deployment boundary: Prisma and SQL migration artifacts remain inconsistent; migration 002 accepts SRS probability/interval parameters from callers and its published-exercise SELECT policy filters rows, not JSON payload fields; Prisma declares AuditLog but inspected migrations do not create its table. These are repository-artifact findings only; no live database was queried. Role/RLS, assignment/revision/result/SRS/audit realization, context FK, Profile.dailyGoalMin, and UserProgress.score remain deferred.
+- Diagram Readiness: No business-level P0-D07 blocker remains for logical behavior modeling. Current deployment/database diagrams cannot claim live state until read-only database reconciliation. The next task is Full CURRENT + TARGET Modeling Review; no implementation before that review and a separately approved implementation scope.
+- Scope discipline: No application/source, Prisma, migration, seed, generated artifact, live DB, or diagram file was changed. Existing uncommitted files remain unstaged; no commit was created.
+## 2026-10-10 - Full CURRENT + TARGET Modeling Review
+
+- Authorization and Scope: User authorized documentation-only modeling review and safe read-only database inspection under AGENTS.md. Zero application source, API, Prisma, migration, seed, RLS/RPC or DB data changes were made.
+- Work accomplished:
+  1. Inventoried and hashed 73 pre-existing diagram sources, 31 embedded blocks, 3 hash-identical alias groups without modifying them.
+  2. Recorded dated CURRENT evidence across CODE, PRISMA, ordered MIGRATIONS, and LIVE DB (LIVE DB UNVERIFIED recorded; M25 intentionally omitted).
+  3. Created complete coverage M01-M38 (45 PlantUML source files, 90 SVG/PNG rendered outputs) under docs/diagrams/current-target-2026-10-10/.
+  4. Maintained strict three roles (Admin, Teacher, Learner), assignment/content separation, immutable publication (Clone-to-Draft v2), distinct assessment purposes, aggregate assessment feedback, trusted Policy B and audit policy; distinguished completion vs performance vs proficiency vs readiness.
+  5. Delivered PO review order (13 top-down steps), catalog.json (46 items), catalog.md, README.md, review.md (gap analysis & readiness), and interactive review.html viewer.
+  6. Verified zero PlantUML error images, zero prohibited legacy terms, valid hashes, and clean git diff --check.
+- Readiness Conclusion: READY WITH DEFERRED PHYSICAL DETAILS for Product Owner review. Stops at Modeling Review; no implementation or schema planning authorized.
+
+## 2026-10-10 - Clean Rebuild of Lingora Diagram Artifacts
+
+- Authorization and scope: Explicit instruction from Product Owner (2026-10-10) authorized complete deletion of legacy diagram artifacts across the repository and a clean rebuild of the modeling baseline from active authorities (ADR-030�035, requirements, use-case specifications). Zero application source, API, Prisma, migration, seed, RLS/RPC or DB data changes.
+- Deletions executed:
+  - Deleted docs/diagrams/current-target-2026-10-10/ (46 puml, 90 rendered outputs, evidence catalogs)
+  - Deleted docs/diagrams/lingora-modeling/ (24 puml, 23 rendered outputs)
+  - Deleted docs/plantuml/ (49 puml, 14 png files)
+  - Deleted docs/report/diagrams/ (45 png files)
+  - Deleted empty docs/diagrams/ directory
+  - Total deleted: 119 puml sources, 172 rendered outputs, plus associated indexes/catalogs.
+- Rebuild executed:
+  - Established canonical modeling directory: docs/modeling/current-target/
+  - Created 36 fresh, authoritative PlantUML sources strictly aligned with ADR-030�035 and current UC specs:
+    - 4 System diagrams (SYS-01..04)
+    - 4 Use Case diagrams (UC-01..04)
+    - 9 Activity diagrams (ACT-01..09)
+    - 3 State diagrams (STA-01..03)
+    - 1 Core Domain Model (DOM-01)
+    - 3 Data / ERD diagrams (DATA-01..03; Live DB unverified and omitted)
+    - 9 Sequence diagrams (SEQ-01..09)
+    - 1 Security DFD diagram (SEC-01)
+    - 2 Deployment diagrams (DEP-01..02)
+  - Rendered all 36 sources to SVG and PNG (72 total outputs) with zero errors.
+  - Authored README.md (PO Review Index & Navigation) and review.md (Audit, Gaps, Readiness).
+- Verification: Zero legacy roles, zero AI runtime, zero rigid SRS scales, Unit correctly marked as logical concept, zero PlantUML errors, git diff --check clean.
+- Readiness: APPROVED / READY FOR PHYSICAL RECONCILIATION. Next task: Safe Read-Only Live Database Inspection.
+
+## 2026-10-10 - Archive Stale Legacy Plans from Plans Root (Documentation Cleanup Step 1)
+
+- Context & Directive: Executed Step 1 of documentation cleanup upon explicit user instruction. Moved 9 stale/superseded plan files from plans/ root to plans/archive/ while preserving full git and historical audit trail. Zero application source, API, Prisma, migration, seed, RLS/RPC or DB data changes.
+- Files moved to plans/archive/:
+  - plans/m2-2-behavior-uc-activity-state-plan.md -> plans/archive/2026-09-22-m2-2-behavior-uc-activity-state-plan-HISTORICAL.md (M2.2 accepted via ADR-020; superseded by 14 UC baseline).
+  - plans/m2-3-sequence-api-service-boundary-plan.md -> plans/archive/2026-09-23-m2-3-sequence-api-service-boundary-plan-HISTORICAL.md (M2.3 accepted via ADR-025; superseded by SEQ-01..09).
+  - plans/m2-4-architecture-security-plan.md -> plans/archive/2026-09-23-m2-4-architecture-security-plan-HISTORICAL.md (M2.4 accepted via ADR-027; roles/security updated by ADR-034/035).
+  - plans/m2-5-design-validation-plan.md -> plans/archive/2026-09-26-m2-5-design-validation-plan-HISTORICAL.md (M2.5 validation accepted via ADR-028).
+  - plans/m2-6-design-handoff-plan.md -> plans/archive/2026-09-26-m2-6-design-handoff-plan-HISTORICAL.md (M2.6 design handoff accepted via ADR-029).
+  - plans/phase-0-fix-plan.md -> plans/archive/2026-09-20-phase-0-fix-plan-HISTORICAL.md (Phase 0 documentation adjudication completed).
+  - plans/phase-0-presentation-fix-plan.md -> plans/archive/2026-09-20-phase-0-presentation-fix-plan-HISTORICAL.md (Phase 0 presentation audit fix completed).
+  - plans/phase-0-tai-lieu-requirements-fix-plan.md -> plans/archive/2026-09-20-phase-0-tai-lieu-requirements-fix-plan-HISTORICAL.md (Phase 0 slide-readiness fix completed).
+  - plans/phase-0-user-research-analysis-and-requirements-writing-plan.md -> plans/archive/2026-08-23-phase-0-user-research-analysis-and-requirements-writing-plan-HISTORICAL.md (Phase 0 research/authoring plan completed).
+- Updates:
+  - Updated plans/archive/README.md to document the newly archived historical plans.
+  - Updated plans/current-task.md and HANDOFF.md.
+- Verification:
+  - Exactly 2 active files remain at plans/ root (current-task.md, master-implementation-and-report-plan.md).
+  - git diff --check clean with 0 whitespace errors.
+  - Web typecheck and 8/8 unit tests pass cleanly.
+  - Modeling assertions pass.
+
+## 2026-10-10 - Archive Phase 0 and Legacy Report Artifacts (Documentation Cleanup Step 2)
+
+- Context & Directive: Executed Step 2 of documentation cleanup upon explicit user instruction. Organized 23 Phase 0 documents into docs/archive/phase-0/ and 4 legacy report drafts/decks into docs/archive/historical-reports/ using git mv to preserve 100% commit and content history. Removed temporary untracked docs/superpowers/. Zero application source, API, Prisma, migration, seed, RLS/RPC or DB data changes.
+- Archives created:
+  - docs/archive/phase-0/: 23 historical files (Phase 0 user research, mock surveys, audits, approval packets, and consolidation reports).
+  - docs/archive/historical-reports/: 4 legacy draft files (
+eport-draft-analysis-design.md, 	ai-lieu-phan-tich-yeu-cau.md, 	ai-lieu-phan-tich-yeu-cau.docx, slide-deck-17-slides.md).
+- Documentation index updates:
+  - Created docs/archive/README.md cataloging the archived collections, status, and authority pointers.
+  - Updated link to rchive/phase-0/phase-0-roles-and-mvp-final.md in docs/README.md.
+  - Updated plans/current-task.md and HANDOFF.md.
+- Verification:
+  - docs/ root file count reduced from 56 to 29.
+  - git diff --check clean with 0 errors.
+  - Web typecheck and unit test suite pass with 8/8 tests.
+  - 36 modeling diagrams verify cleanly.
+
+
+## 2026-10-10 - Lingora Product Revision Pass
+
+- Authorization and scope: The Product Owner explicitly authorized this documentation-only revision in `plans/approved/2026-10-10-lingora-product-revision-pass-APPROVED.md`. No application source, API, Prisma, SQL migration, seed, RLS/RPC, or database work was performed. No files were staged or committed.
+- Product authority: Added ADR-036 with six approved groups: lesson retry/scoring/completion and latest performance; core/optional SRS enrollment and Policy B recurrence/reinforcement; active curriculum eligibility and withdrawal/replacement history; assessment blueprint/readiness/immutable version/practice-item separation; Reassessment deferred; and bounded Admin Learner account support with learning evidence protected.
+- Reconciliation: Added the current ADR-036 requirements addendum and traceability rows; updated current UC behavior without renumbering the 14-entry catalog (UC-03 reminder remains deferred; no Reassessment UC exists); updated QUICK-REF, authority pointers, modeling README/review, and HANDOFF. Added logical lesson-attempt, completion, SRS, curriculum, assessment, assignment, and audit concepts without choosing physical tables.
+- Modeling: Revised affected active views, including the Teacher Use Case diagram to show assigned blueprint-scoped assessment-item authoring. Retained ACT-05 as a single `DEFERRED - NOT MVP` marker with no workflow. Removed the deprecated shared PlantUML `handwritten` setting after visual review found it produced a warning banner in every diagram. Regenerated all 36 sources to 72 SVG/PNG outputs.
+- Verification: See `T-PRP-001` in `logs/test-log.md`. PlantUML rendering returned zero errors; existing rebuild verification passed; seven targeted ADR-036 static checks passed; representative lesson, Teacher, and deferred diagrams were visually reviewed. `git diff --check` exited 0 with only configured line-ending notices. The first inline verifier drafts had checker-only assertion mismatches and were corrected; one extra blank line in the active task plan was removed before final diff-check. No product defect was found from those checks.
+- Completion state: The revised modeling package is READY FOR FINAL MODELING REVIEW. Physical schema, implementation, and live DB inspection remain separate future tasks. The next step is not active until its own task plan and authorization are recorded.
+- Final semantic adjustment: limited the same-session SRS reinforcement rule to the approved no-second-scheduling/no-long-term-change behavior; left any separate activity-history representation unspecified. Re-rendered all 36 sources and reran all seven ADR-036 checks (T-PRP-002).
+
+
+## FMR-001 - Final Modeling Review after ADR-036 (2026-10-11)
+
+- Completed authorized documentation-only PLAN/REVIEW/APPROVE/IMPLEMENT/TEST/LOG gates; approved/request/baseline snapshots preserved before corrections. User instruction excludes staging/COMMIT, so no commit was created; HEAD remains89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737.
+- Work: manually reviewed all36 canonical sources and final images, active requirements,14-entry UC catalog and traceability against PO/ADR-030..036. Recorded nine-concern matrix and per-diagram acceptance in docs/modeling/current-target/review.md; independent read-only correction review found no logical blocker or active authority contradiction.
+- Problems/solutions: corrected12 groups of drift covering FIFO lesson retry/scoring, recurring SRS/reinforcement/enrollment, context cap/resume, completed-only assessment evidence/gates, authoring readiness/review loops, account/assignment lifecycle, premature physical/API contracts, CURRENT artifact facts, logical ownership/provenance, draft media/audit/trust, UC/view identity/links and visual layouts. No new product/architecture decision; ADR log was left immutable rather than inventing approval.
+- Tooling: renderer records true diagram identities/classifications/source hashes and validates output; task-specific verify.py covers36 sources/72 outputs, semantic/static/link/canonical/scope/index checks and new-file line counts. Initial6/29 inventory expectation and a QUICK-REF whitespace failure were corrected from observed evidence, then checks passed.
+- Tests/evidence: T-FMR-001 in logs/test-log.md and docs/modeling/current-target/verification-output.txt: renderSVG/PNG exit0, final static verification exit0, git diff --check exit0; manual review N/A command with36-row evidence. Existing invalid/mixed historical development-log bytes were preserved by appending this ASCII entry only.
+- Outcome: MODELING APPROVED WITH NON-BLOCKING NOTES; READY FOR PHYSICAL DESIGN. 35 active views=5 CURRENT +30 TARGET, plus1 deferred Reassessment. UC catalog13 active +1 deferred reminder; VIEW-UC-01..04 crosswalk explicit. Dense aggregate SVG zoom/configuration and future physical realization remain notes; LIVE DB UNVERIFIED.
+- Completion: current-task/HANDOFF/current indexes reconciled; new DONE archive preserves this task. Next task only Physical Data & Runtime Design / Database Rebuild Planning, separately authorized; optional Safe Read-Only Live DB Inspection collects environment evidence only. No follow-on task started; no app/Prisma/migration/API edit, live query, staging or commit. Pre-existing dirty worktree/index retained.
+
+
+## DCP-001 - Full Diagram Correction Pass (2026-10-11)
+
+- Completed documentation-only PLAN/REVIEW/APPROVE/IMPLEMENT/TEST/LOG within the explicit user request; immutable approved/request/worktree-index baseline captured first. No staging/commit in bounded plan; HEAD remains89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737. Commit: NOT CREATED.
+- Work: audited/corrected all36 canonical PlantUML sources; normalized academic Vietnamese monochrome presentation; corrected protected Login includes without UC catalog mutation, participant swimlanes/sequence fragments/states, N/K lesson flow, SRS scheduling versus reinforcement, logical domain/data separation, server trust/governance and CURRENT repository-only claims. Stable IDs/filenames retained;5 CURRENT+30 TARGET+1 DEFERRED.
+- Problems/solutions: separated invalid lesson input from abandonment; guarded SRS due-card loop against reinforcement re-entry and retained schedule; corrected account-disable/re-enable branch; removed unsupported assignment CLOSED state; distinguished two identically named backend package aliases; removed deprecated style warning and crowded/stretched layouts. Source metadata moved to comments/manifest; prior review/verifier/output preserved as raw evidence, old ADR/approved/archive bytes unchanged.
+- Evidence:36 SVG+36 PNG regenerated with exit0; each final PNG manually inspected; independent read-only review found one substantive SRS ambiguity, fixed and closed. T-DCP-001 records render/static/diff observed PASS and manual N/A; verification output binds36 visual rows to final hashes, verifies links/scope/index, and records new-file line counts. Initial Java quoting/checker-regex failures repaired and rerun; no product/runtime failure inferred.
+- Outcome: A-N report,20 main+10 supporting+5 CURRENT+1 deferred index,11-concern consistency matrix and per-image evidence complete. READY FOR FINAL MODELING REVIEW; this pass does not grant MODELING APPROVED or physical readiness. No unresolved new product decision; physical/configuration/live-state questions remain separate.
+- Closure: current-task/DONE archive/HANDOFF/QUICK-REF/docs index reconciled. STOP; next separately planned/authorized task is FINAL MODELING REVIEW by Product Owner/Codex. No follow-on task active, no app/API/schema/migration/DB operation and no staging/commit. Existing historical mixed-encoding log bytes preserved with ASCII append only.
+
+- Completion-state recheck: static verifier exit0 after DONE/archive/index/log closure;182 local links resolve, old log prefixes/index/HEAD preserved; completion archive57 lines. Task-attributed filenames retained in docs/modeling/current-target/evidence/task-change-inventory.txt.
+
+
+## FMR-002 - Independent Final Modeling Review (2026-10-11)
+
+- Authorization and scope: The user directly requested and authorized this independent FINAL MODELING REVIEW for canonical modeling at docs/modeling/current-target/ following the FULL DIAGRAM CORRECTION PASS. Documentation-only scope: no product redesign, no new features, no code/Prisma/SQL/migration/database modifications, and no physical design or implementation started. Commit: NOT CREATED; dirty baseline worktree, index, and HEAD (89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737) preserved.
+- Work performed: Conducted an exhaustive, independent review of all 36 canonical PlantUML sources (30 TARGET + 5 CURRENT + 1 DEFERRED) and 72 rendered outputs (36 SVG + 36 PNG). Cross-examined directly against PO decisions, ADR-030 to ADR-036, active requirements addendum, canonical 14-entry UC catalog (docs/use-case-specifications.md), and traceability matrix (docs/05-traceability-matrix.md).
+- 15 Mandatory checks evaluated & verified:
+  1. Exactly 3 roles: Admin, Teacher, Learner; no legacy roles in TARGET; single role per account; staff do not learn on staff accounts.
+  2. Login supporting UC and <<include>>: 13 protected capabilities include Login; 3 public flows (Signup, Recovery, Activation) exclude it; canonical 14 UC catalog remains untouched.
+  3. Lesson retry/scoring: N core items, K first-incorrect items; contributions 1.0 / 0.5 / 0.0; score = sum/(N+K); completion independent of score; redo creates new attempt without incrementing completed lesson count.
+  4. SRS: Core vocabulary auto-enrollment; optional opt-in; unique card per User+Vocabulary; Policy B intervals 1->3->7->14->30 recurring every 30 days; forgotten resets to stage 1 / 1 day; single-session reinforcement does not create second scheduling operation; retry idempotent; qualifies streak.
+  5. Curriculum: Locked/coming-soon future content excluded from eligible progress denominator; withdrawal and replacement preserve historical completions and evidence; completed learners not forced to repeat replacements.
+  6. Assessment: Placement and Level-up are the sole active MVP assessment purposes; Reassessment is deferred (ACT-05 marked DEFERRED - NOT IN MVP and isolated).
+  7. Content Governance SoD: Admin defines blueprints/assignments; Teacher authors items for assigned work only; readiness checks enforce coverage and prohibit practice-item reuse; Admin reviews/approves and publishes immutable versions; no Admin authoring or self-approval.
+  8. Admin learner support: Limited to necessary identity/status/minimal context reads; disable/re-enable audited; strictly barred from altering learning evidence.
+  9. Lifecycle decoupling: Assignment responsibility lifecycle (STA-02) decoupled from Content Revision lifecycle (STA-03).
+  10. Abstraction distinction: Domain Model (DOM-01, 22 UML classes) distinct in nature from Logical ERD (DATA-03, 21 logical entities, crow-foot notation, evidence/history structures).
+  11. Logical integrity: Logical concepts not collapsed into physical tables; derived domain outputs (LearningPlan, Progress) have no forced table; grouped entities are presentation abstractions.
+  12. Business sequence level: All 9 sequence diagrams use business-level messages in Vietnamese; zero API/SQL contracts.
+  13. Activity swimlanes: All 9 activity diagrams use swimlanes and valid business decision flows.
+  14. CURRENT accuracy: 5 CURRENT diagrams describe repository/config evidence only; no false live deployment claims.
+  15. Hygiene: Zero AI runtime, legacy roles, mastery engines, Jump, or generic workflows in TARGET.
+- Cross-diagram consistency: Fully verified across all 11 concerns (Authentication, Lesson, SRS, Placement, Level-up, Curriculum, Assignment, Publication, Assessment, Account support, Disable).
+- Visual inspection: Readability, typography, actor placement, line crossing, and strict monochrome/grayscale palette confirmed across all 36 PNGs and SVGs.
+- Outcome: MODELING APPROVED WITH NON-BLOCKING NOTES; separate confirmation: READY FOR PHYSICAL DESIGN.
+- Documentation updates: Created docs/modeling/current-target/final-review.md; updated docs/modeling/current-target/README.md; updated plans/current-task.md, HANDOFF.md, docs/QUICK-REF.md, and docs/README.md.
+
+
+## F3C-001 — Final 3-Point Modeling Correction (2026-10-11)
+
+- Read-only finding: `STA-02` already had a single current-responsibility state and reassignment self-transition retaining attribution/history. `ACT-04`, UC-05 and ADR-033 already made curriculum readiness and assessment passing configuration-driven, with no universal 100% gate. No unnecessary source change for points 1 or 2; no traceability churn or ADR change.
+- Corrected only the active curriculum denominator ambiguity: ACT-01/ACT-09 separate unpublished/unavailable content from published active lessons that remain eligible while normal progression has them locked; UC-04 and active requirements now state the same rule. Updated the final-review report and current pointers to record the requested verdict.
+- Only ACT-01 and ACT-09 were rendered (SVG/PNG) and manually inspected. T-F3C-001 records fresh canonical verifier, targeted scans, diff check, output hashes and environment. First static assertion/link-check drafts were corrected as verifier-scope issues, not product changes.
+- Initial dirty worktree/index preserved. No application/API/Prisma/schema/migration/DB operation, physical design or staging. Commit: NOT CREATED because unrelated staged prior work and a large dirty baseline must remain untouched. Final conclusion under the user's explicit scope: MODELING APPROVED / READY FOR PHYSICAL DESIGN. STOP; any physical task requires separate authorization.
+
+- Closure recheck after DONE archive/pointers/logs: canonical verifier exit0,187 resolved local links, all semantic/scope/index/log-prefix assertions PASS; DONE archive51 lines. Final `git diff --check` exit0. Static output remains `FINAL 3-POINT STATIC VERIFICATION PASS; updated diagrams match individual manual-review hashes.`
+
+
+## PD-001 — Physical Data/Runtime Design and Conditional Rebuild Plan (2026-10-11)
+
+- **Authorization/completed work:** direct 71-section PO request authorizes design only. Created 34-table typed catalog/logical mapping, auth/role/status/provider mapping, private prompt/grading/media separation, FORCE RLS/runtime/principal matrix, query/index/constraint/delete policies, concurrency/transaction/idempotency boundaries, four-view separate physical ERD, legacy evidence/rebuild/preservation/seed outline and 44 future acceptance scenarios. Modeling remains upstream approved and unchanged by this task.
+- **Problems/solution:** Prisma18models/six-role versus SQL17tables/two-role mismatch recorded as legacy evidence; no valid local/process DB config => LIVE DB UNVERIFIED, not inferred empty. Recommend CLEAN REBUILD conditionally with read-only inventory, disposition/backup/restore and separate cutover gates. Latest PO authorizes proposing rebuild; historical migrations/ADRs retained. No data-transform metrics or synthetic N/K provenance.
+- **Independent correction loop:** explicit FORCE RLS helper policies, exact assignment composite FKs/context scope, separate item authoring owner, canonical-fingerprint advisory lock protecting absent rows, named finalizer/key/provisioner/scoped-lock privilege responsibilities. Independent remainder recheck reports no material defect; no product-policy contradiction found. Primary first-pass final recheck hit agent usage limit; a second independent reviewer completed bounded closure.
+- **Verification:** T-PD-001 observed exits0 for render/static documentation/Git checks, four PNGs inspected and hash-bound. Initial evidence-link/external-new-path checks corrected; no application or live DB tests executed. Six concurrently created unrelated drawio paths preserved/observed separately. HEAD/index and all139 preexisting modeling files preserved.
+- **Decision record:** ADR-037 is PROPOSED, not accepted; design result PHYSICAL DESIGN READY FOR REVIEW. Technical approval is the next separate FINAL PHYSICAL DESIGN REVIEW.
+- **Commit:** none; no staging/commit authorized. Preexisting index remains exact. No application source/Prisma/migration/dependency/seed/DB/upload/deploy change. STOP at delivery; no Implementation Plan or Antigravity coding subtasks yet.
+
+## DNP-001 — All Diagram PUML Native draw.io Rendering Parity (2026-10-11)
+
+- Separated the native editable-cell draw.io build from the SVG-backed visual option; both now build distinct 36-page files. The native builder expands only the approved local shared-style include and preserves standalone PUML edit payloads.
+- Built and validated 36 native pages (2,115 editable cells) and regenerated the 36-page SVG-backed option. Task-specific unit tests, page validator, semantic baseline verifier, and both build commands passed.
+- Installed draw.io Desktop 32.4.1 was used to export UC-01, ACT-03, SEQ-01, DATA-03, and SYS-04 from the native file plus UC-01 from the SVG-backed file. Repeated exports produced the same SHA-256 evidence.
+- Visual review found the native renderer materially diverges on UC-01 and SYS-04, and has readability collisions/overlaps on ACT-03 and DATA-03. SEQ-01 is close. The SVG-backed option preserves the 36 reference SVGs and matching self-contained PUML payloads, but each page is one SVG object; re-rendering its PUML in draw.io can restore native converter geometry.
+- No PUML declarations, relationships, product semantics, or renderer/vendor code were altered to force layout. The user approved only minor renderer-specific differences, so the larger observed gaps return the plan to `REVIEW`.
+- The unchanged canonical verifier stops at its exact PUML file-count check because the pre-existing `docs/design/physical/physical-erd.puml` sits outside the canonical modeling set. This file was preserved. All its prior 36-diagram source/render/hash checks pass.
+- Primary filename choice remains open between exact SVG appearance with embedded PUML edit data and cell-by-cell native editing with documented layout gaps. No commit; existing index and unrelated workspace state remain intact.
+
+
+## DNP-001-FINAL -- Native diagram readability correction (2026-10-11)
+
+- Confirmed the user requires an editable native draw.io diagram rather than SVG image pages, and that native geometry must be laid out for readability. The immutable approved layout amendment remains the controlling scope.
+- Visual inspection of the actual final UC-01 export found that native actor glyph cells had no mapped SVG entity identity. Their shapes were positioned correctly, but the layout pass could not copy the reference relationship paths to actor-to-use-case edges. Added a regression test, observed its expected failure (`routed_edges` was 0), then mapped each actor glyph to its matched SVG entity ID. The test now passes and the native associations use the reference routes.
+- Rebuilt `docs/modeling/current-target/lingora-all-diagrams.drawio` from 36 PUML sources. The output has 36 ordered pages, 2,115 mxCells, 2,043 editable vertices/edges, and zero SVG image cells. No canonical PUML declaration, relationship, label, payload, or accepted modeling semantics changed.
+- Exported all 36 pages from the built `.drawio` with draw.io Desktop 32.4.1. Refreshed per-page dimensions and SHA-256 values in `evidence/native-render-review/final/manifest.csv`, generated four contact sheets, and visually inspected all 36 previews. UC-01 was inspected at full size after the route fix. All task-specific native tests, builder tests, page/payload validation, semantic baseline comparison, and the 36-page renderer completed successfully.
+- `docs/modeling/current-target/verify.py` was rerun. It again fails only at the repository-wide canonical PUML file-count invariant because `docs/design/physical/physical-erd.puml` is pre-existing and separate; preceding source/render/hash/visual checks pass. The unrelated physical ERD was preserved.
+- Updated the native render review with final results. Current task pointers and logs record the final output and the commit gate. The exact canonical `.drawio` path was already untracked at the approved task baseline; the implementation plan prohibits including such an overlapping pre-existing path when a clean task-only delta cannot be staged. No staging or commit was performed, and the task stays in TESTING pending user direction on that gate.
+
+## DNP-001-A — Exclude deferred ACT-05 from the primary native package (2026-10-11)
+
+- The user directed removal of page 13 because ACT-05 Reassessment is outside scope. Excluded `ACT-05` from the primary native `.drawio` build and adjusted the native geometry pass to handle the 35-page active package. The validator rejects ACT-05 in the active file while continuing to reject missing active pages. The baseline verifier compares the immutable original page identities against the approved 35-page/renumbered output and still checks all 36 source semantic inventories and render hashes.
+- Rebuilt `docs/modeling/current-target/lingora-all-diagrams.drawio`: 35 active pages, 2,106 mxCells, zero SVG image cells. Page 13 is ACT-06. The canonical source/render inventory remains 36, including ACT-05 marked deferred.
+- Draw.io Desktop 32.4.1 exported all 35 active pages. Updated `evidence/native-render-review/final/manifest.csv` and four contact sheets; removed obsolete page-indexed preview PNGs from that final evidence directory. Reviewed all four updated contact sheets; no ACT-05 page remains in the active preview set.
+- An initial build exposed two stale `36` page-count assumptions in the native geometry pass. Replaced them with the active 35-page count; the complete rebuild then succeeded. No PUML source, diagram semantics, SVG-backed comparison package, Git index, or unrelated workspace path was changed.
+- The repository task pointer now records the separate Final Physical Data & Runtime Design Review as active and identifies the draw.io task as pending; it was not overwritten as part of this amendment. No staging or commit was performed.
+
+- **Concurrent workspace state:** A later immutable-baseline audit observed four newly untracked files for the separate Final Physical Data & Runtime Design Review (`plans/approved/2026-10-11-final-physical-runtime-review-{APPROVED,BASELINE,REQUEST}.*` and `plans/archive/2026-10-11-drawio-native-render-parity-PENDING-CAPTURE.md`). The audit returned exit 1 solely for `Unrelated pre-existing Git status entries changed`; these paths appeared after the earlier passing check, are outside this amendment, and were left untouched. `plans/current-task.md` now points to that physical review, so this draw.io amendment was not substituted into the active task pointer and remains uncommitted.
+
+## FPD-001 — Final Physical Data & Runtime Design Review (2026-10-11)
+
+- Completed source-based independent review of the entire physical package against PO/ADR-030–036, active requirements/UC/traceability and approved DOM/DATA/ACT/STA/SEQ/SEC modeling. Audited all 34 tables, actual runtime privilege responsibilities, history, transactions, retries/concurrency, query/index viability, four ERD views and conditional rebuild safety. Three read-only domain reviewers plus a final report consistency recheck supported the primary review.
+- Result: NEEDS PHYSICAL CORRECTION / NOT READY FOR IMPLEMENTATION PLANNING. Twelve concrete counterexamples, six P1/six P2, are open: Teacher SUBMIT privileges, first-context course-lock/lookup, missing-account audit subject, reviewed assignment scope, draft removal, media cleanup race, historical curriculum ownership, replacement first completion, card/session reinforcement, available default entry, immutable assessment scope and controlled coverage metadata.
+- Table count remains 34, including Unit; no mandatory table merge/remove/add, persisted LearningPlan/Progress/mastery/reporting engine or product decision introduced. CLEAN REBUILD RECOMMENDED only for new/disposable environment as conditional recommendation; LIVE DB UNVERIFIED, exact preservation/backup/restore/rollback/cutover approval still required. Legacy migrations are immutable; future baseline must select a separate executable chain.
+- Delivered `docs/design/physical/final-review.md` with all A–S sections, per-table necessity audit, mapping, actionable correction directions and missing acceptance scenarios. No physical definition/security/ERD correction was applied; only a final-review pointer was prepended to physical README. Original definition bytes/source/renders/historical review/verifier evidence remain intact.
+- Verification T-FPD-001 records observed syntax/fresh renders, link/scope/security/config scans, exact hashes/index/HEAD and diff evidence. Original physical verifier exits1 on four old workspace-baseline checks; preserved diagnostic is distinct from current review verifier exit0. Fresh 8 outputs match original rendered bytes; all four PNGs individually inspected. First verifier run's invalid encoding alias was corrected and fully rerun.
+- Preserved the previous draw.io pending task pointer verbatim. Concurrent ACT-05 packaging/preview-renumbering changes were separately captured on exactly 38 modeling paths, not edited or attributed to this review; original log prefixes preserved. Updated task/source pointers and handoff to the physical correction gate.
+- No new architecture/physical choice was accepted; no accepted ADR was fabricated. Review-only completion does not approve physical design. Next separately recorded work: bounded F01–F12 physical correction and independent recheck. No implementation master plan, app/API/UI/Prisma/migration/DB/seed/deploy work follows.
+- **Commit:** NOT CREATED — user explicitly prohibited staging/commit; original Git index and HEAD retained.
+
+## PHYSICAL DESIGN CORRECTION PASS — F01–F12 (2026-10-11)
+
+- Completed the bounded documentation-only correction task against the twelve findings in `docs/design/physical/final-review.md`. The initial approved snapshot remains immutable; an amendment records that F10 follows approved ACT-01's lowest-level-with-content behavior and F12 adds explicit positive/negative coverage-tag validation.
+- Updated the proposed physical catalog/runtime/security matrix, ERD, and acceptance suite. Preserved 34 tables and the proposed/unimplemented status. Added availability-aware default and coverage-tag acceptance scenarios; all future database scenarios remain NOT EXECUTED.
+- Rendered the four ERD panels to SVG and PNG, parsed each SVG, hashed all eight artifacts, and visually reviewed all four PNGs. The course/default note is readable in identity view. Evidence copies match the primary renders.
+- The independent read-only closure reviewer marked F01–F12 CLOSED. Final checks are recorded in `docs/design/physical/correction-pass-evidence/verification.md` after the final verifier/diff-check run.
+- An initial `git diff --check` found three trailing spaces in the task pointer's Markdown hard-break lines; removed them and observed exit 0 on the rerun. The evidence file holds the clean rerun; final checks are repeated after the log/pointer changes.
+- Current correction verifier checks the current task baseline, log append-only prefixes, exact 189-file approved-modeling inventory, HEAD and original index. No pre-existing unrelated worktree changes were attributed to this task.
+- No product/physical design was approved. No code, Prisma, SQL/migration, database, seed, deployment, staging or commit action was performed. Next gate: separate FINAL PHYSICAL DESIGN REVIEW.
+
+## FINAL PHYSICAL DESIGN RECHECK (started 2026-10-11; completed 2026-10-12)
+
+- Completed independent documentation review against latest PO instruction, ADR-036/compatible ADR-030–035, active requirements/UC/traceability and approved logical modeling. Report A–R and twelve independent verdicts: `docs/design/physical/final-recheck.md`.
+- Found F01/F02 still incomplete despite prior CLOSED labels: assigned Teacher key authoring read lacks a named privileged executor; existing-context locker cannot obtain its ownership lookup from the separate learner_writer grant without a specified dependency. Focused read-only reviewer independently agreed. F03–F12 CLOSED; no new demonstrated product/security regression. No silent redesign.
+- Proposed table count 34 APPROPRIATE; Unit remains justified. Fresh four-view PNG/SVG copies match primary bytes and were visually inspected. Future acceptance cases remain NOT EXECUTED; notes include impossible two-SCHEDULE PD-F09 fixture and redundant ERD aliases/shorthands.
+- Existing correction verifier passed at entry; later old new-file allowlist fails on authorized new review artifacts. Preserved exact failure and unchanged verifier; new task-baseline checker protects current scope. A concurrent presentation file was separately observed/hash-recorded, left untouched; initial scope failure and corrected observation-aware check are retained.
+- Updated current task/source pointers and handoff to NEEDS PHYSICAL CORRECTION / NOT READY FOR IMPLEMENTATION PLANNING; historical reviews/approval snapshots preserved. ADR-040 records review rejection rather than inventing physical approval.
+- Observed artifact/render/link/scope/whitespace checks and line counts recorded in T-FPR-001 and final-recheck evidence. All 189 modeling files, physical definitions/security/source/primary renders and original HEAD/index preserved; physical README changes are status pointers only.
+- LIVE DB UNVERIFIED does not alone block design acceptance but blocks destructive rebuild. No implementation master plan, app/Prisma/SQL/migration/DB/seed/deploy/stage/commit performed. Next separately authorized work: bounded F01/F02 dependency correction and recheck.
+- **Commit:** NOT CREATED — user prohibited staging/commit.
+
+
+## PERS-001 — Study Focus addendum + F01/F02 final correction (2026-10-12)
+
+Completed the PO-authorized documentation/modeling addendum ADR-042: five-value primary context focus, next supplementary composition only, independent internal due selection, eligible published finite practice metadata with configured bias/fallback, unchanged core/SRS/pinned assessments and UC catalog. Targeted seven canonical/three report/two physical view changes retain 34 tables. Preserved the concurrent report task inputs and its human-steered presentation Markdown; predecessor partial pointer was captured without marking that task DONE.
+
+F01 now specifies assigned Teacher authoring-secret SELECT/edit, full readiness/submit grants and a separate bounded frozen-member validator; independent reviewer found/rechecked that reuse dependency and explicit membership/catalog/media reads. F02 specifies learner_writer stable parent account SELECT+lock privilege before context count/lookup plus its own context writes and scoped_locker independent context/config reads. No caller-grant inheritance or FORCE RLS bypass is assumed.
+
+Corrected stale verifier baselines/finite artifact inventory, obsolete SRS literal/global package checks, a local archived-target link and SVG source-offset churn. Fixed one task-local UTF-8 editing mistake; historical log mixed-encoding bytes were preserved. Fresh verifiers/diff checks exit 0; manual review and future design runtime cases distinguished, evidence T-PERS-001. Final status PERSONALIZATION ADDENDUM APPLIED / F01 CLOSED / F02 CLOSED / PHYSICAL DESIGN READY FOR FINAL APPROVAL RECHECK. LIVE DB UNVERIFIED; no implementation/rebuild approval.
+
+**Commit:** none — user forbids staging/commit; HEAD and original index unchanged. Stop; next separate task FINAL PHYSICAL APPROVAL RECHECK.
+
+## RUC-RESUME-001 — Report-oriented functional Use Case views resumption (2026-10-12)
+
+Resumed the interrupted report-view documentation task after the user could not see its diagrams. Surfaced all eight functional groups across nine rendered report views. Corrected the Vietnamese staff account-provisioning note in VIEW-RUC-01 and added the core scoring/completion boundary to VIEW-RUC-03; refreshed only those two PNG/SVG render pairs and manifest entries. Updated the detailed ten-minute speaking script for the approved Study Focus behavior already represented in VIEW-RUC-02/03.
+
+Verified all nine PlantUML sources, all 18 manifest-bound outputs, local links, catalog/role/SRS boundaries, and manually inspected every diagram. The final scope and whitespace checks are recorded in T-RUC-RESUME-001. No canonical UC catalog, physical design, app/runtime, schema, database, or deployment content was changed.
+
+**Commit:** none — no staging or commit; concurrent work and the existing index were left untouched.
+
+
+## PUML-PRES-001 — Full PUML review and scoped 10-minute presentation (2026-10-12)
+
+Reviewed all 49 extant PUML files: canonical 36, shared style, nine functional views, primary four-panel physical ERD and two identical historical snapshots. Syntax exit 0; independent primary manifest freshness passes. Canonical/physical verifiers still exit 1 through frozen prior task scope; captured initial and repeated failures, traced them to later authorized report amendments/presentation updates, and left historical records/verifiers unchanged.
+
+The user clarified that excluded items are the three actor-oriented diagram pages learner (UC-02), Teacher (UC-03), Admin (UC-04), not business UC IDs or functional groups. Preserved the first approval snapshot and recorded Amendment 01. Created a companion script retaining overall/all nine functional views and ACT-03/06/04 with a 600-second outline; original speaking script remains untouched. All 13 active business UCs are represented, reminder UC-03 and Reassessment remain deferred.
+
+Review findings cover missing AD narration, namespace confusion, long AD layout, Level-up final gate clarity, duplicate physical content alias, stale verifier scope and edge-case explanation. Presentation fixes are embodied in the companion script; diagram/verifier corrections remain recommendations for separately authorized tasks. Contact-sheet overview and selected full-size visual inspection support findings; no runtime/physical approval or measured rehearsal is claimed.
+
+Required evidence recorded in T-PUML-PRES-001; logs appended without changing prior bytes. Task review acceptance passes even though independently recorded historical-scope diagnostics remain FAIL. HEAD/index, all PUML/renders/manifests and original script preserved. No ADR/product decision, application/schema/DB/migration change, staging or commit. **Commit:** NOT CREATED — task isolates review deliverables from preexisting mixed/untracked work.
+
+
+## T-DRAWIO-RUC-ADD-001 — Add report views to the native Draw.io bundle (paused)
+
+The user requested the nine existing `VIEW-RUC` report diagrams immediately after page 08, Admin. The first builder run generated 44 native pages in the requested order. Review against the pre-change snapshot then showed that the existing Draw.io file's embedded PUML differs from current canonical source in eight pages (UC-02, ACT-01, ACT-03, ACT-06, DOM-01, DATA-03, SEQ-06, SEQ-08). The full builder regenerated the original pages along with the additions, so this exceeded the approved additive scope. The native target currently contains the regenerated 44-page output. The alternate SVG-editable file has the original payload hashes but does not contain the original native page cells; no exact native backup was found in the repository. The task pointer is REVIEW under the AGENTS.md stop rule. No further implementation, staging, or commit until the source/output conflict is resolved.
+
+
+## UC-CLEAN9-001 — All nine report Use Case diagrams cleaned (2026-10-12)
+
+Applied the user's explicit presentation/UML correction scope to all nine VIEW-RUC source/render pairs and native pages 09–17. Removed seven rendered rule notes and seventeen step/internal ellipses through documented merges (61→44), removed five include/one extend dependencies, retained forty labels and made four pre-reported actor-goal name corrections using existing specification/view names. RUC-01 uses a common presentation actor with three generalizations; registration remains Learner-only and activation Teacher-only, with no new business role. Teacher/Admin independent actions, context preferences, lesson redo/performance and optional SRS/practice remain intact.
+
+Saved a full pre-change ZIP before edits, preserved 35 unrelated raw page fragments exactly and 1,035 outside-scope file hashes, including every repository script/test, domain/spec/ADR, application/schema/physical source. Replaced only the nine report pages, did not run the full-bundle builder, did not alter the prior insertion conflict or historical records. Native exports were made with Draw.io Desktop and all nine inspected; all nine source PNGs also inspected. Resolved temporary newline-audit mismatches and PlantUML orientation issues through actual evidence, not baseline edits. Required evidence recorded in T-UC-CLEAN9-001.
+
+Detailed business rules already exist in the unchanged UC Specification and Study Focus addendum; the Word reference was read only for formatting, with its implementation-level/TOEIC functions and questionable relations excluded. No product decision/ADR, code, Prisma, migration, API, tests or runtime change; no historical deletion, staging or commit. **Commit:** NOT CREATED.
+
+
+## UC-OVERALL-LAYOUT-001 — Page05 overall Use Case straightened (2026-10-12)
+
+Applied the direct user instruction to native `page-UC-01` only. Removed old routing waypoints from all 33 existing connectors, aligned 17 existing ovals and three actors, spaced four existing groups and placed 13 unchanged include labels in a clear gutter. Names, associations, dependency direction/type and embedded PUML unchanged. Shared account associations still intersect in the left corridor; no relations removed or invented for appearance.
+
+Fresh actual Draw.io export inspected and temporary artifact audit passed; 43 other page fragments (including the nine cleaned views), 913 protected files and historical log prefixes exact. Required command/output evidence recorded in T-UC-OVERALL-LAYOUT-001 and the task-specific evidence folder. Primary editable file is the delivery; canonical source/render/specification remains unchanged. Full entry backup retained. Prior source/output REVIEW conflict remains separate; no full builder or historical deletion. No code/schema/migration/API/test/ADR/business/runtime change. **Commit:** NOT CREATED — existing mixed worktree and index/HEAD preserved.
+
+
+## AD-LAYOUT-001 — Eight Activity diagrams polished for presentation (2026-10-12)
+
+Applied the user's direct bounded layout request to native ACT-01/02/03/04/06/07/08/09, prioritizing the script's ACT-03/06/04. Enlarged decision/action spacing and readable fonts, widened title/lane headers, moved branch labels and corrected connector ports. Removed rail-route diagonals in SRS, separated the pre-existing overlapping clone/withdrawal boxes in ACT-09, routed its withdrawal tail around other nodes and corrected three remaining ACT-01 connector/text collisions discovered in final visual review.
+
+Exported fresh native PNG/SVG pairs for eight pages. The current ten-minute script points to these exports and includes three overlapping ACT-03 presentation regions. All object IDs/labels, edge endpoints/types, lane ownership and embedded PUML are unchanged; 36 other raw pages and 925 protected files preserved. Prior source/output conflict remains REVIEW; predecessor UC-01 pointer captured exactly without inventing its closure. Test evidence T-AD-LAYOUT-001 and task evidence record checks and resolved intermediate diagnostics.
+
+No source PUML, old renders/manifests, original speaking script, PPTX, product/ADR, application/schema/API/DB/migration or repository test/script change. Required evidence/log gates completed before task closeout. **Commit:** NOT CREATED — preserve the pre-existing mixed worktree, HEAD and index.
+
+
+## CLASS-READABILITY-001 — Existing page29 UML class diagram cleaned (2026-10-12)
+
+The user's existence/readability request found an existing DOM-01 class diagram, so no duplicate was added. Corrected native presentation defects: negative/out-of-frame member positions, hidden derived header, undersized fields, mixed/detached multiplicities and inherited routes. Retained23 classifiers,35 member rows and24 relationships from the immutable entry payload; displayed48 existing multiplicities at endpoints, adding14 text cells only. Names, attributes, enum literals, composition kinds and domain semantics unchanged.
+
+Fresh PNG/SVG exports exit0 and visually inspected; final temporary scope/semantic/geometry audit PASS. Other43 raw pages and1,018 protected files exact, including existing UC/AD, canonical source/renders/specification, code/schema/API/ADR/tests/scripts/runtime. Required evidence in T-CLASS-READABILITY-001; complete entry backup preserved. Active Activity task status retained through additive DOM lifecycle notes; no unrelated task silently closed. No full-bundle builder, historical deletion, staging or commit. **Commit:** NOT CREATED.
+
+
+## CLASS-COMPLETENESS-001 — Class-domain completeness review (2026-10-12)
+
+Reviewed every DOM-01 classifier after the user challenged empty Assignment/LogicalUnit. Native/source inventories match; five classes were already empty in source. Existing DOM was deliberately approved as a conceptual model with minimal attributes, so prior layout PASS did not establish detailed class-design completeness. Recorded23 per-class findings, relationship/type/method limitations and a concrete source-backed correction proposal, preserving conceptual approval scope.
+
+Assignment is needed for Teacher responsibility/authorization separate from content lifecycle; requirements/scope/checklist/history are approved semantics missing from the detailed view. LogicalUnit has Course/Lesson/Level relationships but lacks display/ordering details; order naming/title remain representation proposals. Do not introduce Assignment CLOSED/COMPLETED/project-management fields, fixed6Unit/4Lesson constants, CRUD/entity method guesses or physical XOR targets/candidates as approved domain. Other notable gaps: blueprint coverage/config, version/item snapshots, provenance, audit target/time/reason and Progress's formula-only member. No domain correction applied by this review.
+
+Required evidence in T-CLASS-COMPLETENESS-001; final readonly/link/coverage/whitespace checks pass,1,041 files unchanged including entire primary Draw.io, canonical source/render/spec/ADR and runtime. Prior source/output conflict and physical approvals remain separate. Entry pointer captured; prior archives immutable, logs append-only. **Commit:** NOT CREATED — no staging/index/HEAD changes.

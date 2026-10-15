@@ -1,0 +1,95 @@
+@startuml
+' Addendum authority: ADR-042; Study Focus affects supplementary practice only.
+!include ../style.puml
+' diagram-id: ACT-03
+' classification: TARGET
+' authority: ADR-033/035/036/041; UC-06/07/08
+' An optional ordinary-practice SRS block is system-selected and outside core score/completion.
+title Sơ đồ hoạt động – Học bài và luyện tập
+|Học viên|
+start
+:Mở bài học đang được phép học;
+|Hệ thống|
+:Kiểm tra quyền, ngữ cảnh và phiên bản;
+|Học viên|
+:Xem nội dung bài học;
+|Hệ thống|
+:Tạo lượt làm với N bài tập cốt lõi;
+:Khởi tạo tổng đóng góp = 0, K = 0;
+while (Còn bài tập trong hàng đợi?) is (Có)
+  :Lấy bài tập đầu hàng đợi;
+  |Học viên|
+  if (Tiếp tục lượt làm?) then (Không / bỏ dở)
+    |Hệ thống|
+    :Không ghi hoàn tất hoặc điểm hoàn tất;
+    :Giữ lịch sử trước đó;
+    stop
+  else (Có)
+    |Học viên|
+    :Gửi câu trả lời;
+  endif
+  |Hệ thống|
+  while (Câu trả lời chưa hợp lệ?) is (Có)
+    :Báo lỗi, không tính lượt trả lời;
+    |Học viên|
+    :Sửa và gửi lại câu trả lời;
+    |Hệ thống|
+    :Kiểm tra lại dữ liệu;
+  endwhile (Không)
+  :Chấm bằng dữ liệu của phiên bản;
+  if (Lần trả lời đầu?) then (Có)
+    if (Đúng?) then (Đúng)
+      :Cộng đóng góp 1.0;
+    else (Sai)
+      :Phản hồi hỗ trợ học; tăng K;
+      :Đưa bài xuống cuối hàng đợi sau các bài còn lại, thử lại đúng một lần;
+    endif
+  else (Thử lại)
+    if (Đúng?) then (Đúng)
+      :Cộng đóng góp 0.5;
+    else (Sai)
+      :Cộng đóng góp 0;
+    endif
+    :Phản hồi, không thêm lượt thử lại;
+  endif
+endwhile (Không)
+:Lưu lượt hoàn tất và điểm tổng đóng góp / (N + K);
+if (Lưu thành công?) then (Có)
+  :Ghi hoàn thành, độc lập đúng sai;
+  :Tự thêm từ cốt lõi vào SRS; thẻ cũ giữ lịch ôn;
+  :Tính hoạt động học cho chuỗi ngày;
+  if (Bắt đầu phần luyện tập bổ sung?) then (Có)
+    :Đọc ngữ cảnh và trọng tâm hiện tại;
+    :Chọn nội bộ thẻ đến hạn / quá hạn độc lập trọng tâm;
+    :Chọn luyện tập đã xuất bản theo trọng tâm và cấu hình;
+    :Thiếu nội dung ưu tiên: dùng nội dung hợp lệ khác;
+    :Giữ cấu trúc phiên; không gửi danh sách trước;
+    while (Còn câu hỏi bổ sung được chọn?) is (Có)
+      :Đưa ra một câu hỏi hiện tại;
+      |Học viên|
+      :Trả lời câu hỏi bổ sung;
+      |Hệ thống|
+      if (Câu ôn SRS?) then (Có)
+        :Xác thực Đã nhớ / Chưa nhớ; tính lịch SRS;
+        :Chưa nhớ: xếp một lượt củng cố cuối phiên;
+      else (Luyện tập theo trọng tâm)
+        :Phản hồi luyện tập; không ghi điểm core;
+      endif
+    endwhile (Không)
+    :Củng cố câu chưa nhớ tối đa một lần; không tính lịch lại;
+    :Kết quả bổ sung không đổi N, K hoặc hoàn thành;
+  else (Không)
+  endif
+  :Hiển thị performance lượt hoàn tất mới nhất;
+else (Không)
+  :Không ghi hoàn tất hoặc điểm hoàn tất;
+  :Giữ lịch sử trước đó;
+endif
+stop
+' N is configured core count; K is the number of first-attempt errors; score denominator is N + K.
+' Contributions are 1 / 0.5 / 0. Completion is independent of correctness and score.
+' SRS questions are outside core count, score, completion and progression; never inject into scored Placement/Level-up.
+' A regular checkpoint may use the same system-selected SRS block. Due state stays internal.
+' Redo creates a new attempt without incrementing completed-lesson count.
+' Best completed performance may be secondary; streak counts at most once per local day.
+@enduml

@@ -1,0 +1,11 @@
+{
+  "classification": "Separately observed concurrent artifact; not created or edited by this task; preserved without attributing its author",
+  "observed_utc": "2026-10-11T17:05:22.819753+00:00",
+  "paths": {
+    "docs/presentation/usecase-activity-presentation.md": {
+      "sha256": "7c383af06f0a9a072055f852ed6049f2ee3db814b6c0464aba8225e22e5c7d11",
+      "bytes": 19784,
+      "mtime_ns": 1791738313394867600
+    }
+  }
+}

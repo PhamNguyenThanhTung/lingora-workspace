@@ -1,0 +1,511 @@
+{
+  "renderer": "PlantUML version 1.2026.8 / 149874a [2026-09-05 15:59:17 UTC]",
+  "style_sha256": "8420f616afa5f9b24ab52c8df77ccfd0745e729d8a36eb27280bd5b37f767379",
+  "diagram_count": 36,
+  "records": [
+    {
+      "id": "ACT-01",
+      "classification": "TARGET",
+      "source": "src/ACT-01-learner-onboarding.puml",
+      "source_sha256": "29e1e7d6d5d958ae35580b33d067dfb8079dc2202c1a7cf66abb606a2acf02de",
+      "outputs": {
+        "svg": "rendered/ACT-01-learner-onboarding.svg",
+        "png": "rendered/ACT-01-learner-onboarding.png"
+      },
+      "output_sha256": {
+        "svg": "98faaaf3db3103b1c5e84bd282bcd2aed7c5955f1c96d4bf60045fa9429b2090",
+        "png": "63811b947f753c99e82b8c0ffe7e4b1049bd9447ea6553bcceacce0d13af7a1a"
+      }
+    },
+    {
+      "id": "ACT-02",
+      "classification": "TARGET",
+      "source": "src/ACT-02-placement-assessment.puml",
+      "source_sha256": "2c47bc416b62a295f18acd0a374fc2472649fc5d3b8355f1623f5f2687daf095",
+      "outputs": {
+        "svg": "rendered/ACT-02-placement-assessment.svg",
+        "png": "rendered/ACT-02-placement-assessment.png"
+      },
+      "output_sha256": {
+        "svg": "6c7ebd026f2ad9d6c8139992d85773f58e8e47003f9f615aa649f07040b9aefc",
+        "png": "67df4d3b76a0e4d9ab422e3ba3d33efbf48d739b6a33188060060f8ba4bdb10a"
+      }
+    },
+    {
+      "id": "ACT-03",
+      "classification": "TARGET",
+      "source": "src/ACT-03-lesson-learning.puml",
+      "source_sha256": "c864502cd58761968d553cfa088f89651a90da2dc73a80acb2911f0d3871d229",
+      "outputs": {
+        "svg": "rendered/ACT-03-lesson-learning.svg",
+        "png": "rendered/ACT-03-lesson-learning.png"
+      },
+      "output_sha256": {
+        "svg": "96e3fc543b5408eb7ae1de90518b4241944f1aead54f096c30b95c1865f15ce7",
+        "png": "8e4abdef377f1d4b194f24644b59e3df8a291ba3c623f4c17f317cf2ea41b2b3"
+      }
+    },
+    {
+      "id": "ACT-04",
+      "classification": "TARGET",
+      "source": "src/ACT-04-level-up-assessment.puml",
+      "source_sha256": "9430fb04226e655f0a03a61163cf24b80672b60fa08b16bf270ec6e70cde07c2",
+      "outputs": {
+        "svg": "rendered/ACT-04-level-up-assessment.svg",
+        "png": "rendered/ACT-04-level-up-assessment.png"
+      },
+      "output_sha256": {
+        "svg": "ede899eb18f88b8c666d7459d0aabe46e8f029bfe879dda9bf7199639067b4d6",
+        "png": "849cf9f720e696ef9d97477aade5bff2bc577220bab7e0e60f0fed56d6850bf2"
+      }
+    },
+    {
+      "id": "ACT-05",
+      "classification": "DEFERRED \u2014 NOT MVP",
+      "source": "src/ACT-05-reassessment.puml",
+      "source_sha256": "0f3301ca6c8414afcb88ba821606b3d41938c9ea15ae9fa80c5a0deb23f11ea0",
+      "outputs": {
+        "svg": "rendered/ACT-05-reassessment.svg",
+        "png": "rendered/ACT-05-reassessment.png"
+      },
+      "output_sha256": {
+        "svg": "06ab500315efeaf99d3e184f6c76b53071c6707623fd80b1ed7e6ad6cc6bb574",
+        "png": "38207a16cb14497a05afbd4c2181f9e756bb4a7148017f5249baa68a7ef6c8d1"
+      }
+    },
+    {
+      "id": "ACT-06",
+      "classification": "TARGET",
+      "source": "src/ACT-06-srs-review.puml",
+      "source_sha256": "fdda3f597c8b991186f5ad516f09c267b7c5deea66e4e5db2831ff13f18ebbcd",
+      "outputs": {
+        "svg": "rendered/ACT-06-srs-review.svg",
+        "png": "rendered/ACT-06-srs-review.png"
+      },
+      "output_sha256": {
+        "svg": "00c6ce650138a762be644e50519c02eb9dbbffbd234d43b003e3830368042369",
+        "png": "a2fea7b94b7973a1ab00535efbefdd3c45cd52ec9075aa0722264c6339110368"
+      }
+    },
+    {
+      "id": "ACT-07",
+      "classification": "TARGET",
+      "source": "src/ACT-07-teacher-provisioning.puml",
+      "source_sha256": "0d4959e6a13bd5b52ef24cb9af380716e6e7e509e59b21e56a7f4df364448b39",
+      "outputs": {
+        "svg": "rendered/ACT-07-teacher-provisioning.svg",
+        "png": "rendered/ACT-07-teacher-provisioning.png"
+      },
+      "output_sha256": {
+        "svg": "1e214866cd5d62d5303b7ae654e3d213efae6175f3de29a5d93f069805b4897d",
+        "png": "7eb33b6a519b32ea0f94a99b2581f112f3569bd47438ffddeb8a367d0eb97d00"
+      }
+    },
+    {
+      "id": "ACT-08",
+      "classification": "TARGET",
+      "source": "src/ACT-08-content-governance.puml",
+      "source_sha256": "44a06e57db9a22c6e42244cdcb660062fd7a3879168bdead59a72c5c8313ab75",
+      "outputs": {
+        "svg": "rendered/ACT-08-content-governance.svg",
+        "png": "rendered/ACT-08-content-governance.png"
+      },
+      "output_sha256": {
+        "svg": "93fa39fb71f9e505af922d37d19e718cc49b55133d200fb20f19b521e6cf1ff3",
+        "png": "5db69a94ef759bd8ed77dc233d7fb3cabeb4b1e03d4750828d28af99bff1c09c"
+      }
+    },
+    {
+      "id": "ACT-09",
+      "classification": "TARGET",
+      "source": "src/ACT-09-revision-replacement.puml",
+      "source_sha256": "db8f5a9a28e2e87d157804be93d3c74f8b90a8e095889b0633a85055b569278f",
+      "outputs": {
+        "svg": "rendered/ACT-09-revision-replacement.svg",
+        "png": "rendered/ACT-09-revision-replacement.png"
+      },
+      "output_sha256": {
+        "svg": "fdfbdcf71a7cb0c7f1797b0899a59b20b9cb15e711bf7df09ef201008b110166",
+        "png": "d437c44a5a8066ec0b6c48b3f4e59de333bc05d52a7631ae4607345983e2f5cd"
+      }
+    },
+    {
+      "id": "DATA-01",
+      "classification": "CURRENT",
+      "source": "src/DATA-01-current-migration-erd.puml",
+      "source_sha256": "8ce09c954b644725bc5114f08fe03f03b13fa06d2279538284eda358fefa85af",
+      "outputs": {
+        "svg": "rendered/DATA-01-current-migration-erd.svg",
+        "png": "rendered/DATA-01-current-migration-erd.png"
+      },
+      "output_sha256": {
+        "svg": "79c5bbe8164fc01a3f746d8255db5d5b7523218869821194bfb8df531e705862",
+        "png": "2398d8756aeddd399b0306bff1a6abfff320fd2d90755b096e3d98689fd60af2"
+      }
+    },
+    {
+      "id": "DATA-02",
+      "classification": "CURRENT",
+      "source": "src/DATA-02-current-prisma-model.puml",
+      "source_sha256": "4bd85298a9c38f0e327470e4f8ca43594cf25a6530a866876f41615b84d48744",
+      "outputs": {
+        "svg": "rendered/DATA-02-current-prisma-model.svg",
+        "png": "rendered/DATA-02-current-prisma-model.png"
+      },
+      "output_sha256": {
+        "svg": "23c650b70eb854db0a2cb077191e1b176ca210cd4b5546dcfd2eac4fff9c67b6",
+        "png": "3180a0fa670d28597b4690095315d2546f2c8531b83341e0df0c2261500caec9"
+      }
+    },
+    {
+      "id": "DATA-03",
+      "classification": "TARGET",
+      "source": "src/DATA-03-target-logical-erd.puml",
+      "source_sha256": "dcc85e2af2fbb9db9a116e679b6eca55ba8eda58a2789ab42f5e252ee2ba343b",
+      "outputs": {
+        "svg": "rendered/DATA-03-target-logical-erd.svg",
+        "png": "rendered/DATA-03-target-logical-erd.png"
+      },
+      "output_sha256": {
+        "svg": "cf2408aa18f9d4eee64c7abce57027296bc7bb5bfe7b746994247e60c352916d",
+        "png": "9f4732185eadd14e9667b99334088672b45422a6e2413a25138fdb54f3d317f5"
+      }
+    },
+    {
+      "id": "DEP-01",
+      "classification": "CURRENT",
+      "source": "src/DEP-01-current-deployment.puml",
+      "source_sha256": "01342e201df39dbf8a3a5321fe0a110dbacbe304b1116720c94f75301160fbe9",
+      "outputs": {
+        "svg": "rendered/DEP-01-current-deployment.svg",
+        "png": "rendered/DEP-01-current-deployment.png"
+      },
+      "output_sha256": {
+        "svg": "87a7ab011ddc708f1dd516450a5912f81261b3f46d73f4b21dc7e49cc0d4ffcf",
+        "png": "fe8600b28b774c0158556052bb9f0acc9a7bd60ce7dab6efb75a6bc24e4dbdb4"
+      }
+    },
+    {
+      "id": "DEP-02",
+      "classification": "TARGET",
+      "source": "src/DEP-02-target-deployment.puml",
+      "source_sha256": "b41f95b2f6406e96db6982ed68d18752f2eb72f481abf4073e4add99158c76ec",
+      "outputs": {
+        "svg": "rendered/DEP-02-target-deployment.svg",
+        "png": "rendered/DEP-02-target-deployment.png"
+      },
+      "output_sha256": {
+        "svg": "4fceb2d998e3840235d00ccb21609d63ee4c2e286775bd3dbb0e34f59ff54e98",
+        "png": "b94d7dfe7b1fefbfa7643103a8154b3e266c697d676cf2a1582a87c7b882e563"
+      }
+    },
+    {
+      "id": "DOM-01",
+      "classification": "TARGET",
+      "source": "src/DOM-01-core-domain-model.puml",
+      "source_sha256": "c1c305a25d70916fa365209de7e876c5a7c12754fc520b6d52c55a94dfcabee8",
+      "outputs": {
+        "svg": "rendered/DOM-01-core-domain-model.svg",
+        "png": "rendered/DOM-01-core-domain-model.png"
+      },
+      "output_sha256": {
+        "svg": "8c2ef11944b421b3e0d59d21ae54d3fe7a999500076316ca74719271735a8692",
+        "png": "8cffca37cd6e294b98c904f98a7ef222cd86106def2699f227f1d43aeca3bcb5"
+      }
+    },
+    {
+      "id": "SEC-01",
+      "classification": "TARGET",
+      "source": "src/SEC-01-target-trust-boundary-dfd.puml",
+      "source_sha256": "e80018be7806b48bb6a001debaa827871599fd2cb0ae40216bf12994a6bf71c9",
+      "outputs": {
+        "svg": "rendered/SEC-01-target-trust-boundary-dfd.svg",
+        "png": "rendered/SEC-01-target-trust-boundary-dfd.png"
+      },
+      "output_sha256": {
+        "svg": "cc57ea87dfa5cf59d6830e24935d522b1bc80468bea36a59481fe36c8244c9db",
+        "png": "f1559c498e8dd0e843bd5773113e6f3814c505724e01e9fcebeca80eedce9751"
+      }
+    },
+    {
+      "id": "SEQ-01",
+      "classification": "TARGET",
+      "source": "src/SEQ-01-login-authorization.puml",
+      "source_sha256": "b496ad5e1f2a9b1e6066a3bff6cc875005f09921f7203c4c568f5b1237d4c846",
+      "outputs": {
+        "svg": "rendered/SEQ-01-login-authorization.svg",
+        "png": "rendered/SEQ-01-login-authorization.png"
+      },
+      "output_sha256": {
+        "svg": "3e5ee95a23b909ec7c15d25171a682557312343d17f1d9c587b2ff9fdd2c613d",
+        "png": "a1386aa422fd2d495f7df0499dc4194bdd782e4bee7d10ca5f31ca3d54a9b37c"
+      }
+    },
+    {
+      "id": "SEQ-02",
+      "classification": "TARGET",
+      "source": "src/SEQ-02-teacher-provisioning.puml",
+      "source_sha256": "b771ef506052493df966f15087eb9fbb0a7b509ff4101767d2fe464092808c94",
+      "outputs": {
+        "svg": "rendered/SEQ-02-teacher-provisioning.svg",
+        "png": "rendered/SEQ-02-teacher-provisioning.png"
+      },
+      "output_sha256": {
+        "svg": "5b516e112c8f2fc575bf515260d582e159562239586b219b2cce887472f42972",
+        "png": "c34ac4660c90a82ada03460847c694230ed0c008b62e07ac74a90def87719fe1"
+      }
+    },
+    {
+      "id": "SEQ-03",
+      "classification": "TARGET",
+      "source": "src/SEQ-03-assignment-authoring-submit.puml",
+      "source_sha256": "16f49cd8e00acfa7bae57228415dcf141a3a93c0fd41c23626bc95f91e57c05d",
+      "outputs": {
+        "svg": "rendered/SEQ-03-assignment-authoring-submit.svg",
+        "png": "rendered/SEQ-03-assignment-authoring-submit.png"
+      },
+      "output_sha256": {
+        "svg": "3842cef8dd928bdb49bb6032afaf945dafa281c0f61d44917ab6790d6e0a223c",
+        "png": "75f33b9f29e4732dd549eb54514c6aa46dfd918ab9df286418440731f54f7fd5"
+      }
+    },
+    {
+      "id": "SEQ-04",
+      "classification": "TARGET",
+      "source": "src/SEQ-04-review-approve-publish.puml",
+      "source_sha256": "42a1707781119cae91f44f53054729239c7de7f44cd9674db975b46ffbbbd970",
+      "outputs": {
+        "svg": "rendered/SEQ-04-review-approve-publish.svg",
+        "png": "rendered/SEQ-04-review-approve-publish.png"
+      },
+      "output_sha256": {
+        "svg": "a137f7082ef0d27107ee61a7c97cdc8367996eb124abe9dbfaf1bc0e94d9f717",
+        "png": "3e6faba850935a0c978892e18f0a0a1d9b0b970fcb779589af194eb01609a9e5"
+      }
+    },
+    {
+      "id": "SEQ-05",
+      "classification": "TARGET",
+      "source": "src/SEQ-05-revision-replacement.puml",
+      "source_sha256": "5ae1ec22f281ef4d001a816e61c465a05e2721b1c7266b744bda787ecfbed2fa",
+      "outputs": {
+        "svg": "rendered/SEQ-05-revision-replacement.svg",
+        "png": "rendered/SEQ-05-revision-replacement.png"
+      },
+      "output_sha256": {
+        "svg": "43a7e34d9fbfa0f0aa7818ef72890a0913ee1477c7a96a5d17977dbdf6d9e582",
+        "png": "3c62dce6fee1e23898032516f6c063fd2743b4395897b00c109e1ded428d634f"
+      }
+    },
+    {
+      "id": "SEQ-06",
+      "classification": "TARGET",
+      "source": "src/SEQ-06-lesson-exercise-submission.puml",
+      "source_sha256": "7c71f52c2fd2a68b57a453ceb7465ec1167ee8a95f5a4d5c34b635ad8890a725",
+      "outputs": {
+        "svg": "rendered/SEQ-06-lesson-exercise-submission.svg",
+        "png": "rendered/SEQ-06-lesson-exercise-submission.png"
+      },
+      "output_sha256": {
+        "svg": "d7aa150401e61ea7256a9f1d4a4479583db896acc1099171c6521b6a233daaaa",
+        "png": "8cc92ef2b61619a780f13fc3651f4e47966ac22e342495ff11810eb477d64657"
+      }
+    },
+    {
+      "id": "SEQ-07",
+      "classification": "TARGET",
+      "source": "src/SEQ-07-assessment-submission.puml",
+      "source_sha256": "115680080f4c2eda9644d25f56f5ea5c55018c6e37fabeeda0523000e53ece8d",
+      "outputs": {
+        "svg": "rendered/SEQ-07-assessment-submission.svg",
+        "png": "rendered/SEQ-07-assessment-submission.png"
+      },
+      "output_sha256": {
+        "svg": "baf917684036db7f5f0805089c6c0b5ab2eec17aa9d07d0152ae4b20fe6b0684",
+        "png": "ddaa2f6c0e83d8d2ecbd54c942f59c655f70ac85aa8dceb3ca0d0c2bf475a1bf"
+      }
+    },
+    {
+      "id": "SEQ-08",
+      "classification": "TARGET",
+      "source": "src/SEQ-08-srs-review.puml",
+      "source_sha256": "44b453197278e9d5ae54cf4d644c3b27ee0f4265dda2b71a9b9fba25d23f691e",
+      "outputs": {
+        "svg": "rendered/SEQ-08-srs-review.svg",
+        "png": "rendered/SEQ-08-srs-review.png"
+      },
+      "output_sha256": {
+        "svg": "8560ca4adab53c6fe3e6079c093ee40bc24e5a8e8b37434aa2a590da48486d57",
+        "png": "75c3e87c014a16cd47adb79275bd23d6cd27b849b579ccda85d4b7bd28c0107e"
+      }
+    },
+    {
+      "id": "SEQ-09",
+      "classification": "TARGET",
+      "source": "src/SEQ-09-disable-account-enforcement.puml",
+      "source_sha256": "eedfa9db7c551587801dc079fb834cf817f90cfec2c67922ddd814bf9f5e8250",
+      "outputs": {
+        "svg": "rendered/SEQ-09-disable-account-enforcement.svg",
+        "png": "rendered/SEQ-09-disable-account-enforcement.png"
+      },
+      "output_sha256": {
+        "svg": "ff4b92adad5e3157cca0e97a21362ea1fa7f3da10625d803c077083af399bdc2",
+        "png": "8c6369d4ab981508ba6723ed6c16eaa643db62688c5f76c8f2a191d971c85b53"
+      }
+    },
+    {
+      "id": "STA-01",
+      "classification": "TARGET",
+      "source": "src/STA-01-account-status.puml",
+      "source_sha256": "3e320cf6664b742b098ff5a2e21d8f0d1ae5594a913636a0da9e2f34fe83d527",
+      "outputs": {
+        "svg": "rendered/STA-01-account-status.svg",
+        "png": "rendered/STA-01-account-status.png"
+      },
+      "output_sha256": {
+        "svg": "362d15f952f35980dbf817b69c2aab11295e5311f440d5284f10ed986fa6457e",
+        "png": "da4d3c8de0c01688ba1b4bd7d1855e88014ce7e0439fb436f6482646b3870d8f"
+      }
+    },
+    {
+      "id": "STA-02",
+      "classification": "TARGET",
+      "source": "src/STA-02-assignment-lifecycle.puml",
+      "source_sha256": "88ca0e5dbc06758c166dad81e18fc468cc4e18b5b8df77bc94518c6d470abbfb",
+      "outputs": {
+        "svg": "rendered/STA-02-assignment-lifecycle.svg",
+        "png": "rendered/STA-02-assignment-lifecycle.png"
+      },
+      "output_sha256": {
+        "svg": "59724a43dacbbf0087476697ab9755d611096c2ea107f18248bf10eb543f26ff",
+        "png": "076bc254b7b7a6a7e036c9e74e27d1d78bdeef834e36f44441ba4b4aa0ca396c"
+      }
+    },
+    {
+      "id": "STA-03",
+      "classification": "TARGET",
+      "source": "src/STA-03-content-revision-lifecycle.puml",
+      "source_sha256": "33bf02b34fc3e75334d54adbf7e2b56b2f0a55b12e12e4606aeec5fcb51115bf",
+      "outputs": {
+        "svg": "rendered/STA-03-content-revision-lifecycle.svg",
+        "png": "rendered/STA-03-content-revision-lifecycle.png"
+      },
+      "output_sha256": {
+        "svg": "ae25776b9d02b01e6580c45a8d26761b53c0e3bff7a52f5a2e5512b9a1ae2ab7",
+        "png": "63bdbfbf6f3d5305aeb9b3e7eb2d805f2af5befd8b773217ad6176b35d9de241"
+      }
+    },
+    {
+      "id": "SYS-01",
+      "classification": "CURRENT",
+      "source": "src/SYS-01-current-context.puml",
+      "source_sha256": "937270f34bac629eee1bbb0c83c5fa15546443d6181bf2fbc593c53b30f9aa7d",
+      "outputs": {
+        "svg": "rendered/SYS-01-current-context.svg",
+        "png": "rendered/SYS-01-current-context.png"
+      },
+      "output_sha256": {
+        "svg": "77a6c8ef9f592ae25fa1a75aabe6aa659167cd00f5030a1fd3695c45bf590a5c",
+        "png": "fd07b6ab5fb91fe699772b6b1958545bec3a664b605bc3efcb07f77d4e4b5348"
+      }
+    },
+    {
+      "id": "SYS-02",
+      "classification": "TARGET",
+      "source": "src/SYS-02-target-context.puml",
+      "source_sha256": "ce5efbc41818d951a655b79ae90af1471540469d3e5407c181c35867741b6bd7",
+      "outputs": {
+        "svg": "rendered/SYS-02-target-context.svg",
+        "png": "rendered/SYS-02-target-context.png"
+      },
+      "output_sha256": {
+        "svg": "53e3717aa5f24c10a84f91177036e6b361c6ad5a03e07259b936e59106d98ce6",
+        "png": "a7d2b3e6745a22b106551a82e613f5fbf8850f45c741273620d374bd339ead44"
+      }
+    },
+    {
+      "id": "SYS-03",
+      "classification": "CURRENT",
+      "source": "src/SYS-03-current-components.puml",
+      "source_sha256": "46914a058c57f45bdb1ac013f1d11903b6d23bfdef219d667f007a6208a671e9",
+      "outputs": {
+        "svg": "rendered/SYS-03-current-components.svg",
+        "png": "rendered/SYS-03-current-components.png"
+      },
+      "output_sha256": {
+        "svg": "219831dd4bb94a35f14aaaf65e3a23bb3073649d4a10f1b7c23b668c1c9d5009",
+        "png": "14f6f55bd71e8b4db5aecdc1ea0827ca6c8831b02f043399904bf43896c0bf96"
+      }
+    },
+    {
+      "id": "SYS-04",
+      "classification": "TARGET",
+      "source": "src/SYS-04-target-components.puml",
+      "source_sha256": "3354648ddd2d870c895ee31e72211eed2486a1f7f74ad185dcd16acdad06fc1c",
+      "outputs": {
+        "svg": "rendered/SYS-04-target-components.svg",
+        "png": "rendered/SYS-04-target-components.png"
+      },
+      "output_sha256": {
+        "svg": "c3ba51ec7142968ebca1dafe705c7e006e3adf9106ca11a13e0657869d0225a5",
+        "png": "0411f43e958a2af97d35d0a9eb499e1c2345f53e3f78cee05b225940bd64f8d4"
+      }
+    },
+    {
+      "id": "VIEW-UC-01",
+      "classification": "TARGET",
+      "source": "src/UC-01-target-overall.puml",
+      "source_sha256": "f343aa87af42a466ff408924f66c22b355bbbbcd4e6507247f9db3e0e763d1de",
+      "outputs": {
+        "svg": "rendered/UC-01-target-overall.svg",
+        "png": "rendered/UC-01-target-overall.png"
+      },
+      "output_sha256": {
+        "svg": "e1817b99bf40f9717b790956dd12804ae034742a34f3e25c0307624caf28c34d",
+        "png": "389918d94f97f21ec0a2c7241f159345d4654e23ff8932d48bf3501d6b62f8a4"
+      }
+    },
+    {
+      "id": "VIEW-UC-02",
+      "classification": "TARGET",
+      "source": "src/UC-02-target-learner.puml",
+      "source_sha256": "5d4dec72e182d401d9de9d930e1053471caf530642aa18ccef4af2bdf42cd606",
+      "outputs": {
+        "svg": "rendered/UC-02-target-learner.svg",
+        "png": "rendered/UC-02-target-learner.png"
+      },
+      "output_sha256": {
+        "svg": "fd52ad24762a499baacbe51669f332b906424e587037d46a6672f93066f4f14a",
+        "png": "ddeaaae7272e6967022a1f84df90c3e855d1a1d9bd2d60402670cdae35b75a36"
+      }
+    },
+    {
+      "id": "VIEW-UC-03",
+      "classification": "TARGET",
+      "source": "src/UC-03-target-teacher.puml",
+      "source_sha256": "f57b321917c321b80ef9d6382734fea3d96a145d10410ee9f3165f9a481adb0b",
+      "outputs": {
+        "svg": "rendered/UC-03-target-teacher.svg",
+        "png": "rendered/UC-03-target-teacher.png"
+      },
+      "output_sha256": {
+        "svg": "235d731f58c12c15bf21b1e6e03f2b4d0e8820094cf63fd4c89818946030b622",
+        "png": "0320536c629f6965bef1c96399e81ceda03a86602b0676d74c9c7351de762e4e"
+      }
+    },
+    {
+      "id": "VIEW-UC-04",
+      "classification": "TARGET",
+      "source": "src/UC-04-target-admin.puml",
+      "source_sha256": "bfaf63e788b77857abe9f08e5f8580abafa965c53ddcdb4694f5904269019200",
+      "outputs": {
+        "svg": "rendered/UC-04-target-admin.svg",
+        "png": "rendered/UC-04-target-admin.png"
+      },
+      "output_sha256": {
+        "svg": "5e08a526e6211ec4b055c09d833700a1a0cfd5bdbec886f32fba9d8698a9da22",
+        "png": "1c43bdef91c34bc34102d48b3ff87c7f80f9a0a1aa83f4cc2f8ce48688abd9a3"
+      }
+    }
+  ]
+}

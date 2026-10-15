@@ -1,0 +1,327 @@
+ M AGENTS.md
+ M ENVIRONMENT.md
+ M HANDOFF.md
+ M README.md
+ M docs/01-architecture.md
+ M docs/02-requirements.md
+ M docs/04-data-model.md
+ M docs/05-traceability-matrix.md
+ M docs/QUICK-REF.md
+ M docs/README.md
+R  docs/report-draft-analysis-design.md -> docs/archive/historical-reports/report-draft-analysis-design.md
+R  docs/slide-deck-17-slides.md -> docs/archive/historical-reports/slide-deck-17-slides.md
+R  docs/tai-lieu-phan-tich-yeu-cau.docx -> docs/archive/historical-reports/tai-lieu-phan-tich-yeu-cau.docx
+R  docs/tai-lieu-phan-tich-yeu-cau.md -> docs/archive/historical-reports/tai-lieu-phan-tich-yeu-cau.md
+R  docs/phase-0-corrective-implementation-report.md -> docs/archive/phase-0/phase-0-corrective-implementation-report.md
+R  docs/phase-0-final-independent-reverification-report.md -> docs/archive/phase-0/phase-0-final-independent-reverification-report.md
+R  docs/phase-0-final-master-consolidation.md -> docs/archive/phase-0/phase-0-final-master-consolidation.md
+R  docs/phase-0-final-product-owner-decision-sheet.md -> docs/archive/phase-0/phase-0-final-product-owner-decision-sheet.md
+R  docs/phase-0-final-reconciliation-log.md -> docs/archive/phase-0/phase-0-final-reconciliation-log.md
+R  docs/phase-0-final-requirements-audit.md -> docs/archive/phase-0/phase-0-final-requirements-audit.md
+R  docs/phase-0-final-requirements-baseline-audit.md -> docs/archive/phase-0/phase-0-final-requirements-baseline-audit.md
+R  docs/phase-0-final-user-research-and-requirements-audit.md -> docs/archive/phase-0/phase-0-final-user-research-and-requirements-audit.md
+R  docs/phase-0-fix-plan-independent-review.md -> docs/archive/phase-0/phase-0-fix-plan-independent-review.md
+R  docs/phase-0-independent-reverification-report.md -> docs/archive/phase-0/phase-0-independent-reverification-report.md
+R  docs/phase-0-master-report-independent-review.md -> docs/archive/phase-0/phase-0-master-report-independent-review.md
+R  docs/phase-0-master-report.md -> docs/archive/phase-0/phase-0-master-report.md
+R  docs/phase-0-mock-survey-report.md -> docs/archive/phase-0/phase-0-mock-survey-report.md
+R  docs/phase-0-presentation-artifacts-independent-audit.md -> docs/archive/phase-0/phase-0-presentation-artifacts-independent-audit.md
+R  docs/phase-0-product-owner-approval-packet.md -> docs/archive/phase-0/phase-0-product-owner-approval-packet.md
+R  docs/phase-0-product-owner-decision-sheet.md -> docs/archive/phase-0/phase-0-product-owner-decision-sheet.md
+R  docs/phase-0-requirements-gap-audit.md -> docs/archive/phase-0/phase-0-requirements-gap-audit.md
+R  docs/phase-0-role-content-workflow-review.md -> docs/archive/phase-0/phase-0-role-content-workflow-review.md
+R  docs/phase-0-roles-and-mvp-final.md -> docs/archive/phase-0/phase-0-roles-and-mvp-final.md
+R  docs/phase-0-survey-requirements.md -> docs/archive/phase-0/phase-0-survey-requirements.md
+R  docs/phase-0-synthetic-stakeholder-research.md -> docs/archive/phase-0/phase-0-synthetic-stakeholder-research.md
+R  docs/phase-0-user-research-analysis-and-requirements-independent-review.md -> docs/archive/phase-0/phase-0-user-research-analysis-and-requirements-independent-review.md
+R  docs/phase-0-user-research-analysis-and-requirements.md -> docs/archive/phase-0/phase-0-user-research-analysis-and-requirements.md
+ D docs/diagrams/lingora-modeling/deck/Lingora-System-Modeling-Presentation-v13.pptx
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide1.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide10.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide11.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide12.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide13.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide14.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide15.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide16.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide17.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide2.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide3.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide4.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide5.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide6.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide7.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide8.JPG
+ D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide9.JPG
+ D docs/diagrams/lingora-modeling/out/01-usecase-tong-quat.png
+ D docs/diagrams/lingora-modeling/out/02-usecase-hoc-vien.png
+ D docs/diagrams/lingora-modeling/out/02-usecase-overall.png
+ D docs/diagrams/lingora-modeling/out/03-usecase-learner.png
+ D docs/diagrams/lingora-modeling/out/03-usecase-noi-dung.png
+ D docs/diagrams/lingora-modeling/out/04-usecase-content-admin.png
+ D docs/diagrams/lingora-modeling/out/04-usecase-quan-tri-van-hanh.png
+ D docs/diagrams/lingora-modeling/out/05-activity-placement.png
+ D docs/diagrams/lingora-modeling/out/05a-activity-placement-flow.png
+ D docs/diagrams/lingora-modeling/out/05b-activity-placement-branches.png
+ D docs/diagrams/lingora-modeling/out/06-activity-learning.png
+ D docs/diagrams/lingora-modeling/out/06a-activity-learning-main.png
+ D docs/diagrams/lingora-modeling/out/06b-activity-learning-retry.png
+ D docs/diagrams/lingora-modeling/out/07-activity-jump.png
+ D docs/diagrams/lingora-modeling/out/07a-activity-jump-check.png
+ D docs/diagrams/lingora-modeling/out/07b-activity-jump-result.png
+ D docs/diagrams/lingora-modeling/out/08-activity-governance.png
+ D docs/diagrams/lingora-modeling/out/08a-activity-governance-main.png
+ D docs/diagrams/lingora-modeling/out/08b-activity-governance-branches.png
+ D docs/diagrams/lingora-modeling/out/09-class-content.png
+ D docs/diagrams/lingora-modeling/out/10-class-learner-assessment.png
+ D docs/diagrams/lingora-modeling/out/_style.png
+ D docs/diagrams/lingora-modeling/out/smoke.png
+ D docs/diagrams/lingora-modeling/src/01-usecase-tong-quat.puml
+ D docs/diagrams/lingora-modeling/src/02-usecase-hoc-vien.puml
+ D docs/diagrams/lingora-modeling/src/02-usecase-overall.png
+ D docs/diagrams/lingora-modeling/src/02-usecase-overall.puml
+ D docs/diagrams/lingora-modeling/src/03-usecase-learner.puml
+ D docs/diagrams/lingora-modeling/src/03-usecase-noi-dung.puml
+ D docs/diagrams/lingora-modeling/src/04-usecase-content-admin.puml
+ D docs/diagrams/lingora-modeling/src/04-usecase-quan-tri-van-hanh.puml
+ D docs/diagrams/lingora-modeling/src/05-activity-placement.puml
+ D docs/diagrams/lingora-modeling/src/05a-activity-placement-flow.puml
+ D docs/diagrams/lingora-modeling/src/05b-activity-placement-branches.puml
+ D docs/diagrams/lingora-modeling/src/06-activity-learning.puml
+ D docs/diagrams/lingora-modeling/src/06a-activity-learning-main.puml
+ D docs/diagrams/lingora-modeling/src/06b-activity-learning-retry.puml
+ D docs/diagrams/lingora-modeling/src/07-activity-jump.puml
+ D docs/diagrams/lingora-modeling/src/07a-activity-jump-check.puml
+ D docs/diagrams/lingora-modeling/src/07b-activity-jump-result.puml
+ D docs/diagrams/lingora-modeling/src/08-activity-governance.puml
+ D docs/diagrams/lingora-modeling/src/08a-activity-governance-main.puml
+ D docs/diagrams/lingora-modeling/src/08b-activity-governance-branches.puml
+ D docs/diagrams/lingora-modeling/src/09-class-content.puml
+ D docs/diagrams/lingora-modeling/src/10-class-learner-assessment.puml
+ D docs/diagrams/lingora-modeling/src/_style.puml
+ D docs/diagrams/lingora-modeling/src/smoke.puml
+ D docs/plantuml/activity-authoring-flow-m22.puml
+ D docs/plantuml/activity-content-approval.png
+ D docs/plantuml/activity-content-approval.puml
+ D docs/plantuml/activity-learner-flow-m22.puml
+ D docs/plantuml/activity-learner-journey.png
+ D docs/plantuml/activity-learner-journey.puml
+ D docs/plantuml/assessment-lifecycle-d3.puml
+ D docs/plantuml/component-architecture-m24.puml
+ D docs/plantuml/concept-content-evidence-d4.puml
+ D docs/plantuml/content-lifecycle-state.puml
+ D docs/plantuml/curriculum-architecture-d4.puml
+ D docs/plantuml/deployment-boundary-m24.puml
+ D docs/plantuml/diagnostic-flow-d3.puml
+ D docs/plantuml/domain-model-core.puml
+ D docs/plantuml/erd-logical-status-mapping.puml
+ D docs/plantuml/erd-mvp-learning.png
+ D docs/plantuml/erd-mvp-learning.puml
+ D docs/plantuml/item-bank-authoring-d4.puml
+ D docs/plantuml/layer-responsibility-m23.puml
+ D docs/plantuml/learning-progression-d3.puml
+ D docs/plantuml/learning-progression-model.puml
+ D docs/plantuml/lesson-blueprint-d4.puml
+ D docs/plantuml/level-readiness-d3.puml
+ D docs/plantuml/mastery-knowledge-gap-d3.puml
+ D docs/plantuml/multilanguage-content-d4.puml
+ D docs/plantuml/placement-jump-m22.puml
+ D docs/plantuml/recommendation-remediation-d3.puml
+ D docs/plantuml/remedial-content-d4.puml
+ D docs/plantuml/role-permission-matrix.png
+ D docs/plantuml/role-permission-matrix.puml
+ D docs/plantuml/screen-flow-inventory-m22.puml
+ D docs/plantuml/security-matrix-m24.puml
+ D docs/plantuml/sequence-admin-ops-m23.puml
+ D docs/plantuml/sequence-auth-session-m23.puml
+ D docs/plantuml/sequence-authoring-moderation-publish-m23.puml
+ D docs/plantuml/sequence-conditional-jump-m23.puml
+ D docs/plantuml/sequence-content-publishing.png
+ D docs/plantuml/sequence-content-publishing.puml
+ D docs/plantuml/sequence-diagnostic-placement-m23.puml
+ D docs/plantuml/sequence-gec-interaction-m23.puml
+ D docs/plantuml/sequence-learner-onboarding-m23.puml
+ D docs/plantuml/sequence-lesson-completion.png
+ D docs/plantuml/sequence-lesson-completion.puml
+ D docs/plantuml/sequence-lesson-exercise-retry-m23.puml
+ D docs/plantuml/sequence-progress-streak-m23.puml
+ D docs/plantuml/sequence-srs-review-m23.puml
+ D docs/plantuml/service-boundary-m23.puml
+ D docs/plantuml/sitemap-mvp.png
+ D docs/plantuml/sitemap-mvp.puml
+ D docs/plantuml/srs-flow-m22.puml
+ D docs/plantuml/state-progression-readiness-m22.puml
+ D docs/plantuml/system-architecture-mvp.png
+ D docs/plantuml/system-architecture-mvp.puml
+ D docs/plantuml/uc-admin.png
+ D docs/plantuml/uc-admin.puml
+ D docs/plantuml/uc-authoring.png
+ D docs/plantuml/uc-authoring.puml
+ D docs/plantuml/uc-general.png
+ D docs/plantuml/uc-general.puml
+ D docs/plantuml/uc-learner.png
+ D docs/plantuml/uc-learner.puml
+ D docs/plantuml/use-case-mvp-overview.png
+ D docs/plantuml/use-case-mvp-overview.puml
+ D docs/report/diagrams/activity-achievements.png
+ D docs/report/diagrams/activity-admin-content.png
+ D docs/report/diagrams/activity-auth-session.png
+ D docs/report/diagrams/activity-content-approval.png
+ D docs/report/diagrams/activity-learner-journey.png
+ D docs/report/diagrams/activity-lesson-exercise.png
+ D docs/report/diagrams/activity-placement-test.png
+ D docs/report/diagrams/activity-progress-reminder.png
+ D docs/report/diagrams/activity-srs-review.png
+ D docs/report/diagrams/activity-writing-grammar.png
+ D docs/report/diagrams/bfd-functional-decomposition.png
+ D docs/report/diagrams/class-diagram.png
+ D docs/report/diagrams/dfd-context.png
+ D docs/report/diagrams/dfd-lesson-exercise.png
+ D docs/report/diagrams/dfd-level-0.png
+ D docs/report/diagrams/dfd-srs.png
+ D docs/report/diagrams/dfd-writing-grammar.png
+ D docs/report/diagrams/erd-baseline-and-proposed.png
+ D docs/report/diagrams/erd-mvp-learning.png
+ D docs/report/diagrams/role-permission-matrix.png
+ D docs/report/diagrams/sequence-achievements.png
+ D docs/report/diagrams/sequence-auth.png
+ D docs/report/diagrams/sequence-content-publishing.png
+ D docs/report/diagrams/sequence-lesson-completion.png
+ D docs/report/diagrams/sequence-placement-test.png
+ D docs/report/diagrams/sequence-srs.png
+ D docs/report/diagrams/sequence-writing-grammar.png
+ D docs/report/diagrams/sitemap-mvp.png
+ D docs/report/diagrams/sitemap-ui-flow.png
+ D docs/report/diagrams/system-architecture-mvp.png
+ D docs/report/diagrams/system-architecture.png
+ D docs/report/diagrams/use-case-admin.png
+ D docs/report/diagrams/use-case-learner.png
+ D docs/report/diagrams/use-case-mvp-overview.png
+ D docs/report/diagrams/use-case-overview.png
+ D docs/report/diagrams/use-case-uc01.png
+ D docs/report/diagrams/use-case-uc02.png
+ D docs/report/diagrams/use-case-uc03.png
+ D docs/report/diagrams/use-case-uc04.png
+ D docs/report/diagrams/use-case-uc05.png
+ D docs/report/diagrams/use-case-uc06.png
+ D docs/report/diagrams/use-case-uc07.png
+ D docs/report/diagrams/use-case-uc08.png
+ D docs/report/diagrams/use-case-uc09.png
+ D docs/report/diagrams/use-case-uc10.png
+ M docs/use-case-specifications.md
+ D lingora-ai/README.md
+ D lingora-ai/api/.env.example
+ D lingora-ai/api/README.md
+ D lingora-ai/api/app/__init__.py
+ D lingora-ai/api/app/auth.py
+ D lingora-ai/api/app/config.py
+ D lingora-ai/api/app/main.py
+ D lingora-ai/api/app/schemas.py
+ D lingora-ai/api/app/services/mock.py
+ D lingora-ai/api/requirements.txt
+ D lingora-ai/api/tests/__init__.py
+ D lingora-ai/api/tests/conftest.py
+ D lingora-ai/api/tests/test_auth.py
+ D lingora-ai/api/tests/test_chat_roleplay.py
+ D lingora-ai/api/tests/test_error_envelope.py
+ D lingora-ai/api/tests/test_health_and_info.py
+ D lingora-ai/api/tests/test_srs_schedule.py
+ M lingora-web/README.md
+ M lingora-web/package-lock.json
+ M lingora-web/package.json
+ D lingora-web/src/app/api/ai/chat/route.ts
+ D lingora-web/src/app/api/ai/srs/route.ts
+ D lingora-web/src/features/ai/contracts.ts
+ D lingora-web/src/lib/api/error.ts
+ D lingora-web/src/lib/api/proxy.ts
+ D lingora-web/tests/unit/api.proxy.test.ts
+ M logs/decision-log.md
+ M logs/development-log.md
+ M logs/test-log.md
+ M plans/approved/README.md
+R  plans/phase-0-user-research-analysis-and-requirements-writing-plan.md -> plans/archive/2026-08-23-phase-0-user-research-analysis-and-requirements-writing-plan-HISTORICAL.md
+R  plans/phase-0-fix-plan.md -> plans/archive/2026-09-20-phase-0-fix-plan-HISTORICAL.md
+R  plans/phase-0-presentation-fix-plan.md -> plans/archive/2026-09-20-phase-0-presentation-fix-plan-HISTORICAL.md
+R  plans/phase-0-tai-lieu-requirements-fix-plan.md -> plans/archive/2026-09-20-phase-0-tai-lieu-requirements-fix-plan-HISTORICAL.md
+R  plans/m2-2-behavior-uc-activity-state-plan.md -> plans/archive/2026-09-22-m2-2-behavior-uc-activity-state-plan-HISTORICAL.md
+R  plans/m2-3-sequence-api-service-boundary-plan.md -> plans/archive/2026-09-23-m2-3-sequence-api-service-boundary-plan-HISTORICAL.md
+R  plans/m2-4-architecture-security-plan.md -> plans/archive/2026-09-23-m2-4-architecture-security-plan-HISTORICAL.md
+R  plans/m2-5-design-validation-plan.md -> plans/archive/2026-09-26-m2-5-design-validation-plan-HISTORICAL.md
+R  plans/m2-6-design-handoff-plan.md -> plans/archive/2026-09-26-m2-6-design-handoff-plan-HISTORICAL.md
+ M plans/archive/README.md
+ M plans/current-task.md
+ M plans/master-implementation-and-report-plan.md
+?? docs/archive/README.md
+?? docs/design/
+?? docs/modeling/
+?? docs/presentation/
+?? docs/superpowers/
+?? package-lock.json
+?? package.json
+?? plans/approved/2026-10-07-harness-authority-reconciliation-APPROVED.md
+?? plans/approved/2026-10-10-full-current-target-modeling-review-APPROVED.md
+?? plans/approved/2026-10-10-full-current-target-modeling-review-REQUEST.txt
+?? plans/approved/2026-10-10-lingora-product-revision-pass-APPROVED.md
+?? plans/approved/2026-10-10-p0-d07-logical-security-decisions-APPROVED.md
+?? plans/approved/2026-10-10-remove-stale-ai-references-APPROVED.md
+?? plans/approved/2026-10-11-drawio-exclude-deferred-act05-APPROVED.md
+?? plans/approved/2026-10-11-drawio-exclude-deferred-act05-REQUEST.txt
+?? plans/approved/2026-10-11-drawio-native-cell-layout-APPROVED.md
+?? plans/approved/2026-10-11-drawio-native-cell-layout-REQUEST.txt
+?? plans/approved/2026-10-11-drawio-native-render-parity-APPROVED.md
+?? plans/approved/2026-10-11-drawio-native-render-parity-BASELINE.json
+?? plans/approved/2026-10-11-drawio-native-render-parity-REQUEST.txt
+?? plans/approved/2026-10-11-final-3-point-modeling-correction-APPROVED.md
+?? plans/approved/2026-10-11-final-3-point-modeling-correction-BASELINE.json
+?? plans/approved/2026-10-11-final-3-point-modeling-correction-REQUEST.txt
+?? plans/approved/2026-10-11-final-physical-design-recheck-APPROVED.md
+?? plans/approved/2026-10-11-final-physical-design-recheck-BASELINE.json
+?? plans/approved/2026-10-11-final-physical-design-recheck-REQUEST.txt
+?? plans/approved/2026-10-11-final-physical-runtime-review-APPROVED.md
+?? plans/approved/2026-10-11-final-physical-runtime-review-BASELINE.json
+?? plans/approved/2026-10-11-final-physical-runtime-review-REQUEST.txt
+?? plans/approved/2026-10-11-full-diagram-correction-pass-APPROVED.md
+?? plans/approved/2026-10-11-full-diagram-correction-pass-BASELINE.json
+?? plans/approved/2026-10-11-full-diagram-correction-pass-REQUEST.txt
+?? plans/approved/2026-10-11-lingora-final-modeling-review-APPROVED.md
+?? plans/approved/2026-10-11-lingora-final-modeling-review-BASELINE.json
+?? plans/approved/2026-10-11-lingora-final-modeling-review-REQUEST.txt
+?? plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md
+?? plans/approved/2026-10-11-physical-data-runtime-design-BASELINE.json
+?? plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt
+?? plans/approved/2026-10-11-physical-design-correction-pass-APPROVED.md
+?? plans/approved/2026-10-11-physical-design-correction-pass-BASELINE.json
+?? plans/approved/2026-10-11-physical-design-correction-pass-REQUEST.txt
+?? plans/approved/2026-10-12-report-functional-usecase-views-AMENDMENT-01.md
+?? plans/approved/2026-10-12-report-functional-usecase-views-APPROVED.md
+?? plans/approved/2026-10-12-report-functional-usecase-views-BASELINE.json
+?? plans/approved/2026-10-12-report-functional-usecase-views-REQUEST.txt
+?? plans/approved/2026-10-12-study-focus-personalization-f01-f02-APPROVED.md
+?? plans/approved/2026-10-12-study-focus-personalization-f01-f02-BASELINE.json
+?? plans/approved/2026-10-12-study-focus-personalization-f01-f02-REQUEST.txt
+?? plans/archive/2026-10-07-prior-master-plan-active-task-capture-SUPERSEDED.md
+?? plans/archive/2026-10-08-p0-d03-domain-decision-record-DONE.md
+?? plans/archive/2026-10-08-p0-d04-domain-decision-record-DONE.md
+?? plans/archive/2026-10-08-p0-d05-placement-starting-point-policy-DONE.md
+?? plans/archive/2026-10-10-archive-legacy-plans-from-plans-root-DONE.md
+?? plans/archive/2026-10-10-archive-phase-0-and-legacy-reports-to-docs-archive-DONE.md
+?? plans/archive/2026-10-10-clean-rebuild-diagram-artifacts-DONE.md
+?? plans/archive/2026-10-10-full-current-target-modeling-review-DONE.md
+?? plans/archive/2026-10-10-lingora-product-revision-pass-DONE.md
+?? plans/archive/2026-10-10-p0-d02-three-business-roles-content-responsibilities-DONE.md
+?? plans/archive/2026-10-10-p0-d07-logical-security-decisions-DONE.md
+?? plans/archive/2026-10-10-pre-p0-d02-current-task-capture-SUPERSEDED.md
+?? plans/archive/2026-10-10-remove-stale-ai-references-DONE.md
+?? plans/archive/2026-10-11-drawio-native-render-parity-PENDING-CAPTURE.md
+?? plans/archive/2026-10-11-final-3-point-modeling-correction-DONE.md
+?? plans/archive/2026-10-11-final-physical-design-recheck-DONE.md
+?? plans/archive/2026-10-11-final-physical-runtime-review-DONE.md
+?? plans/archive/2026-10-11-full-diagram-correction-pass-DONE.md
+?? plans/archive/2026-10-11-lingora-final-modeling-review-DONE.md
+?? plans/archive/2026-10-11-physical-data-runtime-design-DONE.md
+?? plans/archive/2026-10-11-physical-design-correction-pass-DONE.md
+?? scratch/generate_clean_modeling.py
+?? scratch/render_puml.py
+?? scratch/verify_clean_rebuild.py
+?? scratch/verify_modeling_review.py
+?? scripts/

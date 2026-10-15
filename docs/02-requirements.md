@@ -1,12 +1,58 @@
 # 02 - Lingora Requirements and Report Scope
 
-> **[CANONICAL PHASE 2 REQUIREMENTS SUMMARY / CURRENT SOURCE OF TRUTH]**
-> **Controlling Implementation Source:** [`plans/master-implementation-and-report-plan.md`](../plans/master-implementation-and-report-plan.md) and [`docs/phase-1-m2-6-design-handoff.md`](phase-1-m2-6-design-handoff.md).
-> **Platform:** Web (`lingora-web` for Learner; `lingora-admin` for Content Governance).
-> **Canonical Roles (6 roles):** `Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager`. (Historical roles `Student` / `Teacher` are strictly SUPERSEDED).
-> **Phase 2 Scope:** Software Engineering CORE platform with deterministic algorithms (Placement/Mapping A, Lesson Content Viewer + 5 exercise types, Controlled Retry D7, SRS Policy B D8, Jump D5, Streak D9, 6-state content governance with SoD, RLS).
+> **Classification: MIXED HISTORICAL REQUIREMENTS AND PROPOSED ENGINEERING REQUIREMENTS; NOT A GLOBAL APPROVAL RECORD.** Validate each requirement against its controlling ADR and current use case before implementation; implementation is not authorized by this document.
+> **Current business/security authority:** ADR-034 approves exactly three business roles (`Admin`, `Teacher`, `Learner`), one role per account, and role responsibilities. ADR-035 approves logical identity/authorization, content lifecycle, assessment secrecy, SRS trust, and audit policies only. Six-role content below is historical and superseded only where it conflicts with current business/logical policy.
+> **Current behavioral authority:** `docs/use-case-specifications.md`, controlled by ADR-030 through ADR-036 and the SRS interaction clarification in ADR-041, each within its explicit scope. ADR-036 is the MVP addendum for lesson attempts, SRS enrollment, curriculum availability, assessment packages/purposes, and Admin Learner support; ADR-041 controls learner-visible SRS interaction and assessment-session boundaries. P0-D07 is resolved only as a logical product/security target; physical mapping and live state remain deferred. `plans/master-implementation-and-report-plan.md` is a TARGET roadmap, not implementation authority.
+> **Platform evidence:** Web (`lingora-web`) learner-auth foundation and Admin Prisma/migration artifacts exist; this document does not establish that other behaviors are implemented.
+> **Legacy Phase 2 scope values:** Mapping A, fixed assessment values, Jump, and physical role/RLS details are not approved by this header; apply ADR-032/033/035. Logical content states and security behavior follow ADR-035; physical status/schema representation remains deferred.
 > **AI Scope Status in Phase 2:** AI / ML / GEC is retained strictly for historical context and canonical traceability (`ML-GEC-*`, `P1-FR-007`); it is **OUT OF CURRENT PHASE 2 IMPLEMENTATION, TESTING, DEMO, AND ACCEPTANCE**.
 > **Sections below marked `[SUPERSEDED / HISTORICAL REFERENCE]` are preserved solely for academic report evolution and traceability.**
+
+---
+
+## Current MVP Product Baseline Addendum — ADR-036 (2026-10-10)
+
+This addendum controls current MVP product behavior where older requirement prose conflicts. It records PO-approved product rules only; it does not authorize application implementation or physical database design. Historical sections below remain unchanged evidence.
+
+### Lesson attempts and performance
+
+A lesson has `N` required core exercises as configured for that lesson. Never treat a sample question count as a platform invariant. Each core exercise is answered once; a first correct response contributes `1.0`. A first incorrect response gets formative feedback and is queued at the end for exactly one retry. A correct retry contributes `0.5`; an incorrect retry contributes `0`. For `K` first-incorrect exercises, a completed attempt's performance is the sum of contributions divided by `N + K`, counting every actual response. Completion requires validly processing every core exercise and any required retry, then successfully recording the attempt; correctness and score do not gate completion. An unfinished attempt has no completion or completed performance. Redo creates a new attempt without increasing completed-lesson count. Latest completed performance is primary; best may be secondary. Progress is based on completion, never score.
+
+### Vocabulary enrollment and SRS
+
+Completing a lesson enrolls its core vocabulary. Optional vocabulary is enrolled only when the learner chooses “Add to review.” One learner has one logical card per Vocabulary identity; later appearances reuse its stage and due date. New cards begin at Policy B stage 1 and are first due after one day. Remembered cards advance through `1 → 3 → 7 → 14 → 30` days and recur every 30 days at the final stage. A forgotten card resets to stage 1/one day and can return to the end of its current session once. That reinforcement does not create a second scheduling operation or change the long-term schedule again. The server remains the scheduling authority under ADR-035.
+
+### Study Focus personalization — ADR-042 (2026-10-12)
+
+Each owned LearningContext has one primary Study Focus: BALANCED default, VOCABULARY, GRAMMAR, READING or LISTENING. Selection/change is optional context/preferences behavior and applies to the next supplementary session only. Preserve existing history/scores/progress/start/working level and all SRS schedules; started session composition is unchanged.
+
+Ordinary supplementary practice combines independently eligible due/overdue SRS with configured focus-biased authored PRACTICE from the context's published AVAILABLE accessible curriculum. Reuse finite active Topic/Skill catalog metadata with four controlled knowledge areas; reject draft/inactive/retired/foreign-scope/secure assessment content. Bias is nonexclusive and configuration-driven, with eligible other-area fallback and no failure from sparse focus content. No fixed platform count/percentage or new taxonomy/history/composition table is required.
+
+Shared core order/unlocks/completion/Level-up gates and N/K contributions 1/0.5/0 with N+K denominator are unchanged. Supplementary responses never enter core score/completion or scored pinned Placement/Level-up composition/results. Grammar focus cannot suppress due vocabulary. Learners see only current prompts after session start, never due-list/pre-browse metadata. Detailed decision and PERS-01–10 design cases: [Study Focus addendum](study-focus-addendum.md). Canonical UCs remain unchanged.
+
+### SRS interaction and session boundary — ADR-041 (2026-10-12)
+
+The learner does not browse or preview a due/overdue vocabulary list, review stages, or the exact cards that will appear. `due_at` and due/overdue detection are internal scheduling state. During an ordinary learning/practice session, the system may select due/overdue cards and append or interleave review questions after or alongside core work; the learner sees only the selected question/prompt and answer interaction. A dedicated review session is optional; if offered, the system selects eligible items after the learner starts it. A due/overdue card remains eligible for a later suitable session until a valid review is recorded. Learners provide a valid answer/recall outcome and may optionally use “Add to Review” for eligible optional vocabulary; they do not select cards from the due queue or control stage, interval, or due date.
+
+SRS questions may appear in ordinary practice/checkpoints, but must not be dynamically inserted into a scored immutable Placement or Level-up Assessment Version. A separate review block, if presented near an assessment, remains outside the Assessment Version, score, and pass/fail decision. ADR-041 changes only learner-facing interaction/session presentation; Policy B (`1 → 3 → 7 → 14 → 30` days, then every 30 days), core-vocabulary auto-enrollment after valid lesson completion, optional enrollment, one logical Learner+Vocabulary card, server-authoritative scheduling, operation idempotency, and at-most-once same-session reinforcement remain unchanged.
+
+Physical-design synchronization note: Physical design must consume the updated SRS interaction semantics; due_at remains persisted/internal, but learner-facing due-list browsing is not an MVP capability. The physical-design package was not modified here.
+
+### Curriculum availability and history
+
+The learner follows the active curriculum. Unpublished or otherwise unavailable future content may appear as `LOCKED / COMING SOON` and is excluded from the eligible required-lesson progress denominator. A required lesson that is published and remains in the active curriculum stays eligible in that denominator even when normal sequential progression has not unlocked it for this learner. A lock icon can describe either unavailable content or current access; the UI and model distinguish those meanings. A withdrawn, uncompleted lesson is unavailable and is not counted as an uncompleted requirement in current eligible progress. Valid completion, performance, assessment result, and history are preserved through withdrawal, replacement, or curriculum update. Learners who completed a prior revision are not forced to repeat the replacement; learners who have not completed it follow the active revision. A future relearning/migration rule requires separate approval. A next level without available content is shown as locked/coming soon with an explanation that all currently available content is complete.
+
+### Assessment package and version
+
+Admin defines the assessment blueprint and requirement: language, framework, level/transition, purpose, curriculum/topic coverage, skill or knowledge coverage, item requirements/distribution, and necessary configuration. Teacher authors actual items within assigned work. Before submit/publication, the system checks coverage, required items/configuration, grading data, required media, and item completeness. Teacher submits; Admin reviews, approves, and publishes an immutable logical Assessment Version. An attempt stays bound to one version for its duration. An item exposed in ordinary lesson practice with its answer, correctness, or answer-revealing explanation cannot be reused exactly in an assessment; a different item or variant may test the same concept. This is a bounded workflow, not a generic workflow engine or QuestionBank platform.
+
+### MVP assessment scope
+
+MVP includes Placement for a starting-point recommendation and Level-up for progression only. Neither is a comprehensive language proficiency certificate. Reassessment, periodic rechecking, and verified-proficiency reassessment are deferred and are not active MVP use cases or learner-journey steps. Historical references remain historical/deferred.
+
+### Admin learner-account operations
+
+Admin may search Learner accounts, view necessary identity/status/role fields and a minimal LearningContext summary for support, disable/re-enable accounts, enter a reason where appropriate, and have the action audited. Admin may not edit completion, performance, assessment results, SRS review history, activity, level, progress, or other learner evidence. Password recovery remains a learner account flow; Admin does not need or learn the learner's current password.
 
 ---
 
@@ -194,7 +240,7 @@ Ch8. Kết luận
 
 ## Phase 0 Canonical Functional Baseline (MVP-01 to MVP-19)
 
-*Source: [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md)*
+*Source: [`docs/phase-0-roles-and-mvp-final.md`](archive/phase-0/phase-0-roles-and-mvp-final.md)*
 
 | ID | Chức năng MVP | Owner chính | Tiêu chí nghiệm thu tối thiểu (Acceptance Criteria) | Liên kết Use Case |
 |---|---|---|---|---|
@@ -258,10 +304,10 @@ This section contains the detailed technical engineering requirements (`P1-FR-*`
 | P1-FR-003 | Must | Learner can complete MCQ, FILL_BLANK, REORDER, GRAMMAR, and word-level LISTENING exercises following lesson content viewing. | Each type validates its approved payload; exercises test content introduced in the Lesson Content Viewer; correct/incorrect result is shown; progress is updated once per submission. A “Quiz” label, if used, refers to this sequence and does not imply separate Quiz/Attempt persistence. GRAMMAR and LISTENING detail is specified in `P1-FR-012` and `P1-FR-013`. | Exercise unit/E2E tests |
 
 | P1-FR-004 | Must | Learner can view and update lesson progress. | Status transitions are `NOT_STARTED → IN_PROGRESS → COMPLETED`; repeated completion is idempotent; progress is scoped to the authenticated learner. | Data/RLS tests |
-| P1-FR-005 | Must | Learner can review vocabulary using the approved deterministic SRS policy. | Due cards are selected from learner-owned state using `nextReviewAt <= now`; a completed review updates one SRS card and one immutable review log through the trusted RPC boundary. The policy is not called SM-2 until the RPC audit proves compatibility. | SRS/RPC integration and policy tests |
-| P1-FR-006 | Must | Review submission is recorded atomically. | `record_review` rejects a card not owned by `auth.uid()`; valid calls insert one review log and update one SRS card in one transaction. | RPC/RLS integration test |
+| P1-FR-005 | Must | Learner can review vocabulary using the approved deterministic SRS Policy B. | Due cards are selected from learner-owned state using `nextReviewAt <= now`; client submits card identity and valid self-rating only; trusted server/RPC computes stage, interval, and due date; same-operation retry is idempotent. Policy B is not SM-2/FSRS. | SRS/RPC integration and policy tests; physical reconciliation deferred under ADR-035 |
+| P1-FR-006 | Must | Review submission is recorded atomically and securely. | `record_review` rejects a card not owned by `auth.uid()`; a valid review operation updates one SRS card and one review-history record atomically. Client-provided probability/interval are not authoritative. Retrying the same operation does not duplicate history; deliberate re-review creates a new operation. | RPC/RLS integration test; inspect live RPC before implementation per ADR-035 |
 | P1-FR-007 | Must | Learner can complete scenario-based English writing practice and receive GEC feedback. | The application presents an ordered scenario prompt; valid English input returns `corrected_text`; unavailable optional suggestions/explanations do not fail correction; scenario-not-found, invalid-input, unauthorized and model-unavailable cases use documented errors. Dialogue generation is not implied. | GEC API and scenario-writing E2E |
-| P1-FR-008 | Must | Admin can authenticate with ADMIN role and manage published learning content and chat scenarios. | LEARNER cannot write content; ADMIN can create/update/publish/unpublish approved entities; unauthorized writes are rejected. | Admin checklist, RLS tests |
+| P1-FR-008 | Must | Admin can provision/manage Teacher accounts, manage curriculum requirements and assignments, and review, approve, and publish Teacher-authored learning content. | Learner may self-register; Teacher/Admin accounts are not publicly self-registered; each account has one server-controlled business role and no role-conversion UI; `auth.uid()` is the trusted subject; disabled accounts are denied on the next request; Teachers author only assigned Lesson packages; Admin does not author lesson/exercise/assessment content; only approved revisions can publish. Ambiguous legacy role values require deliberate review, not auto-conversion. Physical role/RLS, lifecycle persistence, and audit emission remain deferred under ADR-035. Chat-scenario administration is not active scope without a separate approved requirement. | Current UCs 1, 9–13; ADR-034/035; physical conformance pending Modeling Review |
 
 | P1-FR-009 | Must | Admin can upload approved media through Supabase Storage. | Only ADMIN can write media; stored paths are associated with the owning content record; invalid type/size is rejected. | Storage policy test |
 | P1-FR-010 | Must | The product supports approved UI/content locale behavior. | UI supports `vi` and `en`, defaults/falls back to `vi`; `ja` is P2; content follows requested locale → supported native locale → `vi` → `en` → explicit unavailable state. | Locale checklist |

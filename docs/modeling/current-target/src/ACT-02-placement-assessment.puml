@@ -1,0 +1,49 @@
+@startuml
+!include ../style.puml
+' diagram-id: ACT-02
+' classification: TARGET
+' authority: ADR-031/032/035/036; UC-02
+title Sơ đồ hoạt động – Kiểm tra xếp lớp
+|Học viên|
+start
+:Chọn kiểm tra xếp lớp;
+|Hệ thống|
+:Kiểm tra quyền và ngữ cảnh học;
+:Gắn lượt làm với một phiên bản đã xuất bản;
+:Hiển thị câu hỏi theo cấu hình;
+|Học viên|
+:Làm bài, không có phản hồi đúng sai;
+if (Nộp bài?) then (Có)
+  :Gửi câu trả lời;
+else (Không / bỏ dở)
+  |Hệ thống|
+  :Không tạo kết quả hoặc điểm giả;
+  :Giữ điểm bắt đầu trước đó;
+  stop
+endif
+|Hệ thống|
+if (Dữ liệu hợp lệ?) then (Có)
+  :Chấm bài ở phía hệ thống;
+else (Không)
+  :Không tạo kết quả hoàn tất;
+  :Giữ điểm bắt đầu trước đó;
+  stop
+endif
+:Lưu kết quả theo ngữ cảnh và phiên bản;
+if (Lưu thành công?) then (Có)
+  :Giữ bằng chứng và lịch sử trước đó;
+else (Không)
+  :Không tạo kết quả hoàn tất;
+  :Giữ điểm bắt đầu trước đó;
+  stop
+endif
+:Suy ra cấp độ bắt đầu đề xuất;
+:Trả kết quả tổng hợp và đề xuất;
+|Học viên|
+:Xem điểm bắt đầu đề xuất;
+:Tiếp tục học;
+stop
+' Failed/incomplete attempt may choose another entry path or try Placement later.
+' Recommendation is not verified proficiency/certification; no item answer/solution returned.
+' Submission retry is idempotent; deliberate new attempts retain prior evidence.
+@enduml

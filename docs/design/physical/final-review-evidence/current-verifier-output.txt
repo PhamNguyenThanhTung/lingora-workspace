@@ -1,0 +1,100 @@
+PASS 34-table catalog, complete necessity audit and ERD entity sets match
+PASS all requested A-S sections present in order
+PASS 12 explicit findings, six P1 and six P2, with OPEN status
+PASS review verdict and downstream stop are explicit
+PASS conditional rebuild and live-state boundary explicit
+PASS local link final-review.md -> ../../../plans/approved/2026-10-11-final-physical-runtime-review-REQUEST.txt
+PASS local link final-review.md -> ../../../plans/approved/2026-10-11-final-physical-runtime-review-APPROVED.md
+PASS local link final-review.md -> ../../../plans/approved/2026-10-11-final-physical-runtime-review-BASELINE.json
+PASS local link final-review.md -> ../../../logs/decision-log.md
+PASS local link final-review.md -> ../../02-requirements.md
+PASS local link final-review.md -> ../../use-case-specifications.md
+PASS local link final-review.md -> ../../05-traceability-matrix.md
+PASS local link final-review.md -> ../../modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS local link final-review.md -> ../../modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS local link final-review.md -> security-and-rls.md
+PASS local link final-review.md -> rebuild-plan.md
+PASS local link final-review.md -> review-and-verification.md
+PASS local link final-review.md -> final-review-evidence/verification.md
+PASS local link verification.md -> concurrent-workspace-observations.json
+PASS local link verification.md -> render-manifest.json
+PASS local link verification.md -> physical-verifier-output.txt
+PASS local link verification.md -> current-verifier-output.txt
+PASS local link verification.md -> diff-check-output.txt
+PASS local link verification.md -> diff-stat-output.txt
+PASS local link verification.md -> ../final-review.md
+PASS local link verification.md -> ../verify_final_review.py
+PASS local link README.md -> final-review.md
+PASS local link README.md -> ../../modeling/current-target/final-review.md
+PASS local link README.md -> ../../modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS local link README.md -> ../../modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS local link README.md -> ../../02-requirements.md
+PASS local link README.md -> ../../use-case-specifications.md
+PASS local link README.md -> ../../../logs/decision-log.md
+PASS local link README.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md
+PASS local link README.md -> security-and-rls.md
+PASS local link README.md -> rebuild-plan.md
+PASS local link README.md -> review-and-verification.md
+PASS local link README.md -> physical-erd.puml
+PASS local link README.md -> physical-erd-identity.svg
+PASS local link README.md -> physical-erd-content.svg
+PASS local link README.md -> physical-erd-learning.svg
+PASS local link README.md -> physical-erd-assessment.svg
+PASS local link README.md -> security-and-rls.md
+PASS local link README.md -> rebuild-plan.md
+PASS local link README.md -> review-and-verification.md
+LOCAL_LINK_COUNT 40
+PASS proposed business roles remain exactly three
+PASS no active Reassessment purpose introduced
+PASS no active legacy business role enum
+PASS no AI/runtime/mastery/materialized-plan subsystem
+PASS no hard-coded A1, assessment item count or universal gate introduced
+PASS Prisma and provider service-role trust claims remain explicit
+PASS unchanged source matches original render manifest
+PASS fresh independent render manifest covers unchanged source and eight outputs
+PASS source-bound unchanged render physical-erd-identity.svg
+PASS fresh render byte-identical to individually reviewed PNG/SVG physical-erd-identity.svg
+PASS source-bound unchanged render physical-erd-identity.png
+PASS fresh render byte-identical to individually reviewed PNG/SVG physical-erd-identity.png
+PASS PNG dimensions identity
+PASS source-bound unchanged render physical-erd-content.svg
+PASS fresh render byte-identical to individually reviewed PNG/SVG physical-erd-content.svg
+PASS source-bound unchanged render physical-erd-content.png
+PASS fresh render byte-identical to individually reviewed PNG/SVG physical-erd-content.png
+PASS PNG dimensions content
+PASS source-bound unchanged render physical-erd-learning.svg
+PASS fresh render byte-identical to individually reviewed PNG/SVG physical-erd-learning.svg
+PASS source-bound unchanged render physical-erd-learning.png
+PASS fresh render byte-identical to individually reviewed PNG/SVG physical-erd-learning.png
+PASS PNG dimensions learning
+PASS source-bound unchanged render physical-erd-assessment.svg
+PASS fresh render byte-identical to individually reviewed PNG/SVG physical-erd-assessment.svg
+PASS source-bound unchanged render physical-erd-assessment.png
+PASS fresh render byte-identical to individually reviewed PNG/SVG physical-erd-assessment.png
+PASS PNG dimensions assessment
+PASS preexisting scope preservation: []
+PASS 38 exact concurrent draw.io observations preserved, including recorded deletions
+PASS physical definitions byte-identical; only final-review pointer prepended
+PASS append-only original log prefix preserved: logs/test-log.md
+PASS append-only original log prefix preserved: logs/development-log.md
+PASS all 109 canonical PUML/render artifacts unchanged
+PASS new paths confined to review records or exact concurrent observations
+PASS HEAD unchanged; no commit
+PASS preexisting index unchanged; no staging
+NEW_REVIEW_FILE_LINE_COUNTS
+docs/design/physical/final-review-evidence/concurrent-workspace-observations.json 44
+docs/design/physical/final-review-evidence/current-verifier-output.txt 0
+docs/design/physical/final-review-evidence/diff-check-output.txt 0
+docs/design/physical/final-review-evidence/diff-stat-output.txt 218
+docs/design/physical/final-review-evidence/physical-verifier-output.txt 147
+docs/design/physical/final-review-evidence/render-manifest.json 53
+docs/design/physical/final-review-evidence/verification.md 49
+docs/design/physical/final-review.md 263
+docs/design/physical/verify_final_review.py 133
+plans/approved/2026-10-11-final-physical-runtime-review-APPROVED.md 33
+plans/approved/2026-10-11-final-physical-runtime-review-BASELINE.json 703
+plans/approved/2026-10-11-final-physical-runtime-review-REQUEST.txt 1223
+plans/archive/2026-10-11-drawio-native-render-parity-PENDING-CAPTURE.md 80
+plans/archive/2026-10-11-final-physical-runtime-review-DONE.md 42
+DOCUMENTATION_AND_SCOPE_CHECKS PASS
+SEMANTIC_REVIEW NEEDS PHYSICAL CORRECTION; F01-F12 OPEN; RUNTIME TESTS NOT EXECUTED

@@ -2,11 +2,33 @@
 
 ## Source-of-truth policy
 
-`docs/` is the canonical and immediately authoritative documentation set for Lingora.
+The repository has topic-specific authorities; `docs/` membership alone does not make a statement current or approved. At task start, read `plans/current-task.md`, `docs/QUICK-REF.md`, `HANDOFF.md`, then this index. Read the controlling topic source listed below. `AGENTS.md` controls agent procedure; this file controls documentation authority and supersession.
+
+### Authority order
+
+1. The active, human-authorized scope in `plans/current-task.md` controls what may be done in the current task. An approval applies only to that scope.
+2. `logs/decision-log.md` records approved architecture and product decisions. A decision controls only the subject it explicitly resolves; a later approval supersedes an earlier one only within the approved scope.
+3. Immutable snapshots in `plans/approved/` authorize only the named scope while referenced by the active `plans/current-task.md`. Completed or superseded snapshots are `HISTORICAL`; their old approval does not authorize new work. A plan draft or task status without current approval evidence and snapshot does not authorize implementation.
+4. Accepted design documents control their named TARGET design only. They do not prove runtime or database deployment.
+5. Repository source and ordered SQL migrations establish CURRENT repository artifacts. A live deployment or applied database state requires dated environment/catalog evidence; prose, Prisma alone, and old test logs do not establish it.
+6. `plans/master-implementation-and-report-plan.md` is a draft TARGET roadmap and the existing P0 decision backlog. It does not independently authorize a milestone.
+
+If the authorities disagree, label the affected rule `CONFLICT`, do not combine or select behavior by inference, and keep dependent implementation out of scope until the named decision is approved and recorded.
+
+### Required classifications
+
+| Classification | Meaning |
+|---|---|
+| `CURRENT` | Verified repository artifacts or dated runtime evidence; not a future design claim. |
+| `TARGET` | Approved future design; not implemented or deployed by virtue of being documented. |
+| `PROPOSED` | Direction or detail with no recorded approval. |
+| `HISTORICAL` | Previous approved or implemented state retained as evidence. |
+| `SUPERSEDED` | No longer controlling; the replacing source is named. |
+| `CONFLICT` | Sources disagree and no controlling approval resolves the difference. |
 
 `ke-hoach-chi-tiet/` was the legacy planning directory. It has been removed after full migration verification (M0). The migration map below is retained as a historical traceability record only.
 
-The final product name is **Lingora**. Approved repository boundaries are:
+The final product name is **Lingora**. The following are documented architectural boundaries, not proof that every subsystem exists in the current checkout:
 
 ```text
 lingora-web/    # Learner Web Platform (Next.js 15, SSR Auth, UI)
@@ -15,23 +37,52 @@ lingora-ai/     # Supporting AI Capability Service (Python 3.11, FastAPI, GEC)
 └── api/
 ```
 
+## Full Diagram Correction Pass & Final Modeling Review (2026-10-11)
+
+- **Correction Pass:** [Canonical correction report](modeling/current-target/review.md) records all 36 sources (30 TARGET, 5 CURRENT repository/configuration views, 1 deferred scope marker). Presentation, UML/data abstraction, and 11-concern consistency were corrected.
+- **Final Modeling Review and 3-point correction:** [Final review report](modeling/current-target/final-review.md) records the bounded recheck after the previous review. Verdict: **MODELING APPROVED** / **READY FOR PHYSICAL DESIGN**. It confirms there is no Assignment `CLOSED` state, Level-up readiness/pass parameters are configured without a platform-wide 100% lesson gate, and progress counts published active required lessons even when normal progression has not unlocked them. Unpublished/unavailable and withdrawn-incomplete content remains excluded. Only ACT-01 and ACT-09 were changed and rerendered; no physical design or implementation was started. See [diagram index](modeling/current-target/README.md) and [correction evidence](modeling/current-target/evidence/final-three-point-correction.md).
+
+## Proposed Physical Data & Runtime Design (2026-10-11)
+
+[Physical design](design/physical/README.md) and [conditional rebuild plan](design/physical/rebuild-plan.md) are **PROPOSED PHYSICAL DESIGN — NOT IMPLEMENTED**. They map approved logical modeling to 34 proposed tables, auth/RLS/runtime boundaries, four-view physical ERD and future acceptance tests. The task authorizes inspection/design only; technical choices are not yet approved. Live DB remains **LIVE DB UNVERIFIED**. Design review must precede any Implementation Plan, Prisma/migration/database or application change. [Review evidence](design/physical/review-and-verification.md) records independent defects/corrections and observed documentation checks.
+
+**Final independent review (2026-10-11):** [Final A–S review](design/physical/final-review.md) returned **NEEDS PHYSICAL CORRECTION / NOT READY FOR IMPLEMENTATION PLANNING**, with F01–F12 open at that review gate. Recommended table count remains 34; CLEAN REBUILD is conditional on separate live inventory/preservation/restore/cutover gates. Earlier physical readiness is historical input, not approval. That review changed only review/status/evidence; no physical correction or implementation was applied in it. The subsequently authorized correction pass is recorded below.
+
+**Physical correction pass (2026-10-11):** [Correction report](design/physical/correction-pass.md) records the bounded F01–F12 documentation changes; the independent [closure recheck](design/physical/independent-recheck.md) found all twelve CLOSED. F10 follows approved ACT-01; F12 now has explicit positive and negative coverage-tag scenarios. These cases are specified but NOT EXECUTED, so the physical design remains PROPOSED and the live database remains UNVERIFIED. Next is a separate FINAL PHYSICAL DESIGN REVIEW; implementation planning still requires that review's explicit approval.
+
+**Historical final physical design recheck (completed 2026-10-12; corrected by the addendum below):** [Final A–R report](design/physical/final-recheck.md) returns **NEEDS PHYSICAL CORRECTION / NOT READY FOR IMPLEMENTATION PLANNING**. F01/F02 remain STILL OPEN in the Teacher authoring-secret read executor and existing-context scoped-locker lookup; F03–F12 are independently CLOSED. Original findings and earlier all-CLOSED labels remain historical evidence. No redesign or implementation approval was applied; all four fresh render pairs match primary artifacts, 34 tables and 189 modeling files are preserved. Next separately authorized work is bounded F01/F02 correction and recheck. LIVE DB UNVERIFIED; destructive rebuild stays gated.
+
+## Study Focus personalization and final physical correction (2026-10-12)
+
+[Study Focus addendum](study-focus-addendum.md) and ADR-042 control the additive product scope alongside unchanged ADR-036/041: one primary focus per owned context, default BALANCED, affecting next supplementary practice only. Independent internal due SRS remains separate from eligible authored-practice bias/fallback; shared core and scored pinned assessments stay unchanged. Canonical UC-01–14 remains unchanged.
+
+[Current A–L correction report](design/physical/personalization-and-final-correction.md) supersedes only the prior F01/F02 open dependencies; [fresh targeted reviewer](design/physical/personalization-correction-evidence/independent-review.md) returns CONSISTENT / F01 CLOSED / F02 CLOSED / regression NONE. Table impact 34→34; canonical/physical verifiers exit 0. Status: PHYSICAL DESIGN READY FOR FINAL APPROVAL RECHECK, still PROPOSED / NOT IMPLEMENTED / LIVE DB UNVERIFIED. Final physical approval and implementation planning remain separate, unauthorized tasks. Prior approval/archive/review records are retained as historical evidence.
+
 ## Canonical documents
 
 | Document | Authority |
 |---|---|
-| [00-master-plan.md](00-master-plan.md) | Scope, priority, roadmap, workflow, risk and delivery baseline |
-| [01-architecture.md](01-architecture.md) | System boundaries, responsibilities, stack, model roles and repository layout |
-| [02-requirements.md](02-requirements.md) | Requirements, 19 MVP functions, 15 Use Cases, 6 roles, 6-state content workflow |
-| [03-api-contract.md](03-api-contract.md) | AI API contract (health, model info, target GEC contract, compatibility) |
-| [04-data-model.md](04-data-model.md) | Phase 0 Target Data Model, 6 roles, content lifecycle, RLS, RPC |
-| [05-traceability-matrix.md](05-traceability-matrix.md) | Requirement-to-MVP-UC-data-API-UI-test traceability |
-| [06-system-analysis.md](06-system-analysis.md) | System analysis, stakeholder catalog, boundaries, sequence flows |
-| [07-data-dictionary.md](07-data-dictionary.md) | Data dictionary, attribute constraints, schema definitions |
-| [phase-0-roles-and-mvp-final.md](phase-0-roles-and-mvp-final.md) | Phase 0 final roles (6 roles), permission matrix, 19 MVP functions |
-| [phase-0-survey-requirements.md](phase-0-survey-requirements.md) | Survey requirements elicitation baseline |
-| [QUICK-REF.md](QUICK-REF.md) | High-level quick reference snapshot for development |
+| [QUICK-REF.md](QUICK-REF.md) | First-read project snapshot: CURRENT repository state, TARGET intent, known conflicts, and task-specific pointers. Sections 1–5 are explicitly marked `HISTORICAL / SUPERSEDED` as operational instructions. |
+| [use-case-specifications.md](use-case-specifications.md) | Current 14-entry behavioral catalog with versioned crosswalks to inherited 15-entry catalogs. ADR-030–036 control only their recorded domain/logical scope: ADR-034 roles/responsibilities; ADR-032 Placement; ADR-033 completion/progression/activity; ADR-035 identity security, assignment/content lifecycle, assessment secrecy, SRS trust, and audit policy; ADR-036 revised lesson attempts, SRS enrollment, curriculum availability, assessment packages/versions, Reassessment deferral, and Admin learner-account scope. UC-03 reminders are deferred; Reassessment is not an active MVP UC. English configuration is not selected by UC text alone. Physical realization/live state remains open; this is not implementation approval. |
+| [01-architecture.md](01-architecture.md) | Phase 0 architecture reference; accepted Phase 1 architecture TARGET is [M2.4](phase-1-m2-4-architecture-security.md). ADR-030/031/032/033/034/035 record curriculum, learner-state, assessment/progression, business-role, and logical security policies without implementation authorization or physical-schema changes. Current code determines runtime; database/security deployment facts require read-only reconciliation. |
+| [02-requirements.md](02-requirements.md) | Mixed historical and proposed requirements, not blanket product approval. The current MVP Product Baseline Addendum is controlled by ADR-036 for lesson attempts, SRS enrollment, curriculum availability, assessment versions/purposes, and Admin learner support; ADR-034 controls current roles and ADR-035 logical security/governance. Legacy sections are historical where marked and do not override these decisions. Physical implementation remains unauthorized and deferred. |
+| [03-api-contract.md](03-api-contract.md) | Read-only legacy AI API contract. Its existence does not establish that the AI service or compatibility routes exist in the current checkout or are in active implementation scope. |
+| [04-data-model.md](04-data-model.md) | Historical and target data-model reference. ADR-030/031/032/033/034/035/036 control their recorded logical domain/product policies only; none decides physical schema. ADR-036 adds attempt/performance, completion, SRS enrollment/history, curriculum eligibility, assessment blueprint/version, and audited learner support concepts without requiring one table per concept. Current artifacts are `lingora-admin/prisma/schema.prisma` plus ordered SQL migrations; they disagree, including six Prisma roles plus `assignedRoles` versus two SQL role values. Physical mapping/RLS, assignments, publication, results, SRS, audit, `UserProgress.score`, performance/attempt representation, and `Profile.dailyGoalMin` remain deferred. Migration history does not establish live DB state. |
+| [05-traceability-matrix.md](05-traceability-matrix.md) | Current ADR-034–036 product/security traceability addenda plus an unchanged historical Phase 0 19-function/15-UC catalog. Historical implementation/test statuses are not current evidence; current catalog crosswalk is in `use-case-specifications.md`. |
+| [phase-1-m2-1-domain-and-logical-data-foundation.md](phase-1-m2-1-domain-and-logical-data-foundation.md) | Accepted logical domain TARGET. Logical entities and fields are not physical schema or implementation. ADR-030 controls the approved curriculum/framework scope; ADR-031 supersedes its single-`LearnerProfile` ownership assumptions where state must be per context and does not require persisted `SkillProfile` by default. The historical design is not rewritten. |
+| [phase-1-d3-assessment-learning-engine-design.md](phase-1-d3-assessment-learning-engine-design.md) | Accepted, historical assessment-engine TARGET. Progress/proficiency/mastery/readiness distinctions, two assessment classification axes, and immutable completed `AssessmentResult` concept remain where compatible. ADR-030/031/032/033/035 control curriculum, context ownership, Placement, completion/progression/activity, and logical answer/result security. Single-`LearnerProfile` ownership and unconditional persisted-`SkillProfile` assumptions are superseded within ADR-031 scope; stage-adaptive diagnostic is deferred by ADR-032; conflicting D06 rules are superseded within ADR-033; ADR-035 constrains assessment feedback/secrecy but approves no physical representation. The D3 file remains unchanged historical evidence. |
+| [phase-1-d4-content-curriculum-design.md](phase-1-d4-content-curriculum-design.md) | Proposed logical curriculum/content design; header says `READY FOR INDEPENDENT REVIEW`, so it is not an accepted implementation authority. ADR-030 controls accepted P0-D04 curriculum decisions and ADR-035 controls logical assignment/content lifecycle and publication-unit behavior; other D4 content remains proposed. |
+| [phase-1-m2-4-architecture-security.md](phase-1-m2-4-architecture-security.md) | Accepted architecture/security TARGET (ADR-027); supersedes Phase 0 architecture where covered, subject to later approved decisions. Its six-role names and actor/permission mapping are historical/superseded by ADR-034/035 for current business/logical security semantics; physical enforcement and deployment state remain deferred. |
+| [phase-1-m2-6-design-handoff.md](phase-1-m2-6-design-handoff.md) | Accepted handoff only (ADR-029); does not approve Phase 2 implementation. |
+| [phase-1-m2-2-behavior-uc-activity-state.md](phase-1-m2-2-behavior-uc-activity-state.md) | `SUPERSEDED` for current use-case behavior/actors by `use-case-specifications.md`; retained as historical design evidence. ADR-034/035 control current business/logical security and content responsibility; ADR-032/033 control Placement and progression/activity where older M2.2 statements conflict. UC IDs are catalog-local and crosswalked in the current specification. |
+| [08-english-a1-curriculum.md](08-english-a1-curriculum.md) | English A1 MVP `TARGET` content only; unit/lesson counts and sequence are not platform-wide architecture. |
+| [09-placement-and-jump-specification.md](09-placement-and-jump-specification.md) | Earlier English A1 Placement/Jump `HISTORICAL` specification and approval evidence. ADR-032 supersedes conflicting MVP Placement defaults; ADR-033 defers Jump as an MVP progression mechanism and supersedes its 95%/24-hour policy as a default. English counts, time, blueprint, thresholds, mapping (including historically approved Mapping A), and level-up settings remain configuration candidates requiring review. Historical approval remains intact. |
+| [archive/phase-0/phase-0-roles-and-mvp-final.md](archive/phase-0/phase-0-roles-and-mvp-final.md) | `HISTORICAL` Phase 0 roles and MVP. Its role names/responsibilities are superseded by ADR-034/035 for current business/logical security semantics; physical account-role mapping remains deferred. |
+| `Historical six-role matrix (legacy)` | Historical six-role M2.4 permission/security target. The legacy standalone artifact was deleted in the clean diagram rebuild. Canonical modeling baseline is at [modeling/current-target/](modeling/current-target/). ADR-034/035 control current business/logical security policy; physical enforcement remains deferred. |
+| [06-system-analysis.md](06-system-analysis.md) and [07-data-dictionary.md](07-data-dictionary.md) | Historical Phase 0 analysis/data-dictionary sources. Neither is current role or physical-schema authority; use ADR-034/035 for business/logical security policy and Full CURRENT + TARGET Modeling Review for physical reconciliation. |
+| [00-master-plan.md](00-master-plan.md) | `HISTORICAL` Phase 0 priorities and roadmap; not Phase 2 task authorization. Its old P0 AI/GEC items are not current Phase 2 priorities. |
 
-Workflow authority lives in [AGENTS.md](../AGENTS.md), [plans/current-task.md](../plans/current-task.md), and `logs/`.
+Workflow authority lives in [AGENTS.md](../AGENTS.md). The single task-status pointer is [plans/current-task.md](../plans/current-task.md); `DONE` means no follow-on task is active until a new one is recorded. [HANDOFF.md](../HANDOFF.md) summarizes operational state. The Phase 2 roadmap and decision queue are in `plans/master-implementation-and-report-plan.md`; that roadmap is a draft and does not authorize implementation. Accepted decisions remain in `logs/decision-log.md` (ADR-030 P0-D04, ADR-031 P0-D03, ADR-032 P0-D05, ADR-033 P0-D06, ADR-034 P0-D02, ADR-035 P0-D07 logical product/security target, ADR-036 MVP product revision); evidence belongs in `logs/test-log.md` and `logs/development-log.md`.
 
 ## Classification legend
 

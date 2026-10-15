@@ -1,0 +1,36 @@
+@startuml
+!include ../current-target/style.puml
+' diagram-id: VIEW-RUC-01
+' classification: REPORT
+' canonical UC: UC-01 only; report view ID is not a new canonical use case.
+' Presentation cleanup only; goal-level view, no detailed rules or internal-processing nodes.
+left to right direction
+skinparam linetype polyline
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam usecaseBackgroundColor white
+title Use Case chức năng – Đăng ký, đăng nhập và hồ sơ
+actor "Học viên" as Learner
+actor "Quản trị viên" as Admin
+actor "Giáo viên" as Teacher
+actor "Người dùng" as User
+rectangle "HỆ THỐNG LINGORA" {
+  usecase "Đăng ký tài khoản (Học viên)" as Signup
+  usecase "Đăng nhập / Xác thực" as Login
+  usecase "Khôi phục mật khẩu" as Recovery
+  usecase "Quản lý hồ sơ cá nhân" as Profile
+  usecase "Đăng xuất / kết thúc phiên" as Logout
+  usecase "Kích hoạt tài khoản đã được cấp" as Activate
+}
+Learner --|> User
+Admin --|> User
+Teacher --|> User
+Learner -- Signup
+Teacher -- Activate
+User -- Login
+User -- Recovery
+User -- Profile
+User -- Logout
+@enduml

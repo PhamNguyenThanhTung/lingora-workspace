@@ -1,0 +1,31 @@
+@startuml
+!include ../current-target/style.puml
+' ADR-042: context supporting subflow; no new canonical UC. No due-list browsing.
+' diagram-id: VIEW-RUC-02
+' classification: REPORT
+' canonical coverage: UC-01 supporting authentication, UC-02 Placement, UC-04 learning path.
+' Presentation cleanup only; goal-level view, no detailed rules or internal-processing nodes.
+left to right direction
+skinparam linetype polyline
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam usecaseBackgroundColor white
+title Use Case chức năng – Thiết lập ngữ cảnh học tập
+actor "Học viên" as Learner
+rectangle "HỆ THỐNG LINGORA" {
+  usecase "Tạo ngữ cảnh học" as CreateContext
+  usecase "Tiếp tục ngữ cảnh đang tạm dừng" as Resume
+  usecase "Tạm dừng ngữ cảnh" as Pause
+  usecase "Chọn/thay đổi trọng tâm học tập" as Focus
+  usecase "Làm Placement" as Placement
+  usecase "Mở lộ trình hiện hành" as OpenPath
+}
+Learner -- CreateContext
+Learner -- Resume
+Learner -- Pause
+Learner -- Focus
+Learner -- Placement
+Learner -- OpenPath
+@enduml

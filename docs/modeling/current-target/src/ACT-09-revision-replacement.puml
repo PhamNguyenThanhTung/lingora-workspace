@@ -1,0 +1,51 @@
+@startuml
+!include ../style.puml
+' diagram-id: ACT-09
+' classification: TARGET
+' authority: ADR-034/035/036; UC-04/09/10/11/12
+title Sơ đồ hoạt động – Thay thế và thu hồi phiên bản
+|Quản trị viên|
+start
+:Chọn bài học đã xuất bản;
+if (Thao tác?) then (Thay thế)
+  :Giao việc sửa cho một giáo viên;
+  |Hệ thống|
+  :Nhân bản thành bản nháp mới;\ngiữ nguồn gốc và bản đang dùng;
+  |Giáo viên|
+  :Sửa bản nháp được giao;
+  :Gửi duyệt;
+  |Quản trị viên|
+  :Duyệt và yêu cầu chỉnh sửa nếu cần;
+  :Phê duyệt bản đáp ứng yêu cầu;
+  :Yêu cầu xuất bản;
+  |Hệ thống|
+  :Kiểm tra quyền, phê duyệt và phiên bản;
+  if (Xuất bản thành công?) then (Có)
+    :Xuất bản bản mới, chuyển bản đang dùng nguyên tử;
+    :Lưu bản cũ và lịch sử;
+    if (Học viên đã hoàn thành bản trước?) then (Có)
+      :Giữ hoàn thành, không buộc học lại;
+    else (Không)
+      :Dẫn học viên tới bản đang dùng mới;
+    endif
+  else (Không)
+    :Giữ nguyên bản đang dùng và bằng chứng;
+  endif
+else (Thu hồi)
+  |Quản trị viên|
+  :Yêu cầu thu hồi theo chính sách;
+  |Hệ thống|
+  :Ngừng cung cấp bài đã thu hồi;
+  :Giữ hoàn thành, kết quả, điểm và lịch sử;
+  :Loại bài thu hồi chưa hoàn thành\nkhỏi yêu cầu tiến độ hiện hành;
+endif
+|Hệ thống|
+:Giữ bằng chứng học và ghi nhật ký;
+:Tính tiến độ trên nội dung đủ điều kiện;
+:Nội dung chưa publish / không khả dụng:\nhiển thị “Đang phát triển”, không tính mẫu số;
+:Bài đã publish trong lộ trình hiện hành,\nchưa mở do tiến trình vẫn tính mẫu số;
+:Tính tiến độ trên bài bắt buộc active,\nđã publish và đủ điều kiện;
+stop
+' No hard deletion of referenced content; no forced relearning or curriculum migration obligation.
+' Review/changes/resubmission lifecycle is detailed in ACT-08 and STA-03.
+@enduml

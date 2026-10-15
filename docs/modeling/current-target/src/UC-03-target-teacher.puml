@@ -1,0 +1,41 @@
+@startuml
+!include ../style.puml
+' diagram-id: VIEW-UC-03
+' classification: TARGET
+' Maps to UC-01/10/11; VIEW-UC-03 is not canonical reminder UC-03.
+' Activation/profile/Login = UC-01; worklist/edit/preview = UC-10; submission/history = UC-11.
+' Login is supporting presentation only; no canonical UC added.
+' Authority: ADR-034–036. Teacher authors only assigned work, follows Admin blueprint.
+' Edit only DRAFT/CHANGES_REQUESTED; no approval/publication or staff-account learning.
+' Readiness checks coverage, grading data, required media and completeness.
+' Answer-exposed practice items cannot be reused verbatim in assessments.
+left to right direction
+title Sơ đồ Use Case của Giáo viên
+
+actor "Giáo viên" as Teacher
+rectangle "HỆ THỐNG HỌC NGOẠI NGỮ LINGORA" {
+  usecase "Kích hoạt tài khoản" as Activation
+  usecase "Quản lý hồ sơ cá nhân" as Profile
+  usecase "Xem công việc được phân công" as Worklist
+  usecase "Soạn bài học và câu hỏi đánh giá" as Edit
+  usecase "Xem trước nội dung" as Preview
+  usecase "Nộp bài và nộp lại" as Submit
+  usecase "Xem phản hồi và lịch sử" as History
+  usecase "Đăng nhập / Xác thực" as Login
+}
+Teacher -- Activation
+Teacher -- Profile
+Teacher -- Worklist
+Teacher -- Edit
+Teacher -- Preview
+Teacher -- Submit
+Teacher -- History
+Teacher -- Login
+
+Profile ..> Login : <<include>>
+Worklist ..> Login : <<include>>
+Edit ..> Login : <<include>>
+Preview ..> Login : <<include>>
+Submit ..> Login : <<include>>
+History ..> Login : <<include>>
+@enduml

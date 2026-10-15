@@ -1,0 +1,30 @@
+@startuml
+!include ../style.puml
+' diagram-id: DEP-01
+' classification: CURRENT
+' Repository/configuration evidence only; no observed running host/service/database.
+' Evidence: lingora-web package.json/.env.example and auth implementation;
+' lingora-admin package.json/.env.example, Prisma datasource and SQL bucket declarations.
+' CURRENT app has auth/UI shell only; admin workspace contains CLI/data artifacts, no web app.
+' Applied migrations, live catalog, DB version, live buckets and deployment remain UNVERIFIED.
+' No web-to-product-DB edge: current web source contains no learner product query runtime.
+left to right direction
+title Sơ đồ cấu hình triển khai trong kho mã nguồn
+
+node "Môi trường phát triển web" {
+  artifact "Ứng dụng Next.js học viên\nXác thực và khung giao diện" as Web
+}
+node "Không gian dữ liệu quản trị" {
+  artifact "Prisma CLI và script seed" as CLI
+  artifact "SQL migration" as SQL
+}
+rectangle "Cấu hình dịch vụ Supabase" {
+  component "Tích hợp xác thực" as Auth
+  database "Kết nối PostgreSQL" as DB
+  storage "Khai báo kho ảnh và tài liệu" as Storage
+}
+Web ..> Auth : Cấu hình xác thực
+CLI ..> DB : Cấu hình kết nối
+SQL ..> DB : Định nghĩa dữ liệu và quyền
+SQL ..> Storage : Định nghĩa kho và quyền
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+!include ../style.puml
+' diagram-id: SEQ-02
+' classification: TARGET
+' authority: ADR-034, ADR-035; UC-13
+' Controlled provisioning, not public staff signup or role conversion.
+' Password/token secrets are not returned to Admin or stored in audit.
+title Sơ đồ trình tự – Cấp tài khoản Giáo viên
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+participant "Xác thực" as Auth
+database "Cơ sở dữ liệu" as DB
+
+Admin -> Web : Nhập thông tin Giáo viên
+Web -> Server : Yêu cầu cấp tài khoản
+Server -> Server : Kiểm tra danh tính, trạng thái và quyền quản trị
+alt Không đủ quyền
+  Server -> DB : Ghi nhật ký từ chối
+  Server --> Web : Từ chối cấp tài khoản
+else Đủ quyền
+  Server -> DB : Kiểm tra tài khoản đã tồn tại
+  DB --> Server : Kết quả tra cứu
+  alt Thông tin không hợp lệ hoặc tài khoản đã tồn tại
+    Server --> Web : Thông báo lỗi cần xử lý
+  else Thông tin hợp lệ
+    Server -> Auth : Tạo tài khoản; gửi lời mời kích hoạt
+    Auth --> Server : Kết quả cấp tài khoản
+    alt Cấp tài khoản thành công
+      Server -> DB : Lưu tài khoản với vai trò Giáo viên
+      Server -> DB : Ghi nhật ký cấp tài khoản
+      Server --> Web : Thông báo đã gửi lời mời
+    else Cấp tài khoản thất bại
+      Server -> DB : Ghi nhật ký thất bại
+      Server --> Web : Thông báo chưa cấp tài khoản
+    end
+  end
+end
+Web --> Admin : Hiển thị kết quả
+@enduml

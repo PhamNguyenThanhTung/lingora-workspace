@@ -1,0 +1,21 @@
+{
+  "verdict": "PASS",
+  "errors": [],
+  "pages": 44,
+  "unchanged_raw_pages": 43,
+  "goals": 17,
+  "actors": 3,
+  "associations": 20,
+  "includes": 13,
+  "waypoint_arrays": 0,
+  "protected_files": 913,
+  "embedded_source_payload": "unchanged",
+  "HEAD/index": "unchanged",
+  "historical_log_prefixes": "unchanged",
+  "native_export": "Draw.io Desktop page-index 5; exit 0; final PNG visually inspected",
+  "new_file_line_counts": {
+    "plans\\approved\\2026-10-12-overall-usecase-straight-layout-APPROVED.md": 10,
+    "plans\\archive\\2026-10-12-overall-usecase-straight-layout-DONE.md": 7,
+    "docs\\modeling\\current-target\\evidence\\2026-10-12-overall-straight\\verification.md": 21
+  }
+}

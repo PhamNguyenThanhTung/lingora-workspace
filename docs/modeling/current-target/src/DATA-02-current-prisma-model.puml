@@ -1,0 +1,61 @@
+@startuml
+!include ../style.puml
+' diagram-id: DATA-02
+' classification: CURRENT
+title Sơ đồ mô hình Prisma trong repository (CURRENT)
+' Appendix scope: Selected 7 of 18 declared models; 6 roles; Unit table declared; AuditLog declared
+
+entity Language {
+  * code : String <<PK>>
+}
+
+entity Profile {
+  * id : String <<PK>>
+  role : Role (6 values)
+  assignedRoles : Role[]
+}
+
+entity Course {
+  * id : String <<PK>>
+  languageCode : String <<FK Language>>
+}
+
+entity Unit {
+  * id : String <<PK>>
+  courseId : String <<FK Course>>
+  orderIndex : Int
+}
+
+entity Lesson {
+  * id : String <<PK>>
+  courseId : String <<FK Course>>
+  unitId : String <<FK Unit, Optional>>
+  status : ContentStatus (6 values)
+}
+
+entity Exercise {
+  * id : String <<PK>>
+  lessonId : String <<FK Lesson>>
+  payload : Json
+}
+
+entity AuditLog {
+  * id : String <<PK>>
+  actorId : String <<FK Profile>>
+  action : String
+}
+
+Course }o--|| Language
+Unit }o--|| Course
+Lesson }o--|| Course
+Lesson }o--o| Unit
+Exercise }o--|| Lesson
+AuditLog }o--|| Profile
+
+' note bottom of Unit
+'   MISMATCH WITH MIGRATIONS:
+'   Prisma declares 'Unit' and 'AuditLog',
+'   but SQL migrations 001..003 DO NOT create them.
+'   Prisma declares 6 roles; SQL migration has only 2 roles.
+' end note
+@enduml

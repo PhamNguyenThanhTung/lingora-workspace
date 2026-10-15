@@ -1,0 +1,740 @@
+Bạn đang làm việc trong repository Lingora hiện tại.
+
+Nhiệm vụ này là:
+
+**Rà soát và hoàn thiện sơ đồ lớp thiết kế hiện tại dựa trên các quyết định domain đã được chấp thuận, nhưng không được tự mở rộng phạm vi hoặc tự sáng tạo nghiệp vụ mới.**
+
+Toàn bộ báo cáo và giải thích phải viết bằng **tiếng Việt**.
+Tên class, field, enum, method, file, code và thuật ngữ kỹ thuật chuẩn có thể giữ tiếng Anh.
+
+---
+
+# 1. Mục tiêu
+
+Sơ đồ lớp hiện tại đang có khoảng 22 class và 1 enum.
+
+Một số class đang để trống thuộc tính hoặc thiếu quan hệ.
+
+Mục tiêu của task:
+
+- kiểm tra toàn bộ class hiện có;
+- xác định class nào đã đủ;
+- class nào thiếu thuộc tính/quan hệ;
+- class nào đang trùng nghĩa;
+- class nào cần merge/rename;
+- class nào chỉ nên giữ ở mức conceptual;
+- class nào chưa đủ requirement để chốt;
+- hoàn thiện sơ đồ lớp thành bản thiết kế có thể giải thích được.
+
+Không được tự biến sơ đồ thành implementation schema.
+
+Không được thêm class chỉ vì “kiến trúc đẹp hơn”.
+
+---
+
+# 2. Các quyết định đã chốt — KHÔNG mở lại
+
+## Assignment
+
+Chốt workflow:
+
+- Admin là người assign content cho Teacher.
+- Mỗi content item chỉ có **1 Teacher active assignee tại một thời điểm**.
+- Admin có thể reassign sang Teacher khác.
+- Khi reassign, phải giữ lịch sử assignment cũ để audit.
+- Assignment là khái niệm riêng với content status/revision.
+- Assignment không đồng nghĩa với publish/review state.
+
+Không thêm multi-assignee cho MVP.
+
+---
+
+## AssessmentBlueprint / Version
+
+Chốt:
+
+- `AssessmentBlueprint` mô tả cấu hình logic của loại assessment.
+- `AssessmentBlueprintVersion` là snapshot cụ thể của blueprint.
+- Một version đã được publish/activate để dùng cho learner thì **immutable**.
+- Muốn thay đổi cấu hình phải tạo version mới.
+- Assessment result phải truy được blueprint/version đã dùng.
+- Không sửa ngược version cũ đã có evidence.
+
+Không xây generic versioning framework.
+
+---
+
+## LogicalUnit
+
+Mặc định:
+
+`LogicalUnit` KHÔNG được giữ như một concept riêng nếu nó chỉ có ý nghĩa:
+
+> nhóm Lesson có thứ tự bên trong Course.
+
+Trong trường hợp đó phải dùng:
+
+`Unit`
+
+và target hierarchy:
+
+Course
+→ Unit
+→ Lesson
+
+Chỉ giữ `LogicalUnit` nếu repository/design chứng minh nó có semantics khác thật sự với `Unit`.
+
+Nếu không chứng minh được:
+- đề xuất merge/rename thành `Unit`;
+- không để cả `Unit` và `LogicalUnit` tồn tại song song.
+
+Không tự xóa source trong task này nếu chưa được phép.
+Chỉ chỉnh model/diagram hoặc báo cáo reconciliation cần thiết.
+
+---
+
+# 3. Các quyết định domain hiện có phải giữ nguyên
+
+Đọc các ADR/authority hiện tại trước khi sửa.
+
+Đặc biệt giữ các quyết định đã chốt về:
+
+- shared curriculum/content;
+- `Course` thuộc một learned `Language`;
+- `Unit → Lesson`;
+- learner không sở hữu bản copy Lesson;
+- `LearningContext` theo `(User, learned Language)`;
+- maximum 2 ACTIVE learned languages là MVP rule;
+- `Progress != Proficiency != Mastery != Readiness`;
+- placement chỉ đề xuất starting point;
+- AssessmentResult là evidence;
+- LearningPlan là deterministic domain concept, chưa mặc định persisted;
+- SRS learner-global;
+- streak account-global;
+- completion tách performance;
+- progression cần curriculum gate + level-up assessment.
+
+Không được sửa các quyết định này trong task sơ đồ lớp.
+
+---
+
+# 4. Phân loại mỗi class
+
+Với TẤT CẢ class hiện tại, bắt buộc phân loại một trong:
+
+### A. KEEP
+Class hợp lệ và cần giữ.
+
+### B. COMPLETE
+Class hợp lệ nhưng cần bổ sung attribute/relationship tối thiểu.
+
+### C. MERGE
+Class trùng semantics với class khác.
+
+Ví dụ:
+`LogicalUnit` nếu thực chất là `Unit`.
+
+### D. RENAME
+Tên class không phản ánh đúng meaning hiện tại.
+
+### E. DEFER
+Concept hợp lệ nhưng requirement chưa đủ để chốt attribute/method chi tiết.
+
+### F. REMOVE FROM DESIGN
+Chỉ dùng nếu class rõ ràng là tàn dư/duplicate và có evidence mạnh.
+Không xóa file/source trong task nếu chưa được authorize.
+
+Không được tự thêm class mới trước khi chứng minh class hiện tại không thể biểu diễn requirement.
+
+---
+
+# 5. Rà soát Assignment
+
+Kiểm tra class `Assignment`.
+
+Minimum semantics mong muốn:
+
+Assignment
+- id
+- content target
+- assignedTeacher
+- assignedByAdmin
+- assignedAt
+- endedAt? / active status
+- reassignment history
+
+Không bắt buộc đúng tên field trên.
+
+Phải thiết kế sao cho hỗ trợ:
+
+Admin
+→ assign Teacher A
+→ sau này reassign Teacher B
+→ vẫn truy ra Teacher A từng được assign trước đây.
+
+Không dùng một field overwrite đơn giản làm mất lịch sử.
+
+Không tạo workflow engine.
+
+Không tạo multi-assignee.
+
+---
+
+# 6. Rà soát Unit / LogicalUnit
+
+Xác định:
+
+- repository hiện có `Unit` hay `LogicalUnit`;
+- hai class có đang trùng nhau không;
+- D4/domain hiện coi Unit là gì;
+- lesson order đang nằm ở đâu.
+
+Target ưu tiên:
+
+Course
+→ Unit
+→ Lesson
+
+`Unit` tối thiểu cần biểu diễn:
+
+- identity
+- Course owner
+- ordering
+- code hoặc label
+- title/name nếu cần
+- optional Level association nếu domain hiện yêu cầu
+
+Không thêm field chỉ vì tiện implementation.
+
+Nếu `LogicalUnit` không có semantics riêng:
+đề xuất bỏ khỏi target diagram và dùng `Unit`.
+
+---
+
+# 7. Course
+
+Kiểm tra `Course`.
+
+Theo domain hiện tại:
+
+- Course là shared curriculum/program.
+- Course thuộc learned Language.
+- Course không phải learner enrollment.
+- Course không phải LearningPurpose.
+- Course không bị định nghĩa bởi một CEFR scalar duy nhất trong target domain.
+
+Minimum class diagram nên thể hiện đủ để hiểu:
+
+- identity;
+- learned Language;
+- lifecycle/publication status nếu thuộc domain content;
+- Units;
+- framework relationship nếu đã được quyết định.
+
+Không nhét implementation field quá chi tiết.
+
+---
+
+# 8. Vocabulary
+
+Hoàn thiện `Vocabulary` ở mức thiết kế tối thiểu.
+
+Cần xem xét:
+
+- Language
+- lexical form/term
+- meaning/definition
+- optional pronunciation
+- optional part of speech
+- optional example
+- relationship với Lesson/content
+- relationship với SRS learner state
+
+Không bắt buộc tất cả phải là required attribute.
+
+Phân biệt:
+
+`Vocabulary`
+= shared content
+
+khác:
+
+`UserVocabSrs`
+= learner-specific memory state.
+
+---
+
+# 9. AssessmentItem
+
+Hoàn thiện `AssessmentItem`.
+
+Phải tách:
+
+- learner-facing item content;
+- grading/correct-answer information.
+
+Không được vẽ class theo cách ngụ ý grading key được gửi công khai cho learner.
+
+Minimum semantics cần xem xét:
+
+- item id;
+- type;
+- prompt/content;
+- options nếu phù hợp;
+- skill/topic/level metadata nếu có;
+- grading key/server-only data;
+- lifecycle/status;
+- relation với Blueprint/Version/item pool.
+
+Không cần plugin architecture.
+
+---
+
+# 10. AssessmentBlueprint / AssessmentBlueprintVersion
+
+Phải thể hiện rõ:
+
+AssessmentBlueprint
+→ có nhiều AssessmentBlueprintVersion
+
+AssessmentBlueprintVersion:
+- immutable sau publish/use;
+- chứa assessment configuration snapshot;
+- phải đủ để trace AssessmentResult.
+
+Các yếu tố có thể cần biểu diễn:
+
+- blueprint type/purpose;
+- item count/config;
+- coverage;
+- time limit nếu có;
+- threshold/config;
+- framework/level scope;
+- version number;
+- published/activated timestamp.
+
+Chỉ giữ những field thực sự cần ở design level.
+
+Không nhét mọi policy vào một JSON blob chỉ để tránh modeling.
+
+---
+
+# 11. AssessmentResult
+
+Kiểm tra class này nếu có trong diagram.
+
+Phải thể hiện:
+
+- learner/context owner;
+- assessment purpose/type;
+- blueprint version used;
+- score/result;
+- outcome/recommendation nếu có;
+- created/completed time;
+- provenance.
+
+Không mặc định:
+
+AssessmentResult
+→ verified proficiency
+
+Chỉ là evidence.
+
+---
+
+# 12. ContentRevision
+
+Hoàn thiện ở mức tối thiểu để trả lời:
+
+- revision thuộc content nào;
+- revision number/version;
+- ai tạo;
+- thời điểm;
+- change summary nếu cần.
+
+Không biến ContentRevision thành full event sourcing.
+
+---
+
+# 13. AuditLog
+
+Minimum semantics:
+
+AuditLog
+- actor
+- action
+- target type
+- target id
+- timestamp
+- optional metadata/reason
+
+AuditLog dùng cho:
+
+- reassignment;
+- publish/review;
+- direct admin action;
+- privileged operation.
+
+Không duplicate toàn bộ content snapshot vào AuditLog nếu không cần.
+
+---
+
+# 14. Progress
+
+Không chỉ để công thức trống trong class.
+
+Phải thể hiện đủ để giải thích semantics:
+
+Progress
+- completed required lessons
+- eligible required lessons
+- completion ratio [derived]
+- status nếu thực sự cần
+- timestamps nếu cần
+
+Nhưng phải xác định cái gì:
+
+- persisted;
+- derived;
+- conceptual only.
+
+Không mặc định lưu cả numerator, denominator và ratio nếu có thể derive.
+
+D06 đã chốt:
+
+progress = completed required lessons / eligible required lessons
+
+trong active level scope.
+
+Không biến progress thành proficiency.
+
+---
+
+# 15. LearningContext
+
+Kiểm tra diagram có phản ánh đúng ADR-031 chưa.
+
+Minimum semantics:
+
+LearningContext
+- User
+- learned Language
+- ACTIVE / PAUSED
+- primary LearningPurpose
+- focus preferences
+- study preferences
+- starting point
+- self-reported proficiency/reference nếu cần
+
+Không thêm Enrollment riêng trong MVP.
+
+Không lưu verified proficiency như một scalar mơ hồ nếu evidence có thể đại diện tốt hơn.
+
+---
+
+# 16. LearningPlan
+
+Nếu class này đang tồn tại:
+
+phải kiểm tra nó có thực sự nên là persisted class không.
+
+Theo domain đã chốt:
+
+LearningPlan là deterministic domain output.
+
+Nếu chưa có requirement persistence:
+- có thể bỏ nó khỏi persistent/domain class diagram;
+- hoặc đánh dấu `derived/conceptual`.
+
+Không tự tạo:
+- LearningPlanVersion
+- PlanHistory
+- PlanItem persistence
+nếu chưa có requirement.
+
+---
+
+# 17. Method trong class diagram
+
+Không tự thêm CRUD methods kiểu:
+
+- create()
+- update()
+- delete()
+- getAll()
+
+chỉ để class “đầy hơn”.
+
+Method chỉ nên xuất hiện nếu nó có giá trị domain rõ ràng.
+
+Nếu sơ đồ hiện tại là domain/design class diagram:
+ưu tiên attributes + relationships hơn methods.
+
+Không ép mỗi class phải có method.
+
+---
+
+# 18. Kiểu dữ liệu
+
+Không chốt DB-specific type nếu đây chưa phải physical schema diagram.
+
+Ưu tiên kiểu logical như:
+
+String
+Integer
+Boolean
+DateTime
+Identifier
+Enum
+Reference
+
+Không cần:
+
+VARCHAR(255)
+BIGINT
+TIMESTAMPTZ
+
+trừ khi sơ đồ hiện tại rõ ràng là physical schema diagram.
+
+---
+
+# 19. Cardinality
+
+Rà lại toàn bộ multiplicity.
+
+Đặc biệt:
+
+User
+→ LearningContext
+
+Language
+→ Course
+
+Course
+→ Unit
+
+Unit
+→ Lesson
+
+Lesson
+→ Exercise
+
+Lesson
+↔ Vocabulary
+
+AssessmentBlueprint
+→ AssessmentBlueprintVersion
+
+AssessmentBlueprintVersion
+→ AssessmentItem / item configuration
+
+LearningContext
+→ AssessmentResult
+
+Admin
+→ Assignment
+
+Teacher
+→ Assignment
+
+Content
+→ Revision
+
+User
+→ UserVocabSrs
+→ Vocabulary
+
+Không đặt multiplicity theo suy đoán nếu requirement chưa đủ.
+
+---
+
+# 20. Không tự quyết những thứ chưa đủ requirement
+
+Nếu gặp nội dung product-level chưa được quyết định:
+
+đánh dấu:
+
+USER DECISION REQUIRED
+
+Không tự chọn.
+
+Nếu chỉ là modeling detail thông thường và có một phương án tối thiểu rõ ràng:
+
+đánh dấu:
+
+SAFE DESIGN DECISION
+
+và tự hoàn thiện.
+
+Nếu chưa cần cho MVP:
+
+DEFER.
+
+---
+
+# 21. Báo cáo trước khi sửa
+
+Trước khi thay diagram, xuất bảng:
+
+| Class | Current status | Problem | Classification | Proposed change | Decision source |
+
+Phải bao phủ toàn bộ 22 class + enum hiện có.
+
+Sau đó riêng một mục:
+
+## USER DECISIONS STILL REQUIRED
+
+Chỉ liệt kê những câu mà chủ dự án thực sự phải quyết.
+
+Không hỏi những detail kỹ thuật như:
+- String hay varchar;
+- field name nhỏ;
+- nullable implementation;
+- index.
+
+Nếu không còn câu hỏi product quan trọng:
+ghi rõ:
+
+`Không còn user decision bắt buộc cho vòng hoàn thiện sơ đồ này.`
+
+---
+
+# 22. Sau khi phân tích mới được sửa diagram
+
+Chỉ sửa diagram sau khi đã:
+
+- kiểm tra đủ 22 class;
+- phân loại;
+- xác nhận không có unresolved user decision đang block phần đó.
+
+Không sửa product requirements để khớp diagram.
+
+Diagram phải khớp decisions, không phải decisions khớp diagram.
+
+---
+
+# 23. Yêu cầu bố cục sơ đồ
+
+Vẽ lại sạch.
+
+Nhóm theo domain nếu cần:
+
+- Identity / Learner
+- Curriculum / Content
+- Assessment
+- Progress / SRS
+- Authoring / Governance
+
+Không dùng note box lớn che diagram.
+
+Không để đường association spaghetti.
+
+Không thêm explanation paragraph trong class box.
+
+Class chỉ nên có:
+
+Class Name
+
+Attributes
+
+Methods nếu thực sự cần.
+
+Dùng package/grouping để giải thích context thay vì note trắng dài.
+
+---
+
+# 24. Không được làm
+
+Không:
+
+- sửa Prisma;
+- sửa migrations;
+- sửa seed;
+- sửa application code;
+- sửa API;
+- sửa frontend;
+- sửa tests;
+- tạo migration;
+- thay ADR;
+- thay product policy;
+- thêm feature;
+- xóa historical docs;
+- cài package.
+
+Task chỉ phục vụ:
+
+**class model completeness + diagram cleanup**
+
+---
+
+# 25. Output sau khi hoàn tất
+
+Báo cáo:
+
+## A. Tổng số class trước/sau
+
+## B. Class giữ nguyên
+
+## C. Class được bổ sung
+
+## D. Class merge/rename
+
+Đặc biệt báo cáo rõ:
+`LogicalUnit` đã xử lý thế nào.
+
+## E. Attributes đã thêm
+
+Chỉ liệt kê những attribute quan trọng về domain.
+
+## F. Relationships/cardinality đã sửa
+
+## G. Classes/fields bị DEFER
+
+## H. User decisions còn lại
+
+Nếu không còn:
+ghi rõ.
+
+## I. Những phần KHÔNG sửa
+
+Xác nhận:
+- không Prisma;
+- không migration;
+- không runtime;
+- không code.
+
+## J. Diagram quality check
+
+Xác nhận:
+- không note trắng dài;
+- không empty class vô lý;
+- không association spaghetti;
+- không duplicate semantics;
+- không field implementation noise;
+- sơ đồ đủ để trình bày và giải thích ở mức thiết kế.
+
+## K. Git diff summary
+
+Không commit.
+
+---
+
+# 26. Quy tắc cuối
+
+Nếu có chỗ không chắc chắn:
+
+không tự bịa.
+
+Ưu tiên:
+
+minimal model
++
+existing approved decisions
++
+clear DEFER
+
+hơn là tạo thêm abstraction.
+
+Kết thúc bằng:
+
+`CLASS DESIGN REVIEW COMPLETE — PRODUCT IMPLEMENTATION NOT AUTHORIZED`

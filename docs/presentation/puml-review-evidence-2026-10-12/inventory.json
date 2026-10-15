@@ -1,0 +1,301 @@
+{
+  "head": "89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737",
+  "index": ":100644 100644 30c8e74 30c8e74 R100\tdocs/report-draft-analysis-design.md\tdocs/archive/historical-reports/report-draft-analysis-design.md\n:100644 100644 4354ed8 4354ed8 R100\tdocs/slide-deck-17-slides.md\tdocs/archive/historical-reports/slide-deck-17-slides.md\n:100644 100644 40863f9 40863f9 R100\tdocs/tai-lieu-phan-tich-yeu-cau.docx\tdocs/archive/historical-reports/tai-lieu-phan-tich-yeu-cau.docx\n:100644 100644 265557f 265557f R100\tdocs/tai-lieu-phan-tich-yeu-cau.md\tdocs/archive/historical-reports/tai-lieu-phan-tich-yeu-cau.md\n:100644 100644 5b498a6 5b498a6 R100\tdocs/phase-0-corrective-implementation-report.md\tdocs/archive/phase-0/phase-0-corrective-implementation-report.md\n:100644 100644 e22a195 e22a195 R100\tdocs/phase-0-final-independent-reverification-report.md\tdocs/archive/phase-0/phase-0-final-independent-reverification-report.md\n:100644 100644 3e41eef 3e41eef R100\tdocs/phase-0-final-master-consolidation.md\tdocs/archive/phase-0/phase-0-final-master-consolidation.md\n:100644 100644 54a94b2 54a94b2 R100\tdocs/phase-0-final-product-owner-decision-sheet.md\tdocs/archive/phase-0/phase-0-final-product-owner-decision-sheet.md\n:100644 100644 be615ba be615ba R100\tdocs/phase-0-final-reconciliation-log.md\tdocs/archive/phase-0/phase-0-final-reconciliation-log.md\n:100644 100644 7dfe21c 7dfe21c R100\tdocs/phase-0-final-requirements-audit.md\tdocs/archive/phase-0/phase-0-final-requirements-audit.md\n:100644 100644 8d0af23 8d0af23 R100\tdocs/phase-0-final-requirements-baseline-audit.md\tdocs/archive/phase-0/phase-0-final-requirements-baseline-audit.md\n:100644 100644 e02a712 e02a712 R100\tdocs/phase-0-final-user-research-and-requirements-audit.md\tdocs/archive/phase-0/phase-0-final-user-research-and-requirements-audit.md\n:100644 100644 459a992 459a992 R100\tdocs/phase-0-fix-plan-independent-review.md\tdocs/archive/phase-0/phase-0-fix-plan-independent-review.md\n:100644 100644 84947c6 84947c6 R100\tdocs/phase-0-independent-reverification-report.md\tdocs/archive/phase-0/phase-0-independent-reverification-report.md\n:100644 100644 a99a94b a99a94b R100\tdocs/phase-0-master-report-independent-review.md\tdocs/archive/phase-0/phase-0-master-report-independent-review.md\n:100644 100644 275933d 275933d R100\tdocs/phase-0-master-report.md\tdocs/archive/phase-0/phase-0-master-report.md\n:100644 100644 52d4377 52d4377 R100\tdocs/phase-0-mock-survey-report.md\tdocs/archive/phase-0/phase-0-mock-survey-report.md\n:100644 100644 ea7dea1 ea7dea1 R100\tdocs/phase-0-presentation-artifacts-independent-audit.md\tdocs/archive/phase-0/phase-0-presentation-artifacts-independent-audit.md\n:100644 100644 78addf3 78addf3 R100\tdocs/phase-0-product-owner-approval-packet.md\tdocs/archive/phase-0/phase-0-product-owner-approval-packet.md\n:100644 100644 a083377 a083377 R100\tdocs/phase-0-product-owner-decision-sheet.md\tdocs/archive/phase-0/phase-0-product-owner-decision-sheet.md\n:100644 100644 6715173 6715173 R100\tdocs/phase-0-requirements-gap-audit.md\tdocs/archive/phase-0/phase-0-requirements-gap-audit.md\n:100644 100644 a12d0fe a12d0fe R100\tdocs/phase-0-role-content-workflow-review.md\tdocs/archive/phase-0/phase-0-role-content-workflow-review.md\n:100644 100644 3e3e7a6 3e3e7a6 R100\tdocs/phase-0-roles-and-mvp-final.md\tdocs/archive/phase-0/phase-0-roles-and-mvp-final.md\n:100644 100644 df8ce3f df8ce3f R100\tdocs/phase-0-survey-requirements.md\tdocs/archive/phase-0/phase-0-survey-requirements.md\n:100644 100644 bcf4a43 bcf4a43 R100\tdocs/phase-0-synthetic-stakeholder-research.md\tdocs/archive/phase-0/phase-0-synthetic-stakeholder-research.md\n:100644 100644 f8415cc f8415cc R100\tdocs/phase-0-user-research-analysis-and-requirements-independent-review.md\tdocs/archive/phase-0/phase-0-user-research-analysis-and-requirements-independent-review.md\n:100644 100644 fad0ae2 fad0ae2 R100\tdocs/phase-0-user-research-analysis-and-requirements.md\tdocs/archive/phase-0/phase-0-user-research-analysis-and-requirements.md\n:100644 100644 f9ae906 f9ae906 R100\tplans/phase-0-user-research-analysis-and-requirements-writing-plan.md\tplans/archive/2026-08-23-phase-0-user-research-analysis-and-requirements-writing-plan-HISTORICAL.md\n:100644 100644 e0e862b e0e862b R100\tplans/phase-0-fix-plan.md\tplans/archive/2026-09-20-phase-0-fix-plan-HISTORICAL.md\n:100644 100644 754d6ca 754d6ca R100\tplans/phase-0-presentation-fix-plan.md\tplans/archive/2026-09-20-phase-0-presentation-fix-plan-HISTORICAL.md\n:100644 100644 1f230f3 1f230f3 R100\tplans/phase-0-tai-lieu-requirements-fix-plan.md\tplans/archive/2026-09-20-phase-0-tai-lieu-requirements-fix-plan-HISTORICAL.md\n:100644 100644 65dea17 65dea17 R100\tplans/m2-2-behavior-uc-activity-state-plan.md\tplans/archive/2026-09-22-m2-2-behavior-uc-activity-state-plan-HISTORICAL.md\n:100644 100644 bc0a538 bc0a538 R100\tplans/m2-3-sequence-api-service-boundary-plan.md\tplans/archive/2026-09-23-m2-3-sequence-api-service-boundary-plan-HISTORICAL.md\n:100644 100644 cd2a994 cd2a994 R100\tplans/m2-4-architecture-security-plan.md\tplans/archive/2026-09-23-m2-4-architecture-security-plan-HISTORICAL.md\n:100644 100644 e01b889 e01b889 R100\tplans/m2-5-design-validation-plan.md\tplans/archive/2026-09-26-m2-5-design-validation-plan-HISTORICAL.md\n:100644 100644 abdb8a9 abdb8a9 R100\tplans/m2-6-design-handoff-plan.md\tplans/archive/2026-09-26-m2-6-design-handoff-plan-HISTORICAL.md\n",
+  "original_script_sha256": "38032218d4c5c8e935cb8564fb753645c7970fcd8e7966f97683d9ed6282ad6d",
+  "files": [
+    {
+      "path": "docs/design/physical/final-recheck-evidence/physical-erd.puml",
+      "sha256": "934bf9a3881a0a3d6245895cbf75fb848e98fa98354033646a0f994f19e4215e",
+      "lines": 410,
+      "diagrams": 4
+    },
+    {
+      "path": "docs/design/physical/personalization-correction-evidence/entry-physical-erd.puml",
+      "sha256": "934bf9a3881a0a3d6245895cbf75fb848e98fa98354033646a0f994f19e4215e",
+      "lines": 410,
+      "diagrams": 4
+    },
+    {
+      "path": "docs/design/physical/physical-erd.puml",
+      "sha256": "9938aa943c615cfa78019d4acfb1469edeec2e7673f24eb6a2ec004b6c7a44f3",
+      "lines": 401,
+      "diagrams": 4
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-01-learner-onboarding.puml",
+      "sha256": "29e1e7d6d5d958ae35580b33d067dfb8079dc2202c1a7cf66abb606a2acf02de",
+      "lines": 77,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-02-placement-assessment.puml",
+      "sha256": "2c47bc416b62a295f18acd0a374fc2472649fc5d3b8355f1623f5f2687daf095",
+      "lines": 49,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-03-lesson-learning.puml",
+      "sha256": "c864502cd58761968d553cfa088f89651a90da2dc73a80acb2911f0d3871d229",
+      "lines": 95,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-04-level-up-assessment.puml",
+      "sha256": "9430fb04226e655f0a03a61163cf24b80672b60fa08b16bf270ec6e70cde07c2",
+      "lines": 67,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-05-reassessment.puml",
+      "sha256": "0f3301ca6c8414afcb88ba821606b3d41938c9ea15ae9fa80c5a0deb23f11ea0",
+      "lines": 11,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-06-srs-review.puml",
+      "sha256": "fdda3f597c8b991186f5ad516f09c267b7c5deea66e4e5db2831ff13f18ebbcd",
+      "lines": 72,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-07-teacher-provisioning.puml",
+      "sha256": "0d4959e6a13bd5b52ef24cb9af380716e6e7e509e59b21e56a7f4df364448b39",
+      "lines": 31,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-08-content-governance.puml",
+      "sha256": "44a06e57db9a22c6e42244cdcb660062fd7a3879168bdead59a72c5c8313ab75",
+      "lines": 72,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/ACT-09-revision-replacement.puml",
+      "sha256": "db8f5a9a28e2e87d157804be93d3c74f8b90a8e095889b0633a85055b569278f",
+      "lines": 51,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/DATA-01-current-migration-erd.puml",
+      "sha256": "8ce09c954b644725bc5114f08fe03f03b13fa06d2279538284eda358fefa85af",
+      "lines": 86,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/DATA-02-current-prisma-model.puml",
+      "sha256": "4bd85298a9c38f0e327470e4f8ca43594cf25a6530a866876f41615b84d48744",
+      "lines": 61,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/DATA-03-target-logical-erd.puml",
+      "sha256": "dcc85e2af2fbb9db9a116e679b6eca55ba8eda58a2789ab42f5e252ee2ba343b",
+      "lines": 166,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/DEP-01-current-deployment.puml",
+      "sha256": "01342e201df39dbf8a3a5321fe0a110dbacbe304b1116720c94f75301160fbe9",
+      "lines": 30,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/DEP-02-target-deployment.puml",
+      "sha256": "b41f95b2f6406e96db6982ed68d18752f2eb72f481abf4073e4add99158c76ec",
+      "lines": 30,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/DOM-01-core-domain-model.puml",
+      "sha256": "a816e03b3987954456b2a05900f7f7ac42c3f8ad9555184e3afcb38f2824b783",
+      "lines": 119,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEC-01-target-trust-boundary-dfd.puml",
+      "sha256": "e80018be7806b48bb6a001debaa827871599fd2cb0ae40216bf12994a6bf71c9",
+      "lines": 57,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-01-login-authorization.puml",
+      "sha256": "b496ad5e1f2a9b1e6066a3bff6cc875005f09921f7203c4c568f5b1237d4c846",
+      "lines": 49,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-02-teacher-provisioning.puml",
+      "sha256": "b771ef506052493df966f15087eb9fbb0a7b509ff4101767d2fe464092808c94",
+      "lines": 41,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-03-assignment-authoring-submit.puml",
+      "sha256": "16f49cd8e00acfa7bae57228415dcf141a3a93c0fd41c23626bc95f91e57c05d",
+      "lines": 54,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-04-review-approve-publish.puml",
+      "sha256": "42a1707781119cae91f44f53054729239c7de7f44cd9674db975b46ffbbbd970",
+      "lines": 49,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-05-revision-replacement.puml",
+      "sha256": "5ae1ec22f281ef4d001a816e61c465a05e2721b1c7266b744bda787ecfbed2fa",
+      "lines": 46,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-06-lesson-exercise-submission.puml",
+      "sha256": "7c71f52c2fd2a68b57a453ceb7465ec1167ee8a95f5a4d5c34b635ad8890a725",
+      "lines": 97,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-07-assessment-submission.puml",
+      "sha256": "115680080f4c2eda9644d25f56f5ea5c55018c6e37fabeeda0523000e53ece8d",
+      "lines": 59,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-08-srs-review.puml",
+      "sha256": "44b453197278e9d5ae54cf4d644c3b27ee0f4265dda2b71a9b9fba25d23f691e",
+      "lines": 84,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SEQ-09-disable-account-enforcement.puml",
+      "sha256": "eedfa9db7c551587801dc079fb834cf817f90cfec2c67922ddd814bf9f5e8250",
+      "lines": 57,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/STA-01-account-status.puml",
+      "sha256": "3e320cf6664b742b098ff5a2e21d8f0d1ae5594a913636a0da9e2f34fe83d527",
+      "lines": 21,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/STA-02-assignment-lifecycle.puml",
+      "sha256": "88ca0e5dbc06758c166dad81e18fc468cc4e18b5b8df77bc94518c6d470abbfb",
+      "lines": 15,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/STA-03-content-revision-lifecycle.puml",
+      "sha256": "33bf02b34fc3e75334d54adbf7e2b56b2f0a55b12e12e4606aeec5fcb51115bf",
+      "lines": 31,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SYS-01-current-context.puml",
+      "sha256": "937270f34bac629eee1bbb0c83c5fa15546443d6181bf2fbc593c53b30f9aa7d",
+      "lines": 27,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SYS-02-target-context.puml",
+      "sha256": "ce5efbc41818d951a655b79ae90af1471540469d3e5407c181c35867741b6bd7",
+      "lines": 33,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SYS-03-current-components.puml",
+      "sha256": "46914a058c57f45bdb1ac013f1d11903b6d23bfdef219d667f007a6208a671e9",
+      "lines": 37,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/SYS-04-target-components.puml",
+      "sha256": "3354648ddd2d870c895ee31e72211eed2486a1f7f74ad185dcd16acdad06fc1c",
+      "lines": 56,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/UC-01-target-overall.puml",
+      "sha256": "f343aa87af42a466ff408924f66c22b355bbbbcd4e6507247f9db3e0e763d1de",
+      "lines": 81,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/UC-02-target-learner.puml",
+      "sha256": "5d4dec72e182d401d9de9d930e1053471caf530642aa18ccef4af2bdf42cd606",
+      "lines": 60,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/UC-03-target-teacher.puml",
+      "sha256": "f57b321917c321b80ef9d6382734fea3d96a145d10410ee9f3165f9a481adb0b",
+      "lines": 41,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/src/UC-04-target-admin.puml",
+      "sha256": "bfaf63e788b77857abe9f08e5f8580abafa965c53ddcdb4694f5904269019200",
+      "lines": 65,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/current-target/style.puml",
+      "sha256": "8420f616afa5f9b24ab52c8df77ccfd0745e729d8a36eb27280bd5b37f767379",
+      "lines": 43,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-01-auth-profile.puml",
+      "sha256": "2b6a8adc68ace22da1952b155453f3ad4379d92adb6dba392043f778a25e219d",
+      "lines": 39,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-02-learning-context.puml",
+      "sha256": "ab83707b49561c1fef79186223df5a159f2fb80a9b21781e5655ef3d5dfe2f3e",
+      "lines": 36,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml",
+      "sha256": "3c9b6d513c8185f99ea556fa9edb1fc8a7f9b9cb80195600f1e4528eb6046264",
+      "lines": 45,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-04-srs-review.puml",
+      "sha256": "67416a0118f50d4adc203c106e8c809514b99d07b8f7f40143a89cb7ac85991d",
+      "lines": 27,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-05-assessment.puml",
+      "sha256": "3e5f71ea2e32a3028f326a5656d69e479c52d1d49b65b9f24dabc500c069222a",
+      "lines": 32,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-06-progress-history.puml",
+      "sha256": "1efd75c74c6c81474a1b1ebf950164e5ef9b2f069ad2382a45a6b6969ace5903",
+      "lines": 30,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-07-teacher-authoring.puml",
+      "sha256": "2714278564266d476c91dde6248b7557a8b5b4bb1b045de01fa4f7dc3f03d4b5",
+      "lines": 35,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-08A-admin-content-governance.puml",
+      "sha256": "808c4a1cd78aa09e028a4820a407f1547ced4d83e752d9fe948a03e2cbb78acf",
+      "lines": 36,
+      "diagrams": 1
+    },
+    {
+      "path": "docs/modeling/report-usecases/VIEW-RUC-08B-admin-account-support.puml",
+      "sha256": "f1d08c8f8e14ef833922b952f9d44f2ce622341150f5d14a2c0db368ff997020",
+      "lines": 27,
+      "diagrams": 1
+    }
+  ]
+}

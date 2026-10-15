@@ -1,0 +1,67 @@
+@startuml
+!include ../style.puml
+' diagram-id: ACT-04
+' classification: TARGET
+' authority: ADR-033/035/036; UC-04/05
+title Sơ đồ hoạt động – Kiểm tra lên cấp
+|Học viên|
+start
+:Chọn kiểm tra lên cấp;
+|Hệ thống|
+:Kiểm tra quyền và ngữ cảnh hoạt động;
+:Tính tiến độ trên bài bắt buộc đủ điều kiện;
+if (Đạt điều kiện chương trình?) then (Có)
+  :Gắn lượt làm với phiên bản đã xuất bản;
+else (Không)
+  :Hiển thị yêu cầu đủ điều kiện còn thiếu;
+  stop
+endif
+|Học viên|
+:Làm bài, không có phản hồi đúng sai;
+if (Nộp bài?) then (Có)
+  :Gửi câu trả lời;
+else (Không / bỏ dở)
+  |Hệ thống|
+  :Không tạo kết quả hoặc điểm giả;
+  :Giữ trạng thái và bằng chứng;
+  stop
+endif
+|Hệ thống|
+if (Dữ liệu hợp lệ?) then (Có)
+  :Chấm bài theo phiên bản đã gắn;
+else (Không)
+  :Không tạo kết quả hoặc điểm giả;
+  :Giữ trạng thái và bằng chứng;
+  stop
+endif
+:Lưu kết quả;
+if (Lưu thành công?) then (Có)
+  :Giữ kết quả và lịch sử học;
+else (Không)
+  :Không tạo kết quả hoặc mở cấp mới;
+  :Giữ trạng thái và bằng chứng;
+  stop
+endif
+if (Đạt điều kiện bài kiểm tra?) then (Có)
+  :Giữ bằng chứng đã đạt;
+  if (Cấp kế tiếp có nội dung khả dụng?) then (Có)
+    :Mở cấp học kế tiếp;
+  else (Không)
+    :Hiển thị cấp kế tiếp: khóa / sắp có;
+    :Giải thích nội dung đang phát triển;
+    if (Đã hoàn thành mọi nội dung hiện có?) then (Có)
+      :Thông báo đã hoàn thành nội dung hiện có;
+    else (Không)
+    endif
+  endif
+else (Không)
+  :Giữ tiến độ và quyền học hiện có;
+  :Đề xuất ôn tập, thi lại theo cấu hình;
+endif
+:Trả kết quả tổng hợp;
+stop
+' Gate and pass parameters are course configuration, not fixed platform constants.
+' Future unavailable and uncompleted withdrawn lessons do not enter eligible denominator.
+' Level-up is progression evidence, not comprehensive proficiency certification.
+' Duplicate submission is idempotent; invalid/unrecorded attempts produce no completed result.
+@enduml

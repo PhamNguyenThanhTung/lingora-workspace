@@ -1,0 +1,49 @@
+@startuml
+!include ../style.puml
+' diagram-id: SEQ-04
+' classification: TARGET
+' authority: ADR-034, ADR-035, ADR-036; UC-12
+' Admin reviews Teacher-authored work; no Admin authoring/self-approval.
+' Lesson/revision is the publication unit; no whole-Unit transaction required.
+' Approved/Published content cannot be edited in place.
+title Sơ đồ trình tự – Thẩm định, phê duyệt và xuất bản nội dung
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+database "Cơ sở dữ liệu" as DB
+
+Admin -> Web : Mở nội dung chờ thẩm định
+Web -> Server : Yêu cầu nội dung và lịch sử
+Server -> Server : Kiểm tra trạng thái và quyền quản trị
+Server -> DB : Lấy bản nộp, đề cương và lịch sử
+DB --> Server : Nội dung cần thẩm định
+Server --> Web : Hiển thị nội dung và mức đáp ứng yêu cầu
+alt Yêu cầu chỉnh sửa
+  Admin -> Web : Nhập phản hồi chỉnh sửa
+  Web -> Server : Gửi yêu cầu chỉnh sửa
+  Server -> DB : Lưu trạng thái, phản hồi và nhật ký
+  Server --> Web : Chờ Giáo viên sửa và nộp lại
+else Phê duyệt
+  Admin -> Web : Phê duyệt bản đã thẩm định
+  Web -> Server : Gửi quyết định phê duyệt
+  Server -> Server : Kiểm tra phiên bản và mức đáp ứng yêu cầu
+  Server -> DB : Lưu phê duyệt và nhật ký
+  Server --> Web : Xác nhận đã phê duyệt
+  Admin -> Web : Xuất bản bản đã phê duyệt
+  Web -> Server : Yêu cầu xuất bản
+  Server -> Server : Kiểm tra lại quyền, phê duyệt và độ sẵn sàng
+  alt Không đủ điều kiện hoặc xuất bản thất bại
+    Server -> DB : Ghi nhật ký từ chối hoặc thất bại
+    Server --> Web : Giữ phiên bản đang dùng
+  else Xuất bản thành công
+    Server -> DB : Xuất bản bất biến; chuyển bản đang dùng nguyên tử
+    opt Có gói kiểm tra được phê duyệt
+      Server -> DB : Xuất bản phiên bản kiểm tra bất biến
+    end
+    Server -> DB : Giữ bằng chứng học tập; ghi nhật ký xuất bản
+    Server --> Web : Phiên bản mới sẵn sàng cho lượt học mới
+  end
+end
+Web --> Admin : Hiển thị kết quả
+@enduml

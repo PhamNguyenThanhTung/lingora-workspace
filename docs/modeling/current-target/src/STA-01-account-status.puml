@@ -1,0 +1,21 @@
+@startuml
+!include ../style.puml
+' diagram-id: STA-01
+' classification: TARGET
+' authority: ADR-034/035/036; UC-01/13
+title Sơ đồ trạng thái – Tài khoản
+top to bottom direction
+state "Chờ kích hoạt" as PENDING
+state "Hoạt động" as ACTIVE
+state "Vô hiệu hóa" as DISABLED
+[*] --> PENDING : Khởi tạo tài khoản Giáo viên
+[*] --> ACTIVE : Đăng ký / khởi tạo hợp lệ
+PENDING --> ACTIVE : Kích hoạt hợp lệ
+ACTIVE --> DISABLED : Quản trị viên:\nvô hiệu hóa\nGhi lý do, nhật ký
+DISABLED --> ACTIVE : Quản trị viên:\nmở lại\nGhi nhật ký
+DISABLED : Từ chối yêu cầu được bảo vệ kế tiếp
+' PENDING is logical activation state supported by UC-01 Teacher invitation; no physical enum prescribed.
+' Server-controlled role/status and trusted identity; disabled enforcement applies despite an unexpired session.
+' Recovery never overrides account disable; no deletion or role-conversion lifecycle selected.
+' Admin learner support cannot edit any learning evidence; account operations preserve learning history.
+@enduml

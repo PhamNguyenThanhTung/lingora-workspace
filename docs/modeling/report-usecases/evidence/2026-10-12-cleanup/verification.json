@@ -1,0 +1,126 @@
+{
+  "verdict": "PASS",
+  "pages": 44,
+  "corrected_pages": 9,
+  "unchanged_raw_pages": 35,
+  "protected_files": 1035,
+  "goal_ellipses": 44,
+  "unchanged_goal_names": 40,
+  "reported_goal_name_corrections": 4,
+  "notes_removed": 7,
+  "associations": 44,
+  "generalizations": 3,
+  "rendered_notes": 0,
+  "include_extend": 0,
+  "records": [
+    {
+      "id": "VIEW-RUC-01",
+      "native_goals": 6,
+      "actors": 4,
+      "edges": 9,
+      "native_dimensions": [
+        1082,
+        992
+      ],
+      "native_png_sha256": "4ee8c8f771352433f06b68528118309fb9e441a04aad266d40eacb749ed91815",
+      "source_sha256": "16d58ecc54261c799f1703433c4cacbfa8a08f723f417c5ea779f04987ba0362"
+    },
+    {
+      "id": "VIEW-RUC-02",
+      "native_goals": 6,
+      "actors": 1,
+      "edges": 6,
+      "native_dimensions": [
+        872,
+        922
+      ],
+      "native_png_sha256": "7ab37f6098eb9cb7a2177d45372978eee61dbca3e14be825b4e02f6b5a9e618c",
+      "source_sha256": "9d7ebf9cdb373e60aabc0ffb6fe4292e8e606c580adab2b7eb2f63e3e096b86e"
+    },
+    {
+      "id": "VIEW-RUC-03",
+      "native_goals": 4,
+      "actors": 1,
+      "edges": 4,
+      "native_dimensions": [
+        872,
+        702
+      ],
+      "native_png_sha256": "a18f5c3c89f98cc9f0aaf0eaf6e65c2524ab85165795e24752678d15e97211fc",
+      "source_sha256": "1dd701a8a88778805d335f24fb2ce61e6c29090f2b1f2dbe6f80303799297aa9"
+    },
+    {
+      "id": "VIEW-RUC-04",
+      "native_goals": 2,
+      "actors": 1,
+      "edges": 2,
+      "native_dimensions": [
+        872,
+        482
+      ],
+      "native_png_sha256": "68d2ecb83e23acfeb0bf87624f7488d8a1b557219f949e5db54478f3fab69519",
+      "source_sha256": "62767cbb45f19e3c672e51c94f8c2ca6b21d8205d149f75e87ee7f98fe7d6d68"
+    },
+    {
+      "id": "VIEW-RUC-05",
+      "native_goals": 4,
+      "actors": 1,
+      "edges": 4,
+      "native_dimensions": [
+        872,
+        702
+      ],
+      "native_png_sha256": "1284c27164621cc3ef8bae91c5154bcde52c37f666fdb233363f88f039ba3a14",
+      "source_sha256": "b9fbf1ebca91ce0dd57fb18d898b420ae60b68d6e883700332af9fe8e61f74a8"
+    },
+    {
+      "id": "VIEW-RUC-06",
+      "native_goals": 5,
+      "actors": 1,
+      "edges": 5,
+      "native_dimensions": [
+        872,
+        812
+      ],
+      "native_png_sha256": "f160f042eb73a7834a7083732318aca0828789ff6a9efd1d102e7c3106187239",
+      "source_sha256": "c707e7104a59e6ea5b2f7ece4b009e4fec4f0691b34c31303e748ac281ddc7dc"
+    },
+    {
+      "id": "VIEW-RUC-07",
+      "native_goals": 5,
+      "actors": 1,
+      "edges": 5,
+      "native_dimensions": [
+        872,
+        812
+      ],
+      "native_png_sha256": "38c511e872e15bd2a22e20dce64bdcc26a2754bc9f1f322d9314d4ed5bdc8f03",
+      "source_sha256": "4406aae30ff34aa448eb94034bd4276a7f18fed55f4d2fe0abac3b6804d3eb21"
+    },
+    {
+      "id": "VIEW-RUC-08A",
+      "native_goals": 8,
+      "actors": 1,
+      "edges": 8,
+      "native_dimensions": [
+        872,
+        1142
+      ],
+      "native_png_sha256": "37cc1bd4c7cf69ba8d5713d2ce22cc90c352314b2853a95cfaa384ee5d8b7e9c",
+      "source_sha256": "a7302d777906a4e16c703e505754cfc830ede0b0604fdfe217586b3305587fbe"
+    },
+    {
+      "id": "VIEW-RUC-08B",
+      "native_goals": 4,
+      "actors": 1,
+      "edges": 4,
+      "native_dimensions": [
+        872,
+        702
+      ],
+      "native_png_sha256": "1c711f47a67f095038116ba82198c51f46413f72edd95b588a9fac0e41b178b0",
+      "source_sha256": "512c61ad93bebc0953a5fd2d52dc70ba7968a39fdf8e0960782e88eaa663131f"
+    }
+  ],
+  "errors": []
+}

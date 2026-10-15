@@ -1,0 +1,26 @@
+@startuml
+!include ../current-target/style.puml
+' diagram-id: VIEW-RUC-08B
+' classification: REPORT
+' canonical coverage: UC-13 account administration and UC-14 reports/audit; authentication support is UC-01.
+' Presentation cleanup only; goal-level view, no detailed rules or internal-processing nodes.
+left to right direction
+skinparam linetype polyline
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam usecaseBackgroundColor white
+title Use Case chức năng – Admin quản lý tài khoản và hỗ trợ
+actor "Quản trị viên" as Admin
+rectangle "HỆ THỐNG LINGORA" {
+  usecase "Provision tài khoản Giáo viên" as Provision
+  usecase "Disable / re-enable tài khoản" as Disable
+  usecase "Hỗ trợ tài khoản Học viên trong\nphạm vi cho phép" as Support
+  usecase "Xem báo cáo và audit" as Audit
+}
+Admin -- Provision
+Admin -- Disable
+Admin -- Support
+Admin -- Audit
+@enduml

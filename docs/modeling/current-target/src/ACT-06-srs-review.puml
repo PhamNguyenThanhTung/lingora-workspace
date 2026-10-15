@@ -1,0 +1,72 @@
+@startuml
+' Addendum authority: ADR-042; Study Focus affects supplementary practice only.
+!include ../style.puml
+' diagram-id: ACT-06
+' classification: TARGET
+' authority: ADR-031/033/035/036/041; UC-07/08
+' Due selection is internal. Learner sees a selected question, never a due-card list.
+title Sơ đồ hoạt động – Thêm từ và ôn tập ngắt quãng
+|Hệ thống|
+start
+if (Nguồn thêm từ?) then (Bài học hoàn tất)
+  :Tự thêm từ cốt lõi sau hoàn tất hợp lệ;
+elseif (Từ tùy chọn)
+  |Học viên|
+  if (Chọn Add to Review?) then (Có)
+    |Hệ thống|
+    :Kiểm tra từ tùy chọn và thêm vào ôn tập;
+  else (Không)
+    stop
+  endif
+else (Thẻ đã có)
+endif
+|Hệ thống|
+:Mỗi Learner + Vocabulary có một thẻ logic; thẻ cũ giữ nguyên giai đoạn và lịch; thẻ mới đến hạn sau một ngày;
+|Học viên|
+if (Bắt đầu phiên nào?) then (Học/luyện tập thường)
+  :Tiếp tục phiên học thông thường;
+elseif (Ôn riêng tùy chọn)
+  :Bắt đầu phiên ôn riêng tùy chọn;
+endif
+|Hệ thống|
+:Kiểm tra tài khoản và quyền sở hữu thẻ;
+:Chọn nội bộ thẻ đến hạn / quá hạn;
+:Trọng tâm không loại thẻ đến hạn; giữ thẻ chưa được ôn;
+:Chọn câu hỏi phù hợp sau khi bắt đầu phiên;
+while (Còn câu hỏi được hệ thống chọn?) is (Có)
+  :Đưa ra một review question/prompt;
+  |Học viên|
+  :Trả lời prompt và chọn Đã nhớ / Chưa nhớ;
+  |Hệ thống|
+  :Kiểm tra outcome hợp lệ và lượt ôn;
+  if (Lượt ôn đã được ghi?) then (Có)
+    :Trả kết quả cũ, không cập nhật lại;
+  else (Không)
+    if (Đã nhớ?) then (Có)
+      :Tiến lịch Policy B 1 → 3 → 7 → 14 → 30 ngày;
+      :Sau stage cuối, lặp mỗi 30 ngày;
+    else (Chưa nhớ)
+      :Reset về stage 1, đến hạn sau 1 ngày;
+      :Đưa vào hàng củng cố cuối phiên tối đa một lần;
+    endif
+    :Ghi một lượt review và lịch do hệ thống tính;
+    :Ghi hoạt động cho chuỗi ngày học;
+  endif
+endwhile (Không)
+if (Có câu cần củng cố?) then (Có)
+  |Học viên|
+  :Trả lời lại câu hỏi củng cố đã đưa ra;
+  |Hệ thống|
+  :Giữ lịch đã tính; không tạo lượt lập lịch thứ hai;
+else (Không)
+endif
+:Hiển thị tổng kết phiên, không hiển thị due list;
+stop
+' Cards remain eligible while due/overdue until a valid review; a paused context does not pause global SRS.
+' Learner sees only question/prompt and answer interaction; stage, due date and upcoming cards stay internal.
+' Client input is card identity plus valid two-value recall outcome; server is authoritative.
+' Same-operation retry is idempotent; deliberate new review is another operation.
+' Reinforcement occurs at most once and never requeues itself or reschedules.
+' Optional dedicated sessions select only after start. Ordinary checkpoint may follow regular-session policy.
+' Never dynamically insert SRS into scored immutable Placement or Level-up Assessment Versions.
+@enduml

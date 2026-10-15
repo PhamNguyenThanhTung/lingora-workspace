@@ -1,0 +1,23 @@
+@startuml
+!include ../current-target/style.puml
+' ADR-042: context supporting subflow; no new canonical UC. No due-list browsing.
+' diagram-id: VIEW-RUC-04
+' classification: REPORT
+' canonical coverage: UC-07; lesson completion enrollment trigger is UC-06.
+' Presentation cleanup only; goal-level view, no detailed rules or internal-processing nodes.
+left to right direction
+skinparam linetype polyline
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam usecaseBackgroundColor white
+title Use Case chức năng – Ôn tập từ vựng theo SRS
+actor "Học viên" as Learner
+rectangle "HỆ THỐNG LINGORA" {
+  usecase "Ôn tập từ vựng theo SRS" as AnswerQuestion
+  usecase "Thêm từ tùy chọn vào Review" as AddOptional
+}
+Learner -- AnswerQuestion
+Learner -- AddOptional
+@enduml

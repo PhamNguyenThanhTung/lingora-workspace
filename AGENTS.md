@@ -2,13 +2,16 @@
 
 This repository follows a gated development workflow. These rules apply to every coding agent and every subdirectory unless a more specific `AGENTS.md` adds stricter rules.
 
-## Source of truth
+## Agent entry and source authority
 
-Always read before planning or changing anything:
+At the start of every new task, read in this order:
 
-1. `plans/current-task.md` — active task scope and status
-2. `docs/QUICK-REF.md` — project snapshot: stack, milestones, API, DB, storage, constraints
-3. `HANDOFF.md` — read at the start of a new agent session or when resuming after a task gap. Contains: current state, pending decisions, and what NOT to do next.
+1. `plans/current-task.md` — the single task-status pointer: current scope, approval, status, and permitted work; if its task is `DONE`, no follow-on task is active until a new one is recorded
+2. `docs/QUICK-REF.md` — concise CURRENT/TARGET/CONFLICT snapshot and source pointers
+3. `HANDOFF.md` — operational state, unresolved entry conditions, and next permitted action
+4. `docs/README.md` — authority order and CURRENT/TARGET/PROPOSED/HISTORICAL/SUPERSEDED/CONFLICT classifications
+
+The task-specific source selected by `docs/README.md` controls its topic. `AGENTS.md` controls agent workflow; it does not approve product behavior. A decision is approved only when the designated approval record says so. A task status alone, a design document, a test log, or a later edit does not approve a decision.
 
 Do not reread canonical documents merely to reconfirm information already available in `docs/QUICK-REF.md`.
 Read the canonical source only when the task actually requires its detail. During the same uninterrupted
@@ -42,37 +45,32 @@ Read only when the task requires it:
 | UI/UX, screens, design tokens | `DESIGN.md` |
 | Requirement traceability or test mapping | `docs/05-traceability-matrix.md` |
 
-The canonical documents in `docs/` govern all new work immediately. `ke-hoach-chi-tiet/` has been removed; it is no longer in the repository.
+`docs/README.md` defines the source hierarchy. A document's location in `docs/` does not by itself make every statement current or approved. Where sources conflict, stop dependent work, preserve the conflict, and route it to the owner in the active decision backlog. Do not infer implementation requirements from historical or target design prose. `ke-hoach-chi-tiet/` has been removed; it is no longer in the repository.
 
 ## Mandatory workflow
 
-Every feature or behavior-changing task must pass through:
+Every feature, architecture, schema, API, security, or product-behavior task must pass through:
 
 `PLAN → REVIEW → APPROVE → IMPLEMENT → TEST → LOG → COMMIT`
 
-- `PLAN`: write or update `plans/current-task.md`.
-- `REVIEW`: inspect the plan against architecture, requirements, contracts, data model, risks, and scope.
-- `APPROVE`: a human explicitly changes the task status to `APPROVED` and completes the Approval section.
-- `IMPLEMENT`: make only the approved changes.
-- `TEST`: run the approved test plan and record evidence.
-- `LOG`: update the relevant files under `logs/`.
-- `COMMIT`: commit only after tests and logs are complete.
+- `PLAN`: write or update `plans/current-task.md` with scope, permitted files/actions, dependencies, acceptance criteria, and verification.
+- `REVIEW`: check the plan against controlling sources and the unresolved-decision queue.
+- `APPROVE`: a human explicitly approves the plan; preserve an immutable snapshot under `plans/approved/` before implementation.
+- `IMPLEMENT`: do only the approved work. The approved plan is not blanket authorization for dependent decisions.
+- `TEST`: run the approved verification and record observed output.
+- `LOG`: update required task and evidence logs.
+- `COMMIT`: use a Conventional Commit after the required gates.
 
-Agents must never move a task from `DRAFT` or `REVIEW` to `APPROVED`. Explicit user approval is required. If `plans/current-task.md` is not `APPROVED`, do not implement feature code.
+An explicit user instruction may authorize a bounded documentation-only task directly. Record that scope and the instruction as its approval evidence; it does not authorize product implementation or resolve dependent product decisions.
 
 After implementation begins, use `IMPLEMENTING`, then `TESTING`, and finally `DONE`. Use `BLOCKED` only when work cannot safely continue.
 
-If a task returns to `REVIEW` more than twice because of the same gap category, the agent must escalate: propose a formal scope amendment rather than continue patching individual decisions. Each REVIEW re-entry must include a `category:` tag in its `logs/decision-log.md` entry (one of: `runtime-boundary`, `rls-conflict`, `scope-ambiguity`, `missing-dependency`, `contract-gap`, `test-failure`). This makes the escalation threshold grep-verifiable rather than judgment-dependent.
-
 ## Stop rules
 
-Pause implementation and return the task to `REVIEW` status immediately if any of the following is true. Do not patch around a Stop condition silently — report the gap, set `plans/current-task.md` status to `REVIEW`, and wait for human resolution.
+Pause implementation and return the task to `REVIEW` status immediately if any of the following is true. Do not patch around a Stop condition silently — report the gap and wait for resolution:
 
-- A file outside `Files Expected To Change` needs modification.
-- A dependency, schema, API path, or architecture change is implied but not named in the approved task.
-- A semantic gap appears between an approved decision and implementation reality (e.g. a contract assumption that does not hold in the live system).
-- A security boundary, RLS policy, or trust model must be altered to make the approved change work.
-- A test result contradicts a claim made in the approved plan.
+- A dependency, schema, API path, or architecture change is implied but not named in the plan.
+- A semantic gap appears between an approved decision and implementation reality.
 
 ## AI Coding Agents & Responsibilities
 

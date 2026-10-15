@@ -1,0 +1,59 @@
+@startuml
+!include ../style.puml
+' diagram-id: SEQ-07
+' classification: TARGET
+' authority: ADR-031, ADR-032, ADR-033, ADR-035, ADR-036; UC-02, UC-05
+' MVP purposes: Placement and Level-up only; no Reassessment.
+' AssessmentResult retains separate assessmentType/deliveryMode classifications.
+' Count/time/threshold/mapping are configuration, not platform invariants.
+' No per-item correctness during attempt, or keys/solutions after submission.
+' A deliberate new attempt is separate; same submission is idempotent.
+' Incomplete Placement preserves prior starting point; assessment does not qualify streak.
+' Passed Level-up evidence survives next-level content being locked/coming soon.
+title Sơ đồ trình tự – Nộp bài kiểm tra xếp lớp hoặc lên cấp
+autonumber
+actor "Học viên" as Learner
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+database "Cơ sở dữ liệu" as DB
+
+Learner -> Web : Bắt đầu kiểm tra xếp lớp hoặc lên cấp
+Web -> Server : Yêu cầu lượt kiểm tra
+Server -> Server : Kiểm tra tài khoản, ngữ cảnh và mục đích
+Server -> Server : Kiểm tra điều kiện chương trình nếu thi lên cấp
+alt Không đủ điều kiện bắt đầu
+  Server --> Web : Từ chối bắt đầu; giữ tiến độ
+else Đủ điều kiện
+  Server -> DB : Lấy phiên bản kiểm tra bất biến đang dùng
+  DB --> Server : Câu hỏi và dữ liệu chấm được bảo vệ
+  Server -> Server : Gắn lượt kiểm tra với một phiên bản
+  Server --> Web : Gửi câu hỏi; giữ kín đáp án và đúng/sai
+  Learner -> Web : Nộp câu trả lời cuối cùng
+  Web -> Server : Gửi bài làm và lượt kiểm tra
+  Server -> Server : Kiểm tra chủ sở hữu, ngữ cảnh, phiên bản và bài làm
+  Server -> DB : Đối chiếu lượt nộp và kết quả đã ghi
+  DB --> Server : Kết quả đối chiếu theo chủ sở hữu
+  alt Bài nộp không hợp lệ
+    Server --> Web : Không tạo kết quả hoàn tất; giữ tiến độ
+  else Nộp lại cùng lần nộp hợp lệ đã ghi nhận
+    Server --> Web : Trả kết quả tổng hợp đã ghi; không ghi lại
+  else Lần nộp hợp lệ mới
+    Server -> Server : Chấm theo phiên bản đã gắn
+    alt Kiểm tra xếp lớp
+      Server -> Server : Tính điểm bắt đầu đề xuất theo cấu hình
+    else Kiểm tra lên cấp
+      Server -> Server : Xét đạt theo cấu hình và điều kiện chương trình
+    end
+    alt Ghi nhận thành công
+      Server -> DB : Lưu kết quả bất biến theo ngữ cảnh và phiên bản
+      opt Đạt điều kiện lên cấp
+        Server -> DB : Ghi kết quả lên cấp; giữ bằng chứng
+      end
+      Server --> Web : Chỉ trả điểm tổng hợp, kết quả hoặc đề xuất
+    else Ghi nhận thất bại
+      Server --> Web : Không tạo kết quả hoàn tất; giữ tiến độ
+    end
+  end
+end
+Web --> Learner : Hiển thị kết quả tổng hợp hoặc lỗi
+@enduml

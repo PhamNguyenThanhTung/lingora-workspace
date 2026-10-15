@@ -1,0 +1,43 @@
+@startuml
+' Shared academic presentation; identities and authority belong in comments/index.
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam defaultFontColor black
+skinparam titleFontSize 18
+skinparam titleFontColor black
+skinparam ArrowColor black
+skinparam ArrowThickness 1
+skinparam roundCorner 0
+skinparam nodesep 35
+skinparam ranksep 45
+skinparam ActorBackgroundColor white
+skinparam ActorBorderColor black
+skinparam ParticipantBackgroundColor white
+skinparam ParticipantBorderColor black
+skinparam ControlBackgroundColor white
+skinparam BoundaryBackgroundColor white
+skinparam DatabaseBackgroundColor white
+skinparam ClassBackgroundColor white
+skinparam ClassBorderColor black
+skinparam ClassHeaderBackgroundColor white
+skinparam EntityBackgroundColor white
+skinparam EntityBorderColor black
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderColor black
+skinparam StateBackgroundColor white
+skinparam StateBorderColor black
+skinparam PackageBackgroundColor white
+skinparam PackageBorderColor #555555
+skinparam RectangleBackgroundColor white
+skinparam RectangleBorderColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+skinparam sequenceLifeLineBorderColor #555555
+skinparam sequenceGroupBackgroundColor white
+skinparam sequenceGroupBodyBackgroundColor white
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+!include ../style.puml
+' diagram-id: DEP-02
+' classification: TARGET
+' Authority: ADR-027 scoped by ADR-030–036; existing approved web/admin/Supabase boundaries.
+' TARGET logical deployment allocation, not a physical host/network or production design.
+' Application modules execute in-process; no AI runtime or extra infrastructure introduced.
+' Trusted role/status/ownership checks and appropriate RLS govern data and media access.
+' Physical claims/grants/RLS and live deployment remain deferred/unverified.
+left to right direction
+title Sơ đồ phân bố triển khai dự kiến của Lingora
+
+node "Ứng dụng web học viên" {
+  artifact "Next.js\nGiao diện và xử lý phía máy chủ" as LearnerWeb
+}
+node "Ứng dụng quản trị và biên soạn" {
+  artifact "Next.js\nGiao diện và xử lý phía máy chủ" as StaffWeb
+}
+cloud "Dịch vụ Supabase" {
+  component "Xác thực tài khoản" as Auth
+  database "Cơ sở dữ liệu" as DB
+  storage "Ảnh và tài liệu học tập" as Media
+}
+LearnerWeb --> Auth : Xác thực
+LearnerWeb --> DB : Truy cập dữ liệu được cấp quyền
+LearnerWeb --> Media : Tài liệu đã xuất bản
+StaffWeb --> Auth : Xác thực
+StaffWeb --> DB : Quản trị được cấp quyền
+StaffWeb --> Media : Tài liệu theo phạm vi phân công
+@enduml

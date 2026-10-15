@@ -1,0 +1,1061 @@
+Thực hiện **FULL DIAGRAM CORRECTION PASS** cho toàn bộ canonical modeling của Lingora trước Final Modeling Review.
+
+Đây là vòng **chỉnh sửa toàn bộ sơ đồ**, chưa phải vòng phê duyệt cuối.
+
+Mục tiêu:
+
+> Làm cho toàn bộ sơ đồ Lingora đúng nghiệp vụ ADR-030 → ADR-036, đúng loại UML/data-model tương ứng, nhất quán với nhau và có hình thức phù hợp để đưa trực tiếp vào báo cáo đồ án/slide.
+
+Sau task này phải dừng lại để Product Owner thực hiện **Final Modeling Review** riêng.
+
+---
+
+# 0. Nguyên tắc quan trọng nhất
+
+Không chỉ sửa những diagram đang được báo lỗi.
+
+Phải audit **toàn bộ 36 PlantUML source hiện tại** trong:
+
+`docs/modeling/current-target/`
+
+và chỉnh tất cả diagram nào:
+- biểu diễn sai loại sơ đồ;
+- bố cục khó đọc;
+- còn phong cách AI/debug;
+- thừa technical note;
+- thiếu nghiệp vụ đã duyệt;
+- mâu thuẫn với diagram khác;
+- chưa phù hợp báo cáo học thuật.
+
+Không sửa product decisions.
+
+Authority:
+
+1. Product Owner decisions mới nhất.
+2. ADR-036.
+3. ADR-030 → ADR-035.
+4. Active requirements.
+5. Active UC specifications.
+6. Traceability.
+7. Canonical modeling.
+
+Diagram cũ không được dùng làm authority.
+
+---
+
+# 1. Cho phép dùng subagent
+
+Antigravity có thể gọi nhiều subagent nhưng phải chia ownership rõ.
+
+Gợi ý:
+
+### Worker A
+Use Case diagrams.
+
+### Worker B
+Activity + State diagrams.
+
+### Worker C
+Sequence diagrams.
+
+### Worker D
+Domain/Class + ERD/Data diagrams.
+
+### Worker E
+System/Component/Deployment/Security diagrams.
+
+### Worker QA
+Cross-diagram consistency + visual review.
+
+Không để hai worker cùng sửa một source.
+
+Subagent không được tự tạo product decision.
+
+Mọi ambiguity không giải được bằng ADR phải trả về orchestrator.
+
+---
+
+# 2. Một visual style thống nhất cho báo cáo
+
+Toàn bộ diagram dùng trong báo cáo phải có phong cách:
+
+- nền trắng;
+- chữ đen;
+- border đen/xám;
+- association/arrow đen;
+- ít màu hoặc monochrome;
+- font dễ đọc;
+- khoảng trắng hợp lý;
+- bố cục sạch;
+- không trang trí không cần thiết.
+
+## Xóa khỏi rendered diagrams
+
+Không còn:
+
+- arrow xanh;
+- note vàng;
+- note màu nổi;
+- footer xám giải thích canonical ID;
+- debug metadata;
+- paragraph giải thích dài;
+- legend kỹ thuật không cần;
+- text kiểu internal modeling;
+- hash/version/source authority nằm trực tiếp trong hình.
+
+Những metadata đó có thể giữ:
+- trong PlantUML comment;
+- README;
+- modeling index;
+- review.md.
+
+Không đưa lên hình báo cáo.
+
+---
+
+# 3. Ngôn ngữ diagram
+
+Ưu tiên **tiếng Việt thống nhất** cho bộ report diagrams.
+
+Có thể ghi thuật ngữ Anh trong ngoặc lần đầu:
+
+- Học viên (Learner)
+- Giáo viên (Teacher)
+- Quản trị viên (Admin)
+- Kiểm tra xếp lớp (Placement)
+- Kiểm tra lên cấp (Level-up)
+- Ôn tập ngắt quãng (SRS)
+
+Không trộn tiếng Anh/Việt tùy ý.
+
+Tên class/table có thể giữ English nếu canonical model đang dùng English và việc dịch gây khó mapping.
+
+---
+
+# 4. USE CASE DIAGRAMS
+
+Sửa toàn bộ:
+- Overall;
+- Learner;
+- Teacher;
+- Admin.
+
+Phong cách phải gần sơ đồ Use Case học thuật trong mẫu Product Owner cung cấp.
+
+## Actor
+
+Actor đặt ngoài system boundary.
+
+Association:
+- đường đen;
+- không cần arrow direction cho association actor-use case.
+
+System boundary rõ:
+
+`HỆ THỐNG HỌC NGOẠI NGỮ LINGORA`
+
+Có thể chia package chức năng nhưng không nested quá sâu.
+
+---
+
+# 5. Supporting Login Use Case
+
+Trong **Overall Use Case**, Product Owner muốn thể hiện giống sơ đồ mẫu:
+
+Các protected use cases có:
+
+`<<include>> Đăng nhập / Xác thực`
+
+Tạo supporting UC:
+
+`Đăng nhập / Xác thực`
+
+Nhưng:
+
+- không tạo UC canonical mới;
+- không đổi UC-01…UC-14;
+- không biến nó thành UC-15;
+- không sửa catalog chỉ để phục vụ presentation.
+
+Supporting Login UC chỉ dùng cho UML presentation.
+
+Các chức năng cần authenticated session phải include nó.
+
+Không include đối với:
+- đăng ký;
+- quên mật khẩu;
+- recovery;
+- activation public nếu có.
+
+Nếu UC canonical hiện gộp Authentication + Profile:
+presentation được phép tách visually:
+- Đăng nhập / Xác thực
+- Quản lý hồ sơ cá nhân
+
+nhưng mapping canonical phải ghi trong source comment/index.
+
+---
+
+# 6. Overall Use Case phải nhìn như báo cáo
+
+Không để Overview giống architecture/debug diagram.
+
+Mục tiêu khi nhìn hình:
+
+- thấy 3 actor;
+- thấy các nhóm chức năng;
+- thấy Login dependency;
+- thấy hệ thống Lingora làm gì.
+
+Không nhét business rules chi tiết vào Overview.
+
+Không có note kiểu:
+`Placement only recommends...`
+trong hình.
+
+Các giải thích đó để caption/report.
+
+---
+
+# 7. Activity Diagram
+
+Toàn bộ Activity diagrams phải audit và chỉnh về UML activity style học thuật.
+
+Ưu tiên **swimlane**.
+
+Ví dụ:
+
+| Học viên | Hệ thống |
+
+| Giáo viên | Hệ thống |
+
+| Quản trị viên | Hệ thống |
+
+Nếu flow cần 3 participant thì dùng 3 lane.
+
+## Phải sử dụng
+
+- start node;
+- end node;
+- action box;
+- decision diamond;
+- merge;
+- black arrow;
+- flow top-down.
+
+## Không sử dụng
+
+- note vàng;
+- technical annotation panel;
+- API path;
+- SQL;
+- database table name nếu không cần.
+
+---
+
+# 8. Lesson Activity phải thể hiện đúng ADR-036
+
+Không hard-code số câu.
+
+Dùng:
+
+`N core exercises`
+
+Nếu learner sai lần đầu:
+
+`Sai`
+→ formative feedback
+→ item chuyển xuống cuối queue
+→ tiếp tục các item khác
+→ retry item đó đúng 1 lần.
+
+Retry:
+
+- đúng → contribution `0.5`;
+- sai → contribution `0`.
+
+Đúng lần đầu:
+- contribution `1.0`.
+
+Nếu có:
+- `N` core items;
+- `K` first-attempt errors;
+
+performance denominator:
+
+`N + K`.
+
+Không dùng ví dụ 12/13 trong rule diagram.
+
+Completion:
+- không yêu cầu 100%;
+- độc lập correctness;
+- hoàn thành flow core hợp lệ là complete.
+
+---
+
+# 9. SRS Activity
+
+Phải thể hiện full lifecycle:
+
+Core vocabulary
+→ auto-enroll sau lesson completion.
+
+Optional vocabulary
+→ learner chọn Add to Review.
+
+Một logical card:
+`Learner + Vocabulary`.
+
+Schedule:
+
+`1 → 3 → 7 → 14 → 30 ngày`
+
+sau đó:
+`30 ngày/lần`.
+
+Card không biến mất.
+
+Forgot:
+→ reset về stage đầu.
+
+Same-session reinforcement:
+→ đưa lại cuối session tối đa một lần;
+→ không double scheduling operation.
+
+Không dùng:
+Again / Hard / Good / Easy.
+
+---
+
+# 10. Curriculum Activity / progression
+
+Phải thể hiện:
+
+- active/available content;
+- locked future content;
+- coming soon/developing content;
+- withdrawal;
+- replacement;
+- preservation history.
+
+Future content chưa available:
+không tính denominator.
+
+Level tiếp theo chưa có:
+hiện locked/coming soon.
+
+Không coi learner incomplete vì content chưa tồn tại.
+
+---
+
+# 11. Sequence Diagrams
+
+Toàn bộ Sequence diagram phải sửa theo style giống mẫu Product Owner cung cấp.
+
+Participants/lifelines rõ:
+
+Ví dụ:
+
+`Học viên`
+`Web App`
+`Ứng dụng / Backend`
+`Auth`
+`Database`
+
+Không dùng quá nhiều participant.
+
+---
+
+# 12. Sequence message phải ở business level
+
+Không lấy:
+
+`POST /api/...`
+`SELECT *`
+`RPC function(...)`
+
+làm nội dung chính.
+
+Ưu tiên:
+
+`Gửi thông tin đăng nhập`
+
+`Xác thực tài khoản`
+
+`Lấy hồ sơ`
+
+`Lưu kết quả`
+
+`Kiểm tra quyền`
+
+`Tính lịch SRS`
+
+`Ghi nhận completion`
+
+Technical API contract để implementation phase.
+
+---
+
+# 13. Sequence fragments
+
+Dùng đúng:
+
+- `alt`
+- `opt`
+- `loop`
+
+Ví dụ:
+
+Login:
+- valid;
+- invalid.
+
+Lesson:
+- first correct;
+- first wrong;
+- retry.
+
+Assessment:
+- valid submission;
+- duplicate retry;
+- failed validation.
+
+Không nhét cả use case vào một sequence khổng lồ.
+
+---
+
+# 14. State Diagrams
+
+Style tối giản.
+
+Không note dài.
+
+Audit:
+
+### Account
+Chỉ state đã có authority.
+
+### Assignment
+Tập trung ownership/responsibility.
+
+Không biến nó thành project management state machine.
+
+Reassignment:
+- ownership change;
+- giữ history.
+
+### Revision
+Flow:
+
+Draft
+→ In Review
+→ Changes Requested
+→ In Review
+→ Approved
+→ Published
+→ Archived / Withdrawn.
+
+Invalid transitions không cần nhét thành hàng chục edge nếu làm hình rối.
+
+---
+
+# 15. DOMAIN / CLASS DIAGRAM — PHẢI SỬA ĐÚNG BẢN CHẤT
+
+Đây là yêu cầu đặc biệt quan trọng.
+
+`DOM-01` phải là:
+
+**UML Domain/Class Diagram**
+
+Nó trả lời:
+
+> Hệ thống có những khái niệm nghiệp vụ nào và chúng quan hệ với nhau ra sao?
+
+Không được vẽ DOM-01 giống database ERD.
+
+## DOM-01 nên thể hiện
+
+Ví dụ các concept:
+
+- User/Profile
+- LearningContext
+- Language
+- Framework
+- Level
+- Course
+- Unit
+- Lesson
+- Exercise
+- Vocabulary
+- SRSCard
+- LessonAttempt
+- Progress
+- Assignment
+- Revision
+- AssessmentBlueprint
+- AssessmentVersion
+- AssessmentItem
+- AssessmentResult
+- AuditEvent
+
+Chỉ giữ concept thật sự cần.
+
+---
+
+# 16. Class Diagram attributes
+
+Class diagram chỉ cần các thuộc tính nghiệp vụ quan trọng.
+
+Không nhét:
+
+- PK/FK physical;
+- varchar(255);
+- UUID FK;
+- database constraints;
+- indexes;
+- nullable syntax;
+- SQL types.
+
+Có thể dùng type logic đơn giản nếu cần:
+
+`status: AccountStatus`
+
+`score: Percentage`
+
+`dueAt: DateTime`
+
+nhưng không biến thành DB schema.
+
+---
+
+# 17. Class relationships
+
+Dùng UML association/multiplicity:
+
+`1`
+`0..1`
+`0..*`
+`1..*`
+
+Có thể có association name:
+
+`owns`
+`contains`
+`assigned to`
+`publishes`
+`attempts`
+`reviews`
+
+Nhưng tránh quá nhiều text.
+
+Mục đích phải giống **ảnh Class Diagram mẫu**:
+nhìn vào hiểu domain.
+
+---
+
+# 18. ERD / RM — PHẢI KHÁC CLASS DIAGRAM
+
+TARGET Data diagram phải là:
+
+**Logical Relational Model / ERD**
+
+Nó trả lời:
+
+> Domain được tổ chức thành các thực thể dữ liệu và quan hệ như thế nào?
+
+Không được đơn giản lấy DOM-01 rồi đổi tiêu đề.
+
+---
+
+# 19. ERD presentation
+
+ERD có thể thể hiện:
+
+- entity;
+- logical identifier;
+- logical attributes;
+- FK relationship;
+- cardinality.
+
+Nếu physical schema chưa approved:
+
+không đóng băng:
+- actual SQL table names;
+- exact SQL datatype;
+- index;
+- cascade rule;
+- physical naming strategy.
+
+Nhưng ERD phải nhìn rõ là **data model**, khác Class Diagram.
+
+---
+
+# 20. Sau này Physical RM mới giống ảnh mẫu 2
+
+Ảnh RM/database mẫu Product Owner cung cấp có:
+
+- table;
+- column;
+- datatype;
+- PK/FK;
+- NN;
+- relationship.
+
+Đó thuộc **physical data design**.
+
+Task hiện tại chưa được tự tạo physical schema final nếu authority chưa cho phép.
+
+TARGET logical ERD phải đủ để làm nền cho Physical RM sau Final Modeling Review.
+
+---
+
+# 21. Không được để DOM-01 và DATA-03 giống nhau
+
+Bắt buộc manual compare:
+
+`DOM-01`
+vs
+`DATA-03`
+
+Nếu:
+- node gần như giống 1:1;
+- attributes giống nhau;
+- relationship giống nhau;
+- chỉ đổi title;
+
+thì FAIL.
+
+DOM:
+- business concepts.
+
+DATA:
+- logical persistence structure.
+
+Hai sơ đồ có liên quan nhưng không phải một.
+
+---
+
+# 22. CURRENT Data diagrams
+
+CURRENT Prisma / Migration diagrams nếu vẫn tồn tại:
+
+- giữ tách riêng;
+- label CURRENT;
+- style sạch.
+
+Không cần làm đẹp theo kiểu target report nếu không dùng trong main report, nhưng vẫn phải dễ đọc.
+
+Legacy schema không quyết TARGET.
+
+---
+
+# 23. Security DFD
+
+Giữ trust semantics:
+
+Browser/User
+→ Application boundary
+→ controlled backend/data
+→ storage/auth.
+
+Phải thể hiện:
+
+- untrusted client;
+- server authoritative role;
+- grading secret;
+- SRS scheduling authority;
+- draft/unpublished protection.
+
+Không note vàng.
+
+Không paragraph dài.
+
+---
+
+# 24. System Context / Component diagrams
+
+Audit toàn bộ.
+
+Không để:
+- logical module trông như microservice;
+- Content Engine;
+- Assessment Engine;
+- SRS module
+
+bị hiểu là deployable network service nếu thực chất cùng application.
+
+Nếu logical module:
+vẽ trong cùng application/container boundary.
+
+---
+
+# 25. Deployment diagrams
+
+CURRENT:
+chỉ claim những gì có evidence.
+
+TARGET:
+đơn giản.
+
+Không AI runtime.
+
+Không tự tạo infrastructure mới.
+
+---
+
+# 26. Reassessment
+
+MVP không có Reassessment active.
+
+Nếu vẫn giữ một artifact deferred:
+phải label rất rõ:
+
+`DEFERRED — NOT IN MVP`
+
+Không nối vào:
+- learner active UC;
+- active activity;
+- active sequence;
+- progression.
+
+Nếu deferred diagram không còn giá trị report:
+có thể giữ source/history nhưng loại khỏi main review index.
+
+Không xóa historical evidence.
+
+---
+
+# 27. Report diagram naming
+
+Dùng caption/title giống báo cáo:
+
+- `Sơ đồ Use Case tổng quan hệ thống Lingora`
+- `Sơ đồ Use Case của Học viên`
+- `Sơ đồ hoạt động – Học bài và luyện tập`
+- `Sơ đồ trình tự – Đăng nhập`
+- `Sơ đồ lớp miền của hệ thống Lingora`
+- `Sơ đồ quan hệ dữ liệu logic của Lingora`
+
+Không dùng title kiểu internal/debug.
+
+---
+
+# 28. Không tạo diagram dư
+
+Audit cả 36 source.
+
+Nếu hai diagram gần như trùng nghĩa:
+ghi finding.
+
+Không tự xóa nếu có traceability/historical dependency.
+
+Có thể đề xuất:
+- merge;
+- remove from report;
+- keep as technical appendix.
+
+Canonical source management vẫn phải rõ.
+
+---
+
+# 29. Modeling README
+
+Sau khi chỉnh diagram:
+
+Cập nhật README để chia rõ:
+
+## Main Report Diagrams
+Những hình nên đưa vào báo cáo.
+
+## Supporting Modeling Diagrams
+Những hình phục vụ technical review.
+
+## CURRENT Evidence Diagrams
+Prisma/migration/current architecture.
+
+## Deferred
+Reassessment hoặc artifact deferred.
+
+Như vậy không cần nhét cả 36 hình vào báo cáo chính.
+
+---
+
+# 30. Report order
+
+Đề xuất main report order:
+
+1. System Context nếu cần.
+2. Use Case Overview.
+3. Learner Use Case.
+4. Teacher Use Case.
+5. Admin Use Case.
+6. Activity diagrams chính.
+7. Sequence diagrams chính.
+8. Domain/Class Diagram.
+9. Logical ERD.
+10. Deployment/Security nếu chương báo cáo yêu cầu.
+
+Không lấy CURRENT migration/prisma ERD làm sơ đồ CSDL chính của TARGET report.
+
+---
+
+# 31. Cross-diagram consistency
+
+Sau khi chỉnh visual, audit semantics giữa các loại sơ đồ.
+
+Các concern bắt buộc:
+
+| Concern | UC | Activity | State | Domain | ERD | Sequence | Security |
+
+- Authentication
+- Lesson completion
+- Lesson scoring
+- SRS
+- Placement
+- Level-up
+- Curriculum availability
+- Teacher assignment
+- Content review/publish
+- Assessment package
+- Account disable
+
+Nếu có mismatch:
+sửa theo ADR authority.
+
+---
+
+# 32. Không thay product decisions
+
+Không thay:
+
+- 3 roles;
+- account-role rule;
+- N/K scoring;
+- 1/0.5/0 contribution;
+- SRS Policy B;
+- 30-day recurrence;
+- curriculum availability policy;
+- assessment blueprint;
+- reassessment deferred;
+- Admin learner-support rule;
+- content governance.
+
+Task này là:
+**modeling correction + report presentation normalization**.
+
+Không phải product redesign.
+
+---
+
+# 33. Render toàn bộ
+
+Sau khi sửa:
+
+Render tất cả canonical sources.
+
+Phải có:
+- SVG;
+- PNG;
+- zero PlantUML errors.
+
+Sau render phải **manual visual review từng ảnh**.
+
+Không coi compile PASS là visual PASS.
+
+---
+
+# 34. Manual visual QA
+
+Kiểm tra từng diagram:
+
+- text có đọc được không;
+- font có quá nhỏ không;
+- line có cắt nhau không;
+- box có quá dài không;
+- actor có nằm sai vị trí không;
+- arrow có chạy xuyên diagram không;
+- swimlane có rõ không;
+- sequence có quá rộng không;
+- ERD có spaghetti không;
+- Class Diagram có đang giống ERD không;
+- màu có còn kiểu AI/debug không;
+- note/footer kỹ thuật còn sót không.
+
+Nếu layout xấu:
+tiếp tục chỉnh PlantUML đến khi hợp lý.
+
+---
+
+# 35. Acceptance riêng cho Use Case Overview
+
+PASS khi:
+
+- 3 actors rõ;
+- boundary rõ;
+- association đen;
+- supporting Login UC;
+- protected UCs include Login;
+- Login không trở thành UC canonical mới;
+- không note vàng;
+- không arrow xanh;
+- không footer debug;
+- layout giống phong cách đồ án học thuật.
+
+---
+
+# 36. Acceptance riêng cho Activity
+
+PASS khi:
+
+- swimlane hợp lý;
+- flow top-down;
+- action ngắn;
+- decision rõ;
+- không technical noise;
+- không note ngoài lề;
+- nghiệp vụ đúng ADR.
+
+---
+
+# 37. Acceptance riêng cho Sequence
+
+PASS khi:
+
+- lifeline chuẩn;
+- message business-level;
+- alt/loop đúng;
+- không SQL/API noise;
+- actor/application/database rõ;
+- layout gần style mẫu report.
+
+---
+
+# 38. Acceptance riêng cho Class Diagram
+
+PASS khi:
+
+- là UML domain/class model;
+- không phải physical schema;
+- relation mang nghĩa nghiệp vụ;
+- multiplicity hợp lý;
+- attribute tối thiểu;
+- không FK/SQL noise;
+- khác rõ ràng so với ERD.
+
+---
+
+# 39. Acceptance riêng cho ERD
+
+PASS khi:
+
+- là logical relational/data model;
+- entity/relationship/cardinality rõ;
+- persistence structure rõ;
+- không biến thành class diagram;
+- chưa vượt sang physical schema contract;
+- đủ nền để thiết kế RM vật lý ở phase tiếp theo.
+
+---
+
+# 40. Verification
+
+Bắt buộc chạy:
+
+- render all diagrams;
+- diagram count check;
+- broken link check;
+- duplicate source check;
+- legacy role scan;
+- AI runtime scan;
+- active Reassessment scan;
+- rigid SRS rating scan;
+- hard-coded lesson question-count scan;
+- A1/Unit1/80%-as-invariant scan;
+- `git diff --check`.
+
+Nhưng deterministic checks không thay manual visual review.
+
+---
+
+# 41. Output cuối
+
+Trả báo cáo:
+
+## A. Diagram inventory reviewed
+
+Tổng số source và phân loại.
+
+## B. Files changed
+
+## C. Use Case corrections
+
+## D. Activity corrections
+
+## E. Sequence corrections
+
+## F. State corrections
+
+## G. Domain/Class corrections
+
+Giải thích DOM-01 bây giờ khác ERD thế nào.
+
+## H. ERD/Data corrections
+
+## I. System/Security/Deployment corrections
+
+## J. Visual normalization
+
+Những style cũ đã loại bỏ:
+- blue arrows;
+- yellow notes;
+- debug footer;
+- technical annotation.
+
+## K. Cross-diagram consistency
+
+Có mismatch nào còn lại không.
+
+## L. Render evidence
+
+Source / SVG / PNG / failure.
+
+## M. Remaining concerns
+
+Chỉ ghi concern thật sự.
+
+## N. Readiness
+
+Chỉ một:
+
+- READY FOR FINAL MODELING REVIEW
+- NEEDS MORE DIAGRAM CORRECTION
+- NEEDS PO DECISION
+- BLOCKED
+
+Không tự ghi:
+`MODELING APPROVED`
+
+Task này **không có quyền final approve modeling**.
+
+---
+
+# 42. Stop condition
+
+Khi toàn bộ correction hoàn tất:
+
+DỪNG.
+
+Không:
+- implementation;
+- physical schema;
+- migration;
+- reset DB;
+- code;
+- final approval.
+
+Task tiếp theo phải là một task riêng:
+
+**FINAL MODELING REVIEW**
+
+để Product Owner/Codex review lần cuối toàn bộ bộ sơ đồ đã được chỉnh.

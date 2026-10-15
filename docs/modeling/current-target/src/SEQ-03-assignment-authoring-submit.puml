@@ -1,0 +1,54 @@
+@startuml
+!include ../style.puml
+' diagram-id: SEQ-03
+' classification: TARGET
+' authority: ADR-034, ADR-035, ADR-036; UC-09, UC-10, UC-11
+' One assignment covers one lesson/content package and related exercise/assessment items.
+' Exactly one responsible Teacher; reassignment retains attribution and history.
+' Admin defines requirements/blueprint, never authors items or self-approves.
+' Minimal optimistic version check; no collaboration/workflow subsystem implied.
+title Sơ đồ trình tự – Phân công, soạn và nộp nội dung
+autonumber
+actor "Quản trị viên" as Admin
+actor "Giáo viên" as Teacher
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+database "Cơ sở dữ liệu" as DB
+
+Admin -> Web : Lập yêu cầu; phân công một Giáo viên
+Web -> Server : Gửi yêu cầu và phân công
+Server -> Server : Kiểm tra trạng thái và quyền quản trị
+Server -> DB : Lưu đề cương, người phụ trách và lịch sử
+Server -> DB : Ghi nhật ký phân công hoặc đổi phân công
+Server --> Web : Xác nhận phân công
+
+Teacher -> Web : Mở nội dung được giao
+Web -> Server : Yêu cầu nội dung và phản hồi
+Server -> Server : Kiểm tra trạng thái và phân công hiện hành
+Server -> DB : Lấy nội dung và lịch sử được phép xem
+DB --> Server : Nội dung được giao
+Server --> Web : Hiển thị nội dung và phản hồi
+Teacher -> Web : Soạn và lưu bản sửa
+Web -> Server : Gửi bản sửa
+Server -> Server : Kiểm tra phân công, trạng thái và phiên bản
+alt Ngoài phân công, không được sửa hoặc xung đột phiên bản
+  Server --> Web : Từ chối; giữ bản trước
+else Bản Nháp hoặc Yêu cầu chỉnh sửa hợp lệ
+  Server -> DB : Lưu bản sửa và lịch sử tác giả
+  Server --> Web : Xác nhận lưu; cho phép xem trước
+end
+
+Teacher -> Web : Nộp hoặc nộp lại nội dung
+Web -> Server : Yêu cầu gửi thẩm định
+Server -> Server : Kiểm tra lại phân công và phiên bản
+Server -> Server : Kiểm tra đề cương, câu hỏi, đáp án và học liệu
+Server -> Server : Kiểm tra không dùng câu hỏi luyện tập đã lộ đáp án
+alt Không đủ quyền, xung đột hoặc nội dung chưa đạt yêu cầu
+  Server --> Web : Từ chối nộp; hiển thị lỗi
+else Nội dung hợp lệ và đủ quyền
+  Server -> DB : Chuyển sang Chờ thẩm định; giữ lịch sử
+  Server -> DB : Ghi nhật ký nộp nội dung
+  Server --> Web : Xác nhận đã gửi thẩm định
+end
+Web --> Teacher : Hiển thị kết quả
+@enduml

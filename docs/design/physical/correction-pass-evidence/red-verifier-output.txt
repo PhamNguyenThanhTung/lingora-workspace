@@ -1,0 +1,141 @@
+PASS 34 unique proposed tables retained
+PASS table inventory, typed definitions and physical ERD entity sets agree
+PASS four proposed physical ERD views remain
+PASS ERD relationship endpoints exist: physical-erd-identity
+PASS ERD relationship endpoints exist: physical-erd-content
+PASS ERD relationship endpoints exist: physical-erd-learning
+PASS ERD relationship endpoints exist: physical-erd-assessment
+PASS ERD still labels design PROPOSED / NOT IMPLEMENTED
+PASS required correction artifact exists: README.md
+PASS local link README.md -> final-review.md
+PASS local link README.md -> ../../modeling/current-target/final-review.md
+PASS local link README.md -> ../../modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS local link README.md -> ../../modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS local link README.md -> ../../02-requirements.md
+PASS local link README.md -> ../../use-case-specifications.md
+PASS local link README.md -> ../../../logs/decision-log.md
+PASS local link README.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md
+PASS local link README.md -> security-and-rls.md
+PASS local link README.md -> rebuild-plan.md
+PASS local link README.md -> review-and-verification.md
+PASS local link README.md -> physical-erd.puml
+PASS local link README.md -> physical-erd-identity.svg
+PASS local link README.md -> physical-erd-content.svg
+PASS local link README.md -> physical-erd-learning.svg
+PASS local link README.md -> physical-erd-assessment.svg
+PASS local link README.md -> security-and-rls.md
+PASS local link README.md -> rebuild-plan.md
+PASS local link README.md -> review-and-verification.md
+PASS required correction artifact exists: security-and-rls.md
+PASS local link security-and-rls.md -> ../../../logs/decision-log.md
+PASS local link security-and-rls.md -> ../../02-requirements.md
+PASS local link security-and-rls.md -> ../../use-case-specifications.md
+PASS local link security-and-rls.md -> README.md
+PASS local link security-and-rls.md -> rebuild-plan.md
+PASS required correction artifact exists: rebuild-plan.md
+PASS local link rebuild-plan.md -> ../../modeling/current-target/final-review.md
+PASS local link rebuild-plan.md -> README.md
+PASS local link rebuild-plan.md -> security-and-rls.md
+PASS local link rebuild-plan.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt
+PASS local link rebuild-plan.md -> ../../../lingora-admin/package.json
+PASS local link rebuild-plan.md -> ../../../lingora-web/package.json
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/schema.prisma
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140001_init/migration.sql
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140002_auth_rls_storage_record_review/migration.sql
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140003_storage_two_bucket_size_enforcement/migration.sql
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/features/auth/auth.service.ts
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/lib/supabase/server.ts
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/lib/supabase/middleware.ts
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/middleware.ts
+PASS local link rebuild-plan.md -> ../../../lingora-web/src/app/page.tsx
+PASS local link rebuild-plan.md -> ../../../lingora-admin/.env.example
+PASS local link rebuild-plan.md -> ../../../lingora-web/.env.example
+PASS local link rebuild-plan.md -> ../../../ENVIRONMENT.md
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/seed.js
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/m1_3_security_test.js
+PASS local link rebuild-plan.md -> ../../../lingora-admin/prisma/m1_4_seed_test.js
+PASS required correction artifact exists: review-and-verification.md
+PASS local link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md
+PASS local link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt
+PASS local link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-BASELINE.json
+PASS local link review-and-verification.md -> README.md
+PASS local link review-and-verification.md -> security-and-rls.md
+PASS local link review-and-verification.md -> rebuild-plan.md
+PASS local link review-and-verification.md -> verification-manifest.json
+PASS local link review-and-verification.md -> verification-output.txt
+PASS local link review-and-verification.md -> git-checks.txt
+PASS local link review-and-verification.md -> unrelated-workspace-observations.json
+FAIL required correction artifact exists: correction-pass.md
+FAIL required correction artifact exists: independent-recheck.md
+LOCAL_LINK_COUNT 55
+PASS physical design and live database status remain explicitly proposed/unverified
+PASS only the three approved business roles and approved account statuses are represented
+FAIL active assessment purpose remains Placement/Level-up without Reassessment
+FAIL browser/server/Prisma/service-role boundaries and server authorization are explicit
+FAIL conditional rebuild and destructive execution gates are preserved
+PASS no AI, mastery, KnowledgeGap, persisted plan or SkillProfile table is introduced
+FAIL correction report records no hard-coded level, universal readiness or item-count invariant
+FAIL correction report gives exactly one CLOSED/OPEN result for F01-F12
+FAIL independent recheck independently reports all twelve findings CLOSED
+FAIL capability matrix includes CTX_CREATE
+FAIL capability matrix includes LESSON_ANSWER
+FAIL capability matrix includes LESSON_COMPLETE
+FAIL capability matrix includes SRS_REVIEW
+FAIL capability matrix includes ASSESSMENT_FINALIZE
+FAIL capability matrix includes TEACHER_EDIT_DRAFT
+FAIL capability matrix includes TEACHER_REMOVE_DRAFT_MEMBER
+FAIL capability matrix includes TEACHER_SUBMIT
+FAIL capability matrix includes ADMIN_REQUEST_CHANGES
+FAIL capability matrix includes ADMIN_APPROVE
+FAIL capability matrix includes ADMIN_PUBLISH
+FAIL capability matrix includes ADMIN_DISABLE
+FAIL capability matrix includes ADMIN_REENABLE
+FAIL capability matrix includes MEDIA_CLEANUP
+FAIL capability matrix names actor, trusted checks, ownership and DB/RLS dependencies
+FAIL F01 checked Teacher submission
+FAIL F02 first context branch and capacity
+FAIL F03 missing-account audit subject
+FAIL F04 assignment generation and review pin
+FAIL F05 draft-only membership removal
+FAIL F06 retirement reservation race
+FAIL F07 stable curriculum ownership
+FAIL F08 active-revision first completion guard
+FAIL F09 card/session reinforcement uniqueness
+FAIL F10 availability-aware default start
+FAIL F11 immutable blueprint scope and version
+FAIL F12 finite topic/skill/purpose mapping
+FAIL acceptance scenario is recorded: PD-F01-TEACHER-SUBMIT
+FAIL acceptance scenario is recorded: PD-F01-UNASSIGNED-DENIED
+FAIL acceptance scenario is recorded: PD-F02-FIRST-CONTEXT
+FAIL acceptance scenario is recorded: PD-F02-CONTEXT-CAPACITY-RACE
+FAIL acceptance scenario is recorded: PD-F05-REMOVE-DRAFT-MEMBER
+FAIL acceptance scenario is recorded: PD-F06-CLEANUP-PUBLISH-RACE
+FAIL acceptance scenario is recorded: PD-F11-BLUEPRINT-CONFIG-AFTER-PUBLISH
+FAIL acceptance scenario is recorded: PD-F04-CURRICULUM-ASSIGNMENT-HISTORY
+FAIL acceptance scenario is recorded: PD-F08-OLD-OPEN-ATTEMPT
+FAIL acceptance scenario is recorded: PD-F08-REPLACEMENT-COMPLETION-RACE
+FAIL acceptance scenario is recorded: PD-F09-DUPLICATE-REINFORCEMENT-RETRY
+FAIL acceptance scenario is recorded: PD-F09-CARD-SESSION-UNIQUE-RACE
+FAIL acceptance scenario is recorded: PD-F03-MISSING-ACCOUNT-AUDIT
+FAIL acceptance scenario is recorded: PD-F11-VERSION-COVERAGE-SNAPSHOT
+FAIL future acceptance cases identify setup, action and expected invariant
+FAIL historical verifier disposition recorded: preexisting files changed only in authorized pointers
+FAIL historical verifier disposition recorded: six separately observed unrelated drawio files
+FAIL historical verifier disposition recorded: task new files only authorized physical/task artifacts
+FAIL historical verifier disposition recorded: all 139 canonical modeling files unchanged
+FAIL verifier now uses current task baseline and current authority
+PASS pre-existing files outside task permissions preserved: []
+PASS append-only log prefix preserved: logs/test-log.md
+PASS append-only log prefix preserved: logs/development-log.md
+PASS append-only log prefix preserved: logs/decision-log.md
+PASS new files confined to authorized task artifacts: []
+PASS all 189 approved-modeling files match this task baseline
+PASS HEAD unchanged; no commit
+PASS pre-existing Git index unchanged; no staging
+NEW_TEXT_FILE_LINE_COUNTS
+docs/design/physical/correction-pass-evidence/red-verifier-output.txt: 122
+docs/design/physical/final-review-evidence/historical-verify.py: 131
+plans/approved/2026-10-11-physical-design-correction-pass-APPROVED.md: 55
+plans/approved/2026-10-11-physical-design-correction-pass-BASELINE.json: 1023
+plans/approved/2026-10-11-physical-design-correction-pass-REQUEST.txt: 864
+PHYSICAL CORRECTION VERIFICATION FAIL

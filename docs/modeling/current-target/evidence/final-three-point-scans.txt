@@ -1,0 +1,20 @@
+Command: rg -n -i "\bCLOSED\b" docs/modeling/current-target/src --glob "*.puml"
+Exit: 1
+Output:
+(no matches)
+
+Command: rg -n -i "100%|100 percent|all required lessons" docs/modeling/current-target/src/ACT-04-level-up-assessment.puml
+Exit: 1
+Output:
+(no matches)
+
+Command: rg -n -i "không tính mẫu số|vẫn tính mẫu số|normal sequential progression has not unlocked" ACT-01 ACT-09 requirements and UC
+Exit: 0
+Output:
+docs/modeling/current-target/src/ACT-09-revision-replacement.puml:45::Nội dung chưa publish / không khả dụng:\nhiển thị “Đang phát triển”, không tính mẫu số;
+docs/modeling/current-target/src/ACT-09-revision-replacement.puml:46::Bài đã publish trong lộ trình hiện hành,\nchưa mở do tiến trình vẫn tính mẫu số;
+docs/02-requirements.md:27:The learner follows the active curriculum. Unpublished or otherwise unavailable future content may appear as `LOCKED / COMING SOON` and is excluded from the eligible required-lesson progress denominator. A required lesson that is published and remains in the active curriculum stays eligible in that denominator even when normal sequential progression has not unlocked it for this learner. A lock icon can describe either unavailable content or current access; the UI and model distinguish those meanings. A withdrawn, uncompleted lesson is unavailable and is not counted as an uncompleted requirement in current eligible progress. Valid completion, performance, assessment result, and history are preserved through withdrawal, replacement, or curriculum update. Learners who completed a prior revision are not forced to repeat the replacement; learners who have not completed it follow the active revision. A future relearning/migration rule requires separate approval. A next level without available content is shown as locked/coming soon with an explanation that all currently available content is complete.
+docs/modeling/current-target/src/ACT-01-learner-onboarding.puml:61::Nội dung chưa xuất bản / không khả dụng:\nHiển thị “Đang phát triển”, không tính mẫu số;
+docs/modeling/current-target/src/ACT-01-learner-onboarding.puml:62::Bài đã xuất bản trong lộ trình hiện hành,\nchưa mở do tiến trình vẫn tính mẫu số;
+
+Interpretation: the only CLOSED hit is STA-02 explanatory prohibition text; no closed state/transition is modeled. No 100%/equivalent Level-up hard-code matched. The four active files show excluded unavailable content and included published active progression-locked content.

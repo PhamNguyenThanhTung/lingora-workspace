@@ -1,0 +1,166 @@
+@startuml
+' Addendum authority: ADR-042; Study Focus affects supplementary practice only.
+!include ../style.puml
+' diagram-id: DATA-03
+' classification: TARGET
+' Logical identifiers/reference fields below are symbolic, not approved physical columns/keys.
+' Authority ADR-030–036. Relation grouping and separate response/binding/history records
+' express persistence requirements without mandating one SQL table per drawn entity.
+title Sơ đồ quan hệ dữ liệu logic của Lingora
+hide circle
+skinparam nodesep 35
+skinparam ranksep 50
+
+ entity "AccountRecord" as Account {
+  * accountIdentity
+  --
+  role; accountStatus
+  locale; timezone; streak
+ }
+ entity "ContextRecord" as Context {
+  * accountIdentity + learnedLanguage
+  --
+  status; purpose; studyPreferences
+  studyFocus (mặc định BALANCED)
+  startingPoint; provenance; selfReport
+ }
+ entity "LessonAttemptRecord" as Attempt {
+  * attemptIdentity
+  --
+  contextRef; lessonRevisionRef
+  contributionSum; responseCount
+  completedAt
+ }
+ entity "ExerciseResponseRecord" as Response {
+  * attemptRef + exerciseRef + responseOrder
+  --
+  firstOrRetry; contribution
+ }
+ entity "CompletionRecord" as Completion {
+  * contextRef + lessonRef
+  --
+  completedAt; attemptProvenance
+ }
+ Account ||--o{ Context
+ Context ||--o{ Attempt
+ Attempt ||--o{ Response
+ Context ||--o{ Completion
+ Completion |o--|| Attempt : nguồn hoàn thành
+ entity "CurriculumReference" as Curriculum {
+  * curriculumPositionIdentity
+  --
+  language; framework; version
+  level; course; unit
+  ordering; eligibility
+  finiteTopicSkillCatalog; controlledKnowledgeAreas
+ }
+ entity "LessonRecord" as Lesson {
+  * lessonIdentity
+  --
+  curriculumRef; required; activeRevisionRef
+ }
+ entity "RevisionRecord" as Revision {
+  * revisionIdentity
+  --
+  lessonRef; priorRevisionRef; lifecycle
+  attribution; reviewHistory
+  concurrencyVersion
+ }
+ entity "ExerciseRecord" as Exercise {
+  * revisionRef + exerciseIdentity
+  --
+  order; type; core
+  practiceSkillRefs; immutableAreaSnapshot
+  learnerPayload; protectedGradingData
+ }
+ entity "VocabularyRecord" as Vocabulary {
+  * language + vocabularyIdentity
+ }
+ entity "LessonVocabularyLink" as LessonVocabulary {
+  * lessonRef + vocabularyRef
+  --
+  coreOrOptional
+ }
+ Curriculum ||--o{ Lesson
+ Lesson ||--|{ Revision
+ Revision ||--o{ Exercise
+ Lesson ||--o{ LessonVocabulary
+ Vocabulary ||--o{ LessonVocabulary
+ entity "SrsCardRecord" as Card {
+  * accountRef + vocabularyRef
+  --
+  enrollmentSource; stage; dueAt
+ }
+ entity "SrsOperationRecord" as Review {
+  * reviewOperationIdentity
+  --
+  cardRef; selfRating; serverTime
+  scheduleOutcome; idempotencyIdentity
+ }
+ Card ||--o{ Review
+ entity "BlueprintRecord" as Blueprint {
+  * blueprintIdentity
+  --
+  purpose; curriculumRef; coverage
+  itemRequirements; assessmentConfiguration
+ }
+ entity "AssessmentVersionRecord" as Version {
+  * assessmentVersionIdentity
+  --
+  blueprintRef; approvedSnapshot
+  rubricSnapshot
+ }
+ entity "VersionItemRecord" as Item {
+  * assessmentVersionRef + itemIdentity
+  --
+  contentSnapshot; protectedGradingData
+  practiceExposureEligibility
+ }
+ entity "AssessmentAttemptRecord" as AssessmentAttempt {
+  * assessmentAttemptIdentity
+  --
+  contextRef; pinnedVersionRef
+  purpose
+  submissionIdentity
+ }
+ entity "AssessmentResultRecord" as Result {
+  * assessmentAttemptRef
+  --
+  aggregateOutcome; recommendation
+  assessmentType; deliveryMode; completedAt
+ }
+ entity "AssignmentRecord" as Assignment {
+  * assignmentIdentity
+  --
+  lessonRef; blueprintRef; currentTeacherRef
+ }
+ entity "AssignmentHistoryRecord" as History {
+  * assignmentRef + historyIdentity
+  --
+  previousTeacher; nextTeacher
+  authorAttribution
+ }
+ entity "SecurityAuditRecord" as Audit {
+  * auditEventIdentity
+  --
+  actorRef; action
+  targetVersionRef
+  serverTime; outcome; reason
+ }
+ Blueprint ||--o{ Version
+ Version ||--|{ Item
+ Version ||--o{ AssessmentAttempt
+ AssessmentAttempt ||--o| Result
+ Assignment ||--o{ History
+Account ||--o{ Card
+Vocabulary ||--o{ Card
+Context ||--o{ AssessmentAttempt
+Lesson ||--o{ Assignment
+Account ||--o{ Audit
+Blueprint -[hidden]down- Account
+Assignment -[hidden]right- Revision
+' References without drawn joins: attempt→revision, completion→lesson, assignment→teacher/blueprint.
+' CurriculumReference groups approved curriculum concepts; not a physical denormalization decision.
+' Completion and latest completed performance remain distinct; history survives withdrawal/replacement.
+' No Enrollment, persisted LearningPlan, SkillProfile or mastery store required.
+@enduml

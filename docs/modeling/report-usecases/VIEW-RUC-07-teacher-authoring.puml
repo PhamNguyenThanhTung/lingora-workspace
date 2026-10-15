@@ -1,0 +1,28 @@
+@startuml
+!include ../current-target/style.puml
+' diagram-id: VIEW-RUC-07
+' classification: REPORT
+' canonical coverage: UC-09 assignment scope, UC-10 authoring, UC-11 submit/revision response.
+' Presentation cleanup only; goal-level view, no detailed rules or internal-processing nodes.
+left to right direction
+skinparam linetype polyline
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam usecaseBackgroundColor white
+title Use Case chức năng – Giáo viên biên soạn nội dung
+actor "Giáo viên" as Teacher
+rectangle "HỆ THỐNG LINGORA" {
+  usecase "Xem assignment và yêu cầu nội\ndung" as Worklist
+  usecase "Tạo / sửa draft được phân công" as Draft
+  usecase "Submit draft" as Submit
+  usecase "Sửa và resubmit" as Resubmit
+  usecase "Xem phản hồi / lịch sử" as History
+}
+Teacher -- Worklist
+Teacher -- Draft
+Teacher -- Submit
+Teacher -- Resubmit
+Teacher -- History
+@enduml

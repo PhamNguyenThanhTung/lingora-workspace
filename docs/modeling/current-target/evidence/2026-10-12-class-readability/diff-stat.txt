@@ -1,0 +1,231 @@
+exit=0
+ AGENTS.md                                          |  44 +-
+ ENVIRONMENT.md                                     |   8 +-
+ HANDOFF.md                                         |  62 +-
+ README.md                                          |   4 +-
+ docs/01-architecture.md                            |   2 +
+ docs/02-requirements.md                            |  64 +-
+ docs/04-data-model.md                              |   2 +
+ docs/05-traceability-matrix.md                     |  62 +-
+ docs/QUICK-REF.md                                  |  22 +-
+ docs/README.md                                     |  81 ++-
+ .../Lingora-System-Modeling-Presentation-v13.pptx  | Bin 7881517 -> 0 bytes
+ .../deck/slides_v13_png/Slide1.JPG                 | Bin 40099 -> 0 bytes
+ .../deck/slides_v13_png/Slide10.JPG                | Bin 86156 -> 0 bytes
+ .../deck/slides_v13_png/Slide11.JPG                | Bin 89187 -> 0 bytes
+ .../deck/slides_v13_png/Slide12.JPG                | Bin 91010 -> 0 bytes
+ .../deck/slides_v13_png/Slide13.JPG                | Bin 87986 -> 0 bytes
+ .../deck/slides_v13_png/Slide14.JPG                | Bin 135575 -> 0 bytes
+ .../deck/slides_v13_png/Slide15.JPG                | Bin 111386 -> 0 bytes
+ .../deck/slides_v13_png/Slide16.JPG                | Bin 179453 -> 0 bytes
+ .../deck/slides_v13_png/Slide17.JPG                | Bin 60397 -> 0 bytes
+ .../deck/slides_v13_png/Slide2.JPG                 | Bin 115295 -> 0 bytes
+ .../deck/slides_v13_png/Slide3.JPG                 | Bin 113404 -> 0 bytes
+ .../deck/slides_v13_png/Slide4.JPG                 | Bin 110664 -> 0 bytes
+ .../deck/slides_v13_png/Slide5.JPG                 | Bin 105056 -> 0 bytes
+ .../deck/slides_v13_png/Slide6.JPG                 | Bin 104040 -> 0 bytes
+ .../deck/slides_v13_png/Slide7.JPG                 | Bin 83097 -> 0 bytes
+ .../deck/slides_v13_png/Slide8.JPG                 | Bin 99887 -> 0 bytes
+ .../deck/slides_v13_png/Slide9.JPG                 | Bin 99588 -> 0 bytes
+ .../lingora-modeling/out/01-usecase-tong-quat.png  | Bin 237963 -> 0 bytes
+ .../lingora-modeling/out/02-usecase-hoc-vien.png   | Bin 106546 -> 0 bytes
+ .../lingora-modeling/out/02-usecase-overall.png    | Bin 237963 -> 0 bytes
+ .../lingora-modeling/out/03-usecase-learner.png    | Bin 106546 -> 0 bytes
+ .../lingora-modeling/out/03-usecase-noi-dung.png   | Bin 89066 -> 0 bytes
+ .../out/04-usecase-content-admin.png               | Bin 89066 -> 0 bytes
+ .../out/04-usecase-quan-tri-van-hanh.png           | Bin 51277 -> 0 bytes
+ .../lingora-modeling/out/05-activity-placement.png | Bin 356432 -> 0 bytes
+ .../out/05a-activity-placement-flow.png            | Bin 181980 -> 0 bytes
+ .../out/05b-activity-placement-branches.png        | Bin 171227 -> 0 bytes
+ .../lingora-modeling/out/06-activity-learning.png  | Bin 437668 -> 0 bytes
+ .../out/06a-activity-learning-main.png             | Bin 383231 -> 0 bytes
+ .../out/06b-activity-learning-retry.png            | Bin 222774 -> 0 bytes
+ .../lingora-modeling/out/07-activity-jump.png      | Bin 503288 -> 0 bytes
+ .../out/07a-activity-jump-check.png                | Bin 126106 -> 0 bytes
+ .../out/07b-activity-jump-result.png               | Bin 188782 -> 0 bytes
+ .../out/08-activity-governance.png                 | Bin 466073 -> 0 bytes
+ .../out/08a-activity-governance-main.png           | Bin 202303 -> 0 bytes
+ .../out/08b-activity-governance-branches.png       | Bin 243254 -> 0 bytes
+ .../lingora-modeling/out/09-class-content.png      | Bin 406644 -> 0 bytes
+ .../out/10-class-learner-assessment.png            | Bin 701839 -> 0 bytes
+ docs/diagrams/lingora-modeling/out/_style.png      | Bin 733 -> 0 bytes
+ docs/diagrams/lingora-modeling/out/smoke.png       | Bin 51999 -> 0 bytes
+ .../lingora-modeling/src/01-usecase-tong-quat.puml | 102 ---
+ .../lingora-modeling/src/02-usecase-hoc-vien.puml  |  58 --
+ .../lingora-modeling/src/02-usecase-overall.png    | Bin 30336 -> 0 bytes
+ .../lingora-modeling/src/02-usecase-overall.puml   | 102 ---
+ .../lingora-modeling/src/03-usecase-learner.puml   |  58 --
+ .../lingora-modeling/src/03-usecase-noi-dung.puml  |  52 --
+ .../src/04-usecase-content-admin.puml              |  52 --
+ .../src/04-usecase-quan-tri-van-hanh.puml          |  38 --
+ .../src/05-activity-placement.puml                 |  31 -
+ .../src/05a-activity-placement-flow.puml           |  29 -
+ .../src/05b-activity-placement-branches.puml       |  38 --
+ .../lingora-modeling/src/06-activity-learning.puml |  36 --
+ .../src/06a-activity-learning-main.puml            |  41 --
+ .../src/06b-activity-learning-retry.puml           |  31 -
+ .../lingora-modeling/src/07-activity-jump.puml     |  41 --
+ .../src/07a-activity-jump-check.puml               |  33 -
+ .../src/07b-activity-jump-result.puml              |  41 --
+ .../src/08-activity-governance.puml                |  41 --
+ .../src/08a-activity-governance-main.puml          |  42 --
+ .../src/08b-activity-governance-branches.puml      |  53 --
+ .../lingora-modeling/src/09-class-content.puml     | 105 ---
+ .../src/10-class-learner-assessment.puml           | 162 -----
+ docs/diagrams/lingora-modeling/src/_style.puml     |  79 ---
+ docs/diagrams/lingora-modeling/src/smoke.puml      |  16 -
+ docs/plantuml/activity-authoring-flow-m22.puml     |  94 ---
+ docs/plantuml/activity-content-approval.png        | Bin 51693 -> 0 bytes
+ docs/plantuml/activity-content-approval.puml       |  28 -
+ docs/plantuml/activity-learner-flow-m22.puml       | 146 -----
+ docs/plantuml/activity-learner-journey.png         | Bin 62589 -> 0 bytes
+ docs/plantuml/activity-learner-journey.puml        |  30 -
+ docs/plantuml/assessment-lifecycle-d3.puml         |  79 ---
+ docs/plantuml/component-architecture-m24.puml      |  77 ---
+ docs/plantuml/concept-content-evidence-d4.puml     | 126 ----
+ docs/plantuml/content-lifecycle-state.puml         |  64 --
+ docs/plantuml/curriculum-architecture-d4.puml      | 133 ----
+ docs/plantuml/deployment-boundary-m24.puml         |  88 ---
+ docs/plantuml/diagnostic-flow-d3.puml              |  45 --
+ docs/plantuml/domain-model-core.puml               | 334 ----------
+ docs/plantuml/erd-logical-status-mapping.puml      | 283 ---------
+ docs/plantuml/erd-mvp-learning.png                 | Bin 88216 -> 0 bytes
+ docs/plantuml/erd-mvp-learning.puml                |  90 ---
+ docs/plantuml/item-bank-authoring-d4.puml          | 118 ----
+ docs/plantuml/layer-responsibility-m23.puml        |  81 ---
+ docs/plantuml/learning-progression-d3.puml         |  50 --
+ docs/plantuml/learning-progression-model.puml      | 159 -----
+ docs/plantuml/lesson-blueprint-d4.puml             |  94 ---
+ docs/plantuml/level-readiness-d3.puml              |  47 --
+ docs/plantuml/mastery-knowledge-gap-d3.puml        |  73 ---
+ docs/plantuml/multilanguage-content-d4.puml        |  98 ---
+ docs/plantuml/placement-jump-m22.puml              |  96 ---
+ docs/plantuml/recommendation-remediation-d3.puml   |  83 ---
+ docs/plantuml/remedial-content-d4.puml             |  99 ---
+ docs/plantuml/role-permission-matrix.png           | Bin 61690 -> 0 bytes
+ docs/plantuml/role-permission-matrix.puml          |  30 -
+ docs/plantuml/screen-flow-inventory-m22.puml       | 104 ---
+ docs/plantuml/security-matrix-m24.puml             |  83 ---
+ docs/plantuml/sequence-admin-ops-m23.puml          | 114 ----
+ docs/plantuml/sequence-auth-session-m23.puml       |  79 ---
+ .../sequence-authoring-moderation-publish-m23.puml | 152 -----
+ docs/plantuml/sequence-conditional-jump-m23.puml   |  78 ---
+ docs/plantuml/sequence-content-publishing.png      | Bin 70527 -> 0 bytes
+ docs/plantuml/sequence-content-publishing.puml     |  33 -
+ .../sequence-diagnostic-placement-m23.puml         |  87 ---
+ docs/plantuml/sequence-gec-interaction-m23.puml    |  60 --
+ docs/plantuml/sequence-learner-onboarding-m23.puml |  78 ---
+ docs/plantuml/sequence-lesson-completion.png       | Bin 55478 -> 0 bytes
+ docs/plantuml/sequence-lesson-completion.puml      |  29 -
+ .../sequence-lesson-exercise-retry-m23.puml        |  99 ---
+ docs/plantuml/sequence-progress-streak-m23.puml    |  70 --
+ docs/plantuml/sequence-srs-review-m23.puml         |  75 ---
+ docs/plantuml/service-boundary-m23.puml            |  96 ---
+ docs/plantuml/sitemap-mvp.png                      | Bin 67676 -> 0 bytes
+ docs/plantuml/sitemap-mvp.puml                     |  53 --
+ docs/plantuml/srs-flow-m22.puml                    |  94 ---
+ docs/plantuml/state-progression-readiness-m22.puml | 112 ----
+ docs/plantuml/system-architecture-mvp.png          | Bin 77971 -> 0 bytes
+ docs/plantuml/system-architecture-mvp.puml         |  46 --
+ docs/plantuml/uc-admin.png                         | Bin 51277 -> 0 bytes
+ docs/plantuml/uc-admin.puml                        |  38 --
+ docs/plantuml/uc-authoring.png                     | Bin 89066 -> 0 bytes
+ docs/plantuml/uc-authoring.puml                    |  52 --
+ docs/plantuml/uc-general.png                       | Bin 237963 -> 0 bytes
+ docs/plantuml/uc-general.puml                      | 102 ---
+ docs/plantuml/uc-learner.png                       | Bin 106546 -> 0 bytes
+ docs/plantuml/uc-learner.puml                      |  58 --
+ docs/plantuml/use-case-mvp-overview.png            | Bin 306472 -> 0 bytes
+ docs/plantuml/use-case-mvp-overview.puml           | 106 ----
+ docs/report/diagrams/activity-achievements.png     | Bin 40819 -> 0 bytes
+ docs/report/diagrams/activity-admin-content.png    | Bin 59433 -> 0 bytes
+ docs/report/diagrams/activity-auth-session.png     | Bin 44113 -> 0 bytes
+ docs/report/diagrams/activity-content-approval.png | Bin 51693 -> 0 bytes
+ docs/report/diagrams/activity-learner-journey.png  | Bin 62589 -> 0 bytes
+ docs/report/diagrams/activity-lesson-exercise.png  | Bin 55158 -> 0 bytes
+ docs/report/diagrams/activity-placement-test.png   | Bin 48492 -> 0 bytes
+ .../report/diagrams/activity-progress-reminder.png | Bin 63619 -> 0 bytes
+ docs/report/diagrams/activity-srs-review.png       | Bin 69584 -> 0 bytes
+ docs/report/diagrams/activity-writing-grammar.png  | Bin 126551 -> 0 bytes
+ .../diagrams/bfd-functional-decomposition.png      | Bin 169749 -> 0 bytes
+ docs/report/diagrams/class-diagram.png             | Bin 289589 -> 0 bytes
+ docs/report/diagrams/dfd-context.png               | Bin 58728 -> 0 bytes
+ docs/report/diagrams/dfd-lesson-exercise.png       | Bin 140604 -> 0 bytes
+ docs/report/diagrams/dfd-level-0.png               | Bin 129547 -> 0 bytes
+ docs/report/diagrams/dfd-srs.png                   | Bin 133424 -> 0 bytes
+ docs/report/diagrams/dfd-writing-grammar.png       | Bin 108326 -> 0 bytes
+ docs/report/diagrams/erd-baseline-and-proposed.png | Bin 473080 -> 0 bytes
+ docs/report/diagrams/erd-mvp-learning.png          | Bin 88216 -> 0 bytes
+ docs/report/diagrams/role-permission-matrix.png    | Bin 61690 -> 0 bytes
+ docs/report/diagrams/sequence-achievements.png     | Bin 81716 -> 0 bytes
+ docs/report/diagrams/sequence-auth.png             | Bin 68960 -> 0 bytes
+ .../diagrams/sequence-content-publishing.png       | Bin 70527 -> 0 bytes
+ .../report/diagrams/sequence-lesson-completion.png | Bin 55478 -> 0 bytes
+ docs/report/diagrams/sequence-placement-test.png   | Bin 77072 -> 0 bytes
+ docs/report/diagrams/sequence-srs.png              | Bin 75205 -> 0 bytes
+ docs/report/diagrams/sequence-writing-grammar.png  | Bin 75491 -> 0 bytes
+ docs/report/diagrams/sitemap-mvp.png               | Bin 67676 -> 0 bytes
+ docs/report/diagrams/sitemap-ui-flow.png           | Bin 134943 -> 0 bytes
+ docs/report/diagrams/system-architecture-mvp.png   | Bin 77971 -> 0 bytes
+ docs/report/diagrams/system-architecture.png       | Bin 123296 -> 0 bytes
+ docs/report/diagrams/use-case-admin.png            | Bin 48662 -> 0 bytes
+ docs/report/diagrams/use-case-learner.png          | Bin 83786 -> 0 bytes
+ docs/report/diagrams/use-case-mvp-overview.png     | Bin 306472 -> 0 bytes
+ docs/report/diagrams/use-case-overview.png         | Bin 83908 -> 0 bytes
+ docs/report/diagrams/use-case-uc01.png             | Bin 30998 -> 0 bytes
+ docs/report/diagrams/use-case-uc02.png             | Bin 24811 -> 0 bytes
+ docs/report/diagrams/use-case-uc03.png             | Bin 25946 -> 0 bytes
+ docs/report/diagrams/use-case-uc04.png             | Bin 35272 -> 0 bytes
+ docs/report/diagrams/use-case-uc05.png             | Bin 26839 -> 0 bytes
+ docs/report/diagrams/use-case-uc06.png             | Bin 35625 -> 0 bytes
+ docs/report/diagrams/use-case-uc07.png             | Bin 25910 -> 0 bytes
+ docs/report/diagrams/use-case-uc08.png             | Bin 28317 -> 0 bytes
+ docs/report/diagrams/use-case-uc09.png             | Bin 26869 -> 0 bytes
+ docs/report/diagrams/use-case-uc10.png             | Bin 28327 -> 0 bytes
+ docs/use-case-specifications.md                    | 245 ++++---
+ lingora-ai/README.md                               |   8 -
+ lingora-ai/api/.env.example                        |   4 -
+ lingora-ai/api/README.md                           |   4 -
+ lingora-ai/api/app/__init__.py                     |   1 -
+ lingora-ai/api/app/auth.py                         | 187 ------
+ lingora-ai/api/app/config.py                       |  28 -
+ lingora-ai/api/app/main.py                         | 262 --------
+ lingora-ai/api/app/schemas.py                      |  90 ---
+ lingora-ai/api/app/services/mock.py                |  58 --
+ lingora-ai/api/requirements.txt                    |   8 -
+ lingora-ai/api/tests/__init__.py                   |   1 -
+ lingora-ai/api/tests/conftest.py                   |  70 --
+ lingora-ai/api/tests/test_auth.py                  | 372 -----------
+ lingora-ai/api/tests/test_chat_roleplay.py         |  89 ---
+ lingora-ai/api/tests/test_error_envelope.py        |  29 -
+ lingora-ai/api/tests/test_health_and_info.py       |  50 --
+ lingora-ai/api/tests/test_srs_schedule.py          |  80 ---
+ lingora-web/README.md                              |   5 +-
+ lingora-web/package-lock.json                      |   1 +
+ lingora-web/package.json                           |   3 +-
+ lingora-web/src/app/api/ai/chat/route.ts           |  10 -
+ lingora-web/src/app/api/ai/srs/route.ts            |  10 -
+ lingora-web/src/features/ai/contracts.ts           |  88 ---
+ lingora-web/src/lib/api/error.ts                   |  18 -
+ lingora-web/src/lib/api/proxy.ts                   |  76 ---
+ lingora-web/tests/unit/api.proxy.test.ts           |  71 ---
+ logs/decision-log.md                               | 563 ++++++++++++++++
+ logs/development-log.md                            | 359 +++++++++++
+ logs/test-log.md                                   | 704 +++++++++++++++++++++
+ plans/approved/README.md                           |  30 +
+ plans/archive/README.md                            |  39 ++
+ plans/current-task.md                              |  72 +--
+ plans/master-implementation-and-report-plan.md     |  21 +
+ 217 files changed, 2114 insertions(+), 7717 deletions(-)
+
+warning: in the working copy of 'AGENTS.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'ENVIRONMENT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'HANDOFF.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/01-architecture.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/04-data-model.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'logs/development-log.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'logs/test-log.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'plans/approved/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'plans/archive/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'plans/current-task.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'plans/master-implementation-and-report-plan.md', LF will be replaced by CRLF the next time Git touches it

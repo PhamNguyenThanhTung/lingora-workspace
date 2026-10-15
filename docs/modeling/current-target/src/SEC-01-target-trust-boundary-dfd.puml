@@ -1,0 +1,57 @@
+@startuml
+!include ../style.puml
+' diagram-id: SEC-01
+' classification: TARGET
+' Authority: ADR-035/036. Logical DFD/trust boundary; no physical schema or deployed RLS claim.
+' auth.uid() trusted subject; server-controlled role/status; disabled denied from next request.
+' Client user ID/role/interval/due date not authoritative; appropriate RLS required by ADR-035.
+' Teacher edits assigned Draft/Changes Requested only; Admin cannot author or edit learning evidence.
+' Publish approved/readiness-validated immutable version; atomic replacement retains history.
+' Generic learner reads omit keys; assessments return aggregate only, practice has formative feedback.
+' Assessment attempts pin immutable version; same submission retry is idempotent.
+' SRS: User+Vocabulary; core auto-enroll/optional add; Policy B recurring final 30 days.
+' Client ratings remembered/forgotten; trusted scheduling/idempotency; reinforcement no reschedule.
+' Account support reads necessary identity/status/minimal context summary; actions audited.
+' Audit append-only, Admin reader; privileged events and sensitive denials; no secrets logged.
+' Datastore is a logical trust partition, not a final table or one prescribed physical database.
+' All learner/staff responses are filtered by trusted authorization; there is no client-store bypass.
+left to right direction
+skinparam nodesep 38
+skinparam ranksep 55
+title Sơ đồ luồng dữ liệu và ranh giới tin cậy
+
+rectangle "Trình duyệt không tin cậy" {
+  rectangle "Học viên" as LearnerClient
+  rectangle "Giáo viên / Quản trị viên" as StaffClient
+}
+rectangle "Ranh giới ứng dụng phía máy chủ" {
+  rectangle "Xác thực và phân quyền\nVai trò, trạng thái tin cậy" as Guard
+  rectangle "Kiểm soát nội dung\nBản nháp theo phân công\nXuất bản đã duyệt" as Content
+  rectangle "Chấm điểm máy chủ\nGiữ bí mật đáp án" as Grading
+  rectangle "Lập lịch ôn tập\nLịch tin cậy, chống ghi trùng" as SRS
+  rectangle "Hỗ trợ tài khoản\nKhông sửa bằng chứng học tập" as Support
+  rectangle "Ghi nhật ký bảo mật" as Audit
+}
+rectangle "Dữ liệu và dịch vụ được kiểm soát" {
+  component "Dịch vụ xác thực" as Auth
+  database "Tài khoản và dữ liệu học tập\nNội dung theo quyền\nĐáp án được bảo vệ" as Data
+  database "Nhật ký bảo mật\nChỉ ghi thêm; Admin đọc" as AuditStore
+}
+LearnerClient --> Guard : Bài làm, nhớ / quên
+StaffClient --> Guard : Nội dung, lệnh quản trị
+Guard --> LearnerClient : Nội dung, phản hồi được phép
+Guard --> StaffClient : Dữ liệu theo quyền
+Guard --> Auth : Xác minh danh tính
+Data --> Guard : Vai trò, trạng thái
+Guard <--> Content : Nội dung theo quyền
+Guard <--> Grading : Bài làm / phản hồi hợp lệ
+Guard <--> SRS : Thẻ, đánh giá / lịch
+Guard <--> Support : Yêu cầu / tóm tắt hỗ trợ
+Guard --> Audit : Sự kiện nhạy cảm
+Content <--> Data : Nội dung theo quyền
+Grading <--> Data : Đáp án / kết quả
+SRS <--> Data : Thẻ, lịch và lịch sử
+Support <--> Data : Tóm tắt / trạng thái tài khoản
+Audit --> AuditStore : Sự kiện không chứa bí mật
+AuditStore --> Guard : Đọc theo quyền Admin
+@enduml

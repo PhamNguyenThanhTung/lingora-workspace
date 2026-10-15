@@ -1,0 +1,992 @@
+{
+  "boxes": {
+    "User": [
+      800,
+      120,
+      400,
+      108
+    ],
+    "Profile": [
+      260,
+      120,
+      320,
+      108
+    ],
+    "LearningContext": [
+      800,
+      380,
+      460,
+      168
+    ],
+    "LearningPlan": [
+      1390,
+      410,
+      410,
+      96
+    ],
+    "Progress": [
+      1390,
+      610,
+      440,
+      96
+    ],
+    "Language": [
+      260,
+      660,
+      320,
+      78
+    ],
+    "ProficiencyFramework": [
+      80,
+      1120,
+      330,
+      108
+    ],
+    "Level": [
+      550,
+      1140,
+      280,
+      78
+    ],
+    "StudyFocus": [
+      1420,
+      790,
+      320,
+      198
+    ],
+    "Course": [
+      260,
+      900,
+      300,
+      56
+    ],
+    "LogicalUnit": [
+      700,
+      920,
+      280,
+      56
+    ],
+    "Lesson": [
+      950,
+      1120,
+      420,
+      108
+    ],
+    "Exercise": [
+      950,
+      1630,
+      700,
+      192
+    ],
+    "Vocabulary": [
+      80,
+      1410,
+      330,
+      56
+    ],
+    "LessonAttempt": [
+      900,
+      790,
+      370,
+      108
+    ],
+    "SrsCard": [
+      260,
+      420,
+      320,
+      108
+    ],
+    "AssessmentBlueprint": [
+      2070,
+      420,
+      400,
+      78
+    ],
+    "AssessmentVersion": [
+      2070,
+      680,
+      400,
+      78
+    ],
+    "AssessmentResult": [
+      1870,
+      940,
+      490,
+      78
+    ],
+    "Assignment": [
+      1880,
+      1200,
+      360,
+      56
+    ],
+    "ContentRevision": [
+      950,
+      1410,
+      410,
+      78
+    ],
+    "AssessmentItem": [
+      2460,
+      940,
+      300,
+      56
+    ],
+    "SecurityAuditEvent": [
+      1420,
+      120,
+      360,
+      108
+    ]
+  },
+  "relations": [
+    {
+      "id": "rel_62",
+      "source": "User",
+      "target": "Profile",
+      "kind": "*--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "1",
+      "role": "",
+      "cards": [
+        "card_63",
+        "card_64"
+      ],
+      "path": [
+        [
+          800,
+          174.0
+        ],
+        [
+          580,
+          174.0
+        ]
+      ]
+    },
+    {
+      "id": "rel_65",
+      "source": "User",
+      "target": "LearningContext",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "sở hữu",
+      "cards": [
+        "card_66",
+        "card_67"
+      ],
+      "path": [
+        [
+          1000.0,
+          228
+        ],
+        [
+          1030.0,
+          228
+        ],
+        [
+          1030.0,
+          380
+        ]
+      ],
+      "role_center": [
+        1110,
+        300
+      ]
+    },
+    {
+      "id": "rel_68",
+      "source": "LearningContext",
+      "target": "LearningPlan",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..1",
+      "role": "xác định",
+      "cards": [
+        "card_69",
+        "card_70"
+      ],
+      "path": [
+        [
+          1260,
+          457.28
+        ],
+        [
+          1320,
+          457.28
+        ],
+        [
+          1320,
+          460
+        ],
+        [
+          1320,
+          455
+        ],
+        [
+          1390,
+          455
+        ],
+        [
+          1390,
+          458.0
+        ]
+      ],
+      "role_center": [
+        1320,
+        402
+      ]
+    },
+    {
+      "id": "rel_71",
+      "source": "LearningContext",
+      "target": "Progress",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "theo dõi theo cấp",
+      "cards": [
+        "card_72",
+        "card_73"
+      ],
+      "path": [
+        [
+          1260,
+          514.4
+        ],
+        [
+          1320,
+          514.4
+        ],
+        [
+          1320,
+          520
+        ],
+        [
+          1320,
+          655
+        ],
+        [
+          1390,
+          655
+        ],
+        [
+          1390,
+          658.0
+        ]
+      ],
+      "role_center": [
+        1340,
+        592
+      ]
+    },
+    {
+      "id": "rel_74",
+      "source": "Language",
+      "target": "Course",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "có chương trình",
+      "cards": [
+        "card_75",
+        "card_76"
+      ],
+      "path": [
+        [
+          420.0,
+          738
+        ],
+        [
+          410.0,
+          738
+        ],
+        [
+          410.0,
+          900
+        ]
+      ],
+      "role_center": [
+        480,
+        820
+      ]
+    },
+    {
+      "id": "rel_77",
+      "source": "ProficiencyFramework",
+      "target": "Level",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "1..*",
+      "role": "định nghĩa",
+      "cards": [
+        "card_78",
+        "card_79"
+      ],
+      "path": [
+        [
+          410,
+          1174.0
+        ],
+        [
+          465,
+          1174.0
+        ],
+        [
+          465,
+          1179.0
+        ],
+        [
+          550,
+          1179.0
+        ]
+      ],
+      "role_center": [
+        480,
+        1136
+      ]
+    },
+    {
+      "id": "rel_80",
+      "source": "Course",
+      "target": "LogicalUnit",
+      "kind": "*--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "",
+      "cards": [
+        "card_81",
+        "card_82"
+      ],
+      "path": [
+        [
+          560,
+          928.0
+        ],
+        [
+          630,
+          928
+        ],
+        [
+          630,
+          948
+        ],
+        [
+          700,
+          948.0
+        ]
+      ]
+    },
+    {
+      "id": "rel_83",
+      "source": "LogicalUnit",
+      "target": "Lesson",
+      "kind": "*--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "",
+      "cards": [
+        "card_84",
+        "card_85"
+      ],
+      "path": [
+        [
+          840.0,
+          976
+        ],
+        [
+          840,
+          1080
+        ],
+        [
+          900,
+          1080
+        ],
+        [
+          900,
+          1174.0
+        ],
+        [
+          950,
+          1174.0
+        ]
+      ]
+    },
+    {
+      "id": "rel_86",
+      "source": "Lesson",
+      "target": "Vocabulary",
+      "kind": "--",
+      "source_multiplicity": "0..*",
+      "target_multiplicity": "0..*",
+      "role": "từ cốt lõi / tùy chọn",
+      "cards": [
+        "rel_86-source-multiplicity",
+        "rel_86-target-multiplicity"
+      ],
+      "path": [
+        [
+          950,
+          1174.0
+        ],
+        [
+          860,
+          1174.0
+        ],
+        [
+          860,
+          1438
+        ],
+        [
+          410,
+          1438.0
+        ]
+      ],
+      "role_center": [
+        670,
+        1418
+      ]
+    },
+    {
+      "id": "rel_87",
+      "source": "LearningContext",
+      "target": "LessonAttempt",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "thực hiện",
+      "cards": [
+        "card_88",
+        "card_89"
+      ],
+      "path": [
+        [
+          1030.0,
+          548
+        ],
+        [
+          1030,
+          700
+        ],
+        [
+          1085,
+          700
+        ],
+        [
+          1085.0,
+          790
+        ]
+      ],
+      "role_center": [
+        1120,
+        690
+      ]
+    },
+    {
+      "id": "rel_90",
+      "source": "LessonAttempt",
+      "target": "Lesson",
+      "kind": "--",
+      "source_multiplicity": "0..*",
+      "target_multiplicity": "1",
+      "role": "học / làm lại",
+      "cards": [
+        "rel_90-source-multiplicity",
+        "rel_90-target-multiplicity"
+      ],
+      "path": [
+        [
+          1085.0,
+          898
+        ],
+        [
+          1085,
+          1010
+        ],
+        [
+          1160,
+          1010
+        ],
+        [
+          1160.0,
+          1120
+        ]
+      ],
+      "role_center": [
+        1200,
+        1026
+      ]
+    },
+    {
+      "id": "rel_91",
+      "source": "User",
+      "target": "SrsCard",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "ôn tập",
+      "cards": [
+        "card_92",
+        "card_93"
+      ],
+      "path": [
+        [
+          800,
+          195.6
+        ],
+        [
+          660,
+          195.6
+        ],
+        [
+          660,
+          173
+        ],
+        [
+          660,
+          473
+        ],
+        [
+          580,
+          473
+        ],
+        [
+          580,
+          474.0
+        ]
+      ],
+      "role_center": [
+        690,
+        325
+      ]
+    },
+    {
+      "id": "rel_94",
+      "source": "SrsCard",
+      "target": "Vocabulary",
+      "kind": "--",
+      "source_multiplicity": "0..*",
+      "target_multiplicity": "1",
+      "role": "ghi nhớ",
+      "cards": [
+        "rel_94-source-multiplicity",
+        "rel_94-target-multiplicity"
+      ],
+      "path": [
+        [
+          260,
+          474.0
+        ],
+        [
+          25,
+          474.0
+        ],
+        [
+          25,
+          473
+        ],
+        [
+          25,
+          1438
+        ],
+        [
+          80,
+          1438.0
+        ]
+      ],
+      "role_center": [
+        72,
+        1000
+      ]
+    },
+    {
+      "id": "rel_95",
+      "source": "AssessmentBlueprint",
+      "target": "AssessmentVersion",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "có phiên bản",
+      "cards": [
+        "card_96",
+        "card_97"
+      ],
+      "path": [
+        [
+          2270.0,
+          498
+        ],
+        [
+          2270.0,
+          680
+        ]
+      ],
+      "role_center": [
+        2360,
+        610
+      ]
+    },
+    {
+      "id": "rel_98",
+      "source": "AssessmentVersion",
+      "target": "AssessmentResult",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "cung cấp bằng chứng",
+      "cards": [
+        "rel_98-source-multiplicity",
+        "rel_98-target-multiplicity"
+      ],
+      "path": [
+        [
+          2270.0,
+          758
+        ],
+        [
+          2270,
+          850
+        ],
+        [
+          2115,
+          850
+        ],
+        [
+          2115.0,
+          940
+        ]
+      ],
+      "role_center": [
+        2130,
+        828
+      ]
+    },
+    {
+      "id": "rel_99",
+      "source": "LearningContext",
+      "target": "AssessmentResult",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "nhận kết quả",
+      "cards": [
+        "card_100",
+        "card_101"
+      ],
+      "path": [
+        [
+          1260,
+          544.64
+        ],
+        [
+          1850,
+          544.64
+        ],
+        [
+          1850,
+          550
+        ],
+        [
+          1850,
+          978
+        ],
+        [
+          1870,
+          978
+        ],
+        [
+          1870,
+          979.0
+        ]
+      ],
+      "role_center": [
+        1880,
+        800
+      ]
+    },
+    {
+      "id": "rel_102",
+      "source": "Assignment",
+      "target": "User",
+      "kind": "--",
+      "source_multiplicity": "0..*",
+      "target_multiplicity": "1",
+      "role": "giáo viên phụ trách",
+      "cards": [
+        "card_103",
+        "card_104"
+      ],
+      "path": [
+        [
+          2060.0,
+          1200
+        ],
+        [
+          2060,
+          1120
+        ],
+        [
+          1840,
+          1120
+        ],
+        [
+          1840,
+          300
+        ],
+        [
+          1240,
+          300
+        ],
+        [
+          1240,
+          173
+        ],
+        [
+          1200,
+          173
+        ],
+        [
+          1200,
+          174.0
+        ]
+      ],
+      "role_center": [
+        1550,
+        278
+      ]
+    },
+    {
+      "id": "rel_105",
+      "source": "Assignment",
+      "target": "Lesson",
+      "kind": "--",
+      "source_multiplicity": "0..*",
+      "target_multiplicity": "1",
+      "role": "gói nội dung",
+      "cards": [
+        "card_106",
+        "card_107"
+      ],
+      "path": [
+        [
+          1880,
+          1228.0
+        ],
+        [
+          1620,
+          1228
+        ],
+        [
+          1620,
+          1173
+        ],
+        [
+          1370,
+          1173
+        ],
+        [
+          1370,
+          1174.0
+        ]
+      ],
+      "role_center": [
+        1550,
+        1150
+      ]
+    },
+    {
+      "id": "rel_108",
+      "source": "Lesson",
+      "target": "ContentRevision",
+      "kind": "*--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "1..*",
+      "role": "",
+      "cards": [
+        "rel_108-source-multiplicity",
+        "rel_108-target-multiplicity"
+      ],
+      "path": [
+        [
+          1160.0,
+          1228
+        ],
+        [
+          1160,
+          1340
+        ],
+        [
+          1155,
+          1340
+        ],
+        [
+          1155.0,
+          1410
+        ]
+      ]
+    },
+    {
+      "id": "rel_109",
+      "source": "ContentRevision",
+      "target": "Exercise",
+      "kind": "*--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "",
+      "cards": [
+        "rel_109-source-multiplicity",
+        "rel_109-target-multiplicity"
+      ],
+      "path": [
+        [
+          1155.0,
+          1488
+        ],
+        [
+          1155,
+          1580
+        ],
+        [
+          1300,
+          1580
+        ],
+        [
+          1300.0,
+          1630
+        ]
+      ]
+    },
+    {
+      "id": "rel_110",
+      "source": "AssessmentVersion",
+      "target": "AssessmentItem",
+      "kind": "*--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "1..*",
+      "role": "",
+      "cards": [
+        "rel_110-source-multiplicity",
+        "rel_110-target-multiplicity"
+      ],
+      "path": [
+        [
+          2470,
+          719.0
+        ],
+        [
+          2610,
+          719.0
+        ],
+        [
+          2610,
+          718
+        ],
+        [
+          2610.0,
+          940
+        ]
+      ]
+    },
+    {
+      "id": "rel_111",
+      "source": "User",
+      "target": "SecurityAuditEvent",
+      "kind": "--",
+      "source_multiplicity": "1",
+      "target_multiplicity": "0..*",
+      "role": "thực hiện hành động",
+      "cards": [
+        "card_112",
+        "card_113"
+      ],
+      "path": [
+        [
+          1200,
+          174.0
+        ],
+        [
+          1420,
+          174.0
+        ]
+      ],
+      "role_center": [
+        1310,
+        132
+      ]
+    },
+    {
+      "id": "rel_114",
+      "source": "LearningContext",
+      "target": "Language",
+      "kind": "--",
+      "source_multiplicity": "0..*",
+      "target_multiplicity": "1",
+      "role": "ngôn ngữ học",
+      "cards": [
+        "card_115",
+        "card_116"
+      ],
+      "path": [
+        [
+          800,
+          514.4
+        ],
+        [
+          740,
+          514.4
+        ],
+        [
+          740,
+          520
+        ],
+        [
+          740,
+          699
+        ],
+        [
+          580,
+          699.0
+        ]
+      ],
+      "role_center": [
+        720,
+        635
+      ]
+    },
+    {
+      "id": "rel_117",
+      "source": "LogicalUnit",
+      "target": "Level",
+      "kind": "--",
+      "source_multiplicity": "0..*",
+      "target_multiplicity": "1",
+      "role": "nhóm theo cấp",
+      "cards": [
+        "card_118",
+        "card_119"
+      ],
+      "path": [
+        [
+          840.0,
+          976
+        ],
+        [
+          840,
+          1030
+        ],
+        [
+          690,
+          1030
+        ],
+        [
+          690.0,
+          1140
+        ]
+      ],
+      "role_center": [
+        760,
+        1050
+      ]
+    }
+  ]
+}

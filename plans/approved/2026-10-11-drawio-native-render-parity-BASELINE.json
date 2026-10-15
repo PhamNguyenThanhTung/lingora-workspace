@@ -1,0 +1,4425 @@
+{
+  "captured_date": "2026-10-11",
+  "diagram_count": 36,
+  "drawio_pages": [
+    {
+      "id": "page-SYS-01",
+      "name": "01 - Hệ thống - Tổng quan hệ thống hiện tại (SYS-01)"
+    },
+    {
+      "id": "page-SYS-02",
+      "name": "02 - Hệ thống - Tổng quan hệ thống mục tiêu (SYS-02)"
+    },
+    {
+      "id": "page-SYS-03",
+      "name": "03 - Hệ thống - Components hiện tại (SYS-03)"
+    },
+    {
+      "id": "page-SYS-04",
+      "name": "04 - Hệ thống - Components mục tiêu (SYS-04)"
+    },
+    {
+      "id": "page-UC-01",
+      "name": "05 - Use Case - Tổng quan Lingora (UC-01)"
+    },
+    {
+      "id": "page-UC-02",
+      "name": "06 - Use Case - Học viên (UC-02)"
+    },
+    {
+      "id": "page-UC-03",
+      "name": "07 - Use Case - Giáo viên (UC-03)"
+    },
+    {
+      "id": "page-UC-04",
+      "name": "08 - Use Case - Quản trị viên (UC-04)"
+    },
+    {
+      "id": "page-ACT-01",
+      "name": "09 - Activity - Onboarding học viên (ACT-01)"
+    },
+    {
+      "id": "page-ACT-02",
+      "name": "10 - Activity - Placement Assessment (ACT-02)"
+    },
+    {
+      "id": "page-ACT-03",
+      "name": "11 - Activity - Học bài và luyện tập (ACT-03)"
+    },
+    {
+      "id": "page-ACT-04",
+      "name": "12 - Activity - Level-up Assessment (ACT-04)"
+    },
+    {
+      "id": "page-ACT-05",
+      "name": "13 - Activity - Reassessment - Deferred (ACT-05)"
+    },
+    {
+      "id": "page-ACT-06",
+      "name": "14 - Activity - Ôn tập SRS (ACT-06)"
+    },
+    {
+      "id": "page-ACT-07",
+      "name": "15 - Activity - Provision và quản lý Teacher (ACT-07)"
+    },
+    {
+      "id": "page-ACT-08",
+      "name": "16 - Activity - Content Governance (ACT-08)"
+    },
+    {
+      "id": "page-ACT-09",
+      "name": "17 - Activity - Revision Replacement (ACT-09)"
+    },
+    {
+      "id": "page-STA-01",
+      "name": "18 - State - Trạng thái tài khoản (STA-01)"
+    },
+    {
+      "id": "page-STA-02",
+      "name": "19 - State - Vòng đời Assignment (STA-02)"
+    },
+    {
+      "id": "page-STA-03",
+      "name": "20 - State - Vòng đời Content Revision (STA-03)"
+    },
+    {
+      "id": "page-DOM-01",
+      "name": "21 - Domain - Mô hình miền Lingora (DOM-01)"
+    },
+    {
+      "id": "page-DATA-01",
+      "name": "22 - Data - Migration ERD hiện tại (DATA-01)"
+    },
+    {
+      "id": "page-DATA-02",
+      "name": "23 - Data - Prisma Model hiện tại (DATA-02)"
+    },
+    {
+      "id": "page-DATA-03",
+      "name": "24 - Data - Logical ERD mục tiêu (DATA-03)"
+    },
+    {
+      "id": "page-SEQ-01",
+      "name": "25 - Sequence - Đăng nhập và kiểm tra tài khoản (SEQ-01)"
+    },
+    {
+      "id": "page-SEQ-02",
+      "name": "26 - Sequence - Provision Teacher (SEQ-02)"
+    },
+    {
+      "id": "page-SEQ-03",
+      "name": "27 - Sequence - Teacher soạn và submit nội dung (SEQ-03)"
+    },
+    {
+      "id": "page-SEQ-04",
+      "name": "28 - Sequence - Review approve và publish (SEQ-04)"
+    },
+    {
+      "id": "page-SEQ-05",
+      "name": "29 - Sequence - Thay thế revision (SEQ-05)"
+    },
+    {
+      "id": "page-SEQ-06",
+      "name": "30 - Sequence - Học bài và xử lý exercise (SEQ-06)"
+    },
+    {
+      "id": "page-SEQ-07",
+      "name": "31 - Sequence - Placement và Level-up (SEQ-07)"
+    },
+    {
+      "id": "page-SEQ-08",
+      "name": "32 - Sequence - Ôn tập SRS (SEQ-08)"
+    },
+    {
+      "id": "page-SEQ-09",
+      "name": "33 - Sequence - Hỗ trợ và disable tài khoản (SEQ-09)"
+    },
+    {
+      "id": "page-SEC-01",
+      "name": "34 - Security - Trust Boundary DFD (SEC-01)"
+    },
+    {
+      "id": "page-DEP-01",
+      "name": "35 - Deployment - Hệ thống hiện tại (DEP-01)"
+    },
+    {
+      "id": "page-DEP-02",
+      "name": "36 - Deployment - Kiến trúc triển khai mục tiêu (DEP-02)"
+    }
+  ],
+  "drawio_sha256": "70109552507ccbc5f9708112d0b52e7a4b7034ea138dba9e8ecf54afdf5c59f3",
+  "git": {
+    "head": "89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737",
+    "index_entries_sha256": "d0760930c73cbe41021a441f1ca81ce2a0b283f9f3523c253b01797ab37a6a21",
+    "preexisting_path_states": {
+      "AGENTS.md": {
+        "kind": "file",
+        "sha256": "1b9b565aa502e984d79592adab3481cbd524fece39f09e155e6488d6eaa53cc9"
+      },
+      "ENVIRONMENT.md": {
+        "kind": "file",
+        "sha256": "98a149e0d731f0c53de43fd1b88030ecc002497201ff619fc8235347378bdc4a"
+      },
+      "HANDOFF.md": {
+        "kind": "file",
+        "sha256": "80dbc4fda31df4e2898fdfc8fb373cc27eb692e99674b4b9608d556f073e1570"
+      },
+      "README.md": {
+        "kind": "file",
+        "sha256": "e070232b9c5807befbb6eacc911e4702f43fa05e9deac6eb9ad66b608a4f2efc"
+      },
+      "docs/01-architecture.md": {
+        "kind": "file",
+        "sha256": "7eaa9469c099f118c5c3b43c1740d789f606e584c8a20b26b568c874fdda6dfc"
+      },
+      "docs/02-requirements.md": {
+        "kind": "file",
+        "sha256": "7fa9ebab1f3c23908897d7a0525de2d0e463f89acd09342ea84cc34835c84e73"
+      },
+      "docs/04-data-model.md": {
+        "kind": "file",
+        "sha256": "cbd7d8a8ea6a59780873260681c1d355e6fd602e8884cf73c10293c508ed7a10"
+      },
+      "docs/05-traceability-matrix.md": {
+        "kind": "file",
+        "sha256": "f847c214b64b898b851f9e26a0e8e0d57d203e895faf18aa8f5014961bd6f9e7"
+      },
+      "docs/QUICK-REF.md": {
+        "kind": "file",
+        "sha256": "5c98bb106b490c8c084de727b145de7414a01cedc3d90a9de098133bd5082292"
+      },
+      "docs/README.md": {
+        "kind": "file",
+        "sha256": "b79524dafc7be1de315818b9f95a9d48e3053504e887094ba1132c363a502a0e"
+      },
+      "docs/archive/README.md": {
+        "kind": "file",
+        "sha256": "4b36d11e53d59b62c5d53ae5365c8df5063249f4be5477f4cad9d221b3b10a5c"
+      },
+      "docs/archive/historical-reports/report-draft-analysis-design.md": {
+        "kind": "file",
+        "sha256": "17bbcc0b271c3d5f3d9c2830d674c84e2d016ef49c0ef053b55bb3da6015f0f4"
+      },
+      "docs/archive/historical-reports/slide-deck-17-slides.md": {
+        "kind": "file",
+        "sha256": "5f9c16b1d67403e9e2a9c0202b739b285d123ebcfae9c929ba846b7484881427"
+      },
+      "docs/archive/historical-reports/tai-lieu-phan-tich-yeu-cau.docx": {
+        "kind": "file",
+        "sha256": "2abcfe2bcf765ff5ad33900152add61b100dbcb0931497cc9f075e8a1d68775b"
+      },
+      "docs/archive/historical-reports/tai-lieu-phan-tich-yeu-cau.md": {
+        "kind": "file",
+        "sha256": "0979964819e58b45a00ee19ca7a4c12c7840272fd7239c506fade23beb5e7bf5"
+      },
+      "docs/archive/phase-0/phase-0-corrective-implementation-report.md": {
+        "kind": "file",
+        "sha256": "2f46e4d08c6a5ee9f4f303537e01f7eb13860ee42b3d5959e1cedfaa327cece5"
+      },
+      "docs/archive/phase-0/phase-0-final-independent-reverification-report.md": {
+        "kind": "file",
+        "sha256": "87cac6b07516c04d2c89544a341315a038d084d27bb05eb351b5b8f7115ac4bd"
+      },
+      "docs/archive/phase-0/phase-0-final-master-consolidation.md": {
+        "kind": "file",
+        "sha256": "131faeac70912dd359a5d5fe3c6529b3dab36d639260a93967e0b17f0e746b78"
+      },
+      "docs/archive/phase-0/phase-0-final-product-owner-decision-sheet.md": {
+        "kind": "file",
+        "sha256": "5aeb5af43a81ca1944870d2d944f3cfcaa8ca0347cf2f8530a6f124cc5fe9ddb"
+      },
+      "docs/archive/phase-0/phase-0-final-reconciliation-log.md": {
+        "kind": "file",
+        "sha256": "2759691a6f2c8568018b06fcdebd38e5a6ea005b697941e7bf4fdb906651bc16"
+      },
+      "docs/archive/phase-0/phase-0-final-requirements-audit.md": {
+        "kind": "file",
+        "sha256": "295372a7956f7ffed90ff64c134ce409fe48cc389a5f3f6a9dec6d8f6b7aa86e"
+      },
+      "docs/archive/phase-0/phase-0-final-requirements-baseline-audit.md": {
+        "kind": "file",
+        "sha256": "8909f6f7e1681f89254ef38494e7b420736a61ae950c5fdfd9f4bcb38c91f350"
+      },
+      "docs/archive/phase-0/phase-0-final-user-research-and-requirements-audit.md": {
+        "kind": "file",
+        "sha256": "3e723eff1305d5bd3450ed8ee60613646ef90fcb9781a888b715dce7597a94f7"
+      },
+      "docs/archive/phase-0/phase-0-fix-plan-independent-review.md": {
+        "kind": "file",
+        "sha256": "d60b7b9e29abf033dcce5497be665836a7cf5200f5316019649ee51642bbd7d9"
+      },
+      "docs/archive/phase-0/phase-0-independent-reverification-report.md": {
+        "kind": "file",
+        "sha256": "84af36e237cfc12a071a6594745c93ff8897413650dfce12cd967a4a57b0f704"
+      },
+      "docs/archive/phase-0/phase-0-master-report-independent-review.md": {
+        "kind": "file",
+        "sha256": "212e0a1bed6ebe1484f4478adc6e05f2cb502b61ec3c3d12e19bac1bdc08f8fe"
+      },
+      "docs/archive/phase-0/phase-0-master-report.md": {
+        "kind": "file",
+        "sha256": "8485ad2ca94fde82f84978694f37e43dcd8888e4a4ed8c98d7ae59fdbc1b456c"
+      },
+      "docs/archive/phase-0/phase-0-mock-survey-report.md": {
+        "kind": "file",
+        "sha256": "8db2025e4dbd987bfcf20559cdaff4c608fe5b5fd678b6c9abfd8a3a581089ce"
+      },
+      "docs/archive/phase-0/phase-0-presentation-artifacts-independent-audit.md": {
+        "kind": "file",
+        "sha256": "6611053a13311219339f18683e09bca51445765e844cab5499cad39c0e65a769"
+      },
+      "docs/archive/phase-0/phase-0-product-owner-approval-packet.md": {
+        "kind": "file",
+        "sha256": "b9e3ef2d79618eb021537e0d95e901560a011328dcf179dd05ef2c44610fcf9a"
+      },
+      "docs/archive/phase-0/phase-0-product-owner-decision-sheet.md": {
+        "kind": "file",
+        "sha256": "2968f56421dffcb44618e98c32d147ab9fed74d482358edb8ab056aefb8f3222"
+      },
+      "docs/archive/phase-0/phase-0-requirements-gap-audit.md": {
+        "kind": "file",
+        "sha256": "306c20d57e9c139697727a9e4aa4e2ddb69c8899ee55fbcfd34201acc5f26e1e"
+      },
+      "docs/archive/phase-0/phase-0-role-content-workflow-review.md": {
+        "kind": "file",
+        "sha256": "b686f9afb8dd263a935ac979fa4470defcd8bd55afa7f7737cbe68baa9468f51"
+      },
+      "docs/archive/phase-0/phase-0-roles-and-mvp-final.md": {
+        "kind": "file",
+        "sha256": "ad88d32c127e17eabd0862ea0ede09653e8d2fa0429aa2d4ee02cb44230e4f70"
+      },
+      "docs/archive/phase-0/phase-0-survey-requirements.md": {
+        "kind": "file",
+        "sha256": "3d0a822af8803cdf33e1eff7c30e84b6b16af8a0ae6878880c6a89e6c245f93a"
+      },
+      "docs/archive/phase-0/phase-0-synthetic-stakeholder-research.md": {
+        "kind": "file",
+        "sha256": "705e49de0def9e27dd4d99de685cee0953fd20c57c15b1968dfaf6594a9f29c0"
+      },
+      "docs/archive/phase-0/phase-0-user-research-analysis-and-requirements-independent-review.md": {
+        "kind": "file",
+        "sha256": "88eab145533d8ace4413f762d20f43490b0d10103cacfff132e367b472edb871"
+      },
+      "docs/archive/phase-0/phase-0-user-research-analysis-and-requirements.md": {
+        "kind": "file",
+        "sha256": "785b256f0b8e763b92301da785aa5a6912f4e85e7ba1242e1e49f6751201f525"
+      },
+      "docs/design/physical/README.md": {
+        "kind": "file",
+        "sha256": "29d1dd7d19b6a3a8fde974ef4577dce7429234e40a2ca16b484fa1bca4f23591"
+      },
+      "docs/design/physical/git-checks.txt": {
+        "kind": "file",
+        "sha256": "d923bd4998ce5b687515ba1299ea2dd5e47babf0a73dfda6e3e322fad2ddf0bb"
+      },
+      "docs/design/physical/physical-erd-assessment.png": {
+        "kind": "file",
+        "sha256": "26cbc75bac109d2baa12fe979414cb95e5fe3538c1da41008573ec8a3cbb2bcd"
+      },
+      "docs/design/physical/physical-erd-assessment.svg": {
+        "kind": "file",
+        "sha256": "ae3a45b729b2bfd26a1d63e2fddc3f927ee36a6de2fd49b1c0c2f3051861069d"
+      },
+      "docs/design/physical/physical-erd-content.png": {
+        "kind": "file",
+        "sha256": "b865460197dfd903c3bb151881b478092ed31e811e6a2c5930a6f9e1dd156fea"
+      },
+      "docs/design/physical/physical-erd-content.svg": {
+        "kind": "file",
+        "sha256": "f31a94226647a76c7b1c4735f5f8a03922346b6b203b738299e4c67b84fef9bc"
+      },
+      "docs/design/physical/physical-erd-identity.png": {
+        "kind": "file",
+        "sha256": "de048d43e284ac5d46ee1ae4b616f0bef78cabd7f3e6ee565cc8ddfdef49bf82"
+      },
+      "docs/design/physical/physical-erd-identity.svg": {
+        "kind": "file",
+        "sha256": "33cbb9aa8768faf2c715215ef445052236505d4ceb48d1a44a5ed46c956be341"
+      },
+      "docs/design/physical/physical-erd-learning.png": {
+        "kind": "file",
+        "sha256": "22e515764c6233d4add2db9471d5439dc393e8e0b38a5920ce19e9b85ca3474d"
+      },
+      "docs/design/physical/physical-erd-learning.svg": {
+        "kind": "file",
+        "sha256": "d27a9a16af4a5ce2fb124766188d13c98fcad581fc407d5acccb2be0ff52e682"
+      },
+      "docs/design/physical/physical-erd.puml": {
+        "kind": "file",
+        "sha256": "39d2f6076e87e18b326405457a2c0074c2eb7f8e3849a9938fd843854d975235"
+      },
+      "docs/design/physical/rebuild-plan.md": {
+        "kind": "file",
+        "sha256": "2c957ce7378a853d00da906d61de729e291928d556c72d3c66e27d34e97e17ea"
+      },
+      "docs/design/physical/review-and-verification.md": {
+        "kind": "file",
+        "sha256": "2ebc662269df571ef4b7bfabd4167e61cdc0689af526abba6fea3937bdb8bdad"
+      },
+      "docs/design/physical/security-and-rls.md": {
+        "kind": "file",
+        "sha256": "a351a035e778fb37abaf90e6cf6151623aecebc22501978de6fd34ff839775dd"
+      },
+      "docs/design/physical/unrelated-workspace-observations.json": {
+        "kind": "file",
+        "sha256": "eb3ce99202fb53553d04265eb1f86a3288e44db94e763380c841c6cf33baae84"
+      },
+      "docs/design/physical/verification-manifest.json": {
+        "kind": "file",
+        "sha256": "2c494e9f96a36485b0e2cfbeb005430809eccdc3a344b4356042557ef3cf5584"
+      },
+      "docs/design/physical/verification-output.txt": {
+        "kind": "file",
+        "sha256": "d35a57341d69683412ee0ba285c2b0478b57c7d1f3c12f41c7cf78f71b911ffd"
+      },
+      "docs/design/physical/verify.py": {
+        "kind": "file",
+        "sha256": "cdca07d6ede355d4ab706ab9d612e1f133218bf2ec1b3995f3b7052afbe0ebad"
+      },
+      "docs/diagrams/lingora-modeling/deck/Lingora-System-Modeling-Presentation-v13.pptx": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide1.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide10.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide11.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide12.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide13.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide14.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide15.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide16.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide17.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide2.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide3.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide4.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide5.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide6.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide7.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide8.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide9.JPG": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/01-usecase-tong-quat.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/02-usecase-hoc-vien.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/02-usecase-overall.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/03-usecase-learner.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/03-usecase-noi-dung.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/04-usecase-content-admin.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/04-usecase-quan-tri-van-hanh.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/05-activity-placement.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/05a-activity-placement-flow.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/05b-activity-placement-branches.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/06-activity-learning.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/06a-activity-learning-main.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/06b-activity-learning-retry.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/07-activity-jump.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/07a-activity-jump-check.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/07b-activity-jump-result.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/08-activity-governance.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/08a-activity-governance-main.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/08b-activity-governance-branches.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/09-class-content.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/10-class-learner-assessment.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/_style.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/out/smoke.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/01-usecase-tong-quat.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/02-usecase-hoc-vien.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/02-usecase-overall.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/02-usecase-overall.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/03-usecase-learner.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/03-usecase-noi-dung.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/04-usecase-content-admin.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/04-usecase-quan-tri-van-hanh.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/05-activity-placement.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/05a-activity-placement-flow.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/05b-activity-placement-branches.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/06-activity-learning.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/06a-activity-learning-main.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/06b-activity-learning-retry.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/07-activity-jump.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/07a-activity-jump-check.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/07b-activity-jump-result.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/08-activity-governance.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/08a-activity-governance-main.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/08b-activity-governance-branches.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/09-class-content.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/10-class-learner-assessment.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/_style.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/diagrams/lingora-modeling/src/smoke.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/modeling/current-target/README.md": {
+        "kind": "file",
+        "sha256": "d749356defea4f7961e90f3730e79cdd19f01aa51aa19415eee73d78b87f337c"
+      },
+      "docs/modeling/current-target/evidence/2026-10-11-prior-final-modeling-review.md.txt": {
+        "kind": "file",
+        "sha256": "4af670aab5dab7235a13e3d6eb331c66f7f7082cd84330e92074f36877f527c2"
+      },
+      "docs/modeling/current-target/evidence/2026-10-11-prior-final-verification-output.txt": {
+        "kind": "file",
+        "sha256": "4a9aa2931d0d89b001600c841460c33af32576ddcbc4f7ca919eebda9e47447e"
+      },
+      "docs/modeling/current-target/evidence/2026-10-11-prior-final-verifier.py": {
+        "kind": "file",
+        "sha256": "d33be2881c45f40266eaef5fcc49365d2f657ad5e46b48716666ab41ecf49955"
+      },
+      "docs/modeling/current-target/evidence/diff-check-output.txt": {
+        "kind": "file",
+        "sha256": "b7b5228a8a03d5acfca741f04917b0ccefbf1c1bc91981e67bd18c5955a5c531"
+      },
+      "docs/modeling/current-target/evidence/final-three-point-correction.md": {
+        "kind": "file",
+        "sha256": "2edfdcea13d215b5a6b8dd4d42741ceeedd37bb1749ebdb03f059b0cdef50a79"
+      },
+      "docs/modeling/current-target/evidence/final-three-point-scans.txt": {
+        "kind": "file",
+        "sha256": "d591f46d8af2575492568d54c5bbd2380639f161ffa5544d84224ab35096d958"
+      },
+      "docs/modeling/current-target/evidence/final-threepoint-diff-check.txt": {
+        "kind": "file",
+        "sha256": "b7b5228a8a03d5acfca741f04917b0ccefbf1c1bc91981e67bd18c5955a5c531"
+      },
+      "docs/modeling/current-target/evidence/final-threepoint-worktree-stat.txt": {
+        "kind": "file",
+        "sha256": "cd6c6fe9e5982392eeebc9a07e044ef1638312bbc90d55487707b5f2eaa06e7d"
+      },
+      "docs/modeling/current-target/evidence/independent-review.md": {
+        "kind": "file",
+        "sha256": "1ddeb27fb7755a390e1a9f74fb283c944b6ca992166e94dae7828ba616eb6fbb"
+      },
+      "docs/modeling/current-target/evidence/previews/DATA-03-target-logical-erd.png": {
+        "kind": "file",
+        "sha256": "c471f235ee287db83551485cf9da0d7142e39f88cdb5d55c4eb36428bf833c78"
+      },
+      "docs/modeling/current-target/evidence/previews/DOM-01-core-domain-model.png": {
+        "kind": "file",
+        "sha256": "2e18be66c5ec0e7d02463ea24e6bec26389685b2035a10c36319895ee1b4b7d5"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-01-login-authorization.png": {
+        "kind": "file",
+        "sha256": "a1386aa422fd2d495f7df0499dc4194bdd782e4bee7d10ca5f31ca3d54a9b37c"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-02-teacher-provisioning.png": {
+        "kind": "file",
+        "sha256": "c34ac4660c90a82ada03460847c694230ed0c008b62e07ac74a90def87719fe1"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-03-assignment-authoring-submit.png": {
+        "kind": "file",
+        "sha256": "75f33b9f29e4732dd549eb54514c6aa46dfd918ab9df286418440731f54f7fd5"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-04-review-approve-publish.png": {
+        "kind": "file",
+        "sha256": "3e6faba850935a0c978892e18f0a0a1d9b0b970fcb779589af194eb01609a9e5"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-05-revision-replacement.png": {
+        "kind": "file",
+        "sha256": "3c62dce6fee1e23898032516f6c063fd2743b4395897b00c109e1ded428d634f"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-06-lesson-exercise-submission.png": {
+        "kind": "file",
+        "sha256": "ac730586a3a121fd7a805a4464b1d61eb55460acc4ec4bea6597e005d930f620"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-07-assessment-submission.png": {
+        "kind": "file",
+        "sha256": "ddaa2f6c0e83d8d2ecbd54c942f59c655f70ac85aa8dceb3ca0d0c2bf475a1bf"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-08-srs-review.png": {
+        "kind": "file",
+        "sha256": "5884d68952d38e0317964172bd4c86c8120182cda0623d03790c88c36bed39e3"
+      },
+      "docs/modeling/current-target/evidence/sequence-previews/SEQ-09-disable-account-enforcement.png": {
+        "kind": "file",
+        "sha256": "8c6369d4ab981508ba6723ed6c16eaa643db62688c5f76c8f2a191d971c85b53"
+      },
+      "docs/modeling/current-target/evidence/task-change-inventory.txt": {
+        "kind": "file",
+        "sha256": "c8b55d60e58194e1483823d50676d9c19af538a66b9a584813b81699ad2c991f"
+      },
+      "docs/modeling/current-target/evidence/visual-review.md": {
+        "kind": "file",
+        "sha256": "7847f372a76e47995c569464120ade1e67e353f9bccfef8dd5cf65b4048e89a2"
+      },
+      "docs/modeling/current-target/evidence/worktree-diff-stat.txt": {
+        "kind": "file",
+        "sha256": "e0b54d666aa155d37565635a455e12352913175fc31f6e914b1adeb62747a7e0"
+      },
+      "docs/modeling/current-target/final-review.md": {
+        "kind": "file",
+        "sha256": "98856413146b3994508bf74ae621213acd35b23be73ebaa4d5448d603627d71d"
+      },
+      "docs/modeling/current-target/lingora-all-diagrams.drawio": {
+        "kind": "file",
+        "sha256": "70109552507ccbc5f9708112d0b52e7a4b7034ea138dba9e8ecf54afdf5c59f3"
+      },
+      "docs/modeling/current-target/render-manifest.json": {
+        "kind": "file",
+        "sha256": "f200ef8cd37937c9b12f636490b33fa04ff837e159496f92555950a3577d202f"
+      },
+      "docs/modeling/current-target/render.py": {
+        "kind": "file",
+        "sha256": "b481acf90f91eecafd833928a99488e98c0cef0b23d5b2ea65ce9803126b3b92"
+      },
+      "docs/modeling/current-target/rendered/ACT-01-learner-onboarding.png": {
+        "kind": "file",
+        "sha256": "046242edc45ac21b4b8acf450196fb93e3d3f996b8e8fa7411a5543235dd4bf9"
+      },
+      "docs/modeling/current-target/rendered/ACT-01-learner-onboarding.svg": {
+        "kind": "file",
+        "sha256": "b079bb303b790d6568df608ffb4f0925a716f0fde816234f5f75691b3b117847"
+      },
+      "docs/modeling/current-target/rendered/ACT-02-placement-assessment.png": {
+        "kind": "file",
+        "sha256": "67df4d3b76a0e4d9ab422e3ba3d33efbf48d739b6a33188060060f8ba4bdb10a"
+      },
+      "docs/modeling/current-target/rendered/ACT-02-placement-assessment.svg": {
+        "kind": "file",
+        "sha256": "6c7ebd026f2ad9d6c8139992d85773f58e8e47003f9f615aa649f07040b9aefc"
+      },
+      "docs/modeling/current-target/rendered/ACT-03-lesson-learning.png": {
+        "kind": "file",
+        "sha256": "92ab4120d301edc3245a5e0a79e361aef3b2a9f6d32260a5765717960eba362d"
+      },
+      "docs/modeling/current-target/rendered/ACT-03-lesson-learning.svg": {
+        "kind": "file",
+        "sha256": "dccce80fa1e6d2e32bf42f483fb4f30088a060f44cd4254b832f9fed96516710"
+      },
+      "docs/modeling/current-target/rendered/ACT-04-level-up-assessment.png": {
+        "kind": "file",
+        "sha256": "849cf9f720e696ef9d97477aade5bff2bc577220bab7e0e60f0fed56d6850bf2"
+      },
+      "docs/modeling/current-target/rendered/ACT-04-level-up-assessment.svg": {
+        "kind": "file",
+        "sha256": "ede899eb18f88b8c666d7459d0aabe46e8f029bfe879dda9bf7199639067b4d6"
+      },
+      "docs/modeling/current-target/rendered/ACT-05-reassessment.png": {
+        "kind": "file",
+        "sha256": "38207a16cb14497a05afbd4c2181f9e756bb4a7148017f5249baa68a7ef6c8d1"
+      },
+      "docs/modeling/current-target/rendered/ACT-05-reassessment.svg": {
+        "kind": "file",
+        "sha256": "06ab500315efeaf99d3e184f6c76b53071c6707623fd80b1ed7e6ad6cc6bb574"
+      },
+      "docs/modeling/current-target/rendered/ACT-06-srs-review.png": {
+        "kind": "file",
+        "sha256": "d18ef30b25c4fbba062ed0f3a2e98a013e249f79e9a4cc1e37bf115e70ad9a9a"
+      },
+      "docs/modeling/current-target/rendered/ACT-06-srs-review.svg": {
+        "kind": "file",
+        "sha256": "3739b49b3725ee54ddf9f49481277aeaac7a8560cd38ac951c1874001e6b69c1"
+      },
+      "docs/modeling/current-target/rendered/ACT-07-teacher-provisioning.png": {
+        "kind": "file",
+        "sha256": "7eb33b6a519b32ea0f94a99b2581f112f3569bd47438ffddeb8a367d0eb97d00"
+      },
+      "docs/modeling/current-target/rendered/ACT-07-teacher-provisioning.svg": {
+        "kind": "file",
+        "sha256": "1e214866cd5d62d5303b7ae654e3d213efae6175f3de29a5d93f069805b4897d"
+      },
+      "docs/modeling/current-target/rendered/ACT-08-content-governance.png": {
+        "kind": "file",
+        "sha256": "5db69a94ef759bd8ed77dc233d7fb3cabeb4b1e03d4750828d28af99bff1c09c"
+      },
+      "docs/modeling/current-target/rendered/ACT-08-content-governance.svg": {
+        "kind": "file",
+        "sha256": "93fa39fb71f9e505af922d37d19e718cc49b55133d200fb20f19b521e6cf1ff3"
+      },
+      "docs/modeling/current-target/rendered/ACT-09-revision-replacement.png": {
+        "kind": "file",
+        "sha256": "d437c44a5a8066ec0b6c48b3f4e59de333bc05d52a7631ae4607345983e2f5cd"
+      },
+      "docs/modeling/current-target/rendered/ACT-09-revision-replacement.svg": {
+        "kind": "file",
+        "sha256": "fdfbdcf71a7cb0c7f1797b0899a59b20b9cb15e711bf7df09ef201008b110166"
+      },
+      "docs/modeling/current-target/rendered/DATA-01-current-migration-erd.png": {
+        "kind": "file",
+        "sha256": "2398d8756aeddd399b0306bff1a6abfff320fd2d90755b096e3d98689fd60af2"
+      },
+      "docs/modeling/current-target/rendered/DATA-01-current-migration-erd.svg": {
+        "kind": "file",
+        "sha256": "79c5bbe8164fc01a3f746d8255db5d5b7523218869821194bfb8df531e705862"
+      },
+      "docs/modeling/current-target/rendered/DATA-02-current-prisma-model.png": {
+        "kind": "file",
+        "sha256": "3180a0fa670d28597b4690095315d2546f2c8531b83341e0df0c2261500caec9"
+      },
+      "docs/modeling/current-target/rendered/DATA-02-current-prisma-model.svg": {
+        "kind": "file",
+        "sha256": "23c650b70eb854db0a2cb077191e1b176ca210cd4b5546dcfd2eac4fff9c67b6"
+      },
+      "docs/modeling/current-target/rendered/DATA-03-target-logical-erd.png": {
+        "kind": "file",
+        "sha256": "e6c7cdd5031cf1e472461995ccbacb4879db94c6e4fae3bc1239dc27dd0a198d"
+      },
+      "docs/modeling/current-target/rendered/DATA-03-target-logical-erd.svg": {
+        "kind": "file",
+        "sha256": "59119b2b3f9eaa723062453ddde3cf6a4b9dd28e7146451e6f5cb5ba991b17f4"
+      },
+      "docs/modeling/current-target/rendered/DEP-01-current-deployment.png": {
+        "kind": "file",
+        "sha256": "fe8600b28b774c0158556052bb9f0acc9a7bd60ce7dab6efb75a6bc24e4dbdb4"
+      },
+      "docs/modeling/current-target/rendered/DEP-01-current-deployment.svg": {
+        "kind": "file",
+        "sha256": "87a7ab011ddc708f1dd516450a5912f81261b3f46d73f4b21dc7e49cc0d4ffcf"
+      },
+      "docs/modeling/current-target/rendered/DEP-02-target-deployment.png": {
+        "kind": "file",
+        "sha256": "b94d7dfe7b1fefbfa7643103a8154b3e266c697d676cf2a1582a87c7b882e563"
+      },
+      "docs/modeling/current-target/rendered/DEP-02-target-deployment.svg": {
+        "kind": "file",
+        "sha256": "4fceb2d998e3840235d00ccb21609d63ee4c2e286775bd3dbb0e34f59ff54e98"
+      },
+      "docs/modeling/current-target/rendered/DOM-01-core-domain-model.png": {
+        "kind": "file",
+        "sha256": "2e18be66c5ec0e7d02463ea24e6bec26389685b2035a10c36319895ee1b4b7d5"
+      },
+      "docs/modeling/current-target/rendered/DOM-01-core-domain-model.svg": {
+        "kind": "file",
+        "sha256": "fbb48e3d292a559fbc12e7a8d195b7aee1094fb0922b93576331c3321378ae35"
+      },
+      "docs/modeling/current-target/rendered/SEC-01-target-trust-boundary-dfd.png": {
+        "kind": "file",
+        "sha256": "f1559c498e8dd0e843bd5773113e6f3814c505724e01e9fcebeca80eedce9751"
+      },
+      "docs/modeling/current-target/rendered/SEC-01-target-trust-boundary-dfd.svg": {
+        "kind": "file",
+        "sha256": "cc57ea87dfa5cf59d6830e24935d522b1bc80468bea36a59481fe36c8244c9db"
+      },
+      "docs/modeling/current-target/rendered/SEQ-01-login-authorization.png": {
+        "kind": "file",
+        "sha256": "a1386aa422fd2d495f7df0499dc4194bdd782e4bee7d10ca5f31ca3d54a9b37c"
+      },
+      "docs/modeling/current-target/rendered/SEQ-01-login-authorization.svg": {
+        "kind": "file",
+        "sha256": "3e5ee95a23b909ec7c15d25171a682557312343d17f1d9c587b2ff9fdd2c613d"
+      },
+      "docs/modeling/current-target/rendered/SEQ-02-teacher-provisioning.png": {
+        "kind": "file",
+        "sha256": "c34ac4660c90a82ada03460847c694230ed0c008b62e07ac74a90def87719fe1"
+      },
+      "docs/modeling/current-target/rendered/SEQ-02-teacher-provisioning.svg": {
+        "kind": "file",
+        "sha256": "5b516e112c8f2fc575bf515260d582e159562239586b219b2cce887472f42972"
+      },
+      "docs/modeling/current-target/rendered/SEQ-03-assignment-authoring-submit.png": {
+        "kind": "file",
+        "sha256": "75f33b9f29e4732dd549eb54514c6aa46dfd918ab9df286418440731f54f7fd5"
+      },
+      "docs/modeling/current-target/rendered/SEQ-03-assignment-authoring-submit.svg": {
+        "kind": "file",
+        "sha256": "3842cef8dd928bdb49bb6032afaf945dafa281c0f61d44917ab6790d6e0a223c"
+      },
+      "docs/modeling/current-target/rendered/SEQ-04-review-approve-publish.png": {
+        "kind": "file",
+        "sha256": "3e6faba850935a0c978892e18f0a0a1d9b0b970fcb779589af194eb01609a9e5"
+      },
+      "docs/modeling/current-target/rendered/SEQ-04-review-approve-publish.svg": {
+        "kind": "file",
+        "sha256": "a137f7082ef0d27107ee61a7c97cdc8367996eb124abe9dbfaf1bc0e94d9f717"
+      },
+      "docs/modeling/current-target/rendered/SEQ-05-revision-replacement.png": {
+        "kind": "file",
+        "sha256": "3c62dce6fee1e23898032516f6c063fd2743b4395897b00c109e1ded428d634f"
+      },
+      "docs/modeling/current-target/rendered/SEQ-05-revision-replacement.svg": {
+        "kind": "file",
+        "sha256": "43a7e34d9fbfa0f0aa7818ef72890a0913ee1477c7a96a5d17977dbdf6d9e582"
+      },
+      "docs/modeling/current-target/rendered/SEQ-06-lesson-exercise-submission.png": {
+        "kind": "file",
+        "sha256": "ac730586a3a121fd7a805a4464b1d61eb55460acc4ec4bea6597e005d930f620"
+      },
+      "docs/modeling/current-target/rendered/SEQ-06-lesson-exercise-submission.svg": {
+        "kind": "file",
+        "sha256": "4d84cafa1d54e60fcfba76d15f8ff49328f49d221e5a062f08d988227b8f3854"
+      },
+      "docs/modeling/current-target/rendered/SEQ-07-assessment-submission.png": {
+        "kind": "file",
+        "sha256": "ddaa2f6c0e83d8d2ecbd54c942f59c655f70ac85aa8dceb3ca0d0c2bf475a1bf"
+      },
+      "docs/modeling/current-target/rendered/SEQ-07-assessment-submission.svg": {
+        "kind": "file",
+        "sha256": "baf917684036db7f5f0805089c6c0b5ab2eec17aa9d07d0152ae4b20fe6b0684"
+      },
+      "docs/modeling/current-target/rendered/SEQ-08-srs-review.png": {
+        "kind": "file",
+        "sha256": "5884d68952d38e0317964172bd4c86c8120182cda0623d03790c88c36bed39e3"
+      },
+      "docs/modeling/current-target/rendered/SEQ-08-srs-review.svg": {
+        "kind": "file",
+        "sha256": "dee0144fd251130754ab7c0f1605d5e62df3ab6dc6b5c74d33aba101d89df659"
+      },
+      "docs/modeling/current-target/rendered/SEQ-09-disable-account-enforcement.png": {
+        "kind": "file",
+        "sha256": "8c6369d4ab981508ba6723ed6c16eaa643db62688c5f76c8f2a191d971c85b53"
+      },
+      "docs/modeling/current-target/rendered/SEQ-09-disable-account-enforcement.svg": {
+        "kind": "file",
+        "sha256": "ff4b92adad5e3157cca0e97a21362ea1fa7f3da10625d803c077083af399bdc2"
+      },
+      "docs/modeling/current-target/rendered/STA-01-account-status.png": {
+        "kind": "file",
+        "sha256": "da4d3c8de0c01688ba1b4bd7d1855e88014ce7e0439fb436f6482646b3870d8f"
+      },
+      "docs/modeling/current-target/rendered/STA-01-account-status.svg": {
+        "kind": "file",
+        "sha256": "362d15f952f35980dbf817b69c2aab11295e5311f440d5284f10ed986fa6457e"
+      },
+      "docs/modeling/current-target/rendered/STA-02-assignment-lifecycle.png": {
+        "kind": "file",
+        "sha256": "076bc254b7b7a6a7e036c9e74e27d1d78bdeef834e36f44441ba4b4aa0ca396c"
+      },
+      "docs/modeling/current-target/rendered/STA-02-assignment-lifecycle.svg": {
+        "kind": "file",
+        "sha256": "59724a43dacbbf0087476697ab9755d611096c2ea107f18248bf10eb543f26ff"
+      },
+      "docs/modeling/current-target/rendered/STA-03-content-revision-lifecycle.png": {
+        "kind": "file",
+        "sha256": "63bdbfbf6f3d5305aeb9b3e7eb2d805f2af5befd8b773217ad6176b35d9de241"
+      },
+      "docs/modeling/current-target/rendered/STA-03-content-revision-lifecycle.svg": {
+        "kind": "file",
+        "sha256": "ae25776b9d02b01e6580c45a8d26761b53c0e3bff7a52f5a2e5512b9a1ae2ab7"
+      },
+      "docs/modeling/current-target/rendered/SYS-01-current-context.png": {
+        "kind": "file",
+        "sha256": "fd07b6ab5fb91fe699772b6b1958545bec3a664b605bc3efcb07f77d4e4b5348"
+      },
+      "docs/modeling/current-target/rendered/SYS-01-current-context.svg": {
+        "kind": "file",
+        "sha256": "77a6c8ef9f592ae25fa1a75aabe6aa659167cd00f5030a1fd3695c45bf590a5c"
+      },
+      "docs/modeling/current-target/rendered/SYS-02-target-context.png": {
+        "kind": "file",
+        "sha256": "a7d2b3e6745a22b106551a82e613f5fbf8850f45c741273620d374bd339ead44"
+      },
+      "docs/modeling/current-target/rendered/SYS-02-target-context.svg": {
+        "kind": "file",
+        "sha256": "53e3717aa5f24c10a84f91177036e6b361c6ad5a03e07259b936e59106d98ce6"
+      },
+      "docs/modeling/current-target/rendered/SYS-03-current-components.png": {
+        "kind": "file",
+        "sha256": "14f6f55bd71e8b4db5aecdc1ea0827ca6c8831b02f043399904bf43896c0bf96"
+      },
+      "docs/modeling/current-target/rendered/SYS-03-current-components.svg": {
+        "kind": "file",
+        "sha256": "219831dd4bb94a35f14aaaf65e3a23bb3073649d4a10f1b7c23b668c1c9d5009"
+      },
+      "docs/modeling/current-target/rendered/SYS-04-target-components.png": {
+        "kind": "file",
+        "sha256": "0411f43e958a2af97d35d0a9eb499e1c2345f53e3f78cee05b225940bd64f8d4"
+      },
+      "docs/modeling/current-target/rendered/SYS-04-target-components.svg": {
+        "kind": "file",
+        "sha256": "c3ba51ec7142968ebca1dafe705c7e006e3adf9106ca11a13e0657869d0225a5"
+      },
+      "docs/modeling/current-target/rendered/UC-01-target-overall.png": {
+        "kind": "file",
+        "sha256": "389918d94f97f21ec0a2c7241f159345d4654e23ff8932d48bf3501d6b62f8a4"
+      },
+      "docs/modeling/current-target/rendered/UC-01-target-overall.svg": {
+        "kind": "file",
+        "sha256": "e1817b99bf40f9717b790956dd12804ae034742a34f3e25c0307624caf28c34d"
+      },
+      "docs/modeling/current-target/rendered/UC-02-target-learner.png": {
+        "kind": "file",
+        "sha256": "ddeaaae7272e6967022a1f84df90c3e855d1a1d9bd2d60402670cdae35b75a36"
+      },
+      "docs/modeling/current-target/rendered/UC-02-target-learner.svg": {
+        "kind": "file",
+        "sha256": "fd52ad24762a499baacbe51669f332b906424e587037d46a6672f93066f4f14a"
+      },
+      "docs/modeling/current-target/rendered/UC-03-target-teacher.png": {
+        "kind": "file",
+        "sha256": "0320536c629f6965bef1c96399e81ceda03a86602b0676d74c9c7351de762e4e"
+      },
+      "docs/modeling/current-target/rendered/UC-03-target-teacher.svg": {
+        "kind": "file",
+        "sha256": "235d731f58c12c15bf21b1e6e03f2b4d0e8820094cf63fd4c89818946030b622"
+      },
+      "docs/modeling/current-target/rendered/UC-04-target-admin.png": {
+        "kind": "file",
+        "sha256": "1c43bdef91c34bc34102d48b3ff87c7f80f9a0a1aa83f4cc2f8ce48688abd9a3"
+      },
+      "docs/modeling/current-target/rendered/UC-04-target-admin.svg": {
+        "kind": "file",
+        "sha256": "5e08a526e6211ec4b055c09d833700a1a0cfd5bdbec886f32fba9d8698a9da22"
+      },
+      "docs/modeling/current-target/review.md": {
+        "kind": "file",
+        "sha256": "12ac031f9afef26b376499e003747183c61bc60b92b4a369aa45e09d1f6b881d"
+      },
+      "docs/modeling/current-target/src/ACT-01-learner-onboarding.puml": {
+        "kind": "file",
+        "sha256": "dc9f8b1f8d1e07e4aaf9861ad2ca098bef7b416252f452a8b4fd0c40c94aad68"
+      },
+      "docs/modeling/current-target/src/ACT-02-placement-assessment.puml": {
+        "kind": "file",
+        "sha256": "2c47bc416b62a295f18acd0a374fc2472649fc5d3b8355f1623f5f2687daf095"
+      },
+      "docs/modeling/current-target/src/ACT-03-lesson-learning.puml": {
+        "kind": "file",
+        "sha256": "a1c205797efc9cdaf5ae1e6b7f21644ca9faecd66785a6de99a3a39cd2cb57fb"
+      },
+      "docs/modeling/current-target/src/ACT-04-level-up-assessment.puml": {
+        "kind": "file",
+        "sha256": "9430fb04226e655f0a03a61163cf24b80672b60fa08b16bf270ec6e70cde07c2"
+      },
+      "docs/modeling/current-target/src/ACT-05-reassessment.puml": {
+        "kind": "file",
+        "sha256": "0f3301ca6c8414afcb88ba821606b3d41938c9ea15ae9fa80c5a0deb23f11ea0"
+      },
+      "docs/modeling/current-target/src/ACT-06-srs-review.puml": {
+        "kind": "file",
+        "sha256": "cf11f4f1780208c282b3a07d305ee0ae10516f595e3a59b5090c120b46d9eaa9"
+      },
+      "docs/modeling/current-target/src/ACT-07-teacher-provisioning.puml": {
+        "kind": "file",
+        "sha256": "0d4959e6a13bd5b52ef24cb9af380716e6e7e509e59b21e56a7f4df364448b39"
+      },
+      "docs/modeling/current-target/src/ACT-08-content-governance.puml": {
+        "kind": "file",
+        "sha256": "44a06e57db9a22c6e42244cdcb660062fd7a3879168bdead59a72c5c8313ab75"
+      },
+      "docs/modeling/current-target/src/ACT-09-revision-replacement.puml": {
+        "kind": "file",
+        "sha256": "db8f5a9a28e2e87d157804be93d3c74f8b90a8e095889b0633a85055b569278f"
+      },
+      "docs/modeling/current-target/src/DATA-01-current-migration-erd.puml": {
+        "kind": "file",
+        "sha256": "8ce09c954b644725bc5114f08fe03f03b13fa06d2279538284eda358fefa85af"
+      },
+      "docs/modeling/current-target/src/DATA-02-current-prisma-model.puml": {
+        "kind": "file",
+        "sha256": "4bd85298a9c38f0e327470e4f8ca43594cf25a6530a866876f41615b84d48744"
+      },
+      "docs/modeling/current-target/src/DATA-03-target-logical-erd.puml": {
+        "kind": "file",
+        "sha256": "b685f94351405c35d6338fd29e85b01779e0ed4497d3c767523afe8f99fbed04"
+      },
+      "docs/modeling/current-target/src/DEP-01-current-deployment.puml": {
+        "kind": "file",
+        "sha256": "01342e201df39dbf8a3a5321fe0a110dbacbe304b1116720c94f75301160fbe9"
+      },
+      "docs/modeling/current-target/src/DEP-02-target-deployment.puml": {
+        "kind": "file",
+        "sha256": "b41f95b2f6406e96db6982ed68d18752f2eb72f481abf4073e4add99158c76ec"
+      },
+      "docs/modeling/current-target/src/DOM-01-core-domain-model.puml": {
+        "kind": "file",
+        "sha256": "3715bbbc5189d78ea043fdefd9bafcce42f115bd22ec40daa81226cb2a7b987d"
+      },
+      "docs/modeling/current-target/src/SEC-01-target-trust-boundary-dfd.puml": {
+        "kind": "file",
+        "sha256": "e80018be7806b48bb6a001debaa827871599fd2cb0ae40216bf12994a6bf71c9"
+      },
+      "docs/modeling/current-target/src/SEQ-01-login-authorization.puml": {
+        "kind": "file",
+        "sha256": "b496ad5e1f2a9b1e6066a3bff6cc875005f09921f7203c4c568f5b1237d4c846"
+      },
+      "docs/modeling/current-target/src/SEQ-02-teacher-provisioning.puml": {
+        "kind": "file",
+        "sha256": "b771ef506052493df966f15087eb9fbb0a7b509ff4101767d2fe464092808c94"
+      },
+      "docs/modeling/current-target/src/SEQ-03-assignment-authoring-submit.puml": {
+        "kind": "file",
+        "sha256": "16f49cd8e00acfa7bae57228415dcf141a3a93c0fd41c23626bc95f91e57c05d"
+      },
+      "docs/modeling/current-target/src/SEQ-04-review-approve-publish.puml": {
+        "kind": "file",
+        "sha256": "42a1707781119cae91f44f53054729239c7de7f44cd9674db975b46ffbbbd970"
+      },
+      "docs/modeling/current-target/src/SEQ-05-revision-replacement.puml": {
+        "kind": "file",
+        "sha256": "5ae1ec22f281ef4d001a816e61c465a05e2721b1c7266b744bda787ecfbed2fa"
+      },
+      "docs/modeling/current-target/src/SEQ-06-lesson-exercise-submission.puml": {
+        "kind": "file",
+        "sha256": "32aa56d09b4dc890c8947495457405a58f9e05a284343a61db3e85c9511e9cd6"
+      },
+      "docs/modeling/current-target/src/SEQ-07-assessment-submission.puml": {
+        "kind": "file",
+        "sha256": "115680080f4c2eda9644d25f56f5ea5c55018c6e37fabeeda0523000e53ece8d"
+      },
+      "docs/modeling/current-target/src/SEQ-08-srs-review.puml": {
+        "kind": "file",
+        "sha256": "87dd0a32256fb3e31fb50e3b347819601e75035e4425e51d226bc9409529a7df"
+      },
+      "docs/modeling/current-target/src/SEQ-09-disable-account-enforcement.puml": {
+        "kind": "file",
+        "sha256": "eedfa9db7c551587801dc079fb834cf817f90cfec2c67922ddd814bf9f5e8250"
+      },
+      "docs/modeling/current-target/src/STA-01-account-status.puml": {
+        "kind": "file",
+        "sha256": "3e320cf6664b742b098ff5a2e21d8f0d1ae5594a913636a0da9e2f34fe83d527"
+      },
+      "docs/modeling/current-target/src/STA-02-assignment-lifecycle.puml": {
+        "kind": "file",
+        "sha256": "88ca0e5dbc06758c166dad81e18fc468cc4e18b5b8df77bc94518c6d470abbfb"
+      },
+      "docs/modeling/current-target/src/STA-03-content-revision-lifecycle.puml": {
+        "kind": "file",
+        "sha256": "33bf02b34fc3e75334d54adbf7e2b56b2f0a55b12e12e4606aeec5fcb51115bf"
+      },
+      "docs/modeling/current-target/src/SYS-01-current-context.puml": {
+        "kind": "file",
+        "sha256": "937270f34bac629eee1bbb0c83c5fa15546443d6181bf2fbc593c53b30f9aa7d"
+      },
+      "docs/modeling/current-target/src/SYS-02-target-context.puml": {
+        "kind": "file",
+        "sha256": "ce5efbc41818d951a655b79ae90af1471540469d3e5407c181c35867741b6bd7"
+      },
+      "docs/modeling/current-target/src/SYS-03-current-components.puml": {
+        "kind": "file",
+        "sha256": "46914a058c57f45bdb1ac013f1d11903b6d23bfdef219d667f007a6208a671e9"
+      },
+      "docs/modeling/current-target/src/SYS-04-target-components.puml": {
+        "kind": "file",
+        "sha256": "3354648ddd2d870c895ee31e72211eed2486a1f7f74ad185dcd16acdad06fc1c"
+      },
+      "docs/modeling/current-target/src/UC-01-target-overall.puml": {
+        "kind": "file",
+        "sha256": "f343aa87af42a466ff408924f66c22b355bbbbcd4e6507247f9db3e0e763d1de"
+      },
+      "docs/modeling/current-target/src/UC-02-target-learner.puml": {
+        "kind": "file",
+        "sha256": "fa5ed7c096c746224ce21b74641b72d04af40e6a148829f394b6d69d7712edba"
+      },
+      "docs/modeling/current-target/src/UC-03-target-teacher.puml": {
+        "kind": "file",
+        "sha256": "f57b321917c321b80ef9d6382734fea3d96a145d10410ee9f3165f9a481adb0b"
+      },
+      "docs/modeling/current-target/src/UC-04-target-admin.puml": {
+        "kind": "file",
+        "sha256": "bfaf63e788b77857abe9f08e5f8580abafa965c53ddcdb4694f5904269019200"
+      },
+      "docs/modeling/current-target/style.puml": {
+        "kind": "file",
+        "sha256": "8420f616afa5f9b24ab52c8df77ccfd0745e729d8a36eb27280bd5b37f767379"
+      },
+      "docs/modeling/current-target/verification-output.txt": {
+        "kind": "file",
+        "sha256": "87756322a8275fb096a0b8e971a5eeb0b772c78e7065e90f7500b1baa466d413"
+      },
+      "docs/modeling/current-target/verify.py": {
+        "kind": "file",
+        "sha256": "e24099ad8553604459c40faeb72e7d95df60108f8c7060ee27fd398d3da6f2ca"
+      },
+      "docs/phase-0-corrective-implementation-report.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-final-independent-reverification-report.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-final-master-consolidation.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-final-product-owner-decision-sheet.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-final-reconciliation-log.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-final-requirements-audit.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-final-requirements-baseline-audit.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-final-user-research-and-requirements-audit.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-fix-plan-independent-review.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-independent-reverification-report.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-master-report-independent-review.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-master-report.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-mock-survey-report.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-presentation-artifacts-independent-audit.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-product-owner-approval-packet.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-product-owner-decision-sheet.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-requirements-gap-audit.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-role-content-workflow-review.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-roles-and-mvp-final.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-survey-requirements.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-synthetic-stakeholder-research.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-user-research-analysis-and-requirements-independent-review.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/phase-0-user-research-analysis-and-requirements.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/activity-authoring-flow-m22.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/activity-content-approval.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/activity-content-approval.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/activity-learner-flow-m22.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/activity-learner-journey.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/activity-learner-journey.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/assessment-lifecycle-d3.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/component-architecture-m24.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/concept-content-evidence-d4.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/content-lifecycle-state.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/curriculum-architecture-d4.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/deployment-boundary-m24.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/diagnostic-flow-d3.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/domain-model-core.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/erd-logical-status-mapping.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/erd-mvp-learning.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/erd-mvp-learning.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/item-bank-authoring-d4.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/layer-responsibility-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/learning-progression-d3.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/learning-progression-model.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/lesson-blueprint-d4.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/level-readiness-d3.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/mastery-knowledge-gap-d3.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/multilanguage-content-d4.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/placement-jump-m22.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/recommendation-remediation-d3.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/remedial-content-d4.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/role-permission-matrix.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/role-permission-matrix.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/screen-flow-inventory-m22.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/security-matrix-m24.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-admin-ops-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-auth-session-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-authoring-moderation-publish-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-conditional-jump-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-content-publishing.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-content-publishing.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-diagnostic-placement-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-gec-interaction-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-learner-onboarding-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-lesson-completion.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-lesson-completion.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-lesson-exercise-retry-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-progress-streak-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sequence-srs-review-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/service-boundary-m23.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sitemap-mvp.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/sitemap-mvp.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/srs-flow-m22.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/state-progression-readiness-m22.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/system-architecture-mvp.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/system-architecture-mvp.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/uc-admin.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/uc-admin.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/uc-authoring.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/uc-authoring.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/uc-general.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/uc-general.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/uc-learner.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/uc-learner.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/use-case-mvp-overview.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/plantuml/use-case-mvp-overview.puml": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report-draft-analysis-design.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-achievements.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-admin-content.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-auth-session.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-content-approval.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-learner-journey.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-lesson-exercise.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-placement-test.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-progress-reminder.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-srs-review.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/activity-writing-grammar.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/bfd-functional-decomposition.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/class-diagram.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/dfd-context.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/dfd-lesson-exercise.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/dfd-level-0.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/dfd-srs.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/dfd-writing-grammar.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/erd-baseline-and-proposed.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/erd-mvp-learning.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/role-permission-matrix.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sequence-achievements.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sequence-auth.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sequence-content-publishing.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sequence-lesson-completion.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sequence-placement-test.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sequence-srs.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sequence-writing-grammar.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sitemap-mvp.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/sitemap-ui-flow.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/system-architecture-mvp.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/system-architecture.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-admin.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-learner.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-mvp-overview.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-overview.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc01.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc02.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc03.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc04.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc05.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc06.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc07.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc08.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc09.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/report/diagrams/use-case-uc10.png": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/slide-deck-17-slides.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/superpowers/plans/2026-10-11-drawio-native-render-parity.md": {
+        "kind": "file",
+        "sha256": "50b999b60b1f37439ea9454e3dcda6045f71f49485c35be1d82f26fcd61a31b4"
+      },
+      "docs/superpowers/specs/2026-10-11-drawio-native-render-parity-design.md": {
+        "kind": "file",
+        "sha256": "4a2b9c62dfd3594a816d9e2c1e68bf5114a64bc50987c40669ba6b5d19a4c17a"
+      },
+      "docs/tai-lieu-phan-tich-yeu-cau.docx": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/tai-lieu-phan-tich-yeu-cau.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "docs/use-case-specifications.md": {
+        "kind": "file",
+        "sha256": "c19cedabae92a7493a7c383cefc01d11d75f8dd9eb5cae4f83fc5cd47b8ea430"
+      },
+      "lingora-ai/README.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/.env.example": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/README.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/app/__init__.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/app/auth.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/app/config.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/app/main.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/app/schemas.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/app/services/mock.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/requirements.txt": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/tests/__init__.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/tests/conftest.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/tests/test_auth.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/tests/test_chat_roleplay.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/tests/test_error_envelope.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/tests/test_health_and_info.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-ai/api/tests/test_srs_schedule.py": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-web/README.md": {
+        "kind": "file",
+        "sha256": "31eb581b7192ca9784100867560b46a4f1ab860bc3ff9b73c95f23769c6c1e54"
+      },
+      "lingora-web/package-lock.json": {
+        "kind": "file",
+        "sha256": "c0aa329d2be758b4c304f147089deda663509ae1c8a5b7d6358d1c6b2bf53925"
+      },
+      "lingora-web/package.json": {
+        "kind": "file",
+        "sha256": "535166ec3937c8e9013b50c2244d7306d4c005f410417b5ac2b6c077521c4814"
+      },
+      "lingora-web/src/app/api/ai/chat/route.ts": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-web/src/app/api/ai/srs/route.ts": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-web/src/features/ai/contracts.ts": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-web/src/lib/api/error.ts": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-web/src/lib/api/proxy.ts": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "lingora-web/tests/unit/api.proxy.test.ts": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "logs/decision-log.md": {
+        "kind": "file",
+        "sha256": "883ed69d68a3a7e61fdf64b6b69d9d020be16e1ca999f71a3340b36f46e90ab0"
+      },
+      "logs/development-log.md": {
+        "kind": "file",
+        "sha256": "9a88ed49a07bb1e682021e53a2d56c73e5ec5543eef3feaa4fadcc02af872666"
+      },
+      "logs/test-log.md": {
+        "kind": "file",
+        "sha256": "a659359bd94ecf377b32d209f341211269a857a6c65629e0f4a414a6f94b7969"
+      },
+      "package-lock.json": {
+        "kind": "file",
+        "sha256": "86b9280512412ffaf11148dfbd5ff81f0ef3ba8c58c408adf37d8b918938b997"
+      },
+      "package.json": {
+        "kind": "file",
+        "sha256": "92fcafe6abaf2a26e078798a2ce1cb3f4c84e2f8c5ac28b68c5acdf445625df2"
+      },
+      "plans/approved/2026-10-07-harness-authority-reconciliation-APPROVED.md": {
+        "kind": "file",
+        "sha256": "885ffd5cef183935e25ea14b06d7def259b74dfb095caa55c5a367be3f8c9f10"
+      },
+      "plans/approved/2026-10-10-full-current-target-modeling-review-APPROVED.md": {
+        "kind": "file",
+        "sha256": "7ecebf66a314cc9cb3eb6e0f4d363228e3c0ec8ca37153fe3abb920e240efcc6"
+      },
+      "plans/approved/2026-10-10-full-current-target-modeling-review-REQUEST.txt": {
+        "kind": "file",
+        "sha256": "6c7dc2e4e0828a1a6c69578b1c97bf00a5eff9ef34584369cddbef34f0818e7e"
+      },
+      "plans/approved/2026-10-10-lingora-product-revision-pass-APPROVED.md": {
+        "kind": "file",
+        "sha256": "8def781d3a65fb80cd37913f84560cf28c80cde88c8707ed3e9fc6923bbca893"
+      },
+      "plans/approved/2026-10-10-p0-d07-logical-security-decisions-APPROVED.md": {
+        "kind": "file",
+        "sha256": "7454da741b7fe0d015816369a3b6541c26e911ea0cc74fea987bc37c18e90923"
+      },
+      "plans/approved/2026-10-10-remove-stale-ai-references-APPROVED.md": {
+        "kind": "file",
+        "sha256": "b78f31777dbb14fff9f64ce0364693e8bba5cb1571ed8b43c5e279d6d7038208"
+      },
+      "plans/approved/2026-10-11-drawio-native-render-parity-APPROVED.md": {
+        "kind": "file",
+        "sha256": "50b999b60b1f37439ea9454e3dcda6045f71f49485c35be1d82f26fcd61a31b4"
+      },
+      "plans/approved/2026-10-11-drawio-native-render-parity-REQUEST.txt": {
+        "kind": "file",
+        "sha256": "abecbce7d4f974d2339946b99abeaf61e5ea4bb6de392c2b12481ec692791853"
+      },
+      "plans/approved/2026-10-11-final-3-point-modeling-correction-APPROVED.md": {
+        "kind": "file",
+        "sha256": "e60905e04d0a018b4e0c2b34354143a27a8a6b9894039ed9775a9c6211625720"
+      },
+      "plans/approved/2026-10-11-final-3-point-modeling-correction-BASELINE.json": {
+        "kind": "file",
+        "sha256": "7ef3a7be2d68552ab54b4617dd9ebedee4a946e306c972a3f024bd5debdabd61"
+      },
+      "plans/approved/2026-10-11-final-3-point-modeling-correction-REQUEST.txt": {
+        "kind": "file",
+        "sha256": "9280a8a4dd4f7060f31a17d9c8c1b6c2885d8ddf7024c86d403cfbfefdf2ca37"
+      },
+      "plans/approved/2026-10-11-full-diagram-correction-pass-APPROVED.md": {
+        "kind": "file",
+        "sha256": "8125f0f44b0fc864d95571edfb60118e87acfab4ed2df32098dfca644373f54c"
+      },
+      "plans/approved/2026-10-11-full-diagram-correction-pass-BASELINE.json": {
+        "kind": "file",
+        "sha256": "636aac90cd1ebcddfba128892a58f34d2d985206eaafe377be87f5c377e10afc"
+      },
+      "plans/approved/2026-10-11-full-diagram-correction-pass-REQUEST.txt": {
+        "kind": "file",
+        "sha256": "2ee2151d607623f1f965c43ed1b22e1249a892d52fda5fdb290f3613c76e9c63"
+      },
+      "plans/approved/2026-10-11-lingora-final-modeling-review-APPROVED.md": {
+        "kind": "file",
+        "sha256": "7372ea105e95f69f6a150e9bebe499bf0b769444cb9f6f2d2a0975c72c3f49a5"
+      },
+      "plans/approved/2026-10-11-lingora-final-modeling-review-BASELINE.json": {
+        "kind": "file",
+        "sha256": "6daec40eba3fd05029005f86560607d7269f9e61f443b04efc8457e38f1e3f79"
+      },
+      "plans/approved/2026-10-11-lingora-final-modeling-review-REQUEST.txt": {
+        "kind": "file",
+        "sha256": "0a39bf68cebdc0ee92f2cd5f99dba0f2045e606167c93dead71728f1f51adf23"
+      },
+      "plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md": {
+        "kind": "file",
+        "sha256": "dab197e4457904bb845ef4a65e95cc4dc8f4697cadbfa2470b40887db8c00d38"
+      },
+      "plans/approved/2026-10-11-physical-data-runtime-design-BASELINE.json": {
+        "kind": "file",
+        "sha256": "c7b718c1b577e22d7bb7f57bac006dc52ec1523c81d3d926662404a987ac9e22"
+      },
+      "plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt": {
+        "kind": "file",
+        "sha256": "964459e39606d3c0999b137c265a8c1fe62239b0e03d5ca3878e6eceb03e4bd0"
+      },
+      "plans/approved/README.md": {
+        "kind": "file",
+        "sha256": "8a59583a5a1fe87c5ab518dffe64fa0b495b40a16179b0ebb6f9146cf2452163"
+      },
+      "plans/archive/2026-08-23-phase-0-user-research-analysis-and-requirements-writing-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "0cd3f88082b66bd7a682bf8029199b0b091bec6f89d646a18fd3db4b7236f18a"
+      },
+      "plans/archive/2026-09-20-phase-0-fix-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "bea733ecbf0c537445b3035a9ccb719d6c3b83cbb6602bb2e572a07b97c15cc3"
+      },
+      "plans/archive/2026-09-20-phase-0-presentation-fix-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "45ff8bf594dd341d708c7ed74953de7b3a330390bf59c2f62462aac49031825a"
+      },
+      "plans/archive/2026-09-20-phase-0-tai-lieu-requirements-fix-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "09cbe564ee51adb8b47fdee0ea68e6d91539a20ce80e9751c46468bb8caa06f4"
+      },
+      "plans/archive/2026-09-22-m2-2-behavior-uc-activity-state-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "b0d8ea1aef1edd23d273e97d438a92d946494f42495ad23deee7b73f72e6d65f"
+      },
+      "plans/archive/2026-09-23-m2-3-sequence-api-service-boundary-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "66bb1ff5e7abed69afabd94754210503bfdfa981833cb28e06c2cd425dd51754"
+      },
+      "plans/archive/2026-09-23-m2-4-architecture-security-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "f8e9243c0d3ccab2e3a4244b788dd3962273571f28a2c38999298bf791ba25ff"
+      },
+      "plans/archive/2026-09-26-m2-5-design-validation-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "16b3b46082204032c6ddaaa914e8d1d524b5999126b675f3c2d5db0ff27b0d42"
+      },
+      "plans/archive/2026-09-26-m2-6-design-handoff-plan-HISTORICAL.md": {
+        "kind": "file",
+        "sha256": "44edd1cc25d96789608de7098c79727ed0c2a5afc0b28ab675b9f4894aeedeb2"
+      },
+      "plans/archive/2026-10-07-prior-master-plan-active-task-capture-SUPERSEDED.md": {
+        "kind": "file",
+        "sha256": "cac4cb0fa1e49bd6b457db21283082f686d97c7a71119f74ed40a0c86e2346b3"
+      },
+      "plans/archive/2026-10-08-p0-d03-domain-decision-record-DONE.md": {
+        "kind": "file",
+        "sha256": "4e66e3eb17cb2257981a379a5546a4c7adefa23f58fcd58bd5387100200bb3d1"
+      },
+      "plans/archive/2026-10-08-p0-d04-domain-decision-record-DONE.md": {
+        "kind": "file",
+        "sha256": "2c62afc2b52cd215c2b3e869811cd5d0a9eba4d6d8f23ed760b06259f33435cf"
+      },
+      "plans/archive/2026-10-08-p0-d05-placement-starting-point-policy-DONE.md": {
+        "kind": "file",
+        "sha256": "171febe3f7b9f5e0d4c081c784b122602c2b6c097237ceb5d8a0a9accee12654"
+      },
+      "plans/archive/2026-10-10-archive-legacy-plans-from-plans-root-DONE.md": {
+        "kind": "file",
+        "sha256": "0f9b835febdeabd03cd9cf0d73633c8ab5422dff346af361aeeaa2021a068e13"
+      },
+      "plans/archive/2026-10-10-archive-phase-0-and-legacy-reports-to-docs-archive-DONE.md": {
+        "kind": "file",
+        "sha256": "09777acaf843bf1f8e41ff817458530e4896eac626cf61b4d00e81a6a3bbb8a2"
+      },
+      "plans/archive/2026-10-10-clean-rebuild-diagram-artifacts-DONE.md": {
+        "kind": "file",
+        "sha256": "d5dbf2f1d4f8176acca4dddd46c4b6ff7199d866ab04035756c2bbbd920e45d3"
+      },
+      "plans/archive/2026-10-10-full-current-target-modeling-review-DONE.md": {
+        "kind": "file",
+        "sha256": "46f83f89444e566db8ef0de1e451c3e18bd924eef442b0b97022718a2c9657a5"
+      },
+      "plans/archive/2026-10-10-lingora-product-revision-pass-DONE.md": {
+        "kind": "file",
+        "sha256": "8837d28ab1b29b5ef46829b5a7f5904a695831128d4fb5b4488d67498181c9f9"
+      },
+      "plans/archive/2026-10-10-p0-d02-three-business-roles-content-responsibilities-DONE.md": {
+        "kind": "file",
+        "sha256": "5bc8f0d48f91f5c384ff7739a9181d0e14770df7c27ed42c4fa2a38468ec1012"
+      },
+      "plans/archive/2026-10-10-p0-d07-logical-security-decisions-DONE.md": {
+        "kind": "file",
+        "sha256": "1dea331aa0f541424092327ae6516d1a67d1d4228db8b818a907b97c1dcbf207"
+      },
+      "plans/archive/2026-10-10-pre-p0-d02-current-task-capture-SUPERSEDED.md": {
+        "kind": "file",
+        "sha256": "82f8d04b1b039eb7e888a8ad49fa7b8c8b1b835851ecb46210339fe3f7d89bdb"
+      },
+      "plans/archive/2026-10-10-remove-stale-ai-references-DONE.md": {
+        "kind": "file",
+        "sha256": "5eb87a3478ac1bcf11860ad38359bc378e417a070f0b7740e7e2c1221a8c607a"
+      },
+      "plans/archive/2026-10-11-final-3-point-modeling-correction-DONE.md": {
+        "kind": "file",
+        "sha256": "700279c1f16d55d224fbd306f905077fb2c3bcf5e878cf149945374b513cd138"
+      },
+      "plans/archive/2026-10-11-full-diagram-correction-pass-DONE.md": {
+        "kind": "file",
+        "sha256": "d6749effd3d81cd9ec7c119f5f65ab0dfae9b3b75274bb136c8e8a9c8af6454c"
+      },
+      "plans/archive/2026-10-11-lingora-final-modeling-review-DONE.md": {
+        "kind": "file",
+        "sha256": "f670f8cc095a67cafcfd5bf71af2684d4d1b9c8d136996ab3bd1d3f65d3ffcc6"
+      },
+      "plans/archive/2026-10-11-physical-data-runtime-design-DONE.md": {
+        "kind": "file",
+        "sha256": "9aca17a81b407da0a3809f1d9aebdce8b86156e6685709d00ba21bc91e351276"
+      },
+      "plans/archive/README.md": {
+        "kind": "file",
+        "sha256": "95e7e67094509d26bed4eefa918a35bcad5c3c49bb390632ea5f4ff3275d8684"
+      },
+      "plans/current-task.md": {
+        "kind": "file",
+        "sha256": "33969a13472ecc1851b0075820d1a3b0da7ef0e20a8287394d6437c2a879f709"
+      },
+      "plans/m2-2-behavior-uc-activity-state-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "plans/m2-3-sequence-api-service-boundary-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "plans/m2-4-architecture-security-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "plans/m2-5-design-validation-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "plans/m2-6-design-handoff-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "plans/master-implementation-and-report-plan.md": {
+        "kind": "file",
+        "sha256": "62276766cd500e09692425f346efbaedff1f77b10a6840a8483d0084410e542d"
+      },
+      "plans/phase-0-fix-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "plans/phase-0-presentation-fix-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "plans/phase-0-tai-lieu-requirements-fix-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "plans/phase-0-user-research-analysis-and-requirements-writing-plan.md": {
+        "kind": "missing",
+        "sha256": null
+      },
+      "scratch/generate_clean_modeling.py": {
+        "kind": "file",
+        "sha256": "d80eb1abc003e792d768dd6a6e849e4bede81be429441fd9583ac3392ee224e0"
+      },
+      "scratch/render_puml.py": {
+        "kind": "file",
+        "sha256": "6e0a8a15e5d7f2229a9b40a4747cfed696a45acb9b2238b31182c432e11a826d"
+      },
+      "scratch/verify_clean_rebuild.py": {
+        "kind": "file",
+        "sha256": "4b3740733ff8aa30c57c6cc9c0224d8df241478853caacff9dd3ac749e19e420"
+      },
+      "scratch/verify_modeling_review.py": {
+        "kind": "file",
+        "sha256": "dbaae92576872365f7b97d0bfdac819958359299c60c05ed08840484137df63b"
+      },
+      "scripts/build_drawio.py": {
+        "kind": "file",
+        "sha256": "3af17a191f06801c8229efa2cf09e5929082739488e891b2944ccd4553581923"
+      },
+      "scripts/build_drawio_from_puml.js": {
+        "kind": "file",
+        "sha256": "b5a8ce3fae582e52ed4c7067f46480da1dd4a0a27f7e01ecc8c30488e3083031"
+      },
+      "scripts/build_drawio_from_svgs.py": {
+        "kind": "file",
+        "sha256": "7db6e1695be85c4187be1a49a351fa6b41f818a48c1db52cb501467b51af9ae1"
+      },
+      "scripts/test_drawio_native_parity.py": {
+        "kind": "file",
+        "sha256": "6c057047b96512af288ef642749eaac537c7a5d97a73bca6990d7c54bc3cbc60"
+      },
+      "scripts/validate_drawio.py": {
+        "kind": "file",
+        "sha256": "26ad996fcb11d3f20cb71039249f348d5c53612c16f067c4f8a52236d3364407"
+      },
+      "scripts/vendor/drawio-plantuml.min.js": {
+        "kind": "file",
+        "sha256": "62cff34490984e180abb859abbb0e40086e72d4494cc56363a84e69f1d3082c4"
+      },
+      "scripts/verify_drawio_native_parity.py": {
+        "kind": "file",
+        "sha256": "0326ce11e5c420e0d0278fe723c888ba221ae3904b615c7596c5cb43db0f8e85"
+      }
+    },
+    "preexisting_status": [
+      " M AGENTS.md",
+      " M ENVIRONMENT.md",
+      " M HANDOFF.md",
+      " M README.md",
+      " M docs/01-architecture.md",
+      " M docs/02-requirements.md",
+      " M docs/04-data-model.md",
+      " M docs/05-traceability-matrix.md",
+      " M docs/QUICK-REF.md",
+      " M docs/README.md",
+      "R  docs/report-draft-analysis-design.md -> docs/archive/historical-reports/report-draft-analysis-design.md",
+      "R  docs/slide-deck-17-slides.md -> docs/archive/historical-reports/slide-deck-17-slides.md",
+      "R  docs/tai-lieu-phan-tich-yeu-cau.docx -> docs/archive/historical-reports/tai-lieu-phan-tich-yeu-cau.docx",
+      "R  docs/tai-lieu-phan-tich-yeu-cau.md -> docs/archive/historical-reports/tai-lieu-phan-tich-yeu-cau.md",
+      "R  docs/phase-0-corrective-implementation-report.md -> docs/archive/phase-0/phase-0-corrective-implementation-report.md",
+      "R  docs/phase-0-final-independent-reverification-report.md -> docs/archive/phase-0/phase-0-final-independent-reverification-report.md",
+      "R  docs/phase-0-final-master-consolidation.md -> docs/archive/phase-0/phase-0-final-master-consolidation.md",
+      "R  docs/phase-0-final-product-owner-decision-sheet.md -> docs/archive/phase-0/phase-0-final-product-owner-decision-sheet.md",
+      "R  docs/phase-0-final-reconciliation-log.md -> docs/archive/phase-0/phase-0-final-reconciliation-log.md",
+      "R  docs/phase-0-final-requirements-audit.md -> docs/archive/phase-0/phase-0-final-requirements-audit.md",
+      "R  docs/phase-0-final-requirements-baseline-audit.md -> docs/archive/phase-0/phase-0-final-requirements-baseline-audit.md",
+      "R  docs/phase-0-final-user-research-and-requirements-audit.md -> docs/archive/phase-0/phase-0-final-user-research-and-requirements-audit.md",
+      "R  docs/phase-0-fix-plan-independent-review.md -> docs/archive/phase-0/phase-0-fix-plan-independent-review.md",
+      "R  docs/phase-0-independent-reverification-report.md -> docs/archive/phase-0/phase-0-independent-reverification-report.md",
+      "R  docs/phase-0-master-report-independent-review.md -> docs/archive/phase-0/phase-0-master-report-independent-review.md",
+      "R  docs/phase-0-master-report.md -> docs/archive/phase-0/phase-0-master-report.md",
+      "R  docs/phase-0-mock-survey-report.md -> docs/archive/phase-0/phase-0-mock-survey-report.md",
+      "R  docs/phase-0-presentation-artifacts-independent-audit.md -> docs/archive/phase-0/phase-0-presentation-artifacts-independent-audit.md",
+      "R  docs/phase-0-product-owner-approval-packet.md -> docs/archive/phase-0/phase-0-product-owner-approval-packet.md",
+      "R  docs/phase-0-product-owner-decision-sheet.md -> docs/archive/phase-0/phase-0-product-owner-decision-sheet.md",
+      "R  docs/phase-0-requirements-gap-audit.md -> docs/archive/phase-0/phase-0-requirements-gap-audit.md",
+      "R  docs/phase-0-role-content-workflow-review.md -> docs/archive/phase-0/phase-0-role-content-workflow-review.md",
+      "R  docs/phase-0-roles-and-mvp-final.md -> docs/archive/phase-0/phase-0-roles-and-mvp-final.md",
+      "R  docs/phase-0-survey-requirements.md -> docs/archive/phase-0/phase-0-survey-requirements.md",
+      "R  docs/phase-0-synthetic-stakeholder-research.md -> docs/archive/phase-0/phase-0-synthetic-stakeholder-research.md",
+      "R  docs/phase-0-user-research-analysis-and-requirements-independent-review.md -> docs/archive/phase-0/phase-0-user-research-analysis-and-requirements-independent-review.md",
+      "R  docs/phase-0-user-research-analysis-and-requirements.md -> docs/archive/phase-0/phase-0-user-research-analysis-and-requirements.md",
+      " D docs/diagrams/lingora-modeling/deck/Lingora-System-Modeling-Presentation-v13.pptx",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide1.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide10.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide11.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide12.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide13.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide14.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide15.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide16.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide17.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide2.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide3.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide4.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide5.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide6.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide7.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide8.JPG",
+      " D docs/diagrams/lingora-modeling/deck/slides_v13_png/Slide9.JPG",
+      " D docs/diagrams/lingora-modeling/out/01-usecase-tong-quat.png",
+      " D docs/diagrams/lingora-modeling/out/02-usecase-hoc-vien.png",
+      " D docs/diagrams/lingora-modeling/out/02-usecase-overall.png",
+      " D docs/diagrams/lingora-modeling/out/03-usecase-learner.png",
+      " D docs/diagrams/lingora-modeling/out/03-usecase-noi-dung.png",
+      " D docs/diagrams/lingora-modeling/out/04-usecase-content-admin.png",
+      " D docs/diagrams/lingora-modeling/out/04-usecase-quan-tri-van-hanh.png",
+      " D docs/diagrams/lingora-modeling/out/05-activity-placement.png",
+      " D docs/diagrams/lingora-modeling/out/05a-activity-placement-flow.png",
+      " D docs/diagrams/lingora-modeling/out/05b-activity-placement-branches.png",
+      " D docs/diagrams/lingora-modeling/out/06-activity-learning.png",
+      " D docs/diagrams/lingora-modeling/out/06a-activity-learning-main.png",
+      " D docs/diagrams/lingora-modeling/out/06b-activity-learning-retry.png",
+      " D docs/diagrams/lingora-modeling/out/07-activity-jump.png",
+      " D docs/diagrams/lingora-modeling/out/07a-activity-jump-check.png",
+      " D docs/diagrams/lingora-modeling/out/07b-activity-jump-result.png",
+      " D docs/diagrams/lingora-modeling/out/08-activity-governance.png",
+      " D docs/diagrams/lingora-modeling/out/08a-activity-governance-main.png",
+      " D docs/diagrams/lingora-modeling/out/08b-activity-governance-branches.png",
+      " D docs/diagrams/lingora-modeling/out/09-class-content.png",
+      " D docs/diagrams/lingora-modeling/out/10-class-learner-assessment.png",
+      " D docs/diagrams/lingora-modeling/out/_style.png",
+      " D docs/diagrams/lingora-modeling/out/smoke.png",
+      " D docs/diagrams/lingora-modeling/src/01-usecase-tong-quat.puml",
+      " D docs/diagrams/lingora-modeling/src/02-usecase-hoc-vien.puml",
+      " D docs/diagrams/lingora-modeling/src/02-usecase-overall.png",
+      " D docs/diagrams/lingora-modeling/src/02-usecase-overall.puml",
+      " D docs/diagrams/lingora-modeling/src/03-usecase-learner.puml",
+      " D docs/diagrams/lingora-modeling/src/03-usecase-noi-dung.puml",
+      " D docs/diagrams/lingora-modeling/src/04-usecase-content-admin.puml",
+      " D docs/diagrams/lingora-modeling/src/04-usecase-quan-tri-van-hanh.puml",
+      " D docs/diagrams/lingora-modeling/src/05-activity-placement.puml",
+      " D docs/diagrams/lingora-modeling/src/05a-activity-placement-flow.puml",
+      " D docs/diagrams/lingora-modeling/src/05b-activity-placement-branches.puml",
+      " D docs/diagrams/lingora-modeling/src/06-activity-learning.puml",
+      " D docs/diagrams/lingora-modeling/src/06a-activity-learning-main.puml",
+      " D docs/diagrams/lingora-modeling/src/06b-activity-learning-retry.puml",
+      " D docs/diagrams/lingora-modeling/src/07-activity-jump.puml",
+      " D docs/diagrams/lingora-modeling/src/07a-activity-jump-check.puml",
+      " D docs/diagrams/lingora-modeling/src/07b-activity-jump-result.puml",
+      " D docs/diagrams/lingora-modeling/src/08-activity-governance.puml",
+      " D docs/diagrams/lingora-modeling/src/08a-activity-governance-main.puml",
+      " D docs/diagrams/lingora-modeling/src/08b-activity-governance-branches.puml",
+      " D docs/diagrams/lingora-modeling/src/09-class-content.puml",
+      " D docs/diagrams/lingora-modeling/src/10-class-learner-assessment.puml",
+      " D docs/diagrams/lingora-modeling/src/_style.puml",
+      " D docs/diagrams/lingora-modeling/src/smoke.puml",
+      " D docs/plantuml/activity-authoring-flow-m22.puml",
+      " D docs/plantuml/activity-content-approval.png",
+      " D docs/plantuml/activity-content-approval.puml",
+      " D docs/plantuml/activity-learner-flow-m22.puml",
+      " D docs/plantuml/activity-learner-journey.png",
+      " D docs/plantuml/activity-learner-journey.puml",
+      " D docs/plantuml/assessment-lifecycle-d3.puml",
+      " D docs/plantuml/component-architecture-m24.puml",
+      " D docs/plantuml/concept-content-evidence-d4.puml",
+      " D docs/plantuml/content-lifecycle-state.puml",
+      " D docs/plantuml/curriculum-architecture-d4.puml",
+      " D docs/plantuml/deployment-boundary-m24.puml",
+      " D docs/plantuml/diagnostic-flow-d3.puml",
+      " D docs/plantuml/domain-model-core.puml",
+      " D docs/plantuml/erd-logical-status-mapping.puml",
+      " D docs/plantuml/erd-mvp-learning.png",
+      " D docs/plantuml/erd-mvp-learning.puml",
+      " D docs/plantuml/item-bank-authoring-d4.puml",
+      " D docs/plantuml/layer-responsibility-m23.puml",
+      " D docs/plantuml/learning-progression-d3.puml",
+      " D docs/plantuml/learning-progression-model.puml",
+      " D docs/plantuml/lesson-blueprint-d4.puml",
+      " D docs/plantuml/level-readiness-d3.puml",
+      " D docs/plantuml/mastery-knowledge-gap-d3.puml",
+      " D docs/plantuml/multilanguage-content-d4.puml",
+      " D docs/plantuml/placement-jump-m22.puml",
+      " D docs/plantuml/recommendation-remediation-d3.puml",
+      " D docs/plantuml/remedial-content-d4.puml",
+      " D docs/plantuml/role-permission-matrix.png",
+      " D docs/plantuml/role-permission-matrix.puml",
+      " D docs/plantuml/screen-flow-inventory-m22.puml",
+      " D docs/plantuml/security-matrix-m24.puml",
+      " D docs/plantuml/sequence-admin-ops-m23.puml",
+      " D docs/plantuml/sequence-auth-session-m23.puml",
+      " D docs/plantuml/sequence-authoring-moderation-publish-m23.puml",
+      " D docs/plantuml/sequence-conditional-jump-m23.puml",
+      " D docs/plantuml/sequence-content-publishing.png",
+      " D docs/plantuml/sequence-content-publishing.puml",
+      " D docs/plantuml/sequence-diagnostic-placement-m23.puml",
+      " D docs/plantuml/sequence-gec-interaction-m23.puml",
+      " D docs/plantuml/sequence-learner-onboarding-m23.puml",
+      " D docs/plantuml/sequence-lesson-completion.png",
+      " D docs/plantuml/sequence-lesson-completion.puml",
+      " D docs/plantuml/sequence-lesson-exercise-retry-m23.puml",
+      " D docs/plantuml/sequence-progress-streak-m23.puml",
+      " D docs/plantuml/sequence-srs-review-m23.puml",
+      " D docs/plantuml/service-boundary-m23.puml",
+      " D docs/plantuml/sitemap-mvp.png",
+      " D docs/plantuml/sitemap-mvp.puml",
+      " D docs/plantuml/srs-flow-m22.puml",
+      " D docs/plantuml/state-progression-readiness-m22.puml",
+      " D docs/plantuml/system-architecture-mvp.png",
+      " D docs/plantuml/system-architecture-mvp.puml",
+      " D docs/plantuml/uc-admin.png",
+      " D docs/plantuml/uc-admin.puml",
+      " D docs/plantuml/uc-authoring.png",
+      " D docs/plantuml/uc-authoring.puml",
+      " D docs/plantuml/uc-general.png",
+      " D docs/plantuml/uc-general.puml",
+      " D docs/plantuml/uc-learner.png",
+      " D docs/plantuml/uc-learner.puml",
+      " D docs/plantuml/use-case-mvp-overview.png",
+      " D docs/plantuml/use-case-mvp-overview.puml",
+      " D docs/report/diagrams/activity-achievements.png",
+      " D docs/report/diagrams/activity-admin-content.png",
+      " D docs/report/diagrams/activity-auth-session.png",
+      " D docs/report/diagrams/activity-content-approval.png",
+      " D docs/report/diagrams/activity-learner-journey.png",
+      " D docs/report/diagrams/activity-lesson-exercise.png",
+      " D docs/report/diagrams/activity-placement-test.png",
+      " D docs/report/diagrams/activity-progress-reminder.png",
+      " D docs/report/diagrams/activity-srs-review.png",
+      " D docs/report/diagrams/activity-writing-grammar.png",
+      " D docs/report/diagrams/bfd-functional-decomposition.png",
+      " D docs/report/diagrams/class-diagram.png",
+      " D docs/report/diagrams/dfd-context.png",
+      " D docs/report/diagrams/dfd-lesson-exercise.png",
+      " D docs/report/diagrams/dfd-level-0.png",
+      " D docs/report/diagrams/dfd-srs.png",
+      " D docs/report/diagrams/dfd-writing-grammar.png",
+      " D docs/report/diagrams/erd-baseline-and-proposed.png",
+      " D docs/report/diagrams/erd-mvp-learning.png",
+      " D docs/report/diagrams/role-permission-matrix.png",
+      " D docs/report/diagrams/sequence-achievements.png",
+      " D docs/report/diagrams/sequence-auth.png",
+      " D docs/report/diagrams/sequence-content-publishing.png",
+      " D docs/report/diagrams/sequence-lesson-completion.png",
+      " D docs/report/diagrams/sequence-placement-test.png",
+      " D docs/report/diagrams/sequence-srs.png",
+      " D docs/report/diagrams/sequence-writing-grammar.png",
+      " D docs/report/diagrams/sitemap-mvp.png",
+      " D docs/report/diagrams/sitemap-ui-flow.png",
+      " D docs/report/diagrams/system-architecture-mvp.png",
+      " D docs/report/diagrams/system-architecture.png",
+      " D docs/report/diagrams/use-case-admin.png",
+      " D docs/report/diagrams/use-case-learner.png",
+      " D docs/report/diagrams/use-case-mvp-overview.png",
+      " D docs/report/diagrams/use-case-overview.png",
+      " D docs/report/diagrams/use-case-uc01.png",
+      " D docs/report/diagrams/use-case-uc02.png",
+      " D docs/report/diagrams/use-case-uc03.png",
+      " D docs/report/diagrams/use-case-uc04.png",
+      " D docs/report/diagrams/use-case-uc05.png",
+      " D docs/report/diagrams/use-case-uc06.png",
+      " D docs/report/diagrams/use-case-uc07.png",
+      " D docs/report/diagrams/use-case-uc08.png",
+      " D docs/report/diagrams/use-case-uc09.png",
+      " D docs/report/diagrams/use-case-uc10.png",
+      " M docs/use-case-specifications.md",
+      " D lingora-ai/README.md",
+      " D lingora-ai/api/.env.example",
+      " D lingora-ai/api/README.md",
+      " D lingora-ai/api/app/__init__.py",
+      " D lingora-ai/api/app/auth.py",
+      " D lingora-ai/api/app/config.py",
+      " D lingora-ai/api/app/main.py",
+      " D lingora-ai/api/app/schemas.py",
+      " D lingora-ai/api/app/services/mock.py",
+      " D lingora-ai/api/requirements.txt",
+      " D lingora-ai/api/tests/__init__.py",
+      " D lingora-ai/api/tests/conftest.py",
+      " D lingora-ai/api/tests/test_auth.py",
+      " D lingora-ai/api/tests/test_chat_roleplay.py",
+      " D lingora-ai/api/tests/test_error_envelope.py",
+      " D lingora-ai/api/tests/test_health_and_info.py",
+      " D lingora-ai/api/tests/test_srs_schedule.py",
+      " M lingora-web/README.md",
+      " M lingora-web/package-lock.json",
+      " M lingora-web/package.json",
+      " D lingora-web/src/app/api/ai/chat/route.ts",
+      " D lingora-web/src/app/api/ai/srs/route.ts",
+      " D lingora-web/src/features/ai/contracts.ts",
+      " D lingora-web/src/lib/api/error.ts",
+      " D lingora-web/src/lib/api/proxy.ts",
+      " D lingora-web/tests/unit/api.proxy.test.ts",
+      " M logs/decision-log.md",
+      " M logs/development-log.md",
+      " M logs/test-log.md",
+      " M plans/approved/README.md",
+      "R  plans/phase-0-user-research-analysis-and-requirements-writing-plan.md -> plans/archive/2026-08-23-phase-0-user-research-analysis-and-requirements-writing-plan-HISTORICAL.md",
+      "R  plans/phase-0-fix-plan.md -> plans/archive/2026-09-20-phase-0-fix-plan-HISTORICAL.md",
+      "R  plans/phase-0-presentation-fix-plan.md -> plans/archive/2026-09-20-phase-0-presentation-fix-plan-HISTORICAL.md",
+      "R  plans/phase-0-tai-lieu-requirements-fix-plan.md -> plans/archive/2026-09-20-phase-0-tai-lieu-requirements-fix-plan-HISTORICAL.md",
+      "R  plans/m2-2-behavior-uc-activity-state-plan.md -> plans/archive/2026-09-22-m2-2-behavior-uc-activity-state-plan-HISTORICAL.md",
+      "R  plans/m2-3-sequence-api-service-boundary-plan.md -> plans/archive/2026-09-23-m2-3-sequence-api-service-boundary-plan-HISTORICAL.md",
+      "R  plans/m2-4-architecture-security-plan.md -> plans/archive/2026-09-23-m2-4-architecture-security-plan-HISTORICAL.md",
+      "R  plans/m2-5-design-validation-plan.md -> plans/archive/2026-09-26-m2-5-design-validation-plan-HISTORICAL.md",
+      "R  plans/m2-6-design-handoff-plan.md -> plans/archive/2026-09-26-m2-6-design-handoff-plan-HISTORICAL.md",
+      " M plans/archive/README.md",
+      " M plans/current-task.md",
+      " M plans/master-implementation-and-report-plan.md",
+      "?? docs/archive/README.md",
+      "?? docs/design/physical/README.md",
+      "?? docs/design/physical/git-checks.txt",
+      "?? docs/design/physical/physical-erd-assessment.png",
+      "?? docs/design/physical/physical-erd-assessment.svg",
+      "?? docs/design/physical/physical-erd-content.png",
+      "?? docs/design/physical/physical-erd-content.svg",
+      "?? docs/design/physical/physical-erd-identity.png",
+      "?? docs/design/physical/physical-erd-identity.svg",
+      "?? docs/design/physical/physical-erd-learning.png",
+      "?? docs/design/physical/physical-erd-learning.svg",
+      "?? docs/design/physical/physical-erd.puml",
+      "?? docs/design/physical/rebuild-plan.md",
+      "?? docs/design/physical/review-and-verification.md",
+      "?? docs/design/physical/security-and-rls.md",
+      "?? docs/design/physical/unrelated-workspace-observations.json",
+      "?? docs/design/physical/verification-manifest.json",
+      "?? docs/design/physical/verification-output.txt",
+      "?? docs/design/physical/verify.py",
+      "?? docs/modeling/current-target/README.md",
+      "?? docs/modeling/current-target/evidence/2026-10-11-prior-final-modeling-review.md.txt",
+      "?? docs/modeling/current-target/evidence/2026-10-11-prior-final-verification-output.txt",
+      "?? docs/modeling/current-target/evidence/2026-10-11-prior-final-verifier.py",
+      "?? docs/modeling/current-target/evidence/diff-check-output.txt",
+      "?? docs/modeling/current-target/evidence/final-three-point-correction.md",
+      "?? docs/modeling/current-target/evidence/final-three-point-scans.txt",
+      "?? docs/modeling/current-target/evidence/final-threepoint-diff-check.txt",
+      "?? docs/modeling/current-target/evidence/final-threepoint-worktree-stat.txt",
+      "?? docs/modeling/current-target/evidence/independent-review.md",
+      "?? docs/modeling/current-target/evidence/previews/DATA-03-target-logical-erd.png",
+      "?? docs/modeling/current-target/evidence/previews/DOM-01-core-domain-model.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-01-login-authorization.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-02-teacher-provisioning.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-03-assignment-authoring-submit.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-04-review-approve-publish.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-05-revision-replacement.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-06-lesson-exercise-submission.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-07-assessment-submission.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-08-srs-review.png",
+      "?? docs/modeling/current-target/evidence/sequence-previews/SEQ-09-disable-account-enforcement.png",
+      "?? docs/modeling/current-target/evidence/task-change-inventory.txt",
+      "?? docs/modeling/current-target/evidence/visual-review.md",
+      "?? docs/modeling/current-target/evidence/worktree-diff-stat.txt",
+      "?? docs/modeling/current-target/final-review.md",
+      "?? docs/modeling/current-target/lingora-all-diagrams.drawio",
+      "?? docs/modeling/current-target/render-manifest.json",
+      "?? docs/modeling/current-target/render.py",
+      "?? docs/modeling/current-target/rendered/ACT-01-learner-onboarding.png",
+      "?? docs/modeling/current-target/rendered/ACT-01-learner-onboarding.svg",
+      "?? docs/modeling/current-target/rendered/ACT-02-placement-assessment.png",
+      "?? docs/modeling/current-target/rendered/ACT-02-placement-assessment.svg",
+      "?? docs/modeling/current-target/rendered/ACT-03-lesson-learning.png",
+      "?? docs/modeling/current-target/rendered/ACT-03-lesson-learning.svg",
+      "?? docs/modeling/current-target/rendered/ACT-04-level-up-assessment.png",
+      "?? docs/modeling/current-target/rendered/ACT-04-level-up-assessment.svg",
+      "?? docs/modeling/current-target/rendered/ACT-05-reassessment.png",
+      "?? docs/modeling/current-target/rendered/ACT-05-reassessment.svg",
+      "?? docs/modeling/current-target/rendered/ACT-06-srs-review.png",
+      "?? docs/modeling/current-target/rendered/ACT-06-srs-review.svg",
+      "?? docs/modeling/current-target/rendered/ACT-07-teacher-provisioning.png",
+      "?? docs/modeling/current-target/rendered/ACT-07-teacher-provisioning.svg",
+      "?? docs/modeling/current-target/rendered/ACT-08-content-governance.png",
+      "?? docs/modeling/current-target/rendered/ACT-08-content-governance.svg",
+      "?? docs/modeling/current-target/rendered/ACT-09-revision-replacement.png",
+      "?? docs/modeling/current-target/rendered/ACT-09-revision-replacement.svg",
+      "?? docs/modeling/current-target/rendered/DATA-01-current-migration-erd.png",
+      "?? docs/modeling/current-target/rendered/DATA-01-current-migration-erd.svg",
+      "?? docs/modeling/current-target/rendered/DATA-02-current-prisma-model.png",
+      "?? docs/modeling/current-target/rendered/DATA-02-current-prisma-model.svg",
+      "?? docs/modeling/current-target/rendered/DATA-03-target-logical-erd.png",
+      "?? docs/modeling/current-target/rendered/DATA-03-target-logical-erd.svg",
+      "?? docs/modeling/current-target/rendered/DEP-01-current-deployment.png",
+      "?? docs/modeling/current-target/rendered/DEP-01-current-deployment.svg",
+      "?? docs/modeling/current-target/rendered/DEP-02-target-deployment.png",
+      "?? docs/modeling/current-target/rendered/DEP-02-target-deployment.svg",
+      "?? docs/modeling/current-target/rendered/DOM-01-core-domain-model.png",
+      "?? docs/modeling/current-target/rendered/DOM-01-core-domain-model.svg",
+      "?? docs/modeling/current-target/rendered/SEC-01-target-trust-boundary-dfd.png",
+      "?? docs/modeling/current-target/rendered/SEC-01-target-trust-boundary-dfd.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-01-login-authorization.png",
+      "?? docs/modeling/current-target/rendered/SEQ-01-login-authorization.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-02-teacher-provisioning.png",
+      "?? docs/modeling/current-target/rendered/SEQ-02-teacher-provisioning.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-03-assignment-authoring-submit.png",
+      "?? docs/modeling/current-target/rendered/SEQ-03-assignment-authoring-submit.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-04-review-approve-publish.png",
+      "?? docs/modeling/current-target/rendered/SEQ-04-review-approve-publish.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-05-revision-replacement.png",
+      "?? docs/modeling/current-target/rendered/SEQ-05-revision-replacement.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-06-lesson-exercise-submission.png",
+      "?? docs/modeling/current-target/rendered/SEQ-06-lesson-exercise-submission.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-07-assessment-submission.png",
+      "?? docs/modeling/current-target/rendered/SEQ-07-assessment-submission.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-08-srs-review.png",
+      "?? docs/modeling/current-target/rendered/SEQ-08-srs-review.svg",
+      "?? docs/modeling/current-target/rendered/SEQ-09-disable-account-enforcement.png",
+      "?? docs/modeling/current-target/rendered/SEQ-09-disable-account-enforcement.svg",
+      "?? docs/modeling/current-target/rendered/STA-01-account-status.png",
+      "?? docs/modeling/current-target/rendered/STA-01-account-status.svg",
+      "?? docs/modeling/current-target/rendered/STA-02-assignment-lifecycle.png",
+      "?? docs/modeling/current-target/rendered/STA-02-assignment-lifecycle.svg",
+      "?? docs/modeling/current-target/rendered/STA-03-content-revision-lifecycle.png",
+      "?? docs/modeling/current-target/rendered/STA-03-content-revision-lifecycle.svg",
+      "?? docs/modeling/current-target/rendered/SYS-01-current-context.png",
+      "?? docs/modeling/current-target/rendered/SYS-01-current-context.svg",
+      "?? docs/modeling/current-target/rendered/SYS-02-target-context.png",
+      "?? docs/modeling/current-target/rendered/SYS-02-target-context.svg",
+      "?? docs/modeling/current-target/rendered/SYS-03-current-components.png",
+      "?? docs/modeling/current-target/rendered/SYS-03-current-components.svg",
+      "?? docs/modeling/current-target/rendered/SYS-04-target-components.png",
+      "?? docs/modeling/current-target/rendered/SYS-04-target-components.svg",
+      "?? docs/modeling/current-target/rendered/UC-01-target-overall.png",
+      "?? docs/modeling/current-target/rendered/UC-01-target-overall.svg",
+      "?? docs/modeling/current-target/rendered/UC-02-target-learner.png",
+      "?? docs/modeling/current-target/rendered/UC-02-target-learner.svg",
+      "?? docs/modeling/current-target/rendered/UC-03-target-teacher.png",
+      "?? docs/modeling/current-target/rendered/UC-03-target-teacher.svg",
+      "?? docs/modeling/current-target/rendered/UC-04-target-admin.png",
+      "?? docs/modeling/current-target/rendered/UC-04-target-admin.svg",
+      "?? docs/modeling/current-target/review.md",
+      "?? docs/modeling/current-target/src/ACT-01-learner-onboarding.puml",
+      "?? docs/modeling/current-target/src/ACT-02-placement-assessment.puml",
+      "?? docs/modeling/current-target/src/ACT-03-lesson-learning.puml",
+      "?? docs/modeling/current-target/src/ACT-04-level-up-assessment.puml",
+      "?? docs/modeling/current-target/src/ACT-05-reassessment.puml",
+      "?? docs/modeling/current-target/src/ACT-06-srs-review.puml",
+      "?? docs/modeling/current-target/src/ACT-07-teacher-provisioning.puml",
+      "?? docs/modeling/current-target/src/ACT-08-content-governance.puml",
+      "?? docs/modeling/current-target/src/ACT-09-revision-replacement.puml",
+      "?? docs/modeling/current-target/src/DATA-01-current-migration-erd.puml",
+      "?? docs/modeling/current-target/src/DATA-02-current-prisma-model.puml",
+      "?? docs/modeling/current-target/src/DATA-03-target-logical-erd.puml",
+      "?? docs/modeling/current-target/src/DEP-01-current-deployment.puml",
+      "?? docs/modeling/current-target/src/DEP-02-target-deployment.puml",
+      "?? docs/modeling/current-target/src/DOM-01-core-domain-model.puml",
+      "?? docs/modeling/current-target/src/SEC-01-target-trust-boundary-dfd.puml",
+      "?? docs/modeling/current-target/src/SEQ-01-login-authorization.puml",
+      "?? docs/modeling/current-target/src/SEQ-02-teacher-provisioning.puml",
+      "?? docs/modeling/current-target/src/SEQ-03-assignment-authoring-submit.puml",
+      "?? docs/modeling/current-target/src/SEQ-04-review-approve-publish.puml",
+      "?? docs/modeling/current-target/src/SEQ-05-revision-replacement.puml",
+      "?? docs/modeling/current-target/src/SEQ-06-lesson-exercise-submission.puml",
+      "?? docs/modeling/current-target/src/SEQ-07-assessment-submission.puml",
+      "?? docs/modeling/current-target/src/SEQ-08-srs-review.puml",
+      "?? docs/modeling/current-target/src/SEQ-09-disable-account-enforcement.puml",
+      "?? docs/modeling/current-target/src/STA-01-account-status.puml",
+      "?? docs/modeling/current-target/src/STA-02-assignment-lifecycle.puml",
+      "?? docs/modeling/current-target/src/STA-03-content-revision-lifecycle.puml",
+      "?? docs/modeling/current-target/src/SYS-01-current-context.puml",
+      "?? docs/modeling/current-target/src/SYS-02-target-context.puml",
+      "?? docs/modeling/current-target/src/SYS-03-current-components.puml",
+      "?? docs/modeling/current-target/src/SYS-04-target-components.puml",
+      "?? docs/modeling/current-target/src/UC-01-target-overall.puml",
+      "?? docs/modeling/current-target/src/UC-02-target-learner.puml",
+      "?? docs/modeling/current-target/src/UC-03-target-teacher.puml",
+      "?? docs/modeling/current-target/src/UC-04-target-admin.puml",
+      "?? docs/modeling/current-target/style.puml",
+      "?? docs/modeling/current-target/verification-output.txt",
+      "?? docs/modeling/current-target/verify.py",
+      "?? docs/superpowers/plans/2026-10-11-drawio-native-render-parity.md",
+      "?? docs/superpowers/specs/2026-10-11-drawio-native-render-parity-design.md",
+      "?? package-lock.json",
+      "?? package.json",
+      "?? plans/approved/2026-10-07-harness-authority-reconciliation-APPROVED.md",
+      "?? plans/approved/2026-10-10-full-current-target-modeling-review-APPROVED.md",
+      "?? plans/approved/2026-10-10-full-current-target-modeling-review-REQUEST.txt",
+      "?? plans/approved/2026-10-10-lingora-product-revision-pass-APPROVED.md",
+      "?? plans/approved/2026-10-10-p0-d07-logical-security-decisions-APPROVED.md",
+      "?? plans/approved/2026-10-10-remove-stale-ai-references-APPROVED.md",
+      "?? plans/approved/2026-10-11-drawio-native-render-parity-APPROVED.md",
+      "?? plans/approved/2026-10-11-drawio-native-render-parity-REQUEST.txt",
+      "?? plans/approved/2026-10-11-final-3-point-modeling-correction-APPROVED.md",
+      "?? plans/approved/2026-10-11-final-3-point-modeling-correction-BASELINE.json",
+      "?? plans/approved/2026-10-11-final-3-point-modeling-correction-REQUEST.txt",
+      "?? plans/approved/2026-10-11-full-diagram-correction-pass-APPROVED.md",
+      "?? plans/approved/2026-10-11-full-diagram-correction-pass-BASELINE.json",
+      "?? plans/approved/2026-10-11-full-diagram-correction-pass-REQUEST.txt",
+      "?? plans/approved/2026-10-11-lingora-final-modeling-review-APPROVED.md",
+      "?? plans/approved/2026-10-11-lingora-final-modeling-review-BASELINE.json",
+      "?? plans/approved/2026-10-11-lingora-final-modeling-review-REQUEST.txt",
+      "?? plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md",
+      "?? plans/approved/2026-10-11-physical-data-runtime-design-BASELINE.json",
+      "?? plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt",
+      "?? plans/archive/2026-10-07-prior-master-plan-active-task-capture-SUPERSEDED.md",
+      "?? plans/archive/2026-10-08-p0-d03-domain-decision-record-DONE.md",
+      "?? plans/archive/2026-10-08-p0-d04-domain-decision-record-DONE.md",
+      "?? plans/archive/2026-10-08-p0-d05-placement-starting-point-policy-DONE.md",
+      "?? plans/archive/2026-10-10-archive-legacy-plans-from-plans-root-DONE.md",
+      "?? plans/archive/2026-10-10-archive-phase-0-and-legacy-reports-to-docs-archive-DONE.md",
+      "?? plans/archive/2026-10-10-clean-rebuild-diagram-artifacts-DONE.md",
+      "?? plans/archive/2026-10-10-full-current-target-modeling-review-DONE.md",
+      "?? plans/archive/2026-10-10-lingora-product-revision-pass-DONE.md",
+      "?? plans/archive/2026-10-10-p0-d02-three-business-roles-content-responsibilities-DONE.md",
+      "?? plans/archive/2026-10-10-p0-d07-logical-security-decisions-DONE.md",
+      "?? plans/archive/2026-10-10-pre-p0-d02-current-task-capture-SUPERSEDED.md",
+      "?? plans/archive/2026-10-10-remove-stale-ai-references-DONE.md",
+      "?? plans/archive/2026-10-11-final-3-point-modeling-correction-DONE.md",
+      "?? plans/archive/2026-10-11-full-diagram-correction-pass-DONE.md",
+      "?? plans/archive/2026-10-11-lingora-final-modeling-review-DONE.md",
+      "?? plans/archive/2026-10-11-physical-data-runtime-design-DONE.md",
+      "?? scratch/generate_clean_modeling.py",
+      "?? scratch/render_puml.py",
+      "?? scratch/verify_clean_rebuild.py",
+      "?? scratch/verify_modeling_review.py",
+      "?? scripts/build_drawio.py",
+      "?? scripts/build_drawio_from_puml.js",
+      "?? scripts/build_drawio_from_svgs.py",
+      "?? scripts/test_drawio_native_parity.py",
+      "?? scripts/validate_drawio.py",
+      "?? scripts/vendor/drawio-plantuml.min.js",
+      "?? scripts/verify_drawio_native_parity.py"
+    ]
+  },
+  "render_manifest_sha256": "f200ef8cd37937c9b12f636490b33fa04ff837e159496f92555950a3577d202f",
+  "rendered_outputs_sha256": {
+    "docs/modeling/current-target/rendered/ACT-01-learner-onboarding.png": "046242edc45ac21b4b8acf450196fb93e3d3f996b8e8fa7411a5543235dd4bf9",
+    "docs/modeling/current-target/rendered/ACT-01-learner-onboarding.svg": "b079bb303b790d6568df608ffb4f0925a716f0fde816234f5f75691b3b117847",
+    "docs/modeling/current-target/rendered/ACT-02-placement-assessment.png": "67df4d3b76a0e4d9ab422e3ba3d33efbf48d739b6a33188060060f8ba4bdb10a",
+    "docs/modeling/current-target/rendered/ACT-02-placement-assessment.svg": "6c7ebd026f2ad9d6c8139992d85773f58e8e47003f9f615aa649f07040b9aefc",
+    "docs/modeling/current-target/rendered/ACT-03-lesson-learning.png": "92ab4120d301edc3245a5e0a79e361aef3b2a9f6d32260a5765717960eba362d",
+    "docs/modeling/current-target/rendered/ACT-03-lesson-learning.svg": "dccce80fa1e6d2e32bf42f483fb4f30088a060f44cd4254b832f9fed96516710",
+    "docs/modeling/current-target/rendered/ACT-04-level-up-assessment.png": "849cf9f720e696ef9d97477aade5bff2bc577220bab7e0e60f0fed56d6850bf2",
+    "docs/modeling/current-target/rendered/ACT-04-level-up-assessment.svg": "ede899eb18f88b8c666d7459d0aabe46e8f029bfe879dda9bf7199639067b4d6",
+    "docs/modeling/current-target/rendered/ACT-05-reassessment.png": "38207a16cb14497a05afbd4c2181f9e756bb4a7148017f5249baa68a7ef6c8d1",
+    "docs/modeling/current-target/rendered/ACT-05-reassessment.svg": "06ab500315efeaf99d3e184f6c76b53071c6707623fd80b1ed7e6ad6cc6bb574",
+    "docs/modeling/current-target/rendered/ACT-06-srs-review.png": "d18ef30b25c4fbba062ed0f3a2e98a013e249f79e9a4cc1e37bf115e70ad9a9a",
+    "docs/modeling/current-target/rendered/ACT-06-srs-review.svg": "3739b49b3725ee54ddf9f49481277aeaac7a8560cd38ac951c1874001e6b69c1",
+    "docs/modeling/current-target/rendered/ACT-07-teacher-provisioning.png": "7eb33b6a519b32ea0f94a99b2581f112f3569bd47438ffddeb8a367d0eb97d00",
+    "docs/modeling/current-target/rendered/ACT-07-teacher-provisioning.svg": "1e214866cd5d62d5303b7ae654e3d213efae6175f3de29a5d93f069805b4897d",
+    "docs/modeling/current-target/rendered/ACT-08-content-governance.png": "5db69a94ef759bd8ed77dc233d7fb3cabeb4b1e03d4750828d28af99bff1c09c",
+    "docs/modeling/current-target/rendered/ACT-08-content-governance.svg": "93fa39fb71f9e505af922d37d19e718cc49b55133d200fb20f19b521e6cf1ff3",
+    "docs/modeling/current-target/rendered/ACT-09-revision-replacement.png": "d437c44a5a8066ec0b6c48b3f4e59de333bc05d52a7631ae4607345983e2f5cd",
+    "docs/modeling/current-target/rendered/ACT-09-revision-replacement.svg": "fdfbdcf71a7cb0c7f1797b0899a59b20b9cb15e711bf7df09ef201008b110166",
+    "docs/modeling/current-target/rendered/DATA-01-current-migration-erd.png": "2398d8756aeddd399b0306bff1a6abfff320fd2d90755b096e3d98689fd60af2",
+    "docs/modeling/current-target/rendered/DATA-01-current-migration-erd.svg": "79c5bbe8164fc01a3f746d8255db5d5b7523218869821194bfb8df531e705862",
+    "docs/modeling/current-target/rendered/DATA-02-current-prisma-model.png": "3180a0fa670d28597b4690095315d2546f2c8531b83341e0df0c2261500caec9",
+    "docs/modeling/current-target/rendered/DATA-02-current-prisma-model.svg": "23c650b70eb854db0a2cb077191e1b176ca210cd4b5546dcfd2eac4fff9c67b6",
+    "docs/modeling/current-target/rendered/DATA-03-target-logical-erd.png": "e6c7cdd5031cf1e472461995ccbacb4879db94c6e4fae3bc1239dc27dd0a198d",
+    "docs/modeling/current-target/rendered/DATA-03-target-logical-erd.svg": "59119b2b3f9eaa723062453ddde3cf6a4b9dd28e7146451e6f5cb5ba991b17f4",
+    "docs/modeling/current-target/rendered/DEP-01-current-deployment.png": "fe8600b28b774c0158556052bb9f0acc9a7bd60ce7dab6efb75a6bc24e4dbdb4",
+    "docs/modeling/current-target/rendered/DEP-01-current-deployment.svg": "87a7ab011ddc708f1dd516450a5912f81261b3f46d73f4b21dc7e49cc0d4ffcf",
+    "docs/modeling/current-target/rendered/DEP-02-target-deployment.png": "b94d7dfe7b1fefbfa7643103a8154b3e266c697d676cf2a1582a87c7b882e563",
+    "docs/modeling/current-target/rendered/DEP-02-target-deployment.svg": "4fceb2d998e3840235d00ccb21609d63ee4c2e286775bd3dbb0e34f59ff54e98",
+    "docs/modeling/current-target/rendered/DOM-01-core-domain-model.png": "2e18be66c5ec0e7d02463ea24e6bec26389685b2035a10c36319895ee1b4b7d5",
+    "docs/modeling/current-target/rendered/DOM-01-core-domain-model.svg": "fbb48e3d292a559fbc12e7a8d195b7aee1094fb0922b93576331c3321378ae35",
+    "docs/modeling/current-target/rendered/SEC-01-target-trust-boundary-dfd.png": "f1559c498e8dd0e843bd5773113e6f3814c505724e01e9fcebeca80eedce9751",
+    "docs/modeling/current-target/rendered/SEC-01-target-trust-boundary-dfd.svg": "cc57ea87dfa5cf59d6830e24935d522b1bc80468bea36a59481fe36c8244c9db",
+    "docs/modeling/current-target/rendered/SEQ-01-login-authorization.png": "a1386aa422fd2d495f7df0499dc4194bdd782e4bee7d10ca5f31ca3d54a9b37c",
+    "docs/modeling/current-target/rendered/SEQ-01-login-authorization.svg": "3e5ee95a23b909ec7c15d25171a682557312343d17f1d9c587b2ff9fdd2c613d",
+    "docs/modeling/current-target/rendered/SEQ-02-teacher-provisioning.png": "c34ac4660c90a82ada03460847c694230ed0c008b62e07ac74a90def87719fe1",
+    "docs/modeling/current-target/rendered/SEQ-02-teacher-provisioning.svg": "5b516e112c8f2fc575bf515260d582e159562239586b219b2cce887472f42972",
+    "docs/modeling/current-target/rendered/SEQ-03-assignment-authoring-submit.png": "75f33b9f29e4732dd549eb54514c6aa46dfd918ab9df286418440731f54f7fd5",
+    "docs/modeling/current-target/rendered/SEQ-03-assignment-authoring-submit.svg": "3842cef8dd928bdb49bb6032afaf945dafa281c0f61d44917ab6790d6e0a223c",
+    "docs/modeling/current-target/rendered/SEQ-04-review-approve-publish.png": "3e6faba850935a0c978892e18f0a0a1d9b0b970fcb779589af194eb01609a9e5",
+    "docs/modeling/current-target/rendered/SEQ-04-review-approve-publish.svg": "a137f7082ef0d27107ee61a7c97cdc8367996eb124abe9dbfaf1bc0e94d9f717",
+    "docs/modeling/current-target/rendered/SEQ-05-revision-replacement.png": "3c62dce6fee1e23898032516f6c063fd2743b4395897b00c109e1ded428d634f",
+    "docs/modeling/current-target/rendered/SEQ-05-revision-replacement.svg": "43a7e34d9fbfa0f0aa7818ef72890a0913ee1477c7a96a5d17977dbdf6d9e582",
+    "docs/modeling/current-target/rendered/SEQ-06-lesson-exercise-submission.png": "ac730586a3a121fd7a805a4464b1d61eb55460acc4ec4bea6597e005d930f620",
+    "docs/modeling/current-target/rendered/SEQ-06-lesson-exercise-submission.svg": "4d84cafa1d54e60fcfba76d15f8ff49328f49d221e5a062f08d988227b8f3854",
+    "docs/modeling/current-target/rendered/SEQ-07-assessment-submission.png": "ddaa2f6c0e83d8d2ecbd54c942f59c655f70ac85aa8dceb3ca0d0c2bf475a1bf",
+    "docs/modeling/current-target/rendered/SEQ-07-assessment-submission.svg": "baf917684036db7f5f0805089c6c0b5ab2eec17aa9d07d0152ae4b20fe6b0684",
+    "docs/modeling/current-target/rendered/SEQ-08-srs-review.png": "5884d68952d38e0317964172bd4c86c8120182cda0623d03790c88c36bed39e3",
+    "docs/modeling/current-target/rendered/SEQ-08-srs-review.svg": "dee0144fd251130754ab7c0f1605d5e62df3ab6dc6b5c74d33aba101d89df659",
+    "docs/modeling/current-target/rendered/SEQ-09-disable-account-enforcement.png": "8c6369d4ab981508ba6723ed6c16eaa643db62688c5f76c8f2a191d971c85b53",
+    "docs/modeling/current-target/rendered/SEQ-09-disable-account-enforcement.svg": "ff4b92adad5e3157cca0e97a21362ea1fa7f3da10625d803c077083af399bdc2",
+    "docs/modeling/current-target/rendered/STA-01-account-status.png": "da4d3c8de0c01688ba1b4bd7d1855e88014ce7e0439fb436f6482646b3870d8f",
+    "docs/modeling/current-target/rendered/STA-01-account-status.svg": "362d15f952f35980dbf817b69c2aab11295e5311f440d5284f10ed986fa6457e",
+    "docs/modeling/current-target/rendered/STA-02-assignment-lifecycle.png": "076bc254b7b7a6a7e036c9e74e27d1d78bdeef834e36f44441ba4b4aa0ca396c",
+    "docs/modeling/current-target/rendered/STA-02-assignment-lifecycle.svg": "59724a43dacbbf0087476697ab9755d611096c2ea107f18248bf10eb543f26ff",
+    "docs/modeling/current-target/rendered/STA-03-content-revision-lifecycle.png": "63bdbfbf6f3d5305aeb9b3e7eb2d805f2af5befd8b773217ad6176b35d9de241",
+    "docs/modeling/current-target/rendered/STA-03-content-revision-lifecycle.svg": "ae25776b9d02b01e6580c45a8d26761b53c0e3bff7a52f5a2e5512b9a1ae2ab7",
+    "docs/modeling/current-target/rendered/SYS-01-current-context.png": "fd07b6ab5fb91fe699772b6b1958545bec3a664b605bc3efcb07f77d4e4b5348",
+    "docs/modeling/current-target/rendered/SYS-01-current-context.svg": "77a6c8ef9f592ae25fa1a75aabe6aa659167cd00f5030a1fd3695c45bf590a5c",
+    "docs/modeling/current-target/rendered/SYS-02-target-context.png": "a7d2b3e6745a22b106551a82e613f5fbf8850f45c741273620d374bd339ead44",
+    "docs/modeling/current-target/rendered/SYS-02-target-context.svg": "53e3717aa5f24c10a84f91177036e6b361c6ad5a03e07259b936e59106d98ce6",
+    "docs/modeling/current-target/rendered/SYS-03-current-components.png": "14f6f55bd71e8b4db5aecdc1ea0827ca6c8831b02f043399904bf43896c0bf96",
+    "docs/modeling/current-target/rendered/SYS-03-current-components.svg": "219831dd4bb94a35f14aaaf65e3a23bb3073649d4a10f1b7c23b668c1c9d5009",
+    "docs/modeling/current-target/rendered/SYS-04-target-components.png": "0411f43e958a2af97d35d0a9eb499e1c2345f53e3f78cee05b225940bd64f8d4",
+    "docs/modeling/current-target/rendered/SYS-04-target-components.svg": "c3ba51ec7142968ebca1dafe705c7e006e3adf9106ca11a13e0657869d0225a5",
+    "docs/modeling/current-target/rendered/UC-01-target-overall.png": "389918d94f97f21ec0a2c7241f159345d4654e23ff8932d48bf3501d6b62f8a4",
+    "docs/modeling/current-target/rendered/UC-01-target-overall.svg": "e1817b99bf40f9717b790956dd12804ae034742a34f3e25c0307624caf28c34d",
+    "docs/modeling/current-target/rendered/UC-02-target-learner.png": "ddeaaae7272e6967022a1f84df90c3e855d1a1d9bd2d60402670cdae35b75a36",
+    "docs/modeling/current-target/rendered/UC-02-target-learner.svg": "fd52ad24762a499baacbe51669f332b906424e587037d46a6672f93066f4f14a",
+    "docs/modeling/current-target/rendered/UC-03-target-teacher.png": "0320536c629f6965bef1c96399e81ceda03a86602b0676d74c9c7351de762e4e",
+    "docs/modeling/current-target/rendered/UC-03-target-teacher.svg": "235d731f58c12c15bf21b1e6e03f2b4d0e8820094cf63fd4c89818946030b622",
+    "docs/modeling/current-target/rendered/UC-04-target-admin.png": "1c43bdef91c34bc34102d48b3ff87c7f80f9a0a1aa83f4cc2f8ce48688abd9a3",
+    "docs/modeling/current-target/rendered/UC-04-target-admin.svg": "5e08a526e6211ec4b055c09d833700a1a0cfd5bdbec886f32fba9d8698a9da22"
+  },
+  "root": "C:/Users/PC/lingora",
+  "sources": {
+    "ACT-01-learner-onboarding.puml": {
+      "id": "ACT-01",
+      "semantic_inventory": [
+        "title Sơ đồ hoạt động – Khởi đầu học và chọn ngôn ngữ",
+        "|Học viên|",
+        "start",
+        ":Đăng nhập và chọn ngôn ngữ học;",
+        "|Hệ thống|",
+        "if (Ngữ cảnh đang hoạt động?) then (Có)",
+        ":Mở ngữ cảnh, giữ điểm bắt đầu;",
+        ":Hiển thị lộ trình hiện hành;",
+        "stop",
+        "else (Không)",
+        "endif",
+        "if (Đã có hai ngữ cảnh hoạt động?) then (Có)",
+        "|Học viên|",
+        "if (Tạm dừng một ngữ cảnh?) then (Có)",
+        "|Hệ thống|",
+        ":Tạm dừng, giữ tiến độ và bằng chứng;",
+        "else (Không)",
+        "|Hệ thống|",
+        ":Giữ các ngữ cảnh hiện có;",
+        "stop",
+        "endif",
+        "else (Không)",
+        "endif",
+        "|Hệ thống|",
+        "if (Ngữ cảnh đã tạm dừng?) then (Có)",
+        ":Tiếp tục ngữ cảnh, giữ trạng thái;",
+        ":Hiển thị lộ trình hiện hành;",
+        "stop",
+        "else (Không)",
+        "endif",
+        ":Tạo ngữ cảnh học cho ngôn ngữ;",
+        "|Học viên|",
+        "if (Cách chọn điểm bắt đầu?) then (Xếp lớp)",
+        ":Làm kiểm tra xếp lớp;",
+        "|Hệ thống|",
+        "if (Kết quả hợp lệ đã được lưu?) then (Có)",
+        ":Dùng cấp độ bắt đầu đề xuất;",
+        "else (Không)",
+        "|Học viên|",
+        ":Chọn tự khai báo hoặc mặc định;",
+        "|Hệ thống|",
+        ":Giữ nguồn tự khai báo hoặc mặc định;",
+        "endif",
+        "elseif (Tự khai báo)",
+        "|Học viên|",
+        ":Khai báo cấp độ;",
+        "|Hệ thống|",
+        ":Ghi điểm bắt đầu chưa xác minh;",
+        "else (Mặc định)",
+        "|Hệ thống|",
+        ":Chọn điểm thấp nhất có nội dung;",
+        "endif",
+        "|Hệ thống|",
+        ":Suy ra lộ trình từ ngữ cảnh và tiến độ;",
+        ":Hiển thị nội dung hiện hành đủ điều kiện;",
+        ":Nội dung chưa xuất bản / không khả dụng:\\nHiển thị “Đang phát triển”, không tính mẫu số;",
+        ":Bài đã xuất bản trong lộ trình hiện hành,\\nchưa mở do tiến trình vẫn tính mẫu số;",
+        ":Tính trên bài bắt buộc active, đã xuất bản\\nvà đủ điều kiện;",
+        "stop"
+      ],
+      "sha256": "dc9f8b1f8d1e07e4aaf9861ad2ca098bef7b416252f452a8b4fd0c40c94aad68"
+    },
+    "ACT-02-placement-assessment.puml": {
+      "id": "ACT-02",
+      "semantic_inventory": [
+        "title Sơ đồ hoạt động – Kiểm tra xếp lớp",
+        "|Học viên|",
+        "start",
+        ":Chọn kiểm tra xếp lớp;",
+        "|Hệ thống|",
+        ":Kiểm tra quyền và ngữ cảnh học;",
+        ":Gắn lượt làm với một phiên bản đã xuất bản;",
+        ":Hiển thị câu hỏi theo cấu hình;",
+        "|Học viên|",
+        ":Làm bài, không có phản hồi đúng sai;",
+        "if (Nộp bài?) then (Có)",
+        ":Gửi câu trả lời;",
+        "else (Không / bỏ dở)",
+        "|Hệ thống|",
+        ":Không tạo kết quả hoặc điểm giả;",
+        ":Giữ điểm bắt đầu trước đó;",
+        "stop",
+        "endif",
+        "|Hệ thống|",
+        "if (Dữ liệu hợp lệ?) then (Có)",
+        ":Chấm bài ở phía hệ thống;",
+        "else (Không)",
+        ":Không tạo kết quả hoàn tất;",
+        ":Giữ điểm bắt đầu trước đó;",
+        "stop",
+        "endif",
+        ":Lưu kết quả theo ngữ cảnh và phiên bản;",
+        "if (Lưu thành công?) then (Có)",
+        ":Giữ bằng chứng và lịch sử trước đó;",
+        "else (Không)",
+        ":Không tạo kết quả hoàn tất;",
+        ":Giữ điểm bắt đầu trước đó;",
+        "stop",
+        "endif",
+        ":Suy ra cấp độ bắt đầu đề xuất;",
+        ":Trả kết quả tổng hợp và đề xuất;",
+        "|Học viên|",
+        ":Xem điểm bắt đầu đề xuất;",
+        ":Tiếp tục học;",
+        "stop"
+      ],
+      "sha256": "2c47bc416b62a295f18acd0a374fc2472649fc5d3b8355f1623f5f2687daf095"
+    },
+    "ACT-03-lesson-learning.puml": {
+      "id": "ACT-03",
+      "semantic_inventory": [
+        "title Sơ đồ hoạt động – Học bài và luyện tập",
+        "|Học viên|",
+        "start",
+        ":Mở bài học đang được phép học;",
+        "|Hệ thống|",
+        ":Kiểm tra quyền, ngữ cảnh và phiên bản;",
+        "|Học viên|",
+        ":Xem nội dung bài học;",
+        "|Hệ thống|",
+        ":Tạo lượt làm với N bài tập cốt lõi;",
+        ":Khởi tạo tổng đóng góp = 0, K = 0;",
+        "while (Còn bài tập trong hàng đợi?) is (Có)",
+        ":Lấy bài tập đầu hàng đợi;",
+        "|Học viên|",
+        "if (Tiếp tục lượt làm?) then (Không / bỏ dở)",
+        "|Hệ thống|",
+        ":Không ghi hoàn tất hoặc điểm hoàn tất;",
+        ":Giữ lịch sử trước đó;",
+        "stop",
+        "else (Có)",
+        "|Học viên|",
+        ":Gửi câu trả lời;",
+        "endif",
+        "|Hệ thống|",
+        "while (Câu trả lời chưa hợp lệ?) is (Có)",
+        ":Báo lỗi, không tính lượt trả lời;",
+        "|Học viên|",
+        ":Sửa và gửi lại câu trả lời;",
+        "|Hệ thống|",
+        ":Kiểm tra lại dữ liệu;",
+        "endwhile (Không)",
+        ":Chấm bằng dữ liệu của phiên bản;",
+        "if (Lần trả lời đầu?) then (Có)",
+        "if (Đúng?) then (Đúng)",
+        ":Cộng đóng góp 1.0;",
+        "else (Sai)",
+        ":Phản hồi hỗ trợ học; tăng K;",
+        ":Đưa bài xuống cuối hàng đợi\\nsau các bài còn lại, thử lại đúng một lần;",
+        "endif",
+        "else (Thử lại)",
+        "if (Đúng?) then (Đúng)",
+        ":Cộng đóng góp 0.5;",
+        "else (Sai)",
+        ":Cộng đóng góp 0;",
+        "endif",
+        ":Phản hồi, không thêm lượt thử lại;",
+        "endif",
+        "endwhile (Không)",
+        ":Lưu lượt hoàn tất và điểm\\ntổng đóng góp / (N + K);",
+        "if (Lưu thành công?) then (Có)",
+        ":Ghi hoàn thành, độc lập đúng sai;",
+        ":Tự thêm từ cốt lõi vào SRS;\\nthẻ cũ giữ lịch ôn;",
+        ":Tính hoạt động học cho chuỗi ngày;",
+        ":Hiển thị điểm lượt hoàn tất mới nhất;",
+        "else (Không)",
+        ":Không ghi hoàn tất hoặc điểm hoàn tất;",
+        ":Giữ lịch sử trước đó;",
+        "endif",
+        "stop"
+      ],
+      "sha256": "a1c205797efc9cdaf5ae1e6b7f21644ca9faecd66785a6de99a3a39cd2cb57fb"
+    },
+    "ACT-04-level-up-assessment.puml": {
+      "id": "ACT-04",
+      "semantic_inventory": [
+        "title Sơ đồ hoạt động – Kiểm tra lên cấp",
+        "|Học viên|",
+        "start",
+        ":Chọn kiểm tra lên cấp;",
+        "|Hệ thống|",
+        ":Kiểm tra quyền và ngữ cảnh hoạt động;",
+        ":Tính tiến độ trên bài bắt buộc đủ điều kiện;",
+        "if (Đạt điều kiện chương trình?) then (Có)",
+        ":Gắn lượt làm với phiên bản đã xuất bản;",
+        "else (Không)",
+        ":Hiển thị yêu cầu đủ điều kiện còn thiếu;",
+        "stop",
+        "endif",
+        "|Học viên|",
+        ":Làm bài, không có phản hồi đúng sai;",
+        "if (Nộp bài?) then (Có)",
+        ":Gửi câu trả lời;",
+        "else (Không / bỏ dở)",
+        "|Hệ thống|",
+        ":Không tạo kết quả hoặc điểm giả;",
+        ":Giữ trạng thái và bằng chứng;",
+        "stop",
+        "endif",
+        "|Hệ thống|",
+        "if (Dữ liệu hợp lệ?) then (Có)",
+        ":Chấm bài theo phiên bản đã gắn;",
+        "else (Không)",
+        ":Không tạo kết quả hoặc điểm giả;",
+        ":Giữ trạng thái và bằng chứng;",
+        "stop",
+        "endif",
+        ":Lưu kết quả;",
+        "if (Lưu thành công?) then (Có)",
+        ":Giữ kết quả và lịch sử học;",
+        "else (Không)",
+        ":Không tạo kết quả hoặc mở cấp mới;",
+        ":Giữ trạng thái và bằng chứng;",
+        "stop",
+        "endif",
+        "if (Đạt điều kiện bài kiểm tra?) then (Có)",
+        ":Giữ bằng chứng đã đạt;",
+        "if (Cấp kế tiếp có nội dung khả dụng?) then (Có)",
+        ":Mở cấp học kế tiếp;",
+        "else (Không)",
+        ":Hiển thị cấp kế tiếp: khóa / sắp có;",
+        ":Giải thích nội dung đang phát triển;",
+        "if (Đã hoàn thành mọi nội dung hiện có?) then (Có)",
+        ":Thông báo đã hoàn thành nội dung hiện có;",
+        "else (Không)",
+        "endif",
+        "endif",
+        "else (Không)",
+        ":Giữ tiến độ và quyền học hiện có;",
+        ":Đề xuất ôn tập, thi lại theo cấu hình;",
+        "endif",
+        ":Trả kết quả tổng hợp;",
+        "stop"
+      ],
+      "sha256": "9430fb04226e655f0a03a61163cf24b80672b60fa08b16bf270ec6e70cde07c2"
+    },
+    "ACT-05-reassessment.puml": {
+      "id": "ACT-05",
+      "semantic_inventory": [
+        "title Kiểm tra đánh giá lại – DEFERRED — NOT IN MVP",
+        "|Hệ thống|",
+        "start",
+        ":Ngoài phạm vi MVP;",
+        "stop"
+      ],
+      "sha256": "0f3301ca6c8414afcb88ba821606b3d41938c9ea15ae9fa80c5a0deb23f11ea0"
+    },
+    "ACT-06-srs-review.puml": {
+      "id": "ACT-06",
+      "semantic_inventory": [
+        "title Sơ đồ hoạt động – Thêm từ và ôn tập ngắt quãng",
+        "|Hệ thống|",
+        "start",
+        "if (Nguồn thêm từ?) then (Bài học hoàn tất)",
+        ":Tự thêm từ cốt lõi;",
+        "elseif (Từ tùy chọn)",
+        "|Học viên|",
+        "if (Chọn thêm vào ôn tập?) then (Có)",
+        "|Hệ thống|",
+        ":Thêm từ đã chọn;",
+        "else (Không)",
+        "stop",
+        "endif",
+        "else (Ôn thẻ đã có)",
+        "endif",
+        "|Hệ thống|",
+        ":Mỗi Học viên + Từ vựng có một thẻ;",
+        "if (Thẻ mới?) then (Có)",
+        ":Khởi tạo giai đoạn 1, đến hạn sau 1 ngày;",
+        "else (Không)",
+        ":Dùng thẻ cũ, giữ giai đoạn và lịch;",
+        "endif",
+        "|Học viên|",
+        ":Mở phiên ôn tập;",
+        "|Hệ thống|",
+        ":Kiểm tra tài khoản và quyền sở hữu thẻ;",
+        "while (Còn thẻ đến hạn chưa ôn?\\nKhông gồm lượt củng cố) is (Có)",
+        ":Hiển thị thẻ;",
+        "|Học viên|",
+        ":Lật thẻ và chọn Đã nhớ / Chưa nhớ;",
+        "|Hệ thống|",
+        ":Kiểm tra đánh giá và lượt ôn;",
+        "if (Lượt ôn đã được ghi?) then (Có)",
+        ":Trả kết quả cũ, không cập nhật lại;",
+        "else (Không)",
+        "if (Đã nhớ?) then (Có)",
+        ":Tiến giai đoạn theo 1 → 3 → 7 → 14 → 30 ngày;",
+        ":Ở giai đoạn cuối: ôn mỗi 30 ngày, thẻ còn hoạt động;",
+        "else (Chưa nhớ)",
+        ":Về giai đoạn 1, đến hạn sau 1 ngày;",
+        ":Thêm vào hàng củng cố cuối phiên\\ntối đa một lần;",
+        "endif",
+        ":Ghi một lượt ôn và lịch do hệ thống tính;",
+        ":Tính hoạt động học cho chuỗi ngày;",
+        "endif",
+        "endwhile (Không)",
+        "if (Có thẻ cần củng cố?) then (Có)",
+        "|Học viên|",
+        ":Luyện nhớ lại mỗi thẻ một lần;",
+        "|Hệ thống|",
+        ":Giữ lịch, không tạo lượt lập lịch thứ hai;",
+        "else (Không)",
+        "endif",
+        "|Hệ thống|",
+        ":Hiển thị tổng kết phiên;",
+        "stop"
+      ],
+      "sha256": "cf11f4f1780208c282b3a07d305ee0ae10516f595e3a59b5090c120b46d9eaa9"
+    },
+    "ACT-07-teacher-provisioning.puml": {
+      "id": "ACT-07",
+      "semantic_inventory": [
+        "title Sơ đồ hoạt động – Khởi tạo tài khoản giáo viên",
+        "|Quản trị viên|",
+        "start",
+        ":Nhập email và thông tin giáo viên;",
+        "|Hệ thống|",
+        ":Kiểm tra quyền và dữ liệu;",
+        "if (Thông tin hợp lệ, email chưa dùng?) then (Có)",
+        ":Tạo tài khoản chỉ có vai trò Giáo viên;",
+        ":Ghi nhật ký khởi tạo tài khoản;",
+        ":Gửi liên kết kích hoạt;",
+        "|Giáo viên|",
+        ":Mở liên kết và đặt mật khẩu;",
+        "|Hệ thống|",
+        "if (Kích hoạt hợp lệ?) then (Có)",
+        ":Kích hoạt tài khoản;",
+        ":Ghi nhận kết quả;",
+        "else (Không)",
+        ":Báo lỗi, chưa kích hoạt;",
+        "endif",
+        "else (Không)",
+        ":Báo lỗi, không tạo tài khoản;",
+        "endif",
+        "stop"
+      ],
+      "sha256": "0d4959e6a13bd5b52ef24cb9af380716e6e7e509e59b21e56a7f4df364448b39"
+    },
+    "ACT-08-content-governance.puml": {
+      "id": "ACT-08",
+      "semantic_inventory": [
+        "title Sơ đồ hoạt động – Soạn thảo, duyệt và xuất bản nội dung",
+        "|Quản trị viên|",
+        "start",
+        ":Xác định yêu cầu nội dung;",
+        "if (Có gói đánh giá?) then (Có)",
+        ":Xác định đặc tả và độ bao phủ bài đánh giá;",
+        "else (Không)",
+        "endif",
+        ":Giao gói nội dung cho một giáo viên;",
+        "|Hệ thống|",
+        ":Ghi người phụ trách và lịch sử giao việc;",
+        "repeat",
+        "|Giáo viên|",
+        ":Mở bản nháp được giao;",
+        ":Soạn bài học, bài tập và câu hỏi đánh giá;",
+        ":Xem thử nội dung và phương tiện;",
+        "|Hệ thống|",
+        ":Kiểm tra quyền và phiên bản hiện hành;",
+        ":Kiểm tra độ bao phủ, cấu hình,\\nchấm điểm, phương tiện và độ đầy đủ;",
+        ":Kiểm tra không dùng câu đã lộ đáp án;",
+        "while (Chưa đủ điều kiện gửi duyệt?) is (Có)",
+        ":Hiển thị lỗi cần sửa;",
+        "|Giáo viên|",
+        ":Sửa bản nháp được giao;",
+        "|Hệ thống|",
+        ":Kiểm tra lại;",
+        "endwhile (Không)",
+        "|Giáo viên|",
+        ":Gửi bản soạn thảo;",
+        "|Hệ thống|",
+        ":Chuyển sang chờ duyệt, giữ lịch sử;",
+        "|Quản trị viên|",
+        ":Xem nội dung và lịch sử phản hồi;",
+        "if (Yêu cầu chỉnh sửa?) then (Có)",
+        ":Ghi phản hồi;",
+        "|Hệ thống|",
+        ":Chuyển sang cần chỉnh sửa;",
+        "else (Không)",
+        "endif",
+        "repeat while (Cần chỉnh sửa?) is (Có)",
+        "->Không;",
+        "|Quản trị viên|",
+        ":Phê duyệt;",
+        ":Yêu cầu xuất bản;",
+        "|Hệ thống|",
+        ":Kiểm tra quyền, bản được duyệt và độ đầy đủ;",
+        "if (Xuất bản thành công?) then (Có)",
+        ":Xuất bản phiên bản bất biến;",
+        ":Chuyển bản bài học đang dùng một cách nguyên tử;",
+        "if (Có gói đánh giá?) then (Có)",
+        ":Xuất bản phiên bản đánh giá bất biến;",
+        ":Lượt đang làm giữ phiên bản đã gắn;",
+        "else (Không)",
+        "endif",
+        ":Giữ tác giả, lịch sử và bằng chứng học;",
+        "else (Không)",
+        ":Giữ bản đang xuất bản;",
+        ":Báo lỗi xuất bản;",
+        "endif",
+        ":Ghi nhật ký hành động và kết quả;",
+        "stop"
+      ],
+      "sha256": "44a06e57db9a22c6e42244cdcb660062fd7a3879168bdead59a72c5c8313ab75"
+    },
+    "ACT-09-revision-replacement.puml": {
+      "id": "ACT-09",
+      "semantic_inventory": [
+        "title Sơ đồ hoạt động – Thay thế và thu hồi phiên bản",
+        "|Quản trị viên|",
+        "start",
+        ":Chọn bài học đã xuất bản;",
+        "if (Thao tác?) then (Thay thế)",
+        ":Giao việc sửa cho một giáo viên;",
+        "|Hệ thống|",
+        ":Nhân bản thành bản nháp mới;\\ngiữ nguồn gốc và bản đang dùng;",
+        "|Giáo viên|",
+        ":Sửa bản nháp được giao;",
+        ":Gửi duyệt;",
+        "|Quản trị viên|",
+        ":Duyệt và yêu cầu chỉnh sửa nếu cần;",
+        ":Phê duyệt bản đáp ứng yêu cầu;",
+        ":Yêu cầu xuất bản;",
+        "|Hệ thống|",
+        ":Kiểm tra quyền, phê duyệt và phiên bản;",
+        "if (Xuất bản thành công?) then (Có)",
+        ":Xuất bản bản mới, chuyển bản đang dùng nguyên tử;",
+        ":Lưu bản cũ và lịch sử;",
+        "if (Học viên đã hoàn thành bản trước?) then (Có)",
+        ":Giữ hoàn thành, không buộc học lại;",
+        "else (Không)",
+        ":Dẫn học viên tới bản đang dùng mới;",
+        "endif",
+        "else (Không)",
+        ":Giữ nguyên bản đang dùng và bằng chứng;",
+        "endif",
+        "else (Thu hồi)",
+        "|Quản trị viên|",
+        ":Yêu cầu thu hồi theo chính sách;",
+        "|Hệ thống|",
+        ":Ngừng cung cấp bài đã thu hồi;",
+        ":Giữ hoàn thành, kết quả, điểm và lịch sử;",
+        ":Loại bài thu hồi chưa hoàn thành\\nkhỏi yêu cầu tiến độ hiện hành;",
+        "endif",
+        "|Hệ thống|",
+        ":Giữ bằng chứng học và ghi nhật ký;",
+        ":Tính tiến độ trên nội dung đủ điều kiện;",
+        ":Nội dung chưa publish / không khả dụng:\\nhiển thị “Đang phát triển”, không tính mẫu số;",
+        ":Bài đã publish trong lộ trình hiện hành,\\nchưa mở do tiến trình vẫn tính mẫu số;",
+        ":Tính tiến độ trên bài bắt buộc active,\\nđã publish và đủ điều kiện;",
+        "stop"
+      ],
+      "sha256": "db8f5a9a28e2e87d157804be93d3c74f8b90a8e095889b0633a85055b569278f"
+    },
+    "DATA-01-current-migration-erd.puml": {
+      "id": "DATA-01",
+      "semantic_inventory": [
+        "title Sơ đồ dữ liệu từ migration trong repository (CURRENT)",
+        "entity languages {",
+        "* code : varchar(8) <<PK>>",
+        "--",
+        "name : text",
+        "is_learnable : boolean",
+        "}",
+        "entity profiles {",
+        "* id : uuid <<PK, FK auth.users>>",
+        "--",
+        "role : Role (LEARNER | ADMIN)",
+        "email : text",
+        "timezone : text",
+        "streak_count : int",
+        "}",
+        "entity courses {",
+        "* id : uuid <<PK>>",
+        "--",
+        "* language_code : varchar(8) <<FK languages>>",
+        "}",
+        "entity lessons {",
+        "* id : uuid <<PK>>",
+        "--",
+        "* course_id : uuid <<FK courses>>",
+        "order_index : int",
+        "}",
+        "entity exercises {",
+        "* id : uuid <<PK>>",
+        "--",
+        "* lesson_id : uuid <<FK lessons>>",
+        "payload : jsonb",
+        "order_index : int",
+        "}",
+        "entity user_progress {",
+        "* id : uuid <<PK>>",
+        "* user_id : uuid <<FK profiles, pair unique>>",
+        "* lesson_id : uuid <<FK lessons, pair unique>>",
+        "--",
+        "status : ProgressStatus",
+        "score : int",
+        "completed_at : timestamp(3)",
+        "}",
+        "entity user_vocab_srs {",
+        "* id : uuid <<PK>>",
+        "* user_id : uuid <<FK profiles, pair unique>>",
+        "* vocabulary_id : uuid <<FK vocabularies, pair unique>>",
+        "--",
+        "interval_days : float",
+        "ease_factor : float",
+        "next_review_at : timestamp(3)",
+        "}",
+        "entity chat_sessions {",
+        "* id : uuid <<PK>>",
+        "--",
+        "* user_id : uuid <<FK profiles>>",
+        "}",
+        "courses }o--|| languages",
+        "lessons }o--|| courses",
+        "exercises }o--|| lessons",
+        "user_progress }o--|| profiles",
+        "user_progress }o--|| lessons",
+        "user_vocab_srs }o--|| profiles",
+        "chat_sessions }o--|| profiles"
+      ],
+      "sha256": "8ce09c954b644725bc5114f08fe03f03b13fa06d2279538284eda358fefa85af"
+    },
+    "DATA-02-current-prisma-model.puml": {
+      "id": "DATA-02",
+      "semantic_inventory": [
+        "title Sơ đồ mô hình Prisma trong repository (CURRENT)",
+        "entity Language {",
+        "* code : String <<PK>>",
+        "}",
+        "entity Profile {",
+        "* id : String <<PK>>",
+        "role : Role (6 values)",
+        "assignedRoles : Role[]",
+        "}",
+        "entity Course {",
+        "* id : String <<PK>>",
+        "languageCode : String <<FK Language>>",
+        "}",
+        "entity Unit {",
+        "* id : String <<PK>>",
+        "courseId : String <<FK Course>>",
+        "orderIndex : Int",
+        "}",
+        "entity Lesson {",
+        "* id : String <<PK>>",
+        "courseId : String <<FK Course>>",
+        "unitId : String <<FK Unit, Optional>>",
+        "status : ContentStatus (6 values)",
+        "}",
+        "entity Exercise {",
+        "* id : String <<PK>>",
+        "lessonId : String <<FK Lesson>>",
+        "payload : Json",
+        "}",
+        "entity AuditLog {",
+        "* id : String <<PK>>",
+        "actorId : String <<FK Profile>>",
+        "action : String",
+        "}",
+        "Course }o--|| Language",
+        "Unit }o--|| Course",
+        "Lesson }o--|| Course",
+        "Lesson }o--o| Unit",
+        "Exercise }o--|| Lesson",
+        "AuditLog }o--|| Profile"
+      ],
+      "sha256": "4bd85298a9c38f0e327470e4f8ca43594cf25a6530a866876f41615b84d48744"
+    },
+    "DATA-03-target-logical-erd.puml": {
+      "id": "DATA-03",
+      "semantic_inventory": [
+        "title Sơ đồ quan hệ dữ liệu logic của Lingora",
+        "hide circle",
+        "entity \"AccountRecord\" as Account {",
+        "* accountIdentity",
+        "--",
+        "role; accountStatus",
+        "locale; timezone; streak",
+        "}",
+        "entity \"ContextRecord\" as Context {",
+        "* accountIdentity + learnedLanguage",
+        "--",
+        "status; purpose; studyPreferences",
+        "startingPoint; provenance; selfReport",
+        "}",
+        "entity \"LessonAttemptRecord\" as Attempt {",
+        "* attemptIdentity",
+        "--",
+        "contextRef; lessonRevisionRef",
+        "contributionSum; responseCount",
+        "completedAt",
+        "}",
+        "entity \"ExerciseResponseRecord\" as Response {",
+        "* attemptRef + exerciseRef + responseOrder",
+        "--",
+        "firstOrRetry; contribution",
+        "}",
+        "entity \"CompletionRecord\" as Completion {",
+        "* contextRef + lessonRef",
+        "--",
+        "completedAt; attemptProvenance",
+        "}",
+        "Account ||--o{ Context",
+        "Context ||--o{ Attempt",
+        "Attempt ||--o{ Response",
+        "Context ||--o{ Completion",
+        "Completion |o--|| Attempt : nguồn hoàn thành",
+        "entity \"CurriculumReference\" as Curriculum {",
+        "* curriculumPositionIdentity",
+        "--",
+        "language; framework; version",
+        "level; course; unit",
+        "ordering; eligibility",
+        "}",
+        "entity \"LessonRecord\" as Lesson {",
+        "* lessonIdentity",
+        "--",
+        "curriculumRef; required; activeRevisionRef",
+        "}",
+        "entity \"RevisionRecord\" as Revision {",
+        "* revisionIdentity",
+        "--",
+        "lessonRef; priorRevisionRef; lifecycle",
+        "attribution; reviewHistory",
+        "concurrencyVersion",
+        "}",
+        "entity \"ExerciseRecord\" as Exercise {",
+        "* revisionRef + exerciseIdentity",
+        "--",
+        "order; type; core",
+        "learnerPayload; protectedGradingData",
+        "}",
+        "entity \"VocabularyRecord\" as Vocabulary {",
+        "* language + vocabularyIdentity",
+        "}",
+        "entity \"LessonVocabularyLink\" as LessonVocabulary {",
+        "* lessonRef + vocabularyRef",
+        "--",
+        "coreOrOptional",
+        "}",
+        "Curriculum ||--o{ Lesson",
+        "Lesson ||--|{ Revision",
+        "Revision ||--o{ Exercise",
+        "Lesson ||--o{ LessonVocabulary",
+        "Vocabulary ||--o{ LessonVocabulary",
+        "entity \"SrsCardRecord\" as Card {",
+        "* accountRef + vocabularyRef",
+        "--",
+        "enrollmentSource; stage; dueAt",
+        "}",
+        "entity \"SrsOperationRecord\" as Review {",
+        "* reviewOperationIdentity",
+        "--",
+        "cardRef; selfRating; serverTime",
+        "scheduleOutcome; idempotencyIdentity",
+        "}",
+        "Card ||--o{ Review",
+        "entity \"BlueprintRecord\" as Blueprint {",
+        "* blueprintIdentity",
+        "--",
+        "purpose; curriculumRef; coverage",
+        "itemRequirements; assessmentConfiguration",
+        "}",
+        "entity \"AssessmentVersionRecord\" as Version {",
+        "* assessmentVersionIdentity",
+        "--",
+        "blueprintRef; approvedSnapshot",
+        "rubricSnapshot",
+        "}",
+        "entity \"VersionItemRecord\" as Item {",
+        "* assessmentVersionRef + itemIdentity",
+        "--",
+        "contentSnapshot; protectedGradingData",
+        "practiceExposureEligibility",
+        "}",
+        "entity \"AssessmentAttemptRecord\" as AssessmentAttempt {",
+        "* assessmentAttemptIdentity",
+        "--",
+        "contextRef; pinnedVersionRef",
+        "purpose",
+        "submissionIdentity",
+        "}",
+        "entity \"AssessmentResultRecord\" as Result {",
+        "* assessmentAttemptRef",
+        "--",
+        "aggregateOutcome; recommendation",
+        "assessmentType; deliveryMode; completedAt",
+        "}",
+        "entity \"AssignmentRecord\" as Assignment {",
+        "* assignmentIdentity",
+        "--",
+        "lessonRef; blueprintRef; currentTeacherRef",
+        "}",
+        "entity \"AssignmentHistoryRecord\" as History {",
+        "* assignmentRef + historyIdentity",
+        "--",
+        "previousTeacher; nextTeacher",
+        "authorAttribution",
+        "}",
+        "entity \"SecurityAuditRecord\" as Audit {",
+        "* auditEventIdentity",
+        "--",
+        "actorRef; action",
+        "targetVersionRef",
+        "serverTime; outcome; reason",
+        "}",
+        "Blueprint ||--o{ Version",
+        "Version ||--|{ Item",
+        "Version ||--o{ AssessmentAttempt",
+        "AssessmentAttempt ||--o| Result",
+        "Assignment ||--o{ History",
+        "Account ||--o{ Card",
+        "Vocabulary ||--o{ Card",
+        "Context ||--o{ AssessmentAttempt",
+        "Lesson ||--o{ Assignment",
+        "Account ||--o{ Audit",
+        "Blueprint -[hidden]down- Account",
+        "Assignment -[hidden]right- Revision"
+      ],
+      "sha256": "b685f94351405c35d6338fd29e85b01779e0ed4497d3c767523afe8f99fbed04"
+    },
+    "DEP-01-current-deployment.puml": {
+      "id": "DEP-01",
+      "semantic_inventory": [
+        "title Sơ đồ cấu hình triển khai trong kho mã nguồn",
+        "node \"Môi trường phát triển web\" {",
+        "artifact \"Ứng dụng Next.js học viên\\nXác thực và khung giao diện\" as Web",
+        "}",
+        "node \"Không gian dữ liệu quản trị\" {",
+        "artifact \"Prisma CLI và script seed\" as CLI",
+        "artifact \"SQL migration\" as SQL",
+        "}",
+        "rectangle \"Cấu hình dịch vụ Supabase\" {",
+        "component \"Tích hợp xác thực\" as Auth",
+        "database \"Kết nối PostgreSQL\" as DB",
+        "storage \"Khai báo kho ảnh và tài liệu\" as Storage",
+        "}",
+        "Web ..> Auth : Cấu hình xác thực",
+        "CLI ..> DB : Cấu hình kết nối",
+        "SQL ..> DB : Định nghĩa dữ liệu và quyền",
+        "SQL ..> Storage : Định nghĩa kho và quyền"
+      ],
+      "sha256": "01342e201df39dbf8a3a5321fe0a110dbacbe304b1116720c94f75301160fbe9"
+    },
+    "DEP-02-target-deployment.puml": {
+      "id": "DEP-02",
+      "semantic_inventory": [
+        "title Sơ đồ phân bố triển khai dự kiến của Lingora",
+        "node \"Ứng dụng web học viên\" {",
+        "artifact \"Next.js\\nGiao diện và xử lý phía máy chủ\" as LearnerWeb",
+        "}",
+        "node \"Ứng dụng quản trị và biên soạn\" {",
+        "artifact \"Next.js\\nGiao diện và xử lý phía máy chủ\" as StaffWeb",
+        "}",
+        "cloud \"Dịch vụ Supabase\" {",
+        "component \"Xác thực tài khoản\" as Auth",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "storage \"Ảnh và tài liệu học tập\" as Media",
+        "}",
+        "LearnerWeb --> Auth : Xác thực",
+        "LearnerWeb --> DB : Truy cập dữ liệu được cấp quyền",
+        "LearnerWeb --> Media : Tài liệu đã xuất bản",
+        "StaffWeb --> Auth : Xác thực",
+        "StaffWeb --> DB : Quản trị được cấp quyền",
+        "StaffWeb --> Media : Tài liệu theo phạm vi phân công"
+      ],
+      "sha256": "b41f95b2f6406e96db6982ed68d18752f2eb72f481abf4073e4add99158c76ec"
+    },
+    "DOM-01-core-domain-model.puml": {
+      "id": "DOM-01",
+      "semantic_inventory": [
+        "title Sơ đồ lớp miền của hệ thống Lingora",
+        "hide circle",
+        "hide empty members",
+        "class User {",
+        "role: Admin | Teacher | Learner",
+        "status: AccountStatus",
+        "}",
+        "class Profile {",
+        "timezone: TimeZone",
+        "streak: Integer",
+        "}",
+        "class LearningContext {",
+        "status: ACTIVE | PAUSED",
+        "startingPoint: Level",
+        "purpose: LearningPurpose",
+        "}",
+        "class LearningPlan <<derived>> {",
+        "orderedLessons: Lesson[*]",
+        "}",
+        "class Progress <<derived>> {",
+        "completedEligible / eligibleRequired",
+        "}",
+        "User \"1\" *-- \"1\" Profile",
+        "User \"1\" -- \"0..*\" LearningContext : sở hữu",
+        "LearningContext \"1\" -- \"0..1\" LearningPlan : xác định",
+        "LearningContext \"1\" -- \"0..*\" Progress : theo dõi theo cấp",
+        "class Language {",
+        "name: Text",
+        "}",
+        "class ProficiencyFramework {",
+        "name: Text",
+        "version: Text",
+        "}",
+        "class Level {",
+        "label: Text",
+        "}",
+        "class Course",
+        "class LogicalUnit",
+        "class Lesson {",
+        "required: Boolean",
+        "availability: CurriculumAvailability",
+        "}",
+        "class Exercise {",
+        "type: ExerciseType",
+        "core: Boolean",
+        "}",
+        "class Vocabulary",
+        "Language \"1\" -- \"0..*\" Course : có chương trình",
+        "ProficiencyFramework \"1\" -- \"1..*\" Level : định nghĩa",
+        "Course \"1\" *-- \"0..*\" LogicalUnit",
+        "LogicalUnit \"1\" *-- \"0..*\" Lesson",
+        "Lesson \"0..*\" -- \"0..*\" Vocabulary : từ cốt lõi / tùy chọn",
+        "class LessonAttempt {",
+        "performance: Percentage",
+        "completed: Boolean",
+        "}",
+        "class SrsCard {",
+        "stage: Integer",
+        "dueAt: DateTime",
+        "}",
+        "class AssessmentBlueprint {",
+        "purpose: Placement | LevelUp",
+        "}",
+        "class AssessmentVersion {",
+        "published: Boolean",
+        "}",
+        "class AssessmentResult {",
+        "recommendationOrOutcome: Result",
+        "}",
+        "LearningContext \"1\" -- \"0..*\" LessonAttempt : thực hiện",
+        "LessonAttempt \"0..*\" -- \"1\" Lesson : học / làm lại",
+        "User \"1\" -- \"0..*\" SrsCard : ôn tập",
+        "SrsCard \"0..*\" -- \"1\" Vocabulary : ghi nhớ",
+        "AssessmentBlueprint \"1\" -- \"0..*\" AssessmentVersion : có phiên bản",
+        "AssessmentVersion \"1\" -- \"0..*\" AssessmentResult : cung cấp bằng chứng",
+        "LearningContext \"1\" -- \"0..*\" AssessmentResult : nhận kết quả",
+        "class Assignment",
+        "class ContentRevision {",
+        "status: ContentStatus",
+        "}",
+        "class AssessmentItem",
+        "class SecurityAuditEvent {",
+        "action: Text",
+        "outcome: Text",
+        "}",
+        "Assignment \"0..*\" -- \"1\" User : giáo viên phụ trách",
+        "Assignment \"0..*\" -- \"1\" Lesson : gói nội dung",
+        "Lesson \"1\" *-- \"1..*\" ContentRevision",
+        "ContentRevision \"1\" *-- \"0..*\" Exercise",
+        "AssessmentVersion \"1\" *-- \"1..*\" AssessmentItem",
+        "User \"1\" -- \"0..*\" SecurityAuditEvent : thực hiện hành động",
+        "LearningContext \"0..*\" -- \"1\" Language : ngôn ngữ học",
+        "LogicalUnit \"0..*\" -- \"1\" Level : nhóm theo cấp"
+      ],
+      "sha256": "3715bbbc5189d78ea043fdefd9bafcce42f115bd22ec40daa81226cb2a7b987d"
+    },
+    "SEC-01-target-trust-boundary-dfd.puml": {
+      "id": "SEC-01",
+      "semantic_inventory": [
+        "title Sơ đồ luồng dữ liệu và ranh giới tin cậy",
+        "rectangle \"Trình duyệt không tin cậy\" {",
+        "rectangle \"Học viên\" as LearnerClient",
+        "rectangle \"Giáo viên / Quản trị viên\" as StaffClient",
+        "}",
+        "rectangle \"Ranh giới ứng dụng phía máy chủ\" {",
+        "rectangle \"Xác thực và phân quyền\\nVai trò, trạng thái tin cậy\" as Guard",
+        "rectangle \"Kiểm soát nội dung\\nBản nháp theo phân công\\nXuất bản đã duyệt\" as Content",
+        "rectangle \"Chấm điểm máy chủ\\nGiữ bí mật đáp án\" as Grading",
+        "rectangle \"Lập lịch ôn tập\\nLịch tin cậy, chống ghi trùng\" as SRS",
+        "rectangle \"Hỗ trợ tài khoản\\nKhông sửa bằng chứng học tập\" as Support",
+        "rectangle \"Ghi nhật ký bảo mật\" as Audit",
+        "}",
+        "rectangle \"Dữ liệu và dịch vụ được kiểm soát\" {",
+        "component \"Dịch vụ xác thực\" as Auth",
+        "database \"Tài khoản và dữ liệu học tập\\nNội dung theo quyền\\nĐáp án được bảo vệ\" as Data",
+        "database \"Nhật ký bảo mật\\nChỉ ghi thêm; Admin đọc\" as AuditStore",
+        "}",
+        "LearnerClient --> Guard : Bài làm, nhớ / quên",
+        "StaffClient --> Guard : Nội dung, lệnh quản trị",
+        "Guard --> LearnerClient : Nội dung, phản hồi được phép",
+        "Guard --> StaffClient : Dữ liệu theo quyền",
+        "Guard --> Auth : Xác minh danh tính",
+        "Data --> Guard : Vai trò, trạng thái",
+        "Guard <--> Content : Nội dung theo quyền",
+        "Guard <--> Grading : Bài làm / phản hồi hợp lệ",
+        "Guard <--> SRS : Thẻ, đánh giá / lịch",
+        "Guard <--> Support : Yêu cầu / tóm tắt hỗ trợ",
+        "Guard --> Audit : Sự kiện nhạy cảm",
+        "Content <--> Data : Nội dung theo quyền",
+        "Grading <--> Data : Đáp án / kết quả",
+        "SRS <--> Data : Thẻ, lịch và lịch sử",
+        "Support <--> Data : Tóm tắt / trạng thái tài khoản",
+        "Audit --> AuditStore : Sự kiện không chứa bí mật",
+        "AuditStore --> Guard : Đọc theo quyền Admin"
+      ],
+      "sha256": "e80018be7806b48bb6a001debaa827871599fd2cb0ae40216bf12994a6bf71c9"
+    },
+    "SEQ-01-login-authorization.puml": {
+      "id": "SEQ-01",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Đăng nhập và kiểm tra quyền truy cập",
+        "autonumber",
+        "actor \"Người dùng\" as User",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "participant \"Xác thực\" as Auth",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "User -> Web : Gửi thông tin đăng nhập",
+        "Web -> Server : Yêu cầu đăng nhập",
+        "Server -> Auth : Xác thực tài khoản",
+        "Auth --> Server : Kết quả xác thực",
+        "alt Thông tin đăng nhập không hợp lệ",
+        "Server --> Web : Từ chối đăng nhập",
+        "Web --> User : Hiển thị lỗi đăng nhập",
+        "else Xác thực thành công",
+        "Server -> DB : Lấy vai trò và trạng thái tài khoản",
+        "DB --> Server : Vai trò và trạng thái được quản lý",
+        "alt Tài khoản đang hoạt động",
+        "Server --> Web : Cho phép truy cập theo vai trò",
+        "Web --> User : Hiển thị trang phù hợp",
+        "else Tài khoản bị vô hiệu hóa",
+        "Server --> Web : Từ chối truy cập",
+        "Web --> User : Thông báo tài khoản bị vô hiệu hóa",
+        "end",
+        "end",
+        "opt Yêu cầu tiếp theo có phiên đăng nhập",
+        "User -> Web : Thực hiện chức năng được bảo vệ",
+        "Web -> Server : Gửi yêu cầu và phiên đăng nhập",
+        "Server -> Auth : Kiểm tra danh tính từ phiên",
+        "Auth --> Server : Kết quả kiểm tra phiên",
+        "Server -> DB : Kiểm tra lại trạng thái, vai trò và quyền",
+        "DB --> Server : Thông tin cấp quyền hiện tại",
+        "alt Phiên hợp lệ, tài khoản hoạt động và đủ quyền",
+        "Server --> Web : Cho phép thực hiện chức năng",
+        "else Phiên không hợp lệ, bị vô hiệu hóa hoặc thiếu quyền",
+        "Server --> Web : Từ chối yêu cầu",
+        "end",
+        "Web --> User : Hiển thị kết quả",
+        "end"
+      ],
+      "sha256": "b496ad5e1f2a9b1e6066a3bff6cc875005f09921f7203c4c568f5b1237d4c846"
+    },
+    "SEQ-02-teacher-provisioning.puml": {
+      "id": "SEQ-02",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Cấp tài khoản Giáo viên",
+        "autonumber",
+        "actor \"Quản trị viên\" as Admin",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "participant \"Xác thực\" as Auth",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "Admin -> Web : Nhập thông tin Giáo viên",
+        "Web -> Server : Yêu cầu cấp tài khoản",
+        "Server -> Server : Kiểm tra danh tính, trạng thái và quyền quản trị",
+        "alt Không đủ quyền",
+        "Server -> DB : Ghi nhật ký từ chối",
+        "Server --> Web : Từ chối cấp tài khoản",
+        "else Đủ quyền",
+        "Server -> DB : Kiểm tra tài khoản đã tồn tại",
+        "DB --> Server : Kết quả tra cứu",
+        "alt Thông tin không hợp lệ hoặc tài khoản đã tồn tại",
+        "Server --> Web : Thông báo lỗi cần xử lý",
+        "else Thông tin hợp lệ",
+        "Server -> Auth : Tạo tài khoản; gửi lời mời kích hoạt",
+        "Auth --> Server : Kết quả cấp tài khoản",
+        "alt Cấp tài khoản thành công",
+        "Server -> DB : Lưu tài khoản với vai trò Giáo viên",
+        "Server -> DB : Ghi nhật ký cấp tài khoản",
+        "Server --> Web : Thông báo đã gửi lời mời",
+        "else Cấp tài khoản thất bại",
+        "Server -> DB : Ghi nhật ký thất bại",
+        "Server --> Web : Thông báo chưa cấp tài khoản",
+        "end",
+        "end",
+        "end",
+        "Web --> Admin : Hiển thị kết quả"
+      ],
+      "sha256": "b771ef506052493df966f15087eb9fbb0a7b509ff4101767d2fe464092808c94"
+    },
+    "SEQ-03-assignment-authoring-submit.puml": {
+      "id": "SEQ-03",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Phân công, soạn và nộp nội dung",
+        "autonumber",
+        "actor \"Quản trị viên\" as Admin",
+        "actor \"Giáo viên\" as Teacher",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "Admin -> Web : Lập yêu cầu; phân công một Giáo viên",
+        "Web -> Server : Gửi yêu cầu và phân công",
+        "Server -> Server : Kiểm tra trạng thái và quyền quản trị",
+        "Server -> DB : Lưu đề cương, người phụ trách và lịch sử",
+        "Server -> DB : Ghi nhật ký phân công hoặc đổi phân công",
+        "Server --> Web : Xác nhận phân công",
+        "Teacher -> Web : Mở nội dung được giao",
+        "Web -> Server : Yêu cầu nội dung và phản hồi",
+        "Server -> Server : Kiểm tra trạng thái và phân công hiện hành",
+        "Server -> DB : Lấy nội dung và lịch sử được phép xem",
+        "DB --> Server : Nội dung được giao",
+        "Server --> Web : Hiển thị nội dung và phản hồi",
+        "Teacher -> Web : Soạn và lưu bản sửa",
+        "Web -> Server : Gửi bản sửa",
+        "Server -> Server : Kiểm tra phân công, trạng thái và phiên bản",
+        "alt Ngoài phân công, không được sửa hoặc xung đột phiên bản",
+        "Server --> Web : Từ chối; giữ bản trước",
+        "else Bản Nháp hoặc Yêu cầu chỉnh sửa hợp lệ",
+        "Server -> DB : Lưu bản sửa và lịch sử tác giả",
+        "Server --> Web : Xác nhận lưu; cho phép xem trước",
+        "end",
+        "Teacher -> Web : Nộp hoặc nộp lại nội dung",
+        "Web -> Server : Yêu cầu gửi thẩm định",
+        "Server -> Server : Kiểm tra lại phân công và phiên bản",
+        "Server -> Server : Kiểm tra đề cương, câu hỏi, đáp án và học liệu",
+        "Server -> Server : Kiểm tra không dùng câu hỏi luyện tập đã lộ đáp án",
+        "alt Không đủ quyền, xung đột hoặc nội dung chưa đạt yêu cầu",
+        "Server --> Web : Từ chối nộp; hiển thị lỗi",
+        "else Nội dung hợp lệ và đủ quyền",
+        "Server -> DB : Chuyển sang Chờ thẩm định; giữ lịch sử",
+        "Server -> DB : Ghi nhật ký nộp nội dung",
+        "Server --> Web : Xác nhận đã gửi thẩm định",
+        "end",
+        "Web --> Teacher : Hiển thị kết quả"
+      ],
+      "sha256": "16f49cd8e00acfa7bae57228415dcf141a3a93c0fd41c23626bc95f91e57c05d"
+    },
+    "SEQ-04-review-approve-publish.puml": {
+      "id": "SEQ-04",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Thẩm định, phê duyệt và xuất bản nội dung",
+        "autonumber",
+        "actor \"Quản trị viên\" as Admin",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "Admin -> Web : Mở nội dung chờ thẩm định",
+        "Web -> Server : Yêu cầu nội dung và lịch sử",
+        "Server -> Server : Kiểm tra trạng thái và quyền quản trị",
+        "Server -> DB : Lấy bản nộp, đề cương và lịch sử",
+        "DB --> Server : Nội dung cần thẩm định",
+        "Server --> Web : Hiển thị nội dung và mức đáp ứng yêu cầu",
+        "alt Yêu cầu chỉnh sửa",
+        "Admin -> Web : Nhập phản hồi chỉnh sửa",
+        "Web -> Server : Gửi yêu cầu chỉnh sửa",
+        "Server -> DB : Lưu trạng thái, phản hồi và nhật ký",
+        "Server --> Web : Chờ Giáo viên sửa và nộp lại",
+        "else Phê duyệt",
+        "Admin -> Web : Phê duyệt bản đã thẩm định",
+        "Web -> Server : Gửi quyết định phê duyệt",
+        "Server -> Server : Kiểm tra phiên bản và mức đáp ứng yêu cầu",
+        "Server -> DB : Lưu phê duyệt và nhật ký",
+        "Server --> Web : Xác nhận đã phê duyệt",
+        "Admin -> Web : Xuất bản bản đã phê duyệt",
+        "Web -> Server : Yêu cầu xuất bản",
+        "Server -> Server : Kiểm tra lại quyền, phê duyệt và độ sẵn sàng",
+        "alt Không đủ điều kiện hoặc xuất bản thất bại",
+        "Server -> DB : Ghi nhật ký từ chối hoặc thất bại",
+        "Server --> Web : Giữ phiên bản đang dùng",
+        "else Xuất bản thành công",
+        "Server -> DB : Xuất bản bất biến; chuyển bản đang dùng nguyên tử",
+        "opt Có gói kiểm tra được phê duyệt",
+        "Server -> DB : Xuất bản phiên bản kiểm tra bất biến",
+        "end",
+        "Server -> DB : Giữ bằng chứng học tập; ghi nhật ký xuất bản",
+        "Server --> Web : Phiên bản mới sẵn sàng cho lượt học mới",
+        "end",
+        "end",
+        "Web --> Admin : Hiển thị kết quả"
+      ],
+      "sha256": "42a1707781119cae91f44f53054729239c7de7f44cd9674db975b46ffbbbd970"
+    },
+    "SEQ-05-revision-replacement.puml": {
+      "id": "SEQ-05",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Thay thế phiên bản và bảo toàn lịch sử",
+        "autonumber",
+        "actor \"Quản trị viên\" as Admin",
+        "actor \"Học viên\" as Learner",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "Admin -> Web : Xuất bản bản sửa mới đã phê duyệt",
+        "Web -> Server : Yêu cầu thay thế phiên bản",
+        "Server -> Server : Kiểm tra quyền, phê duyệt và độ sẵn sàng",
+        "Server -> DB : Lấy phiên bản đang dùng",
+        "DB --> Server : Phiên bản hiện hành",
+        "alt Xuất bản thành công",
+        "Server -> DB : Xuất bản bất biến; chuyển bản đang dùng nguyên tử",
+        "Server -> DB : Giữ bản cũ, kết quả, hoàn thành và lịch sử tác giả",
+        "Server -> DB : Ghi nhật ký thay thế phiên bản",
+        "Server --> Web : Xác nhận phiên bản mới đang dùng",
+        "else Không đủ quyền hoặc xuất bản thất bại",
+        "Server -> DB : Ghi nhật ký từ chối hoặc thất bại",
+        "Server --> Web : Giữ nguyên bản đang dùng và lịch sử",
+        "end",
+        "Web --> Admin : Hiển thị kết quả",
+        "opt Học viên mở bài sau khi thay thế thành công",
+        "Learner -> Web : Mở bài học",
+        "Web -> Server : Yêu cầu bài học hiện hành",
+        "Server -> Server : Kiểm tra tài khoản, ngữ cảnh và quyền học",
+        "Server -> DB : Lấy bản hiện hành và bằng chứng hoàn thành",
+        "DB --> Server : Nội dung và lịch sử học",
+        "alt Đã hoàn thành phiên bản trước",
+        "Server --> Web : Giữ hoàn thành; không yêu cầu học lại",
+        "else Chưa hoàn thành bài học",
+        "Server --> Web : Học phiên bản thay thế đang có sẵn",
+        "end",
+        "Web --> Learner : Hiển thị bài học và trạng thái",
+        "end"
+      ],
+      "sha256": "5ae1ec22f281ef4d001a816e61c465a05e2721b1c7266b744bda787ecfbed2fa"
+    },
+    "SEQ-06-lesson-exercise-submission.puml": {
+      "id": "SEQ-06",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Làm bài tập và ghi nhận hoàn thành bài học",
+        "autonumber",
+        "actor \"Học viên\" as Learner",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "Learner -> Web : Bắt đầu bài học hoặc học lại",
+        "Web -> Server : Yêu cầu lượt học",
+        "Server -> Server : Kiểm tra tài khoản, ngữ cảnh hoạt động và quyền học",
+        "Server -> DB : Lấy phiên bản đang dùng và N bài tập chính",
+        "DB --> Server : Nội dung và dữ liệu chấm được bảo vệ",
+        "Server -> Server : Tạo hàng đợi N bài tập; K = 0",
+        "Server --> Web : Nội dung học và bài tập kế tiếp",
+        "loop Còn bài tập chính hoặc lượt thử lại trong hàng đợi",
+        "Learner -> Web : Trả lời bài tập kế tiếp",
+        "Web -> Server : Gửi câu trả lời",
+        "Server -> Server : Kiểm tra quyền và lượt trả lời dự kiến",
+        "alt Câu trả lời không hợp lệ",
+        "Server --> Web : Yêu cầu gửi lại; chưa tính lượt trả lời",
+        "else Câu trả lời hợp lệ",
+        "Server -> Server : Chấm câu trả lời",
+        "alt Đúng lần đầu",
+        "Server -> Server : Ghi đóng góp 1.0",
+        "else Sai lần đầu",
+        "Server -> Server : Tăng K; thêm 1 lượt thử lại cuối hàng đợi",
+        "else Đúng ở lượt thử lại",
+        "Server -> Server : Ghi đóng góp 0.5; không thử lại nữa",
+        "else Sai ở lượt thử lại",
+        "Server -> Server : Ghi đóng góp 0; không thử lại nữa",
+        "end",
+        "Server --> Web : Phản hồi học tập; bài tập kế tiếp",
+        "end",
+        "end",
+        "alt Kết thúc hợp lệ và ghi nhận thành công",
+        "Server -> DB : Lưu điểm lượt hoàn tất = tổng đóng góp / (N + K)",
+        "Server -> DB : Ghi hoàn thành độc lập điểm; học lại không tăng số bài",
+        "Server -> DB : Thêm từ vựng chính vào SRS; giữ lịch thẻ đã có",
+        "Server -> DB : Ghi hoạt động cho chuỗi ngày học toàn tài khoản",
+        "Server --> Web : Hoàn thành và điểm lượt hoàn tất gần nhất",
+        "else Chưa kết thúc hợp lệ hoặc ghi nhận thất bại",
+        "Server --> Web : Chưa ghi hoàn thành hay điểm hoàn tất mới; giữ lịch sử",
+        "end",
+        "Web --> Learner : Hiển thị kết quả"
+      ],
+      "sha256": "32aa56d09b4dc890c8947495457405a58f9e05a284343a61db3e85c9511e9cd6"
+    },
+    "SEQ-07-assessment-submission.puml": {
+      "id": "SEQ-07",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Nộp bài kiểm tra xếp lớp hoặc lên cấp",
+        "autonumber",
+        "actor \"Học viên\" as Learner",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "Learner -> Web : Bắt đầu kiểm tra xếp lớp hoặc lên cấp",
+        "Web -> Server : Yêu cầu lượt kiểm tra",
+        "Server -> Server : Kiểm tra tài khoản, ngữ cảnh và mục đích",
+        "Server -> Server : Kiểm tra điều kiện chương trình nếu thi lên cấp",
+        "alt Không đủ điều kiện bắt đầu",
+        "Server --> Web : Từ chối bắt đầu; giữ tiến độ",
+        "else Đủ điều kiện",
+        "Server -> DB : Lấy phiên bản kiểm tra bất biến đang dùng",
+        "DB --> Server : Câu hỏi và dữ liệu chấm được bảo vệ",
+        "Server -> Server : Gắn lượt kiểm tra với một phiên bản",
+        "Server --> Web : Gửi câu hỏi; giữ kín đáp án và đúng/sai",
+        "Learner -> Web : Nộp câu trả lời cuối cùng",
+        "Web -> Server : Gửi bài làm và lượt kiểm tra",
+        "Server -> Server : Kiểm tra chủ sở hữu, ngữ cảnh, phiên bản và bài làm",
+        "Server -> DB : Đối chiếu lượt nộp và kết quả đã ghi",
+        "DB --> Server : Kết quả đối chiếu theo chủ sở hữu",
+        "alt Bài nộp không hợp lệ",
+        "Server --> Web : Không tạo kết quả hoàn tất; giữ tiến độ",
+        "else Nộp lại cùng lần nộp hợp lệ đã ghi nhận",
+        "Server --> Web : Trả kết quả tổng hợp đã ghi; không ghi lại",
+        "else Lần nộp hợp lệ mới",
+        "Server -> Server : Chấm theo phiên bản đã gắn",
+        "alt Kiểm tra xếp lớp",
+        "Server -> Server : Tính điểm bắt đầu đề xuất theo cấu hình",
+        "else Kiểm tra lên cấp",
+        "Server -> Server : Xét đạt theo cấu hình và điều kiện chương trình",
+        "end",
+        "alt Ghi nhận thành công",
+        "Server -> DB : Lưu kết quả bất biến theo ngữ cảnh và phiên bản",
+        "opt Đạt điều kiện lên cấp",
+        "Server -> DB : Ghi kết quả lên cấp; giữ bằng chứng",
+        "end",
+        "Server --> Web : Chỉ trả điểm tổng hợp, kết quả hoặc đề xuất",
+        "else Ghi nhận thất bại",
+        "Server --> Web : Không tạo kết quả hoàn tất; giữ tiến độ",
+        "end",
+        "end",
+        "end",
+        "Web --> Learner : Hiển thị kết quả tổng hợp hoặc lỗi"
+      ],
+      "sha256": "115680080f4c2eda9644d25f56f5ea5c55018c6e37fabeeda0523000e53ece8d"
+    },
+    "SEQ-08-srs-review.puml": {
+      "id": "SEQ-08",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Thêm từ vựng và ôn tập ngắt quãng",
+        "autonumber",
+        "actor \"Học viên\" as Learner",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "opt Hoàn thành bài học hoặc chủ động thêm từ tùy chọn",
+        "alt Hoàn thành bài học",
+        "Server -> Server : Chọn từ vựng chính của bài học",
+        "else Học viên chọn thêm từ vựng tùy chọn",
+        "Learner -> Web : Thêm từ vào ôn tập",
+        "Web -> Server : Yêu cầu thêm từ tùy chọn",
+        "Server -> Server : Kiểm tra tài khoản và từ vựng",
+        "end",
+        "Server -> DB : Tìm thẻ của Học viên và từ vựng",
+        "DB --> Server : Thẻ đã có hoặc chưa có",
+        "alt Thẻ đã tồn tại",
+        "Server -> Server : Dùng lại thẻ; giữ giai đoạn và ngày đến hạn",
+        "else Chưa có thẻ",
+        "Server -> DB : Tạo thẻ giai đoạn 1; đến hạn sau 1 ngày",
+        "end",
+        "end",
+        "Learner -> Web : Mở phiên ôn tập",
+        "Web -> Server : Yêu cầu thẻ đến hạn",
+        "Server -> Server : Kiểm tra tài khoản; cho phép cả ngữ cảnh tạm dừng",
+        "Server -> DB : Lấy thẻ đến hạn của Học viên",
+        "DB --> Server : Danh sách thẻ",
+        "Server --> Web : Hiển thị thẻ ôn tập",
+        "loop Mỗi thẻ đến hạn, chưa gồm lượt củng cố",
+        "Learner -> Web : Chọn Đã nhớ hoặc Chưa nhớ",
+        "Web -> Server : Gửi thẻ, đánh giá và lượt ôn",
+        "Server -> Server : Kiểm tra tài khoản, thẻ và đánh giá",
+        "Server -> DB : Kiểm tra lượt ôn đã ghi nhận",
+        "DB --> Server : Kết quả tra cứu lượt ôn",
+        "alt Gửi lại cùng lượt ôn đã ghi",
+        "Server --> Web : Trả kết quả cũ; không tính lịch lần nữa",
+        "else Lượt ôn hợp lệ mới",
+        "Server -> DB : Lấy giai đoạn hiện tại",
+        "DB --> Server : Giai đoạn của thẻ",
+        "alt Chưa nhớ",
+        "Server -> Server : Về giai đoạn 1; đến hạn sau 1 ngày",
+        "else Đã nhớ",
+        "Server -> Server : Tiến lịch 1 → 3 → 7 → 14 → 30 ngày",
+        "Server -> Server : Sau giai đoạn cuối: giữ thẻ, lặp mỗi 30 ngày",
+        "end",
+        "Server -> DB : Ghi một lượt ôn và lịch đã tính",
+        "Server -> DB : Ghi hoạt động cho chuỗi ngày học toàn tài khoản",
+        "Server --> Web : Trả lịch ôn mới",
+        "opt Chưa nhớ và chưa thêm lượt củng cố trong phiên",
+        "Server --> Web : Đưa thẻ xuống cuối phiên đúng một lần",
+        "end",
+        "end",
+        "end",
+        "opt Có thẻ cần củng cố cuối phiên",
+        "loop Mỗi thẻ cần củng cố, tối đa một lượt",
+        "Server --> Web : Hiển thị lại thẻ",
+        "Learner -> Web : Luyện nhớ lại",
+        "Web --> Learner : Kết thúc lượt củng cố; giữ lịch ôn đã tính",
+        "end",
+        "end"
+      ],
+      "sha256": "87dd0a32256fb3e31fb50e3b347819601e75035e4425e51d226bc9409529a7df"
+    },
+    "SEQ-09-disable-account-enforcement.puml": {
+      "id": "SEQ-09",
+      "semantic_inventory": [
+        "title Sơ đồ trình tự – Hỗ trợ tài khoản Học viên và kiểm soát truy cập",
+        "autonumber",
+        "actor \"Quản trị viên\" as Admin",
+        "actor \"Học viên\" as Learner",
+        "boundary \"Ứng dụng web\" as Web",
+        "control \"Backend\" as Server",
+        "participant \"Xác thực\" as Auth",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "Admin -> Web : Tìm tài khoản Học viên cần hỗ trợ",
+        "Web -> Server : Yêu cầu thông tin hỗ trợ tối thiểu",
+        "Server -> Server : Kiểm tra trạng thái và quyền quản trị",
+        "Server -> DB : Lấy định danh, vai trò, trạng thái và tóm tắt ngữ cảnh",
+        "DB --> Server : Thông tin hỗ trợ tối thiểu",
+        "Server --> Web : Hiển thị thông tin được phép",
+        "Admin -> Web : Vô hiệu hóa hoặc kích hoạt lại; nhập lý do",
+        "Web -> Server : Gửi yêu cầu hỗ trợ tài khoản",
+        "Server -> Server : Kiểm tra lại quyền và phạm vi hỗ trợ",
+        "alt Đổi trạng thái tài khoản được phép",
+        "Server -> DB : Chỉ đổi trạng thái tài khoản; ghi nhật ký",
+        "Server --> Web : Xác nhận trạng thái mới",
+        "else Không đủ quyền hoặc yêu cầu sửa dữ liệu học tập",
+        "Server -> DB : Ghi nhật ký từ chối",
+        "Server --> Web : Từ chối; giữ dữ liệu học tập",
+        "end",
+        "Web --> Admin : Hiển thị kết quả hỗ trợ",
+        "Learner -> Web : Thực hiện chức năng với phiên còn hạn",
+        "Web -> Server : Gửi yêu cầu và phiên đăng nhập",
+        "Server -> Auth : Kiểm tra danh tính từ phiên",
+        "Auth --> Server : Danh tính đã xác thực",
+        "Server -> DB : Kiểm tra lại trạng thái, vai trò và quyền",
+        "DB --> Server : Thông tin cấp quyền hiện tại",
+        "alt Tài khoản bị vô hiệu hóa",
+        "Server --> Web : Từ chối ngay yêu cầu",
+        "else Tài khoản hoạt động và đủ quyền",
+        "Server --> Web : Cho phép thực hiện chức năng",
+        "end",
+        "Web --> Learner : Hiển thị kết quả truy cập",
+        "opt Học viên cần khôi phục mật khẩu",
+        "Learner -> Web : Yêu cầu khôi phục mật khẩu",
+        "Web -> Auth : Bắt đầu quy trình khôi phục tài khoản",
+        "Auth --> Learner : Hướng dẫn khôi phục riêng cho chủ tài khoản",
+        "end"
+      ],
+      "sha256": "eedfa9db7c551587801dc079fb834cf817f90cfec2c67922ddd814bf9f5e8250"
+    },
+    "STA-01-account-status.puml": {
+      "id": "STA-01",
+      "semantic_inventory": [
+        "title Sơ đồ trạng thái – Tài khoản",
+        "state \"Chờ kích hoạt\" as PENDING",
+        "state \"Hoạt động\" as ACTIVE",
+        "state \"Vô hiệu hóa\" as DISABLED",
+        "[*] --> PENDING : Khởi tạo tài khoản Giáo viên",
+        "[*] --> ACTIVE : Đăng ký / khởi tạo hợp lệ",
+        "PENDING --> ACTIVE : Kích hoạt hợp lệ",
+        "ACTIVE --> DISABLED : Quản trị viên:\\nvô hiệu hóa\\nGhi lý do, nhật ký",
+        "DISABLED --> ACTIVE : Quản trị viên:\\nmở lại\\nGhi nhật ký",
+        "DISABLED : Từ chối yêu cầu được bảo vệ kế tiếp"
+      ],
+      "sha256": "3e320cf6664b742b098ff5a2e21d8f0d1ae5594a913636a0da9e2f34fe83d527"
+    },
+    "STA-02-assignment-lifecycle.puml": {
+      "id": "STA-02",
+      "semantic_inventory": [
+        "title Sơ đồ trạng thái – Trách nhiệm công việc được giao",
+        "state \"Đã giao cho một giáo viên\" as ASSIGNED",
+        "[*] --> ASSIGNED : Quản trị viên giao gói nội dung",
+        "ASSIGNED --> ASSIGNED : Quản trị viên đổi người phụ trách\\nGiữ tác giả và lịch sử",
+        "ASSIGNED : Một giáo viên phụ trách tại một thời điểm"
+      ],
+      "sha256": "88ca0e5dbc06758c166dad81e18fc468cc4e18b5b8df77bc94518c6d470abbfb"
+    },
+    "STA-03-content-revision-lifecycle.puml": {
+      "id": "STA-03",
+      "semantic_inventory": [
+        "title Sơ đồ trạng thái – Phiên bản nội dung",
+        "state \"Bản nháp\" as DRAFT",
+        "state \"Chờ duyệt\" as IN_REVIEW",
+        "state \"Cần chỉnh sửa\" as CHANGES_REQUESTED",
+        "state \"Đã phê duyệt\" as APPROVED",
+        "state \"Đã xuất bản\" as PUBLISHED",
+        "state \"Đã lưu trữ\" as ARCHIVED",
+        "state \"Đã thu hồi\" as WITHDRAWN",
+        "[*] --> DRAFT : Tạo mới / nhân bản thành phiên bản mới",
+        "DRAFT --> IN_REVIEW : Giáo viên gửi duyệt",
+        "IN_REVIEW --> CHANGES_REQUESTED : Quản trị viên yêu cầu sửa",
+        "CHANGES_REQUESTED --> IN_REVIEW : Giáo viên gửi lại",
+        "IN_REVIEW --> APPROVED : Quản trị viên phê duyệt",
+        "APPROVED --> PUBLISHED : Quản trị viên xuất bản thành công",
+        "PUBLISHED --> PUBLISHED : Cần sửa: tạo bản nháp mới\\nGiữ bản này bất biến",
+        "PUBLISHED --> ARCHIVED : Bản thay thế xuất bản thành công",
+        "PUBLISHED --> WITHDRAWN : Quản trị viên thu hồi",
+        "ARCHIVED --> [*]",
+        "WITHDRAWN --> [*]"
+      ],
+      "sha256": "33bf02b34fc3e75334d54adbf7e2b56b2f0a55b12e12e4606aeec5fcb51115bf"
+    },
+    "SYS-01-current-context.puml": {
+      "id": "SYS-01",
+      "semantic_inventory": [
+        "title Sơ đồ ngữ cảnh hệ thống theo mã nguồn hiện có",
+        "actor \"Học viên\" as Learner",
+        "actor \"Người phát triển\" as Developer",
+        "rectangle \"Kho mã nguồn Lingora\" {",
+        "component \"Ứng dụng web học viên\\nĐăng nhập, đăng ký và khung giao diện\" as Web",
+        "artifact \"Không gian dữ liệu quản trị\\nPrisma, migration và seed\" as Workspace",
+        "}",
+        "rectangle \"Cấu hình tích hợp Supabase\" {",
+        "component \"Xác thực\" as Auth",
+        "database \"Kết nối cơ sở dữ liệu\" as DB",
+        "}",
+        "Learner --> Web : Truy cập giao diện",
+        "Developer --> Workspace : Công cụ phát triển",
+        "Web ..> Auth : Tích hợp xác thực",
+        "Workspace ..> DB : Cấu hình kết nối"
+      ],
+      "sha256": "937270f34bac629eee1bbb0c83c5fa15546443d6181bf2fbc593c53b30f9aa7d"
+    },
+    "SYS-02-target-context.puml": {
+      "id": "SYS-02",
+      "semantic_inventory": [
+        "title Sơ đồ ngữ cảnh hệ thống Lingora",
+        "actor \"Học viên\" as Learner",
+        "actor \"Giáo viên\" as Teacher",
+        "actor \"Quản trị viên\" as Admin",
+        "rectangle \"HỆ THỐNG HỌC NGOẠI NGỮ LINGORA\" {",
+        "component \"Ứng dụng web học viên\" as LearnerWeb",
+        "component \"Ứng dụng quản trị và biên soạn\" as Studio",
+        "}",
+        "rectangle \"Dịch vụ Supabase\" {",
+        "component \"Xác thực\" as Auth",
+        "database \"Cơ sở dữ liệu\" as DB",
+        "storage \"Lưu trữ tài liệu\" as Media",
+        "}",
+        "Learner --> LearnerWeb : Học tập và ôn tập",
+        "Teacher --> Studio : Biên soạn theo phân công",
+        "Admin --> Studio : Phân công, thẩm định và vận hành",
+        "LearnerWeb --> Auth : Xác thực tài khoản",
+        "Studio --> Auth : Xác thực tài khoản",
+        "LearnerWeb --> DB : Dữ liệu học tập được cấp quyền",
+        "Studio --> DB : Dữ liệu quản trị được cấp quyền",
+        "LearnerWeb --> Media : Tài liệu đã xuất bản",
+        "Studio --> Media : Tài liệu theo phạm vi được giao"
+      ],
+      "sha256": "ce5efbc41818d951a655b79ae90af1471540469d3e5407c181c35867741b6bd7"
+    },
+    "SYS-03-current-components.puml": {
+      "id": "SYS-03",
+      "semantic_inventory": [
+        "title Sơ đồ thành phần theo mã nguồn hiện có",
+        "package \"Ứng dụng web học viên\" {",
+        "component \"Khung giao diện\" as UI",
+        "component \"Đa ngôn ngữ Việt / Anh\" as I18n",
+        "component \"Đăng nhập, đăng ký, đăng xuất\" as AuthActions",
+        "component \"Quản lý phiên máy chủ\" as Session",
+        "}",
+        "package \"Không gian dữ liệu quản trị\" {",
+        "artifact \"Mô hình Prisma\" as Prisma",
+        "artifact \"SQL migration\" as SQL",
+        "artifact \"Script seed và kiểm tra\" as Scripts",
+        "}",
+        "package \"Khai báo tích hợp Supabase\" {",
+        "component \"Xác thực\" as Auth",
+        "database \"Kết nối PostgreSQL\" as DB",
+        "storage \"Khai báo kho ảnh và tài liệu\" as Storage",
+        "}",
+        "UI --> AuthActions : Thao tác tài khoản",
+        "UI --> I18n : Nội dung giao diện",
+        "AuthActions --> Session : Máy khách phía máy chủ",
+        "Session ..> Auth : Tích hợp xác thực",
+        "Prisma ..> DB : Cấu hình nguồn dữ liệu",
+        "Scripts --> Prisma : Sử dụng Prisma Client",
+        "SQL ..> DB : Định nghĩa dữ liệu và quyền",
+        "SQL ..> Storage : Định nghĩa kho và quyền"
+      ],
+      "sha256": "46914a058c57f45bdb1ac013f1d11903b6d23bfdef219d667f007a6208a671e9"
+    },
+    "SYS-04-target-components.puml": {
+      "id": "SYS-04",
+      "semantic_inventory": [
+        "title Sơ đồ kiến trúc thành phần logic của Lingora",
+        "package \"Ứng dụng web học viên\" {",
+        "component \"Giao diện học viên\" as LearnerUI",
+        "package \"Xử lý phía máy chủ\" as LearnerBackend {",
+        "component \"Xác thực và kiểm tra quyền\" as LearnerGuard",
+        "component \"Bài học và tiến độ\" as Learning",
+        "component \"Xếp lớp và kiểm tra lên cấp\" as Assessment",
+        "component \"Ôn tập và chuỗi ngày học\" as Review",
+        "}",
+        "}",
+        "package \"Ứng dụng quản trị và biên soạn\" {",
+        "component \"Giao diện giáo viên và quản trị\" as StaffUI",
+        "package \"Xử lý phía máy chủ\" as StaffBackend {",
+        "component \"Xác thực và kiểm tra quyền\" as StaffGuard",
+        "component \"Phân công, biên soạn và xuất bản\" as Governance",
+        "component \"Quản lý và hỗ trợ tài khoản\" as Accounts",
+        "component \"Báo cáo và nhật ký\" as Reports",
+        "}",
+        "}",
+        "package \"Dịch vụ Supabase\" {",
+        "component \"Xác thực\" as Auth",
+        "database \"Dữ liệu được kiểm soát quyền\" as DB",
+        "storage \"Tài liệu được kiểm soát quyền\" as Media",
+        "}",
+        "LearnerUI --> LearnerGuard",
+        "LearnerGuard --> Learning",
+        "LearnerGuard --> Assessment",
+        "LearnerGuard --> Review",
+        "LearnerGuard --> Auth",
+        "StaffUI --> StaffGuard",
+        "StaffGuard --> Governance",
+        "StaffGuard --> Accounts",
+        "StaffGuard --> Reports",
+        "StaffGuard --> Auth",
+        "Learning --> DB : Bài học và lịch sử",
+        "Assessment --> DB : Chấm điểm và kết quả",
+        "Review --> DB : Thẻ, lịch ôn và hoạt động",
+        "Governance --> DB : Phân công và phiên bản",
+        "Accounts --> DB : Tài khoản và tóm tắt hỗ trợ",
+        "Reports --> DB : Báo cáo và nhật ký",
+        "Learning --> Media : Tài liệu đã xuất bản",
+        "Governance --> Media : Tài liệu theo phân công"
+      ],
+      "sha256": "3354648ddd2d870c895ee31e72211eed2486a1f7f74ad185dcd16acdad06fc1c"
+    },
+    "UC-01-target-overall.puml": {
+      "id": "UC-01",
+      "semantic_inventory": [
+        "title Sơ đồ Use Case tổng quan hệ thống Lingora",
+        "actor \"Học viên\" as Learner",
+        "actor \"Giáo viên\" as Teacher",
+        "actor \"Quản trị viên\" as Admin",
+        "rectangle \"HỆ THỐNG HỌC NGOẠI NGỮ LINGORA\" {",
+        "package \"Học tập\" {",
+        "usecase \"Kiểm tra xếp lớp\" as UC02",
+        "usecase \"Khám phá lộ trình học\" as UC04",
+        "usecase \"Kiểm tra lên cấp\" as UC05",
+        "usecase \"Học bài và luyện tập\" as UC06",
+        "usecase \"Học từ vựng và ôn tập\" as UC07",
+        "usecase \"Xem tiến độ và chuỗi ngày học\" as UC08",
+        "}",
+        "package \"Biên soạn\" {",
+        "usecase \"Soạn nội dung được phân công\" as UC10",
+        "usecase \"Nộp bài và nộp lại\" as UC11",
+        "}",
+        "package \"Quản trị\" {",
+        "usecase \"Lập đề cương và phân công\" as UC09",
+        "usecase \"Thẩm định và xuất bản\" as UC12",
+        "usecase \"Quản lý tài khoản\" as UC13",
+        "usecase \"Xem báo cáo và nhật ký\" as UC14",
+        "}",
+        "package \"Tài khoản\" {",
+        "usecase \"Đăng ký tài khoản\" as Signup",
+        "usecase \"Khôi phục mật khẩu\" as Recovery",
+        "usecase \"Kích hoạt tài khoản\" as Activation",
+        "usecase \"Quản lý hồ sơ cá nhân\" as Profile",
+        "}",
+        "usecase \"Đăng nhập / Xác thực\" as Login",
+        "}",
+        "Learner -- Signup",
+        "Learner -- Recovery",
+        "Learner -- Profile",
+        "Learner -- UC02",
+        "Learner -- UC04",
+        "Learner -- UC05",
+        "Learner -- UC06",
+        "Learner -- UC07",
+        "Learner -- UC08",
+        "Teacher -- Activation",
+        "Teacher -- Recovery",
+        "Teacher -- Profile",
+        "Teacher -- UC10",
+        "Teacher -- UC11",
+        "Admin -- Recovery",
+        "Admin -- Profile",
+        "Admin -- UC09",
+        "Admin -- UC12",
+        "Admin -- UC13",
+        "Admin -- UC14",
+        "Profile ..> Login : <<include>>",
+        "UC02 ..> Login : <<include>>",
+        "UC04 ..> Login : <<include>>",
+        "UC05 ..> Login : <<include>>",
+        "UC06 ..> Login : <<include>>",
+        "UC07 ..> Login : <<include>>",
+        "UC08 ..> Login : <<include>>",
+        "UC09 ..> Login : <<include>>",
+        "UC10 ..> Login : <<include>>",
+        "UC11 ..> Login : <<include>>",
+        "UC12 ..> Login : <<include>>",
+        "UC13 ..> Login : <<include>>",
+        "UC14 ..> Login : <<include>>"
+      ],
+      "sha256": "f343aa87af42a466ff408924f66c22b355bbbbcd4e6507247f9db3e0e763d1de"
+    },
+    "UC-02-target-learner.puml": {
+      "id": "UC-02",
+      "semantic_inventory": [
+        "title Sơ đồ Use Case của Học viên",
+        "actor \"Học viên\" as Learner",
+        "rectangle \"HỆ THỐNG HỌC NGOẠI NGỮ LINGORA\" {",
+        "package \"Tài khoản\" {",
+        "usecase \"Đăng ký tài khoản\" as Signup",
+        "usecase \"Khôi phục mật khẩu\" as Recovery",
+        "usecase \"Quản lý hồ sơ cá nhân\" as Profile",
+        "usecase \"Đăng nhập / Xác thực\" as Login",
+        "}",
+        "package \"Học tập\" {",
+        "usecase \"Quản lý ngữ cảnh học\" as Context",
+        "usecase \"Chọn điểm bắt đầu học\" as Start",
+        "usecase \"Khám phá lộ trình học\" as Path",
+        "usecase \"Học bài và luyện tập\" as Lesson",
+        "usecase \"Học từ vựng và ôn tập\" as SRS",
+        "usecase \"Kiểm tra lên cấp\" as LevelUp",
+        "usecase \"Xem tiến độ và chuỗi ngày học\" as Progress",
+        "}",
+        "}",
+        "Learner -- Signup",
+        "Learner -- Recovery",
+        "Learner -- Profile",
+        "Learner -- Login",
+        "Learner -- Context",
+        "Learner -- Start",
+        "Learner -- Path",
+        "Learner -- Lesson",
+        "Learner -- SRS",
+        "Learner -- LevelUp",
+        "Learner -- Progress",
+        "Profile ..> Login : <<include>>",
+        "Context ..> Login : <<include>>",
+        "Start ..> Login : <<include>>",
+        "Path ..> Login : <<include>>",
+        "Lesson ..> Login : <<include>>",
+        "SRS ..> Login : <<include>>",
+        "LevelUp ..> Login : <<include>>",
+        "Progress ..> Login : <<include>>"
+      ],
+      "sha256": "fa5ed7c096c746224ce21b74641b72d04af40e6a148829f394b6d69d7712edba"
+    },
+    "UC-03-target-teacher.puml": {
+      "id": "UC-03",
+      "semantic_inventory": [
+        "title Sơ đồ Use Case của Giáo viên",
+        "actor \"Giáo viên\" as Teacher",
+        "rectangle \"HỆ THỐNG HỌC NGOẠI NGỮ LINGORA\" {",
+        "usecase \"Kích hoạt tài khoản\" as Activation",
+        "usecase \"Quản lý hồ sơ cá nhân\" as Profile",
+        "usecase \"Xem công việc được phân công\" as Worklist",
+        "usecase \"Soạn bài học và câu hỏi đánh giá\" as Edit",
+        "usecase \"Xem trước nội dung\" as Preview",
+        "usecase \"Nộp bài và nộp lại\" as Submit",
+        "usecase \"Xem phản hồi và lịch sử\" as History",
+        "usecase \"Đăng nhập / Xác thực\" as Login",
+        "}",
+        "Teacher -- Activation",
+        "Teacher -- Profile",
+        "Teacher -- Worklist",
+        "Teacher -- Edit",
+        "Teacher -- Preview",
+        "Teacher -- Submit",
+        "Teacher -- History",
+        "Teacher -- Login",
+        "Profile ..> Login : <<include>>",
+        "Worklist ..> Login : <<include>>",
+        "Edit ..> Login : <<include>>",
+        "Preview ..> Login : <<include>>",
+        "Submit ..> Login : <<include>>",
+        "History ..> Login : <<include>>"
+      ],
+      "sha256": "f57b321917c321b80ef9d6382734fea3d96a145d10410ee9f3165f9a481adb0b"
+    },
+    "UC-04-target-admin.puml": {
+      "id": "UC-04",
+      "semantic_inventory": [
+        "title Sơ đồ Use Case của Quản trị viên",
+        "actor \"Quản trị viên\" as Admin",
+        "rectangle \"HỆ THỐNG HỌC NGOẠI NGỮ LINGORA\" {",
+        "package \"Tài khoản và vận hành\" {",
+        "usecase \"Quản lý hồ sơ cá nhân\" as Profile",
+        "usecase \"Quản lý tài khoản học viên, giáo viên\" as Accounts",
+        "usecase \"Xem báo cáo và nhật ký\" as Audit",
+        "usecase \"Đăng nhập / Xác thực\" as Login",
+        "}",
+        "package \"Đề cương và phân công\" {",
+        "usecase \"Quản lý cấu trúc và cấu hình khóa học\" as Curriculum",
+        "usecase \"Lập đề cương bài đánh giá\" as Blueprint",
+        "usecase \"Phân công và phân công lại\" as Assign",
+        "}",
+        "package \"Thẩm định và xuất bản\" {",
+        "usecase \"Thẩm định nội dung đã nộp\" as Review",
+        "usecase \"Yêu cầu chỉnh sửa\" as Changes",
+        "usecase \"Phê duyệt nội dung\" as Approve",
+        "usecase \"Xuất bản bài học đã duyệt\" as Publish",
+        "usecase \"Xuất bản phiên bản đánh giá đã duyệt\" as Assessment",
+        "usecase \"Lưu trữ hoặc thu hồi nội dung\" as Archive",
+        "}",
+        "}",
+        "Admin -- Profile",
+        "Admin -- Accounts",
+        "Admin -- Audit",
+        "Admin -- Login",
+        "Admin -- Curriculum",
+        "Admin -- Blueprint",
+        "Admin -- Assign",
+        "Admin -- Review",
+        "Admin -- Changes",
+        "Admin -- Approve",
+        "Admin -- Publish",
+        "Admin -- Assessment",
+        "Admin -- Archive",
+        "Profile ..> Login : <<include>>",
+        "Accounts ..> Login : <<include>>",
+        "Audit ..> Login : <<include>>",
+        "Curriculum ..> Login : <<include>>",
+        "Blueprint ..> Login : <<include>>",
+        "Assign ..> Login : <<include>>",
+        "Review ..> Login : <<include>>",
+        "Changes ..> Login : <<include>>",
+        "Approve ..> Login : <<include>>",
+        "Publish ..> Login : <<include>>",
+        "Assessment ..> Login : <<include>>",
+        "Archive ..> Login : <<include>>"
+      ],
+      "sha256": "bfaf63e788b77857abe9f08e5f8580abafa965c53ddcdb4694f5904269019200"
+    }
+  },
+  "style_sha256": "8420f616afa5f9b24ab52c8df77ccfd0745e729d8a36eb27280bd5b37f767379",
+  "version": 1
+}

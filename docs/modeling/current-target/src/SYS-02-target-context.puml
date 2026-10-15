@@ -1,0 +1,33 @@
+@startuml
+!include ../style.puml
+' diagram-id: SYS-02
+' classification: TARGET
+' Authority: ADR-027 as scoped by ADR-030–036; three single business roles.
+' TARGET logical architecture only; physical deployment/enforcement deferred.
+' Teacher assigned authoring, Admin review/approval/publication/support; no staff-account learning.
+' No AI runtime or additional network services introduced.
+left to right direction
+title Sơ đồ ngữ cảnh hệ thống Lingora
+
+actor "Học viên" as Learner
+actor "Giáo viên" as Teacher
+actor "Quản trị viên" as Admin
+rectangle "HỆ THỐNG HỌC NGOẠI NGỮ LINGORA" {
+  component "Ứng dụng web học viên" as LearnerWeb
+  component "Ứng dụng quản trị và biên soạn" as Studio
+}
+rectangle "Dịch vụ Supabase" {
+  component "Xác thực" as Auth
+  database "Cơ sở dữ liệu" as DB
+  storage "Lưu trữ tài liệu" as Media
+}
+Learner --> LearnerWeb : Học tập và ôn tập
+Teacher --> Studio : Biên soạn theo phân công
+Admin --> Studio : Phân công, thẩm định và vận hành
+LearnerWeb --> Auth : Xác thực tài khoản
+Studio --> Auth : Xác thực tài khoản
+LearnerWeb --> DB : Dữ liệu học tập được cấp quyền
+Studio --> DB : Dữ liệu quản trị được cấp quyền
+LearnerWeb --> Media : Tài liệu đã xuất bản
+Studio --> Media : Tài liệu theo phạm vi được giao
+@enduml

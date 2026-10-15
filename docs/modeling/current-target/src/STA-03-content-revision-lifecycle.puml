@@ -1,0 +1,31 @@
+@startuml
+!include ../style.puml
+' diagram-id: STA-03
+' classification: TARGET
+' authority: ADR-034/035/036; UC-10/11/12
+title Sơ đồ trạng thái – Phiên bản nội dung
+top to bottom direction
+state "Bản nháp" as DRAFT
+state "Chờ duyệt" as IN_REVIEW
+state "Cần chỉnh sửa" as CHANGES_REQUESTED
+state "Đã phê duyệt" as APPROVED
+state "Đã xuất bản" as PUBLISHED
+state "Đã lưu trữ" as ARCHIVED
+state "Đã thu hồi" as WITHDRAWN
+[*] --> DRAFT : Tạo mới / nhân bản thành phiên bản mới
+DRAFT --> IN_REVIEW : Giáo viên gửi duyệt
+IN_REVIEW --> CHANGES_REQUESTED : Quản trị viên yêu cầu sửa
+CHANGES_REQUESTED --> IN_REVIEW : Giáo viên gửi lại
+IN_REVIEW --> APPROVED : Quản trị viên phê duyệt
+APPROVED --> PUBLISHED : Quản trị viên xuất bản thành công
+PUBLISHED --> PUBLISHED : Cần sửa: tạo bản nháp mới\nGiữ bản này bất biến
+PUBLISHED --> ARCHIVED : Bản thay thế xuất bản thành công
+PUBLISHED --> WITHDRAWN : Quản trị viên thu hồi
+ARCHIVED --> [*]
+WITHDRAWN --> [*]
+' Teacher edits only DRAFT or CHANGES_REQUESTED. APPROVED/PUBLISHED are never edited in place.
+' New revision follows the same review/approval flow; active version switches atomically only on successful publish.
+' Withdrawal/replacement preserves attribution and learner completion/results/performance/history.
+' Completed prior revision does not force repeat; incomplete learner follows active replacement.
+' Content with learner references is not hard-deleted. No physical statuses/tables prescribed.
+@enduml

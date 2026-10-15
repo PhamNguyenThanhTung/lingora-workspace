@@ -1,0 +1,10 @@
+{
+  "logs/test-log.md": {
+    "size": 319745,
+    "sha256": "b0eb14ec9274d3b11bab3ba1e87d507094f04903e53ea5c9a4fdc3b630a13f1d"
+  },
+  "logs/development-log.md": {
+    "size": 259449,
+    "sha256": "15e4e1918804804c09e424604d97db7c1f37d644e1637f6f43d906c2240675c9"
+  }
+}

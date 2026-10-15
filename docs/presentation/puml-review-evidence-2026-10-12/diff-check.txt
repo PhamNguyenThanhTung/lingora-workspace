@@ -1,0 +1,13 @@
+COMMAND git diff --check
+warning: in the working copy of 'AGENTS.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'ENVIRONMENT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/01-architecture.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/04-data-model.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'logs/development-log.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'logs/test-log.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'plans/approved/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'plans/archive/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'plans/current-task.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'plans/master-implementation-and-report-plan.md', LF will be replaced by CRLF the next time Git touches it
+
+EXIT 0

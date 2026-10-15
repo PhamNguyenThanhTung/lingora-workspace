@@ -5,6 +5,8 @@ Append test evidence after implementation. Failed tests remain recorded; add a l
 | Test ID | Date | Feature | Expected | Actual | Status | Environment | Build/commit |
 |---|---|---|---|---|---|---|---|
 | `[T-XXX]` | `YYYY-MM-DD` | `[feature]` | `[expected]` | `[actual]` | `PASS/FAIL/BLOCKED` | `[OS/device/runtime/data]` | `[build/hash]` |
+| T-PRP-001 | 2026-10-10 | Lingora Product Revision Pass — requirements/UC/traceability/modeling | 36 canonical PlantUML sources render to 72 outputs with zero errors; 35 active diagrams contain no Reassessment flow, ACT-05 is deferred-only; no A1/Unit 1/80% or example-count invariant; lesson N/K scoring and SRS recurrence are present; teacher/admin authoring responsibilities, 14 UC identities, traceability, unique IDs, and `git diff --check` pass. | Environment: Windows 11 10.0.26200 / PowerShell 7.6.5 / Python 3.13.2 / Java 17.0.2 / PlantUML 1.2026.8 / baseline SHA `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Commands: `py -3.13 docs/modeling/current-target/render.py` with `PLANTUML_JAR` set — SVG exit 0, 36 sources; PNG exit 0, 36 sources; 36 sources rendered to 72 outputs. `py -3.13 scratch/verify_clean_rebuild.py` — 36 sources, all 72 outputs exist, zero prohibited legacy terms, zero rigid SRS scale terms, Unit remains logical; all assertions pass. PowerShell inline Python ADR-036 scan piped to `py -3.13 -` — 7 PASS checks: 36 unique source IDs/manifest match/output count; no active Reassessment and ACT-05 deferred-only; no forbidden platform defaults/examples; lesson scoring and SRS recurrence; Teacher/Admin assessment responsibilities; 14 UC titles and UC-01..14 identities; six requirements groups linked to traceability without renumbering. A first checker draft had two assertion mismatches (deferred-only sentinel classification and case-sensitive trace text); corrected checker passed and found no product defect. `git diff --check` — exit 0; configured LF-to-CRLF notices only. | PASS | Windows 11 / PowerShell 7.6.5 / Python 3.13.2 / Java 17.0.2 / PlantUML 1.2026.8 / static documentation and diagram validation | `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737` |
+| T-HARNESS-RECONCILIATION-001 | 2026-10-07 | Harness authority and task-state reconciliation | Documentation-only static verification; application tests N/A; include diff stat and new-file line counts | Environment: Windows / PowerShell 7.6.5 / baseline 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737. Commands: git diff --check on 13 controlled paths exited 0; Test-Path on required control/log files; inspected P0 queue; git diff --stat on the same tracked paths. Output: required paths existed; P0-D01 RESOLVED, P0-D02 CONFLICT, P0-D03/D04 OPEN, P0-D05/D06/D07 CONFLICT; tracked stat before this log refresh: 13 files, 154 insertions, 120 deletions; new approved snapshot 7 lines, archived prior-task capture 43 lines; no whitespace errors (Git reported configured LF-to-CRLF notices). No application tests run. Verdict: N/A - documentation/control-only; no runtime behavior changed. Static checks passed.
 | T-D4-DESIGN-001 | 2026-09-24 | D4 Content & Curriculum Design (APPROVED, design-only) | 18/18 consistency guards PASS; git diff --check 0; D4 focused scan (17/17 checks) PASS; 6/6 D4 puml balanced with distinct purpose/mode enums; 6 Units / 24 Lessons English A1 baseline inventory; lesson blueprint; concept taxonomy (0 conceptTag); 5 logical exercise types; Reading logical representation (candidate); RemedialModule (published-only, fresh context, no downgrade/replay); 4-tier multi-language chain (hidePinyin: true); 0 code/migrations/algorithms; 15 UCs intact; no Design Freeze; no AssessmentSession | **Environment:** Windows 11 / Python 3.11.9 / Static Doc Inspection. **Command 1:** `py scratch/verify_consistency_guards.py` — **Output:** exit 0, ALL 18 PASSED (GUARD-01..18). **Command 2:** `git diff --check` — **Output:** exit 0 (LF warnings only, 0 whitespace errors). **Command 3:** `py scratch/verify_d4_design.py` — **Output:** exit 0, ALL 17 CHECKS PASSED (Sections A-T, 6U/24L, 4/4 visibility, Concept not child of Exercise, 5 canonical exercise types, 0 Matching, Reading boundary, Remedial bounds, purpose/mode decoupled, multi-lang chain, status review/no freeze, 6/6 PlantUML balance). **Runtime scope:** `git diff --name-only -- lingora-web lingora-admin lingora-ai prisma` empty. **Verdict:** PASS | PASS | Windows 11 / Python 3.11.9 / Static Doc Inspection | `f986d96` |
 | T-D3-HYGIENE-001 | 2026-09-24 | D3 Final Hygiene Fix (Post-Review Non-Blocking Fixes) | Header status updated to READY FOR D4 CONTENT/CURRICULUM DESIGN; HANDOFF.md cleaned to single Latest task; Reading semantic boundary documented in D3 §B3; 18/18 guards PASS; git diff --check 0 | `py scratch/verify_consistency_guards.py` exited 0 (ALL 18 PASSED); `git diff --check` exited 0; 0 code/migrations/algorithms | PASS | Windows 11 / Python 3.11 / Static Doc Inspection | `f986d96` |
 | T-D3-DESIGN-001 | 2026-09-24 | D3 Assessment & Learning Engine Design (APPROVED, design-only) | 18/18 guards PASS; git diff --check 0; 6/6 D3 puml balanced with distinct purpose/mode enums; 10 invariants present; 0 hard-coded D3 thresholds/formulas; 6/6 prose-diagram matches; 0 downgrade/auto-advance edges; 0 code/migrations/algorithms; 15 UCs intact; no Design Freeze; no AssessmentSession | **Environment:** Windows 11 / Python 3.11.9 / Static Doc Inspection; commit `f986d96b2bd4f825d6a84ce465021a1cf0f4a34a`. **Command 1:** `py scratch/verify_consistency_guards.py` — **Output:** exit 0, ALL 18 PASSED (GUARD-01..18). **Command 2:** `git diff --check` — **Output:** exit 0 (LF warnings only, 0 whitespace errors). **Command 3:** D3 focused scan (`C:/Users/tungt/AppData/Local/Temp/opencode/d3_scan.py`) — **Output:** 6/6 balance PASS; 6/6 purpose/mode distinct PASS; invariants PASS; Q status `READY FOR D4 CONTENT/CURRICULUM DESIGN` exact PASS; no freeze claim PASS; 0 forbidden numeric/formula hits; AssessmentSession only negated (4 mentions); 6/6 prose refs PASS; OVERALL PASS. **Runtime scope:** `git diff --name-only -- lingora-web lingora-admin lingora-ai prisma` empty. **Verdict:** PASS | PASS | Windows 11 / Python 3.11.9 / Static Doc Inspection | `f986d96` |
@@ -2427,3 +2429,719 @@ git diff --exit-code docs/03-api-contract.md
     docs/QUICK-REF.md | 35 +-
     docs/phase-1-m2-2-behavior-uc-activity-state.md | 1557 +-
     plans/master-implementation-and-report-plan.md | 1636 +-
+
+## 2026-10-08 - T-P0-D04-DOC-001
+
+- **Environment:** Windows / PowerShell 7.6.5 / baseline commit `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`.
+- **Command:** `git diff --check`; `git diff --stat -- logs/decision-log.md plans/master-implementation-and-report-plan.md docs/QUICK-REF.md docs/README.md docs/01-architecture.md docs/04-data-model.md HANDOFF.md plans/current-task.md logs/development-log.md`.
+- **Output:** `git diff --check` exit 0 (Git emitted configured LF-to-CRLF notices only). Static authority assertions passed: P0-D04 `RESOLVED`; P0-D03 `OPEN`; ADR-030 and the three requested clarifications are present; Quick Ref and Handoff point to ADR-030. Diff-stat checkpoint: 9 files changed, 178 insertions(+), 93 deletions(-); per-file: HANDOFF.md 35 +/-, docs/01-architecture.md 2 +, docs/04-data-model.md 2 +, docs/QUICK-REF.md 16 +/-, docs/README.md 56 +/-, logs/decision-log.md 46 +, logs/development-log.md 18 +, plans/current-task.md 80 +/-, plans/master-implementation-and-report-plan.md 16 +. No new files were created; new-file line-count check: 0 applicable.
+- **Verdict:** `N/A — documentation/control-only; no runtime behavior changed`. Application tests were not run.
+## 2026-10-08 - T-P0-D03-DOC-001
+
+- Environment: Windows / PowerShell 7.6.5 / baseline commit 89d58f3da8b9ffcbf64b272d91b4ecae56a3e4.
+- Command: Static PowerShell authority assertions for ADR-031, P0-D03 RESOLVED, P0-D05..D07 still CONFLICT, implementation-not-authorized status, authority pointers, current-task DONE, and archived P0-D04 SHA-256; `git diff --check`; `git diff --stat` over the scoped authority/control files; archived task line-count check.
+- Output: All seven authority assertions were True. `git diff --check` exit 0 (Git emitted configured LF-to-CRLF notices only). `git status --short -- lingora-admin/prisma lingora-admin/seed` returned no paths. Archived P0-D04 task SHA-256 matched its pre-update hash; 35 lines. Pre-evidence-log scoped diff-stat checkpoint: 10 tracked files changed, 240 insertions(+), 93 deletions(-); it includes pre-existing P0-D04 working-tree changes. No new product/schema files.
+- Verdict: `N/A ? documentation/control-only; no runtime behavior changed`. Application tests were not run.
+## 2026-10-08 - T-P0-D05-DOC-001
+
+- Environment: Windows / PowerShell 7.6.5 / baseline commit 89d58f3da8b9ffcbf64b272d91b4ecae56a3e4.
+- Command: PowerShell static authority assertions for ADR-032, P0-D05 RESOLVED, English configuration pending, stage-adaptive Placement deferred, Mapping A historical approval, P0-D06/P0-D07 conflict status, implementation-not-authorized status, current-task/Handoff pointers, and D03 archive SHA-256/line count; git diff --check; git diff --stat over the scoped authority files.
+- Output: All 12 authority assertions were True. Archived D03 task SHA-256 matched its pre-update capture (4E66E3EB17CB2257981A379A5546A4C7ADEFA23F58FCD58BD5387100200BB3D1); 48 lines. git diff --check exit 0 (Git emitted configured LF-to-CRLF notices only). Scoped tracked diff-stat checkpoint: 7 files changed, 264 insertions(+), 93 deletions(-); it includes pre-existing P0-D03/P0-D04 working-tree changes in the same files. No product/schema paths were edited by this task; the new archived D03 control record has 48 lines. Application tests were not run.
+- Verdict: N/A - documentation/control-only; no runtime behavior changed.
+## 2026-10-08 - T-P0-D06-DOC-001
+
+- **Environment:** Windows 10.0.26200 / PowerShell 7.6.5 / baseline commit `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`; working tree was already dirty.
+- **Command:** Eight PowerShell static authority assertions for ADR-033, P0-D06/P0-D07 states, current task, Handoff, authority pointers, English configuration status, and D05 archive; `git diff --check`; `git diff --stat -- plans/current-task.md HANDOFF.md docs/QUICK-REF.md docs/README.md plans/master-implementation-and-report-plan.md logs/decision-log.md logs/development-log.md logs/test-log.md`; archive line-count check.
+- **Output:** All eight assertions were `True`; `git diff --check` exited 0 (Git printed configured LF-to-CRLF notices). The pre-evidence-log tracked diff-stat checkpoint was 8 files changed, 372 insertions(+), 93 deletions(-), including pre-existing edits to shared files. New archived D05 record: 49 lines (not included in tracked diff stat). Application tests were not run.
+- **Verdict:** `N/A - documentation/domain-decision-only; no runtime behavior changed`.
+
+## 2026-10-10 - T-P0-D02-DOC-001 — Role and UC Authority Reconciliation
+
+- **Environment:** Windows 10.0.26200 / PowerShell 7.6.5 / Node.js v24.11.1 / npm 11.6.2 / Java 17.0.2 / PlantUML 1.2026.8 / baseline commit `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`; shared worktree was already dirty.
+- **Commands:** `plantuml -checkonly docs/plantuml/uc-general.puml docs/plantuml/uc-authoring.puml docs/plantuml/uc-admin.puml docs/plantuml/uc-learner.puml`; `plantuml -tpng docs/plantuml/uc-general.puml docs/plantuml/uc-authoring.puml docs/plantuml/uc-admin.puml docs/plantuml/uc-learner.puml`; `git diff --check`; PowerShell inline static assertions over ADR-034, P0-D02/P0-D07, UC-02/03/06/08/10–14, catalog crosswalk, and active diagram actor/include relationships; `git diff --exit-code -- docs/03-api-contract.md`.
+- **Output:** PlantUML parse and render exited 0; 19 static authority/consistency assertions were `True`; `git diff --check` exited 0 (only configured LF-to-CRLF notices); API contract diff check exited 0 (unchanged). Four active UC PNGs were regenerated from their PlantUML sources. Preserved task-pointer capture: 47 lines; SHA-256 `82F8D04B1B039EB7E888A8AD49FA7B8C8B1B835851ECB46210339FE3F7D89BDB`. Pre-log scoped diff checkpoint: 20 files, 551 insertions(+), 263 deletions(-). Final scoped diff after logs/status update: 22 files, 653 insertions(+), 263 deletions(-). Both include pre-existing edits in overlapping shared files.
+- **Verdict:** `PASS` — documentation and diagram checks.
+
+## 2026-10-10 - T-WEB-BASELINE-DIAGNOSTIC-001 — Existing Checkout Verification
+
+- **Environment:** Windows 10.0.26200 / Node.js v24.11.1 / npm 11.6.2 / baseline commit `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`; files below were already marked deleted before this task.
+- **Commands:** `npm run typecheck --workspace lingora-web`; `npm run test:unit --workspace lingora-web`.
+- **Output:** Typecheck exited 1: TS2307 cannot resolve deleted `@/features/ai/contracts` imports in `src/lib/api/error.ts`, `src/lib/api/proxy.ts`, and `tests/unit/api.proxy.test.ts`; TS2741 also reports incompatible Playwright `Page` types (`ariaSnapshotJSON` absent) in `tests/e2e/accessibility-responsive.spec.ts`. Unit tests exited 1: 3 files passed / 8 tests passed; `tests/unit/api.proxy.test.ts` failed during import resolution for the same missing contracts. Initial `git status` already showed deletions of `lingora-web/src/features/ai/contracts.ts`, both `/api/ai/*` routes, and the `lingora-ai/` tree. No source or test files were changed by this task.
+- **Verdict:** `FAIL` — the current checkout cannot typecheck or pass the full unit suite. This is a pre-existing implementation/worktree issue and remains unmodified; AI compatibility is still P0-D07.
+
+## 2026-10-10 - T-WEB-STALE-AI-001 - Restore web technical baseline
+
+- Environment: Windows 10.0.26200.8457 / Node.js v24.11.1 / npm 11.6.2 / baseline commit `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`; shared worktree contained unrelated pre-existing changes.
+- Commands: `npm run typecheck --workspace lingora-web`; `npm run test:unit --workspace lingora-web`; `npm ls @axe-core/playwright @playwright/test playwright playwright-core --all`; `npm ci --dry-run --ignore-scripts --workspaces=false --no-audit --no-fund` from `lingora-web`; `git diff --check`; focused `rg` scan over current web source/tests, manifests, and current-facing READMEs.
+- Output: Final typecheck exit 0 with no diagnostics. Unit suite exit 0: 3 test files and 8 tests passed. Dependency tree exit 0 and resolves @axe-core/playwright, @playwright/test, playwright, and every playwright-core entry to 1.62.1. Web lockfile clean-install dry run exit 0. `git diff --check` exit 0 (Git emitted configured LF-to-CRLF notices only). Focused AI-reference scan found no matches in web source, tests, or package manifests; retained matches are documentation/boundary references in README.md, ENVIRONMENT.md, docs/README.md, and docs/QUICK-REF.md.
+- Diagnostic: The first post-alignment typecheck reused ignored generated `lingora-web/tsconfig.tsbuildinfo` containing the old 1.63.0 Page diagnostic. `npx tsc --noEmit --incremental false -p lingora-web/tsconfig.json` exited 0; after deleting only the verified ignored cache (`.gitignore:21: *.tsbuildinfo`), the exact required npm typecheck command exited 0. No test semantics were changed.
+- Lockfiles: `lingora-web/package-lock.json` adds only the matching direct devDependency entry. The pre-existing untracked root `package-lock.json` changed only its root peer entry from playwright-core 1.63.0 to 1.62.1; no unrelated lock churn was retained and the root package.json was not changed.
+- Verdict: PASS. No AI runtime/route/contract/stub was restored; no schema, migration, P0-D02, P0-D07, or staged/committed change was made.
+
+
+## 2026-10-10 - P0-D07-LOGICAL-001 — Decision-Record Documentation Checks
+
+- Environment: Windows 10.0.26200.0 / PowerShell 7.6.5 / Node.js v24.11.1 / baseline commit 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737; shared worktree was already dirty.
+- Commands: PowerShell inline static authority assertions across ADR-035, P0-D07 queue, Quick Reference, current UCs, traceability and requirements; git diff --check; git diff --cached --exit-code; git diff --stat -- logs/decision-log.md plans/master-implementation-and-report-plan.md docs/QUICK-REF.md docs/README.md docs/01-architecture.md docs/02-requirements.md docs/04-data-model.md docs/05-traceability-matrix.md docs/use-case-specifications.md plans/current-task.md HANDOFF.md logs/development-log.md logs/test-log.md; (Get-Content plans/approved/2026-10-10-p0-d07-logical-security-decisions-APPROVED.md).Count; rg scan for current authority phrases that still claimed P0-D07 logical blockers.
+- Output: 10/10 static authority assertions were True; git diff --check exited 0 (Git printed configured LF-to-CRLF notices); git diff --cached --exit-code exited 0. The current-authority stale-blocker scan returned no matches (exit 1 means no matching stale phrases). Approved snapshot: 42 lines, SHA-256 7454DA741B7FE0D015816369A3B6541C26E911EA0CC74FEA987BC37C18E90923. Scoped tracked diff checkpoint: 13 files, 669 insertions(+), 205 deletions(-); this includes pre-existing edits to shared files and is not a task-only delta. No new diagram/source/schema/migration path was introduced.
+- Runtime tests: N/A — documentation/product-decision-only; no runtime behavior changed. Live DB was not queried; this is explicitly deferred to Full CURRENT + TARGET Modeling Review.
+- Verdict: PASS for the approved logical decision record and documentation reconciliation; physical/live conformance remains unverified and implementation is not authorized.
+
+## 2026-10-10 - P0-D07-LOGICAL-001 — Final Closure Verification
+
+- Environment: Windows 10.0.26200.0 / PowerShell 7.6.5 / Node.js v24.11.1 / baseline commit 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737.
+- Command: PowerShell inline authority/status/archive assertion script (11 checks):
+  $adr = Get-Content logs/decision-log.md -Raw
+  $queue = Get-Content plans/master-implementation-and-report-plan.md -Raw
+  $quick = Get-Content docs/QUICK-REF.md -Raw
+  $uc = Get-Content docs/use-case-specifications.md -Raw
+  $trace = Get-Content docs/05-traceability-matrix.md -Raw
+  $req = Get-Content docs/02-requirements.md -Raw
+  $current = Get-Content plans/current-task.md -Raw
+  $handoff = Get-Content HANDOFF.md -Raw
+  $archived = (Get-FileHash plans/current-task.md).Hash -eq (Get-FileHash plans/archive/2026-10-10-p0-d07-logical-security-decisions-DONE.md).Hash
+  $stale = ($quick + $handoff + $uc + $trace) | Select-String -Pattern 'P0-D07 remains unresolved|P0-D07 remains open|CONFLICT / P0-D07'
+  $checks = [ordered]@{ ADR-035_packages = ...; logical_scope = ...; queue = ...; quick_ref = ...; UC_assessment = ...; UC_assignment_content_audit_SRS = ...; traceability_evidence = ...; requirements = ...; task_handoff = ...; no_stale_blocker = ...; snapshot_archive_hashes = ... }
+  $checks.GetEnumerator() | ForEach-Object { '{0}: {1}' -f $_.Key,$_.Value }; if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
+- Commands: git diff --check; git diff --cached --exit-code; Get-FileHash plans/current-task.md; Get-FileHash plans/archive/2026-10-10-p0-d07-logical-security-decisions-DONE.md; (Get-Content plans/archive/2026-10-10-p0-d07-logical-security-decisions-DONE.md).Count; (Get-Content plans/approved/2026-10-10-p0-d07-logical-security-decisions-APPROVED.md).Count; git diff --stat.
+- Output: All 11 assertions were True; git diff --check exited 0 with only configured LF-to-CRLF notices; git diff --cached --exit-code exited 0. Current task/archive hashes both equal 1DEA331AA0F541424092327AE6516D1A67D1D4228DB8B818A907B97C1DCBF207. DONE archive is 49 lines; immutable approved snapshot is 42 lines. Tracked working-tree diff is 52 files, 778 insertions(+), 1,915 deletions(-), including pre-existing work from prior tasks; it is not a P0-D07-only diff. No staging occurred.
+- Verdict: PASS for documentation decision-record scope. Application test suites remain N/A; the task changed no runtime behavior. No live database was queried.
+
+## 2026-10-10 - P0-D07-LOGICAL-001 — Exact Final Assertion Command
+
+- Correction: The prior closure entry abbreviated the PowerShell assertion body with ellipses. The exact final script block executed is reproduced below; it returned exit code 0 and all eleven values were True.
+```powershell
+& {
+$ErrorActionPreference = 'Stop'
+$adr = Get-Content logs/decision-log.md -Raw
+$queue = Get-Content plans/master-implementation-and-report-plan.md -Raw
+$quick = Get-Content docs/QUICK-REF.md -Raw
+$uc = Get-Content docs/use-case-specifications.md -Raw
+$trace = Get-Content docs/05-traceability-matrix.md -Raw
+$req = Get-Content docs/02-requirements.md -Raw
+$current = Get-Content plans/current-task.md -Raw
+$handoff = Get-Content HANDOFF.md -Raw
+$archived = (Get-FileHash plans/current-task.md).Hash -eq (Get-FileHash plans/archive/2026-10-10-p0-d07-logical-security-decisions-DONE.md).Hash
+$stale = ($quick + $handoff + $uc + $trace) | Select-String -Pattern 'P0-D07 remains unresolved|P0-D07 remains open|CONFLICT / P0-D07'
+$checks = [ordered]@{
+  'ADR-035 contains all seven packages' = (@('Role and identity','Assignment and authorship','Content lifecycle','Assessment and answer secrecy','SRS','Audit','Database reconciliation') | Where-Object { -not $adr.Contains("**$($_):**") }).Count -eq 0
+  'ADR-035 is logical-only' = ($adr.Contains('P0-D07 is `RESOLVED — LOGICAL PRODUCT/SECURITY TARGET ONLY`') -and $adr.Contains('No physical schema or migration strategy is approved'))
+  'Queue marks P0-D07 logical-resolved' = $queue.Contains('P0-D07 | `RESOLVED — LOGICAL PRODUCT/SECURITY TARGET ONLY`')
+  'Quick Reference states scope and next task' = ($quick.Contains('P0-D07 RESOLVED — LOGICAL TARGET ONLY (ADR-035)') -and $quick.Contains('Full CURRENT + TARGET Modeling Review'))
+  'UC assessment rules and physical deferral present' = ($uc.Contains('server-authoritative') -and $uc.Contains('aggregate result/pass/recommendation') -and $uc.Contains('Open physical/deployment decisions'))
+  'UC assignment/lifecycle/audit/SRS rules present' = ($uc.Contains('mỗi MVP assignment bao phủ') -and $uc.Contains('Đã quyết định về logic (ADR-035)') -and $uc.Contains('security audit append-only') -and $uc.Contains('Retry cùng review operation phải idempotent'))
+  'Traceability records physical evidence gaps' = ($trace.Contains('202608140002') -and $trace.Contains('caller-supplied probability/interval') -and $trace.Contains('does not field-filter JSON payloads') -and $trace.Contains('do not create its table'))
+  'Requirements reflect trusted identity and SRS boundary' = ($req.Contains('Client-provided probability/interval are not authoritative') -and $req.Contains('auth.uid()') -and $req.Contains('trusted subject'))
+  'Task pointer and handoff are DONE; modeling review next' = ($current.Contains('**Status:** DONE') -and $handoff.Contains('is DONE') -and $handoff.Contains('Full CURRENT + TARGET Modeling Review'))
+  'No stale logical blocker statement remains' = ($null -eq $stale)
+  'Approved snapshot exists; archive matches task pointer' = ($archived -and (Test-Path plans/approved/2026-10-10-p0-d07-logical-security-decisions-APPROVED.md))
+}
+$checks.GetEnumerator() | ForEach-Object { '{0}: {1}' -f $_.Key,$_.Value }
+if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
+}
+```
+## 2026-10-10 - Full CURRENT + TARGET Modeling Review Verification
+
+- Environment: Windows 10.0.26200.0 / PowerShell 7.6.5 / Python 3.12 / PlantUML v1.2026.8 / baseline commit 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737.
+- Command 1: python docs/diagrams/current-target-2026-10-10/render.py
+- Output 1:
+  PlantUML svg: exit=0; sources=45
+  PlantUML png: exit=0; sources=45
+  PASS: 45 sources; 90 SVG/PNG outputs; source/style/output hashes recorded
+- Command 2: python scratch/verify_modeling_review.py
+- Output 2:
+  Manifest diagram count: 45
+  Catalog items count: 46
+  PASS: All catalog outputs verified on disk.
+  PASS: Zero prohibited legacy terms in TARGET diagrams.
+  PASS: All verification assertions satisfied.
+- Command 3: git diff --check
+- Output 3: Exit code 0 (configured CRLF notices only, zero syntax or conflict errors).
+- Verdict: PASS. All 45 modeling sources and 90 outputs verified; catalog and review index generated; M25 omitted explicitly due to LIVE DB UNVERIFIED. Zero prohibited legacy terms in TARGET diagrams.
+
+## 2026-10-10 - Full CURRENT + TARGET Modeling Review Correction Pass Verification
+
+- Environment: Windows 10.0.26200.0 / PowerShell 7.6.5 / Python 3.12 / PlantUML v1.2026.8 / baseline commit 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737.
+- Command 1: python docs/diagrams/current-target-2026-10-10/render.py
+- Output 1:
+  PlantUML svg: exit=0; sources=45
+  PlantUML png: exit=0; sources=45
+  PASS: 45 sources; 90 SVG/PNG outputs; source/style/output hashes recorded
+- Command 2: python docs/diagrams/current-target-2026-10-10/build_review_package.py
+- Output 2: Wrote catalog.json (46 items), Wrote catalog.md, Wrote README.md, Wrote review.html
+- Command 3: python scratch/verify_modeling_review.py
+- Output 3:
+  Manifest diagram count: 45
+  Catalog items count: 46
+  PASS: All catalog outputs verified on disk.
+  PASS: Zero prohibited legacy terms in TARGET diagrams.
+  PASS: All verification assertions satisfied.
+- Command 4: git diff --check
+- Output 4: Exit code 0 (configured CRLF notices only, zero syntax or whitespace errors).
+- Verdict: PASS. Three modeling overreaches corrected (Unit as logical concept only; neutral SRS recall terms; live security wording corrected to UNVERIFIED repository artifact). MR-Q01..03 recorded as PO decisions. Modeling review readiness marked APPROVED / READY FOR PHYSICAL RECONCILIATION.
+
+## 2026-10-10 - Clean Rebuild of Lingora Diagram Artifacts Verification
+
+- Environment: Windows 10.0.26200.0 / PowerShell 7.6.5 / Python 3.12 / PlantUML v1.2026.8 / baseline commit 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737.
+- Command 1: python docs/modeling/current-target/render.py
+- Output 1:
+  PlantUML svg: exit=0; sources=36
+  PlantUML png: exit=0; sources=36
+  PASS: 36 sources successfully rendered to 72 SVG/PNG files.
+- Command 2: python scratch/verify_clean_rebuild.py
+- Output 2:
+  Diagram count: 36
+  PASS: All 72 rendered outputs exist on disk.
+  PASS: Zero prohibited legacy terms in TARGET diagrams.
+  PASS: Zero rigid SRS rating scale terms in SRS diagrams.
+  PASS: Unit correctly represented as logical concept without physical table overreach.
+  PASS: All verification assertions passed.
+- Command 3: git diff --check
+- Output 3: Exit code 0 (configured CRLF notices only, zero syntax or whitespace errors).
+- Verdict: PASS. Clean rebuild of 36 modeling sources and 72 outputs verified; all legacy diagram artifacts deleted; README index and review.md created; readiness marked APPROVED / READY FOR PHYSICAL RECONCILIATION.
+
+## 2026-10-10 - Archive Stale Legacy Plans from Plans Root Verification
+
+- Environment: Windows 10.0.26200.0 / PowerShell / Python 3.13 / baseline commit 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737.
+- Command 1: Get-ChildItem -Path plans -File | Select-Object Name
+- Output 1:
+  current-task.md
+  master-implementation-and-report-plan.md
+  PASS: Exactly 2 active files remain at plans/ root.
+- Command 2: git diff --check
+- Output 2: Exit code 0 (configured CRLF notices only, zero syntax or whitespace errors).
+- Command 3: npm --prefix lingora-web run typecheck; npm --prefix lingora-web run test:unit
+- Output 3: typecheck exit=0; test:unit exit=0 (3 files passed, 8/8 tests passed).
+- Command 4: python scratch/verify_clean_rebuild.py
+- Output 4: Diagram count: 36; PASS: All verification assertions passed.
+- Verdict: PASS. 9 stale/superseded plans cleanly moved to plans/archive/; history preserved; zero broken references.
+
+## 2026-10-10 - Archive Phase 0 and Legacy Report Artifacts to docs/archive/ Verification
+
+- Environment: Windows 10.0.26200.0 / PowerShell / Python 3.13 / baseline commit 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737.
+- Command 1: Get-ChildItem -Path docs/archive/phase-0, docs/archive/historical-reports
+- Output 1:
+  docs/archive/phase-0: 23 files
+  docs/archive/historical-reports: 4 files
+  PASS: Exactly 27 legacy files archived; docs/ root reduced from 56 to 29 files.
+- Command 2: git diff --check
+- Output 2: Exit code 0 (configured CRLF notices only, zero syntax or whitespace errors).
+- Command 3: npm --prefix lingora-web run typecheck; npm --prefix lingora-web run test:unit
+- Output 3: typecheck exit=0; test:unit exit=0 (3 files passed, 8/8 tests passed).
+- Command 4: python scratch/verify_clean_rebuild.py
+- Output 4: Diagram count: 36; PASS: All verification assertions passed.
+- Verdict: PASS. Phase 0 and legacy report files cleanly moved to docs/archive/; docs/archive/README.md created; pointer in docs/README.md updated; docs/superpowers/ deleted.
+
+| T-PRP-002 | 2026-10-10 | Lingora Product Revision Pass - final semantic alignment | Final ADR-036 policy, requirements, current UC/traceability, diagram sources and render outputs agree; no active Reassessment, fixed example invariant, duplicate diagram IDs, or whitespace errors. | Environment: Windows 11 10.0.26200 / PowerShell 7.6.5 / Python 3.13.2 / Java 17.0.2 / PlantUML 1.2026.8 / baseline SHA `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Commands: `py -3.13 docs/modeling/current-target/render.py` - SVG and PNG each exit 0 for 36 sources; PASS 36 sources to 72 outputs. `py -3.13 scratch/verify_clean_rebuild.py` - all 72 outputs present; legacy/SRS/logical Unit assertions PASS. Final inline ADR-036 static scan piped to `py -3.13 -` - 7 PASS lines: source/manifest/output set; active/deferred Reassessment classification; no A1/Unit 1/80%/sample-count invariant; lesson/SRS semantics; assessment authoring roles; 14 UC identities; six requirement trace groups. `git diff --check` run after evidence-log update - exit 0, configured LF-to-CRLF notices only. | PASS | Windows 11 / PowerShell 7.6.5 / Python 3.13.2 / Java 17.0.2 / PlantUML 1.2026.8 / static documentation and diagram validation | `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737` |
+
+
+## T-FMR-001 - Final Modeling Review after ADR-036 (2026-10-11)
+
+**Environment:** Windows NT 10.0.26200.0; PowerShell 7.6.5; Python 3.13.2; Java 17.0.2; PlantUML 1.2026.8. Baseline and final HEAD: `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Dirty worktree and pre-existing index preserved; no live DB connection.
+
+### Render verification
+
+**Command:** `$env:PYTHONUTF8='1'; $env:PLANTUML_JAR='C:\Users\PC\scoop\apps\plantuml\current\plantuml.jar'; py -3.13 docs/modeling/current-target/render.py`
+
+**Output:** Observed final full regeneration: SVG exit=0, sources=36; PNG exit=0, sources=36; `PASS: 36 sources` and 72 SVG/PNG files. Renderer validates PNG loading and SVG error/warning absence. Later verification confirmed all36 source hashes still match the generated manifest and exactly72 outputs remain. No diagram source changed after that final regeneration.
+
+**Verdict:** PASS - observed complete rendering, not compiler success used as semantic review.
+
+### Static, source, link and scope verification
+
+**Command:** `$env:PYTHONUTF8='1'; py -3.13 docs/modeling/current-target/verify.py`
+
+**Output:** Exit=0. 36 unique source/manifest records; 5 CURRENT +30 TARGET +1 DEFERRED, active=35; all36 source hashes fresh; 72 outputs without orphan/duplicate/error/warning; prohibited TARGET roles/runtime/physical contracts/sample defaults/four-rating SRS scans clear; N/K scoring, redo/completion, final30 recurrence/reset/reinforcement anchors confirmed. 14 UC entries (13 active + deferred reminder UC-03), VIEW-UC crosswalk, six ADR-036 trace groups, 162 valid local links; one canonical source set. CURRENT18 Prisma models/17 migration tables and selected migration facts checked. Baseline scope, new-file scope, index and HEAD checks passed. `FINAL STATIC VERIFICATION PASS`.
+
+**Observed failures and resolution:** Initial classification expectation/report said6 CURRENT/29 TARGET; reading actual titles established5/30, so inventory and assertion were corrected, not sources relabeled. Final metadata verification also caught trailing whitespace on QUICK-REF line60; removed that single trailing space and reran successfully. A subsequent full-file whitespace check flagged a pre-existing test-log line2425, before new entry line2638. Rather than rewriting historical evidence, the verifier now hashes original log prefixes against BASELINE and checks only appended task entries; prior bytes remain unchanged. All reruns passed. No failure was hidden or treated as PASS.
+
+**Verdict:** PASS - observed reruns after corrections. Detailed output and new-file line counts: [verification-output.txt](../docs/modeling/current-target/verification-output.txt). The baseline checker is task-specific and will intentionally reject later out-of-scope work until that future task defines its own evidence.
+
+### Diff and new-file evidence
+
+**Commands:** `git diff --check`; `git diff --stat`; `py -3.13 docs/modeling/current-target/verify.py` (prints line counts for each new text/JSON file, including snapshots, verifier, evidence and completion archive).
+
+**Output:** `git diff --check` exit=0, empty stdout, configured LF/CRLF notices only. Observed pre-log stat: `217 files changed, 1100 insertions(+), 7713 deletions(-)`. This whole-worktree stat includes substantial unrelated pre-existing changes and excludes untracked modeling; it is not attribution to this task. Task attribution uses immutable BASELINE hashes and new-file scope checks. Observed new-file counts before completion archive: approved plan41, request757, baseline344, verifier122 lines; final archive/evidence counts and updated stat are attached in verification-output.txt. Manual final change review covered diagram/doc corrections, UC/trace crosswalk, review inventory and current pointers; no application/Prisma/migration/API/ADR/historical archive changes from this task.
+
+**Verdict:** PASS - observed whitespace/scope evidence; final completion-state rerun retained in linked output.
+
+### Manual semantic/visual and independent review
+
+**Command:** N/A - read every one of36 sources against authority, trace edge cases across nine concerns, and inspect all36 rendered PNGs; re-inspect affected final diagrams after regeneration. Independent read-only reviewer re-read sources and revised active UC/trace/report after corrections.
+
+**Output:** [review.md](../docs/modeling/current-target/review.md) records nine-concern matrix,12 corrected finding groups and36 individual semantic/visual acceptance rows. Reviewer initial important findings were verified and corrected; final review found no remaining logical blocker/authority contradiction. Optional-best, connection wording and CURRENT type precision notes were also corrected. Dense aggregate views remain usable with SVG zoom.
+
+**Verdict:** N/A - manual modeling review, no runnable semantic/visual test command. Review conclusion: MODELING APPROVED WITH NON-BLOCKING NOTES; READY FOR PHYSICAL DESIGN. Runtime tests N/A because this bounded task changes documentation/modeling only. Historical8/8 unit results were not rerun or claimed here. No new ADR/product decision, physical contract, DB operation, staging or commit.
+
+
+## T-DCP-001 - Full Diagram Correction Pass (2026-10-11)
+
+**Scope:** Bounded documentation/modeling correction; no product implementation or final modeling approval. Approval/request/baseline snapshots in plans/approved/2026-10-11-full-diagram-correction-pass-*.
+
+**Environment:** Windows 11 build26200; PowerShell7.6.5; Python3.13.2; Java17.0.2; PlantUML1.2026.8. HEAD89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737; original dirty worktree/index preserved.
+
+### Render and static verification
+
+**Commands:** `$env:PYTHONUTF8='1'; py -3.13 docs/modeling/current-target/render.py`; `$env:PYTHONUTF8='1'; py -3.13 docs/modeling/current-target/verify.py > docs/modeling/current-target/verification-output.txt`.
+
+**Output:** Final full renderer exit=0: SVG exit0 sources36; PNG exit0 sources36; PASS36 sources /72 outputs. Static verifier exit=0: 36 unique sources/manifest entries,5 CURRENT+30 TARGET+1 DEFERRED; fresh style/source/output hashes;36 individual manual-review records match final PNG hashes;36SVG+36PNG no orphan/error/warning; grayscale and legacy/semantic scans clear;177 local links resolve; HEAD/index, authorized scope and append-only old logs preserved. Terminal verdict: CORRECTION STATIC VERIFICATION PASS; manual review remains separate. New text-file line counts printed in linked output, including approved46/request1061/baseline564/visual48/independent11/prior raw copies126/319/133; completion archive and final evidence counts appear in the completion-state rerun.
+
+**Verdict:** PASS - observed render/static output. Evidence: [verification output](../docs/modeling/current-target/verification-output.txt), [manifest](../docs/modeling/current-target/render-manifest.json).
+
+**Earlier failures and repairs:** A direct PowerShell Java preview command with unquoted `-Djava.awt.headless=true` returned exit1 (.awt.headless=true treated as main class); quoting the Java flag returned exit0. Shared deprecated Padding produced a warning banner; removed and regenerated. Package clustering stretched DOM/ERD; simplified layout and reinspected. First manual-evidence verifier regex excluded VIEW-UC identities and exited1; extended identity regex, then observed exit0 with all36 hashes matched. These were tooling/layout corrections; no product/runtime test failure is claimed.
+
+### Diff, scope and line counts
+
+**Commands:** `git diff --check`; `git diff --stat`; `py -3.13 docs/modeling/current-target/verify.py` (baseline scope/index and new-file line counts).
+
+**Output:** diff-check exit=0, empty stdout, existing LF/CRLF notices only. Pre-closure stat exit=0:217 files changed,1151 insertions(+),7714 deletions(-). Whole-worktree stat includes unrelated pre-existing changes and excludes untracked diagrams; task attribution is baseline comparison. Full command/stdout/stderr and final closure stat retained in [diff check](../docs/modeling/current-target/evidence/diff-check-output.txt) and [worktree stat](../docs/modeling/current-target/evidence/worktree-diff-stat.txt). Required evidence is observed, not inferred.
+
+**Verdict:** PASS - observed diff and authorized-scope checks; completion-state rerun retained in output.
+
+### Manual semantic/visual and independent review
+
+**Command:** N/A - source/authority review; every final PNG opened individually with view_image; ACT-06/STA-01 reinspected after final regeneration; read-only independent source review and9 critical-image inspections.
+
+**Output:** [A-N correction report](../docs/modeling/current-target/review.md) contains11-concern matrix; [visual evidence](../docs/modeling/current-target/evidence/visual-review.md) contains36 individual acceptance rows bound to final PNG hashes; [independent review](../docs/modeling/current-target/evidence/independent-review.md) records the ACT-06 reinforcement-loop finding and verified closure. No remaining substantive correction issue. DOM versus logical ERD differ materially. Large flows need full-page placement; concrete report-template font/page fit remains for later placement.
+
+**Verdict:** N/A - manual review has no runnable semantic/visual test command. Readiness: READY FOR FINAL MODELING REVIEW. Runtime tests N/A for documentation-only scope. No final modeling approval, new ADR, application/API/Prisma/migration edit, live DB operation, staging or commit.
+
+**Completion-state recheck:** Static verifier rerun after logs/DONE/archive/index updates returned exit0;182 local links resolve, historical log prefixes/index/HEAD preserved; completion archive57 lines. Final completion-state output and diff-check/stat evidence retained at the links above.
+
+
+## T-FMR-002 — Final Modeling Review (2026-10-11)
+
+**Environment:** Windows 11 build 26200; PowerShell 7.6.5; Python 3.13.2; Java 17.0.2; PlantUML 1.2026.8. HEAD 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737; baseline dirty worktree and index preserved; no commit.
+
+### Static and link verification
+
+**Command:** `$env:PYTHONUTF8='1'; py -3.13 docs/modeling/current-target/verify.py`
+
+**Output:** Exit code 0; 36 canonical PlantUML sources, 36 SVGs, 36 PNGs verified. 5 CURRENT + 30 TARGET + 1 DEFERRED; 35 active views. 185 local markdown links resolved with 0 broken links. Hashes of all 36 sources, style.puml, and 72 rendered outputs match render-manifest.json. Grayscale/monochrome palette verified; no blue arrows, yellow notes, debug footers, legends, or syntax errors. Scans for legacy roles (Creator, Moderator, Manager, SuperAdmin, assignedRoles), active AI runtime, Jump, Reassessment nodes, BKT/SM-2/FSRS, hardcoded question counts, and API/SQL contracts in TARGET diagrams clear. Append-only logs, index, and HEAD preserved.
+
+**Verdict:** PASS — observed verification output.
+
+### Manual semantic and visual review
+
+**Command:** N/A — independent manual source, semantic, and visual review of all 36 canonical sources and 36 rendered PNG/SVG outputs.
+
+**Output:** Full independent audit of 15 mandatory items and 11 cross-diagram consistency concerns completed. All 15 criteria verified PASS: 3 roles (Admin, Teacher, Learner); Login presentation-only include without changing 14 UC catalog; lesson retry/scoring N+K, contributions 1.0/0.5/0, completion independent of score; SRS Policy B 1→3→7→14→30 recurring 30 days with single-session reinforcement without rescheduling; curriculum availability (locked/coming soon excluded from denominator) and withdrawal/replacement preserving history; Placement and Level-up active, Reassessment deferred (ACT-05); Admin blueprint → Teacher item authoring → Admin review/publish; Admin learner support strictly prohibits editing learning evidence; Assignment lifecycle decoupled from Content Revision lifecycle; Domain model distinct in nature from Logical ERD; logical concepts not collapsed into physical tables; Sequence diagrams at business interaction level without API/SQL contracts; Activity diagrams with swimlanes and business process flows; CURRENT diagrams reflect repository/config evidence only; no AI runtime, legacy roles, mastery engines, Jump, or generic workflows. Visual review confirms high readability, clean Arial typography, proper actor placement, and clean monochrome formatting. Detailed report recorded in `docs/modeling/current-target/final-review.md`.
+
+**Verdict:** N/A — manual semantic/visual review has no runnable single command.
+
+### Worktree diff and line count check
+
+**Command:** `git diff --check; git status -s`
+
+**Output:** Exit code 0 for `git diff --check` with 0 whitespace errors. Worktree status preserved. New file `docs/modeling/current-target/final-review.md` line count: 131 lines.
+
+**Verdict:** PASS — observed clean diff check and verified scope.
+
+
+## T-F3C-001 — Final 3-Point Modeling Correction (2026-10-11)
+
+**Environment:** Windows 11 build26200; PowerShell7.6.5; Python3.13.2; Java17.0.2; PlantUML1.2026.8; HEAD89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737. The initial dirty worktree/index is preserved.
+
+### Targeted render
+
+**Commands:** `java '-Djava.awt.headless=true' '-DPLANTUML_LIMIT_SIZE=16384' -jar C:/Users/PC/scoop/apps/plantuml/current/plantuml.jar -charset UTF-8 --check-before-run --no-error-image --format svg --output-dir C:/Users/PC/lingora/docs/modeling/current-target/rendered C:/Users/PC/lingora/docs/modeling/current-target/src/ACT-01-learner-onboarding.puml C:/Users/PC/lingora/docs/modeling/current-target/src/ACT-09-revision-replacement.puml`; same command with `--format png`.
+
+**Output:** SVG exit0, sources2. PNG exit0, sources2. Only ACT-01 and ACT-09 source/output hashes refreshed; all other render outputs remained untouched. Both final PNGs opened individually with `view_image`. ACT-01 dimensions1640×1632, SHA-256 `046242edc45ac21b4b8acf450196fb93e3d3f996b8e8fa7411a5543235dd4bf9`; ACT-09 dimensions2058×1415, SHA-256 `d437c44a5a8066ec0b6c48b3f4e59de333bc05d52a7631ae4607345983e2f5cd`. Visual review rows match final manifest hashes.
+
+**Verdict:** PASS — both affected diagrams rendered and were visually inspected.
+
+### Authority and denominator scans
+
+**Commands:** `rg -n -i '\bCLOSED\b' docs/modeling/current-target/src --glob '*.puml'`; `rg -n -i '100\s*%|100\s+percent|all required lessons' docs/modeling/current-target/src/ACT-04-level-up-assessment.puml`; `rg -n -i 'không tính mẫu số|vẫn tính mẫu số|normal sequential progression has not unlocked' docs/modeling/current-target/src/ACT-01-learner-onboarding.puml docs/modeling/current-target/src/ACT-09-revision-replacement.puml docs/02-requirements.md docs/use-case-specifications.md`.
+
+**Output:** The only CLOSED hit is a prohibition comment in STA-02; no state/transition uses it. Level-up search exit1 (no fixed threshold match, expected). Denominator search exit0 includes both excluded-unavailable and included-progression-lock semantics. Full command/output: [targeted scans](../docs/modeling/current-target/evidence/final-three-point-scans.txt). Canonical semantic assertions also pass.
+
+**Verdict:** PASS — assignment, configured Level-up and eligible-denominator statements match approved authority.
+
+### Canonical verification and diff
+
+**Commands:** `py -3.13 docs/modeling/current-target/verify.py`; `git diff --check`; `git diff --stat`.
+
+**Output:** Canonical verifier exit0:36 sources/classifications;36 SVG +36 PNG, fresh hashes/no orphan outputs;36 individual visual records match PNG hashes;186 local links resolved in verifier scope; all three semantic checks, authorized file scope, HEAD and cached-index preservation passed. `git diff --check` exit0 (configured line-ending notices only). Whole-worktree diff stat exit0; its totals include unrelated pre-existing edits and untracked diagrams, so it does not represent this task's file count. Exact outputs are saved in `verification-output.txt`, [diff check](../docs/modeling/current-target/evidence/final-threepoint-diff-check.txt) and [worktree stat](../docs/modeling/current-target/evidence/final-threepoint-worktree-stat.txt). New-file line counts appear in the verifier output.
+
+**Verdict:** PASS — observed command output. Runtime/application tests do not apply to this documentation-only correction.
+
+**Checker-only failures repaired:** The first Level-up assertion searched for the English token `course-defined`; the approved UC instead says `do khóa học cấu hình`, so the assertion was changed to check that actual wording plus the configured assessment clause. A trial expansion of local-link checking found a pre-existing legacy requirements link; scan scope was returned to its prior canonical set, with a direct check for this task's new evidence link. No product rule was changed to fit either checker.
+
+### Manual review
+
+**Command:** N/A — compare assignment and Level-up source/report against ADR-033/034/035; inspect active requirements/UC and cross-diagram consistency; open the two updated PNGs individually.
+
+**Output:** `STA-02` already models reassignment as a self-transition that preserves attribution/history; no approved CLOSED terminal exists. `ACT-04`, UC-05 and ADR-033 already define configuration-driven Level-up gates without a universal percentage. Clarified only ACT-01, ACT-09, UC-04 and the active requirements' distinction between unavailable content and published active progression-locked lessons.
+
+**Verdict:** N/A — manual source/visual inspection has no runnable test command. Final verdict is **MODELING APPROVED** / **READY FOR PHYSICAL DESIGN**. Physical design is a separately authorized task.
+
+**DONE-archive closure rerun:** `py -3.13 docs/modeling/current-target/verify.py` exit0 after current task DONE/archive and current pointers/log entries. Final evidence:187 local links; all three semantic checks pass; HEAD/index preserved; changes within approved scope; log prefixes append-only; archive line count51. Final tail: `FINAL 3-POINT STATIC VERIFICATION PASS; updated diagrams match individual manual-review hashes.` `git diff --check` exit0 after closure; only configured line-ending notices. Current outputs in `docs/modeling/current-target/verification-output.txt` and `evidence/final-threepoint-diff-check.txt`.
+
+
+## T-PD-001 — Physical Design Documentation Verification (2026-10-11)
+
+- **Environment:** Windows; PowerShell 7.6.5; Python 3.13.2; Node v24.11.1 (config presence only); OpenJDK 17.0.2 / installed PlantUML 1.2026.8; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Preexisting dirty index preserved.
+- **Command:** `java '-Djava.awt.headless=true' -jar C:/Users/PC/scoop/apps/plantuml/current/plantuml.jar -charset UTF-8 -checkonly docs/design/physical/physical-erd.puml`; same command with `-tsvg` and `-tpng` instead of `-checkonly`.
+- **Output:** each exit0, no syntax diagnostics; four SVG/four PNG outputs. Individually inspected final PNGs: identity1192x655/content869x760/learning894x1319/assessment1361x499, no clipping/connector-text overlap after correction. Hashes/dimensions/manual verdicts in `docs/design/physical/verification-manifest.json`.
+- **Verdict:** PASS — physical draft render/individual visual check; this is not schema deployment verification.
+- **Command:** `$env:PYTHONUTF8='1'; py -3.13 docs/design/physical/verify.py` (stdout captured to `docs/design/physical/verification-output.txt`).
+- **Output:** exit0; `PHYSICAL DESIGN DOCUMENT CHECKS PASS`; LOCAL_LINK_COUNT 54; 34-table catalog/detail/ERD set match; current role/purpose/type/configuration/N-K/SRS/progress/secrecy assertions PASS; helper/target/lock assertions PASS; source/eight reviewed output hashes PASS; all139 preexisting canonical modeling files/HEAD/index unchanged; allowed pointers and append-only log prefixes preserved. Six unrelated drawio paths created by separate workspace activity captured without editing them. Initial check exit1 was due to not-yet-written evidence links and these new unrelated paths; corrected evidence/attribution checks, not product behavior. New textual-file line counts printed in captured output.
+- **Verdict:** PASS — deterministic documentation checks only.
+- **Command:** `git diff --check`; `git diff --stat`.
+- **Output:** exits0/0; diff-check has only LF/CRLF notices, no whitespace errors. Whole dirty-tree stat before this log append: `217 files changed, 1350 insertions(+), 7717 deletions(-)`; includes prior unrelated modifications and omits untracked artifacts, so not task attribution. Exact observed output in `docs/design/physical/git-checks.txt`; baseline verifier identifies scoped changes/new files.
+- **Verdict:** PASS — Git whitespace check. N/A — runtime/application/DB RLS/restore tests are prohibited by this design-only scope; 44 future acceptance scenarios are explicitly NOT EXECUTED.
+- **Independent review:** first reviewer identified five physical defects; fixes/recheck closed them except exact writer/provisioner grants. A second independent reviewer checked that remainder and lock implications; final report closes R6 and says ready for final physical design review. No technical/PO approval inferred.
+- **Live database:** LIVE DB UNVERIFIED; availability probe printed zero conventional local config files and false credential-presence booleans, never values. No DB connection, content read, mutation, old seed/security script execution, deploy or upload.
+
+## DNP-001 — All Diagram PUML Native draw.io Rendering Parity (2026-10-11)
+
+- **Environment:** Windows 11 build 26200; PowerShell 7.6.5; Python 3.13.2; Node v24.11.1; OpenJDK 17.0.2; draw.io Desktop 32.4.1; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Existing staged and worktree changes were preserved.
+- **Command:** `python scripts/test_drawio_native_parity.py`.
+- **Output:** exit 0; 12 tests ran; `OK`.
+- **Verdict:** PASS.
+
+- **Command:** `node scripts/test_drawio_from_puml.js`.
+- **Output:** exit 0; all 5 resolver/conversion tests passed.
+- **Verdict:** PASS.
+
+- **Command:** `node scripts/build_drawio_from_puml.js`.
+- **Output:** exit 0; converted all 36 sources into 36 ordered pages, 2,115 native editable cells, 0 duplicate IDs; native output 1,642.1 KB.
+- **Verdict:** PASS — build and structure only; visual parity is recorded below.
+
+- **Command:** `python scripts/validate_drawio.py`.
+- **Output:** exit 0; 36 ordered native pages contain matching standalone PUML edit payloads.
+- **Verdict:** PASS.
+
+- **Command:** `python scripts/build_drawio.py`.
+- **Output:** exit 0; built the separate SVG-backed 36-page option, 1,309.2 KB.
+- **Verdict:** PASS — build only.
+
+- **Command:** `python scripts/verify_drawio_native_parity.py --verify-baseline plans/approved/2026-10-11-drawio-native-render-parity-BASELINE.json`.
+- **Output:** exit 0; all 36 semantic inventories match; HEAD and index unchanged; all 500 pre-existing changed paths retained outside task scope.
+- **Verdict:** PASS.
+
+- **Command:** `Start-Process -FilePath 'C:\Program Files\draw.io\draw.io.exe' -ArgumentList @('--export','--format','png','--page-index', $page, '--output', $output, $input) -Wait -PassThru -WindowStyle Hidden`, applied to native page indices 5, 11, 25, 24, and 4, and SVG-backed page 5.
+- **Output:** all six exports exit 0. SHA-256 hashes match the visual-review evidence; dimensions/findings and image references are recorded in `docs/modeling/current-target/evidence/native-render-review.md`.
+- **Verdict:** FAIL for the approved native visual-parity criterion: UC-01 and SYS-04 have major layout/routing differences, ACT-03 has a connector-label collision, DATA-03 overlaps labels/relationships, and SEQ-01 is close/readable. The SVG-backed UC-01 export matches the reference with only page margin difference.
+
+- **Command:** `python docs/modeling/current-target/verify.py`.
+- **Output:** exit 1 at `single canonical set plus shared style`; all preceding source, output, manifest, semantic, and visual-hash checks pass. The repository scan counts 38 PUML files instead of 37 because `docs/design/physical/physical-erd.puml` is a separate pre-existing untracked design file; the approved baseline records it as pre-existing. It was not modified.
+- **Verdict:** FAIL — repository-wide verifier denominator conflicts with the pre-existing physical design file; task-specific semantic baseline and native validator pass.
+
+- **Command:** `git diff --check`.
+- **Output:** exit 0; no whitespace errors; only configured LF/CRLF notices.
+- **Verdict:** PASS.
+
+- **Gate result:** overall task remains `REVIEW`. The native visual-parity acceptance is not met by the installed renderer; primary-output selection is pending user choice. No canonical PUML semantics were changed and no commit was created.
+
+
+## DNP-001-FINAL -- Native draw.io Layout and Readability Pass (2026-10-11)
+
+- **Environment:** Windows 11 build 26200; PowerShell 7.6.5; Python 3.13.2; Node v24.11.1; OpenJDK 17.0.2; draw.io Desktop 32.4.1; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. The original index digest and all 500 baseline pre-existing changed paths remain unchanged.
+
+### Tests and build
+
+- **Command:** `py -3.13 scripts/test_drawio_native_parity.py -v`
+- **Output:** exit 0; 21 tests ran; `OK`. The actor association route regression test failed before the fix as expected, then passed with the native actor glyph mapped to its SVG entity identity.
+- **Verdict:** PASS.
+
+- **Command:** `node scripts/test_drawio_from_puml.js`
+- **Output:** exit 0; all 5 resolver/conversion tests passed.
+- **Verdict:** PASS.
+
+- **Command:** `py -3.13 docs/modeling/current-target/render.py`
+- **Output:** exit 0; all 36 canonical PUML sources rendered to 36 SVG and 36 PNG files.
+- **Verdict:** PASS.
+
+- **Command:** `node scripts/build_drawio_from_puml.js`
+- **Output:** exit 0; 36 sources converted in order; native layout pass applied to all 36 pages; 2,115 mxCells; 0 duplicate IDs; output `docs/modeling/current-target/lingora-all-diagrams.drawio`.
+- **Verdict:** PASS.
+
+- **Command:** `py -3.13 scripts/validate_drawio.py`
+- **Output:** exit 0; 36 ordered native pages have matching standalone PUML edit payloads.
+- **Verdict:** PASS.
+
+- **Command:** `py -3.13 scripts/verify_drawio_native_parity.py --verify-baseline plans/approved/2026-10-11-drawio-native-render-parity-BASELINE.json`
+- **Output:** exit 0; 36 semantic inventories match the baseline; HEAD and index are unchanged; all 500 pre-existing changed paths are retained outside task scope.
+- **Verdict:** PASS.
+
+- **Command:** Draw.io Desktop CLI export loop over manifest pages 1 through 36, using `--export --format png --page-index <page> --output <final preview> docs/modeling/current-target/lingora-all-diagrams.drawio`.
+- **Output:** 36/36 commands exited 0. SHA-256, dimensions, and file names are recorded in `docs/modeling/current-target/evidence/native-render-review/final/manifest.csv`; four regenerated contact sheets cover all pages.
+- **Verdict:** PASS -- each preview was visually inspected across the four contact sheets; UC-01 was opened at full size after the actor route correction.
+
+- **Command:** Python XML inventory of `lingora-all-diagrams.drawio` plus final preview manifest.
+- **Output:** 36 pages; 2,115 mxCells; 2,043 editable vertices/edges; 0 SVG image cells; 36 final page PNGs; 36 manifest entries.
+- **Verdict:** PASS.
+
+### Repository-wide modeling verifier exception
+
+- **Command:** `py -3.13 docs/modeling/current-target/verify.py`
+- **Output:** exit 1 at `single canonical set plus shared style`; preceding 36-source, render-manifest, 36-SVG/36-PNG, hash, grayscale, and individual-visual-review checks passed. The repository scan includes the separate pre-existing `docs/design/physical/physical-erd.puml`, so its PUML file denominator exceeds the 36 canonical modeling diagrams. That file was not changed.
+- **Verdict:** FAIL -- pre-existing file-count conflict outside this task. The task-specific semantic baseline, source render, native page validator, and layout checks pass.
+
+- **Command:** `git diff --check`
+- **Output:** exit 0; no whitespace errors. Git reported configured LF/CRLF normalization notices on pre-existing repository text files.
+- **Verdict:** PASS -- observed output.
+
+- **Commit gate:** the canonical `.drawio` output path was already untracked at the approved baseline. The approved implementation plan says to leave the commit pending user direction if that pre-existing overlap cannot be staged as a clean task-only delta. No commit or index mutation was made.
+
+
+- **Command:** `git diff --stat`; PowerShell line counts for `scripts/layout_drawio_native.py`, `evidence/native-render-review/final/manifest.csv`, final page PNGs, and contact sheets.
+- **Output:** whole-worktree tracked diff exit 0: `217 files changed, 1575 insertions(+), 7727 deletions(-)`. This total includes baseline pre-existing changes and excludes untracked artifacts; it is not a task-only stat. Task evidence counts: layout script 950 lines; final manifest 37 lines; 36 page PNGs; 4 contact sheets. Baseline verifier confirms all 500 pre-existing changed paths remain unchanged.
+- **Verdict:** PASS -- observed inventory; scope is established by the immutable baseline and task-specific verifier, not by the contaminated whole-worktree stat.
+
+## DNP-001-A — Exclude deferred ACT-05 from the primary native package (2026-10-11)
+
+- **Environment:** Windows 11 10.0.26200 / PowerShell 7.6.5 / Python 3.13.2 / Node.js 24.11.1 / draw.io Desktop 32.4.1 / baseline commit `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`.
+- **Command:** `node scripts/test_drawio_from_puml.js`
+- **Output:** exit 0; all 6 resolver/conversion/filter tests passed.
+- **Verdict:** PASS.
+
+- **Command:** `py -3.13 scripts/test_drawio_native_parity.py`
+- **Output:** exit 0; 25 tests ran; `OK`, including exact ACT-05 omission, missing-active-page rejection, and baseline page renumbering.
+- **Verdict:** PASS.
+
+- **Command:** `node scripts/build_drawio_from_puml.js`
+- **Output:** exit 0; 36 canonical sources discovered, 35 active pages converted and laid out; 2,106 mxCells; zero duplicate IDs; ACT-05 omitted.
+- **Verdict:** PASS.
+
+- **Command:** `py -3.13 scripts/validate_drawio.py`
+- **Output:** exit 0; 35 ordered active native pages contain matching standalone PUML edit payloads.
+- **Verdict:** PASS.
+
+- **Command:** `py -3.13 scripts/verify_drawio_native_parity.py --verify-baseline plans/approved/2026-10-11-drawio-native-render-parity-BASELINE.json`
+- **Output:** exit 0; all 36 semantic inventories match the immutable baseline; the 35 output pages omit only ACT-05; HEAD and index are unchanged; all 500 pre-existing changed paths remain outside task scope.
+- **Verdict:** PASS.
+
+- **Command:** Draw.io Desktop CLI export loop with `--export --format png --page-index 1..35 --output <final preview> docs/modeling/current-target/lingora-all-diagrams.drawio`.
+- **Output:** 35/35 exports exited 0; updated manifest has 35 entries and four contact sheets. Visual review confirms page 13 is ACT-06 and ACT-05 is absent.
+- **Verdict:** PASS.
+
+- **Command:** UTF-8 Python XML/manifest inventory of the primary `.drawio`, canonical sources/renders, and final preview directory.
+- **Output:** 36 canonical PUML sources, 36 SVG and 36 PNG references; 35 draw.io pages; 2,106 mxCells; 2,036 editable vertices/edges; 0 SVG image cells; 35 preview entries; no ACT-05 in pages/manifest; 4 contact sheets.
+- **Verdict:** PASS.
+
+- **Command:** `git diff --check`
+- **Output:** exit 0; no whitespace errors. Git emitted only configured LF-to-CRLF notices for text files.
+- **Verdict:** PASS.
+
+- **Commit gate:** The primary `.drawio` path was already untracked at the immutable task baseline. The prior approved rule prohibits staging this overlapping pre-existing path when a clean task-only delta cannot be formed. No index mutation or commit was made.
+
+- **Subsequent command:** `py -3.13 scripts/verify_drawio_native_parity.py --verify-baseline plans/approved/2026-10-11-drawio-native-render-parity-BASELINE.json`
+- **Subsequent output:** exit 1, `FAIL: Unrelated pre-existing Git status entries changed`. Filtered status comparison identified four newly untracked files for the separate Final Physical Data & Runtime Design Review: its APPROVED/BASELINE/REQUEST records and `plans/archive/2026-10-11-drawio-native-render-parity-PENDING-CAPTURE.md`. They appeared after the earlier passing baseline comparison, were not modified, and are outside this change. `plans/current-task.md` currently points to that separate review.
+- **Verdict:** FAIL — workspace-preservation baseline could not pass after the concurrent task changed four unrelated status entries. Draw.io page/source validation and the ACT-05-specific tests/build remain passing; no unrelated entry was staged or changed by this amendment.
+
+## T-FPD-001 — Final Physical Data & Runtime Design Review (2026-10-11)
+
+- **Environment:** Windows NT 10.0.26200; Python 3.13.2; Node v24.11.1; OpenJDK 17.0.2; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`; PowerShell at `C:\Users\PC\lingora`.
+- **Command:** `$env:PYTHONUTF8='1'; py -3.13 docs/design/physical/verify.py > docs/design/physical/final-review-evidence/physical-verifier-output.txt`.
+- **Output:** exit1; 55 local links and physical inventory/render assertions pass; four old task-baseline assertions fail: allowed preexisting changes, six prior drawio observations, task-new-path set, all 139 modeling-files inventory. Original script/evidence preserved. Subsequent approved draw.io work and current review differ from that historical baseline.
+- **Verdict:** FAIL — historical diagnostic, not current review acceptance. No semantic/RLS correctness is inferred from string checks.
+- **Command:** `java '-Djava.awt.headless=true' -jar C:/Users/PC/scoop/apps/plantuml/current/plantuml.jar -charset UTF-8 -checkonly docs/design/physical/physical-erd.puml`; same invocation with `-tsvg -o C:/Users/PC/lingora/docs/design/physical/final-review-evidence/rendered`, then `-tpng -o C:/Users/PC/lingora/docs/design/physical/final-review-evidence/rendered`.
+- **Output:** observed exits0/0/0; no syntax errors; four SVG/four PNG fresh outputs byte-identical to originals. Individual PNG review: 1192×655 identity, 869×760 content, 894×1319 learning, 1361×499 assessment; captions/PK/FK/cardinality/cross-view references compared, no clipping.
+- **Verdict:** PASS — documentation/render only; no SQL/runtime claim.
+- **Command:** `$env:PYTHONUTF8='1'; py -3.13 docs/design/physical/verify_final_review.py > docs/design/physical/final-review-evidence/current-verifier-output.txt`.
+- **Output:** exit0; `DOCUMENTATION_AND_SCOPE_CHECKS PASS`; `SEMANTIC_REVIEW NEEDS PHYSICAL CORRECTION; F01-F12 OPEN; RUNTIME TESTS NOT EXECUTED`. Complete 34-table/A–S audit, 6P1/6P2 findings, links/scans, exact physical definition/source/render hashes, 109 canonical PUML/render artifacts, original log prefixes, confined paths and HEAD/index verified. Exactly 38 concurrent draw.io changes observed separately and left untouched. New textual file line counts attached in output.
+- **Verdict:** PASS — current review documentation/scope acceptance; physical design remains rejected pending correction. Initial verifier run failed at line-count encoding alias `utf8-sig`; fixed to `utf-8-sig` and complete rerun observed exit0.
+- **Command:** `git diff --check > docs/design/physical/final-review-evidence/diff-check-output.txt`; `git diff --stat > docs/design/physical/final-review-evidence/diff-stat-output.txt`.
+- **Output:** exit0/0; diff-check stdout empty, LF/CRLF notices only; global diffstat attached includes preexisting work and is not attributed wholesale to this review. New/untracked review artifacts covered by line-count/scope verifier.
+- **Verdict:** PASS — whitespace/evidence capture. Runtime/DB security/restore tests N/A — review-only scope and LIVE DB UNVERIFIED. No application/Prisma/migration/seed/provider mutation/deploy/stage/commit.
+- **Evidence:** `docs/design/physical/final-review.md` and `docs/design/physical/final-review-evidence/verification.md`. Human authorized this documentation-only review, not physical implementation or destructive rebuild.
+
+## T-PDC-001 — Physical Design Correction Pass F01–F12 (2026-10-11)
+
+- **Environment:** Microsoft Windows NT 10.0.26200.0; PowerShell 7.6.5; Python 3.13.2; OpenJDK 17.0.2; PlantUML 1.2026.8; Node v24.11.1; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`.
+- **Command:** `java '-Djava.awt.headless=true' -jar 'C:/Users/PC/scoop/apps/plantuml/current/plantuml.jar' -charset UTF-8 -checkonly docs/design/physical/physical-erd.puml`.
+- **Output:** exit 0; no PlantUML syntax diagnostics.
+- **Verdict:** PASS — source syntax only; no runtime/database claim.
+
+- **Command:** `java '-Djava.awt.headless=true' -jar 'C:/Users/PC/scoop/apps/plantuml/current/plantuml.jar' -charset UTF-8 -overwrite -tpng docs/design/physical/physical-erd.puml`; same command with `-tsvg`.
+- **Output:** both commands exit 0; generated 4 PNG and 4 SVG panels. Identity PNG 1368×715, content 1043×1001, learning 894×1338, assessment 1403×513. All four PNGs visually inspected; all labels readable and unclipped. [`verify_render_artifacts.py`](../docs/design/physical/correction-pass-evidence/verify_render_artifacts.py) exits 0; all SVGs parse, PNGs decode, and 24 root/rendered/CLI-copy artifacts match by SHA-256. Manifest and render evidence are linked from `docs/design/physical/correction-pass-evidence/verification.md`.
+- **Verdict:** PASS — proposed ERD render/evidence check.
+
+- **Command:** `py -3.13 docs/design/physical/verify.py > docs/design/physical/verification-output.txt`.
+- **Output:** exit 0; `PHYSICAL CORRECTION VERIFICATION PASS`; 34 unique proposed tables and four ERD entity/relationship sets agree; 93 local links pass; F01–F12 semantic checks and sixteen future correction scenarios pass; independent report has all twelve findings CLOSED; all 189 approved-modeling files match the task baseline; HEAD and original Git index unchanged; no out-of-scope pre-existing paths changed. The full output includes line counts for new text evidence files at `docs/design/physical/verification-output.txt`.
+- **Verdict:** PASS — documentation, scope, baseline and evidence checks only.
+
+- **Command:** `git diff --check`.
+- **Output:** exit 0; no whitespace errors. Git emitted configured LF-to-CRLF informational warnings for existing worktree files. Full output: `docs/design/physical/correction-pass-evidence/diff-check-output.txt`.
+- **Verdict:** PASS.
+
+- **Command:** `git diff --stat`.
+- **Output:** `217 files changed, 1728 insertions(+), 7727 deletions(-)` for the complete already-dirty workspace; this global stat is not attributed wholesale to this correction task. Full output: `docs/design/physical/correction-pass-evidence/diff-stat-output.txt`.
+- **Verdict:** N/A — inventory evidence only; unrelated baseline changes are included.
+
+- **Command:** Database/runtime acceptance tests.
+- **Output:** N/A — this is a documentation-only task; no DB/runtime implementation or live connection was authorized. All sixteen correction scenarios and the other future acceptance suite are **NOT EXECUTED**. LIVE DB UNVERIFIED.
+- **Verdict:** N/A — no runnable implementation exists in scope; scenario fixtures/actions/expected invariants are recorded for a future approved implementation task.
+
+- **Commit:** NOT CREATED. No staging, application/Prisma/SQL/migration/DB/seed/deployment action; original HEAD/index and unrelated dirty workspace changes preserved.
+
+## T-FPR-001 — Final Physical Design Recheck (completed 2026-10-12)
+
+- **Environment:** Windows 11 10.0.26200; Python 3.13.2; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`; Asia/Saigon task start 2026-10-11, completion 2026-10-12. Existing dirty tree/index preserved.
+- **Command:** `py -3.13 docs/design/physical/verify.py` at entry before new artifacts.
+- **Output:** exit 0; `PHYSICAL CORRECTION VERIFICATION PASS`; 34 tables, 93 local links, 189 unchanged modeling files and original HEAD/index. Exact output `docs/design/physical/final-recheck-evidence/entry-verifier-output.txt`.
+- **Verdict:** PASS — existing artifact controls at correction baseline, not semantic design approval.
+- **Command:** same verifier after new final-review records.
+- **Output:** exit 1; only failed assertion is correction-task new-file allowlist rejecting separately authorized recheck artifacts (and separately observed concurrent presentation on later rerun). All semantic/structure/preservation assertions pass. Exact output `post-review-verifier-output.txt` under final-recheck evidence.
+- **Verdict:** FAIL — task-specific old new-file scope assertion; verifier unchanged. Separate final-task baseline checker supplies current scope proof; no failure hidden or semantic check removed.
+- **Command:** `java '-Djava.awt.headless=true' -jar 'C:/Users/PC/scoop/apps/plantuml/current/plantuml.jar' -charset UTF-8 -checkonly 'docs/design/physical/final-recheck-evidence/physical-erd.puml'`; same command using `-tpng -o rendered` and `-tsvg -o rendered` instead of `-checkonly`.
+- **Output:** all three exit 0, stdout/stderr empty; four PNG/four SVG match primary bytes. Source/hash/dimensions in `render-manifest.json`; SVG parsed, PNG decoded. Four panels individually visually inspected: readable/unclipped, proposed captions, catalog relationships checked; minor repeated governance aliases/shorthands noted.
+- **Verdict:** PASS — documentation render/integrity checks only.
+- **Command:** `py -3.13 docs/design/physical/final-recheck-evidence/check_artifacts.py`.
+- **Output:** initial complete run PASS. Later scope run FAIL after unrelated `docs/presentation/usecase-activity-presentation.md` appeared concurrently; preserved output `prelog-artifact-check-output.txt`. Exact path/hash recorded separately in `concurrent-observation.json`, no edit/deletion attributed to this task. Rerun prints `FINAL RECHECK ARTIFACT CHECKS PASS`: current report links, 34 unique catalog/detail/ERD sets, fresh renders, all 189 modeling hashes, original log prefixes, HEAD/index and scoped paths preserved. Full final command/output and new-file line counts `artifact-check-output.txt`.
+- **Verdict:** PASS — artifact/current-task scope after explicit concurrent observation; design rejection remains independent.
+- **Command:** `git diff --check`; `git diff --stat`; `rg -n -i 'six.role|Content Creator|Moderator|Super Admin|Reassessment|AI runtime|mastery|KnowledgeGap|Jump|A1|Unit ?1|100%|fixed.*count|client.*(score|completion|schedule)' docs/design/physical/README.md docs/design/physical/security-and-rls.md docs/design/physical/rebuild-plan.md docs/design/physical/physical-erd.puml`.
+- **Output:** exit 0/0/0; diff-check stdout empty, LF/CRLF warnings only; global stat and exact scan retained in final-recheck evidence. Scan hits are historical/configuration/denial statements, not newly active capability. Task-only pointer/log diff reviewed manually.
+- **Verdict:** PASS — observed whitespace/stat/scan capture, no benchmark/runtime claim.
+- **Verdict:** N/A — runtime/DB/restore acceptance execution prohibited by documentation-only scope; all future scenarios NOT EXECUTED, LIVE DB UNVERIFIED.
+- **Semantic review:** NEEDS PHYSICAL CORRECTION; F01/F02 STILL OPEN (principal dependencies), F03–F12 CLOSED. No new demonstrated P1/P2 regression or PO-policy contradiction. 34 APPROPRIATE; CLEAN REBUILD RECOMMENDED conditionally; NOT READY FOR IMPLEMENTATION PLANNING.
+- **Commit:** NOT CREATED; no staging or changes to original index/HEAD.
+
+
+## T-PERS-001 — Study Focus + final physical F01/F02 correction (2026-10-12)
+
+- **Environment:** Windows; Python 3.13.2; OpenJDK 17.0.2; PlantUML 1.2026.8; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. LIVE DB UNVERIFIED; no DB connection or mutation.
+- **Command:** `python docs/design/physical/personalization-correction-evidence/verify_all.py` invokes `python docs/design/physical/personalization-correction-evidence/check_task.py`, `python docs/modeling/current-target/verify.py`, `python docs/design/physical/verify.py`, `git diff --check`, `git diff --stat`; exact commands/output retained in each output file.
+- **Output:** observed exits 0/0/0/0/0; `TASK SCOPE/FRESHNESS/LINKS PASS`, `CURRENT TARGETED MODELING STATIC VERIFICATION PASS`, `PHYSICAL PERSONALIZATION / FINAL CORRECTION PASS`. 34→34; finite inventory/links/hashes/monochrome and unchanged HEAD/index pass. New-file line counts are retained with git diff --stat output.
+- **Verdict:** PASS — observed documentation/modeling structural and scope checks only. Initial stale-baseline and transient metadata/link/console-encoding failures were corrected, not concealed as runtime PASS.
+- **Render command:** `python docs/design/physical/personalization-correction-evidence/render_affected.py --physical`, `--logical`, then `python docs/design/physical/personalization-correction-evidence/refresh_visual_records.py` for the changed SEQ-06/identity inputs. Exact PlantUML invocations observed exit 0, empty stdout/stderr; manifests bind source and output hashes.
+- **Manual command/action:** read source chains and individually open affected PNGs with view_image; fresh independent targeted reviewer. **Output:** CONSISTENT; F01 CLOSED; F02 CLOSED; regression NONE. **Verdict:** N/A — non-runnable design/visual review. PERS-01–10 and PD-F01/F02 runtime cases are NOT EXECUTED.
+- **Evidence:** [verification](../docs/design/physical/personalization-correction-evidence/verification.md), [independent review](../docs/design/physical/personalization-correction-evidence/independent-review.md), [final report](../docs/design/physical/personalization-and-final-correction.md).
+
+## T-RUC-RESUME-001 — Report-oriented functional Use Case views resumption (2026-10-12)
+
+- **Environment:** Microsoft Windows NT 10.0.26200.0; OpenJDK 17.0.2; PlantUML 1.2026.8; Python 3.13; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Documentation/modeling only; LIVE DB UNVERIFIED.
+- **Command:** PowerShell enumerated `docs/modeling/report-usecases/VIEW-RUC-*.puml` (nine sources) and invoked `java '-Djava.awt.headless=true' -jar C:/Users/PC/scoop/apps/plantuml/current/plantuml.jar -charset UTF-8 -checkonly $sources`.
+- **Output:** exit 0; nine report PlantUML sources checked with no syntax diagnostics.
+- **Verdict:** PASS — source syntax only.
+- **Render command:** PlantUML `-overwrite -tpng -o docs/modeling/report-usecases/rendered` and `-overwrite -tsvg -o docs/modeling/report-usecases/rendered` for VIEW-RUC-01 and VIEW-RUC-03 only.
+- **Output:** each final PNG and SVG render command exited 0. The source notes now state the staff-provisioning rule in Vietnamese and the core `N`, `K`, `1 / 0.5 / 0`, `N + K`, independent-completion and supplementary-session boundary. Matching manifest hashes were refreshed only for those two IDs.
+- **Verdict:** PASS — targeted report-view renders.
+- **Command:** `py -3.13 -` one-off read-only audit of the report manifest, nine source hashes, 18 output hashes, SVG XML, PNG signatures/dimensions, README/script local links, current catalog identities, and role/SRS requirements.
+- **Output:** exit 0; `8 groups / 9 unique report diagrams / 18 outputs verified`; all local links resolve; canonical UC-01–UC-14 remains the current catalog; UC-03 remains deferred; Reassessment inactive; internal SRS selection and Teacher/Admin boundaries confirmed.
+- **Verdict:** PASS — artifact, link, scope and textual invariants only; no runtime behavior inferred.
+- **Manual visual review:** opened all nine PNGs, then re-opened the final VIEW-RUC-01 and VIEW-RUC-03 PNGs after targeted rerenders. Labels and the scoring/provisioning notes are readable and unclipped.
+- **Verdict:** PASS — visual legibility review.
+- **Command:** `git diff --check`.
+- **Output:** first run exit 2 identified trailing Markdown hard-break spaces in two newly written `plans/current-task.md` header lines. Removed those spaces; the immediate scoped rerun and the subsequent whole-worktree rerun exited 0. Git emitted only configured LF-to-CRLF informational warnings. Final rerun after log/archive changes is recorded below.
+- **Verdict:** PASS — whitespace check after correction; no test failure hidden.
+- **Runtime tests:** N/A — no application, database, schema, migration, or live runtime work is in scope.
+- **Commit:** NOT CREATED; no staging, physical-design edits, or changes to HEAD/index.
+
+### Final lifecycle closeout — T-RUC-RESUME-001
+
+- **Command:** PlantUML `-checkonly` over all `VIEW-RUC-*.puml` sources. **Output:** exit 0; nine sources, no diagnostics. **Verdict:** PASS.
+- **Command:** Python 3.13 local-link and line-count audit over ten task pointer/report documents and all report-usecase text artifacts. **Output:** exit 0; 10 documents' links resolve. Line counts: current pointer 7; DONE archive 46; REQUEST 5; APPROVED 38; BASELINE 27; AMENDMENT-01 17; report README 51; render manifest 135; VIEW-RUC-01/02/03/04/05/06/07/08A/08B sources 39/36/45/27/32/30/35/36/27; speaking script 172. **Verdict:** PASS.
+- **Command:** `git diff --stat`. **Output:** 217 files changed, 1,950 insertions(+), 7,724 deletions(-). This is a worktree-wide snapshot containing unrelated concurrent/pre-existing changes; it is not attributed to this report-view task. **Verdict:** captured, not a task-only diff.
+- **Command:** `git diff --check` after pointer/archive/log updates. **Output:** exit 0, no whitespace diagnostics; Git printed only configured LF-to-CRLF informational warnings. **Verdict:** PASS.
+- `plans/current-task.md` now points to this DONE archive; archive index, QUICK-REF, HANDOFF, and development/test logs have the report-task completion pointer. No files were staged or committed.
+
+
+## T-PUML-PRES-001 — Full PUML and UC/AD presentation review (2026-10-12)
+
+- **Environment:** Windows 11 / NT 10.0.26200; Python 3.13.2; OpenJDK 17.0.2; local PlantUML 1.2026.8; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Asia/Saigon user date; documentation review only.
+- **Command:** `rg --files -g '*.puml'`; Java `--check-syntax` with all 49 discovered paths. The full exact Java argument list is retained in [syntax.txt](../docs/presentation/puml-review-evidence-2026-10-12/syntax.txt).
+- **Output:** `PUML_FILES 49 DIAGRAM_BLOCKS 58 SYNTAX_EXIT 0`; empty syntax diagnostics. **Verdict:** PASS — syntax only.
+- **Command:** `py -3.13 docs/modeling/current-target/verify.py` and `py -3.13 docs/design/physical/verify.py`.
+- **Output:** both exit 1; historical personalization task inventory/presentation hashes and report note rule fail. These failures were observed before review files were created; later review artifacts also exceed that old task allowlist. [Entry failures](../docs/presentation/puml-review-evidence-2026-10-12/entry-verifier-failures.txt), [canonical output](../docs/presentation/puml-review-evidence-2026-10-12/canonical.txt), [physical output](../docs/presentation/puml-review-evidence-2026-10-12/physical.txt). **Verdict:** FAIL — required review diagnostics, recorded findings; no change made to suppress them.
+- **Command:** `py -3.13 -` read-only Python probe, invoked through PowerShell here-string, independently hashing 36 canonical and nine report source/render records, parsing SVG and decoding PNG; primary physical source/four output-pair hashes.
+- **Output:** `FRESHNESS_CHECKS 138 FAILURES []`; [freshness.txt](../docs/presentation/puml-review-evidence-2026-10-12/freshness.txt). **Verdict:** PASS — artifact freshness only.
+- **Command/action:** `view_image` on five contact sheets (49 primary PNGs), full-size report VIEW-RUC-01–05, ACT-03/04/06 and physical content panel. **Output:** diagram detail supports the written findings; tall ACT-03 needs zoom; duplicate physical alias renders as a mixed reference/entity box. **Verdict:** N/A — manual review, not runnable runtime acceptance or all-image full-size legibility certification.
+- **Command:** `py -3.13 -` delivery probe checking Markdown links, timeline/view/catalog coverage, key authority boundaries and source/script/HEAD/index preservation; `git diff --check`; `git diff --stat`.
+- **Output:** exit 0; 93 local links resolve; all nine functional views and exactly ACT-03/04/06 in contiguous 600-second timeline; 13 active canonical UCs mapped plus deferred UC-03; 49 PUML/original script/HEAD/index unchanged; spoken whitespace token count 1410. Diff checks exit 0 (configured LF/CRLF informational warnings only). Full [delivery checks](../docs/presentation/puml-review-evidence-2026-10-12/delivery-checks.txt), [diff check](../docs/presentation/puml-review-evidence-2026-10-12/diff-check.txt), [diff stat](../docs/presentation/puml-review-evidence-2026-10-12/diff-stat.txt). **Verdict:** PASS — review-delivery acceptance, not old task verifier PASS. Final closure/line-count results retained in [closure evidence](../docs/presentation/puml-review-evidence-2026-10-12/closure.txt).
+- **Verdict:** N/A — no runtime/product/DB tests or timed speaking rehearsal; no product/physical changes. No ADR decision required because review routes findings without changing policy.
+- **Commit:** NOT CREATED; preexisting mixed/untracked work preserved; no staging or index/HEAD changes.
+
+
+## T-DRAWIO-RUC-ADD-001 — Add report views to the native Draw.io bundle (paused in REVIEW, 2026-10-12)
+
+- **Environment:** Microsoft Windows NT 10.0.26200.0; Python 3.13.2; Node v24.11.1; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`.
+- **Command:** `python test_drawio_native_parity.py` from `scripts/`; `node scripts/test_drawio_from_puml.js` from the repository root.
+- **Output:** Python exit 0, 27 tests passed. Node exit 0, 7/7 resolver tests passed.
+- **Verdict:** PASS — focused tests only.
+- **Command:** `node scripts/build_drawio_from_puml.js`.
+- **Output:** exit 0; generated 44 pages and 2,486 native editable cells; nine `VIEW-RUC` pages follow UC-04 and ACT-01 moves to page 18.
+- **Command:** `python scripts/validate_drawio.py`.
+- **Output:** exit 0; package validation passed. The validator's success text still says “35” although it loaded 45 sources and validated the 44-page active set.
+- **Command:** `python scripts/verify_drawio_native_parity.py --verify-baseline plans/approved/2026-10-11-drawio-native-render-parity-BASELINE.json`.
+- **Output:** exit 1; canonical source inventory and pre-existing changed-path checks report failures. A separate pre-change payload comparison found the rebuilt package changed embedded source payloads for UC-02, ACT-01, ACT-03, ACT-06, DOM-01, DATA-03, SEQ-06, and SEQ-08.
+- **Verdict:** FAIL — bounded addition acceptance paused because rebuilding all pages changed existing content. `plans/current-task.md` returned to REVIEW; user resolution required before dependent work resumes.
+- **Commit:** NOT CREATED; no staging or index/HEAD changes.
+
+
+## T-UC-CLEAN9-001 — Nine report Use Case presentation/UML corrections (2026-10-12)
+
+- **Environment:** Microsoft Windows NT 10.0.26200.0; Python 3.13.2; OpenJDK 17.0.2; PlantUML 1.2026.8; Draw.io Desktop 32.4.1; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Documentation/modeling only.
+- **Command:** PowerShell enumerated exactly nine `VIEW-RUC-*.puml` paths, then `java '-Djava.awt.headless=true' -jar C:/Users/PC/scoop/apps/plantuml/current/plantuml.jar -charset UTF-8 -checkonly $ucSourcePaths`; same command with `-overwrite -tpng -o rendered` and `-overwrite -tsvg -o rendered`.
+- **Output:** final syntax/PNG/SVG invocations each exit 0; nine sources and eighteen fresh outputs; source/render manifest hashes match. **Verdict:** PASS — diagram artifacts only.
+- **Command:** `C:/Program Files/draw.io/draw.io.exe --export --format png --page-index N --theme light --border 20 --output <native/VIEW-RUC-ID.png> C:/Users/PC/lingora/docs/modeling/current-target/lingora-all-diagrams.drawio`, N=9..17, launched via `Start-Process -WindowStyle Hidden -Wait -PassThru`.
+- **Output:** all nine final exports exit 0. All nine actual native and nine final source PNGs opened for visual review. Actor/boundary containment, oval spacing, labels and straight/no-loop paths checked; RUC-01 final generalization heads separate/readable. **Verdict:** PASS — export/visual artifact review.
+- **Command:** `python C:/Users/PC/AppData/Local/Temp/lingora-clean9-work/verify_report_cleanup.py` (temporary read-only artifact audit; no repository test/script edits).
+- **Output:** final exit 0, `PASS`: 44 total pages; nine corrected; 35 raw page fragments exact; 1,035 protected files unchanged; 44 goal ellipses and associations; 40 names unchanged/four pre-reported corrections; seven notes removed; three generalizations; zero rendered notes/include/extend; HEAD/index/Word reference retained. **Verdict:** PASS — bounded nine-page delivery.
+- **Observed intermediate diagnostics:** temporary generation's raw/universal-newline guard refused the initial write; the first preservation audit compared raw CRLF with newline-normalized baseline hashes and reported mismatches. Corrected temporary checks to compare normalized baseline AND exact original ZIP bytes; immutable baseline unchanged. First visual source render exposed the direction rotation; corrected layout-only hints and rerendered. These findings were resolved and fresh outputs inspected; no failure hidden as acceptance.
+- **Command:** one-off documentation probe; `git diff --check`; `git diff --stat`.
+- **Output:** exit 0; 194 local links resolve; approved/current/report and all nine source line counts recorded; whole-worktree stat 217 files changed, 2,010 insertions(+), 7,722 deletions(-) at initial closeout, containing pre-existing mixed changes. Final closure evidence records the subsequent logs/pointers. **Verdict:** PASS — documentation delivery; stat is contextual, not task-only attribution.
+- **Runtime tests:** N/A — user prohibits code/schema/API/ADR/test changes; no runtime/product acceptance is inferred. No unit tests added or changed.
+- **Evidence:** [before/after report](../docs/modeling/report-usecases/cleanup-review-2026-10-12.md), [verification](../docs/modeling/report-usecases/evidence/2026-10-12-cleanup/verification.md), [machine audit](../docs/modeling/report-usecases/evidence/2026-10-12-cleanup/verification.json), [full backup](../docs/modeling/report-usecases/evidence/2026-10-12-cleanup/before-package.zip).
+- **Commit:** NOT CREATED; no staging, HEAD or index changes.
+
+
+### Final closeout — T-UC-CLEAN9-001
+
+- **Command:** final read-only link/line-count/log-prefix audit and `git diff --check` / `git diff --stat`. **Output:** exit 0; 209 current local links resolve; 2 links in the verbatim predecessor pointer resolve in their original plans context. Initial archive-location lookup produced two diagnostics; historical capture bytes were preserved and origin context recorded explicitly in closure evidence. Final diff check exit 0; whole-worktree stat `217 files changed, 2037 insertions(+), 7724 deletions(-)` includes unrelated entry changes. **Verdict:** PASS — current delivery links, immutable historical context and closure evidence.
+- [Closure](../docs/modeling/report-usecases/evidence/2026-10-12-cleanup/closure.json) records new-file/source line counts and unchanged historical log prefixes. Task pointer/HANDOFF/DONE archive and indexes complete; no staging/commit.
+
+
+## T-UC-OVERALL-LAYOUT-001 — Page05 UC-01 straight native layout (2026-10-12)
+
+- **Environment:** Windows NT 10.0.26200.0; Python 3.13.2; Draw.io Desktop 32.4.1; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Documentation/layout only.
+- **Command:** `C:/Program Files/draw.io/draw.io.exe --export --format png --page-index 5 --border 20 --theme light --output C:/Users/PC/lingora/docs/modeling/current-target/evidence/2026-10-12-overall-straight/after.png C:/Users/PC/lingora/docs/modeling/current-target/lingora-all-diagrams.drawio`, via `Start-Process -WindowStyle Hidden -Wait -PassThru`.
+- **Output:** final exit 0; PNG generated and opened for visual inspection. Straight paths, title/goal spacing, gutter labels, no large routing loops. **Verdict:** PASS — native artifact export/visual review.
+- **Command:** `python C:/Users/PC/AppData/Local/Temp/lingora-overall-straight/verify.py`.
+- **Output:** exit 0, PASS, errors=[]; 44 pages, 43 unchanged raw fragments; 17 goals, 3 actors, 20 associations, 13 includes, 0 waypoint arrays. 913 protected file hashes, embedded source payload, HEAD/index and prior log prefixes unchanged. **Verdict:** PASS — artifact/semantic/scope checks.
+- **Command:** `git diff --check`; `git diff --stat`; new-file line-count check in temporary audit.
+- **Output:** diff check exit 0; full stat/line counts saved in evidence. Whole-worktree stat includes preexisting unrelated edits/deletions, so scope is established by entry hashes. **Verdict:** PASS — whitespace and evidence; runtime/application tests N/A — layout-only task, no repository test changes.
+- **Evidence:** [verification](../docs/modeling/current-target/evidence/2026-10-12-overall-straight/verification.md), [audit](../docs/modeling/current-target/evidence/2026-10-12-overall-straight/verification.json), [backup](../docs/modeling/current-target/evidence/2026-10-12-overall-straight/before-package.zip).
+- **Commit:** NOT CREATED; preexisting mixed worktree preserved, no staging/index/HEAD changes. No code/schema/API/ADR/product rule/runtime change.
+
+
+## T-AD-LAYOUT-001 — Native Activity presentation layout (2026-10-12)
+
+- **Environment:** Windows 10.0.26200.0; Python 3.13.2; Node v24.11.1; Draw.io Desktop 32.4.1; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`.
+- **Command:** `python C:/Users/PC/AppData/Local/Temp/lingora-ad-polish/verify.py` (temporary read-only semantic/geometry/scope audit). **Output:** exit 0, PASS, errors `[]`; 44 pages, eight Activity pages changed, 36 raw pages exact; 289 nodes/329 edges preserve labels/IDs/endpoints/types/payloads; zero node overlaps or connector intersections with unrelated node interiors; 925 protected files and HEAD/index/log prefixes unchanged. **Verdict:** PASS — layout artifacts only.
+- **Command:** Draw.io Desktop export via `Start-Process -WindowStyle Hidden -Wait -PassThru`, exact flags/page map recorded in [verification](../docs/modeling/current-target/evidence/2026-10-12-ad-layout/verification.md). **Output:** sixteen final PNG/SVG invocations exit 0; actual PNGs inspected via whole pages, contact sheet and details; SVG XML parses. **Verdict:** PASS.
+- **Command:** `git diff --check`; `git diff --stat`; temporary closeout new-file line-count/hash probe. **Output:** diff check/stat exit 0; output and new-file line counts in task evidence. Whole-worktree stat includes unrelated entry changes; untracked modeling files are assessed through baseline. **Verdict:** PASS — document evidence.
+- **Intermediate diagnostics:** original-arrow assumption corrected against immutable backup; ACT-09 overlap and three ACT-01 crossing routes corrected before fresh export; temporary shell quoting failures rerun from script files; region links passed after image generation. Full details retained in evidence; no failed intermediate check counted as acceptance.
+- **Runtime tests:** N/A — native diagram layout only; no application or repository test edits, no product/runtime acceptance.
+- **Commit:** NOT CREATED; no staging, index or HEAD changes. [Backup](../docs/modeling/current-target/evidence/2026-10-12-ad-layout/before-package.zip), [audit](../docs/modeling/current-target/evidence/2026-10-12-ad-layout/verification.json).
+
+
+## T-CLASS-READABILITY-001 — Existing DOM-01 class diagram readability (2026-10-12)
+
+- **Environment:** Windows NT10.0.26200.0; Python3.13.2; Draw.io Desktop32.4.1; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Native diagram presentation only.
+- **Command:** `C:/Program Files/draw.io/draw.io.exe --export --format <png|svg> --page-index 29 --border 20 --theme light --output C:/Users/PC/lingora/docs/modeling/current-target/evidence/2026-10-12-class-readability/after.<png|svg> C:/Users/PC/lingora/docs/modeling/current-target/lingora-all-diagrams.drawio`, sequential via `Start-Process -WindowStyle Hidden -Wait -PassThru`.
+- **Output:** final PNG/SVG exports both exit0; native PNG2817×1859 opened, whole diagram and final detail crop inspected. **Verdict:** PASS — export/visual presentation review.
+- **Command:** `python C:/Users/PC/AppData/Local/Temp/lingora-class-check/verify_class.py` (temporary read-only artifact probe).
+- **Output:** final exit0, PASS/errors=[]: 44 pages, other43 raw fragments unchanged; 23 classifiers (22 classes + StudyFocus enum),35 member rows (30 attributes + five literals),24 relationships and48 existing-source multiplicities; no new classifier/field/relation. Geometry checks exclude frame overlaps, detached/clipped fields, endpoint/role collisions and connectors through unrelated classes. 1,018 protected files, embedded source, HEAD/index and prior log prefixes exact. **Verdict:** PASS — artifact/semantic/scope audit.
+- **Observed intermediate diagnostics:** actual first export exposed lost swimlane style; restored native header compartments. Initial narrow audit found3 label/class issues; wider cross-label audit found6 issues. All corrected and followed by final fresh export/inspection/audit, not recorded as acceptance.
+- **Command:** `git diff --check`; `git diff --stat`; new-file line-count probe.
+- **Output:** exit0; stat/line counts stored in evidence; full-worktree stat contains preexisting unrelated changes. Bounded scope established by entry hashes. **Verdict:** PASS — whitespace/evidence. Application/runtime tests N/A — layout-only, no test/code changes.
+- **Evidence:** [verification](../docs/modeling/current-target/evidence/2026-10-12-class-readability/verification.md), [machine audit](../docs/modeling/current-target/evidence/2026-10-12-class-readability/verification.json), [backup](../docs/modeling/current-target/evidence/2026-10-12-class-readability/before-package.zip).
+- **Commit:** NOT CREATED — no staging/index/HEAD change; existing mixed worktree retained.
+
+
+## T-CLASS-COMPLETENESS-001 — Detailed existing class-model completeness review (2026-10-12)
+
+- **Environment:** Windows NT10.0.26200.0; Python3.13.2; HEAD `89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737`. Documentation-only review.
+- **Command:** `python C:/Users/PC/AppData/Local/Temp/lingora-class-check/review_completeness.py`; independently inspected native DOM-01/source classifiers/member rows and compared ADR-030–036/041/042, current UC, DATA-03 and STA-02.
+- **Output:** exit0; observed22 classes +1 enum,30 class member rows +5 enum literals,24 relationships,0 methods; five empty classes Course/LogicalUnit/Vocabulary/Assignment/AssessmentItem; all source/native member lists match. Per-class findings cover all23 classifiers. **Verdict:** PASS — inventory and review coverage; completeness finding is INSUFFICIENT AS DETAILED CLASS DESIGN, not a product/runtime PASS.
+- **Command:** `python C:/Users/PC/AppData/Local/Temp/lingora-class-check/verify_completeness.py`.
+- **Output:** final exit0, PASS/errors=[]; all23 classifiers covered,41 local report links resolve,1,041 protected files unchanged including all44 native pages, source/render/spec/ADR/physical/code/schema/tests/scripts/runtime; HEAD/index and historical log prefixes exact. **Verdict:** PASS — documentation/scope checks.
+- **Observed intermediate:** first link probe found3 evidence links whose target files had not yet been generated; generated verification/diff stat/line counts and reran full audit to PASS. No diagram changes or authority edits.
+- **Command:** `git diff --check`; `git diff --stat`; new-file line-count probe.
+- **Output:** exit0; exact command/output and line counts stored in evidence. Whole-worktree stat contains unrelated preexisting changes; entry hashes prove read-only scope. **Verdict:** PASS — whitespace/evidence. Runtime/application tests N/A — review only.
+- **Evidence:** [review](../docs/modeling/current-target/class-completeness-review-2026-10-12.md), [audit](../docs/modeling/current-target/evidence/2026-10-12-class-completeness/verification.json), [inventory](../docs/modeling/current-target/evidence/2026-10-12-class-completeness/inventory.json).
+- **Commit:** NOT CREATED; no staging/index/HEAD changes. No canonical diagram, domain/product/ADR, code/schema/API/test/runtime modifications.

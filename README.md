@@ -2,8 +2,8 @@
 
 Lingora is a modern language learning web application built with **Software Engineering as the CORE platform** and **AI as a SUPPORTING CAPABILITY**:
 
-- **Software Engineering Core:** Web learning platform (`lingora-web`), admin & content management (`lingora-admin`), 6 canonical roles (`Administrator`, `Lesson Creator`, `Moderator`, `Operations Staff`, `Learner`, `Organizational Manager`), 19 MVP functions, 15 Use Cases, and a 6-state content review workflow (`Draft` → `In Review` → `Changes Requested` → `Approved` → `Published` → `Archived`).
-- **AI Supporting Capability:** Lightweight, stateless AI service (`lingora-ai/api`) providing Grammatical Error Correction (`/v1/gec/correct`) for scenario writing practice via pretrained models or external API providers.
+- **Product role baseline:** Three business roles (`Admin`, `Teacher`, `Learner`) and assigned Teacher authoring with Admin review/approval/publication are approved by ADR-034. Legacy six-role/15-UC materials remain historical; business approval does not establish implementation.
+- **AI Supporting Capability (target intent):** The documented target includes Grammatical Error Correction for scenario writing practice. No AI runtime is currently present in this repository, and compatibility remains open under P0-D07.
 
 The platform follows a unified AI development workflow using **Superpowers** (`obra/superpowers`). Approved repository boundaries are `lingora-web`, `lingora-admin`, and `lingora-ai/api/`.
 

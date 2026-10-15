@@ -1,0 +1,27 @@
+@startuml
+!include ../style.puml
+' diagram-id: SYS-01
+' classification: CURRENT
+' Evidence: lingora-web auth.service.ts/actions.ts, Supabase middleware, package.json;
+' lingora-admin package.json, schema.prisma and ordered SQL migrations.
+' CURRENT describes repository artifacts/configuration, not observed deployment or live DB.
+' No Admin web app, lesson, placement, SRS or progression runtime exists in this checkout.
+' Prisma and SQL disagree; live catalog/applied migration state remain unverified.
+left to right direction
+title Sơ đồ ngữ cảnh hệ thống theo mã nguồn hiện có
+
+actor "Học viên" as Learner
+actor "Người phát triển" as Developer
+rectangle "Kho mã nguồn Lingora" {
+  component "Ứng dụng web học viên\nĐăng nhập, đăng ký và khung giao diện" as Web
+  artifact "Không gian dữ liệu quản trị\nPrisma, migration và seed" as Workspace
+}
+rectangle "Cấu hình tích hợp Supabase" {
+  component "Xác thực" as Auth
+  database "Kết nối cơ sở dữ liệu" as DB
+}
+Learner --> Web : Truy cập giao diện
+Developer --> Workspace : Công cụ phát triển
+Web ..> Auth : Tích hợp xác thực
+Workspace ..> DB : Cấu hình kết nối
+@enduml

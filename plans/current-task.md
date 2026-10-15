@@ -1,64 +1,48 @@
-# Task: Master Implementation, Test, Demo & Report Planning (Phase 2)
+# Current task pointer
 
-## Status
+**Status:** DONE — detailed DOM-01 completeness documentation review only.
+**Approval:** [user-authorized review](approved/2026-10-12-class-completeness-review-APPROVED.md).
+**Completed task:** [archive](archive/2026-10-12-class-completeness-review-DONE.md).
+**Deliverable:** [all23 classifier review + concrete correction proposal](../docs/modeling/current-target/class-completeness-review-2026-10-12.md).
+**Evidence:** [audit](../docs/modeling/current-target/evidence/2026-10-12-class-completeness/verification.json), [inventory](../docs/modeling/current-target/evidence/2026-10-12-class-completeness/inventory.json), [entry capture](../docs/modeling/current-target/evidence/2026-10-12-class-completeness/entry-pointer.zip).
 
-`READY FOR HUMAN REVIEW` (Master Plan Re-scoped to Pure SE Core; Implementation NOT STARTED)
-- `TASK = master-implementation-and-report-plan`
-- `PLAN STATUS = DRAFT / READY FOR HUMAN REVIEW`
-- `HUMAN APPROVAL = PENDING`
-- `IMPLEMENTATION = NOT STARTED`
-- `AI IMPLEMENTATION = OUT OF PHASE 2 SCOPE`
-- `PRIMARY DELIVERABLE = plans/master-implementation-and-report-plan.md`
-- `COMMIT = NOT CREATED`
+Conclusion: conceptual overview with minimal attributes; insufficient as detailed class design. Five empty classes; source/native members match. No canonical/native diagram or business correction applied. All44 pages and1,041 protected files unchanged; logs recorded, no staging/commit. Source-backed additions and naming/type/operation choices are proposals requiring a separately authorized correction scope.
 
-## Baseline Context
+Prior Activity layout and DOM readability remain DONE in their archives. Prior insertion drift remains separately [REVIEW](archive/2026-10-12-add-report-usecases-to-native-drawio-REVIEW-CAPTURE.md). Physical design PROPOSED, liveDB unverified; implementation/physical approval gates unchanged. No follow-on work active.
 
-- `M2.5 CHECKPOINT = d09f7cc`
-- `M2.6 FINAL RE-REVIEW = PASS`
-- `M2.6 ACCEPTANCE = ACCEPTED (ADR-029)`
-- `M2.6 CHECKPOINT = 4c8a7dbd48c8c1a90c8a3e194b267916700bad2b`
-- `M2.6 Handoff Specification = docs/phase-1-m2-6-design-handoff.md`
 
-## Active Scope
+## Active directly authorized task: full Activity refinement
 
-1. Creation of the single authoritative master plan: `plans/master-implementation-and-report-plan.md`.
-2. Repository audit: CURRENT (what actually exists/runs), TARGET (M2.2–M2.6 design), GAP analysis.
-3. Canonical design baseline reconfirmation: 6 roles, UC-01..15, BF-01..15, D1–D9, 19 components, B1–B6 boundaries, 5 zones, 11 audit events, SoD rules, invariants.
-4. Target system decomposition across 19 canonical components into 9 functional domains.
-5. Implementation order: dependency-driven milestone sequence (M3.1..M3.10).
-6. Database implementation plan: 8-phase migration roadmap, DDL specs, UP/DOWN/ROLLBACK, data safety, backfill.
-7. Auth, RBAC, RLS & SoD implementation plan (dual-presence model, negative denial tests).
-8. Learner core engine implementation plan (closed-loop 9-step learner cycle).
-9. Assessment & progression plan (Placement ~25–30 proposed, Mapping A 0–30, Skip, Retake).
-10. Learning intelligence plan (Jump ≥95% 24h lockout, Controlled retry max(1, floor(N*0.10)) 70% credit, SRS Policy B [1,3,7,14,30], Daily streak local IANA timezone).
-11. Content governance implementation plan (6-state lifecycle, Creator no self-approve, Moderator no publish, Manager publish, Admin emergency publish with justification + audit, Unit 4/4 published rule, Clone-to-Draft v2).
-12. API & BFF implementation rules (read-only `docs/03-api-contract.md`, `[ILLUSTRATIVE ROUTE EXAMPLE — NOT LOCKED]` tags).
-13. Test strategy & executable test specifications converting 18 M2.6 test frames.
-14. Deterministic seed dataset specifications (6 roles, 7 learner personas, content states).
-15. Continuous 4-act demo plan with screen and evidence register.
-16. Academic report evidence matrix (5 columns).
-17. Performance / NFR validation framework (TARGET vs MEASURED).
-18. Gated milestone governance model (10 steps).
-19. Alignment with 5-chapter academic report structure.
-20. Gap and risk register (7 columns).
-21. Master roadmap: M3.1 through M3.10.
+**Status:** TESTING
 
-## Category Tag
+# Full Activity layout refinement — preserve concurrent document changes
 
-`category: runtime-boundary`
+**Approval:** direct user request 2026-10-12: “kh chỉnh full à có mấy cái trông vẫn khá xấu ... đang có 1 cái cập nhật song song ... kiểm tra lại xem”; save clarification: “Kiểm tra rồi lưu an toàn vào file chính”. Bounded diagram layout only.
+**Scope:** all eight active native ACT-01/02/03/04/06/07/08/09 pages; prioritize ACT-03/06/04 and screenshot ACT-01. Full layout refinement, not just enlarging existing coordinates. Separate candidate and visual exports first; compare-and-save only the eight current pages into the latest primary bundle after validation. Preserve concurrent DOM-01 and all other current raw pages.
+**Permitted:** consistent wrapped boxes, lane widths, row spacing, compact existing rail geometry, orthogonal connectors and separated branch labels. Preserve every existing label/ID/endpoint/arrow and embedded PUML. Native PNG/SVG and presentation crops in new evidence; current ten-minute script image links; append-only task/test/development/handoff records.
+**Read-only:** all PUML and original PlantUML renders/manifests, product/spec/ADR, application/schema/API/DB/migrations, repository scripts/tests, prior evidence/approvals and PPTX. No new UML/product decision, full-bundle builder, staging or commit.
+**Review:** previous mechanical expansion kept excessively long join lines and close parallel tracks. Shared bundle is also being edited in the DOM-01 chat. Screenshot matches ACT-01 current layout, not evidence of a lost AD save. Work on entry copy; merge only after AD raw hashes/semantics and latest page list remain compatible. If the same AD page changed externally, stop that page and preserve the conflict rather than overwrite it.
+**Acceptance:** all eight layout pages readable; compact join lines, aligned/wrapped boxes, no connector through text; no label/shape clipping. Latest 36 non-AD pages exact at merge, including concurrent DOM-01. Canonical semantics unchanged; inspect actual exports and each difficult region before completion.
+**Verification:** entry backup/hashes; separate candidate exports; temporary text-fit/node/route/label/semantic audit; before-save compare, exclusive file save and after-save raw-page audit; latest DOM-01 retained; current script links; diff check/stat, new-file line counts, append-only test/development evidence. Runtime N/A (layout only).
 
-## Critical Boundaries & Scope Firewall
 
-- **Planning Only:** Zero application code written or modified in `lingora-web`, `lingora-admin`, or `lingora-ai`.
-- **Zero Schema / Migration Execution:** Absolutely NO SQL written or executed, NO DDL, NO migration scripts run, NO `schema.prisma` edits, NO RLS policy deployment.
-- **Contract Immutability:** `docs/03-api-contract.md` remains 100% byte-identical and read-only.
-- **Worktree Discipline:** All unrelated dirty worktree changes preserved untouched; nothing staged; no commit created.
-- **Gating Invariant:** AI coding agents must never move task status to `APPROVED`. Explicit human approval required before implementation begins.
-- **Runtime Status:** Target runtime remains strictly `NOT PRODUCTION READY / NOT DEPLOYED`.
+## Active directly authorized task: class design completion
 
-## Approval Section (Human Partner Only)
+**Status:** IMPLEMENTING
 
-```text
-[ ] APPROVED by: _____________________  Date: _______________
-Comments / Scope Amendments:
-```
+# Hoàn thiện thiết kế lớp miền Lingora — kế hoạch docs-only
+
+**Phê duyệt:** yêu cầu PO đính kèm 2026-10-12 (REQUEST.txt), trực tiếp cho phép SAFE DESIGN DECISION và sửa sau bảng phân loại khi không còn user decision block. Đây là task bounded documentation, không architecture/schema/product implementation. Áp dụng brainstorming/writing-plans theo phạm vi đã chốt; không xin lại duyệt các detail được PO cho phép tự hoàn thiện. Không commit.
+**Phạm vi file:** DOM-01 PUML + riêng PNG/SVG render pair và entry DOM-01 của manifest; chỉ page-DOM-01 native; thêm report/evidence; cập nhật index README ở mục hiện hành; immutable approved request/plan, DONE archive và append-only logs/lifecycle note. Không sửa 35 source khác, other43 native pages, ADR/product/spec, Prisma/migration/seed/code/API/frontend/tests, không cài package/xóa lịch sử.
+**Thiết kế:** 22 class+1 enum trước/sau, không thêm classifier. LogicalUnit→Unit, AssessmentVersion→AssessmentBlueprintVersion giữ native class IDs. Bổ sung attributes logical + explicit28 relations, không methods. Assignment instance là lượt giao có assignedAt/endedAt và previousAssignment reference, at most1 open lượt mỗi content target; giữ Teacher A khi giao B. Blueprint version chứa typed config và grading reference server-only; freeze sau publish/use. Plan/Progress derived; context/SRS/streak/progression invariants giữ nguyên.
+**Concurrent:** Activity refinement đang chạy. Candidate đầy đủ trên entry copy; trước save mở file độc quyền, đọc latest44-page package, kiểm tra DOM entry hash và page list; chỉ thay DOM fragment, giữ latest43 fragments exact và lưu merge evidence. Nếu DOM cũng đổi bên ngoài thì dừng save, giữ candidate và conflict. Current-task/HANDOFF chỉ thêm/update section task này, không overwrite task AD. Shared logs append-only. Ngoài scoped concurrent AD evidence/script/lifecycle, các file readonly giữ hash.
+**Bước thực hiện:**
+- [ ] Đọc authority/inspect repository, đủ23-row bảng trước sửa và USER DECISIONS STILL REQUIRED.
+- [ ] Ghi immutable direct approval và baseline/full backup, preserve current task.
+- [ ] Sửa một DOM source với group/tên/fields/cardinality; render riêng DOM, update manifest record.
+- [ ] Dựng native candidate cùng semantics; route orthogonal/labels/fit; export candidate actual Draw.io PNG/SVG và review.
+- [ ] Kiểm tra semantics/types/multiplicity/security/reassignment interval scenarios; geometry/scope/source-render hashes.
+- [ ] Compare-and-save riêng DOM vào latest primary, xuất/review actual result, bảo toàn43 raw pages tại save.
+- [ ] Báo cáo A–K tiếng Việt, thực chứng diff/stat/line counts/links/log prefixes; logs và DONE archive. Không commit.
+**Verification:** PlantUML checkonly + DOM-only PNG/SVG; temporary read-only artifact audit outside repo (no test edits), actual Draw.io export/visual; font-fit/label/route/containment checks; source-native/manifest28 relation parity; explicit invariants and history scenario model-only, runtime N/A; latest merge audit/protected hashes/HEAD/index; diff check/stat và line count new files. Historical full-bundle baseline conflicts không thay/xóa; không chạy builder.
+**Không còn user decision bắt buộc cho vòng hoàn thiện sơ đồ này.** Assignment episode representation, member naming/types, optional display fields là SAFE DESIGN DECISION theo §20. Standalone assessment-assignment physical XOR, persistence/table design, additional states/operations/zero-denominator UI và unneeded generic systems DEFER, không block nội dung hiện tại.

@@ -1,0 +1,31 @@
+@startuml
+!include ../style.puml
+' diagram-id: ACT-07
+' classification: TARGET
+' authority: ADR-034/035; UC-01/13
+title Sơ đồ hoạt động – Khởi tạo tài khoản giáo viên
+|Quản trị viên|
+start
+:Nhập email và thông tin giáo viên;
+|Hệ thống|
+:Kiểm tra quyền và dữ liệu;
+if (Thông tin hợp lệ, email chưa dùng?) then (Có)
+  :Tạo tài khoản chỉ có vai trò Giáo viên;
+  :Ghi nhật ký khởi tạo tài khoản;
+  :Gửi liên kết kích hoạt;
+  |Giáo viên|
+  :Mở liên kết và đặt mật khẩu;
+  |Hệ thống|
+  if (Kích hoạt hợp lệ?) then (Có)
+    :Kích hoạt tài khoản;
+    :Ghi nhận kết quả;
+  else (Không)
+    :Báo lỗi, chưa kích hoạt;
+  endif
+else (Không)
+  :Báo lỗi, không tạo tài khoản;
+endif
+stop
+' Admin cannot learn/set the Teacher current password.
+' Disable/re-enable enforcement is shown in STA-01; staff accounts do not carry learner role.
+@enduml

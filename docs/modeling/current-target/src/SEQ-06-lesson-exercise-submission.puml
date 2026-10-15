@@ -1,0 +1,97 @@
+@startuml
+' Addendum authority: ADR-042; Study Focus affects supplementary practice only.
+!include ../style.puml
+' diagram-id: SEQ-06
+' classification: TARGET
+' authority: ADR-031, ADR-033, ADR-035, ADR-036, ADR-041; UC-06, UC-07, UC-08
+' N configured core items; K first-response errors; exactly one retry per error.
+' Optional system-selected SRS questions are outside the core score/completion denominator.
+' Completion is independent of performance; latest completed is primary, best optional secondary.
+' Abandoned/invalid attempts create neither completion nor completed performance.
+title Sơ đồ trình tự – Làm bài tập và ghi nhận hoàn thành bài học
+autonumber
+actor "Học viên" as Learner
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+database "Cơ sở dữ liệu" as DB
+
+Learner -> Web : Bắt đầu bài học hoặc học lại
+Web -> Server : Yêu cầu lượt học
+Server -> Server : Kiểm tra tài khoản, ngữ cảnh hoạt động và quyền học
+Server -> DB : Lấy phiên bản đang dùng và N bài tập chính
+DB --> Server : Nội dung và dữ liệu chấm được bảo vệ
+Server -> Server : Tạo hàng đợi N bài tập; K = 0
+Server --> Web : Nội dung học và bài tập kế tiếp
+loop Còn bài tập chính hoặc lượt thử lại trong hàng đợi
+  Learner -> Web : Trả lời bài tập kế tiếp
+  Web -> Server : Gửi câu trả lời
+  Server -> Server : Kiểm tra quyền và lượt trả lời dự kiến
+  alt Câu trả lời không hợp lệ
+    Server --> Web : Yêu cầu gửi lại; chưa tính lượt trả lời
+  else Câu trả lời hợp lệ
+    Server -> Server : Chấm câu trả lời
+    alt Đúng lần đầu
+      Server -> Server : Ghi đóng góp 1.0
+    else Sai lần đầu
+      Server -> Server : Tăng K; thêm 1 lượt thử lại cuối hàng đợi
+    else Đúng ở lượt thử lại
+      Server -> Server : Ghi đóng góp 0.5; không thử lại nữa
+    else Sai ở lượt thử lại
+      Server -> Server : Ghi đóng góp 0; không thử lại nữa
+    end
+    Server --> Web : Phản hồi học tập; bài tập kế tiếp
+  end
+end
+alt Kết thúc hợp lệ và ghi nhận thành công
+  Server -> DB : Lưu performance = tổng đóng góp / (N + K)
+  Server -> DB : Ghi hoàn thành độc lập performance; học lại không tăng số bài
+  Server -> DB : Enroll từ vựng cốt lõi; giữ lịch thẻ đã có
+  Server -> DB : Ghi hoạt động cho chuỗi ngày học toàn tài khoản
+  Server --> Web : Hoàn thành và performance lượt gần nhất
+  opt Bắt đầu phần luyện tập bổ sung sau core
+    Server -> DB : Đọc ngữ cảnh, trọng tâm và cấu hình luyện tập
+    DB --> Server : Trọng tâm hiện tại; nội dung đã xuất bản hợp lệ
+    Server -> Server : Ưu tiên trọng tâm; thiếu nội dung thì dùng nguồn hợp lệ khác
+    Server -> DB : Tìm nội bộ thẻ đến hạn / quá hạn của learner
+    DB --> Server : Candidates chỉ trả về backend; due_at không gửi lên giao diện
+    Server -> Server : Chọn SRS độc lập trọng tâm; giữ cấu trúc phiên
+    Server -> Server : Chỉ trả câu hiện tại sau bắt đầu; không gửi danh sách trước
+    loop Mỗi review question được chọn trong phiên
+      Server --> Web : Một câu hỏi/prompt ôn tập
+      Web --> Learner : Hiển thị prompt và điều khiển trả lời
+      Learner -> Web : Trả lời và chọn recall outcome
+      Web -> Server : Gửi card identity, outcome và operation identity
+      Server -> Server : Xác thực sở hữu, outcome và lượt ôn
+      Server -> DB : Kiểm tra operation đã ghi (idempotency)
+      DB --> Server : Kết quả tra cứu
+      alt Gửi lại cùng operation
+        Server --> Web : Trả kết quả cũ; không cập nhật lịch lần nữa
+      else Review hợp lệ mới
+        Server -> DB : Đọc lịch hiện tại; tính Policy B ở backend
+        Server -> DB : Ghi một review và lịch mới nguyên tử
+        opt Chưa nhớ và chưa củng cố trong phiên
+          Server -> Server : Đặt một câu củng cố cuối phiên; không lịch mới
+        end
+        Server --> Web : Kết quả tương tác và câu hỏi kế tiếp nếu có
+      end
+    end
+    loop Mỗi câu luyện tập theo trọng tâm được chọn
+      Server --> Web : Câu hỏi luyện tập hiện tại
+      Learner -> Web : Trả lời câu hỏi
+      Web -> Server : Câu trả lời và tham chiếu phiên hợp lệ
+      Server -> Server : Chấm PRACTICE đúng phạm vi; phản hồi tạm thời
+      Server --> Web : Phản hồi; không đổi điểm core / completion / SRS
+    end
+    opt Có câu SRS chưa nhớ cần củng cố
+      Server --> Web : Một câu củng cố cuối phiên; không lập lịch lại
+      Web -> Server : Trả lời củng cố trong phiên đã xác thực
+      Server -> DB : Ghi củng cố tối đa một lần; giữ lịch
+    end
+  end
+else Chưa kết thúc hợp lệ hoặc ghi nhận thất bại
+  Server --> Web : Chưa ghi hoàn thành hay performance mới; giữ lịch sử
+end
+Web --> Learner : Hiển thị kết quả phiên học
+' Review block is not an Assessment Version and cannot affect the saved core score or completion.
+' The same selection rule may apply to ordinary practice/checkpoints, never scored Placement/Level-up.
+@enduml

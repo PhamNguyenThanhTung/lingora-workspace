@@ -1,0 +1,84 @@
+@startuml
+' Addendum authority: ADR-042; Study Focus affects supplementary practice only.
+!include ../style.puml
+' diagram-id: SEQ-08
+' classification: TARGET
+' authority: ADR-030, ADR-031, ADR-033, ADR-035, ADR-036, ADR-041; UC-07, UC-08
+' One global Learner+Vocabulary card. Due selection stays server-side; client schedule is never authoritative.
+' Same-operation retry is idempotent; reinforcement has no second scheduling operation.
+title Sơ đồ trình tự – Thêm từ vựng và ôn tập ngắt quãng
+autonumber
+actor "Học viên" as Learner
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+database "Cơ sở dữ liệu" as DB
+
+opt Hoàn thành bài học hoặc learner thêm từ tùy chọn
+  alt Hoàn thành bài học hợp lệ
+    Server -> Server : Chọn core vocabulary của lesson
+  else Learner chủ động Add to Review từ tùy chọn
+    Learner -> Web : Thêm từ tùy chọn vào ôn tập
+    Web -> Server : Yêu cầu thêm từ
+    Server -> Server : Kiểm tra tài khoản, quyền và vocabulary
+  end
+  Server -> DB : Tìm card Learner + Vocabulary
+  DB --> Server : Card đã có hoặc chưa có
+  alt Card đã tồn tại
+    Server -> Server : Dùng lại card; giữ stage và lịch
+  else Card mới
+    Server -> DB : Tạo card stage 1; due sau một ngày
+  end
+end
+
+alt Review block trong phiên học/luyện tập thường
+  Learner -> Web : Bắt đầu hoặc tiếp tục phiên học thường
+else Dedicated review session tùy chọn
+  Learner -> Web : Bắt đầu phiên ôn riêng
+end
+Web -> Server : Bắt đầu phiên; yêu cầu nội dung học/ôn phù hợp
+Server -> Server : Xác thực learner/context; SRS vẫn chạy khi context paused
+Server -> DB : Tìm nội bộ card due/overdue thuộc learner
+DB --> Server : Candidates trả riêng cho backend; giữ due_at nội bộ
+Server -> Server : Chọn câu ôn sau bắt đầu; không lọc theo trọng tâm
+Server -> Server : Giữ thẻ quá hạn chưa chọn đủ điều kiện ôn
+loop Mỗi câu hỏi ôn do hệ thống chọn
+  Server --> Web : Một question/prompt; không gửi danh sách/stage/due date
+  Web --> Learner : Hiển thị câu hỏi và tương tác trả lời
+  Learner -> Web : Gửi recall outcome hợp lệ
+  Web -> Server : Card identity + rating + operation identity
+  Server -> Server : Kiểm tra tài khoản, card, outcome
+  Server -> DB : Kiểm tra operation đã ghi nhận
+  DB --> Server : Kết quả tra cứu theo learner/operation
+  alt Gửi lại cùng operation đã ghi
+    Server --> Web : Trả kết quả cũ; không tính lịch lần nữa
+  else Review hợp lệ mới
+    Server -> DB : Đọc stage hiện tại
+    DB --> Server : Stage lưu nội bộ
+    alt Chưa nhớ
+      Server -> Server : Reset stage 1; đặt hạn một ngày
+    else Đã nhớ
+      Server -> Server : Tính Policy B 1 → 3 → 7 → 14 → 30 ngày
+      Server -> Server : Stage cuối tiếp tục lặp mỗi 30 ngày
+    end
+    Server -> DB : Ghi review và lịch do server tính
+    Server -> DB : Ghi activity đủ điều kiện cho streak
+    Server --> Web : Kết quả tương tác; có thể trả câu hỏi kế tiếp
+    opt Chưa nhớ và chưa củng cố trong phiên
+      Server -> Server : Xếp đúng một prompt reinforcement cuối phiên
+      Server -> Server : Củng cố giữ lịch; không lập lịch lần thứ hai
+    end
+  end
+end
+opt Có câu củng cố trong phiên
+  Server --> Web : Đưa câu reinforcement đã được chọn
+  Web --> Learner : Hiển thị lại prompt; không hiển thị due list
+  Learner -> Web : Trả lời prompt củng cố
+  Web -> Server : Gửi tương tác củng cố, không lập lịch mới
+  Server --> Web : Giữ nguyên lịch đã tính; kết thúc củng cố
+end
+Server --> Web : Tổng kết phiên, không có due-card list
+Web --> Learner : Hiển thị tổng kết
+' A due/overdue card remains eligible until a valid review is recorded.
+' Learner never previews due vocabulary; system selects only after ordinary-session choice or dedicated-session start.
+' Never inject review items into a scored immutable Placement/Level-up Assessment Version.
+@enduml

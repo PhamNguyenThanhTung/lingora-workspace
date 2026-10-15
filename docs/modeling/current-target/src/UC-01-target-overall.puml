@@ -1,0 +1,81 @@
+@startuml
+!include ../style.puml
+' diagram-id: VIEW-UC-01
+' classification: TARGET
+' Authority: ADR-030–036; docs/use-case-specifications.md current catalog.
+' UC-01 is visually split into public signup/recovery/activation, profile and supporting Login.
+' Login is presentation-only: no canonical UC is added or renumbered.
+' UC-03 reminder retained in catalog but deferred under ADR-031; excluded from MVP.
+' Reassessment deferred under ADR-036; absent from active learner use cases.
+left to right direction
+skinparam nodesep 28
+skinparam ranksep 55
+title Sơ đồ Use Case tổng quan hệ thống Lingora
+
+actor "Học viên" as Learner
+actor "Giáo viên" as Teacher
+actor "Quản trị viên" as Admin
+
+rectangle "HỆ THỐNG HỌC NGOẠI NGỮ LINGORA" {
+  package "Học tập" {
+    usecase "Kiểm tra xếp lớp" as UC02
+    usecase "Khám phá lộ trình học" as UC04
+    usecase "Kiểm tra lên cấp" as UC05
+    usecase "Học bài và luyện tập" as UC06
+    usecase "Học từ vựng và ôn tập" as UC07
+    usecase "Xem tiến độ và chuỗi ngày học" as UC08
+  }
+  package "Biên soạn" {
+    usecase "Soạn nội dung được phân công" as UC10
+    usecase "Nộp bài và nộp lại" as UC11
+  }
+  package "Quản trị" {
+    usecase "Lập đề cương và phân công" as UC09
+    usecase "Thẩm định và xuất bản" as UC12
+    usecase "Quản lý tài khoản" as UC13
+    usecase "Xem báo cáo và nhật ký" as UC14
+  }
+  package "Tài khoản" {
+    usecase "Đăng ký tài khoản" as Signup
+    usecase "Khôi phục mật khẩu" as Recovery
+    usecase "Kích hoạt tài khoản" as Activation
+    usecase "Quản lý hồ sơ cá nhân" as Profile
+  }
+  usecase "Đăng nhập / Xác thực" as Login
+}
+
+Learner -- Signup
+Learner -- Recovery
+Learner -- Profile
+Learner -- UC02
+Learner -- UC04
+Learner -- UC05
+Learner -- UC06
+Learner -- UC07
+Learner -- UC08
+Teacher -- Activation
+Teacher -- Recovery
+Teacher -- Profile
+Teacher -- UC10
+Teacher -- UC11
+Admin -- Recovery
+Admin -- Profile
+Admin -- UC09
+Admin -- UC12
+Admin -- UC13
+Admin -- UC14
+
+Profile ..> Login : <<include>>
+UC02 ..> Login : <<include>>
+UC04 ..> Login : <<include>>
+UC05 ..> Login : <<include>>
+UC06 ..> Login : <<include>>
+UC07 ..> Login : <<include>>
+UC08 ..> Login : <<include>>
+UC09 ..> Login : <<include>>
+UC10 ..> Login : <<include>>
+UC11 ..> Login : <<include>>
+UC12 ..> Login : <<include>>
+UC13 ..> Login : <<include>>
+UC14 ..> Login : <<include>>
+@enduml

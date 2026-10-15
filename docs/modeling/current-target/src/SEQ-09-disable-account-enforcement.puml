@@ -1,0 +1,57 @@
+@startuml
+!include ../style.puml
+' diagram-id: SEQ-09
+' classification: TARGET
+' authority: ADR-034, ADR-035, ADR-036; UC-13
+' Learner support reads only necessary identity/status/role and minimal context summary.
+' Admin cannot edit completion, performance, assessment results, SRS history,
+' activity, level, progress or any other learning evidence.
+' Recovery belongs to managed account flow; Admin cannot know/set current password.
+' Disable applies on next request even with an unexpired prior session.
+' Trusted subject is auth.uid(); role/status come from server-controlled sources.
+title Sơ đồ trình tự – Hỗ trợ tài khoản Học viên và kiểm soát truy cập
+autonumber
+actor "Quản trị viên" as Admin
+actor "Học viên" as Learner
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+participant "Xác thực" as Auth
+database "Cơ sở dữ liệu" as DB
+
+Admin -> Web : Tìm tài khoản Học viên cần hỗ trợ
+Web -> Server : Yêu cầu thông tin hỗ trợ tối thiểu
+Server -> Server : Kiểm tra trạng thái và quyền quản trị
+Server -> DB : Lấy định danh, vai trò, trạng thái và tóm tắt ngữ cảnh
+DB --> Server : Thông tin hỗ trợ tối thiểu
+Server --> Web : Hiển thị thông tin được phép
+Admin -> Web : Vô hiệu hóa hoặc kích hoạt lại; nhập lý do
+Web -> Server : Gửi yêu cầu hỗ trợ tài khoản
+Server -> Server : Kiểm tra lại quyền và phạm vi hỗ trợ
+alt Đổi trạng thái tài khoản được phép
+  Server -> DB : Chỉ đổi trạng thái tài khoản; ghi nhật ký
+  Server --> Web : Xác nhận trạng thái mới
+else Không đủ quyền hoặc yêu cầu sửa dữ liệu học tập
+  Server -> DB : Ghi nhật ký từ chối
+  Server --> Web : Từ chối; giữ dữ liệu học tập
+end
+Web --> Admin : Hiển thị kết quả hỗ trợ
+
+Learner -> Web : Thực hiện chức năng với phiên còn hạn
+Web -> Server : Gửi yêu cầu và phiên đăng nhập
+Server -> Auth : Kiểm tra danh tính từ phiên
+Auth --> Server : Danh tính đã xác thực
+Server -> DB : Kiểm tra lại trạng thái, vai trò và quyền
+DB --> Server : Thông tin cấp quyền hiện tại
+alt Tài khoản bị vô hiệu hóa
+  Server --> Web : Từ chối ngay yêu cầu
+else Tài khoản hoạt động và đủ quyền
+  Server --> Web : Cho phép thực hiện chức năng
+end
+Web --> Learner : Hiển thị kết quả truy cập
+
+opt Học viên cần khôi phục mật khẩu
+  Learner -> Web : Yêu cầu khôi phục mật khẩu
+  Web -> Auth : Bắt đầu quy trình khôi phục tài khoản
+  Auth --> Learner : Hướng dẫn khôi phục riêng cho chủ tài khoản
+end
+@enduml

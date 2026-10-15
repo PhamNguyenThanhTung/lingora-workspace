@@ -1,0 +1,77 @@
+@startuml
+' Addendum authority: ADR-042; Study Focus affects supplementary practice only.
+!include ../style.puml
+' diagram-id: ACT-01
+' classification: TARGET
+' authority: ADR-030/031/032/036; UC-01/02/04
+title Sơ đồ hoạt động – Khởi đầu học và chọn ngôn ngữ
+|Học viên|
+start
+:Đăng nhập và chọn ngôn ngữ học;
+|Hệ thống|
+if (Ngữ cảnh đang hoạt động?) then (Có)
+  :Mở ngữ cảnh, giữ điểm bắt đầu;
+  :Hiển thị lộ trình hiện hành;
+  stop
+else (Không)
+endif
+if (Đã có hai ngữ cảnh hoạt động?) then (Có)
+  |Học viên|
+  if (Tạm dừng một ngữ cảnh?) then (Có)
+    |Hệ thống|
+    :Tạm dừng, giữ tiến độ và bằng chứng;
+  else (Không)
+    |Hệ thống|
+    :Giữ các ngữ cảnh hiện có;
+    stop
+  endif
+else (Không)
+endif
+|Hệ thống|
+if (Ngữ cảnh đã tạm dừng?) then (Có)
+  :Tiếp tục ngữ cảnh, giữ trạng thái;
+  :Hiển thị lộ trình hiện hành;
+  stop
+else (Không)
+endif
+:Tạo ngữ cảnh học cho ngôn ngữ; trọng tâm mặc định Cân bằng;
+|Học viên|
+if (Muốn chọn trọng tâm riêng?) then (Có)
+  :Chọn Từ vựng / Ngữ pháp / Đọc / Nghe;
+  |Hệ thống|
+  :Lưu trọng tâm hợp lệ; không đổi điểm bắt đầu;
+else (Không)
+  |Hệ thống|
+  :Giữ trọng tâm Cân bằng;
+endif
+|Học viên|
+if (Cách chọn điểm bắt đầu?) then (Xếp lớp)
+  :Làm kiểm tra xếp lớp;
+  |Hệ thống|
+  if (Kết quả hợp lệ đã được lưu?) then (Có)
+    :Dùng cấp độ bắt đầu đề xuất;
+  else (Không)
+    |Học viên|
+    :Chọn tự khai báo hoặc mặc định;
+    |Hệ thống|
+    :Giữ nguồn tự khai báo hoặc mặc định;
+  endif
+elseif (Tự khai báo)
+  |Học viên|
+  :Khai báo cấp độ;
+  |Hệ thống|
+  :Ghi điểm bắt đầu chưa xác minh;
+else (Mặc định)
+  |Hệ thống|
+  :Chọn điểm thấp nhất có nội dung;
+endif
+|Hệ thống|
+:Suy ra lộ trình từ ngữ cảnh và tiến độ;
+:Hiển thị nội dung hiện hành đủ điều kiện;
+:Nội dung chưa xuất bản / không khả dụng:\nHiển thị “Đang phát triển”, không tính mẫu số;
+:Bài đã xuất bản trong lộ trình hiện hành,\nchưa mở do tiến trình vẫn tính mẫu số;
+:Tính trên bài bắt buộc active, đã xuất bản\nvà đủ điều kiện;
+stop
+' One context per User + Language; pausing never resets global SRS.
+' Existing/resumed context curriculum also follows eligibility and future availability rules.
+@enduml

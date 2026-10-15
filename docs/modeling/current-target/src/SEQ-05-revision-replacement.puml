@@ -1,0 +1,46 @@
+@startuml
+!include ../style.puml
+' diagram-id: SEQ-05
+' classification: TARGET
+' authority: ADR-035, ADR-036; UC-12, UC-04, UC-06
+' Published edits use a new Teacher-authored revision and repeat review/approval.
+' Logical all-or-nothing replacement; physical transaction strategy deferred.
+' Learner-referenced content is retained, never hard-deleted.
+title Sơ đồ trình tự – Thay thế phiên bản và bảo toàn lịch sử
+autonumber
+actor "Quản trị viên" as Admin
+actor "Học viên" as Learner
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+database "Cơ sở dữ liệu" as DB
+
+Admin -> Web : Xuất bản bản sửa mới đã phê duyệt
+Web -> Server : Yêu cầu thay thế phiên bản
+Server -> Server : Kiểm tra quyền, phê duyệt và độ sẵn sàng
+Server -> DB : Lấy phiên bản đang dùng
+DB --> Server : Phiên bản hiện hành
+alt Xuất bản thành công
+  Server -> DB : Xuất bản bất biến; chuyển bản đang dùng nguyên tử
+  Server -> DB : Giữ bản cũ, kết quả, hoàn thành và lịch sử tác giả
+  Server -> DB : Ghi nhật ký thay thế phiên bản
+  Server --> Web : Xác nhận phiên bản mới đang dùng
+else Không đủ quyền hoặc xuất bản thất bại
+  Server -> DB : Ghi nhật ký từ chối hoặc thất bại
+  Server --> Web : Giữ nguyên bản đang dùng và lịch sử
+end
+Web --> Admin : Hiển thị kết quả
+
+opt Học viên mở bài sau khi thay thế thành công
+  Learner -> Web : Mở bài học
+  Web -> Server : Yêu cầu bài học hiện hành
+  Server -> Server : Kiểm tra tài khoản, ngữ cảnh và quyền học
+  Server -> DB : Lấy bản hiện hành và bằng chứng hoàn thành
+  DB --> Server : Nội dung và lịch sử học
+  alt Đã hoàn thành phiên bản trước
+    Server --> Web : Giữ hoàn thành; không yêu cầu học lại
+  else Chưa hoàn thành bài học
+    Server --> Web : Học phiên bản thay thế đang có sẵn
+  end
+  Web --> Learner : Hiển thị bài học và trạng thái
+end
+@enduml

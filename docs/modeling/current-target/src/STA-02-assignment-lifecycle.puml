@@ -1,0 +1,15 @@
+@startuml
+!include ../style.puml
+' diagram-id: STA-02
+' classification: TARGET
+' authority: ADR-034/035; UC-09/10/11/12
+title Sơ đồ trạng thái – Trách nhiệm công việc được giao
+top to bottom direction
+state "Đã giao cho một giáo viên" as ASSIGNED
+[*] --> ASSIGNED : Quản trị viên giao gói nội dung
+ASSIGNED --> ASSIGNED : Quản trị viên đổi người phụ trách\nGiữ tác giả và lịch sử
+ASSIGNED : Một giáo viên phụ trách tại một thời điểm
+' Responsibility is separate from revision/content lifecycle; Teacher worklist follows current ownership.
+' No CLOSED/COMPLETED or project-management workflow is approved by ADR-034/035.
+' Assignment remains a logical concept; no stored status or history representation is prescribed.
+@enduml

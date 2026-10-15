@@ -1,0 +1,11 @@
+{
+  "classification": "UNRELATED POST-BASELINE WORKSPACE OBSERVATION; not created or edited by this task",
+  "files": {
+    "scripts/build_drawio.py": "3af17a191f06801c8229efa2cf09e5929082739488e891b2944ccd4553581923",
+    "scripts/build_drawio_from_svgs.py": "7db6e1695be85c4187be1a49a351fa6b41f818a48c1db52cb501467b51af9ae1",
+    "scripts/validate_drawio.py": "26ad996fcb11d3f20cb71039249f348d5c53612c16f067c4f8a52236d3364407",
+    "docs/modeling/current-target/lingora-all-diagrams.drawio": "70109552507ccbc5f9708112d0b52e7a4b7034ea138dba9e8ecf54afdf5c59f3",
+    "scripts/build_drawio_from_puml.js": "b5a8ce3fae582e52ed4c7067f46480da1dd4a0a27f7e01ecc8c30488e3083031",
+    "scripts/vendor/drawio-plantuml.min.js": "62cff34490984e180abb859abbb0e40086e72d4494cc56363a84e69f1d3082c4"
+  }
+}

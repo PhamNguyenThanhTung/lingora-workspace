@@ -1,0 +1,220 @@
+[
+  {
+    "id": "VIEW-RUC-01",
+    "source": "VIEW-RUC-01-auth-profile.puml",
+    "goals_before": 6,
+    "goals_after": 6,
+    "removed_aliases": [],
+    "retained_aliases": [
+      "Signup",
+      "Login",
+      "Recovery",
+      "Profile",
+      "Logout",
+      "Activate"
+    ],
+    "goals": {
+      "Signup": "Đăng ký tài khoản (Học viên)",
+      "Login": "Đăng nhập / Xác thực",
+      "Recovery": "Khôi phục mật khẩu",
+      "Profile": "Quản lý hồ sơ cá nhân",
+      "Logout": "Đăng xuất / kết thúc phiên",
+      "Activate": "Kích hoạt tài khoản đã được cấp"
+    },
+    "notes_before": 1
+  },
+  {
+    "id": "VIEW-RUC-02",
+    "source": "VIEW-RUC-02-learning-context.puml",
+    "goals_before": 10,
+    "goals_after": 6,
+    "removed_aliases": [
+      "Language",
+      "ChooseStart",
+      "SelfReport",
+      "DefaultStart"
+    ],
+    "retained_aliases": [
+      "CreateContext",
+      "Resume",
+      "Pause",
+      "Focus",
+      "Placement",
+      "OpenPath"
+    ],
+    "goals": {
+      "CreateContext": "Tạo ngữ cảnh học",
+      "Resume": "Tiếp tục ngữ cảnh đang tạm dừng",
+      "Pause": "Tạm dừng ngữ cảnh",
+      "Focus": "Chọn/thay đổi trọng tâm học tập",
+      "Placement": "Làm Placement",
+      "OpenPath": "Mở lộ trình hiện hành"
+    },
+    "notes_before": 0
+  },
+  {
+    "id": "VIEW-RUC-03",
+    "source": "VIEW-RUC-03-lesson-practice.puml",
+    "goals_before": 9,
+    "goals_after": 4,
+    "removed_aliases": [
+      "OpenLesson",
+      "Core",
+      "Feedback",
+      "Retry",
+      "SRSQuestion"
+    ],
+    "retained_aliases": [
+      "Complete",
+      "Redo",
+      "Performance",
+      "Supplementary"
+    ],
+    "goals": {
+      "Complete": "Học bài và Làm bài tập tương tác",
+      "Redo": "Học lại bài đã hoàn thành",
+      "Performance": "Xem performance lượt hoàn tất gần nhất",
+      "Supplementary": "Luyện tập bổ sung theo trọng tâm"
+    },
+    "notes_before": 1
+  },
+  {
+    "id": "VIEW-RUC-04",
+    "source": "VIEW-RUC-04-srs-review.puml",
+    "goals_before": 5,
+    "goals_after": 2,
+    "removed_aliases": [
+      "StartReview",
+      "SelectDue",
+      "Schedule"
+    ],
+    "retained_aliases": [
+      "AnswerQuestion",
+      "AddOptional"
+    ],
+    "goals": {
+      "AnswerQuestion": "Ôn tập từ vựng theo SRS",
+      "AddOptional": "Thêm từ tùy chọn vào Review"
+    },
+    "notes_before": 0
+  },
+  {
+    "id": "VIEW-RUC-05",
+    "source": "VIEW-RUC-05-assessment.puml",
+    "goals_before": 6,
+    "goals_after": 4,
+    "removed_aliases": [
+      "SubmitPlacement",
+      "SubmitLevelUp"
+    ],
+    "retained_aliases": [
+      "Placement",
+      "Recommendation",
+      "LevelUp",
+      "Result"
+    ],
+    "goals": {
+      "Placement": "Làm Placement",
+      "Recommendation": "Xem điểm bắt đầu được đề xuất",
+      "LevelUp": "Thi lên cấp",
+      "Result": "Xem kết quả tổng hợp và tiến trình"
+    },
+    "notes_before": 1
+  },
+  {
+    "id": "VIEW-RUC-06",
+    "source": "VIEW-RUC-06-progress-history.puml",
+    "goals_before": 5,
+    "goals_after": 5,
+    "removed_aliases": [],
+    "retained_aliases": [
+      "Curriculum",
+      "Progress",
+      "CompletionHistory",
+      "PerformanceHistory",
+      "Streak"
+    ],
+    "goals": {
+      "Curriculum": "Xem lộ trình và lesson đủ điều kiện",
+      "Progress": "Xem tỷ lệ lesson đã hoàn thành",
+      "CompletionHistory": "Xem lịch sử hoàn thành",
+      "PerformanceHistory": "Xem performance các lượt hoàn tất",
+      "Streak": "Xem chuỗi ngày học"
+    },
+    "notes_before": 1
+  },
+  {
+    "id": "VIEW-RUC-07",
+    "source": "VIEW-RUC-07-teacher-authoring.puml",
+    "goals_before": 8,
+    "goals_after": 5,
+    "removed_aliases": [
+      "Members",
+      "Preview",
+      "Changes"
+    ],
+    "retained_aliases": [
+      "Worklist",
+      "Draft",
+      "Submit",
+      "Resubmit",
+      "History"
+    ],
+    "goals": {
+      "Worklist": "Xem assignment và yêu cầu nội dung",
+      "Draft": "Tạo / sửa draft được phân công",
+      "Submit": "Submit draft",
+      "Resubmit": "Sửa và resubmit",
+      "History": "Xem phản hồi / lịch sử"
+    },
+    "notes_before": 1
+  },
+  {
+    "id": "VIEW-RUC-08A",
+    "source": "VIEW-RUC-08A-admin-content-governance.puml",
+    "goals_before": 8,
+    "goals_after": 8,
+    "removed_aliases": [],
+    "retained_aliases": [
+      "Requirement",
+      "Blueprint",
+      "Assign",
+      "Review",
+      "Changes",
+      "Approve",
+      "Publish",
+      "Archive"
+    ],
+    "goals": {
+      "Requirement": "Tạo requirement và phạm vi nội dung",
+      "Blueprint": "Lập assessment blueprint",
+      "Assign": "Phân công / phân công lại Giáo viên",
+      "Review": "Review nội dung đã nộp",
+      "Changes": "Yêu cầu chỉnh sửa",
+      "Approve": "Approve nội dung",
+      "Publish": "Publish nội dung đã duyệt",
+      "Archive": "Withdraw / archive nội dung"
+    },
+    "notes_before": 1
+  },
+  {
+    "id": "VIEW-RUC-08B",
+    "source": "VIEW-RUC-08B-admin-account-support.puml",
+    "goals_before": 4,
+    "goals_after": 4,
+    "removed_aliases": [],
+    "retained_aliases": [
+      "Provision",
+      "Disable",
+      "Support",
+      "Audit"
+    ],
+    "goals": {
+      "Provision": "Provision tài khoản Giáo viên",
+      "Disable": "Disable / re-enable tài khoản",
+      "Support": "Hỗ trợ tài khoản Học viên trong phạm vi cho phép",
+      "Audit": "Xem báo cáo và audit"
+    },
+    "notes_before": 1
+  }
+]

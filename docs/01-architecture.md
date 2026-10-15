@@ -1,5 +1,7 @@
 # 01 - Lingora System Architecture
 
+> **Classification:** Phase 0 architecture below is `HISTORICAL`/reference. The accepted M2.4 design in [`phase-1-m2-4-architecture-security.md`](phase-1-m2-4-architecture-security.md) is the architecture `TARGET` (ADR-027), not proof of implementation. ADR-030/031/032/033/034/035 record the accepted curriculum, learner-state, assessment/progression, three-role business, and logical security policies only. ADR-034 controls business roles and responsibilities; ADR-035 controls trusted identity, server-side role/status authorization, account-disable enforcement, assessment/SRS trust boundaries, content lifecycle invariants, and logical audit policy. Physical role mapping/RLS, database reconciliation, and all physical realization remain deferred under P0-D07. For `CURRENT`, inspect repository code and perform read-only live-database reconciliation before asserting deployed state. These ADRs do not authorize implementation or change physical schema.
+
 > **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
 > LINGORA is structured as a **Software Engineering CORE** platform with a lightweight **AI SUPPORTING CAPABILITY** (GEC), adhering to [`docs/plantuml/system-architecture-mvp.puml`](plantuml/system-architecture-mvp.puml):
 > - **Human Actors:** 6 canonical roles — `Learner`, `Lesson Creator`, `Moderator`, `Administrator`, `Operations Staff`, and `Organizational Manager`.

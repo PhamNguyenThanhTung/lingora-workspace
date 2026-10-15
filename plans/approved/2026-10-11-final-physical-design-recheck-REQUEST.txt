@@ -1,0 +1,853 @@
+Thực hiện task:
+
+# FINAL PHYSICAL DESIGN RECHECK
+
+cho Lingora.
+
+Đây là vòng review độc lập cuối cùng sau:
+
+`PHYSICAL DESIGN CORRECTION PASS — CLOSE F01–F12`
+
+Correction pass hiện báo:
+
+- F01–F12 đều `CLOSED`;
+- 34 proposed tables;
+- 4 physical ERD views render thành công;
+- verifier exit 0;
+- 93 documentation links hợp lệ;
+- 189 modeling files không thay đổi;
+- `git diff --check` exit 0;
+- LIVE DB vẫn `UNVERIFIED`;
+- physical design vẫn `PROPOSED / NOT APPROVED`.
+
+Task này phải **xác minh độc lập** các claim đó.
+
+Không implementation.
+Không sửa application source.
+Không sửa Prisma production.
+Không tạo/apply migration.
+Không reset/drop DB.
+Không seed.
+Không deploy.
+Không stage/commit nếu chưa được phép.
+
+---
+
+# 1. Authority
+
+Review theo thứ tự:
+
+1. Product Owner decisions mới nhất
+2. ADR-036
+3. ADR-030 → ADR-035 tương thích
+4. active requirements
+5. active UC specifications
+6. traceability
+7. approved logical modeling:
+   `docs/modeling/current-target/`
+8. Final Physical Review findings F01–F12
+9. corrected proposed physical design:
+   `docs/design/physical/`
+
+Physical design không được thay đổi product semantics.
+
+---
+
+# 2. Artifacts bắt buộc inspect
+
+Đọc trực tiếp:
+
+- `docs/design/physical/README.md`
+- `docs/design/physical/final-review.md`
+- `docs/design/physical/correction-pass.md`
+- `docs/design/physical/independent-recheck.md`
+- `docs/design/physical/security-and-rls.md`
+- `docs/design/physical/rebuild-plan.md`
+- physical ERD sources/renders
+- verifier hiện hành
+- relevant correction evidence
+
+Đối chiếu khi cần với:
+
+- DOM-01
+- DATA-03
+- ACT/SEQ/STA/SEC liên quan
+- ADR-030→036
+- requirements/UC/traceability.
+
+Không tin summary hoặc `CLOSED` label nếu underlying design không support.
+
+---
+
+# 3. Review mode
+
+Đây là **recheck**, không phải redesign.
+
+Không audit lại mọi technical choice từ đầu chỉ để tạo thêm findings.
+
+Tập trung vào:
+
+1. F01–F12 có thực sự closed?
+2. Correction có tạo regression mới không?
+3. Physical design có đủ coherent để Implementation Planning bắt đầu không?
+
+Chỉ tạo finding mới nếu phát hiện:
+- correctness defect thực sự;
+- security gap;
+- data integrity gap;
+- contradiction với approved product semantics.
+
+Không tạo “nice to have” finding để kéo dài review.
+
+---
+
+# 4. Recheck F01–F12
+
+Tạo matrix:
+
+| Finding | Original problem | Correction implemented | Independent evidence | Verdict |
+
+Verdict từng finding chỉ:
+
+- CLOSED
+- STILL OPEN
+- REGRESSED
+
+Phải có đủ F01 → F12.
+
+Không đổi numbering.
+
+---
+
+# 5. Teacher SUBMIT
+
+Xác minh execution path thực sự tồn tại:
+
+Teacher assigned work
+→ edit valid draft
+→ submit
+→ provenance
+→ concurrency/version guard
+→ Admin review.
+
+Kiểm tra:
+- ownership;
+- scope;
+- allowed revision state;
+- transaction;
+- authorization.
+
+Teacher không:
+- submit unassigned work;
+- approve;
+- publish.
+
+Nếu chỉ matrix nói “allowed” nhưng runtime command path không xác định:
+finding chưa closed.
+
+---
+
+# 6. First LearningContext creation
+
+Xác minh authenticated Learner có valid path:
+
+Learner
+→ create first context
+→ choose Language
+→ starting-point path.
+
+Phải enforce:
+
+- one logical context per learner + language;
+- ACTIVE/PAUSED;
+- maximum ACTIVE context rule;
+- race-safe concurrent create/resume.
+
+Đặc biệt recheck correction F10:
+
+Default starting point phải chọn **level thấp nhất có nội dung khả dụng theo approved curriculum/config semantics**.
+
+Default config không được nhảy qua lower available level chỉ vì config chỉ tới level cao hơn.
+
+Không hard-code A1.
+
+---
+
+# 7. Draft membership removal
+
+Xác minh Teacher có thể:
+
+- add;
+- edit;
+- remove
+
+draft members trong assigned editable revision.
+
+Removal không được:
+
+- xóa published history;
+- phá learner evidence;
+- để removed member lọt vào published snapshot.
+
+Check actual relational/transaction semantics.
+
+---
+
+# 8. Media cleanup race
+
+Independently trace race:
+
+1. media đang draft/unreferenced;
+2. cleanup đánh dấu candidate;
+3. publish/reference xảy ra;
+4. cleanup delete.
+
+Correction phải đảm bảo bytes mới được referenced/published không bị delete.
+
+Check:
+- reservation/reference guard;
+- final reference check;
+- transaction/concurrency assumptions.
+
+Phải có acceptance scenario tương ứng.
+
+---
+
+# 9. Curriculum scope/history
+
+Xác minh historical objects không bị current curriculum mutation rewrite semantics.
+
+Audit:
+
+- assignments;
+- assessment blueprint/version;
+- revision coverage;
+- topics;
+- skills;
+- curriculum references.
+
+Historical scope phải reconstruct được.
+
+Không cần generic snapshot engine, nhưng immutable historical meaning phải thực sự tồn tại.
+
+---
+
+# 10. Old open attempt after replacement
+
+Trace:
+
+1. Learner starts old lesson revision.
+2. Replacement revision becomes active.
+3. Learner submits completion from old open attempt.
+
+Physical design phải ngăn stale attempt tạo **first valid completion** trái active curriculum/replacement policy.
+
+Đồng thời:
+
+completed history trước replacement vẫn valid.
+
+Check:
+- pinned revision;
+- retirement/version guard;
+- finalize check;
+- concurrency between publish and completion;
+- transaction/locking strategy.
+
+---
+
+# 11. SRS reinforcement uniqueness
+
+Check invariant:
+
+Per:
+
+`review session + SRS card`
+
+tối đa:
+- một normal scheduling operation;
+- một reinforcement occurrence.
+
+Duplicate request/concurrency không được tạo:
+- second reinforcement;
+- second schedule advancement;
+- second due-date mutation.
+
+Verify actual unique/transaction strategy.
+
+---
+
+# 12. Assessment blueprint/version scope
+
+Blueprint có thể mutable trong authoring.
+
+Published Assessment Version phải retain immutable meaning.
+
+Verify persisted/versioned metadata covers:
+
+- purpose;
+- Language;
+- Framework;
+- Level/transition;
+- curriculum coverage;
+- Topic;
+- skill/knowledge area;
+- distribution/config.
+
+Later blueprint edits không được alter old attempts/results.
+
+---
+
+# 13. Topic / Skill / Purpose validity
+
+Recheck F12 specifically.
+
+Valid tag:
+→ accepted only if controlled/allowed by blueprint/curriculum scope.
+
+Must reject:
+- fabricated tag;
+- out-of-scope tag;
+- inactive tag;
+- retired tag;
+- tag not covered by blueprint.
+
+Do not introduce generic taxonomy/mastery subsystem.
+
+Placement and Level-up only.
+
+No active Reassessment.
+
+---
+
+# 14. Assignment historical meaning
+
+Verify assignment retains:
+
+- original requirement;
+- original scope;
+- creator Admin;
+- current/responsible Teacher;
+- reassignment history;
+- authorship attribution;
+- generated revisions/work.
+
+Changing current curriculum or blueprint must not silently rewrite old assignment meaning.
+
+---
+
+# 15. Missing application account row
+
+Trace:
+
+Auth subject valid
++
+no application account record
+→ protected request.
+
+Expected:
+
+- DENY;
+- no automatic trusted account fabrication;
+- audit denial remains possible.
+
+Check audit schema supports:
+- trusted auth subject identity;
+- optional application account reference;
+- outcome/reason.
+
+No credential/token storage.
+
+---
+
+# 16. Capability map
+
+Independently verify executable capabilities exist for:
+
+- create LearningContext;
+- lesson answer submission;
+- lesson completion;
+- SRS review;
+- assessment finalization;
+- Teacher edit;
+- Teacher remove draft item;
+- Teacher submit;
+- Admin request changes;
+- Admin approve;
+- Admin publish;
+- disable/re-enable;
+- media cleanup.
+
+For each:
+
+Actor
+→ trusted server command
+→ authorization
+→ DB operation/transaction.
+
+CRUD table permissions alone are not sufficient.
+
+---
+
+# 17. Runtime principal and RLS
+
+Distinguish clearly:
+
+## Browser/client
+untrusted.
+
+## Trusted application server
+authoritative operations.
+
+## Prisma DB connection
+actual/proposed DB role.
+
+## Supabase service role
+if used.
+
+Verify documentation does not claim RLS enforcement where connection would bypass RLS.
+
+If trusted server bypasses RLS:
+application authorization remains mandatory.
+
+RLS is defense-in-depth where applicable.
+
+Anything not verified in real runtime must remain labeled:
+
+`PROPOSED`
+
+not `CURRENT`.
+
+---
+
+# 18. Publication/replacement guard
+
+Trace concurrent:
+
+A. publish replacement
+B. finalize stale lesson attempt
+
+Expected:
+only one result consistent with revision policy.
+
+Check whether correction uses sufficient:
+- version check;
+- transaction;
+- row locking where necessary;
+- unique constraint.
+
+No distributed locking.
+
+---
+
+# 19. Fingerprint semantics
+
+If item/content fingerprint remains:
+
+Verify its purpose is narrow and documented.
+
+Check:
+- normalization;
+- uniqueness scope;
+- use for exact duplicate/reuse detection;
+- no use as authorization/security identity;
+- no unsafe global uniqueness if semantically distinct items can fingerprint similarly.
+
+Index must correspond to actual lookup.
+
+---
+
+# 20. Audit pagination
+
+Verify stable ordering:
+
+`created_at`
++
+stable tie-breaker such as `id`.
+
+Index should support expected audit query if appropriate.
+
+Do not require benchmark evidence before implementation.
+
+---
+
+# 21. Table-count recheck
+
+Physical design currently:
+
+**34 tables**
+
+Do one sanity pass.
+
+Return exactly:
+
+- 34 APPROPRIATE
+- REDUCE
+- INCREASE
+
+Do not optimize for table count.
+
+No changes unless a real correctness issue demands them.
+
+---
+
+# 22. Unit table
+
+Confirm Unit still has clear physical justification:
+- stable grouping;
+- ordering;
+- curriculum management/navigation.
+
+Do not reopen if correction did not invalidate the rationale.
+
+---
+
+# 23. Logical → physical integrity
+
+Check approved logical concepts still map correctly.
+
+Particularly:
+
+- LearningPlan = derived;
+- Progress = derived;
+- latest/best performance = derived;
+- no SkillProfile;
+- no mastery engine;
+- no KnowledgeGap;
+- no generic workflow engine;
+- no generic QuestionBank platform.
+
+Physical schema must not introduce product capability absent from logical model.
+
+---
+
+# 24. Lesson N/K preservation
+
+Sanity check after correction:
+
+- N core items;
+- K first-attempt errors;
+- denominator N+K;
+- contribution 1 / 0.5 / 0;
+- retry once;
+- completion independent score;
+- redo = new attempt;
+- completion count not duplicated.
+
+No fixed exercise count.
+
+---
+
+# 25. SRS preservation
+
+Verify corrections did not disturb:
+
+- learner + Vocabulary uniqueness;
+- account-wide card;
+- auto-enroll core vocabulary;
+- optional opt-in;
+- `1→3→7→14→30`;
+- 30-day recurrence after final stage;
+- forgotten → stage 1;
+- reinforcement no double schedule.
+
+---
+
+# 26. Progress semantics
+
+Verify:
+
+`unavailable / unpublished / coming soon`
+→ excluded from denominator.
+
+`published active but progression-locked`
+→ not excluded merely because currently locked.
+
+No 100% platform readiness invariant.
+
+---
+
+# 27. Assessment secrecy
+
+Confirm no correction opened data leak.
+
+Learner cannot obtain:
+- answer key;
+- accepted answers;
+- grading metadata;
+- prohibited per-item correctness/explanation.
+
+Attempt remains pinned to immutable version.
+
+---
+
+# 28. Delete/history safety
+
+Recheck:
+
+- no hard delete learner evidence;
+- no dangerous cascade through attempts/results/reviews/completion;
+- account disable rather than delete;
+- archive/withdraw content;
+- historical revision references remain valid.
+
+---
+
+# 29. Clean rebuild
+
+Independently confirm current recommendation.
+
+Choose exactly:
+
+- CLEAN REBUILD RECOMMENDED
+- FORWARD MIGRATION RECOMMENDED
+- NEEDS LIVE DB EVIDENCE
+
+Important distinction:
+
+LIVE DB UNVERIFIED does not necessarily block physical design approval.
+
+But destructive execution MUST remain blocked until:
+- read-only live inventory;
+- backup;
+- restore verification;
+- preservation/disposition approval.
+
+---
+
+# 30. Acceptance scenarios
+
+Review corrected acceptance suite.
+
+Do not count scenarios mechanically.
+
+Ensure critical cases exist for:
+
+- valid and invalid authorization;
+- network retries;
+- concurrency;
+- stale revisions;
+- historical scope;
+- secrecy;
+- cleanup race;
+- missing account;
+- tag validation;
+- first context creation.
+
+These scenarios are DESIGN acceptance specifications.
+
+They are not claimed as executed implementation tests.
+
+---
+
+# 31. Verifier
+
+Run current physical verifier independently.
+
+Review previously stale checks and confirm they now test current authority rather than old baselines.
+
+Do not alter verifier unless a genuine verifier defect is discovered.
+
+Verifier PASS alone does not approve design.
+
+---
+
+# 32. Physical ERD
+
+Render/check all four views.
+
+Manual inspect:
+
+- PK/FK;
+- unique constraints;
+- relation cardinality;
+- labels;
+- cross-view consistency;
+- no orphan table;
+- no unexplained relationship.
+
+All views must remain labelled:
+
+`PROPOSED / NOT IMPLEMENTED`
+
+or equivalent.
+
+---
+
+# 33. Regression scan
+
+Search corrected physical design for:
+
+- six-role legacy model;
+- Content Creator;
+- Moderator;
+- Super Admin;
+- active Reassessment;
+- AI runtime;
+- mastery engine;
+- Jump;
+- hard-coded A1;
+- hard-coded Unit 1;
+- hard-coded 100% readiness;
+- fixed assessment item count;
+- direct client authority over score/completion/SRS schedule.
+
+Any active occurrence must be investigated, not blindly deleted.
+
+---
+
+# 34. Allowed corrections
+
+This is primarily a review.
+
+If reviewer finds a very small documentation inconsistency where authority is obvious:
+may correct it.
+
+Do not perform another broad correction pass.
+
+If a substantive physical defect exists:
+return:
+
+`NEEDS PHYSICAL CORRECTION`
+
+and stop.
+
+Do not silently redesign it inside Final Recheck.
+
+---
+
+# 35. Verification
+
+Run:
+
+- physical verifier;
+- doc link check;
+- physical ERD render;
+- 34-table inventory check;
+- authority/security scans;
+- no stale F01–F12 references claiming OPEN;
+- `git diff --check`;
+- manual final diff review.
+
+Do not touch approved logical modeling.
+
+---
+
+# 36. Final output
+
+Return:
+
+## A. Final verdict
+
+Exactly one:
+
+- `PHYSICAL DESIGN APPROVED`
+- `PHYSICAL DESIGN APPROVED WITH NON-BLOCKING NOTES`
+- `NEEDS PHYSICAL CORRECTION`
+- `NEEDS PO DECISION`
+- `BLOCKED`
+
+## B. F01–F12 closure matrix
+
+All twelve with independent verdict.
+
+## C. Regression findings
+
+## D. Table-count verdict
+
+## E. Auth / RLS / capability verdict
+
+## F. Data integrity verdict
+
+## G. Historical/provenance verdict
+
+## H. Lesson / progress verdict
+
+## I. SRS verdict
+
+## J. Assessment verdict
+
+## K. Content / assignment / publication verdict
+
+## L. Media / audit verdict
+
+## M. Transaction / concurrency / idempotency verdict
+
+## N. Physical ERD verdict
+
+## O. Clean rebuild verdict
+
+Exactly one:
+
+- `CLEAN REBUILD RECOMMENDED`
+- `FORWARD MIGRATION RECOMMENDED`
+- `NEEDS LIVE DB EVIDENCE`
+
+## P. Live DB status
+
+Must explicitly state:
+
+`LIVE DB VERIFIED`
+or
+`LIVE DB UNVERIFIED`.
+
+Also say whether this blocks:
+- design approval;
+- destructive execution.
+
+## Q. Remaining non-blocking notes
+
+## R. Implementation readiness
+
+Exactly one:
+
+- `READY FOR IMPLEMENTATION PLANNING`
+- `NOT READY FOR IMPLEMENTATION PLANNING`
+
+---
+
+# 37. Approval rule
+
+Only return:
+
+`PHYSICAL DESIGN APPROVED`
+
+if:
+
+- F01–F12 all independently CLOSED;
+- no new P1/P2 correctness/security gap;
+- no product authority contradiction;
+- physical design remains coherent;
+- verifier/checks pass.
+
+`LIVE DB UNVERIFIED` alone does NOT force rejection of physical design.
+
+It DOES block destructive DB rebuild execution.
+
+---
+
+# 38. Stop condition
+
+If final result is:
+
+# PHYSICAL DESIGN APPROVED
+# READY FOR IMPLEMENTATION PLANNING
+
+then STOP.
+
+Do not:
+- edit Prisma;
+- create migrations;
+- inspect/write live DB destructively;
+- reset DB;
+- implementation;
+- API/UI code;
+- seed;
+- deploy.
+
+Next separate task:
+
+# IMPLEMENTATION MASTER PLAN + SAFE DATABASE REBUILD EXECUTION PLAN
+
+That task will convert the approved design into dependency-ordered implementation milestones and safe rebuild steps.
+
+Do not begin it automatically.

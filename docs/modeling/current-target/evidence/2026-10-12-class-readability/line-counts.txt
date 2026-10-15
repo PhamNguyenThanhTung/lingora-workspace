@@ -1,0 +1,17 @@
+plans/approved/2026-10-12-class-readability-APPROVED.md: 9
+plans/archive/2026-10-12-class-readability-DONE.md: 7
+docs/modeling/current-target/evidence/2026-10-12-class-readability/after.svg: 3
+docs/modeling/current-target/evidence/2026-10-12-class-readability/audit.stderr.txt: 0
+docs/modeling/current-target/evidence/2026-10-12-class-readability/audit.stdout.txt: 22
+docs/modeling/current-target/evidence/2026-10-12-class-readability/baseline.json: 1698
+docs/modeling/current-target/evidence/2026-10-12-class-readability/diff-check.txt: 13
+docs/modeling/current-target/evidence/2026-10-12-class-readability/diff-stat.txt: 231
+docs/modeling/current-target/evidence/2026-10-12-class-readability/export-png.stderr.txt: 0
+docs/modeling/current-target/evidence/2026-10-12-class-readability/export-png.stdout.txt: 2
+docs/modeling/current-target/evidence/2026-10-12-class-readability/export-svg.stderr.txt: 0
+docs/modeling/current-target/evidence/2026-10-12-class-readability/export-svg.stdout.txt: 2
+docs/modeling/current-target/evidence/2026-10-12-class-readability/export.stderr.txt: 0
+docs/modeling/current-target/evidence/2026-10-12-class-readability/export.stdout.txt: 2
+docs/modeling/current-target/evidence/2026-10-12-class-readability/layout.json: 992
+docs/modeling/current-target/evidence/2026-10-12-class-readability/verification.json: 22
+docs/modeling/current-target/evidence/2026-10-12-class-readability/verification.md: 22

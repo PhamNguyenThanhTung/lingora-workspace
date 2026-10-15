@@ -1,0 +1,171 @@
+PASS 34 unique catalog tables
+PASS catalog/detail/ERD unique table sets agree
+ERD_REPEATED_TABLE_DEFINITIONS {'content_assignments': 2, 'assignment_history': 2, 'revision_reviews': 2}
+PASS four ERD panels
+PASS ERD edge endpoints: physical-erd-identity
+PASS proposed/not-implemented caption: physical-erd-identity
+PASS ERD edge endpoints: physical-erd-content
+PASS proposed/not-implemented caption: physical-erd-content
+PASS ERD edge endpoints: physical-erd-learning
+PASS proposed/not-implemented caption: physical-erd-learning
+PASS ERD edge endpoints: physical-erd-assessment
+PASS proposed/not-implemented caption: physical-erd-assessment
+PASS fresh render equals primary: physical-erd-identity.png
+PASS fresh render equals primary: physical-erd-identity.svg
+PASS fresh render equals primary: physical-erd-content.png
+PASS fresh render equals primary: physical-erd-content.svg
+PASS fresh render equals primary: physical-erd-learning.png
+PASS fresh render equals primary: physical-erd-learning.svg
+PASS fresh render equals primary: physical-erd-assessment.png
+PASS fresh render equals primary: physical-erd-assessment.svg
+PASS render source copy exact
+PASS link README.md -> final-recheck.md
+PASS link README.md -> ../../modeling/current-target/final-review.md
+PASS link README.md -> ../../modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS link README.md -> ../../modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS link README.md -> ../../02-requirements.md
+PASS link README.md -> ../../use-case-specifications.md
+PASS link README.md -> ../../../logs/decision-log.md
+PASS link README.md -> security-and-rls.md
+PASS link README.md -> rebuild-plan.md
+PASS link README.md -> review-and-verification.md
+PASS link README.md -> correction-pass.md
+PASS link README.md -> physical-erd.puml
+PASS link README.md -> physical-erd-identity.svg
+PASS link README.md -> physical-erd-content.svg
+PASS link README.md -> physical-erd-learning.svg
+PASS link README.md -> physical-erd-assessment.svg
+PASS link README.md -> security-and-rls.md
+PASS link README.md -> rebuild-plan.md
+PASS link README.md -> correction-pass.md
+PASS link README.md -> verify.py
+PASS link README.md -> correction-pass-evidence/verification.md
+PASS link README.md -> review-and-verification.md
+PASS link security-and-rls.md -> ../../../logs/decision-log.md
+PASS link security-and-rls.md -> ../../02-requirements.md
+PASS link security-and-rls.md -> ../../use-case-specifications.md
+PASS link security-and-rls.md -> README.md
+PASS link security-and-rls.md -> rebuild-plan.md
+PASS link rebuild-plan.md -> ../../modeling/current-target/final-review.md
+PASS link rebuild-plan.md -> README.md
+PASS link rebuild-plan.md -> security-and-rls.md
+PASS link rebuild-plan.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt
+PASS link rebuild-plan.md -> ../../../lingora-admin/package.json
+PASS link rebuild-plan.md -> ../../../lingora-web/package.json
+PASS link rebuild-plan.md -> ../../../lingora-admin/prisma/schema.prisma
+PASS link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140001_init/migration.sql
+PASS link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140002_auth_rls_storage_record_review/migration.sql
+PASS link rebuild-plan.md -> ../../../lingora-admin/prisma/migrations/202608140003_storage_two_bucket_size_enforcement/migration.sql
+PASS link rebuild-plan.md -> ../../../lingora-web/src/features/auth/auth.service.ts
+PASS link rebuild-plan.md -> ../../../lingora-web/src/lib/supabase/server.ts
+PASS link rebuild-plan.md -> ../../../lingora-web/src/lib/supabase/middleware.ts
+PASS link rebuild-plan.md -> ../../../lingora-web/src/middleware.ts
+PASS link rebuild-plan.md -> ../../../lingora-web/src/app/page.tsx
+PASS link rebuild-plan.md -> ../../../lingora-admin/.env.example
+PASS link rebuild-plan.md -> ../../../lingora-web/.env.example
+PASS link rebuild-plan.md -> ../../../ENVIRONMENT.md
+PASS link rebuild-plan.md -> ../../../lingora-admin/prisma/seed.js
+PASS link rebuild-plan.md -> ../../../lingora-admin/prisma/m1_3_security_test.js
+PASS link rebuild-plan.md -> ../../../lingora-admin/prisma/m1_4_seed_test.js
+PASS link review-and-verification.md -> correction-pass.md
+PASS link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md
+PASS link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt
+PASS link review-and-verification.md -> ../../../plans/approved/2026-10-11-physical-data-runtime-design-BASELINE.json
+PASS link review-and-verification.md -> README.md
+PASS link review-and-verification.md -> security-and-rls.md
+PASS link review-and-verification.md -> rebuild-plan.md
+PASS link review-and-verification.md -> verification-manifest.json
+PASS link review-and-verification.md -> verification-output.txt
+PASS link review-and-verification.md -> git-checks.txt
+PASS link review-and-verification.md -> unrelated-workspace-observations.json
+PASS link correction-pass.md -> final-review.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> physical-erd.puml
+PASS link correction-pass.md -> rebuild-plan.md
+PASS link correction-pass.md -> ../../../plans/approved/2026-10-11-physical-design-correction-pass-REQUEST.txt
+PASS link correction-pass.md -> ../../../plans/approved/2026-10-11-physical-design-correction-pass-APPROVED.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> README.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> security-and-rls.md
+PASS link correction-pass.md -> rebuild-plan.md
+PASS link correction-pass.md -> final-review-evidence/historical-verify.py
+PASS link correction-pass.md -> independent-recheck.md
+PASS link final-review.md -> ../../../plans/approved/2026-10-11-final-physical-runtime-review-REQUEST.txt
+PASS link final-review.md -> ../../../plans/approved/2026-10-11-final-physical-runtime-review-APPROVED.md
+PASS link final-review.md -> ../../../plans/approved/2026-10-11-final-physical-runtime-review-BASELINE.json
+PASS link final-review.md -> ../../../logs/decision-log.md
+PASS link final-review.md -> ../../02-requirements.md
+PASS link final-review.md -> ../../use-case-specifications.md
+PASS link final-review.md -> ../../05-traceability-matrix.md
+PASS link final-review.md -> ../../modeling/current-target/src/DOM-01-core-domain-model.puml
+PASS link final-review.md -> ../../modeling/current-target/src/DATA-03-target-logical-erd.puml
+PASS link final-review.md -> security-and-rls.md
+PASS link final-review.md -> rebuild-plan.md
+PASS link final-review.md -> review-and-verification.md
+PASS link final-review.md -> final-review-evidence/verification.md
+PASS link final-recheck.md -> ../../../plans/approved/2026-10-11-final-physical-design-recheck-REQUEST.txt
+PASS link final-recheck.md -> ../../../plans/approved/2026-10-11-final-physical-design-recheck-APPROVED.md
+PASS link final-recheck.md -> ../../../plans/approved/2026-10-11-final-physical-design-recheck-BASELINE.json
+PASS link final-recheck.md -> ../../../logs/decision-log.md
+PASS link final-recheck.md -> ../../02-requirements.md
+PASS link final-recheck.md -> ../../use-case-specifications.md
+PASS link final-recheck.md -> ../../05-traceability-matrix.md
+PASS link final-recheck.md -> final-recheck-evidence/principal-review.md
+PASS link final-recheck.md -> final-recheck-evidence/render-manifest.json
+PASS link final-recheck.md -> final-recheck-evidence/verification.md
+LOCAL_LINK_COUNT 114
+PASS HEAD unchanged
+PASS original index unchanged
+PASS pre-existing out-of-scope files preserved: []
+PASS all 189 approved modeling files unchanged
+PASS append-only original log prefix: logs/test-log.md
+PASS append-only original log prefix: logs/development-log.md
+PASS append-only original log prefix: logs/decision-log.md
+FAIL new paths confined to final recheck: ['docs/presentation/usecase-activity-presentation.md']
+NEW_TEXT_FILE_LINE_COUNTS
+docs/design/physical/final-recheck-evidence/artifact-check-output.txt 1
+docs/design/physical/final-recheck-evidence/check_artifacts.py 85
+docs/design/physical/final-recheck-evidence/diff-check-output.txt 13
+docs/design/physical/final-recheck-evidence/diff-stat-output.txt 231
+docs/design/physical/final-recheck-evidence/entry-HANDOFF.md 16
+docs/design/physical/final-recheck-evidence/entry-docs__QUICK-REF.md 120
+docs/design/physical/final-recheck-evidence/entry-docs__README.md 118
+docs/design/physical/final-recheck-evidence/entry-docs__design__physical__README.md 292
+docs/design/physical/final-recheck-evidence/entry-plans__approved__README.md 28
+docs/design/physical/final-recheck-evidence/entry-plans__archive__README.md 38
+docs/design/physical/final-recheck-evidence/entry-verifier-output.txt 195
+docs/design/physical/final-recheck-evidence/physical-erd.puml 410
+docs/design/physical/final-recheck-evidence/post-review-verifier-output.txt 210
+docs/design/physical/final-recheck-evidence/principal-review.md 19
+docs/design/physical/final-recheck-evidence/render-manifest.json 49
+docs/design/physical/final-recheck-evidence/source-scan.txt 18
+docs/design/physical/final-recheck-evidence/task-diff.txt 1
+docs/design/physical/final-recheck-evidence/verification.md 19
+docs/design/physical/final-recheck.md 126
+docs/presentation/usecase-activity-presentation.md 249
+plans/approved/2026-10-11-final-physical-design-recheck-APPROVED.md 13
+plans/approved/2026-10-11-final-physical-design-recheck-BASELINE.json 744
+plans/approved/2026-10-11-final-physical-design-recheck-REQUEST.txt 853
+ENVIRONMENT Windows-11-10.0.26200-SP0 3.13.2 89d58f3da8b9ffcb9a7d9bcdfc6eb76b93eab737
+FINAL RECHECK ARTIFACT CHECKS FAIL
+EXIT_CODE 1

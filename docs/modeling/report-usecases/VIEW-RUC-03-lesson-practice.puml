@@ -1,0 +1,27 @@
+@startuml
+!include ../current-target/style.puml
+' ADR-042: context supporting subflow; no new canonical UC. No due-list browsing.
+' diagram-id: VIEW-RUC-03
+' classification: REPORT
+' canonical coverage: UC-06, UC-08; optional in-session SRS questions map to UC-07.
+' Presentation cleanup only; goal-level view, no detailed rules or internal-processing nodes.
+left to right direction
+skinparam linetype polyline
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam usecaseBackgroundColor white
+title Use Case chức năng – Học bài và luyện tập
+actor "Học viên" as Learner
+rectangle "HỆ THỐNG LINGORA" {
+  usecase "Học bài và Làm bài tập tương tác" as Complete
+  usecase "Học lại bài đã hoàn thành" as Redo
+  usecase "Xem performance lượt hoàn tất\ngần nhất" as Performance
+  usecase "Luyện tập bổ sung theo trọng tâm" as Supplementary
+}
+Learner -- Complete
+Learner -- Redo
+Learner -- Performance
+Learner -- Supplementary
+@enduml

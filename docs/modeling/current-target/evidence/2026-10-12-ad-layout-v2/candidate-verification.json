@@ -1,0 +1,51 @@
+{
+  "verdict": "PASS",
+  "errors": [],
+  "candidate_pages": 44,
+  "changed_AD_pages": 8,
+  "entry_other_pages_exact": 36,
+  "counts": {
+    "page-ACT-01": {
+      "nodes": 39,
+      "edges": 48,
+      "branch_labels": 14
+    },
+    "page-ACT-02": {
+      "nodes": 27,
+      "edges": 26,
+      "branch_labels": 6
+    },
+    "page-ACT-03": {
+      "nodes": 57,
+      "edges": 65,
+      "branch_labels": 20
+    },
+    "page-ACT-04": {
+      "nodes": 40,
+      "edges": 42,
+      "branch_labels": 14
+    },
+    "page-ACT-06": {
+      "nodes": 37,
+      "edges": 47,
+      "branch_labels": 13
+    },
+    "page-ACT-07": {
+      "nodes": 16,
+      "edges": 17,
+      "branch_labels": 4
+    },
+    "page-ACT-08": {
+      "nodes": 42,
+      "edges": 47,
+      "branch_labels": 12
+    },
+    "page-ACT-09": {
+      "nodes": 31,
+      "edges": 37,
+      "branch_labels": 6
+    }
+  },
+  "labels_IDs_payloads_edge_endpoints": "unchanged",
+  "HEAD/index": "unchanged"
+}

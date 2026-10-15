@@ -1,0 +1,11 @@
+@startuml
+!include ../style.puml
+' diagram-id: ACT-05
+' classification: DEFERRED — NOT MVP
+' authority: ADR-036; historical reference only, excluded from active MVP journey
+title Kiểm tra đánh giá lại – DEFERRED — NOT IN MVP
+|Hệ thống|
+start
+:Ngoài phạm vi MVP;
+stop
+@enduml

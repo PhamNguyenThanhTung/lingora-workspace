@@ -1,5 +1,7 @@
 # Lingora Local Environment
 
+> **State notice (2026-10-07):** The tool versions and M1.x run instructions below are dated `HISTORICAL` observations, not a fresh environment check or a claim about the current working tree. Repository files and ordered migrations are `CURRENT` evidence of checked-in artifacts only. No live Supabase catalog, deployment, or service availability was inspected for this reconciliation. Remote applied database/runtime state is `UNVERIFIED`.
+
 This file records the M1.1/M1.2 environment boundary and the approved M1.6W Web foundation runtime.
 
 ## Required toolchain from the canonical architecture
@@ -46,13 +48,11 @@ M1.1 creates boundaries and non-secret configuration templates only. Later gated
 - `DIRECT_URL` remains an environment-name placeholder only until a separately approved connectivity decision changes this strategy.
 - Never commit the password or a complete connection URI; keep credentials in ignored local/host configuration.
 
-The database is online and canonical, but M1.2 remains in `REVIEW`: no schema, migration, table, RLS, SQL or seed has been created or run.
+This connection strategy is a historical M1.2 record. Later Prisma, migration, seed, and execution artifacts exist in the repository and logs. Whether any particular migration is applied to a live database is `UNVERIFIED` without current catalog evidence.
 
 ## Current startup state
 
-For the Web learner foundation, copy `lingora-web/.env.example` to an ignored `.env.local`, provide the two
-public Supabase values and fixed server-only `AI_API_BASE_URL`, then run `npm run dev` in `lingora-web/`.
-The M1.5 FastAPI runtime must run separately with `MOCK_MODE=true` for protected SRS/Roleplay checks.
+The following are historical M1.6W instructions, not a verified current startup procedure. The current working tree has removed the learner AI route handlers and their contract module while `lingora-web/src/lib/api/proxy.ts` still imports that module. No Admin web application source is present. Establish and verify a current startup path under a separately authorized task before relying on these instructions.
 
 ## Git repositories & remote strategy
 

@@ -1,0 +1,72 @@
+@startuml
+!include ../style.puml
+' diagram-id: ACT-08
+' classification: TARGET
+' authority: ADR-034/035/036; UC-09/10/11/12/14
+title Sơ đồ hoạt động – Soạn thảo, duyệt và xuất bản nội dung
+|Quản trị viên|
+start
+:Xác định yêu cầu nội dung;
+if (Có gói đánh giá?) then (Có)
+  :Xác định đặc tả và độ bao phủ bài đánh giá;
+else (Không)
+endif
+:Giao gói nội dung cho một giáo viên;
+|Hệ thống|
+:Ghi người phụ trách và lịch sử giao việc;
+repeat
+  |Giáo viên|
+  :Mở bản nháp được giao;
+  :Soạn bài học, bài tập và câu hỏi đánh giá;
+  :Xem thử nội dung và phương tiện;
+  |Hệ thống|
+  :Kiểm tra quyền và phiên bản hiện hành;
+  :Kiểm tra độ bao phủ, cấu hình,\nchấm điểm, phương tiện và độ đầy đủ;
+  :Kiểm tra không dùng câu đã lộ đáp án;
+  while (Chưa đủ điều kiện gửi duyệt?) is (Có)
+    :Hiển thị lỗi cần sửa;
+    |Giáo viên|
+    :Sửa bản nháp được giao;
+    |Hệ thống|
+    :Kiểm tra lại;
+  endwhile (Không)
+  |Giáo viên|
+  :Gửi bản soạn thảo;
+  |Hệ thống|
+  :Chuyển sang chờ duyệt, giữ lịch sử;
+  |Quản trị viên|
+  :Xem nội dung và lịch sử phản hồi;
+  if (Yêu cầu chỉnh sửa?) then (Có)
+    :Ghi phản hồi;
+    |Hệ thống|
+    :Chuyển sang cần chỉnh sửa;
+  else (Không)
+  endif
+repeat while (Cần chỉnh sửa?) is (Có)
+->Không;
+|Quản trị viên|
+:Phê duyệt;
+:Yêu cầu xuất bản;
+|Hệ thống|
+:Kiểm tra quyền, bản được duyệt và độ đầy đủ;
+if (Xuất bản thành công?) then (Có)
+  :Xuất bản phiên bản bất biến;
+  :Chuyển bản bài học đang dùng một cách nguyên tử;
+  if (Có gói đánh giá?) then (Có)
+    :Xuất bản phiên bản đánh giá bất biến;
+    :Lượt đang làm giữ phiên bản đã gắn;
+  else (Không)
+  endif
+  :Giữ tác giả, lịch sử và bằng chứng học;
+else (Không)
+  :Giữ bản đang xuất bản;
+  :Báo lỗi xuất bản;
+endif
+:Ghi nhật ký hành động và kết quả;
+stop
+' Blueprint covers language/framework/level or transition/purpose, curriculum/topic/skill/knowledge coverage,
+' item requirements/distribution and necessary configuration. Admin does not author actual items.
+' Assigned Teacher edits Draft/Changes Requested only, with minimal optimistic version check.
+' Different assessment items/variants may test the same concept; no generic QuestionBank/workflow.
+' Lesson/revision is publication unit; no requirement for atomic entire Unit or physical transaction design.
+@enduml

@@ -1,0 +1,49 @@
+@startuml
+!include ../style.puml
+' diagram-id: SEQ-01
+' classification: TARGET
+' authority: ADR-034, ADR-035; UC-01
+' Trusted identity is auth.uid(); role/status are server controlled.
+' One business role per account. Staff learning uses a separate Learner account.
+title Sơ đồ trình tự – Đăng nhập và kiểm tra quyền truy cập
+autonumber
+actor "Người dùng" as User
+boundary "Ứng dụng web" as Web
+control "Backend" as Server
+participant "Xác thực" as Auth
+database "Cơ sở dữ liệu" as DB
+
+User -> Web : Gửi thông tin đăng nhập
+Web -> Server : Yêu cầu đăng nhập
+Server -> Auth : Xác thực tài khoản
+Auth --> Server : Kết quả xác thực
+alt Thông tin đăng nhập không hợp lệ
+  Server --> Web : Từ chối đăng nhập
+  Web --> User : Hiển thị lỗi đăng nhập
+else Xác thực thành công
+  Server -> DB : Lấy vai trò và trạng thái tài khoản
+  DB --> Server : Vai trò và trạng thái được quản lý
+  alt Tài khoản đang hoạt động
+    Server --> Web : Cho phép truy cập theo vai trò
+    Web --> User : Hiển thị trang phù hợp
+  else Tài khoản bị vô hiệu hóa
+    Server --> Web : Từ chối truy cập
+    Web --> User : Thông báo tài khoản bị vô hiệu hóa
+  end
+end
+
+opt Yêu cầu tiếp theo có phiên đăng nhập
+  User -> Web : Thực hiện chức năng được bảo vệ
+  Web -> Server : Gửi yêu cầu và phiên đăng nhập
+  Server -> Auth : Kiểm tra danh tính từ phiên
+  Auth --> Server : Kết quả kiểm tra phiên
+  Server -> DB : Kiểm tra lại trạng thái, vai trò và quyền
+  DB --> Server : Thông tin cấp quyền hiện tại
+  alt Phiên hợp lệ, tài khoản hoạt động và đủ quyền
+    Server --> Web : Cho phép thực hiện chức năng
+  else Phiên không hợp lệ, bị vô hiệu hóa hoặc thiếu quyền
+    Server --> Web : Từ chối yêu cầu
+  end
+  Web --> User : Hiển thị kết quả
+end
+@enduml

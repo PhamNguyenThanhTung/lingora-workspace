@@ -1,0 +1,26 @@
+@startuml
+!include ../current-target/style.puml
+' diagram-id: VIEW-RUC-05
+' classification: REPORT
+' canonical coverage: UC-02 Placement and UC-05 Level-up; Reassessment is not active.
+' Presentation cleanup only; goal-level view, no detailed rules or internal-processing nodes.
+left to right direction
+skinparam linetype polyline
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam usecaseBackgroundColor white
+title Use Case chức năng – Placement và Level-up Assessment
+actor "Học viên" as Learner
+rectangle "HỆ THỐNG LINGORA" {
+  usecase "Làm Placement" as Placement
+  usecase "Xem điểm bắt đầu được đề xuất" as Recommendation
+  usecase "Thi lên cấp" as LevelUp
+  usecase "Xem kết quả tổng hợp và tiến trình" as Result
+}
+Learner -- Placement
+Learner -- Recommendation
+Learner -- LevelUp
+Learner -- Result
+@enduml

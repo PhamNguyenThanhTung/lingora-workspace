@@ -1,0 +1,46 @@
+{
+  "source_sha256": "9938aa943c615cfa78019d4acfb1469edeec2e7673f24eb6a2ec004b6c7a44f3",
+  "outputs": {
+    "physical-erd-identity.svg": {
+      "sha256": "43cb0887ffe3e4cdbd459153a7cbc6dc55306707015176bf896ef7ed84b78b96"
+    },
+    "physical-erd-identity.png": {
+      "sha256": "a08734ef9cb4c07bd25976b61d8230f959c7675d03d26418b0949b143398c0d6",
+      "dimensions": [
+        1369,
+        627
+      ]
+    },
+    "physical-erd-content.svg": {
+      "sha256": "ac0ca3835b34080f2a6669b28622acba3335de0548df608b139b28c5f7d61e79"
+    },
+    "physical-erd-content.png": {
+      "sha256": "a955786f8dbeebe50ed3cea80a151dd6995b50e54f45835ce4379a71de1dd255",
+      "dimensions": [
+        1043,
+        910
+      ]
+    },
+    "physical-erd-learning.svg": {
+      "sha256": "023e3f46823ed47efc84496c984372b2d7622c28b6196d0d4ff355db8e1b49d6"
+    },
+    "physical-erd-learning.png": {
+      "sha256": "b9a1ef65d2ad6d73a9a93fdbbeb8f022d595d17ee843bba95958d38a15e907e2",
+      "dimensions": [
+        894,
+        1338
+      ]
+    },
+    "physical-erd-assessment.svg": {
+      "sha256": "11079e09bbd86a1f71fafd78dd62567ec4b67d08a70e7cc780d0e97da63c30a5"
+    },
+    "physical-erd-assessment.png": {
+      "sha256": "aec3cae7eb7a796c9bc6e389f04a357671e4447113f7c927456bdfc8ea5c4b4d",
+      "dimensions": [
+        1403,
+        513
+      ]
+    }
+  },
+  "unchanged_view_retention": "Learning/assessment PNGs byte-identical. SVGs drawing XML identical after excluding source-line/codeLine metadata; restore prior byte-identical SVGs to avoid unrelated source-offset churn."
+}

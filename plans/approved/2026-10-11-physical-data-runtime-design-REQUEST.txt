@@ -1,0 +1,1743 @@
+Thực hiện task:
+
+# PHYSICAL DATA & RUNTIME DESIGN + DATABASE REBUILD PLAN
+
+cho dự án Lingora.
+
+Modeling/product phase đã chính thức đóng với:
+
+- `MODELING APPROVED`
+- `READY FOR PHYSICAL DESIGN`
+
+Không mở lại product semantics trừ khi phát hiện contradiction thực sự không thể giải quyết từ authority hiện hành.
+
+Mục tiêu task này:
+
+> Chuyển TARGET logical model đã approved thành một physical data/runtime design đủ rõ để implementation có thể bắt đầu sau một review riêng.
+
+Đây vẫn là **DESIGN TASK**.
+
+KHÔNG:
+- sửa application source;
+- sửa Prisma production;
+- tạo/apply migration;
+- chạy reset/drop database;
+- seed database thật;
+- deploy;
+- implementation feature;
+- stage/commit nếu chưa được phép.
+
+---
+
+# 1. Authority
+
+Thứ tự authority:
+
+1. Product Owner decisions mới nhất.
+2. ADR-036.
+3. ADR-030 → ADR-035 nếu tương thích.
+4. Active requirements.
+5. Active UC specifications.
+6. Traceability.
+7. Approved canonical modeling:
+   `docs/modeling/current-target/`
+8. Physical design của task này.
+
+CURRENT Prisma/migrations/database KHÔNG phải product authority.
+
+Chúng chỉ là:
+- legacy evidence;
+- implementation evidence;
+- migration/rebuild input.
+
+Nếu CURRENT mâu thuẫn TARGET:
+TARGET thắng.
+
+---
+
+# 2. Product Owner authorization về legacy DB/code
+
+PO đã xác nhận:
+
+> Current/legacy database và code có thể được reset/drop/rebuild nếu cần để triển khai TARGET cleanly.
+
+Điều này cho phép physical design đề xuất rebuild sạch.
+
+NHƯNG:
+
+Task hiện tại chỉ được:
+- inspect;
+- design;
+- plan.
+
+Không được thực hiện destructive operation.
+
+Không:
+- drop;
+- truncate;
+- reset;
+- apply migration.
+
+Nếu live DB có thể truy cập:
+chỉ read-only inspection.
+
+---
+
+# 3. Trước khi thiết kế
+
+Audit lại repository hiện tại ở mức cần thiết.
+
+Inspect:
+
+- current Prisma schema;
+- current migrations;
+- Supabase integration;
+- auth code;
+- middleware;
+- current storage/media usage;
+- environment/config declarations;
+- relevant current DB scripts;
+- any RLS/policy SQL;
+- seed scripts nếu có.
+
+Mục đích:
+
+> Biết cái gì đang tồn tại để lập rebuild plan.
+
+Không dùng CURRENT để thay đổi TARGET semantics.
+
+---
+
+# 4. Live DB inspection
+
+Nếu có credentials/tooling hợp lệ và có thể kiểm tra an toàn:
+
+thực hiện **READ-ONLY LIVE DB INSPECTION**.
+
+Chỉ lấy metadata:
+
+- schemas;
+- tables;
+- columns;
+- constraints;
+- indexes;
+- foreign keys;
+- RLS enabled status;
+- policies;
+- functions/RPC metadata;
+- storage buckets metadata;
+- migration version/history nếu đọc được.
+
+Không đọc learner secrets hoặc production content không cần thiết.
+
+Không mutate.
+
+Nếu không truy cập được:
+
+ghi rõ:
+
+`LIVE DB UNVERIFIED`
+
+và tiếp tục physical design từ approved TARGET + repository evidence.
+
+Không block design chỉ vì không có live DB trừ khi một physical decision thật sự phụ thuộc dữ liệu đó.
+
+---
+
+# 5. Technology baseline
+
+Xác minh baseline thực tế của repo trước khi chốt:
+
+- PostgreSQL/Supabase;
+- Supabase Auth;
+- Prisma nếu vẫn là ORM dự kiến;
+- Next.js/backend boundary;
+- storage/media provider.
+
+Không tự đổi technology stack nếu không có lý do mạnh.
+
+Nếu stack hiện tại đủ:
+ưu tiên tiếp tục stack đó.
+
+Nếu phát hiện stack mismatch:
+ghi recommendation, không tự migrate technology.
+
+---
+
+# 6. Thiết kế Auth/User/Profile/Role trước
+
+Phải chốt rõ mapping giữa:
+
+`Supabase Auth user`
+và
+`Lingora application user/profile`
+
+Business roles chỉ:
+
+- ADMIN
+- TEACHER
+- LEARNER
+
+Một account = một role trong MVP.
+
+Thiết kế phải trả lời:
+
+- source of truth của auth identity là gì;
+- application profile nằm đâu;
+- role nằm đâu;
+- account status nằm đâu;
+- disabled account enforce thế nào;
+- Teacher provisioning flow map physical ra sao;
+- Learner self-registration map ra sao.
+
+Không tin role từ client.
+
+Không dùng client-editable metadata làm trusted authorization source.
+
+---
+
+# 7. User account status
+
+Physical design phải support tối thiểu:
+
+- ACTIVE;
+- DISABLED;
+
+và trạng thái provisioning cần thiết nếu thực sự có authority.
+
+Không tự thêm lifecycle phức tạp.
+
+Thiết kế enforcement:
+
+Protected request:
+1. xác định trusted auth subject;
+2. resolve application account;
+3. kiểm tra role/status;
+4. mới authorize operation.
+
+Disable phải có hiệu lực ở protected request tiếp theo.
+
+Không cần hứa instant token revocation nếu architecture không thực hiện được.
+
+---
+
+# 8. Thiết kế Physical Relational Model
+
+Từ approved `DOM-01` và `DATA-03`, quyết định **thực sự cần những table nào**.
+
+Không có rule:
+
+`1 logical entity = 1 table`
+
+Phải justify từng table.
+
+Tạo physical relational model rõ:
+
+- table name;
+- purpose;
+- PK;
+- FK;
+- unique constraints;
+- required/nullable fields;
+- important CHECK constraints;
+- timestamps;
+- ownership;
+- immutable/mutable classification;
+- archive/withdraw semantics nếu liên quan.
+
+Không cần nhét mọi UI field.
+
+---
+
+# 9. Naming convention
+
+Chọn và dùng nhất quán.
+
+Khuyến nghị PostgreSQL:
+
+- `snake_case`;
+- plural hoặc singular phải thống nhất;
+- FK kiểu `<entity>_id`;
+- timestamps:
+  - `created_at`
+  - `updated_at`
+  - domain-specific timestamps khi có ý nghĩa.
+
+Không mix naming style.
+
+Ghi convention vào physical design.
+
+---
+
+# 10. Identifier strategy
+
+Chọn identifier strategy rõ ràng.
+
+Ví dụ:
+- UUID;
+- database-generated UUID;
+- auth user UUID reuse khi phù hợp.
+
+Phải giải thích:
+
+- User/Profile identity;
+- content identity;
+- revision identity;
+- attempt/result identity;
+- SRS operation identity;
+- audit event identity.
+
+Không dùng composite PK nếu simple surrogate ID + unique constraint dễ maintain hơn, trừ khi composite thật sự có lợi.
+
+---
+
+# 11. Curriculum physical model
+
+Thiết kế tối thiểu cho:
+
+- Language;
+- Framework;
+- Level;
+- Course;
+- Unit nếu physical table thực sự có ích;
+- Lesson;
+- curriculum ordering;
+- availability/publication relation.
+
+Phải giải quyết rõ:
+
+## Framework / Level
+
+Level không được hard-code A1/A2.
+
+Framework có thể chứa:
+- CEFR;
+- hoặc framework khác.
+
+Level phải thuộc framework.
+
+---
+
+# 12. Unit decision
+
+Đây là physical decision cần review.
+
+Logical model có `Unit`.
+
+Không tự động tạo table chỉ vì domain có Unit.
+
+Đánh giá:
+
+### Option A
+Physical `units` table.
+
+### Option B
+Unit là grouping/config embedded/derived.
+
+Chọn một phương án dựa trên:
+- ordering;
+- admin curriculum management;
+- future lesson grouping;
+- report/query simplicity;
+- implementation complexity.
+
+Ưu tiên MVP đơn giản nhưng maintainable.
+
+Document decision.
+
+---
+
+# 13. Content revision model
+
+Published content immutable.
+
+Phải thiết kế rõ:
+
+Logical content identity
+vs
+content revision.
+
+Ví dụ cần giải quyết:
+
+- `lesson`
+- `lesson_revision`
+
+hoặc alternative tốt hơn.
+
+Phải support:
+
+- draft;
+- in review;
+- changes requested;
+- approved;
+- published;
+- archived/withdrawn;
+- current active revision;
+- historical revisions.
+
+Không edit published revision trực tiếp.
+
+---
+
+# 14. Atomic publication/replacement
+
+Publication phải đảm bảo:
+
+> Nếu replacement publish thất bại, revision cũ vẫn active.
+
+Thiết kế transaction boundary.
+
+Ví dụ cần đảm bảo:
+
+1. validate approved revision;
+2. set new active published revision;
+3. supersede/deactivate previous active version nếu cần;
+4. commit atomically.
+
+Không để trạng thái:
+- không có active revision;
+- hai active revision trái policy
+
+do partial failure.
+
+Đề xuất:
+- transaction;
+- unique/partial unique constraint nếu PostgreSQL phù hợp.
+
+Không implementation ở task này.
+
+---
+
+# 15. Assignment physical model
+
+Assignment phải biểu diễn:
+
+- requirement;
+- Admin creator;
+- assigned Teacher hiện tại;
+- target content/type;
+- scope/coverage;
+- status tối thiểu nếu thực sự cần persisted;
+- assignment history/reassignment;
+- timestamps.
+
+Không duplicate content revision lifecycle.
+
+Nếu worklist status derive được:
+ưu tiên derive.
+
+Reassignment:
+- thay current responsible Teacher;
+- giữ history/attribution.
+
+Không `CLOSED` nếu không có authority.
+
+---
+
+# 16. Teacher authorship / provenance
+
+Phải giữ được:
+
+- ai tạo revision;
+- ai sửa/submitted;
+- assignment nào sinh revision;
+- ai review;
+- ai approve;
+- ai publish;
+- thời điểm.
+
+Không dùng audit log thay thế toàn bộ domain provenance nếu domain cần query trực tiếp.
+
+Phân biệt:
+- domain provenance;
+- security audit.
+
+---
+
+# 17. Lesson content structure
+
+Thiết kế representation cho:
+
+- lesson explanatory content;
+- vocabulary;
+- grammar;
+- examples;
+- media/audio references;
+- exercises.
+
+Không xây CMS generic vô hạn.
+
+Có thể dùng:
+- normalized fields;
+- structured JSONB cho content block phù hợp;
+
+nhưng phải giải thích nơi nào relational, nơi nào JSONB.
+
+Tránh hai cực:
+
+- mỗi text block thành một table;
+- toàn bộ lesson nhét vào một JSON blob khổng lồ không kiểm soát.
+
+---
+
+# 18. Exercise physical model
+
+Phải support MVP exercise types thực sự cần.
+
+Không tạo plugin engine nếu chưa cần.
+
+Thiết kế phải phân biệt:
+
+## Learner-visible prompt data
+
+và
+
+## Grading secret
+
+Grading secret có thể bao gồm:
+- accepted answers;
+- answer key;
+- rubric/config;
+- correctness metadata.
+
+Generic learner reads tuyệt đối không expose grading secret.
+
+---
+
+# 19. Practice vs Assessment items
+
+Thiết kế provenance để có thể enforce:
+
+> Assessment không dùng lại exact practice item đã expose answer/feedback.
+
+Không cần QuestionBank platform lớn.
+
+Nhưng physical design cần đủ để biết:
+
+- item identity;
+- origin;
+- item/revision;
+- practice usage;
+- assessment usage;
+- content version.
+
+Có thể dùng shared item representation nếu hợp lý, nhưng phải support no-exact-reuse policy.
+
+---
+
+# 20. Lesson Attempt
+
+Thiết kế `lesson_attempt` hoặc equivalent.
+
+Phải support:
+
+- learner/context;
+- lesson revision;
+- started_at;
+- completed_at;
+- attempt identity;
+- redo;
+- latest completed performance;
+- historical attempts.
+
+Completion không đồng nghĩa score.
+
+---
+
+# 21. Lesson response / exercise response
+
+Phải quyết định có lưu từng response không.
+
+Cần support được:
+
+- first response;
+- retry once;
+- contribution:
+  - 1.0
+  - 0.5
+  - 0;
+- `N + K`;
+- history/debug/report cơ bản.
+
+Đánh giá:
+
+### Option A
+Persist each response event.
+
+### Option B
+Persist summarized item outcome.
+
+Chọn MVP design đủ để:
+- tính/verify performance;
+- audit attempt integrity;
+- không over-engineer event sourcing.
+
+Không hard-code number of exercises.
+
+---
+
+# 22. Completion fact
+
+Completion nên là authoritative fact riêng hoặc derive có kiểm soát.
+
+Phải trả lời:
+
+- khi nào lesson được coi completed;
+- có unique learner/context + logical lesson hay revision?
+- redo có tạo completion mới không;
+- replacement revision ảnh hưởng completion cũ thế nào.
+
+Requirement:
+
+Redo:
+- không tăng completed lesson count.
+
+History valid phải được giữ khi revision thay thế.
+
+---
+
+# 23. Performance
+
+Thiết kế cách lưu:
+
+- numerator;
+- denominator;
+- calculated score;
+- attempt reference.
+
+N/K semantics phải preserve.
+
+Không chỉ lưu percentage nếu việc đó làm mất provenance.
+
+Có thể derive percentage.
+
+Latest performance:
+derive từ latest completed attempt.
+
+Best:
+derive.
+
+Không tạo table riêng nếu query đơn giản.
+
+---
+
+# 24. Progress
+
+Không persist progress percentage nếu có thể derive an toàn.
+
+Phải định nghĩa query semantics:
+
+denominator:
+`eligible + published + active curriculum`
+
+không gồm:
+- unavailable;
+- unpublished;
+- coming soon.
+
+Nhưng vẫn gồm:
+- published active lesson chỉ đang progression-locked.
+
+Phải xử lý withdrawal/replacement đúng approved policy.
+
+---
+
+# 25. LearningContext
+
+Thiết kế LearningContext đầy đủ nhưng tối giản.
+
+Phải support:
+
+- learner;
+- language;
+- status ACTIVE/PAUSED;
+- selected starting point;
+- framework/course relation nếu cần;
+- preferences thuộc context;
+- creation/resume.
+
+Một learner/Language có một logical context theo approved rule.
+
+Nếu có giới hạn tối đa ACTIVE context:
+design constraint/enforcement rõ.
+
+Không tạo persisted LearningPlan mặc định.
+
+---
+
+# 26. Starting point
+
+Phải support:
+
+- Placement;
+- self-report;
+- default.
+
+Không hard-code:
+- A1;
+- Unit 1.
+
+Incomplete Placement:
+không overwrite valid starting point.
+
+Phải thiết kế atomic/transaction semantics cho completed Placement recommendation → selected starting point nếu applicable.
+
+---
+
+# 27. Assessment Blueprint
+
+Thiết kế physical representation cho Admin-defined blueprint.
+
+Phải support:
+
+- assessment purpose;
+- Language;
+- Framework;
+- target Level/transition;
+- curriculum coverage;
+- topic coverage;
+- skill/knowledge area;
+- item requirement/distribution;
+- pass/readiness config;
+- duration/config nếu cần.
+
+Không hard-code item count.
+
+Không build generic rules engine.
+
+Có thể dùng relational core + constrained JSONB config nếu hợp lý.
+
+---
+
+# 28. Assessment Version
+
+Published assessment phải immutable version.
+
+Thiết kế:
+
+- blueprint reference;
+- version;
+- item snapshot/reference;
+- published_at;
+- active state nếu cần;
+- provenance.
+
+Attempt phải pin chính xác Assessment Version.
+
+Không để Teacher edit item làm thay đổi assessment đang chạy.
+
+---
+
+# 29. Assessment Attempt / Result
+
+Phân biệt nếu cần:
+
+- Attempt;
+- Result.
+
+Incomplete attempt:
+không có completed Result.
+
+Same submission retry:
+idempotent.
+
+Intentional new attempt:
+new result.
+
+Phải support Placement và Level-up.
+
+Không có Reassessment MVP.
+
+---
+
+# 30. Assessment response secrecy
+
+Physical query/security design phải đảm bảo:
+
+Trong Placement/Level-up:
+
+learner không nhận:
+- answer key;
+- correctness per item;
+- hidden grading metadata;
+- explanatory feedback làm lộ answer
+
+trong/after assessment nếu policy hiện tại cấm.
+
+Learner chỉ nhận aggregate result phù hợp.
+
+Teacher/Admin authoring paths có quyền khác.
+
+---
+
+# 31. Assessment item snapshot strategy
+
+Quyết định cách đảm bảo immutable attempt:
+
+Option examples:
+- immutable item revision IDs;
+- assessment-version snapshot;
+- JSON snapshot;
+- join to immutable item versions.
+
+Chọn phương án đơn giản nhưng bảo toàn provenance.
+
+Không để mutable content phá lịch sử result.
+
+---
+
+# 32. SRS Card
+
+Thiết kế card identity:
+
+Unique:
+
+`Learner + Vocabulary`
+
+hoặc context-equivalent nếu authority yêu cầu account-wide.
+
+Approved policy:
+SRS account-wide theo learner + Vocabulary.
+
+Không duplicate khi word xuất hiện lesson khác.
+
+Fields/concepts cần support:
+- stage;
+- due_at;
+- scheduling state;
+- created/enrolled source;
+- last reviewed.
+
+---
+
+# 33. SRS schedule
+
+Policy B:
+
+`1 → 3 → 7 → 14 → 30 days`
+
+final:
+`30 days recurring`.
+
+Forgot:
+reset về stage đầu / next due according to policy.
+
+Server computes schedule.
+
+Client không gửi arbitrary next_due/stage.
+
+---
+
+# 34. SRS Review Operation
+
+Thiết kế idempotency.
+
+Same network retry:
+không schedule card hai lần.
+
+Intentional new review:
+new operation.
+
+Phải phân biệt:
+
+- long-term scheduling operation;
+- same-session reinforcement.
+
+Same-session reinforcement:
+không tạo second schedule update.
+
+Có thể cần:
+- operation_id/idempotency_key;
+- review history.
+
+Không over-engineer event sourcing.
+
+---
+
+# 35. Vocabulary identity
+
+Đây là quyết định vật lý quan trọng.
+
+Phải xác định Vocabulary identity dựa trên:
+- language;
+- canonical form/lemma nếu MVP có;
+- normalized text;
+- meaning/translation nếu cần.
+
+Không để hai lesson vô tình tạo duplicate SRS card cho cùng vocabulary concept nếu đáng lẽ chung identity.
+
+Nhưng cũng không merge hai từ khác nghĩa một cách mù quáng.
+
+Đề xuất một MVP identity strategy rõ.
+
+---
+
+# 36. Streak
+
+Streak account-global.
+
+Không cần persist computed summary nếu derive được.
+
+Phải xác định source facts nào qualify:
+- completed lesson;
+- valid SRS review;
+- valid assessment nếu approved.
+
+Local-day calculation phải có user timezone/preferences nếu policy cần.
+
+Không hard-code timezone.
+
+---
+
+# 37. Media / Audio
+
+Thiết kế media metadata + storage strategy.
+
+Phải support:
+
+- lesson audio;
+- assessment listening;
+- draft media;
+- published media.
+
+Phân biệt:
+
+- private draft/unpublished;
+- published learner-accessible.
+
+Không để public bucket URL bypass authorization cho draft/assessment secret.
+
+Thiết kế:
+- bucket strategy;
+- path strategy;
+- ownership;
+- signed/public access semantics.
+
+Không upload gì ở task này.
+
+---
+
+# 38. Audit Event
+
+Security audit append-only logical requirement.
+
+Thiết kế physical audit record tối thiểu:
+
+- actor;
+- action;
+- target type;
+- target id;
+- outcome;
+- timestamp;
+- reason/context khi cần;
+- request/correlation metadata nếu hữu ích.
+
+Audit:
+- immutable từ app users;
+- Admin read phù hợp;
+- không lưu secrets/password/answer key.
+
+Không biến audit thành full observability platform.
+
+Retention:
+nếu chưa approved, ghi configurable/deferred.
+
+---
+
+# 39. RLS / Authorization design
+
+Tạo **RLS/authorization matrix**.
+
+Ít nhất cho:
+
+- users/profiles;
+- learning contexts;
+- lesson attempts;
+- completion;
+- SRS cards/reviews;
+- assignments;
+- revisions;
+- assessment blueprints;
+- assessment versions/items;
+- attempts/results;
+- audit.
+
+Matrix:
+
+| Resource | Learner | Teacher | Admin | Server-only |
+
+Phải chỉ rõ:
+- SELECT;
+- INSERT;
+- UPDATE;
+- DELETE;
+- special server operation.
+
+Không nhất thiết mọi table đều direct client access.
+
+Ưu tiên:
+sensitive mutation qua trusted server.
+
+---
+
+# 40. DELETE policy
+
+Không hard-delete learner evidence.
+
+Define delete/archive policy.
+
+Ví dụ:
+
+Account:
+disable rather than physical delete trong MVP.
+
+Content:
+archive/withdraw.
+
+Attempts/results/reviews:
+retain.
+
+Audit:
+append-only.
+
+Draft abandoned content:
+có thể soft-delete/archive nếu cần.
+
+Không dùng cascading delete vô tình xóa learner history.
+
+---
+
+# 41. FK delete behavior
+
+Thiết kế deliberate FK actions:
+
+- RESTRICT;
+- NO ACTION;
+- SET NULL;
+- CASCADE
+
+cho từng category.
+
+Đặc biệt không CASCADE từ:
+- user;
+- lesson;
+- assessment version
+
+sang historical evidence nếu làm mất history.
+
+---
+
+# 42. Important constraints
+
+Đề xuất database constraints cho invariants quan trọng.
+
+Ví dụ candidate:
+
+- one role per account;
+- valid status enum/check;
+- one SRS card per learner+Vocabulary;
+- only one active published revision nếu applicable;
+- immutable published content enforced at service/runtime layer;
+- unique attempt submission idempotency;
+- one logical LearningContext per learner+Language;
+- assessment attempt pinned to one version.
+
+Không nhét mọi business rule vào CHECK nếu application transaction tốt hơn.
+
+Phân loại:
+
+- DB constraint;
+- transaction invariant;
+- service authorization rule;
+- derived calculation.
+
+---
+
+# 43. Index strategy
+
+Đề xuất indexes dựa trên real queries.
+
+Không thêm index cho mọi FK theo thói quen mà không giải thích.
+
+Ít nhất xem xét queries:
+
+- learner active contexts;
+- lesson path;
+- latest completed attempt;
+- learner completion;
+- due SRS cards;
+- Teacher worklist;
+- Admin review queue;
+- current published revision;
+- assessment attempts/results;
+- audit by actor/target/time.
+
+Ghi candidate index + query rationale.
+
+Không benchmark giả.
+
+---
+
+# 44. Concurrency
+
+Thiết kế concurrency cho:
+
+- Teacher concurrent editing;
+- submit/review conflict;
+- publication;
+- SRS review retry;
+- lesson submission retry;
+- assessment submission retry.
+
+Dùng MVP-friendly strategy:
+- optimistic version;
+- transaction;
+- unique idempotency key;
+- row lock khi thực sự cần.
+
+Không distributed lock nếu không cần.
+
+---
+
+# 45. Idempotency matrix
+
+Tạo bảng:
+
+| Operation | Retry safe? | Idempotency strategy |
+
+Ít nhất:
+
+- lesson answer submission;
+- lesson completion;
+- assessment submission;
+- SRS review;
+- content publish;
+- account disable/re-enable;
+- Teacher provision/invite.
+
+---
+
+# 46. Runtime transaction boundaries
+
+Document các transaction quan trọng.
+
+Ví dụ:
+
+## Publish revision
+Atomic.
+
+## Complete lesson
+- finalize attempt;
+- completion fact;
+- performance;
+- core vocabulary SRS enrollment
+
+nên nhất quán trong một transaction hoặc clearly coordinated design.
+
+## Assessment finalize
+- validate submission;
+- grade;
+- completed result;
+- progression update nếu Level-up pass
+
+phải tránh partial result.
+
+## SRS review
+- history operation;
+- stage update;
+- due date
+
+atomic.
+
+---
+
+# 47. Server vs Client responsibilities
+
+Tạo runtime authority matrix.
+
+## Client
+Có thể:
+- render;
+- submit learner choice/input;
+- request action.
+
+Không được authoritative cho:
+- role;
+- account status;
+- grading;
+- completion;
+- score;
+- next SRS interval;
+- published status;
+- assessment answer key.
+
+## Server
+Authoritative cho các domain transition.
+
+---
+
+# 48. API boundary design
+
+Không cần code endpoint.
+
+Nhưng có thể xác định command/query boundary cấp cao.
+
+Ví dụ:
+
+Commands:
+- `submitLessonResponse`
+- `completeLessonAttempt`
+- `submitSrsReview`
+- `finalizeAssessment`
+- `submitContentRevision`
+- `approveRevision`
+- `publishRevision`
+
+Queries:
+- learner curriculum;
+- due SRS;
+- Teacher worklist;
+- review queue.
+
+Không cần chốt URL REST.
+
+Không viết controller.
+
+---
+
+# 49. Prisma mapping
+
+Nếu Prisma vẫn được giữ:
+
+Document:
+
+- tables/entities Prisma sẽ map;
+- enum candidates;
+- relation candidates;
+- nơi Prisma middleware/service không đủ để enforce security;
+- raw SQL migration cần thiết cho:
+  - RLS;
+  - partial unique index;
+  - CHECK;
+  - DB function nếu thật sự cần.
+
+Không sửa `schema.prisma`.
+
+---
+
+# 50. Supabase Auth mapping
+
+Thiết kế rõ:
+
+`auth.users.id`
+→ application user/profile identity.
+
+Không mirror:
+- password;
+- credential secret.
+
+Teacher/Admin provisioning:
+- auth identity;
+- application record;
+- trusted role;
+- status.
+
+Recovery:
+Supabase/Auth mechanism.
+
+Admin không đọc current password.
+
+---
+
+# 51. RLS reality check
+
+Không assume Prisma automatically respects desired RLS architecture.
+
+Phải xác định:
+
+- browser direct Supabase access ở đâu;
+- server service-role usage ở đâu;
+- Prisma connection role;
+- bypass-RLS risks;
+- server authorization required even khi RLS tồn tại.
+
+Mục tiêu:
+defense in depth, không security theater.
+
+---
+
+# 52. Database rebuild strategy
+
+Vì PO cho phép bỏ legacy DB, tạo rebuild plan.
+
+Phải so sánh:
+
+### Option A — Forward migrate legacy schema
+vs
+### Option B — Clean rebuild TARGET schema
+
+Đánh giá:
+
+- amount of legacy divergence;
+- data preservation needs;
+- complexity;
+- development stage;
+- historical evidence value.
+
+Nếu clean rebuild hợp lý:
+recommend rõ.
+
+Nhưng task này không thực hiện.
+
+---
+
+# 53. Data preservation classification
+
+Trước rebuild, phân loại current data:
+
+## Must preserve
+Nếu có.
+
+## Nice to preserve
+
+## Disposable development/test data
+
+## Unknown until live inspection
+
+Không tự assume DB trống.
+
+Nếu live DB chưa verified:
+ghi rõ precondition trước destructive reset.
+
+---
+
+# 54. Rebuild execution plan — chỉ PLAN
+
+Nếu chọn clean rebuild, viết future execution steps.
+
+Ví dụ:
+
+1. backup/snapshot;
+2. inventory/export data cần giữ;
+3. verify rollback;
+4. create new schema/migration chain;
+5. apply on disposable/dev environment;
+6. seed baseline configuration;
+7. run invariant/security tests;
+8. migrate preserved data nếu cần;
+9. validate;
+10. only then cut over.
+
+Không chạy bất kỳ bước destructive nào.
+
+---
+
+# 55. Migration history policy
+
+Nếu rebuild:
+
+Không rewrite historical migrations rồi giả sử chúng đã từng tồn tại.
+
+Đề xuất một clean baseline strategy rõ.
+
+Ví dụ:
+- archive old migrations;
+- new baseline migration for rebuilt environment;
+- document migration reset point.
+
+Nhưng không thực hiện.
+
+---
+
+# 56. Seed/config plan
+
+Thiết kế seed categories:
+
+- roles/status enum không nhất thiết seed;
+- language;
+- framework;
+- levels;
+- curriculum sample nếu cần dev;
+- Admin bootstrap strategy.
+
+Không hard-code A1 như platform rule.
+
+CEFR/A1 chỉ seed data/config nếu project chọn dùng.
+
+Không seed password trong repo.
+
+---
+
+# 57. Test strategy cho physical design sau này
+
+Thiết kế acceptance tests cần có trước implementation.
+
+Ít nhất:
+
+## Auth
+- disabled user denied;
+- wrong role denied.
+
+## Lesson
+- N/K score;
+- retry once;
+- completion independent score;
+- duplicate completion safe.
+
+## SRS
+- unique card;
+- intervals;
+- final 30 recurrence;
+- forgot reset;
+- idempotency.
+
+## Content
+- Teacher assignment enforcement;
+- Admin no authoring;
+- publication atomic;
+- immutable published revision.
+
+## Assessment
+- no answer-key leak;
+- version pinned;
+- duplicate submit idempotent;
+- incomplete ≠ result.
+
+## Progress
+- unavailable excluded;
+- progression-locked published content counted appropriately.
+
+---
+
+# 58. Physical ERD
+
+Tạo một **new physical-design ERD draft**.
+
+Không sửa approved logical `DATA-03`.
+
+Physical ERD phải là artifact riêng.
+
+Ví dụ location:
+
+`docs/design/physical/`
+
+hoặc convention hợp repo.
+
+Physical ERD có thể hiển thị:
+
+- actual proposed table names;
+- PK/FK;
+- important columns;
+- cardinalities.
+
+Nếu physical design chưa final:
+label:
+
+`PROPOSED PHYSICAL DESIGN — NOT IMPLEMENTED`
+
+Không được gọi nó CURRENT.
+
+---
+
+# 59. Không sửa approved canonical modeling
+
+Không chỉnh:
+
+`docs/modeling/current-target/src/...`
+
+trừ khi phát hiện một contradiction thực sự cần PO decision.
+
+Physical design phải downstream từ approved modeling.
+
+Không “clean up” modeling thêm.
+
+---
+
+# 60. Required artifacts
+
+Trước khi tạo file, inspect repo conventions.
+
+Ưu tiên số file tối thiểu.
+
+Có thể dùng cấu trúc kiểu:
+
+`docs/design/physical/README.md`
+- executive design;
+- schema decisions;
+- table catalog;
+- constraints;
+- indexes;
+- runtime boundaries.
+
+`docs/design/physical/physical-erd.puml`
+
+`docs/design/physical/security-and-rls.md`
+
+`docs/design/physical/rebuild-plan.md`
+
+Nếu repo convention cho phép gộp:
+ưu tiên gộp để tránh tài liệu rác.
+
+Không tạo hàng chục file nhỏ.
+
+---
+
+# 61. Table catalog
+
+Báo cáo phải có bảng:
+
+| Table | Purpose | Owner | Mutability | Key constraints |
+
+Mỗi proposed table phải có lý do tồn tại.
+
+Nếu table không có clear use:
+không tạo.
+
+---
+
+# 62. Logical → Physical mapping
+
+Tạo matrix:
+
+| Logical Concept | Physical Representation | Persisted/Derived | Reason |
+
+Ví dụ:
+- LearningPlan → derived
+- Progress → derived
+- Lesson → table
+- Revision → table
+- SRS Card → table
+
+Không mặc định mapping 1:1.
+
+---
+
+# 63. Security matrix
+
+Tạo:
+
+| Resource | Learner | Teacher | Admin | Trusted server |
+
+và ghi:
+- read;
+- create;
+- update;
+- delete;
+- restricted fields.
+
+Đặc biệt grading secret.
+
+---
+
+# 64. Critical invariants matrix
+
+Tạo:
+
+| Invariant | Enforcement layer |
+|---|---|
+
+Layers có thể là:
+- DB constraint;
+- transaction;
+- server authorization;
+- RLS;
+- derived query;
+- application validation.
+
+Mục tiêu:
+không để cùng một invariant không ai chịu trách nhiệm.
+
+---
+
+# 65. Open physical decisions
+
+Agent được phép quyết các technical choices bình thường.
+
+Ví dụ:
+- UUID;
+- normalized table;
+- index;
+- optimistic concurrency.
+
+Nhưng nếu choice thay đổi product behavior:
+không tự quyết.
+
+Báo:
+`NEEDS PO DECISION`.
+
+Không mở PO question cho những việc chỉ là implementation detail thông thường.
+
+---
+
+# 66. Anti-overengineering
+
+KHÔNG thêm:
+
+- event sourcing;
+- CQRS;
+- Kafka;
+- Redis chỉ để “future proof”;
+- microservices;
+- generic workflow engine;
+- generic rule engine;
+- generic QuestionBank platform;
+- mastery engine;
+- materialized view nếu chưa cần;
+- graph database;
+- separate analytics warehouse.
+
+MVP:
+PostgreSQL + existing app stack trước.
+
+---
+
+# 67. Review current legacy files
+
+Báo rõ:
+
+- giữ;
+- replace later;
+- archive;
+- obsolete after rebuild.
+
+Đặc biệt:
+- Prisma schema;
+- old migrations;
+- old role models;
+- chat/AI residue nếu còn.
+
+Không delete trong task.
+
+---
+
+# 68. Deterministic checks
+
+Sau khi tạo design docs:
+
+- validate links;
+- render physical ERD;
+- scan no old roles in TARGET physical design;
+- scan no Reassessment active;
+- scan no hardcoded A1/100%/fixed question count as invariant;
+- check no AI runtime added;
+- `git diff --check`.
+
+Manual review physical ERD.
+
+---
+
+# 69. Independent design review
+
+Sau khi Antigravity hoàn thành first pass:
+
+thực hiện một independent review pass.
+
+Review:
+
+- normalization;
+- integrity;
+- historical evidence preservation;
+- query patterns;
+- security;
+- RLS;
+- idempotency;
+- transaction boundaries;
+- overengineering.
+
+Reviewer không được đổi product semantics.
+
+Worker sửa local physical-design defects cho đến khi checks pass.
+
+---
+
+# 70. Final output
+
+Trả báo cáo:
+
+## A. Physical architecture recommendation
+
+## B. Proposed table inventory
+
+## C. Logical → physical mapping
+
+## D. Auth / role / status model
+
+## E. Curriculum/content/revision design
+
+## F. Lesson attempt / completion / performance design
+
+## G. SRS design
+
+## H. Assessment design
+
+## I. Assignment/governance design
+
+## J. Media design
+
+## K. Audit design
+
+## L. RLS / authorization matrix
+
+## M. Critical constraints
+
+## N. Index/query strategy
+
+## O. Transaction & idempotency strategy
+
+## P. Prisma/Supabase runtime mapping
+
+## Q. Legacy/current schema findings
+
+## R. Database rebuild recommendation
+
+Choose:
+- FORWARD MIGRATION
+- CLEAN REBUILD
+- NEEDS MORE EVIDENCE
+
+## S. Data preservation requirements
+
+## T. Implementation test plan
+
+## U. Open decisions
+
+Chỉ physical decisions thực sự unresolved.
+
+## V. Verification
+
+## W. Final verdict
+
+Một trong:
+
+- `PHYSICAL DESIGN READY FOR REVIEW`
+- `NEEDS PHYSICAL CORRECTION`
+- `NEEDS PO DECISION`
+- `BLOCKED`
+
+Không tự ghi:
+`PHYSICAL DESIGN APPROVED`.
+
+Approval là task review tiếp theo.
+
+---
+
+# 71. Stop condition
+
+Khi physical design + rebuild plan hoàn tất:
+
+DỪNG.
+
+Không:
+- edit Prisma;
+- create production migration;
+- reset DB;
+- seed DB;
+- implementation;
+- API coding;
+- UI coding.
+
+Task tiếp theo phải là:
+
+# FINAL PHYSICAL DESIGN REVIEW
+
+Chỉ sau khi physical design được approved mới lập Implementation Plan và chia subtask cho Antigravity.

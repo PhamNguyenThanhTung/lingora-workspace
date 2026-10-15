@@ -1,0 +1,50 @@
+{
+  "classification": "PROPOSED PHYSICAL DESIGN — NOT IMPLEMENTED",
+  "source_sha256": "39d2f6076e87e18b326405457a2c0074c2eb7f8e3849a9938fd843854d975235",
+  "outputs": {
+    "physical-erd-identity.svg": {
+      "sha256": "33cbb9aa8768faf2c715215ef445052236505d4ceb48d1a44a5ed46c956be341"
+    },
+    "physical-erd-identity.png": {
+      "sha256": "de048d43e284ac5d46ee1ae4b616f0bef78cabd7f3e6ee565cc8ddfdef49bf82",
+      "dimensions": [
+        1192,
+        655
+      ],
+      "manual_review": "ACCEPTABLE — individually inspected final PNG"
+    },
+    "physical-erd-content.svg": {
+      "sha256": "f31a94226647a76c7b1c4735f5f8a03922346b6b203b738299e4c67b84fef9bc"
+    },
+    "physical-erd-content.png": {
+      "sha256": "b865460197dfd903c3bb151881b478092ed31e811e6a2c5930a6f9e1dd156fea",
+      "dimensions": [
+        869,
+        760
+      ],
+      "manual_review": "ACCEPTABLE — individually inspected final PNG"
+    },
+    "physical-erd-learning.svg": {
+      "sha256": "d27a9a16af4a5ce2fb124766188d13c98fcad581fc407d5acccb2be0ff52e682"
+    },
+    "physical-erd-learning.png": {
+      "sha256": "22e515764c6233d4add2db9471d5439dc393e8e0b38a5920ce19e9b85ca3474d",
+      "dimensions": [
+        894,
+        1319
+      ],
+      "manual_review": "ACCEPTABLE — individually inspected final PNG"
+    },
+    "physical-erd-assessment.svg": {
+      "sha256": "ae3a45b729b2bfd26a1d63e2fddc3f927ee36a6de2fd49b1c0c2f3051861069d"
+    },
+    "physical-erd-assessment.png": {
+      "sha256": "26cbc75bac109d2baa12fe979414cb95e5fe3538c1da41008573ec8a3cbb2bcd",
+      "dimensions": [
+        1361,
+        499
+      ],
+      "manual_review": "ACCEPTABLE — individually inspected final PNG"
+    }
+  }
+}

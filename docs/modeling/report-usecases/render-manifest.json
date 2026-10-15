@@ -1,0 +1,136 @@
+{
+  "renderer": "PlantUML version 1.2026.8 / 149874a [2026-09-05 15:59:17 UTC]",
+  "style": "../current-target/style.puml",
+  "style_sha256": "8420f616afa5f9b24ab52c8df77ccfd0745e729d8a36eb27280bd5b37f767379",
+  "diagram_count": 9,
+  "functional_group_count": 8,
+  "records": [
+    {
+      "id": "VIEW-RUC-01",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-01-auth-profile.puml",
+      "source_sha256": "16d58ecc54261c799f1703433c4cacbfa8a08f723f417c5ea779f04987ba0362",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-01-auth-profile.svg",
+        "png": "rendered/VIEW-RUC-01-auth-profile.png"
+      },
+      "output_sha256": {
+        "svg": "dfb68c6ecce8554b94af657d3971d90712cfbf9231e21dec51021ca2493d03cd",
+        "png": "8c98767d9c7c982e061dea02d1bb1d28c51f9db8888c57fd3148c544f0b43417"
+      }
+    },
+    {
+      "id": "VIEW-RUC-02",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-02-learning-context.puml",
+      "source_sha256": "9d7ebf9cdb373e60aabc0ffb6fe4292e8e606c580adab2b7eb2f63e3e096b86e",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-02-learning-context.svg",
+        "png": "rendered/VIEW-RUC-02-learning-context.png"
+      },
+      "output_sha256": {
+        "svg": "15ac415681a74810f30800ee091e309edecf8b06f52ecb2f48ba1287e1592228",
+        "png": "66a443ed57b1dfae0fd0377ce3c8ba5b36c5be8ac580eae7eee5b98e562f9a05"
+      }
+    },
+    {
+      "id": "VIEW-RUC-03",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-03-lesson-practice.puml",
+      "source_sha256": "1dd701a8a88778805d335f24fb2ce61e6c29090f2b1f2dbe6f80303799297aa9",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-03-lesson-practice.svg",
+        "png": "rendered/VIEW-RUC-03-lesson-practice.png"
+      },
+      "output_sha256": {
+        "svg": "25ee0d12ae7ed2209c83998cb535333442ad8c90bfd3a031595cd206cea057df",
+        "png": "0f2fc0fac05ea839491e43004af6a24b3d9df8aa378c00884a356f2d7e6abe55"
+      }
+    },
+    {
+      "id": "VIEW-RUC-04",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-04-srs-review.puml",
+      "source_sha256": "62767cbb45f19e3c672e51c94f8c2ca6b21d8205d149f75e87ee7f98fe7d6d68",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-04-srs-review.svg",
+        "png": "rendered/VIEW-RUC-04-srs-review.png"
+      },
+      "output_sha256": {
+        "svg": "4bb8e3220eea107d9f08aeb20b9879d16b2cecc1c2e2a9bb689726b2d8d754b8",
+        "png": "d4b4663869e6c8e4c92e16e93126cd64813eef5eb7cc326dfd079bcd3b7f0a33"
+      }
+    },
+    {
+      "id": "VIEW-RUC-05",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-05-assessment.puml",
+      "source_sha256": "b9fbf1ebca91ce0dd57fb18d898b420ae60b68d6e883700332af9fe8e61f74a8",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-05-assessment.svg",
+        "png": "rendered/VIEW-RUC-05-assessment.png"
+      },
+      "output_sha256": {
+        "svg": "c1970edf3fb9f51017a50f9dd96c4f1dcf8a75610838b53bedcff29b11307f89",
+        "png": "5e312bd97b9b08e7137370e462de9b03a06dae486d2c9abe4b214675dd414ba8"
+      }
+    },
+    {
+      "id": "VIEW-RUC-06",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-06-progress-history.puml",
+      "source_sha256": "c707e7104a59e6ea5b2f7ece4b009e4fec4f0691b34c31303e748ac281ddc7dc",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-06-progress-history.svg",
+        "png": "rendered/VIEW-RUC-06-progress-history.png"
+      },
+      "output_sha256": {
+        "svg": "90473c4cbdcc402ec208b1a6439b1e6cef74a1c05c917862eed4084cee6a73e4",
+        "png": "1919ba50412fa3d408821abc0dc6ad092db8af8b053bf1a02f5b84f3f95ef730"
+      }
+    },
+    {
+      "id": "VIEW-RUC-07",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-07-teacher-authoring.puml",
+      "source_sha256": "4406aae30ff34aa448eb94034bd4276a7f18fed55f4d2fe0abac3b6804d3eb21",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-07-teacher-authoring.svg",
+        "png": "rendered/VIEW-RUC-07-teacher-authoring.png"
+      },
+      "output_sha256": {
+        "svg": "adb0c716bc70be8455f05ac9cbcd1c06300f63fbbc72729511270ee1c7b92eb8",
+        "png": "3a84f5b45e0398c2fed811ba245312a710d3cf4a26e92e3013b340e09456480c"
+      }
+    },
+    {
+      "id": "VIEW-RUC-08A",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-08A-admin-content-governance.puml",
+      "source_sha256": "a7302d777906a4e16c703e505754cfc830ede0b0604fdfe217586b3305587fbe",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-08A-admin-content-governance.svg",
+        "png": "rendered/VIEW-RUC-08A-admin-content-governance.png"
+      },
+      "output_sha256": {
+        "svg": "b19c8c931f38dc6dea7c9da748dec87da62bb4560548d424bdd2e06665b74284",
+        "png": "0e896d29a21e060ee034a0847dbd070e7356064d0edf60913e46550ea55ec3d1"
+      }
+    },
+    {
+      "id": "VIEW-RUC-08B",
+      "classification": "REPORT",
+      "source": "VIEW-RUC-08B-admin-account-support.puml",
+      "source_sha256": "512c61ad93bebc0953a5fd2d52dc70ba7968a39fdf8e0960782e88eaa663131f",
+      "outputs": {
+        "svg": "rendered/VIEW-RUC-08B-admin-account-support.svg",
+        "png": "rendered/VIEW-RUC-08B-admin-account-support.png"
+      },
+      "output_sha256": {
+        "svg": "9e12aea7cda0104faf80285e4fb3fd3409a21fc41ed64114b4f5799d6dbf2060",
+        "png": "327ef1e4ec4b43964b1495801127499ba7957edbbd25f786c82a678c80bc47aa"
+      }
+    }
+  ],
+  "presentation_revision": "2026-10-12-cleanup"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "lingora-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "lingora-web",
+    "lingora-admin"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w lingora-web",
+    "dev:admin": "npm run dev -w lingora-admin",
+    "build:web": "npm run build -w lingora-web",
+    "build:admin": "npm run build -w lingora-admin"
+  }
+}

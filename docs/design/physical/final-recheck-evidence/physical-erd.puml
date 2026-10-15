@@ -1,0 +1,410 @@
+@startuml physical-erd-identity
+' classification: PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+hide circle
+left to right direction
+title Lingora physical ERD - identity (draft)
+caption PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED | PK=UUID; FK=RESTRICT; ?=nullable; UQ=unique
+entity "app.accounts" as accounts {
+  PK/FK id -> auth.users
+  role / status
+  timezone / ui_locale
+  FK native_language_id?
+  FK avatar_media_id?
+}
+entity "app.languages" as languages {
+  PK id / UQ code
+  is_learnable / is_ui_locale
+}
+entity "app.frameworks" as frameworks {
+  PK id
+  UQ code + version
+}
+entity "app.levels" as levels {
+  PK id / FK framework_id
+  UQ framework + code
+  UQ framework + position
+  owner immutable once referenced
+}
+entity "app.courses" as courses {
+  PK id
+  FK language_id / framework_id
+  FK default_start_level_id
+  gate_config / curriculum_generation
+  coverage_catalog / catalog_generation
+  default picks lowest eligible AVAILABLE level
+  scope immutable once referenced
+}
+entity "app.units" as units {
+  PK id / FK course_id / level_id
+  UQ course + level + position
+  owner immutable once referenced
+  position-only reorder in scope
+}
+entity "app.lessons" as lessons {
+  PK id / FK unit_id
+  FK active_revision_id?
+  UQ unit + position
+  is_required / availability
+  unit_id immutable once referenced
+}
+entity "app.learning_contexts" as learning_contexts {
+  PK id / FK learner_id / language_id
+  FK course_id
+  FK selected_start_level_id? / working_level_id?
+  FK start_result_id?
+  UQ learner + language
+  status / start_source? / row_version
+  null start allowed when no level is available
+}
+entity "lesson_revisions" as lesson_revisions <<reference>> {
+  defined in another ERD view
+}
+entity "assessment_results" as assessment_results <<reference>> {
+  defined in another ERD view
+}
+accounts ||--o{ learning_contexts
+languages ||--o{ courses
+frameworks ||--o{ levels
+frameworks ||--o{ courses
+courses ||--o{ units
+levels ||--o{ units
+units ||--o{ lessons
+courses ||--o{ learning_contexts
+lessons ||--o{ lesson_revisions
+assessment_results |o--o| learning_contexts
+legend bottom
+Reference boxes reuse existing tables; actor and auxiliary FKs are listed in catalog.
+Composite scope FKs, XOR owners and partial uniques: see README.
+No cascade to evidence. Every table retains created_at; mutable rows add updated_at.
+endlegend
+@enduml
+
+
+@startuml physical-erd-content
+' classification: PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+hide circle
+left to right direction
+title Lingora physical ERD - content (draft)
+caption PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED | PK=UUID; FK=RESTRICT; ?=nullable; UQ=unique
+entity "app.lesson_revisions" as lesson_revisions {
+  PK id / FK lesson_id / assignment_id
+  FK prior_revision_id?
+  UQ lesson + revision_no
+  status / content_blocks / row_version
+  topic_ids / skill_ids / catalog_generation
+  coverage_snapshot / assignment_scope_snapshot?
+  submitted_assignment_generation?
+  FK created / edited / submitted actors
+  FK approved / published actors
+}
+entity "app.vocabulary_concepts" as vocabulary_concepts {
+  PK id / FK language_id
+  UQ language + normalized_form + sense_key
+  meaning_labels / frozen_at?
+  FK created_by
+}
+entity "app.lesson_vocabulary_links" as lesson_vocabulary_links {
+  PK id / FK lesson_revision_id
+  FK vocabulary_id
+  UQ revision + vocabulary / position
+  is_core / display_snapshot
+}
+entity "app.item_identities" as item_identities {
+  PK id / FK variant_of_id?
+  FK created_by
+  origin / exact_fingerprint
+  practice_exposed_at?
+}
+entity "app.item_revisions" as item_revisions {
+  PK id / FK item_id
+  FK created_by
+  UQ item + revision_no
+  type / prompt_data / exact_fingerprint
+  FK authoring_lesson_revision_id? OR
+  FK authoring_assessment_version_id? (XOR)
+  frozen_at? / row_version
+}
+entity "app_private.item_grading_secrets" as item_grading_secrets {
+  PK id / FK item_revision_id UNIQUE
+  grading_data / feedback_data?
+  PRIVATE - no generic SELECT
+}
+entity "app.lesson_exercises" as lesson_exercises {
+  PK id / FK lesson_revision_id
+  FK item_revision_id / item_id
+  UQ revision + position / item
+  is_core
+}
+entity "app.media_assets" as media_assets {
+  PK id / UQ bucket_id + object_key
+  FK uploaded_by / owner_account_id?
+  FK assignment_id?
+  kind / sha256 / ready_at?
+  retired_at? (reservation / tombstone)
+}
+entity "app.media_bindings" as media_bindings {
+  PK id / FK media_asset_id
+  FK lesson_revision_id? OR item_revision_id?
+  XOR owner / position / usage
+  draft-only association removal
+}
+entity "app.content_assignments" as content_assignments {
+  PK id / FK created_by / current_teacher_id
+  FK lesson_id? OR blueprint_id?
+  requirement / scope / scope_generation
+}
+entity "app.assignment_history" as assignment_history {
+  PK id / FK assignment_id
+  event_type / scope_generation
+  scope_snapshot / sequence_no
+}
+entity "app.revision_reviews" as revision_reviews {
+  PK id / FK actor_id
+  FK lesson_revision_id? OR assessment_version_id?
+  action / assignment_generation
+  assignment_scope_snapshot / occurred_at
+}
+entity "lessons" as lessons <<reference>> {
+  defined in another ERD view
+}
+entity "content_assignments" as content_assignments <<reference>> {
+  defined in another ERD view
+}
+lessons ||--o{ lesson_revisions
+content_assignments ||--o{ lesson_revisions
+lesson_revisions ||--o{ lesson_exercises
+lesson_revisions ||--o{ lesson_vocabulary_links
+vocabulary_concepts ||--o{ lesson_vocabulary_links
+item_identities ||--o{ item_revisions
+item_revisions ||--o| item_grading_secrets
+item_revisions ||--o{ lesson_exercises
+media_assets ||--o{ media_bindings
+lesson_revisions |o--o{ media_bindings
+item_revisions |o--o{ media_bindings
+legend bottom
+Reference boxes reuse existing tables; actor and auxiliary FKs are listed in catalog.
+Composite scope FKs, XOR owners and partial uniques: see README.
+No cascade to evidence. Every table retains created_at; mutable rows add updated_at.
+endlegend
+@enduml
+
+
+@startuml physical-erd-learning
+' classification: PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+hide circle
+left to right direction
+title Lingora physical ERD - learning (draft)
+caption PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED | PK=UUID; FK=RESTRICT; ?=nullable; UQ=unique
+entity "app.lesson_attempts" as lesson_attempts {
+  PK id / FK context_id
+  FK lesson_revision_id / lesson_id
+  n_core / k_first_wrong?
+  contribution_units? / response_count?
+  started_at / completed_at?
+  qualifying_local_date?
+}
+entity "app.lesson_responses" as lesson_responses {
+  PK id / FK attempt_id
+  FK lesson_exercise_id / lesson_revision_id
+  UQ attempt + exercise + ordinal
+  UQ attempt + operation_key
+  input / is_correct / contribution_units
+}
+entity "app.lesson_completions" as lesson_completions {
+  PK id / FK context_id / lesson_id
+  FK first_attempt_id
+  UQ context + logical lesson
+  completed_at
+}
+entity "app.srs_cards" as srs_cards {
+  PK id / FK learner_id / vocabulary_id
+  UQ learner + vocabulary
+  FK source_attempt_id? / source_link_id?
+  stage / due_at / last_reviewed_at?
+}
+entity "app.srs_review_operations" as srs_review_operations {
+  PK id / FK card_id / learner_id
+  FK reinforces_operation_id?
+  UQ learner + operation_key
+  kind / rating / session_key
+  partial UQ card + session per kind
+  prior/next stage + due / local_date?
+}
+entity "app.content_assignments" as content_assignments {
+  PK id / FK created_by / current_teacher_id
+  FK lesson_id? OR blueprint_id?
+  XOR target / UQ target
+  requirement / scope_generation / row_version
+}
+entity "app.assignment_history" as assignment_history {
+  PK id / FK assignment_id
+  FK previous_teacher_id? / next_teacher_id
+  FK changed_by
+  UQ assignment + sequence_no
+}
+entity "app.revision_reviews" as revision_reviews {
+  PK id / FK actor_id
+  FK lesson_revision_id? OR assessment_version_id?
+  XOR target / action / occurred_at
+}
+entity "app_private.provisioning_requests" as provisioning_requests {
+  PK id / UQ operation_key / email
+  FK requested_by? / auth_user_id?
+  requested_role / state
+  PRIVATE - provider correlation only
+}
+entity "app_private.command_receipts" as command_receipts {
+  PK id / FK actor_id
+  UQ actor + command + operation_key
+  target_id / input_hash / safe_result
+  PRIVATE - bounded retry receipt
+}
+entity "app_private.audit_events" as audit_events {
+  PK id / FK actor_id?
+  actor_kind / verified_auth_subject_id?
+  target_type / target_id? / target_version_id?
+  action / outcome / occurred_at
+  PRIVATE - append only
+}
+entity "accounts" as accounts <<reference>> {
+  defined in another ERD view
+}
+entity "learning_contexts" as learning_contexts <<reference>> {
+  defined in another ERD view
+}
+entity "lesson_revisions" as lesson_revisions <<reference>> {
+  defined in another ERD view
+}
+entity "lesson_exercises" as lesson_exercises <<reference>> {
+  defined in another ERD view
+}
+entity "vocabulary_concepts" as vocabulary_concepts <<reference>> {
+  defined in another ERD view
+}
+learning_contexts ||--o{ lesson_attempts
+lesson_attempts ||--o{ lesson_responses
+lesson_exercises ||--o{ lesson_responses
+learning_contexts ||--o{ lesson_completions
+lesson_attempts ||--o| lesson_completions
+accounts ||--o{ srs_cards
+vocabulary_concepts ||--o{ srs_cards
+srs_cards ||--o{ srs_review_operations
+content_assignments ||--o{ assignment_history
+lesson_revisions |o--o{ revision_reviews
+accounts ||--o{ content_assignments
+accounts |o--o{ audit_events
+accounts ||--o{ command_receipts
+accounts |o--o{ provisioning_requests
+legend bottom
+Reference boxes reuse existing tables; actor and auxiliary FKs are listed in catalog.
+Composite scope FKs, XOR owners and partial uniques: see README.
+No cascade to evidence. Every table retains created_at; mutable rows add updated_at.
+endlegend
+@enduml
+
+
+@startuml physical-erd-assessment
+' classification: PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+hide circle
+left to right direction
+title Lingora physical ERD - assessment (draft)
+caption PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED | PK=UUID; FK=RESTRICT; ?=nullable; UQ=unique
+entity "app.assessment_blueprints" as assessment_blueprints {
+  PK id / FK created_by
+  FK language_id / framework_id / course_id
+  FK target_level_id? / next_level_id?
+  purpose / coverage / requirements
+  coverage_catalog_generation / config / generation
+  scope immutable after submitted or used
+}
+entity "app.assessment_versions" as assessment_versions {
+  PK id / FK blueprint_id / assignment_id
+  UQ blueprint + version_no
+  blueprint_snapshot / blueprint_generation
+  assignment_generation / scope_snapshot?
+  status / is_active / row_version
+  FK creator / editor / submit / approve / publish
+}
+entity "app.assessment_version_items" as assessment_version_items {
+  PK id / FK assessment_version_id
+  FK item_revision_id / item_id
+  UQ version + position / item
+  weight / topic_ids / skill_ids
+  coverage_tags + label snapshot
+}
+entity "app.assessment_attempts" as assessment_attempts {
+  PK id / FK context_id / assessment_version_id
+  submission_key? / submission_hash?
+  started_at / finalized_at?
+  UQ context + submission_key
+}
+entity "app_private.assessment_responses" as assessment_responses {
+  PK id / FK attempt_id
+  FK assessment_version_item_id / assessment_version_id
+  UQ attempt + version_item
+  input / awarded_points / answered_at
+  PRIVATE - no learner SELECT
+}
+entity "app.assessment_results" as assessment_results {
+  PK id / FK attempt_id UNIQUE
+  FK recommended_level_id?
+  raw_points / possible_points
+  passed? / completed_at
+  progression_applied_at?
+}
+entity "learning_contexts" as learning_contexts <<reference>> {
+  defined in another ERD view
+}
+entity "content_assignments" as content_assignments <<reference>> {
+  defined in another ERD view
+}
+entity "item_revisions" as item_revisions <<reference>> {
+  defined in another ERD view
+}
+assessment_blueprints ||--o{ assessment_versions
+content_assignments ||--o{ assessment_versions
+assessment_versions ||--o{ assessment_version_items
+item_revisions ||--o{ assessment_version_items
+assessment_versions ||--o{ assessment_attempts
+learning_contexts ||--o{ assessment_attempts
+assessment_attempts ||--o{ assessment_responses
+assessment_version_items ||--o{ assessment_responses
+assessment_attempts ||--o| assessment_results
+legend bottom
+Reference boxes reuse existing tables; actor and auxiliary FKs are listed in catalog.
+Composite scope FKs, XOR owners and partial uniques: see README.
+No cascade to evidence. Every table retains created_at; mutable rows add updated_at.
+endlegend
+@enduml

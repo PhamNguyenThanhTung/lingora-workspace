@@ -1,0 +1,36 @@
+page,id,name,preview,width,height,sha256
+1,SYS-01,01 - Hệ thống - Tổng quan hệ thống hiện tại (SYS-01),01-SYS-01.png,951,318,dfdedd4be7f80e9da3593ec2c7174e99e38b74fdeed93f0beea03df279dde2d5
+2,SYS-02,02 - Hệ thống - Tổng quan hệ thống mục tiêu (SYS-02),02-SYS-02.png,1020,465,77ac242f7a80fb579eef2e427e0e97d8bdde468ed2e5a78a38ad3a5b2e32a3dc
+3,SYS-03,03 - Hệ thống - Components hiện tại (SYS-03),03-SYS-03.png,1384,463,5859451d5410ead4ff4552cd780f275d383c5f1cf405b7defb9cfed5c511faa6
+4,SYS-04,04 - Hệ thống - Components mục tiêu (SYS-04),04-SYS-04.png,1313,760,7c328aafe357f459a031e1125553c13cc6c7ef33c082effe061cb36d8d347f0c
+5,UC-01,05 - Use Case - Tổng quan Lingora (UC-01),05-UC-01.png,706,1352,795e94212173cd3dc151f0bc3b0dcfb63bd3c5194266cb74036d8d57d9c4a756
+6,UC-02,06 - Use Case - Học viên (UC-02),06-UC-02.png,690,939,204f2111aaa1a648dbffdc61218b5c0c0e4f2f7b442b30358d803fe71c424ece
+7,UC-03,07 - Use Case - Giáo viên (UC-03),07-UC-03.png,652,648,582c1ae9fd1f948a87aa79db510e6d682391295f520b6b3f0e217f07501a75f5
+8,UC-04,08 - Use Case - Quản trị viên (UC-04),08-UC-04.png,759,1215,aaf966dd3278615f23b48d9a87ad73fec15e8d6fbe16c18fad2fe965761a536a
+9,ACT-01,09 - Activity - Onboarding học viên (ACT-01),09-ACT-01.png,1372,1589,8f7bbeefc07bec1980df1a0800e31f8e3afa9574f75307e2a72db3fc8c941488
+10,ACT-02,10 - Activity - Placement Assessment (ACT-02),10-ACT-02.png,793,1288,32e56aaae131391d36b37fadf667d82277fe37396c057553dc12af460407f210
+11,ACT-03,11 - Activity - Học bài và luyện tập (ACT-03),11-ACT-03.png,1188,1705,e04e4c7e5fa987d99de6cd34be9daec57c83a973b043aa771c023d526e4ba944
+12,ACT-04,12 - Activity - Level-up Assessment (ACT-04),12-ACT-04.png,1126,1640,5dff6e90a74f4937b8732a704143fe30c9465726947197750c13dfa6c47df258
+13,ACT-06,13 - Activity - Ôn tập SRS (ACT-06),13-ACT-06.png,1306,1510,b6aec5452097b53d17ed91392c2d68491014d5bb9e8b5cb2083486c798bf8ea3
+14,ACT-07,14 - Activity - Provision và quản lý Teacher (ACT-07),14-ACT-07.png,1104,744,79643fdf3b435bc631ea4bfcc54b3b1f868c15cdfc9a770edd790fd907c7e794
+15,ACT-08,15 - Activity - Content Governance (ACT-08),15-ACT-08.png,1251,2238,9ee003e48a6635ec1b675edca1a51919b60f1e39d01bcecf974c4426fdea9277
+16,ACT-09,16 - Activity - Revision Replacement (ACT-09),16-ACT-09.png,1996,1380,01634cfd79cb6ccb4c644c5f92ca4be8141f2844feb73e5737e04468247858d3
+17,STA-01,17 - State - Trạng thái tài khoản (STA-01),17-STA-01.png,405,412,11060e95e59b1550d616ebe536f7ed26185a41d43fe7e21e8eaba11cd856d6bd
+18,STA-02,18 - State - Vòng đời Assignment (STA-02),18-STA-02.png,531,192,26dcb84dace04a5a72319aa3cd3411f9cb760987981010f90c7f50e0aa799c33
+19,STA-03,19 - State - Vòng đời Content Revision (STA-03),19-STA-03.png,533,710,7afaac60e449bf6747e430a9bfed54370b52db32567af0e99591992c7f2406d6
+20,DOM-01,20 - Domain - Mô hình miền Lingora (DOM-01),20-DOM-01.png,1349,1195,a23169430cf468d3d3283d256263e6a8d8a5354cb3ebe5afce62103a278e038d
+21,DATA-01,21 - Data - Migration ERD hiện tại (DATA-01),21-DATA-01.png,1194,638,79fe97220b9e1c82d04b4b9bf61b20615babc7918973393f428711e5200fa3fa
+22,DATA-02,22 - Data - Prisma Model hiện tại (DATA-02),22-DATA-02.png,578,680,2ff19bb277e6d4c2610e7f3e6dad06d624694e3215b8cf00d87f767f1b231915
+23,DATA-03,23 - Data - Logical ERD mục tiêu (DATA-03),23-DATA-03.png,1963,922,ebb62b1a79bb04cc2c3f6db57f39669632d996e33a51799f38e913894a071ce8
+24,SEQ-01,24 - Sequence - Đăng nhập và kiểm tra tài khoản (SEQ-01),24-SEQ-01.png,950,1053,9c3abd79aef0456c4a7ed9ef92072abd65d818313ad16e10abbc41272be0b386
+25,SEQ-02,25 - Sequence - Provision Teacher (SEQ-02),25-SEQ-02.png,1018,880,e2a89c119a1bf4c0b9fa21a04e1e794b133e6c3f517d9e82aabbe39c229ac7f3
+26,SEQ-03,26 - Sequence - Teacher soạn và submit nội dung (SEQ-03),26-SEQ-03.png,1082,1313,59b70d5c2759b9625cab6e24f883e2cf9b1ddb4f24aecb46bba7566b59ef8a12
+27,SEQ-04,27 - Sequence - Review approve và publish (SEQ-04),27-SEQ-04.png,1033,1191,a6f73849747c985330cc058448902242e7842668d47028ce29c699991caeec61
+28,SEQ-05,28 - Sequence - Thay thế revision (SEQ-05),28-SEQ-05.png,1094,1011,da3808fcaff92c57892c8392bc56249d635da36e8b532c09081089ba20162e1f
+29,SEQ-06,29 - Sequence - Học bài và xử lý exercise (SEQ-06),29-SEQ-06.png,1123,1344,79bb9a61c104624728d55b5c0b2c19051f9adef4b3a6f5b975ebc1813039eea6
+30,SEQ-07,30 - Sequence - Placement và Level-up (SEQ-07),30-SEQ-07.png,1118,1357,61079d28db67ff80e628b76dd23082ffb6ced055c3da4237692f10dfde7adc5b
+31,SEQ-08,31 - Sequence - Ôn tập SRS (SEQ-08),31-SEQ-08.png,1113,1750,17fdcc44ea0b19fdd6a75587ca5ee0feea7b64bf8cf894fbcf967b86bcc71c23
+32,SEQ-09,32 - Sequence - Hỗ trợ và disable tài khoản (SEQ-09),32-SEQ-09.png,1139,1203,906f61bc8ab4ee67187be0e77a943507e7c6382cb1317d5e41016a0d7c110e92
+33,SEC-01,33 - Security - Trust Boundary DFD (SEC-01),33-SEC-01.png,1738,707,950cd9771239f1b22eab620b7f7d2daabcb4aeb7bf570e621224072a9f74da17
+34,DEP-01,34 - Deployment - Hệ thống hiện tại (DEP-01),34-DEP-01.png,713,387,052b41722615f6da894581efd93268942a0045c14251f8d1ca9e97f6b01956bc
+35,DEP-02,35 - Deployment - Kiến trúc triển khai mục tiêu (DEP-02),35-DEP-02.png,752,361,75bd8d39fc64b24b742c35f1a5fbcb34864c64b23e5b3148b323c88c25289317

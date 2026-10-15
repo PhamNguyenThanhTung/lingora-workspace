@@ -1,0 +1,56 @@
+@startuml
+!include ../style.puml
+' diagram-id: SYS-04
+' classification: TARGET
+' Authority: ADR-027 as scoped by ADR-030–036; logical modules run in each application.
+' Nested modules are in-process components, not separately deployed network services.
+' Placement recommends starting point; level-up controls progression; no Reassessment/AI runtime.
+' Lesson completion independent of performance; ADR-036 retry/performance and history apply.
+' SRS scheduling/idempotency is trusted; global streak records only qualifying activity.
+' Admin cannot author content or alter learner evidence; support limited and audited.
+' Physical role/RLS/version/result/SRS/audit realization remains deferred.
+left to right direction
+title Sơ đồ kiến trúc thành phần logic của Lingora
+
+package "Ứng dụng web học viên" {
+  component "Giao diện học viên" as LearnerUI
+  package "Xử lý phía máy chủ" as LearnerBackend {
+    component "Xác thực và kiểm tra quyền" as LearnerGuard
+    component "Bài học và tiến độ" as Learning
+    component "Xếp lớp và kiểm tra lên cấp" as Assessment
+    component "Ôn tập và chuỗi ngày học" as Review
+  }
+}
+package "Ứng dụng quản trị và biên soạn" {
+  component "Giao diện giáo viên và quản trị" as StaffUI
+  package "Xử lý phía máy chủ" as StaffBackend {
+    component "Xác thực và kiểm tra quyền" as StaffGuard
+    component "Phân công, biên soạn và xuất bản" as Governance
+    component "Quản lý và hỗ trợ tài khoản" as Accounts
+    component "Báo cáo và nhật ký" as Reports
+  }
+}
+package "Dịch vụ Supabase" {
+  component "Xác thực" as Auth
+  database "Dữ liệu được kiểm soát quyền" as DB
+  storage "Tài liệu được kiểm soát quyền" as Media
+}
+LearnerUI --> LearnerGuard
+LearnerGuard --> Learning
+LearnerGuard --> Assessment
+LearnerGuard --> Review
+LearnerGuard --> Auth
+StaffUI --> StaffGuard
+StaffGuard --> Governance
+StaffGuard --> Accounts
+StaffGuard --> Reports
+StaffGuard --> Auth
+Learning --> DB : Bài học và lịch sử
+Assessment --> DB : Chấm điểm và kết quả
+Review --> DB : Thẻ, lịch ôn và hoạt động
+Governance --> DB : Phân công và phiên bản
+Accounts --> DB : Tài khoản và tóm tắt hỗ trợ
+Reports --> DB : Báo cáo và nhật ký
+Learning --> Media : Tài liệu đã xuất bản
+Governance --> Media : Tài liệu theo phân công
+@enduml

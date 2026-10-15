@@ -1,0 +1,28 @@
+@startuml
+!include ../current-target/style.puml
+' diagram-id: VIEW-RUC-06
+' classification: REPORT
+' canonical coverage: UC-04 curriculum path, UC-06 completion/performance, UC-08 progress/streak.
+' Presentation cleanup only; goal-level view, no detailed rules or internal-processing nodes.
+left to right direction
+skinparam linetype polyline
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam usecaseBackgroundColor white
+title Use Case chức năng – Theo dõi tiến độ và lịch sử
+actor "Học viên" as Learner
+rectangle "HỆ THỐNG LINGORA" {
+  usecase "Xem lộ trình và lesson đủ điều kiện" as Curriculum
+  usecase "Xem tỷ lệ lesson đã hoàn thành" as Progress
+  usecase "Xem lịch sử hoàn thành" as CompletionHistory
+  usecase "Xem performance các lượt hoàn tất" as PerformanceHistory
+  usecase "Xem chuỗi ngày học" as Streak
+}
+Learner -- Curriculum
+Learner -- Progress
+Learner -- CompletionHistory
+Learner -- PerformanceHistory
+Learner -- Streak
+@enduml

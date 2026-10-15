@@ -1,0 +1,247 @@
+[
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-01-learner-onboarding.png",
+    "width": 1640,
+    "height": 1822
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-02-placement-assessment.png",
+    "width": 796,
+    "height": 1296
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-03-lesson-learning.png",
+    "width": 1570,
+    "height": 2561
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-04-level-up-assessment.png",
+    "width": 1110,
+    "height": 1650
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-05-reassessment.png",
+    "width": 465,
+    "height": 193
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-06-srs-review.png",
+    "width": 1545,
+    "height": 1626
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-07-teacher-provisioning.png",
+    "width": 1042,
+    "height": 752
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-08-content-governance.png",
+    "width": 1193,
+    "height": 2256
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/ACT-09-revision-replacement.png",
+    "width": 2058,
+    "height": 1415
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/DATA-01-current-migration-erd.png",
+    "width": 1167,
+    "height": 638
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/DATA-02-current-prisma-model.png",
+    "width": 493,
+    "height": 680
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/DATA-03-target-logical-erd.png",
+    "width": 1930,
+    "height": 939
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/DEP-01-current-deployment.png",
+    "width": 720,
+    "height": 388
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/DEP-02-target-deployment.png",
+    "width": 759,
+    "height": 382
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/DOM-01-core-domain-model.png",
+    "width": 1331,
+    "height": 1313
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEC-01-target-trust-boundary-dfd.png",
+    "width": 1536,
+    "height": 756
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-01-login-authorization.png",
+    "width": 919,
+    "height": 1119
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-02-teacher-provisioning.png",
+    "width": 969,
+    "height": 934
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-03-assignment-authoring-submit.png",
+    "width": 1014,
+    "height": 1291
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-04-review-approve-publish.png",
+    "width": 1032,
+    "height": 1209
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-05-revision-replacement.png",
+    "width": 1059,
+    "height": 1045
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-06-lesson-exercise-submission.png",
+    "width": 1260,
+    "height": 2553
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-07-assessment-submission.png",
+    "width": 1132,
+    "height": 1391
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-08-srs-review.png",
+    "width": 1223,
+    "height": 2157
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SEQ-09-disable-account-enforcement.png",
+    "width": 1094,
+    "height": 1226
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/STA-01-account-status.png",
+    "width": 415,
+    "height": 456
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/STA-02-assignment-lifecycle.png",
+    "width": 547,
+    "height": 196
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/STA-03-content-revision-lifecycle.png",
+    "width": 652,
+    "height": 719
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SYS-01-current-context.png",
+    "width": 948,
+    "height": 267
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SYS-02-target-context.png",
+    "width": 1012,
+    "height": 414
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SYS-03-current-components.png",
+    "width": 1402,
+    "height": 463
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/SYS-04-target-components.png",
+    "width": 1331,
+    "height": 771
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/UC-01-target-overall.png",
+    "width": 703,
+    "height": 1351
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/UC-02-target-learner.png",
+    "width": 687,
+    "height": 973
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/UC-03-target-teacher.png",
+    "width": 649,
+    "height": 675
+  },
+  {
+    "path": "docs/modeling/current-target/rendered/UC-04-target-admin.png",
+    "width": 756,
+    "height": 1253
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-01-auth-profile.png",
+    "width": 477,
+    "height": 662
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-02-learning-context.png",
+    "width": 450,
+    "height": 950
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-03-lesson-practice.png",
+    "width": 1291,
+    "height": 905
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-04-srs-review.png",
+    "width": 865,
+    "height": 407
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-05-assessment.png",
+    "width": 525,
+    "height": 777
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-06-progress-history.png",
+    "width": 543,
+    "height": 662
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-07-teacher-authoring.png",
+    "width": 501,
+    "height": 848
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-08A-admin-content-governance.png",
+    "width": 533,
+    "height": 883
+  },
+  {
+    "path": "docs/modeling/report-usecases/rendered/VIEW-RUC-08B-admin-account-support.png",
+    "width": 532,
+    "height": 581
+  },
+  {
+    "path": "docs/design/physical/physical-erd-assessment.png",
+    "width": 1403,
+    "height": 513
+  },
+  {
+    "path": "docs/design/physical/physical-erd-content.png",
+    "width": 1043,
+    "height": 910
+  },
+  {
+    "path": "docs/design/physical/physical-erd-identity.png",
+    "width": 1369,
+    "height": 627
+  },
+  {
+    "path": "docs/design/physical/physical-erd-learning.png",
+    "width": 894,
+    "height": 1338
+  }
+]
