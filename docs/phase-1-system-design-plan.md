@@ -1,8 +1,8 @@
 # PHASE 1 — SYSTEM ANALYSIS & DESIGN PLAN (IMPLEMENTATION-INDEPENDENT)
 
-> **Document:** `docs/phase-1-system-design-plan.md`  
-> **Status:** `REVISED — READY FOR REVIEW`  
-> **Purpose:** Define a verifiable, implementation-independent System Analysis & Design work package.  
+> **Document:** `docs/phase-1-system-design-plan.md`<br>
+> **Status:** `HISTORICAL (Phase 1 System Design Plan — Executed in M2.1–M2.6; Historical Reference)`<br>
+> **Purpose:** Historical planning record for the Phase 1 System Analysis & Design package.<br>
 > **Boundary:** No code, schema change, migration, database change, API implementation, UI implementation, ERD/UML/DFD execution, requirements change, curriculum change, Placement Mapping change, or M2 implementation is authorized by this plan.
 
 ## 1. Objective

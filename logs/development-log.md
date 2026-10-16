@@ -3080,3 +3080,26 @@ Completed final cleanup and stabilization of Lingora's portable skill stack:
 
 **Tests:** T-SKILL-FINALIZE-001 (PASS).
 **Commit:** accompanying Conventional Commit.
+
+## STALE-AUTHORITY-001 — Lingora stale-authority cleanup (2026-10-16)
+
+Audited and cleaned stale design authority across the repository to ensure no incoming agent treats legacy, superseded, proposed, or downstream artifacts as current product design:
+1. Archived obsolete master implementation plan: Moved plans/master-implementation-and-report-plan.md to plans/archive/2026-10-07-master-implementation-and-report-plan-SUPERSEDED.md with an explicit non-executable header banner, eliminating 1,226 lines of obsolete 6-role Phase 2 roadmap from active planning. Updated pointers in docs/QUICK-REF.md and docs/02-requirements.md.
+2. Removed dead superpowers documentation: Deleted docs/superpowers/ (2026-10-11-drawio-native-render-parity.md and design spec) following the complete removal of the superpowers skill framework in the previous task.
+3. Added unambiguous classification banners to reference documents:
+   - docs/00-master-plan.md: Marked HISTORICAL / SUPERSEDED REFERENCE ONLY (6-role model superseded by ADR-034; AI GEC out of active scope per ADR-014).
+   - docs/01-architecture.md: Updated header noting Phase 0 6 roles are historical reference superseded by ADR-034/035.
+   - docs/03-api-contract.md: Marked LEGACY SUPPORTING SERVICE REFERENCE (contract applies solely to stateless lingora-ai/api, not core product API).
+   - docs/04-data-model.md: Marked HISTORICAL SCHEMA & TARGET PHYSICAL REFERENCE (logical domain authority governed by ADR-030–036 and canonical modeling; target physical schema is PROPOSED / DEFERRED).
+   - docs/06-system-analysis.md: Marked HISTORICAL / SUPERSEDED (Phase 0 System Analysis Reference).
+   - docs/07-data-dictionary.md: Marked HISTORICAL / LEGACY IMPLEMENTATION REFERENCE.
+   - docs/09-placement-and-jump-specification.md: Marked HISTORICAL / SUPERSEDED REFERENCE (Placement defaults superseded by ADR-032; Jump/Reassessment deferred from MVP by ADR-033/036).
+   - docs/phase-1-m2-4-architecture-security.md & docs/phase-1-m2-6-design-handoff.md: Added top-level supersession notices regarding the 6-role model.
+   - docs/phase-1-system-design-plan.md: Reclassified as HISTORICAL REFERENCE.
+4. Isolated academic reports and presentations: Created directory READMEs in docs/report/ and docs/presentation/ (and updated docs/project-1/README.md) classifying all presentations, docx, and reports as frozen historical academic snapshots that do not govern current product design.
+5. Reconciled decision statuses in logs/decision-log.md: Explicitly tagged ADR-014, ADR-019, ADR-020, ADR-026, ADR-027, and ADR-029 as partially or fully superseded by ADR-030–036.
+6. Embedded authority guard rule in AGENTS.md and formal source-of-truth chain in docs/README.md: Established the 5-tier authority hierarchy (Current Decisions ADR-030–036/041/042 -> Approved Current Target Modeling & Use Cases -> Implementation Specs -> Reference/Legacy Architecture -> Legacy Codebase Evidence).
+7. Strict invariants maintained: Zero edits to product code (lingora-web, lingora-admin, lingora-ai), Prisma schema, SQL migrations, or database state. Class Diagram remains IN PROGRESS.
+
+**Tests:** T-STALE-AUTHORITY-001 (PASS).
+**Commit:** accompanying Conventional Commit.

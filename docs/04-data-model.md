@@ -1,8 +1,12 @@
-# 04 - Lingora Data Model
+# 04 - Lingora Data Model (Historical & Target Physical Reference)
 
-> **Classification:** This file contains `HISTORICAL` Phase 0 schema descriptions and `TARGET` design notes; it is not authority for the currently deployed database. ADR-034 controls three-role business semantics and ADR-035 controls logical identity/security, assignment/content, assessment, SRS, and audit behavior only. ADR-030/031/032/033 control their recorded domain policy. None approves physical schema. Current repository artifacts are [`lingora-admin/prisma/schema.prisma`](../lingora-admin/prisma/schema.prisma) and ordered SQL migrations in `lingora-admin/prisma/migrations/`; they disagree, including the legacy Prisma role/assigned-role model versus the two-value SQL role enum, and do not establish which migrations are applied remotely. Physical role/assignment/publication/assessment/SRS/audit realization and live DB state remain `DEFERRED / UNVERIFIED` under P0-D07; do not infer them from this document or Prisma alone. Before implementation/migration, reconcile live DB state read-only against Prisma, migration history, roles, grants, RLS/policies, and RPCs. Accepted logical targets are linked from [`docs/README.md`](README.md).
-
-> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
+> **CLASSIFICATION: HISTORICAL SCHEMA & TARGET PHYSICAL REFERENCE — NOT CURRENT LOGICAL DOMAIN AUTHORITY.**
+> - **Domain authority:** ADR-030–036 and current canonical modeling (`docs/modeling/current-target/`) control logical domain entities, relationships, and invariants. Physical data structures do NOT define domain design.
+> - **Role model:** The legacy 6-role descriptions and 2-role SQL schemas below are `HISTORICAL / SUPERSEDED`. The current business role model is strictly 3 roles (`Admin`, `Teacher`, `Learner`) per ADR-034.
+> - **Legacy implementation:** [`lingora-admin/prisma/schema.prisma`](../lingora-admin/prisma/schema.prisma) and SQL migrations in `lingora-admin/prisma/migrations/` represent legacy implementation evidence; live database state remains UNVERIFIED.
+> - **Physical proposals:** Detailed physical schema proposals (e.g. `docs/design/physical/`) remain PROPOSED / UNAPPROVED; physical mapping remains deferred under P0-D07.
+>
+> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014 — Historical Reference):**
 > Target database schema aligns with [`docs/plantuml/erd-mvp-learning.puml`](plantuml/erd-mvp-learning.puml) and Phase 0 role/content specifications.
 > Historical migrations (`202608140001_init`, `202608140002_auth_rls_storage_record_review`, `202608140003_storage_two_bucket_size_enforcement`) and Git history are strictly preserved for audit.
 

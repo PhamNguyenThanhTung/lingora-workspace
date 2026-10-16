@@ -13,6 +13,8 @@ At the start of every new task, read in this order:
 
 The task-specific source selected by `docs/README.md` controls its topic. `AGENTS.md` controls agent workflow; it does not approve product behavior. A decision is approved only when the designated approval record says so. A task status alone, a design document, a test log, or a later edit does not approve a decision.
 
+Historical artifacts, legacy implementation, old ADRs, archived plans, database schemas/migrations, reports, presentations, and superseded specifications must not be used to infer current Lingora product or domain behavior unless the current source-of-truth chain explicitly references them. Existing implementation is evidence of what exists, not automatic authority for what the redesigned system should become.
+
 Do not reread canonical documents merely to reconfirm information already available in `docs/QUICK-REF.md`.
 Read the canonical source only when the task actually requires its detail. During the same uninterrupted
 task/session, do not reread `HANDOFF.md` unnecessarily after the initial session/gap read.

@@ -3206,3 +3206,21 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Output:** exit 0; clean whitespace across all modified and deleted files.
 - **Evidence:** Updated `AGENTS.md`, updated `plans/current-task.md`, updated `HANDOFF.md`, 104 files deleted.
 - **Commit:** accompanying Conventional Commit; no push.
+
+## T-STALE-AUTHORITY-001 — Lingora stale-authority cleanup (2026-10-16)
+
+- **Environment:** Microsoft Windows NT 10.0.26200.0; PowerShell 7.6.5 / 5.1; entry HEAD `d8d7457`. Documentation & design authority cleanup; zero product code, Prisma schema, migration, or DB changes.
+- **Command:** `git mv plans/master-implementation-and-report-plan.md plans/archive/2026-10-07-master-implementation-and-report-plan-SUPERSEDED.md`; `git rm -r docs/superpowers/`.
+- **Output:** Exit 0; moved 1,226-line obsolete 6-role Phase 2 master implementation plan to archive with header marked `SUPERSEDED / HISTORICAL PLANNING DRAFT — NOT EXECUTABLE`; permanently deleted obsolete `docs/superpowers/` directory (`2026-10-11-drawio-native-render-parity.md` and design spec). **Verdict:** PASS — stale executable authority eliminated.
+- **Command:** Header / classification audit across canonical and historical specifications:
+  - Added explicit top-level banners and status classifications to `docs/00-master-plan.md`, `docs/01-architecture.md`, `docs/03-api-contract.md`, `docs/04-data-model.md`, `docs/06-system-analysis.md`, `docs/07-data-dictionary.md`, `docs/09-placement-and-jump-specification.md`, `docs/phase-1-m2-4-architecture-security.md`, `docs/phase-1-m2-6-design-handoff.md`, `docs/phase-1-system-design-plan.md`.
+  - Added directory indices / classification banners to `docs/project-1/README.md`, `docs/report/README.md`, `docs/presentation/README.md` identifying them as `REPORT / PRESENTATION ARTIFACT — FROZEN ACADEMIC SNAPSHOTS`.
+  - Added authority order guard rule to `AGENTS.md` and updated `docs/README.md` with explicit 5-tier source-of-truth chain and classification tags.
+  - Reconciled ADR statuses in `logs/decision-log.md` (ADR-014, ADR-019, ADR-020, ADR-026, ADR-027, ADR-029).
+  - Updated links in `docs/QUICK-REF.md` and `docs/02-requirements.md` pointing to the archived master plan.
+- **Output:** All documents clearly classified with zero ambiguity; a fresh agent cannot mistake historical 6-role, legacy AI, unapproved physical schema, or deferred Jump specifications for current authority. **Verdict:** PASS — design authority disambiguated.
+- **Command:** `git diff --check`.
+- **Output:** Exit code 0; zero whitespace or patch format errors across all modified, renamed, and deleted files. **Verdict:** PASS — clean diff.
+- **Scope & Safety Invariant:** Zero changes to runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), Prisma schema, SQL migrations, database state, UI, or API implementation. Class Diagram remains `IN PROGRESS`. **Verdict:** PASS.
+- **Evidence:** Updated canonical and reference docs, `plans/current-task.md`, `logs/decision-log.md`, `HANDOFF.md`.
+- **Commit:** accompanying Conventional Commit; no push.

@@ -1,9 +1,15 @@
-# 00 - Lingora Master Plan
+# 00 - Lingora Master Plan (Phase 0 Historical Baseline)
 
-> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
-> LINGORA is a **Software Engineering CORE** language learning system with an **AI SUPPORTING CAPABILITY** (Grammatical Error Correction - GEC).
+> **CLASSIFICATION: HISTORICAL / SUPERSEDED REFERENCE ONLY — NOT CURRENT PRODUCT OR MILESTONE AUTHORITY.**
+> This document records the historical Phase 0 baseline (2026-09-14) and ADR-014. It is retained strictly for academic auditability, background rationale, and roadmap evolution history.
+> - **Role model:** The 6-role model below was formally superseded on 2026-10-10 by ADR-034 (exactly 3 business roles: `Admin`, `Teacher`, `Learner`). Do NOT use the 6-role model for current design or implementation.
+> - **AI scope:** AI / GEC is a supporting capability, currently OUT OF SCOPE for active Phase 2 implementation, testing, demo, and acceptance.
+> - **Current roadmap & tasks:** Phase 0 priority tiers (P0/P1/P2) and forward roadmap below are historical records; current task authority lives only in `plans/current-task.md`, and current domain design is at Class Diagram (IN PROGRESS).
+>
+> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014 — Historical Context):**
+> LINGORA was structured as a **Software Engineering CORE** language learning system with an **AI SUPPORTING CAPABILITY** (Grammatical Error Correction - GEC).
 > Canonical Phase 0 reference documents:
-> - [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md) (6 roles, 19 MVP functions, 5 target languages: English, Vietnamese, French, Chinese, Japanese).
+> - [`docs/archive/phase-0/phase-0-roles-and-mvp-final.md`](archive/phase-0/phase-0-roles-and-mvp-final.md) (historical 6 roles, 19 MVP functions).
 > - [`docs/phase-0-survey-requirements.md`](phase-0-survey-requirements.md) & [`docs/phase-0-mock-survey-report.md`](phase-0-mock-survey-report.md) (Requirements & survey findings).
 > - Canonical Phase 0 PlantUML diagrams in [`docs/plantuml/`](plantuml/) (`use-case-mvp-overview`, `role-permission-matrix`, `system-architecture-mvp`, etc.).
 > ADR-014 formally supersedes ADR-010's "two equal academic tracks": Software Engineering is the primary system core, and GEC is a supporting capability via pretrained model or external API without requiring local training pipelines. DKT-LSTM, HLR, DQN, and generative MultiWOZ dialogue are **SUPERSEDED** historical targets.

@@ -1,14 +1,14 @@
 # Current task pointer
 
-**Active task:** Finalize Lingora portable skill stack (2026-10-16).
-**Spec:** Direct user instruction — portable skill stack finalization, Superpowers audit & migration to host-level Addy + Ponytail.
+**Active task:** Lingora stale-authority cleanup (2026-10-16).
+**Spec:** Direct user instruction — audit and clean stale design authority, classify historical/proposed/legacy artifacts, eliminate 6-role / obsolete design confusion before resuming Class Diagram.
 **Status:** DONE
-**Work packages:**
-- WP-01: Audit installed Superpowers skills, plugin plumbing, and repository references — PASS.
-- WP-02: Map Superpowers capabilities to Addy + Ponytail and verify host availability — PASS.
-- WP-03: Remove generic vendored Superpowers skills and obsolete plugin plumbing (104 files removed, pptx retained) — PASS.
-- WP-04: Simplify AGENTS.md workflow ceremony (proportional gates, approval boundary, no departmental personas) — PASS.
-- WP-05: Verification, test log (T-SKILL-FINALIZE-001) & development log (SKILL-FINALIZE-001) recording — PASS.
+**Current work packages:**
+- WP-01: Repository-wide scan for stale concepts (six roles, obsolete curriculum/progress/placement, unapproved physical schema) — PASS.
+- WP-02: Review and reclassify authoritative-looking documents (`docs/00`, `docs/03`, `docs/04`, `plans/master-implementation*`) — PASS.
+- WP-03: Update `docs/README.md` and `docs/QUICK-REF.md` with verified source-of-truth chain and authority classifications — PASS.
+- WP-04: Audit `logs/decision-log.md` and ensure superseded ADRs are explicitly marked — PASS.
+- WP-05: Update `AGENTS.md` authority guard & record verification in logs — PASS.
 
-**Design stage:** Class Diagram IN PROGRESS (unchanged; ready for authorization/continuation).
-**Next permitted action:** User may authorize resuming Class Diagram work or starting an authorized implementation task. No product code or database schema was modified.
+**Design stage:** Class Diagram IN PROGRESS (ready to resume).
+**Next permitted action:** Await user authorization to resume Class Diagram review/completion. No follow-on task is active until recorded.

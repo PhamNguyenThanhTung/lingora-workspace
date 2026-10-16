@@ -1,10 +1,11 @@
 # Lingora — Phân tích Hệ thống & Đặc tả Yêu cầu (System Analysis & Requirement Specification)
 
-> **Mã tài liệu:** `docs/06-system-analysis.md`  
-> **Trạng thái:** `READY FOR REQUIREMENTS REVIEW`  
-> **Phiên bản:** `1.3.0` (Phase 0 Canonical Baseline & Requirements Gap Synchronization)  
-> **Ngày hiệu lực:** `2026-09-14`  
-> **Căn cứ pháp lý & kỹ thuật:** `docs/00`–`docs/05`, `ADR-001`–`ADR-014`, `docs/phase-0-final-product-owner-decision-sheet.md`, `docs/phase-0-requirements-gap-audit.md`, `docs/phase-0-synthetic-stakeholder-research.md`.
+> **Mã tài liệu:** `docs/06-system-analysis.md`<br>
+> **Trạng thái:** `HISTORICAL / SUPERSEDED (Phase 0 System Analysis Reference)`<br>
+> **Phân loại:** `HISTORICAL / SUPERSEDED`. Tài liệu phân tích hệ thống thời kỳ Phase 0 (2026-09-14). Các giả định 6 vai trò, quy trình và danh mục Use Case cũ tại đây đã được thay thế bởi `ADR-034/035`, `docs/use-case-specifications.md` (14 Use Cases) và bộ sơ đồ canonical `docs/modeling/current-target/`. Không dùng tài liệu này làm căn cứ nghiệp vụ hiện hành.<br>
+> **Phiên bản:** `1.3.0` (Phase 0 Canonical Baseline & Requirements Gap Synchronization)<br>
+> **Ngày hiệu lực:** `2026-09-14`<br>
+> **Căn cứ pháp lý & kỹ thuật:** `docs/00`–`docs/05`, `ADR-001`–`ADR-014`.
 
 ---
 

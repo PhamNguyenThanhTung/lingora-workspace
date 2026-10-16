@@ -39,6 +39,10 @@ Under the Phase 0 Rebuild, the product architecture is formally clarified: **Sof
 - The AI API in `lingora-ai/api/` is maintained as a lightweight, stateless supporting service implementing standard contracts (`/health/*`, `/v1/model/info`, and target `/v1/gec/correct`).
 - Complex ML training pipelines, model artifacts, and datasets are removed from active runtime scope.
 
+### Status
+
+`PARTIALLY SUPERSEDED — 6-role model superseded by ADR-034 (3 business roles: Admin, Teacher, Learner); AI supporting capability deferred from active Phase 2 implementation.`
+
 ---
 
 ## ADR-012 — Phase 0 product-design reset
@@ -1241,7 +1245,7 @@ Milestone M2.2 bridges the logical domain/data foundation (M2.1) and curriculum 
 ### Consequences
 
 - Establishes canonical behavioral baseline for M2.3 API contract alignment and M3 runtime implementations.
-- Status set to `READY FOR INDEPENDENT REVIEW` (`DESIGN COMPLETE: NOT CLAIMED`, `ACCEPTED: NOT CLAIMED`).
+- Status: `PARTIALLY SUPERSEDED by ADR-030..036 / use-case-specifications.md` (ADR-034 for 3 business roles; ADR-032 for Placement; ADR-033 for lesson completion & deferred Jump; ADR-036 for attempt scoring and deferred Reassessment; `docs/use-case-specifications.md` for current 14 UC identities). Retained as historical M2.2 baseline evidence.
 
 ---
 
@@ -1281,7 +1285,7 @@ Milestone M2.2 independent review returned a verdict of `FAIL` citing 16 P1 and 
 
 - All 16 P1 findings and 15 P2 hygiene findings are completely resolved.
 - M2.2 artifacts achieve 100% semantic consistency with D1–D4 and M2.1 frozen baselines.
-- Status set to `READY FOR INDEPENDENT RE-REVIEW` (`DESIGN COMPLETE: NOT CLAIMED`, `ACCEPTED: NOT CLAIMED`, `COMMIT: NOT CREATED`).
+- Status: `PARTIALLY SUPERSEDED` by ADR-034 (3 business roles replace 6 roles) and ADR-030–036 / `docs/use-case-specifications.md`. Retained as historical remediation evidence.
 - Zero runtime application code, zero DB migrations/schema changes created.
 
 ---
@@ -1476,7 +1480,7 @@ Approved implementation plan `plans/m2-4-architecture-security-plan.md` required
 - Master specification `docs/phase-1-m2-4-architecture-security.md` and 3 PlantUML diagrams (`docs/plantuml/component-architecture-m24.puml`, `docs/plantuml/deployment-boundary-m24.puml`, `docs/plantuml/security-matrix-m24.puml`) establish the complete architecture and security design baseline for M2.5/M2.6.
 - Secondary docs reconciled: `docs/01-architecture.md` (§3.8) and `docs/05-traceability-matrix.md` (§10).
 - Zero application runtime code, zero DB schema/migrations, zero RLS SQL written, `docs/03-api-contract.md` 100% byte-identical.
-- Milestone status: `READY FOR INDEPENDENT REVIEW` (`M2.4 ACCEPTANCE: NOT CLAIMED`, `COMMIT: NOT CREATED`).
+- Milestone status: `PARTIALLY SUPERSEDED by ADR-034/035` (6 roles superseded by ADR-034 3 business roles; security policy updated by ADR-035). Retained as historical M2.4 architecture baseline.
 
 ---
 
@@ -1504,6 +1508,7 @@ Milestone M2.4 completed implementation, Independent Review (`PASS WITH NON-BLOC
 ### Consequences
 
 - M2.4 architecture/security package is the accepted baseline for M2.5 Design Validation.
+- Status: `HISTORICAL / PARTIALLY SUPERSEDED by ADR-034/035` for role/security semantics.
 - `COMMIT: NOT CREATED` in this task.
 
 ---
@@ -1559,7 +1564,8 @@ Milestone M2.6 completed implementation (Handoff Specification with 7 deliverabl
 
 ### Consequences
 
-- The M2.6 handoff package is the accepted baseline for Phase 2 implementation planning.
+- The M2.6 handoff package is the accepted baseline for Phase 1 closeout; it does NOT authorize Phase 2 implementation.
+- Status: `HISTORICAL (Phase 1 Handoff; superseded in part by ADR-030–036 for role, curriculum, and placement/progression semantics)`.
 - `COMMIT: NOT CREATED` in this task.
 
 ---

@@ -1,5 +1,12 @@
-# 03 - Lingora AI API Contract
+# 03 - Lingora AI API Contract (Legacy AI Supporting Service)
 
+> **CLASSIFICATION: LEGACY SUPPORTING SERVICE REFERENCE — NOT CURRENT CORE PRODUCT API CONTRACT.**
+> This document defines the HTTP boundary for the supporting stateless AI service (`lingora-ai/api`), retained for backward compatibility.
+> - **NOT core product API:** This is NOT a general application or domain API contract for Lingora web/admin.
+> - **Core learning independence:** Core learning, exercises, progress, and deterministic SRS are 100% independent of this AI service (ADR-014).
+> - **AI feature scope:** AI / GEC is currently OUT OF ACTIVE SCOPE for Phase 2 implementation, testing, and demo.
+> - **Domain/API sequencing:** Core product domain design is currently at Class Diagram (IN PROGRESS); core backend API contracts depend on domain structure and are not yet finalized.
+>
 > **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
 > This document defines the HTTP boundary for the supporting stateless AI service (`lingora-ai/api`).
 > Direct browser-to-FastAPI calls are forbidden; all calls must flow through the Next.js server-side Route Handler proxy in `lingora-web` with an 8-second timeout.

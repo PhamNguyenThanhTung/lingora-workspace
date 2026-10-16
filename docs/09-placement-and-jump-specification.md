@@ -2,11 +2,10 @@
 
 > **Mã tài liệu:** `docs/09-placement-and-jump-specification.md`
 > **Loại:** ASSESSMENT SPECIFICATION (documentation only — không implement Placement/Jump, không schema, không code)
-> **Trạng thái:** `READY FOR REQUIREMENTS FREEZE` (Placement Mapping A Approved by Product Owner)
-> **Căn cứ:** D5/D6/D7/D8 (immutable); `docs/08-english-a1-curriculum.md` (6 Units U1–U6, 24 lessons, ~200 từ); Quyết định phê duyệt của Product Owner.
-> **Ranh giới:** Assessment = conceptual mode của `Exercise` (D4 — không tạo entity). Mọi threshold/band là
-> `PRODUCT POLICY / CURRICULUM PLACEMENT RULE`, không phải scientific validation, không phải CEFR certification.
-> `[ASSUMPTION]` = giả định kỹ thuật/sư phạm chưa kiểm chứng; `[OPEN DECISION]` = cần PO chốt.
+> **Trạng thái:** `HISTORICAL / SUPERSEDED REFERENCE` (Placement defaults superseded by ADR-032; Jump deferred in MVP by ADR-033)
+> **Phân loại:** `HISTORICAL / SUPERSEDED`. Tài liệu đặc tả Placement Mapping A và Jump thử nghiệm ban đầu. Theo ADR-032, Placement chỉ gợi ý level bắt đầu (không cấp chứng chỉ, không tạo điểm proficiency tuyệt đối). Theo ADR-033/036, cơ chế nhảy cóc (Jump) và Reassessment đã bị HOÃN (DEFERRED) khỏi phạm vi MVP. Mọi ngưỡng câu hỏi/thời gian tại đây là candidate tham khảo, không phải platform invariant.
+> **Căn cứ:** D5/D6/D7/D8 (historical); `docs/08-english-a1-curriculum.md`; ADR-032/033.
+> **Ranh giới:** Assessment = conceptual mode của `Exercise` (D4 — không tạo entity). Mọi threshold/band là `PRODUCT POLICY / CURRICULUM PLACEMENT RULE`, không phải scientific validation, không phải CEFR certification.
 
 ---
 

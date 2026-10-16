@@ -1,14 +1,18 @@
 # 01 - Lingora System Architecture
 
-> **Classification:** Phase 0 architecture below is `HISTORICAL`/reference. The accepted M2.4 design in [`phase-1-m2-4-architecture-security.md`](phase-1-m2-4-architecture-security.md) is the architecture `TARGET` (ADR-027), not proof of implementation. ADR-030/031/032/033/034/035 record the accepted curriculum, learner-state, assessment/progression, three-role business, and logical security policies only. ADR-034 controls business roles and responsibilities; ADR-035 controls trusted identity, server-side role/status authorization, account-disable enforcement, assessment/SRS trust boundaries, content lifecycle invariants, and logical audit policy. Physical role mapping/RLS, database reconciliation, and all physical realization remain deferred under P0-D07. For `CURRENT`, inspect repository code and perform read-only live-database reconciliation before asserting deployed state. These ADRs do not authorize implementation or change physical schema.
-
-> **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014):**
-> LINGORA is structured as a **Software Engineering CORE** platform with a lightweight **AI SUPPORTING CAPABILITY** (GEC), adhering to [`docs/plantuml/system-architecture-mvp.puml`](plantuml/system-architecture-mvp.puml):
-> - **Human Actors:** 6 canonical roles — `Learner`, `Lesson Creator`, `Moderator`, `Administrator`, `Operations Staff`, and `Organizational Manager`.
-> - **Client Applications:** `Learner Web` (`lingora-web`) for learners; `Admin Web` (`lingora-admin`) for content creators, moderators, operations staff, and administrators.
+> **Classification:** Phase 0 architecture below is `HISTORICAL` reference. The accepted M2.4 design in [`phase-1-m2-4-architecture-security.md`](phase-1-m2-4-architecture-security.md) is the architecture `TARGET` (ADR-027), subject to subsequent ADRs.
+> - **Current business role model:** Exactly 3 business roles (`Admin`, `Teacher`, `Learner`) per ADR-034. The 6-role actor model and associated permission matrices below are `HISTORICAL / SUPERSEDED`.
+> - **Security & boundaries:** ADR-035 controls trusted server-side identity/status, account-disable enforcement, assessment/SRS trust boundaries, content lifecycle, and logical audit policy. Physical role mapping/RLS and database realization remain deferred under P0-D07.
+> - **AI status:** AI / GEC is a supporting capability, currently OUT OF SCOPE for active Phase 2 implementation.
+> - **Current state:** Inspect repository code for `CURRENT` evidence; live DB and deployed state remain UNVERIFIED.
+>
+> **Phase 0 Canonical Baseline (Historical Reference — aligned 2026-09-14 & ADR-014):**
+> LINGORA was historically structured under Phase 0 with:
+> - **Human Actors (Historical 6 Roles):** `Learner`, `Lesson Creator`, `Moderator`, `Administrator`, `Operations Staff`, and `Organizational Manager` (superseded by ADR-034).
+> - **Client Applications:** `Learner Web` (`lingora-web`) for learners; `Admin Web` (`lingora-admin`) for content authoring, review, and admin.
 > - **Application Services:** `Learner API`, `Admin API`, and `Auth & RBAC` (Supabase GoTrue, SSR session handling, and database-level RLS).
 > - **Backend Services (Supabase):** PostgreSQL 15 with RLS + RPC, and Supabase Storage (`lingora-avatars`, `lingora-media`).
-> - **Supporting AI Service:** Stateless FastAPI service (`lingora-ai/api`) providing GEC (`/v1/gec/correct`) via pretrained model or external API provider; `/v1/srs/schedule` and `/v1/chat/roleplay` remain compatibility surfaces.
+> - **Supporting AI Service:** Stateless FastAPI service (`lingora-ai/api`) providing supporting GEC; legacy compatibility surfaces retained.
 
 
 ## Phase 0 Target Architecture

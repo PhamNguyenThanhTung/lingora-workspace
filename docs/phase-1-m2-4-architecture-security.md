@@ -1,11 +1,13 @@
+> **SUPERSEDED / HISTORICAL NOTICE:** Mô hình 6 vai trò tác nhân và ma trận phân quyền cũ trong tài liệu này đã được thay thế bởi `ADR-034` (chính xác 3 vai trò nghiệp vụ: `Admin`, `Teacher`, `Learner`) và `ADR-035` (chính sách an ninh logic, vòng đời phân công/soạn thảo/xuất bản, tính bảo mật đề thi và kiểm toán). Tài liệu này được bảo toàn làm bằng chứng lịch sử thiết kế kiến trúc Phase 1; không suy diễn yêu cầu triển khai 6 vai trò từ tài liệu này.
+
 # LINGORA — PHASE 1 MILESTONE M2.4: ARCHITECTURE & SECURITY DESIGN
 
-> **Mã tài liệu:** `docs/phase-1-m2-4-architecture-security.md`  
-> **Giai đoạn:** Phase 1 — System Analysis & Design (Implementation-Independent)  
-> **Mốc thực thi:** Milestone M2.4 (Component Architecture, Deployment/Runtime Boundary & Security Responsibility Matrix)  
-> **Trạng thái:** `IMPLEMENTED — READY FOR INDEPENDENT REVIEW` (Triển khai thiết kế hoàn tất tuân thủ kế hoạch được phê duyệt; KHÔNG tuyên bố Design Freeze; KHÔNG tự ý coi là ACCEPTED; KHÔNG tuyên bố Target Runtime đã sẵn sàng vận hành).  
-> **Căn cứ kế hoạch:** `plans/m2-4-architecture-security-plan.md`, `docs/phase-1-system-design-plan.md` §7 (Artifacts #13, #14, #16; Cổng kiểm định D-G5, D-G6).  
-> **Trạng thái tiếp nhận (Entry State):** `M2.1 ACCEPTED FOR M2.2`, `M2.2 ACCEPTED FOR M2.3`, `M2.3 ACCEPTED FOR M2.4` (commits `379c259`, `d37fc78`), `M2.4 PLAN = APPROVED`.  
+> **Mã tài liệu:** `docs/phase-1-m2-4-architecture-security.md`<br>
+> **Giai đoạn:** Phase 1 — System Analysis & Design (Implementation-Independent)<br>
+> **Mốc thực thi:** Milestone M2.4 (Component Architecture, Deployment/Runtime Boundary & Security Responsibility Matrix)<br>
+> **Trạng thái:** `HISTORICAL / TARGET ARCHITECTURE (Partially Superseded by ADR-034/035)`<br>
+> **Căn cứ kế hoạch:** `plans/m2-4-architecture-security-plan.md`, `docs/phase-1-system-design-plan.md` §7 (Artifacts #13, #14, #16; Cổng kiểm định D-G5, D-G6).<br>
+> **Trạng thái tiếp nhận (Entry State):** `M2.1 ACCEPTED FOR M2.2`, `M2.2 ACCEPTED FOR M2.3`, `M2.3 ACCEPTED FOR M2.4` (commits `379c259`, `d37fc78`), `M2.4 PLAN = APPROVED`.<br>
 > **Ranh giới nghiêm ngặt:** KHÔNG mã nguồn runtime (`lingora-web`, `lingora-admin`, `lingora-ai`), KHÔNG Prisma schema/migration/DDL, KHÔNG RLS SQL scripts, KHÔNG lưu trữ hoặc phơi bày secret thực tế, KHÔNG sửa đổi tài liệu `docs/03-api-contract.md` (giữ nguyên 100% byte-identical / READ-ONLY), KHÔNG sáng chế Use Case mới (`UC-16/17/18`), KHÔNG sáng chế Behavioral Family mới (`BF-16`), GEC là dịch vụ AI stateless (`BF-14`, zero UC, transient diffs only, KHÔNG sở hữu tiến trình học tập), KHÔNG thực thể ma (`no AssessmentSession entity exists`, `no ExerciseAttempt entity exists`), giữ nguyên các quyết định mở ở trạng thái `OPEN / CONFIGURABLE / PENDING VALIDATION`.
 
 ---

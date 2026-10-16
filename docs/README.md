@@ -6,26 +6,36 @@
 
 The repository has topic-specific authorities; `docs/` membership alone does not make a statement current or approved. At task start, read `plans/current-task.md`, `docs/QUICK-REF.md`, `HANDOFF.md`, then this index. Read the controlling topic source listed below. `AGENTS.md` controls agent procedure; this file controls documentation authority and supersession.
 
-### Authority order
+### Authority order (Current Source-of-Truth Chain)
 
-1. The active, human-authorized scope in `plans/current-task.md` controls what may be done in the current task. An approval applies only to that scope.
-2. `logs/decision-log.md` records approved architecture and product decisions. A decision controls only the subject it explicitly resolves; a later approval supersedes an earlier one only within the approved scope.
-3. Immutable snapshots in `plans/approved/` authorize only the named scope while referenced by the active `plans/current-task.md`. Completed or superseded snapshots are `HISTORICAL`; their old approval does not authorize new work. A plan draft or task status without current approval evidence and snapshot does not authorize implementation.
-4. Accepted design documents control their named TARGET design only. They do not prove runtime or database deployment.
-5. Repository source and ordered SQL migrations establish CURRENT repository artifacts. A live deployment or applied database state requires dated environment/catalog evidence; prose, Prisma alone, and old test logs do not establish it.
-6. `plans/master-implementation-and-report-plan.md` is retained historical planning/backlog context. Reconcile any applicable item against current ADRs and the Class Diagram review before reuse; it is not a current execution roadmap or milestone authorization.
+To determine current Lingora product, domain, and behavioral design, agents MUST follow this strict precedence:
 
-If the authorities disagree, label the affected rule `CONFLICT`, do not combine or select behavior by inference, and keep dependent implementation out of scope until the named decision is approved and recorded.
+1. **Current accepted product/domain ADRs** that are not superseded (`logs/decision-log.md`: ADR-030–036, ADR-041/042). A decision controls only the subject it explicitly resolves.
+2. **Current requirements & behavioral/modeling sources**:
+   - [`docs/use-case-specifications.md`](use-case-specifications.md) (Current 14-entry behavioral catalog; UC-03 reminder deferred; Reassessment absent from MVP).
+   - [`docs/02-requirements.md`](02-requirements.md) (Current MVP Baseline Addendum: ADR-036 attempt scoring, vocabulary SRS enrollment, curriculum availability; ADR-041 SRS session boundaries; ADR-042 Study Focus).
+   - [`docs/modeling/current-target/`](modeling/current-target/) (Canonical 36-source baseline: Use Case baseline, Activity baseline, Class Diagram DOM-01 IN PROGRESS).
+3. **Current active task & authorized scope**:
+   - [`plans/current-task.md`](../plans/current-task.md) controls what work is currently active and authorized.
+   - Completed snapshots in `plans/approved/` and archived plans in `plans/archive/` are historical evidence; they do not authorize new work or override current domain rules.
+4. **Current implementation (Evidence only)**:
+   - Web application source (`lingora-web/`), Admin app (`lingora-admin/`), Prisma schema (`schema.prisma`), and SQL migrations establish what physically exists in the repository today. They do NOT define target domain behavior, desired role permissions, or future architecture.
+5. **Historical planning, downstream proposals & reports (Non-Authoritative)**:
+   - Archived master plans (`plans/archive/2026-10-07-master-implementation-and-report-plan-SUPERSEDED.md`), Phase 0 master plan (`docs/00-master-plan.md`), proposed physical schemas (`docs/design/physical/`), and report workspaces (`docs/report/`, `docs/project-1/`, `docs/presentation/`) are retained historical references or unapproved proposals. They must NEVER override the current source-of-truth chain.
+
+If authorities disagree, label the affected rule `CONFLICT`, do not combine or select behavior by inference, and route it to the owner in the active decision backlog.
 
 ### Required classifications
 
 | Classification | Meaning |
 |---|---|
-| `CURRENT` | Verified repository artifacts or dated runtime evidence; not a future design claim. |
-| `TARGET` | Approved future design; not implemented or deployed by virtue of being documented. |
-| `PROPOSED` | Direction or detail with no recorded approval. |
-| `HISTORICAL` | Previous approved or implemented state retained as evidence. |
-| `SUPERSEDED` | No longer controlling; the replacing source is named. |
+| `CURRENT AUTHORITY` | Primary source controlling current product/domain behavior (active ADRs, current UC specs, MVP addenda, active task). |
+| `CURRENT SUPPORTING REFERENCE` | Supporting context, design tokens, or reference checklists; does not override primary authority. |
+| `HISTORICAL / SUPERSEDED` | Previously valid design or decision that has been replaced (e.g. 6-role models, legacy Jump/reassessment rules, Phase 0 plans). |
+| `LEGACY IMPLEMENTATION EVIDENCE` | Physical code, Prisma models, migrations, or seed data showing what currently exists; not target design authority. |
+| `PROPOSED / UNAPPROVED` | Design work or physical schema proposals that have not crossed formal approval boundaries (e.g. `docs/design/physical/`). |
+| `REPORT / PRESENTATION ARTIFACT` | Academic reports, presentation scripts, or slide decks; frozen historical snapshots not governing product design. |
+| `DELETE CANDIDATE` | Artifact with no historical, operational, verification, or design value that risks confusion. |
 | `CONFLICT` | Sources disagree and no controlling approval resolves the difference. |
 
 `ke-hoach-chi-tiet/` was the legacy planning directory. It has been removed after full migration verification (M0). The migration map below is retained as a historical traceability record only.

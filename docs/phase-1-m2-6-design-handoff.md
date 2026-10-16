@@ -1,11 +1,13 @@
+> **SUPERSEDED / HISTORICAL NOTICE:** Gói bàn giao thiết kế M2.6 là hồ sơ kết thúc giai đoạn Phase 1 (ADR-029). Tài liệu này KHÔNG ủy quyền triển khai Phase 2. Các giả định về 6 vai trò, quy trình duyệt cũ, và lộ trình triển khai tại đây đã bị thay thế bởi các quyết định sản phẩm `ADR-030` đến `ADR-036` (đặc biệt `ADR-034` chuẩn hóa 3 vai trò: `Admin`, `Teacher`, `Learner`). Hiện tại dự án đang ở giai đoạn rà soát Class Diagram (IN PROGRESS).
+
 # LINGORA — PHASE 1 MILESTONE M2.6: DESIGN-TO-IMPLEMENTATION HANDOFF SPECIFICATION
 
-> **Mã tài liệu:** `docs/phase-1-m2-6-design-handoff.md`  
-> **Giai đoạn:** Phase 1 — System Analysis & Design (Implementation-Independent)  
-> **Mốc thực thi:** Milestone M2.6 (Design-to-Implementation Handoff — Handoff Package)  
-> **Trạng thái:** `IMPLEMENTED — READY FOR INDEPENDENT REVIEW`  
-> **Căn cứ kế hoạch:** `plans/m2-6-design-handoff-plan.md`, `docs/phase-1-system-design-plan.md` §§7, 10, 11, 12, 14  
-> **Trạng thái tiếp nhận (Entry State):** `M2.5 ACCEPTED FOR M2.6` (ADR-028; commit `d09f7cc5ef0ec251bbf64b272d91b4ecae56a3e4`), `M2.6 PLAN = APPROVED`  
+> **Mã tài liệu:** `docs/phase-1-m2-6-design-handoff.md`<br>
+> **Giai đoạn:** Phase 1 — System Analysis & Design (Implementation-Independent)<br>
+> **Mốc thực thi:** Milestone M2.6 (Design-to-Implementation Handoff — Handoff Package)<br>
+> **Trạng thái:** `HISTORICAL HANDOFF PACKAGE (Accepted for Phase 1 closeout by ADR-029; not current implementation authority)`<br>
+> **Căn cứ kế hoạch:** `plans/m2-6-design-handoff-plan.md`, `docs/phase-1-system-design-plan.md` §§7, 10, 11, 12, 14<br>
+> **Trạng thái tiếp nhận (Entry State):** `M2.5 ACCEPTED FOR M2.6` (ADR-028; commit `d09f7cc5ef0ec251bbf64b272d91b4ecae56a3e4`), `M2.6 PLAN = APPROVED`<br>
 > **Ranh giới nghiêm ngặt:**  
 > 1. **HANDOFF-ONLY / ZERO IMPLEMENTATION:** M2.6 là gói bàn giao thiết kế sang triển khai, tuyệt đối KHÔNG viết mã nguồn ứng dụng (`lingora-web`, `lingora-admin`, `lingora-ai`), KHÔNG chỉnh sửa `schema.prisma`, KHÔNG tạo hoặc thực thi file migration DDL/SQL, KHÔNG triển khai chính sách RLS trên cơ sở dữ liệu thực tế, KHÔNG chạy thử nghiệm mã nguồn, KHÔNG lưu trữ bí mật thực tế, và KHÔNG triển khai hạ tầng đám mây.  
 > 2. **TIER-3 PHYSICAL DECISION ON PAPER:** Mọi quyết định thiết kế vật lý Tầng 3 (DD-01..06 và DD-10) được giải quyết trên giấy tờ dưới dạng đặc tả thiết kế (prose/spec form); một quyết định thiết kế trên giấy tờ KHÔNG PHẢI là một hành động triển khai thực thi (`Tier-3 written design decision != implementation`).  

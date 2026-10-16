@@ -1,9 +1,10 @@
 # Lingora — Từ điển Dữ liệu & Sơ đồ Thực thể Quan hệ (Data Dictionary & ERD)
 
-> **Mã tài liệu:** `docs/07-data-dictionary.md`  
-> **Trạng thái:** `CANONICAL / AUTHORITATIVE`  
-> **Phiên bản:** `1.1.0` (ADR-014 Software Engineering Core & AI Supporting Capability)
-> **Ngày hiệu lực:** `2026-09-14`
+> **Mã tài liệu:** `docs/07-data-dictionary.md`<br>
+> **Trạng thái:** `HISTORICAL (Phase 0 Data Dictionary & Early ERD Reference)`<br>
+> **Phân loại:** `HISTORICAL / LEGACY IMPLEMENTATION REFERENCE`. Tài liệu phản ánh hiện trạng database và định hướng mở rộng tại thời điểm Phase 0 (2026-09-14). Không phải căn cứ thẩm quyền cho mô hình dữ liệu logic mục tiêu (vốn được kiểm soát bởi ADR-030–036 và sơ đồ canonical tại `docs/modeling/current-target/`) hay schema vật lý mục tiêu (hiện đang ở trạng thái PROPOSED / DEFERRED).<br>
+> **Phiên bản:** `1.1.0` (ADR-014 Software Engineering Core & AI Supporting Capability)<br>
+> **Ngày hiệu lực:** `2026-09-14`<br>
 > **Căn cứ pháp lý & kỹ thuật:** `docs/04-data-model.md`, `ADR-003`, `ADR-005`, `ADR-014`, `lingora-admin/prisma/schema.prisma`, và các migration SQL thực tế (`202608140001_init`, `202608140002_auth_rls_storage_record_review`, `202608140003_storage_two_bucket_size_enforcement`).
 >
 > **Phase 0 Scope Alignment (2026-09-14 & ADR-014):** Báo cáo phân loại 12 model cốt lõi phục vụ active learning flow, 1 model mở rộng 6 vai trò (`Profile`), 1 hierarchy bổ sung (`Unit`), 2 model mở rộng quy trình nội dung 6 trạng thái (`Course`, `Lesson`), 2 model ngữ cảnh (`ChatScenario`/`ChatScenarioTranslation`), và 2 model legacy/deprecated (`ChatSession`/`ChatMessage`). GEC là xử lý nội bộ không tạo persistence mới trong MVP. Migration history được bảo toàn tuyệt đối cho mục đích audit.

@@ -1,7 +1,8 @@
 # Project 1 — Software Engineering Report Workspace & Reading Order Index
 
 > **Mã tài liệu:** `docs/project-1/README.md`
-> **Trạng thái:** `CANONICAL INDEX`
+> **Trạng thái:** `REPORT / PRESENTATION ARTIFACT (Historical Project 1 Reading Order Index)`
+> **Phân loại:** `REPORT / PRESENTATION ARTIFACT`. Tài liệu chỉ mục phục vụ báo cáo Đồ án 1 tại thời điểm Phase 0 (ADR-010). Các tài liệu và đường dẫn trong không gian này phản ánh ảnh chụp báo cáo học thuật lịch sử; KHÔNG dùng làm căn cứ thẩm quyền cho thiết kế sản phẩm hoặc miền nghiệp vụ hiện hành (vốn được kiểm soát bởi `AGENTS.md`, `docs/README.md`, `docs/QUICK-REF.md`, và các ADR-030–036).
 > **Phiên bản:** `1.1.0` (ADR-010 two-track consolidation)
 
 ---

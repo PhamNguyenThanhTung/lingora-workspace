@@ -29,7 +29,7 @@ Exactly three business roles: **Admin, Teacher, Learner**, one role per account 
 | Class | DOM-01 PUML/PNG/SVG and class candidate contain 23 classifiers/28 relations; primary native has older 23/24. Both are preserved, explicitly IN PROGRESS. Completion report lacks closeout. |
 | Native editing | [44-page Draw.io](modeling/current-target/lingora-all-diagrams.drawio); only DOM has visible source drift. Do not run a full-bundle builder to merge a single page. |
 | Later design | Sequence/logical data/security/deployment views and [physical proposal](design/physical/README.md) require reconciliation after class review. Historical READY verdicts do not advance today's design stage. |
-| Planning | [Old Phase 2 roadmap](../plans/master-implementation-and-report-plan.md) and archived plans are historical context, not execution instructions. |
+| Planning | [Old Phase 2 roadmap](../plans/archive/2026-10-07-master-implementation-and-report-plan-SUPERSEDED.md) and archived plans are historical context, not execution instructions. |
 
 DOM work is recoverable in [class completion evidence](modeling/current-target/evidence/2026-10-12-class-design-completion/) and its [unfinished report](modeling/current-target/class-design-completion-2026-10-12.md). The [Activity v2 evidence](modeling/current-target/evidence/2026-10-12-ad-layout-v2/) contains entry/candidate/export checks but no accepted primary save. Old task snapshots remain immutable; superseding unfinished work is not claiming it complete.
 
