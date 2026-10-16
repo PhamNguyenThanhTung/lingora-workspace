@@ -3063,3 +3063,20 @@ Audited and simplified Lingora agent workflow to achieve full tool neutrality an
 
 **Tests:** T-TOOL-NEUTRAL-001 (PASS).
 **Commit:** accompanying Conventional Commit.
+
+## SKILL-FINALIZE-001 — Finalize Lingora portable skill stack & remove vendored superpowers (2026-10-16)
+
+Completed final cleanup and stabilization of Lingora's portable skill stack:
+1. Removed vendored generic engineering framework: Deleted 104 files comprising 14 `obra/superpowers` skills across `.agents/skills/` and the duplicate mirror `.codex/skills/`, as well as obsolete plugin plumbing (`.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`).
+2. Preserved project-specific utilities: Retained `.agents/skills/pptx` (specialized deck generator for the 3 tracked `.pptx` presentations in `docs/project-1/` and `docs/report/`) and `.agents/references/` (`security-checklist.md`, `performance-checklist.md`).
+3. Streamlined workflow ceremony in `AGENTS.md`: Established proportional workflow gates:
+   - Significant implementation: `inspect -> spec (plans/<slug>-spec.md) -> work packages -> implement & self-test -> review -> commit & report`.
+   - Design / Modeling: `inspect -> analyze/design -> verify -> ADR/docs -> report`.
+   - Small maintenance / Docs: `inspect -> fix -> test -> commit & report` (no artificial plan/approval gates for small fixes).
+4. Clarified user approval boundary: When the user requests implementation (e.g. "Start implementing the homepage"), that prompt authorizes spec drafting and direct implementation without a redundant second approval gate, pausing only for genuine human decisions (ambiguity, destructive ops, material scope changes, source conflicts).
+5. Rejected departmental personas: Reaffirmed capability-based roles (Coordinator, Executor, Reviewer) and rejected static departmental personas (Frontend Dev, Backend Dev, PM) in favor of task-based on-demand skills.
+6. Reaffirmed maintainer host stack: Verified Ponytail v5.2.0 installed globally in `~/.codex/skills/ponytail/`. Addy Osmani skills catalog kept at host level on-demand without bloat from in-repo vendoring.
+7. Preserved design boundary: Class Diagram remains IN PROGRESS; zero product code or database schema files were modified.
+
+**Tests:** T-SKILL-FINALIZE-001 (PASS).
+**Commit:** accompanying Conventional Commit.

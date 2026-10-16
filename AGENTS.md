@@ -58,23 +58,30 @@ The repository distinguishes two modes to avoid forcing implementation overhead 
 2. **IMPLEMENTATION MODE**: Starts only after the relevant design boundary has been approved (e.g. *"Start implementing the homepage"*).
    - Flow: User triggers implementation → Coordinator inspects actual codebase and approved design → challenges assumptions if codebase disagrees → writes Implementation Spec → splits into safe Work Packages → Executes via Executor(s) (concurrent when safe, or sequential) → Executor(s) implement, self-test, self-fix → Reviewer independently reviews and verifies → PASS (report to user) or one correction round → STOP and report to user if blocking issues remain.
 
-## Mandatory workflow gates
+## Proportional workflow gates
 
-Every feature, architecture, schema, API, security, or product-behavior task must pass through:
+Workflow ceremony is proportional to the risk and scope of the task. Do not force an entire 7-gate lifecycle on small maintenance:
 
-`PLAN → REVIEW → APPROVE → IMPLEMENT → TEST → LOG → COMMIT`
+1. **Significant implementation**:
+   - `inspect repository + approved design → write Implementation Spec (plans/<slug>-spec.md) → partition work packages → implement & self-test → independent verification & review → commit & report`.
+2. **Design / Modeling**:
+   - `inspect canonical sources → analyze/design → verify consistency → record decision/ADR → report`.
+3. **Small maintenance / Documentation fixes**:
+   - `inspect → change → relevant verification → commit & report`. No artificial plan/approval gates for typos or deterministic cleanups.
 
-- `PLAN`: produce the Implementation Spec (`plans/<feature-slug>-spec.md`) informed by actual codebase inspection. Set `plans/current-task.md` as a lightweight pointer.
-- `REVIEW`: check the plan against controlling sources and unresolved decisions.
-- `APPROVE`: a human explicitly approves the plan; preserve an immutable snapshot under `plans/approved/<YYYY-MM-DD>-<feature-slug>-spec-APPROVED.md` before implementation. Ordinary tasks do not require artificial companion files (`*-REQUEST.txt`, `*-BASELINE.json`).
-- `IMPLEMENT`: do only the approved work via work packages.
-- `TEST`: run approved verification and record observed output.
-- `LOG`: update required task and test evidence logs.
-- `COMMIT`: use a Conventional Commit after the required gates.
+### User authorization & approval boundary
 
-An explicit user instruction may authorize a bounded documentation-only task directly. Record that scope and instruction as approval evidence; it does not authorize product implementation or resolve dependent product decisions.
+- When the user explicitly requests implementation (e.g. *"Start implementing the homepage"*), that prompt itself authorizes inspecting the repo, drafting/updating the Implementation Spec, partitioning work packages, and beginning implementation directly.
+- Do NOT require a second approval of the generated spec by default.
+- Pause and prompt the user ONLY for genuine unresolved human decisions:
+  - Product behavior ambiguity;
+  - Material scope expansion;
+  - Conflicting canonical sources (`CONFLICT`);
+  - Destructive operations (migrations, data deletion);
+  - Security/privacy trade-offs;
+  - Irreversible architecture decisions.
 
-Status progression: `PLAN` → `REVIEW` → `APPROVED` → `IMPLEMENTING` → `TESTING` → `DONE`. Use `BLOCKED` only when work cannot safely continue.
+Status progression for tracking: `PLAN` → `IMPLEMENTING` → `TESTING` → `DONE` (use `BLOCKED` only when work cannot safely continue).
 
 ## Stop rules
 
@@ -166,8 +173,9 @@ When implementation succeeds, the user receives a compact summary:
 The repository expects standard software engineering disciplines:
 - Disciplined planning, TDD, systematic debugging, comprehensive verification before completion, code review.
 - **Anti-overengineering bias (Ponytail / Code Simplification)**: YAGNI, standard/native platform solutions first, fewest necessary files, minimum correct diff, no speculative abstractions; understand before simplifying. Never cut validation, security, error handling, or approved requirements.
-- Reusable skills (such as `addyosmani/agent-skills`, `Ponytail`, or `superpowers`) may be supplied by the host environment or global configuration.
-- Local skill directories (`.agents/skills/`, `.codex/skills/`) serve as runtime discovery adapters for environments that inspect project roots. Canonical rules in `AGENTS.md` control project behavior and override any generic skill defaults (such as 5-round review loops, automatic model escalation, or rigid subagent pairing).
+- **On-demand skill routing**: Reusable engineering skills (such as `addyosmani/agent-skills` or `Ponytail`) are supplied by the host environment or global configuration. They are activated contextually based on the task (e.g. TDD for behavior changes, debugging for failures, security for sensitive data), NOT loaded all at once.
+- **Personas**: Do not create permanent departmental personas (Frontend Dev, Backend Dev, PM, Database Specialist). An executor uses relevant skills for the task. Independent review personas (Code Reviewer, Security Auditor, Test Engineer) may be used on-demand when the host supports them.
+- **Tool-neutral repository**: The repository does NOT vendor generic engineering frameworks, plugin manifests, or third-party agent plumbing. Canonical rules in `AGENTS.md` control project behavior.
 
 ## Testing and logs discipline
 

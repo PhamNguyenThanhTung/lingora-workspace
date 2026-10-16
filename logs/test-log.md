@@ -3191,3 +3191,18 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Output:** exit 0; whitespace check clean; scoped modifications limited to `AGENTS.md`, `HANDOFF.md`, `plans/current-task.md`. No product/application or schema files modified. **Verdict:** PASS — diff and whitespace clean.
 - **Evidence:** Updated `AGENTS.md`, `HANDOFF.md`, `plans/current-task.md`.
 - **Commit:** accompanying Conventional Commit; no push.
+
+
+## T-SKILL-FINALIZE-001 — Finalize Lingora portable skill stack & remove vendored superpowers (2026-10-16)
+
+- **Environment:** Microsoft Windows NT 10.0.26200.0; PowerShell 5.1/7.6.5; entry commit `c18e110`. Documentation & skill configuration finalization; no product code or database modification.
+- **Command:** `git status`; `git rm -r .agents/plugins/marketplace.json .codex-plugin/plugin.json .codex/skills/ .agents/skills/<14-superpowers-skills>`; `Get-ChildItem -Recurse .agents`.
+- **Output:** Removed 104 files representing vendored `obra/superpowers` skills, duplicated mirrors (`.codex/skills/`), and obsolete packaging plumbing (`.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`). Preserved `.agents/skills/pptx` (specialized presentation utility for canonical decks in `docs/`) and `.agents/references/` (security and performance checklists). **Verdict:** PASS — all generic skills removed from repository; repository is strictly tool-neutral.
+- **Command:** `Select-String -Path AGENTS.md -Pattern "superpowers|obra"`; `Select-String -Path AGENTS.md -Pattern "Proportional workflow gates"`.
+- **Output:** Zero occurrences of vendored `superpowers` dependencies in `AGENTS.md`. Workflow ceremony simplified with proportional gates (Significant implementation, Design/Modeling, Small maintenance) and clarified user authorization boundary (direct implementation without redundant spec approval loops). Departmental personas explicitly rejected; anti-overengineering (Ponytail) reaffirmed. **Verdict:** PASS — project instructions are streamlined, tool-neutral, and maintainer-aligned.
+- **Command:** `Test-Path C:\Users\tungt\.codex\skills\ponytail\SKILL.md`.
+- **Output:** True. Ponytail v5.2.0 is installed in global host configuration (`C:\Users\tungt\.codex\skills\ponytail\SKILL.md`). External engineering catalog `addyosmani/agent-skills` maintained at host level without repository-level copying. **Verdict:** PASS — host skill architecture verified.
+- **Command:** `git diff --check`.
+- **Output:** exit 0; clean whitespace across all modified and deleted files.
+- **Evidence:** Updated `AGENTS.md`, updated `plans/current-task.md`, updated `HANDOFF.md`, 104 files deleted.
+- **Commit:** accompanying Conventional Commit; no push.
