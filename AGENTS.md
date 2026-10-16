@@ -52,11 +52,11 @@ Read only when the task requires it:
 The repository distinguishes two modes to avoid forcing implementation overhead onto design tasks:
 
 1. **DESIGN MODE**: Used while architecture, product modeling, requirements, or diagrams are being developed (Use Cases, Activity Diagrams, Class Diagrams, UX flow, ADRs).
-   - Flow: User intent → Codex inspects canonical sources → analyzes/designs → optionally delegates bounded research or mechanical drawing drafting → Codex reviews → decisions recorded in ADR/docs → report to user.
+   - Flow: User intent → Coordinator inspects canonical sources → analyzes/designs → optionally delegates bounded research or mechanical drawing drafting → Reviewer reviews → decisions recorded in ADR/docs → report to user.
    - Design tasks do NOT use work-package decomposition or implementation worker orchestration.
 
 2. **IMPLEMENTATION MODE**: Starts only after the relevant design boundary has been approved (e.g. *"Start implementing the homepage"*).
-   - Flow: User triggers implementation → Codex inspects actual codebase and approved design → challenges assumptions if codebase disagrees → writes Implementation Spec → splits into safe Work Packages → delegates to Antigravity workers (parallel when safe) → workers implement, self-test, self-fix → Codex independently reviews and verifies → PASS (report to user) or one correction round → STOP and report to user if blocking issues remain.
+   - Flow: User triggers implementation → Coordinator inspects actual codebase and approved design → challenges assumptions if codebase disagrees → writes Implementation Spec → splits into safe Work Packages → Executes via Executor(s) (concurrent when safe, or sequential) → Executor(s) implement, self-test, self-fix → Reviewer independently reviews and verifies → PASS (report to user) or one correction round → STOP and report to user if blocking issues remain.
 
 ## Mandatory workflow gates
 
@@ -86,28 +86,39 @@ Pause implementation and return the task to `REVIEW` status immediately if any o
 
 ## Roles & Responsibilities
 
-The user interacts primarily with **Codex only**. The user does not manage worker execution, subagent selection, model routing, reasoning levels, or task partitioning.
+The user interacts primarily with the primary agent interface (Coordinator). The user does not manage low-level worker execution, subagent selection, model routing, reasoning levels, or task partitioning.
 
 - **User**:
   - Owns product intent, major scope, human judgment, and authorization to begin major phases.
-- **Codex (Brain, Planner, Orchestrator, Reviewer, Acceptance Authority)**:
+- **Coordinator / Planner**:
   - Repository discovery: inspects the actual codebase before finalizing plans.
   - Checks approved design against current implementation; challenges assumptions if codebase disagrees.
   - Creates the Implementation Spec with concrete acceptance criteria and dependencies.
-  - Decomposes tasks into safe work packages and decides when parallel execution is safe.
-  - Independent acceptance: does NOT trust worker `PASS` claims. Inspects diffs, runs/verifies deterministic checks, checks integration between packages.
-- **Antigravity / Gemini workers (Implementation & Self-Testing)**:
-  - Own complete assigned work package: `understand assignment → implement → test → diagnose failures → fix ordinary failures → return code + evidence`.
+  - Decomposes tasks into safe work packages and decides when concurrent execution is safe.
+- **Executor**:
+  - Owns complete assigned work package: `understand assignment → implement → test → diagnose failures → fix ordinary failures (worker self-fix) → return code + evidence`.
   - Allowed full autonomy within assigned scope: editing code, adding/updating tests, running lint/typecheck/tests, fixing ordinary mechanical errors, local refactoring.
-  - May spawn internal subagents when useful (e.g. read-only codebase research, test generation) without Codex micromanagement.
-  - Must NOT independently change product scope, rewrite architecture, alter unrelated modules, make destructive migrations, or silently expand features. Escalate these to Codex.
+  - May use internal subagents when supported by the host and useful, without Coordinator micromanagement.
+  - Must NOT independently change product scope, rewrite architecture, alter unrelated modules, make destructive migrations, or silently expand features. Escalate these to Coordinator.
+- **Reviewer / Acceptance Authority**:
+  - Independent acceptance: does NOT trust worker `PASS` claims.
+  - Inspects diffs, code quality, architecture alignment, deterministic test results, and cross-package integration.
+
+### Host Flexibility & Execution Modes
+
+The repository is host-neutral. A single agent may perform multiple roles if the host environment does not support multiple agents:
+- **Multi-agent execution**: Coordinator partitions work and delegates to concurrent or sequential Executor agents, followed by Reviewer verification.
+- **Single-agent execution**: A single agent sequentially plans, implements, self-tests, and verifies against acceptance criteria.
+- **Invariant**: Correctness, safety, and evidence standards must NEVER depend on parallel-agent availability.
+
+*(Optional personal host mapping: in the maintainer's personal setup, Codex acts as Coordinator/Reviewer, Antigravity as Executor, and internal Antigravity subagents as task helpers. This is a local host adapter choice, not a project requirement.)*
 
 ## Implementation Spec & current-task lifecycle
 
 1. **One Implementation Spec per task**:
    - Stored in `plans/<feature-slug>-spec.md`.
    - Reuses existing planning conventions; do not maintain redundant `plan.md`, `spec.md`, `execution-plan.md`.
-   - Content: Goal, Approved sources, Existing implementation, Scope, Out of scope, Expected behavior, Key technical decisions, Acceptance criteria, Dependencies, Work packages (WP-01, WP-02...), Parallelization, Integration order, Verification, Open blockers.
+   - Content: Goal, Approved sources, Existing implementation, Scope, Out of scope, Expected behavior, Key technical decisions, Acceptance criteria, Dependencies, Work packages (`WP-01`, `WP-02`...), Parallelization, Integration order, Verification, Open blockers.
    - References canonical documents; does not duplicate large blocks of ADRs or designs.
 2. **`plans/current-task.md` as lightweight pointer**:
    - Acts as a state pointer, not a full duplicate of the spec.
@@ -118,25 +129,25 @@ The user interacts primarily with **Codex only**. The user does not manage worke
 
 ## Work-package decomposition & Safe parallelism
 
-Codex decomposes work after inspecting the codebase.
+The Coordinator decomposes work after inspecting the codebase.
 - **Work Package contents**: goal, scope, owned files/areas where practical, dependencies, input contract, output contract, acceptance checks.
-- **Delegation payload**: Codex provides work-package goal, relevant file paths, relevant canonical sources, constraints, acceptance checks, and contracts. Do not dump the entire repository documentation into worker prompts.
+- **Delegation payload**: Coordinator provides work-package goal, relevant file paths, relevant canonical sources, constraints, acceptance checks, and contracts. Do not dump the entire repository documentation into worker prompts.
 - **Safe parallelism criteria**:
   - Clear, stable API/data contracts between packages.
   - Disjoint file ownership (no two workers modifying the same file/component).
   - Independent dependencies and isolated tests.
 - **Unsafe/Prohibited parallelism**: concurrent edits to same files, concurrent API design, undocumented shared state, conflicting migrations.
-- **Worker count**: No fixed limit. Use as many as operate safely and usefully. Exactly 1 worker is standard when parallelism offers no real benefit.
+- **Worker count**: Determined by host capability. Exactly 1 worker (or sequential execution) is standard when parallelism offers no real benefit.
 
 ## Worker self-fix versus Final-review correction
 
 Distinguish internal worker fixes from external review rounds:
-1. **Worker self-fix**: During implementation, the worker may perform as many ordinary mechanical corrections (syntax, lint, compiler, unit test failures) as needed to complete its package. This is NOT a review round.
-2. **Codex independent review**: Codex inspects the actual diff, code quality, architecture alignment, deterministic test results, and cross-package integration.
+1. **Worker self-fix**: During implementation, the Executor may perform as many ordinary mechanical corrections (syntax, lint, compiler, unit test failures) as needed to complete its package. This is NOT a review round.
+2. **Reviewer independent review**: The Reviewer inspects the actual diff, code quality, architecture alignment, deterministic test results, and cross-package integration.
 3. **Final-review correction**:
-   - If defects remain after Codex acceptance review, Codex provides concrete findings.
-   - Antigravity receives **ONE** bounded correction round.
-   - Codex re-reviews.
+   - If defects remain after Reviewer acceptance review, Reviewer provides concrete findings.
+   - Executor receives **ONE** bounded correction round.
+   - Reviewer re-reviews.
    - If blocking issues still remain: **STOP**, do not fake `PASS`, and report remaining problems to the user. No indefinite review loops.
 
 ## Completion report format
@@ -145,17 +156,18 @@ When implementation succeeds, the user receives a compact summary:
 - Feature status: `COMPLETE`
 - Implemented items
 - Work package results (e.g. WP-01 PASS, WP-02 PASS)
-- Codex independent verification (typecheck PASS, unit tests PASS, integration PASS, acceptance criteria PASS)
+- Independent verification (typecheck PASS, unit tests PASS, integration PASS, acceptance criteria PASS)
 - Key decisions made
 - Remaining/deferred items (if any)
 - Changed files and commit SHA
 
-## Agent Workflow & Methodology: Superpowers
+## Engineering Disciplines & Reusable Skills
 
-The repository uses **Superpowers** as the canonical skill framework shared by Codex and Antigravity.
+The repository expects standard software engineering disciplines:
 - Disciplined planning, TDD, systematic debugging, comprehensive verification before completion, code review.
-- Skills live in `.agents/skills/` and are mirrored in `.codex/skills/` for runtime discovery.
-- Canonical rules in `AGENTS.md` override generic skill defaults (such as 5-round review loops, automatic model escalation, or rigid subagent pairing).
+- **Anti-overengineering bias (Ponytail / Code Simplification)**: YAGNI, standard/native platform solutions first, fewest necessary files, minimum correct diff, no speculative abstractions; understand before simplifying. Never cut validation, security, error handling, or approved requirements.
+- Reusable skills (such as `addyosmani/agent-skills`, `Ponytail`, or `superpowers`) may be supplied by the host environment or global configuration.
+- Local skill directories (`.agents/skills/`, `.codex/skills/`) serve as runtime discovery adapters for environments that inspect project roots. Canonical rules in `AGENTS.md` control project behavior and override any generic skill defaults (such as 5-round review loops, automatic model escalation, or rigid subagent pairing).
 
 ## Testing and logs discipline
 

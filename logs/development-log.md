@@ -3049,3 +3049,17 @@ Audited current Lingora agent/vibe-coding workflow against the desired operating
 
 **Tests:** T-WORKFLOW-AUDIT-001 (PASS).
 **Commit:** accompanying Conventional Commit.
+## TOOL-NEUTRAL-001 — Make Lingora workflow tool-neutral and audit skill stack (2026-10-16)
+
+Audited and simplified Lingora agent workflow to achieve full tool neutrality and evaluated the skill stack:
+1. Replaced all vendor-specific normative rules in AGENTS.md with capability-based roles: Coordinator/Planner, Executor, and Reviewer/Acceptance Authority.
+2. Explicitly documented that the repository supports both multi-agent and single-agent sequential execution, ensuring correctness never depends on parallel-agent availability.
+3. Decoupled the user's personal setup (Codex + Antigravity) into an optional, non-normative local host adapter, allowing any host (Claude Code, Cursor, Copilot, single-agent CLI) to execute tasks identically.
+4. Audited ddyosmani/agent-skills: recognized it as a recommended external engineering skill catalog; concluded that repository-level copying is unneeded and that global/plugin host installation is cleaner.
+5. Audited Ponytail (DietrichGebert/ponytail): established Ponytail's anti-overengineering principles (YAGNI, standard/native platform solutions first, smallest correct diff) as an engineering discipline while safeguarding security, validation, error handling, and approved requirements.
+6. Recommended persona strategy: rejected permanent departmental personas (Frontend Dev, Backend Dev, PM) in favor of task-based skills, while retaining independent review perspectives (Code Reviewer, Security Auditor, Performance Auditor).
+7. Maintained existing skill discovery mirrors (.agents/skills/, .codex/skills/) as portable discovery adapters without breaking Windows/cross-platform environments.
+8. Preserved design boundary: Class Diagram remains IN PROGRESS; no product code or database schema was altered.
+
+**Tests:** T-TOOL-NEUTRAL-001 (PASS).
+**Commit:** accompanying Conventional Commit.

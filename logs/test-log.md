@@ -3178,3 +3178,16 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Output:** exit 0; whitespace check clean; scoped modifications limited to `AGENTS.md`, `HANDOFF.md`, `plans/approved/README.md`, `plans/current-task.md`. No product/application or schema files modified. **Verdict:** PASS — diff and whitespace clean.
 - **Evidence:** Updated `AGENTS.md`, updated `HANDOFF.md`, updated `plans/current-task.md`.
 - **Commit:** accompanying Conventional Commit; no push.
+
+
+## T-TOOL-NEUTRAL-001 — Make Lingora workflow tool-neutral and audit skill stack (2026-10-16)
+
+- **Environment:** Microsoft Windows NT 10.0.26200.0; PowerShell 7.6.5; commit `a37b62c4314cb5da37e2ea9825b1613eb4d88e0a`. Documentation-only tool-neutral workflow audit.
+- **Command:** `Select-String -Path AGENTS.md -Pattern "Codex|Antigravity|Gemini|Claude"`.
+- **Output:** All vendor-specific requirements removed from normative workflow gates, operating modes, and roles. Remaining matches are strictly non-normative notes: optional user host adapter mapping and `.codex/skills/` runtime discovery adapter path. **Verdict:** PASS — normative text is completely tool-neutral.
+- **Command:** `Get-ChildItem -Path C:\Users\tungt\.codex\skills\ponytail -ErrorAction SilentlyContinue`; `Get-ChildItem -Path .agents\skills, .codex\skills -Directory`.
+- **Output:** Ponytail confirmed available in user's global config (`C:\Users\tungt\.codex\skills\ponytail\SKILL.md`); local mirrored skill trees (`.agents/skills/`, `.codex/skills/`) verified intact (15 skills in `.agents/skills`, 14 in `.codex/skills`). Addy Osmani skills analyzed as external catalog; global host installation recommended over in-repo duplication. **Verdict:** PASS — skill stack audited.
+- **Command:** `git diff --check`; `git diff --stat`.
+- **Output:** exit 0; whitespace check clean; scoped modifications limited to `AGENTS.md`, `HANDOFF.md`, `plans/current-task.md`. No product/application or schema files modified. **Verdict:** PASS — diff and whitespace clean.
+- **Evidence:** Updated `AGENTS.md`, `HANDOFF.md`, `plans/current-task.md`.
+- **Commit:** accompanying Conventional Commit; no push.
