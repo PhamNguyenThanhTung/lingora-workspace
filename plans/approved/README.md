@@ -1,8 +1,8 @@
 # Approved Plans
 
-When a task receives explicit human approval, copy the approved snapshot here before implementation. Use a stable filename such as `YYYY-MM-DD-task-slug.md`.
+When an Implementation Spec receives explicit human approval, copy the approved snapshot here before implementation begins (naming: `YYYY-MM-DD-<feature-slug>-spec-APPROVED.md`).
 
-Approved snapshots are immutable. If scope changes, return the active task to REVIEW and create a new approved snapshot after re-approval.
+Approved snapshots are immutable. If scope changes, return the active task to REVIEW and create a new approved snapshot after re-approval. Ordinary tasks do NOT require artificial companion files (`*-REQUEST.txt`, `*-BASELINE.json`); the approved Implementation Spec itself contains the execution contract.
 
 A snapshot is current authorization only while `plans/current-task.md` points to it for the active task. Snapshots for completed or superseded tasks remain `HISTORICAL` evidence; their former approval does not authorize later work. M2.6 accepted a design handoff only and is not a Phase 2 implementation approval.
 

@@ -3165,3 +3165,16 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 
 - **Command:** rerun `node "$env:TEMP\lingora-pre-design-20261016\verify.cjs"`; `git diff --check`; `git diff --cached --check`; `git diff --cached --stat`.
 - **Output:** Node exit 0;1,138 protected files exact;332 local links,0 broken;21 scoped changed/new/deleted files; exact three-file deletion allowlist; single current DONE pointer, Class IN PROGRESS, no follow-on active. New-file lines: audit92, approval13, prior capture48, DONE archive18. Whitespace checks exit0. Staged snapshot before this log appendix:21 files changed,279 insertions(+),1737 deletions(-). **Verdict:** PASS — cleanup closeout; no runtime/visual/live-DB claim. Required evidence precedes accompanying Conventional Commit; no push.
+
+
+## T-WORKFLOW-AUDIT-001 — Lingora workflow audit & simplification (2026-10-16)
+
+- **Environment:** Microsoft Windows NT 10.0.26200.0; PowerShell 7.6.5; entry HEAD `d5a6cc8efb7e77f14bccbc711b739d6989022c31`. Documentation-only workflow audit; no product code or database modification.
+- **Command:** `invoke_subagent` with `TypeName: "research"`, `Role: "Workflow Smoke Tester"`, prompt reading first 5 lines of `AGENTS.md`.
+- **Output:** Subagent conversation `9db31188-4154-43fa-a852-ed8a263b71ad` created and returned: `Smoke test check confirmed: Subagent execution works properly. No files were modified.` with exact first 5 lines of `AGENTS.md`. **Verdict:** PASS — Antigravity native subagent dispatch operational.
+- **Command:** `& "C:\Users\tungt\AppData\Roaming\npm\codex.cmd" doctor`; `& "C:\Users\tungt\AppData\Local\agy\bin\agy.exe" models`.
+- **Output:** Codex CLI 0.162.1 configured and authenticated with OpenAI `gpt-6-luna`. Antigravity CLI 1.3.3 located at `AppData\Local\agy\bin\agy.exe`, models fetched successfully (`gemini-3.8-flash-high`, `claude-sonnet-4-6`, etc.). `agy` is not in the system PATH; automated `Codex -> Antigravity` machine pipe is not wired, but CLI/handoff workflow is functional. **Verdict:** PASS — tooling availability verified; limitation documented.
+- **Command:** `git diff --check`; `git diff --stat`.
+- **Output:** exit 0; whitespace check clean; scoped modifications limited to `AGENTS.md`, `HANDOFF.md`, `plans/approved/README.md`, `plans/current-task.md`. No product/application or schema files modified. **Verdict:** PASS — diff and whitespace clean.
+- **Evidence:** Updated `AGENTS.md`, updated `HANDOFF.md`, updated `plans/current-task.md`.
+- **Commit:** accompanying Conventional Commit; no push.

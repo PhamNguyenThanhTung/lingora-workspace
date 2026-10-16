@@ -3035,3 +3035,17 @@ Canonical AGENTS now describes Codex planning/review and Antigravity/Gemini exec
 Verification: T-PRE-DESIGN-CLEANUP-001, observed Node/Python checks and git diff whitespace/stat; independent final reviewer found no blocking issue.1,138 protected tracked hashes exact; all90 output hashes match; raw manifest provenance remains explicitly unresolved and full/visual/runtime approval is not claimed. Tests/E2E/liveDB/generators N/A. Only cleanup is DONE; next is separately authorized Class Diagram review/completion.
 
 **Commit:** accompanying Conventional Commit `docs(repo): clean legacy tooling and clarify redesign baseline`; no push. [Audit](../docs/repository-audit-2026-10-16.md), [approved scope](../plans/approved/2026-10-16-pre-design-cleanup-APPROVED.md). Old records remain immutable.
+
+## WORKFLOW-AUDIT-001 — Audit and simplify Lingora development operating model (2026-10-16)
+
+Audited current Lingora agent/vibe-coding workflow against the desired operating model:
+1. Clarified two distinct modes in AGENTS.md: DESIGN MODE (architecture, domain modeling, ADRs without implementation worker overhead) and IMPLEMENTATION MODE (codebase-informed Implementation Spec in plans/<slug>-spec.md, safe work packages, parallel execution).
+2. Clarified roles: User interacts primarily with Codex only; Codex is the brain, planner, orchestrator, reviewer, and acceptance authority; Antigravity workers own assigned work packages, run self-tests, and fix ordinary mechanical failures internally.
+3. Defined Implementation Spec structure and established plans/current-task.md as a lightweight state pointer, eliminating redundant specification files and artificial companion files (*-REQUEST.txt, *-BASELINE.json).
+4. Established clear rules for safe parallelism (disjoint file ownership, stable contracts, isolated tests) and worker autonomy with internal self-fixing.
+5. Established correction policy: worker self-fix is separated from acceptance review; strictly one correction dispatch after Codex review, then STOP if blocking issues remain.
+6. Smoke-tested orchestration capabilities: verified Antigravity -> subagent natively via invoke_subagent; verified Codex CLI and Antigravity CLI availability, noting that gy is not in system PATH.
+7. Preserved design boundary: Class Diagram remains IN PROGRESS; no product code or database schema was altered.
+
+**Tests:** T-WORKFLOW-AUDIT-001 (PASS).
+**Commit:** accompanying Conventional Commit.

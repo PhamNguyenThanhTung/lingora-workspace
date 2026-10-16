@@ -47,23 +47,34 @@ Read only when the task requires it:
 
 `docs/README.md` defines the source hierarchy. A document's location in `docs/` does not by itself make every statement current or approved. Where sources conflict, stop dependent work, preserve the conflict, and route it to the owner in the active decision backlog. Do not infer implementation requirements from historical or target design prose. `ke-hoach-chi-tiet/` has been removed; it is no longer in the repository.
 
-## Mandatory workflow
+## Two operating modes
+
+The repository distinguishes two modes to avoid forcing implementation overhead onto design tasks:
+
+1. **DESIGN MODE**: Used while architecture, product modeling, requirements, or diagrams are being developed (Use Cases, Activity Diagrams, Class Diagrams, UX flow, ADRs).
+   - Flow: User intent → Codex inspects canonical sources → analyzes/designs → optionally delegates bounded research or mechanical drawing drafting → Codex reviews → decisions recorded in ADR/docs → report to user.
+   - Design tasks do NOT use work-package decomposition or implementation worker orchestration.
+
+2. **IMPLEMENTATION MODE**: Starts only after the relevant design boundary has been approved (e.g. *"Start implementing the homepage"*).
+   - Flow: User triggers implementation → Codex inspects actual codebase and approved design → challenges assumptions if codebase disagrees → writes Implementation Spec → splits into safe Work Packages → delegates to Antigravity workers (parallel when safe) → workers implement, self-test, self-fix → Codex independently reviews and verifies → PASS (report to user) or one correction round → STOP and report to user if blocking issues remain.
+
+## Mandatory workflow gates
 
 Every feature, architecture, schema, API, security, or product-behavior task must pass through:
 
 `PLAN → REVIEW → APPROVE → IMPLEMENT → TEST → LOG → COMMIT`
 
-- `PLAN`: write or update `plans/current-task.md` with scope, permitted files/actions, dependencies, acceptance criteria, and verification.
-- `REVIEW`: check the plan against controlling sources and the unresolved-decision queue.
-- `APPROVE`: a human explicitly approves the plan; preserve an immutable snapshot under `plans/approved/` before implementation.
-- `IMPLEMENT`: do only the approved work. The approved plan is not blanket authorization for dependent decisions.
-- `TEST`: run the approved verification and record observed output.
-- `LOG`: update required task and evidence logs.
+- `PLAN`: produce the Implementation Spec (`plans/<feature-slug>-spec.md`) informed by actual codebase inspection. Set `plans/current-task.md` as a lightweight pointer.
+- `REVIEW`: check the plan against controlling sources and unresolved decisions.
+- `APPROVE`: a human explicitly approves the plan; preserve an immutable snapshot under `plans/approved/<YYYY-MM-DD>-<feature-slug>-spec-APPROVED.md` before implementation. Ordinary tasks do not require artificial companion files (`*-REQUEST.txt`, `*-BASELINE.json`).
+- `IMPLEMENT`: do only the approved work via work packages.
+- `TEST`: run approved verification and record observed output.
+- `LOG`: update required task and test evidence logs.
 - `COMMIT`: use a Conventional Commit after the required gates.
 
-An explicit user instruction may authorize a bounded documentation-only task directly. Record that scope and the instruction as its approval evidence; it does not authorize product implementation or resolve dependent product decisions.
+An explicit user instruction may authorize a bounded documentation-only task directly. Record that scope and instruction as approval evidence; it does not authorize product implementation or resolve dependent product decisions.
 
-After implementation begins, use `IMPLEMENTING`, then `TESTING`, and finally `DONE`. Use `BLOCKED` only when work cannot safely continue.
+Status progression: `PLAN` → `REVIEW` → `APPROVED` → `IMPLEMENTING` → `TESTING` → `DONE`. Use `BLOCKED` only when work cannot safely continue.
 
 ## Stop rules
 
@@ -71,62 +82,96 @@ Pause implementation and return the task to `REVIEW` status immediately if any o
 
 - A dependency, schema, API path, or architecture change is implied but not named in the plan.
 - A semantic gap appears between an approved decision and implementation reality.
+- An unresolved product/design decision requires human judgment.
 
-## AI Coding Agents & Responsibilities
+## Roles & Responsibilities
 
-Codex owns discovery, planning, review and acceptance. Antigravity / Gemini workers own approved implementation and test execution. Codex may perform directly authorized documentation, audit and repository-plumbing cleanup.
+The user interacts primarily with **Codex only**. The user does not manage worker execution, subagent selection, model routing, reasoning levels, or task partitioning.
 
-- **Codex**:
-  - Discovery & Architecture
-  - Specification & Planning
-  - Review & Verification
-  - Acceptance & Gatekeeping
-- **Antigravity / Gemini workers**:
-  - Implementation & Coding
-  - Test Execution & Verification
-  - Fix implementation issues according to plan and review
+- **User**:
+  - Owns product intent, major scope, human judgment, and authorization to begin major phases.
+- **Codex (Brain, Planner, Orchestrator, Reviewer, Acceptance Authority)**:
+  - Repository discovery: inspects the actual codebase before finalizing plans.
+  - Checks approved design against current implementation; challenges assumptions if codebase disagrees.
+  - Creates the Implementation Spec with concrete acceptance criteria and dependencies.
+  - Decomposes tasks into safe work packages and decides when parallel execution is safe.
+  - Independent acceptance: does NOT trust worker `PASS` claims. Inspects diffs, runs/verifies deterministic checks, checks integration between packages.
+- **Antigravity / Gemini workers (Implementation & Self-Testing)**:
+  - Own complete assigned work package: `understand assignment → implement → test → diagnose failures → fix ordinary failures → return code + evidence`.
+  - Allowed full autonomy within assigned scope: editing code, adding/updating tests, running lint/typecheck/tests, fixing ordinary mechanical errors, local refactoring.
+  - May spawn internal subagents when useful (e.g. read-only codebase research, test generation) without Codex micromanagement.
+  - Must NOT independently change product scope, rewrite architecture, alter unrelated modules, make destructive migrations, or silently expand features. Escalate these to Codex.
 
-Delegate when the task benefits from it. Parallel workers require independent dependencies, explicit file ownership, safe shared state and clear contracts; there is no fixed worker count. The coordinator alone writes shared logs, current-task/HANDOFF and aggregate artifacts unless a safe merge owner is explicit. Read-only audit subagents may inspect independent areas.
+## Implementation Spec & current-task lifecycle
 
-Codex inspects the actual diff and reruns relevant checks before acceptance; a worker's `PASS` alone is insufficient. Across task and final review, allow one bounded correction dispatch, then review and verify again. If blocking findings remain, STOP dependent work, return the task to REVIEW and report; do not start another correction/model-escalation loop or accept it anyway.
+1. **One Implementation Spec per task**:
+   - Stored in `plans/<feature-slug>-spec.md`.
+   - Reuses existing planning conventions; do not maintain redundant `plan.md`, `spec.md`, `execution-plan.md`.
+   - Content: Goal, Approved sources, Existing implementation, Scope, Out of scope, Expected behavior, Key technical decisions, Acceptance criteria, Dependencies, Work packages (WP-01, WP-02...), Parallelization, Integration order, Verification, Open blockers.
+   - References canonical documents; does not duplicate large blocks of ADRs or designs.
+2. **`plans/current-task.md` as lightweight pointer**:
+   - Acts as a state pointer, not a full duplicate of the spec.
+   - Records: Active task name, Implementation Spec link, Status, Active Work Packages, Next permitted action.
+3. **Approval & Archive**:
+   - Approved snapshot saved to `plans/approved/<YYYY-MM-DD>-<feature-slug>-spec-APPROVED.md`.
+   - On completion, record completion in `plans/archive/<YYYY-MM-DD>-<feature-slug>-spec-DONE.md` and set `plans/current-task.md` to `DONE`.
 
-These rules override generic skill defaults on worker roles, model routing, review rounds, commit timing and handoffs. Actual runtime tool schemas control arguments; do not change global settings to satisfy a skill example. Maintain reusable skills in `.agents/skills/`; `.codex/skills/` is its existing mirrored runtime discovery copy, not a second workflow authority.
+## Work-package decomposition & Safe parallelism
+
+Codex decomposes work after inspecting the codebase.
+- **Work Package contents**: goal, scope, owned files/areas where practical, dependencies, input contract, output contract, acceptance checks.
+- **Delegation payload**: Codex provides work-package goal, relevant file paths, relevant canonical sources, constraints, acceptance checks, and contracts. Do not dump the entire repository documentation into worker prompts.
+- **Safe parallelism criteria**:
+  - Clear, stable API/data contracts between packages.
+  - Disjoint file ownership (no two workers modifying the same file/component).
+  - Independent dependencies and isolated tests.
+- **Unsafe/Prohibited parallelism**: concurrent edits to same files, concurrent API design, undocumented shared state, conflicting migrations.
+- **Worker count**: No fixed limit. Use as many as operate safely and usefully. Exactly 1 worker is standard when parallelism offers no real benefit.
+
+## Worker self-fix versus Final-review correction
+
+Distinguish internal worker fixes from external review rounds:
+1. **Worker self-fix**: During implementation, the worker may perform as many ordinary mechanical corrections (syntax, lint, compiler, unit test failures) as needed to complete its package. This is NOT a review round.
+2. **Codex independent review**: Codex inspects the actual diff, code quality, architecture alignment, deterministic test results, and cross-package integration.
+3. **Final-review correction**:
+   - If defects remain after Codex acceptance review, Codex provides concrete findings.
+   - Antigravity receives **ONE** bounded correction round.
+   - Codex re-reviews.
+   - If blocking issues still remain: **STOP**, do not fake `PASS`, and report remaining problems to the user. No indefinite review loops.
+
+## Completion report format
+
+When implementation succeeds, the user receives a compact summary:
+- Feature status: `COMPLETE`
+- Implemented items
+- Work package results (e.g. WP-01 PASS, WP-02 PASS)
+- Codex independent verification (typecheck PASS, unit tests PASS, integration PASS, acceptance criteria PASS)
+- Key decisions made
+- Remaining/deferred items (if any)
+- Changed files and commit SHA
 
 ## Agent Workflow & Methodology: Superpowers
 
-The repository uses **Superpowers** ([https://github.com/obra/superpowers](https://github.com/obra/superpowers)) as the single canonical skill and workflow framework shared by both Codex and Antigravity. No competing or parallel workflow framework (such as Impeccable or legacy local skill trees) is maintained.
+The repository uses **Superpowers** as the canonical skill framework shared by Codex and Antigravity.
+- Disciplined planning, TDD, systematic debugging, comprehensive verification before completion, code review.
+- Skills live in `.agents/skills/` and are mirrored in `.codex/skills/` for runtime discovery.
+- Canonical rules in `AGENTS.md` override generic skill defaults (such as 5-round review loops, automatic model escalation, or rigid subagent pairing).
 
-All agents follow Superpowers methodology:
-- Disciplined planning, specification teasing, and design signoff before code changes.
-- True test-driven development (TDD) and systematic debugging.
-- Comprehensive verification before completion.
-- Consistent code review and finish-the-branch procedures.
-
-Skills are shared across `.agents/skills/` and `.codex/skills/`:
-`brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `finishing-a-development-branch`, `subagent-driven-development`, `dispatching-parallel-agents`, `using-git-worktrees`, `using-superpowers`, `writing-skills`.
-
-Configuration in `.agents/` and `.codex/` provides tool-specific plumbing for agent runtimes. It must not restate or override canonical rules. If any conflict arises, canonical documentation and this file win.
-
-## Testing and logs
+## Testing and logs discipline
 
 After implementation:
-
-1. Run every test listed in the approved Test Plan.
-2. Record results in `logs/test-log.md` using the mandatory evidence format:
-   - **Environment:** OS, runtime version, commit SHA.
-   - **Command:** exact shell command or script invoked.
-   - **Output:** exit code and stdout/stderr excerpt (trim to relevant lines; redact secrets).
-   - **Verdict:** `PASS` or `FAIL` — always from observed output, never inferred. For documentation-only tasks with no runnable command: verdict is `N/A — <reason>`; still attach at minimum `git diff --stat` output and a line-count check for new files. An agent must not record `PASS` based on reasoning alone.
-3. Record completed work, problems, solution, tests, and commit in `logs/development-log.md`.
-4. Record architecture or technical decisions in `logs/decision-log.md` using the ADR template.
-5. Record trained/evaluated model versions only in `logs/model-registry.csv`; do not invent metrics outside the master plan.
+1. Run tests listed in the approved Verification plan.
+2. Record results in `logs/test-log.md` with mandatory evidence format (Environment, Command, Output, Verdict `PASS`/`FAIL` from observed output).
+3. Record completed work, problems, solutions, and commit in `logs/development-log.md`.
+4. Record architecture or product decisions in `logs/decision-log.md` ONLY when a genuine ADR is created/updated. Do not add empty decision log entries for routine code tasks.
+5. Record trained/evaluated models ONLY in `logs/model-registry.csv`.
 6. Do not mark the task `DONE` while required tests fail or required logs are missing.
 
 ## Documentation lifecycle
 
-- Active plan: `plans/current-task.md`.
-- Approved plan snapshot: `plans/approved/`.
-- Completed or superseded plan: `plans/archive/`.
+- Active plan: `plans/current-task.md` (pointer).
+- Approved spec: `plans/approved/`.
+- Completed or superseded spec: `plans/archive/`.
 - Update `HANDOFF.md` whenever a task moves to `DONE` or `BLOCKED`. Keep only the current handoff state — it is not a history log.
 - Do not overwrite historical approved/archive records.
 - Update canonical docs only when the approved task requires a durable project change.
