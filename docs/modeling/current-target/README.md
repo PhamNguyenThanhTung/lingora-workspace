@@ -1,6 +1,8 @@
 # Lingora — Canonical Modeling / Bộ sơ đồ báo cáo
 
-**Trạng thái:** Final 3-point recheck hoàn tất — **MODELING APPROVED** / **READY FOR PHYSICAL DESIGN**. Assignment và Level-up đã đúng authority; progress semantics được làm rõ. Chi tiết và evidence tại [final-review.md](final-review.md).
+**Trạng thái hiện tại (2026-10-16): CLASS DIAGRAM IN PROGRESS.** Use Case và Activity là baseline hành vi để tiếp tục review lớp. Kết luận MODELING APPROVED / READY FOR PHYSICAL DESIGN trong [final-review.md](final-review.md) là kết quả lịch sử của vòng trước; không xác nhận class completion hiện tại hoặc cho phép bước downstream.
+
+**DOM chưa đồng bộ:** [PUML](src/DOM-01-core-domain-model.puml), PNG/SVG và [candidate](evidence/2026-10-12-class-design-completion/candidate.drawio) có 22 class + 1 enum, 28 relations, `Unit` / `AssessmentBlueprintVersion`; primary Draw.io vẫn 24 relations, `LogicalUnit` / `AssessmentVersion`. [Báo cáo completion](class-design-completion-2026-10-12.md) chưa có closeout. Giữ hai trạng thái để review/merge riêng; không regenerate cả bundle. [Audit](../../repository-audit-2026-10-16.md) phân loại rõ source/exports/history. Sequence/logical data/security/deployment bên dưới là tài liệu downstream cần đối chiếu lại sau lớp.
 
 **Authority:** PO decisions → ADR-036 → ADR-030–035 trong phạm vi tương thích → [requirements](../../02-requirements.md) → [UC catalog](../../use-case-specifications.md) → [traceability](../../05-traceability-matrix.md) → modeling. [Decision log](../../../logs/decision-log.md), [correction report](review.md), [final review report](final-review.md).
 
@@ -87,7 +89,7 @@ py -3.13 docs/modeling/current-target/verify.py
 git diff --check
 ```
 
-Renderer dùng Java/local PlantUML jar; có thể đặt `PLANTUML_JAR` khi vị trí khác mặc định. Manifest ghi identity/classification từ source comments và hash source/style/output. [Static evidence](verification-output.txt), [manual visual record](evidence/visual-review.md), [task](../../../plans/current-task.md). Static checks không thay manual review.
+Renderer dùng Java/local PlantUML jar; có thể đặt `PLANTUML_JAR` khi vị trí khác mặc định. `render.py` ghi đè exports/manifest; không chạy để audit read-only hoặc tự đồng bộ native. Manifest ghi identity/classification từ source comments và hash source/style/output. [Static evidence](verification-output.txt), [manual visual record](evidence/visual-review.md), [task](../../../plans/current-task.md). Static checks không thay manual review.
 
 Prior review/verifier/output được giữ nguyên nội dung trong `evidence/2026-10-11-prior-*` để truy vết trước correction; approval/archive snapshots cũ không bị sửa. Vòng này dừng trước final approval/physical design/implementation.
 
@@ -95,7 +97,7 @@ Prior review/verifier/output được giữ nguyên nội dung trong `evidence/2
 
 The current primary deliverable is [lingora-all-diagrams.drawio](lingora-all-diagrams.drawio), with **44 pages: 35 active canonical views and nine report functional Use Case views**. The report views occupy pages 09–17 immediately after page 08 Admin; deferred ACT-05 remains excluded. All nine report pages were corrected on 2026-10-12 with editable native actors, boundaries, ellipses and connectors, no note boxes or redundant dependencies. [Before/after report and current native previews](../report-usecases/cleanup-review-2026-10-12.md) document the targeted correction. The other 35 page fragments were preserved byte-for-byte from this task's entry backup. Earlier 35-page export evidence in [the native render review](evidence/native-render-review.md) and [its preview manifest](evidence/native-render-review/final/manifest.csv) remains historical evidence. The full-bundle builder resynchronizes every page from PUML; it was not run for this nine-page correction. SVG-backed alternatives remain comparison artifacts only.
 
-**Historical native draw.io layout task — TESTING snapshot:** The earlier readability pass covered the active 35-page canonical set. Its completion commit gate remains separate because this exact output path was already untracked before that task's baseline. See [native-render-review.md](evidence/native-render-review.md) for its historical evidence. Reopen the current file from disk to see the corrected nine report pages; this task does not resolve the prior commit gate or source/output conflict.
+**Historical native draw.io layout task — TESTING snapshot:** The earlier readability pass covered the 35-page canonical set then present. See [native-render-review.md](evidence/native-render-review.md) for dated evidence. The bundle is now tracked in synchronization commit `bc40d0f`; former untracked/no-commit statements describe their task-time state, not a current Git blocker. Source/native differences remain explicitly unresolved; committing files did not validate or merge them.
 
 
 ## Study Focus targeted addendum (ADR-042, 2026-10-12)

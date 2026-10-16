@@ -1,4 +1,6 @@
-> **Current correction:** [Study Focus + F01/F02 correction](personalization-and-final-correction.md) supersedes the prior [final recheck](final-recheck.md) only for the corrected dependencies. Independent final approval remains a separate task.
+> **Redesign status (2026-10-16): RETAINED DOWNSTREAM PROPOSAL.** Current work stops at Class Diagram. This physical package predates its unfinished completion and must be reconciled after class review; it is not redesign authority, an active next task, or execution approval. See the [repository audit](../../repository-audit-2026-10-16.md). Dated readiness statements below describe that earlier proposal only.
+>
+> **Historical correction:** [Study Focus + F01/F02 correction](personalization-and-final-correction.md) supersedes the prior [final recheck](final-recheck.md) only for its corrected dependencies.
 
 # Lingora — Physical Data & Runtime Design
 

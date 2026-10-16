@@ -52,7 +52,7 @@ This connection strategy is a historical M1.2 record. Later Prisma, migration, s
 
 ## Current startup state
 
-The following are historical M1.6W instructions, not a verified current startup procedure. The current working tree has removed the learner AI route handlers and their contract module while `lingora-web/src/lib/api/proxy.ts` still imports that module. No Admin web application source is present. Establish and verify a current startup path under a separately authorized task before relying on these instructions.
+Checked 2026-10-16: learner routes are `/`, `/login` and `/register`, with Supabase SSR authentication and vi/en messages. There is no learner AI route, contract module or `src/lib/api/proxy.ts` in this checkout. No Admin application source exists; root `dev:admin` / `build:admin` aliases target scripts absent from the Prisma-only Admin package. Main learning flows and AI runtime are absent. Package contents are not a successful startup/deployment check; live services were not contacted. Historical M1.x observations above do not verify today's runtime.
 
 ## Git repositories & remote strategy
 

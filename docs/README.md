@@ -1,5 +1,7 @@
 # Lingora Documentation
 
+> **Current redesign boundary — 2026-10-16:** Use Case and Activity are the behavioral starting point; **Class Diagram is IN PROGRESS**. Read the [verified repository audit](repository-audit-2026-10-16.md) and [modeling entry point](modeling/current-target/README.md) before continuing. DOM PUML/render/candidate and primary native DOM differ; neither the old completeness review nor downstream physical readiness is a current completion claim. Physical design, later sequence/data/architecture diagrams and Phase 2 roadmaps are retained downstream references, not active next work or implementation approval. Scoped approved ADR semantics remain in force.
+
 ## Source-of-truth policy
 
 The repository has topic-specific authorities; `docs/` membership alone does not make a statement current or approved. At task start, read `plans/current-task.md`, `docs/QUICK-REF.md`, `HANDOFF.md`, then this index. Read the controlling topic source listed below. `AGENTS.md` controls agent procedure; this file controls documentation authority and supersession.
@@ -11,7 +13,7 @@ The repository has topic-specific authorities; `docs/` membership alone does not
 3. Immutable snapshots in `plans/approved/` authorize only the named scope while referenced by the active `plans/current-task.md`. Completed or superseded snapshots are `HISTORICAL`; their old approval does not authorize new work. A plan draft or task status without current approval evidence and snapshot does not authorize implementation.
 4. Accepted design documents control their named TARGET design only. They do not prove runtime or database deployment.
 5. Repository source and ordered SQL migrations establish CURRENT repository artifacts. A live deployment or applied database state requires dated environment/catalog evidence; prose, Prisma alone, and old test logs do not establish it.
-6. `plans/master-implementation-and-report-plan.md` is a draft TARGET roadmap and the existing P0 decision backlog. It does not independently authorize a milestone.
+6. `plans/master-implementation-and-report-plan.md` is retained historical planning/backlog context. Reconcile any applicable item against current ADRs and the Class Diagram review before reuse; it is not a current execution roadmap or milestone authorization.
 
 If the authorities disagree, label the affected rule `CONFLICT`, do not combine or select behavior by inference, and keep dependent implementation out of scope until the named decision is approved and recorded.
 
@@ -37,7 +39,9 @@ lingora-ai/     # Supporting AI Capability Service (Python 3.11, FastAPI, GEC)
 └── api/
 ```
 
-## Full Diagram Correction Pass & Final Modeling Review (2026-10-11)
+## Historical modeling review and downstream physical proposals (2026-10-11–12)
+
+The dated outcomes and next-step statements below describe those earlier tasks only. The current design stage is Class Diagram; they do not select today's next task or approve downstream artifacts against its unfinished changes.
 
 - **Correction Pass:** [Canonical correction report](modeling/current-target/review.md) records all 36 sources (30 TARGET, 5 CURRENT repository/configuration views, 1 deferred scope marker). Presentation, UML/data abstraction, and 11-concern consistency were corrected.
 - **Final Modeling Review and 3-point correction:** [Final review report](modeling/current-target/final-review.md) records the bounded recheck after the previous review. Verdict: **MODELING APPROVED** / **READY FOR PHYSICAL DESIGN**. It confirms there is no Assignment `CLOSED` state, Level-up readiness/pass parameters are configured without a platform-wide 100% lesson gate, and progress counts published active required lessons even when normal progression has not unlocked them. Unpublished/unavailable and withdrawn-incomplete content remains excluded. Only ACT-01 and ACT-09 were changed and rerendered; no physical design or implementation was started. See [diagram index](modeling/current-target/README.md) and [correction evidence](modeling/current-target/evidence/final-three-point-correction.md).
@@ -52,7 +56,7 @@ lingora-ai/     # Supporting AI Capability Service (Python 3.11, FastAPI, GEC)
 
 **Historical final physical design recheck (completed 2026-10-12; corrected by the addendum below):** [Final A–R report](design/physical/final-recheck.md) returns **NEEDS PHYSICAL CORRECTION / NOT READY FOR IMPLEMENTATION PLANNING**. F01/F02 remain STILL OPEN in the Teacher authoring-secret read executor and existing-context scoped-locker lookup; F03–F12 are independently CLOSED. Original findings and earlier all-CLOSED labels remain historical evidence. No redesign or implementation approval was applied; all four fresh render pairs match primary artifacts, 34 tables and 189 modeling files are preserved. Next separately authorized work is bounded F01/F02 correction and recheck. LIVE DB UNVERIFIED; destructive rebuild stays gated.
 
-## Study Focus personalization and final physical correction (2026-10-12)
+## Approved Study Focus semantics and historical physical correction (2026-10-12)
 
 [Study Focus addendum](study-focus-addendum.md) and ADR-042 control the additive product scope alongside unchanged ADR-036/041: one primary focus per owned context, default BALANCED, affecting next supplementary practice only. Independent internal due SRS remains separate from eligible authored-practice bias/fallback; shared core and scored pinned assessments stay unchanged. Canonical UC-01–14 remains unchanged.
 
@@ -82,7 +86,7 @@ lingora-ai/     # Supporting AI Capability Service (Python 3.11, FastAPI, GEC)
 | [06-system-analysis.md](06-system-analysis.md) and [07-data-dictionary.md](07-data-dictionary.md) | Historical Phase 0 analysis/data-dictionary sources. Neither is current role or physical-schema authority; use ADR-034/035 for business/logical security policy and Full CURRENT + TARGET Modeling Review for physical reconciliation. |
 | [00-master-plan.md](00-master-plan.md) | `HISTORICAL` Phase 0 priorities and roadmap; not Phase 2 task authorization. Its old P0 AI/GEC items are not current Phase 2 priorities. |
 
-Workflow authority lives in [AGENTS.md](../AGENTS.md). The single task-status pointer is [plans/current-task.md](../plans/current-task.md); `DONE` means no follow-on task is active until a new one is recorded. [HANDOFF.md](../HANDOFF.md) summarizes operational state. The Phase 2 roadmap and decision queue are in `plans/master-implementation-and-report-plan.md`; that roadmap is a draft and does not authorize implementation. Accepted decisions remain in `logs/decision-log.md` (ADR-030 P0-D04, ADR-031 P0-D03, ADR-032 P0-D05, ADR-033 P0-D06, ADR-034 P0-D02, ADR-035 P0-D07 logical product/security target, ADR-036 MVP product revision); evidence belongs in `logs/test-log.md` and `logs/development-log.md`.
+Workflow authority lives in [AGENTS.md](../AGENTS.md). [plans/current-task.md](../plans/current-task.md) is the sole task-status pointer; [HANDOFF.md](../HANDOFF.md) supplies current operational context. Prior Phase 2 planning remains historical reference. Accepted decisions remain in `logs/decision-log.md` (ADR-030–036, ADR-041/042, each within scope); evidence belongs in `logs/test-log.md` and `logs/development-log.md`. Today's next design action is Class Diagram review, not physical approval or implementation planning.
 
 ## Classification legend
 

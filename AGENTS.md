@@ -74,17 +74,23 @@ Pause implementation and return the task to `REVIEW` status immediately if any o
 
 ## AI Coding Agents & Responsibilities
 
-The project standardizes on two coding agents with distinct responsibilities:
+Codex owns discovery, planning, review and acceptance. Antigravity / Gemini workers own approved implementation and test execution. Codex may perform directly authorized documentation, audit and repository-plumbing cleanup.
 
 - **Codex**:
   - Discovery & Architecture
   - Specification & Planning
   - Review & Verification
   - Acceptance & Gatekeeping
-- **Antigravity**:
+- **Antigravity / Gemini workers**:
   - Implementation & Coding
   - Test Execution & Verification
   - Fix implementation issues according to plan and review
+
+Delegate when the task benefits from it. Parallel workers require independent dependencies, explicit file ownership, safe shared state and clear contracts; there is no fixed worker count. The coordinator alone writes shared logs, current-task/HANDOFF and aggregate artifacts unless a safe merge owner is explicit. Read-only audit subagents may inspect independent areas.
+
+Codex inspects the actual diff and reruns relevant checks before acceptance; a worker's `PASS` alone is insufficient. Across task and final review, allow one bounded correction dispatch, then review and verify again. If blocking findings remain, STOP dependent work, return the task to REVIEW and report; do not start another correction/model-escalation loop or accept it anyway.
+
+These rules override generic skill defaults on worker roles, model routing, review rounds, commit timing and handoffs. Actual runtime tool schemas control arguments; do not change global settings to satisfy a skill example. Maintain reusable skills in `.agents/skills/`; `.codex/skills/` is its existing mirrored runtime discovery copy, not a second workflow authority.
 
 ## Agent Workflow & Methodology: Superpowers
 
