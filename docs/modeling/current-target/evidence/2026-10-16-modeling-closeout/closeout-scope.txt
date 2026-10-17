@@ -1,0 +1,4 @@
+PASS: eight exact candidate Activity pages; other 36 pages including DOM byte-identical.
+PASS: all canonical sources, historical evidence, application code and unrelated tracked files preserved.
+PASS: DOM manifest unchanged; independent Activity and provenance reviews recorded.
+PASS: current documentation links resolve.

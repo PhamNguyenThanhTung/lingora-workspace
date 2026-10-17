@@ -1,0 +1,471 @@
+Command: ['C:\\Users\\tungt\\AppData\\Local\\Programs\\Python\\Python311\\python.exe', 'docs\\modeling\\current-target\\evidence\\2026-10-16-class-review\\verify_class.py']
+Exit: 0
+PASS: 22 domain classes + 1 enum; unique classifier names
+PASS: 23 unique classifiers / 28 explicit relationships
+PASS: 6 compositions / 22 plain associations; no inheritance or aggregation
+PASS: no old roles, duplicate names or physical/API artifacts
+PASS: existing native validator: 44 pages, identities and expanded source payloads
+PASS: native classifier User
+PASS: exact ordered members User
+PASS: member bounds/header clearance User
+PASS: native classifier Profile
+PASS: exact ordered members Profile
+PASS: member bounds/header clearance Profile
+PASS: native classifier LearningContext
+PASS: exact ordered members LearningContext
+PASS: member bounds/header clearance LearningContext
+PASS: native classifier StudyFocus
+PASS: exact ordered members StudyFocus
+PASS: member bounds/header clearance StudyFocus
+PASS: native classifier LessonAttempt
+PASS: exact ordered members LessonAttempt
+PASS: member bounds/header clearance LessonAttempt
+PASS: native classifier Language
+PASS: exact ordered members Language
+PASS: member bounds/header clearance Language
+PASS: native classifier ProficiencyFramework
+PASS: exact ordered members ProficiencyFramework
+PASS: member bounds/header clearance ProficiencyFramework
+PASS: native classifier Level
+PASS: exact ordered members Level
+PASS: member bounds/header clearance Level
+PASS: native classifier Course
+PASS: exact ordered members Course
+PASS: member bounds/header clearance Course
+PASS: native classifier Unit
+PASS: exact ordered members Unit
+PASS: member bounds/header clearance Unit
+PASS: native classifier Lesson
+PASS: exact ordered members Lesson
+PASS: member bounds/header clearance Lesson
+PASS: native classifier Vocabulary
+PASS: exact ordered members Vocabulary
+PASS: member bounds/header clearance Vocabulary
+PASS: native classifier Exercise
+PASS: exact ordered members Exercise
+PASS: member bounds/header clearance Exercise
+PASS: native classifier Assignment
+PASS: exact ordered members Assignment
+PASS: member bounds/header clearance Assignment
+PASS: native classifier ContentRevision
+PASS: exact ordered members ContentRevision
+PASS: member bounds/header clearance ContentRevision
+PASS: native classifier SecurityAuditEvent
+PASS: exact ordered members SecurityAuditEvent
+PASS: member bounds/header clearance SecurityAuditEvent
+PASS: native classifier AssessmentBlueprint
+PASS: exact ordered members AssessmentBlueprint
+PASS: member bounds/header clearance AssessmentBlueprint
+PASS: native classifier AssessmentBlueprintVersion
+PASS: exact ordered members AssessmentBlueprintVersion
+PASS: member bounds/header clearance AssessmentBlueprintVersion
+PASS: native classifier AssessmentResult
+PASS: exact ordered members AssessmentResult
+PASS: member bounds/header clearance AssessmentResult
+PASS: native classifier AssessmentItem
+PASS: exact ordered members AssessmentItem
+PASS: member bounds/header clearance AssessmentItem
+PASS: native classifier LearningPlan
+PASS: exact ordered members LearningPlan
+PASS: member bounds/header clearance LearningPlan
+PASS: native classifier Progress
+PASS: exact ordered members Progress
+PASS: member bounds/header clearance Progress
+PASS: native classifier SrsCard
+PASS: exact ordered members SrsCard
+PASS: member bounds/header clearance SrsCard
+PASS: exact native edge inventory
+PASS: endpoints + multiplicities rel_62
+PASS: composition/association + label rel_62
+PASS: endpoints + multiplicities rel_65
+PASS: composition/association + label rel_65
+PASS: endpoints + multiplicities rel_68
+PASS: composition/association + label rel_68
+PASS: endpoints + multiplicities rel_71
+PASS: composition/association + label rel_71
+PASS: endpoints + multiplicities rel_74
+PASS: composition/association + label rel_74
+PASS: endpoints + multiplicities rel_77
+PASS: composition/association + label rel_77
+PASS: endpoints + multiplicities rel_80
+PASS: composition/association + label rel_80
+PASS: endpoints + multiplicities rel_83
+PASS: composition/association + label rel_83
+PASS: endpoints + multiplicities rel_86
+PASS: composition/association + label rel_86
+PASS: endpoints + multiplicities rel_87
+PASS: composition/association + label rel_87
+PASS: endpoints + multiplicities rel_90
+PASS: composition/association + label rel_90
+PASS: endpoints + multiplicities rel_91
+PASS: composition/association + label rel_91
+PASS: endpoints + multiplicities rel_94
+PASS: composition/association + label rel_94
+PASS: endpoints + multiplicities rel_95
+PASS: composition/association + label rel_95
+PASS: endpoints + multiplicities rel_98
+PASS: composition/association + label rel_98
+PASS: endpoints + multiplicities rel_99
+PASS: composition/association + label rel_99
+PASS: endpoints + multiplicities rel_102
+PASS: composition/association + label rel_102
+PASS: endpoints + multiplicities rel_105
+PASS: composition/association + label rel_105
+PASS: endpoints + multiplicities rel_108
+PASS: composition/association + label rel_108
+PASS: endpoints + multiplicities rel_109
+PASS: composition/association + label rel_109
+PASS: endpoints + multiplicities rel_110
+PASS: composition/association + label rel_110
+PASS: endpoints + multiplicities rel_111
+PASS: composition/association + label rel_111
+PASS: endpoints + multiplicities rel_114
+PASS: composition/association + label rel_114
+PASS: endpoints + multiplicities rel_117
+PASS: composition/association + label rel_117
+PASS: endpoints + multiplicities design-rel-24
+PASS: composition/association + label design-rel-24
+PASS: endpoints + multiplicities design-rel-25
+PASS: composition/association + label design-rel-25
+PASS: endpoints + multiplicities design-rel-26
+PASS: composition/association + label design-rel-26
+PASS: endpoints + multiplicities design-rel-27
+PASS: composition/association + label design-rel-27
+PASS: native classifier boxes do not overlap
+PASS: native relationship labels clear of class boxes
+PASS: native multiplicity/role labels do not overlap
+PASS: orthogonal segment rel_62
+PASS: orthogonal segment rel_65
+PASS: orthogonal segment rel_65
+PASS: orthogonal segment rel_65
+PASS: orthogonal segment rel_65
+PASS: orthogonal segment rel_65
+PASS: orthogonal segment rel_68
+PASS: orthogonal segment rel_68
+PASS: orthogonal segment rel_68
+PASS: orthogonal segment rel_68
+PASS: orthogonal segment rel_68
+PASS: orthogonal segment rel_71
+PASS: orthogonal segment rel_71
+PASS: orthogonal segment rel_71
+PASS: orthogonal segment rel_71
+PASS: orthogonal segment rel_71
+PASS: orthogonal segment rel_74
+PASS: orthogonal segment rel_74
+PASS: orthogonal segment rel_74
+PASS: orthogonal segment rel_74
+PASS: orthogonal segment rel_74
+PASS: orthogonal segment rel_77
+PASS: orthogonal segment rel_80
+PASS: orthogonal segment rel_83
+PASS: orthogonal segment rel_86
+PASS: orthogonal segment rel_86
+PASS: orthogonal segment rel_86
+PASS: orthogonal segment rel_86
+PASS: orthogonal segment rel_86
+PASS: orthogonal segment rel_87
+PASS: orthogonal segment rel_87
+PASS: orthogonal segment rel_87
+PASS: orthogonal segment rel_87
+PASS: orthogonal segment rel_87
+PASS: orthogonal segment rel_90
+PASS: orthogonal segment rel_90
+PASS: orthogonal segment rel_90
+PASS: orthogonal segment rel_91
+PASS: orthogonal segment rel_91
+PASS: orthogonal segment rel_91
+PASS: orthogonal segment rel_91
+PASS: orthogonal segment rel_91
+PASS: orthogonal segment rel_94
+PASS: orthogonal segment rel_94
+PASS: orthogonal segment rel_94
+PASS: orthogonal segment rel_95
+PASS: orthogonal segment rel_98
+PASS: orthogonal segment rel_99
+PASS: orthogonal segment rel_99
+PASS: orthogonal segment rel_99
+PASS: orthogonal segment rel_99
+PASS: orthogonal segment rel_99
+PASS: orthogonal segment rel_102
+PASS: orthogonal segment rel_102
+PASS: orthogonal segment rel_102
+PASS: orthogonal segment rel_102
+PASS: orthogonal segment rel_102
+PASS: orthogonal segment rel_105
+PASS: orthogonal segment rel_105
+PASS: orthogonal segment rel_105
+PASS: orthogonal segment rel_108
+PASS: orthogonal segment rel_108
+PASS: orthogonal segment rel_108
+PASS: orthogonal segment rel_108
+PASS: orthogonal segment rel_108
+PASS: orthogonal segment rel_109
+PASS: orthogonal segment rel_110
+PASS: orthogonal segment rel_110
+PASS: orthogonal segment rel_110
+PASS: orthogonal segment rel_110
+PASS: orthogonal segment rel_111
+PASS: orthogonal segment rel_111
+PASS: orthogonal segment rel_111
+PASS: orthogonal segment rel_111
+PASS: orthogonal segment rel_111
+PASS: orthogonal segment rel_114
+PASS: orthogonal segment rel_114
+PASS: orthogonal segment rel_114
+PASS: orthogonal segment rel_114
+PASS: orthogonal segment rel_114
+PASS: orthogonal segment rel_117
+PASS: orthogonal segment rel_117
+PASS: orthogonal segment rel_117
+PASS: orthogonal segment rel_117
+PASS: orthogonal segment rel_117
+PASS: orthogonal segment design-rel-24
+PASS: orthogonal segment design-rel-24
+PASS: orthogonal segment design-rel-24
+PASS: orthogonal segment design-rel-25
+PASS: orthogonal segment design-rel-26
+PASS: orthogonal segment design-rel-26
+PASS: orthogonal segment design-rel-26
+PASS: orthogonal segment design-rel-27
+PASS: orthogonal segment design-rel-27
+PASS: orthogonal segment design-rel-27
+PASS: orthogonal segment design-rel-27
+PASS: orthogonal segment design-rel-27
+PASS: all 28 native routes avoid class interiors
+PASS: PlantUML SVG parses without an error image
+PASS: PlantUML text/multiplicity bounds do not overlap
+PASS: full-size source PNG decodes
+PASS: native SVG export contains every classifier
+PASS: full-size native PNG decodes without layout crop
+PASS: 43 unrelated primary pages byte-identical; all 44 identities retained
+PASS: all unrelated tracked files, UC/ACT candidates and historical evidence unchanged
+PASS: canonical source is reviewed candidate
+PASS: fresh canonical DOM source/render manifest hashes
+PASS: fresh native DOM export/page provenance hashes
+PASS: canonical identities equal independent reviewer accepted hashes
+PASS: all 35 other render-manifest records unchanged
+PASS: local link evidence/2026-10-16-class-review/inventory.json
+PASS: local link evidence/2026-10-16-class-review/baseline.json
+PASS: local link evidence/2026-10-16-class-review/entry-DOM-01.xml
+PASS: local link ../../../logs/decision-log.md
+PASS: local link ../../use-case-specifications.md
+PASS: local link ../../02-requirements.md
+PASS: local link ../../study-focus-addendum.md
+PASS: local link ../../../plans/approved/2026-10-12-class-design-completion-REQUEST.txt
+PASS: local link ../../../plans/approved/2026-10-12-class-design-completion-APPROVED.md
+PASS: local link evidence/2026-10-16-class-review/independent-review.md
+PASS: local link evidence/2026-10-16-class-review/visual-review.md
+PASS: local link evidence/2026-10-16-class-review/all-bundle-entry-check.txt
+PASS: local link evidence/2026-10-16-class-review/verification.json
+PASS: local link evidence/2026-10-16-class-review/class-check.txt
+PASS: local link evidence/2026-10-16-class-review/native-check.txt
+PASS: local link class-review-2026-10-16.md
+PASS: local link final-review.md
+PASS: local link src/DOM-01-core-domain-model.puml
+PASS: local link evidence/2026-10-16-class-review/independent-review.md
+PASS: local link evidence/2026-10-12-class-design-completion/candidate.drawio
+PASS: local link class-design-completion-2026-10-12.md
+PASS: local link ../../repository-audit-2026-10-16.md
+PASS: local link ../../02-requirements.md
+PASS: local link ../../use-case-specifications.md
+PASS: local link ../../05-traceability-matrix.md
+PASS: local link ../../../logs/decision-log.md
+PASS: local link review.md
+PASS: local link final-review.md
+PASS: local link ../report-usecases/README.md
+PASS: local link src/SYS-02-target-context.puml
+PASS: local link rendered/SYS-02-target-context.svg
+PASS: local link rendered/SYS-02-target-context.png
+PASS: local link src/UC-01-target-overall.puml
+PASS: local link rendered/UC-01-target-overall.svg
+PASS: local link rendered/UC-01-target-overall.png
+PASS: local link src/UC-02-target-learner.puml
+PASS: local link rendered/UC-02-target-learner.svg
+PASS: local link rendered/UC-02-target-learner.png
+PASS: local link src/UC-03-target-teacher.puml
+PASS: local link rendered/UC-03-target-teacher.svg
+PASS: local link rendered/UC-03-target-teacher.png
+PASS: local link src/UC-04-target-admin.puml
+PASS: local link rendered/UC-04-target-admin.svg
+PASS: local link rendered/UC-04-target-admin.png
+PASS: local link src/ACT-01-learner-onboarding.puml
+PASS: local link rendered/ACT-01-learner-onboarding.svg
+PASS: local link rendered/ACT-01-learner-onboarding.png
+PASS: local link src/ACT-02-placement-assessment.puml
+PASS: local link rendered/ACT-02-placement-assessment.svg
+PASS: local link rendered/ACT-02-placement-assessment.png
+PASS: local link src/ACT-03-lesson-learning.puml
+PASS: local link rendered/ACT-03-lesson-learning.svg
+PASS: local link rendered/ACT-03-lesson-learning.png
+PASS: local link src/ACT-04-level-up-assessment.puml
+PASS: local link rendered/ACT-04-level-up-assessment.svg
+PASS: local link rendered/ACT-04-level-up-assessment.png
+PASS: local link src/ACT-06-srs-review.puml
+PASS: local link rendered/ACT-06-srs-review.svg
+PASS: local link rendered/ACT-06-srs-review.png
+PASS: local link src/ACT-08-content-governance.puml
+PASS: local link rendered/ACT-08-content-governance.svg
+PASS: local link rendered/ACT-08-content-governance.png
+PASS: local link src/SEQ-01-login-authorization.puml
+PASS: local link rendered/SEQ-01-login-authorization.svg
+PASS: local link rendered/SEQ-01-login-authorization.png
+PASS: local link src/SEQ-04-review-approve-publish.puml
+PASS: local link rendered/SEQ-04-review-approve-publish.svg
+PASS: local link rendered/SEQ-04-review-approve-publish.png
+PASS: local link src/SEQ-06-lesson-exercise-submission.puml
+PASS: local link rendered/SEQ-06-lesson-exercise-submission.svg
+PASS: local link rendered/SEQ-06-lesson-exercise-submission.png
+PASS: local link src/SEQ-07-assessment-submission.puml
+PASS: local link rendered/SEQ-07-assessment-submission.svg
+PASS: local link rendered/SEQ-07-assessment-submission.png
+PASS: local link src/SEQ-08-srs-review.puml
+PASS: local link rendered/SEQ-08-srs-review.svg
+PASS: local link rendered/SEQ-08-srs-review.png
+PASS: local link src/DOM-01-core-domain-model.puml
+PASS: local link rendered/DOM-01-core-domain-model.svg
+PASS: local link rendered/DOM-01-core-domain-model.png
+PASS: local link src/DATA-03-target-logical-erd.puml
+PASS: local link rendered/DATA-03-target-logical-erd.svg
+PASS: local link rendered/DATA-03-target-logical-erd.png
+PASS: local link src/SEC-01-target-trust-boundary-dfd.puml
+PASS: local link rendered/SEC-01-target-trust-boundary-dfd.svg
+PASS: local link rendered/SEC-01-target-trust-boundary-dfd.png
+PASS: local link src/DEP-02-target-deployment.puml
+PASS: local link rendered/DEP-02-target-deployment.svg
+PASS: local link rendered/DEP-02-target-deployment.png
+PASS: local link src/ACT-07-teacher-provisioning.puml
+PASS: local link rendered/ACT-07-teacher-provisioning.svg
+PASS: local link rendered/ACT-07-teacher-provisioning.png
+PASS: local link src/ACT-09-revision-replacement.puml
+PASS: local link rendered/ACT-09-revision-replacement.svg
+PASS: local link rendered/ACT-09-revision-replacement.png
+PASS: local link src/SEQ-02-teacher-provisioning.puml
+PASS: local link rendered/SEQ-02-teacher-provisioning.svg
+PASS: local link rendered/SEQ-02-teacher-provisioning.png
+PASS: local link src/SEQ-03-assignment-authoring-submit.puml
+PASS: local link rendered/SEQ-03-assignment-authoring-submit.svg
+PASS: local link rendered/SEQ-03-assignment-authoring-submit.png
+PASS: local link src/SEQ-05-revision-replacement.puml
+PASS: local link rendered/SEQ-05-revision-replacement.svg
+PASS: local link rendered/SEQ-05-revision-replacement.png
+PASS: local link src/SEQ-09-disable-account-enforcement.puml
+PASS: local link rendered/SEQ-09-disable-account-enforcement.svg
+PASS: local link rendered/SEQ-09-disable-account-enforcement.png
+PASS: local link src/STA-01-account-status.puml
+PASS: local link rendered/STA-01-account-status.svg
+PASS: local link rendered/STA-01-account-status.png
+PASS: local link src/STA-02-assignment-lifecycle.puml
+PASS: local link rendered/STA-02-assignment-lifecycle.svg
+PASS: local link rendered/STA-02-assignment-lifecycle.png
+PASS: local link src/STA-03-content-revision-lifecycle.puml
+PASS: local link rendered/STA-03-content-revision-lifecycle.svg
+PASS: local link rendered/STA-03-content-revision-lifecycle.png
+PASS: local link src/SYS-04-target-components.puml
+PASS: local link rendered/SYS-04-target-components.svg
+PASS: local link rendered/SYS-04-target-components.png
+PASS: local link src/DATA-01-current-migration-erd.puml
+PASS: local link rendered/DATA-01-current-migration-erd.svg
+PASS: local link rendered/DATA-01-current-migration-erd.png
+PASS: local link src/DATA-02-current-prisma-model.puml
+PASS: local link rendered/DATA-02-current-prisma-model.svg
+PASS: local link rendered/DATA-02-current-prisma-model.png
+PASS: local link src/DEP-01-current-deployment.puml
+PASS: local link rendered/DEP-01-current-deployment.svg
+PASS: local link rendered/DEP-01-current-deployment.png
+PASS: local link src/SYS-01-current-context.puml
+PASS: local link rendered/SYS-01-current-context.svg
+PASS: local link rendered/SYS-01-current-context.png
+PASS: local link src/SYS-03-current-components.puml
+PASS: local link rendered/SYS-03-current-components.svg
+PASS: local link rendered/SYS-03-current-components.png
+PASS: local link src/ACT-05-reassessment.puml
+PASS: local link rendered/ACT-05-reassessment.svg
+PASS: local link rendered/ACT-05-reassessment.png
+PASS: local link verification-output.txt
+PASS: local link evidence/visual-review.md
+PASS: local link ../../../plans/current-task.md
+PASS: local link evidence/2026-10-16-class-review/visual-review.md
+PASS: local link lingora-all-diagrams.drawio
+PASS: local link ../report-usecases/cleanup-review-2026-10-12.md
+PASS: local link evidence/native-render-review.md
+PASS: local link evidence/native-render-review/final/manifest.csv
+PASS: local link evidence/native-render-review.md
+PASS: local link ../../study-focus-addendum.md
+PASS: local link ../../design/physical/personalization-and-final-correction.md
+PASS: local link modeling/current-target/class-review-2026-10-16.md
+PASS: local link repository-audit-2026-10-16.md
+PASS: local link use-case-specifications.md
+PASS: local link 02-requirements.md
+PASS: local link modeling/current-target/
+PASS: local link modeling/current-target/class-review-2026-10-16.md
+PASS: local link ../plans/current-task.md
+PASS: local link modeling/current-target/review.md
+PASS: local link modeling/current-target/final-review.md
+PASS: local link modeling/current-target/README.md
+PASS: local link modeling/current-target/evidence/final-three-point-correction.md
+PASS: local link design/physical/README.md
+PASS: local link design/physical/rebuild-plan.md
+PASS: local link design/physical/review-and-verification.md
+PASS: local link design/physical/final-review.md
+PASS: local link design/physical/correction-pass.md
+PASS: local link design/physical/independent-recheck.md
+PASS: local link design/physical/final-recheck.md
+PASS: local link study-focus-addendum.md
+PASS: local link design/physical/personalization-and-final-correction.md
+PASS: local link design/physical/personalization-correction-evidence/independent-review.md
+PASS: local link QUICK-REF.md
+PASS: local link use-case-specifications.md
+PASS: local link 01-architecture.md
+PASS: local link phase-1-m2-4-architecture-security.md
+PASS: local link 02-requirements.md
+PASS: local link 03-api-contract.md
+PASS: local link 04-data-model.md
+PASS: local link 05-traceability-matrix.md
+PASS: local link phase-1-m2-1-domain-and-logical-data-foundation.md
+PASS: local link phase-1-d3-assessment-learning-engine-design.md
+PASS: local link phase-1-d4-content-curriculum-design.md
+PASS: local link phase-1-m2-4-architecture-security.md
+PASS: local link phase-1-m2-6-design-handoff.md
+PASS: local link phase-1-m2-2-behavior-uc-activity-state.md
+PASS: local link 08-english-a1-curriculum.md
+PASS: local link 09-placement-and-jump-specification.md
+PASS: local link archive/phase-0/phase-0-roles-and-mvp-final.md
+PASS: local link modeling/current-target/
+PASS: local link 06-system-analysis.md
+PASS: local link 07-data-dictionary.md
+PASS: local link 00-master-plan.md
+PASS: local link ../AGENTS.md
+PASS: local link ../plans/current-task.md
+PASS: local link ../HANDOFF.md
+PASS: local link README.md
+PASS: local link repository-audit-2026-10-16.md
+PASS: local link ../plans/current-task.md
+PASS: local link ../HANDOFF.md
+PASS: local link modeling/current-target/class-review-2026-10-16.md
+PASS: local link ../logs/decision-log.md
+PASS: local link use-case-specifications.md
+PASS: local link 02-requirements.md
+PASS: local link modeling/current-target/README.md
+PASS: local link modeling/report-usecases/README.md
+PASS: local link modeling/current-target/class-review-2026-10-16.md
+PASS: local link modeling/current-target/lingora-all-diagrams.drawio
+PASS: local link design/physical/README.md
+PASS: local link ../plans/archive/2026-10-07-master-implementation-and-report-plan-SUPERSEDED.md
+PASS: local link modeling/current-target/evidence/2026-10-16-class-review/independent-review.md
+PASS: local link modeling/current-target/evidence/2026-10-12-class-design-completion/
+PASS: local link modeling/current-target/class-design-completion-2026-10-12.md
+PASS: local link modeling/current-target/evidence/2026-10-12-ad-layout-v2/
+PASS: local link ../AGENTS.md
+PASS: local link README.md
+PASS: local link ../ENVIRONMENT.md
+PASS: local link plans/current-task.md
+PASS: local link plans/archive/2026-10-16-class-review-DONE.md
+PASS: local link docs/modeling/current-target/lingora-all-diagrams.drawio
+PASS: local link docs/modeling/current-target/class-review-2026-10-16.md
+PASS: local link docs/modeling/current-target/evidence/2026-10-16-class-review/independent-review.md
+PASS: local link docs/modeling/current-target/evidence/2026-10-16-class-review/visual-review.md
+PASS: local link docs/modeling/current-target/evidence/2026-10-16-class-review/verification.json
+PASS: local link docs/README.md
+PASS: local link ../docs/modeling/current-target/class-review-2026-10-16.md
+PASS: local link archive/2026-10-16-class-review-DONE.md
+CLASS DIAGRAM DETERMINISTIC VERIFICATION PASS; manual/independent review recorded separately.

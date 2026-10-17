@@ -1,0 +1,67 @@
+Exit: 1
+PASS: 36 sources / manifest entries
+PASS: 36 unique diagram identities; UC view namespace retained
+PASS: 5 CURRENT + 30 TARGET + 1 DEFERRED; 35 active
+PASS: manifest exactly covers source set
+PASS: fresh shared style hash
+PASS: fresh source ACT-01
+PASS: fresh svg ACT-01
+PASS: no render error ACT-01
+PASS: grayscale SVG ACT-01
+PASS: fresh png ACT-01
+PASS: fresh source ACT-02
+PASS: fresh svg ACT-02
+PASS: no render error ACT-02
+PASS: grayscale SVG ACT-02
+PASS: fresh png ACT-02
+PASS: fresh source ACT-03
+PASS: fresh svg ACT-03
+PASS: no render error ACT-03
+PASS: grayscale SVG ACT-03
+PASS: fresh png ACT-03
+PASS: fresh source ACT-04
+PASS: fresh svg ACT-04
+PASS: no render error ACT-04
+PASS: grayscale SVG ACT-04
+PASS: fresh png ACT-04
+PASS: fresh source ACT-05
+PASS: fresh svg ACT-05
+PASS: no render error ACT-05
+PASS: grayscale SVG ACT-05
+PASS: fresh png ACT-05
+PASS: fresh source ACT-06
+PASS: fresh svg ACT-06
+PASS: no render error ACT-06
+PASS: grayscale SVG ACT-06
+PASS: fresh png ACT-06
+PASS: fresh source ACT-07
+PASS: fresh svg ACT-07
+PASS: no render error ACT-07
+PASS: grayscale SVG ACT-07
+PASS: fresh png ACT-07
+PASS: fresh source ACT-08
+PASS: fresh svg ACT-08
+PASS: no render error ACT-08
+PASS: grayscale SVG ACT-08
+PASS: fresh png ACT-08
+PASS: fresh source ACT-09
+PASS: fresh svg ACT-09
+PASS: no render error ACT-09
+PASS: grayscale SVG ACT-09
+PASS: fresh png ACT-09
+PASS: fresh source DATA-01
+PASS: fresh svg DATA-01
+PASS: no render error DATA-01
+PASS: grayscale SVG DATA-01
+PASS: fresh png DATA-01
+PASS: fresh source DATA-02
+PASS: fresh svg DATA-02
+PASS: no render error DATA-02
+PASS: grayscale SVG DATA-02
+PASS: fresh png DATA-02
+PASS: fresh source DATA-03
+PASS: fresh svg DATA-03
+PASS: no render error DATA-03
+PASS: grayscale SVG DATA-03
+PASS: fresh png DATA-03
+FAIL: fresh source DEP-01

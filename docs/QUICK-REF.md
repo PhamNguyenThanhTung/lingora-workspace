@@ -1,10 +1,10 @@
 # Lingora — Quick Reference
 
-> **CURRENT snapshot: 2026-10-16.** [Authority map](README.md), [repository audit](repository-audit-2026-10-16.md). Task status lives only in [current-task](../plans/current-task.md); operational context in [HANDOFF](../HANDOFF.md).
+> **CURRENT snapshot: 2026-10-17.** [Authority map](README.md), [repository audit](repository-audit-2026-10-16.md). Task status lives only in [current-task](../plans/current-task.md); operational context in [HANDOFF](../HANDOFF.md).
 
 ## Current redesign boundary
 
-**Use Case + Activity baseline → Class Diagram IN PROGRESS.** The user has paused downstream design/implementation while the repository is cleaned. Next design work is to review and complete Class Diagram against the sources below. No physical approval, rebuild, migration or application implementation task is active.
+**Use Case + Activity + Class Diagram baseline established.** [Class review](modeling/current-target/class-review-2026-10-16.md) completed semantic/trace/cardinality, independent and visual acceptance. Physical/database design remains NOT STARTED / NOT APPROVED by this task; implementation and implementation planning NOT AUTHORIZED. No follow-on task is active.
 
 Exactly three business roles: **Admin, Teacher, Learner**, one role per account (ADR-034). Admin assigns/reassigns work, reviews, approves and publishes; assigned Teachers author content; Learners self-register and learn. Old six-role matrices and two-role SQL are legacy artifacts, not the redesign permission model.
 
@@ -25,13 +25,13 @@ Exactly three business roles: **Admin, Teacher, Learner**, one role per account 
 | Approved product/domain rules | [Decision log](../logs/decision-log.md): ADR-030–036, ADR-041/042, each within its scope. No physical/implementation authorization. |
 | Behavioral catalog | [UC specifications](use-case-specifications.md): 14 identities, reminder UC-03 deferred; Reassessment outside MVP. [Requirements](02-requirements.md) scoped addenda support these rules. |
 | Use Case | [Canonical sources](modeling/current-target/README.md), UC-01–04; [nine report views](modeling/report-usecases/README.md), VIEW-RUC identifiers do not renumber UCs. |
-| Activity | Canonical ACT-01/02/03/04/06/07/08/09. Primary native layout is the saved baseline; interrupted Activity v2 candidate is retained separately, not declared saved/DONE. |
-| Class | DOM-01 PUML/PNG/SVG and class candidate contain 23 classifiers/28 relations; primary native has older 23/24. Both are preserved, explicitly IN PROGRESS. Completion report lacks closeout. |
-| Native editing | [44-page Draw.io](modeling/current-target/lingora-all-diagrams.drawio); only DOM has visible source drift. Do not run a full-bundle builder to merge a single page. |
+| Activity | Canonical ACT-01/02/03/04/06/07/08/09. Corrected v2 layout saved in primary after independent acceptance on 2026-10-17; source-faithful routing repairs preserve approved behavior. Historical candidate retained. |
+| Class | COMPLETE: 22 classes + 1 enum / 28 relationships; DOM-01 source, PNG/SVG and primary native page 29 synchronized. `Unit` / `AssessmentBlueprintVersion`; [review/trace](modeling/current-target/class-review-2026-10-16.md). Earlier candidate/history preserved. |
+| Native editing | [44-page Draw.io](modeling/current-target/lingora-all-diagrams.drawio); Latest eight-page Activity merge preserved other 36 pages, including DOM, byte-for-byte; native and artifact integrity checks PASS. Do not run a full-bundle builder for a single page. |
 | Later design | Sequence/logical data/security/deployment views and [physical proposal](design/physical/README.md) require reconciliation after class review. Historical READY verdicts do not advance today's design stage. |
 | Planning | [Old Phase 2 roadmap](../plans/archive/2026-10-07-master-implementation-and-report-plan-SUPERSEDED.md) and archived plans are historical context, not execution instructions. |
 
-DOM work is recoverable in [class completion evidence](modeling/current-target/evidence/2026-10-12-class-design-completion/) and its [unfinished report](modeling/current-target/class-design-completion-2026-10-12.md). The [Activity v2 evidence](modeling/current-target/evidence/2026-10-12-ad-layout-v2/) contains entry/candidate/export checks but no accepted primary save. Old task snapshots remain immutable; superseding unfinished work is not claiming it complete.
+DOM closeout is in [current class evidence](modeling/current-target/evidence/2026-10-16-class-review/independent-review.md); [old completion evidence](modeling/current-target/evidence/2026-10-12-class-design-completion/) and its [unfinished report](modeling/current-target/class-design-completion-2026-10-12.md) remain historical. The [original Activity v2 evidence](modeling/current-target/evidence/2026-10-12-ad-layout-v2/) is unchanged; [corrected Activity acceptance](modeling/current-target/evidence/2026-10-16-activity-layout/independent-review.md) covers the saved primary layout. Seventeen stale source hashes are reconciled. [Maintenance closeout](modeling/current-target/modeling-closeout-2026-10-16.md) records current verification. Use `verify_current.py` for current 36-source/72-output and 44-page integrity; old task-specific verifiers and snapshots remain historical. Artifact integrity does not approve downstream designs.
 
 ## Approved semantic guardrails
 

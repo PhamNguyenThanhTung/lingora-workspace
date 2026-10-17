@@ -1,14 +1,11 @@
 # Current task pointer
 
-**Active task:** Lingora stale-authority cleanup (2026-10-16).
-**Spec:** Direct user instruction — audit and clean stale design authority, classify historical/proposed/legacy artifacts, eliminate 6-role / obsolete design confusion before resuming Class Diagram.
+**Active task:** Finish Activity v2 layout and source/render provenance maintenance (started 2026-10-16; completed 2026-10-17).
+**Authorization:** User continuation request, “lam not di”, and “continue” after both leftovers were identified.
+**Mode:** DESIGN / small maintenance.
 **Status:** DONE
-**Current work packages:**
-- WP-01: Repository-wide scan for stale concepts (six roles, obsolete curriculum/progress/placement, unapproved physical schema) — PASS.
-- WP-02: Review and reclassify authoritative-looking documents (`docs/00`, `docs/03`, `docs/04`, `plans/master-implementation*`) — PASS.
-- WP-03: Update `docs/README.md` and `docs/QUICK-REF.md` with verified source-of-truth chain and authority classifications — PASS.
-- WP-04: Audit `logs/decision-log.md` and ensure superseded ADRs are explicitly marked — PASS.
-- WP-05: Update `AGENTS.md` authority guard & record verification in logs — PASS.
-
-**Design stage:** Class Diagram IN PROGRESS (ready to resume).
-**Next permitted action:** Await user authorization to resume Class Diagram review/completion. No follow-on task is active until recorded.
+**Completion snapshot:** [Modeling maintenance DONE](archive/2026-10-17-modeling-maintenance-DONE.md).
+**Review:** [Closeout](../docs/modeling/current-target/modeling-closeout-2026-10-16.md).
+**Result:** Eight corrected Activity pages saved after independent acceptance; 36 other pages including DOM preserved; 17 stale source hashes reconciled. Current integrity, scope, visual and independent checks PASS; required logs recorded.
+**Next permitted action:** Await a separately scoped user task; no follow-on task active.
+**Boundary:** Physical/database design, downstream semantic reconciliation and implementation/planning remain unauthorized.

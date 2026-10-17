@@ -3103,3 +3103,28 @@ Audited and cleaned stale design authority across the repository to ensure no in
 
 **Tests:** T-STALE-AUTHORITY-001 (PASS).
 **Commit:** accompanying Conventional Commit.
+
+
+## CLASS-REVIEW-001 - Current Class Diagram completion (2026-10-16)
+
+Reconciled actual primary/candidate/source inventories against current ADR-030-036/041/042, requirements, 14 UCs and eight active Activities. Preserved 22 classes + one enum. Justified four links behind 24-to-28 drift: Admin-Assignment, Vocabulary-Language, Progress-Level, LessonAttempt-ContentRevision. Unit and AssessmentBlueprintVersion follow domain authority, not legacy implementation.
+
+Completed bounded in-flight version pinning, revision-specific core/optional vocabulary, content/media, workflow feedback distinct from audit, assigned assessment authorship, frozen coverage/distribution snapshots, response provenance, curriculum gate and derived working level. Removed misleading assessment practice-exposure flag. No new classifier, physical choice, product decision or ADR change.
+
+Independent semantic review PASS. Native visual header overlap corrected in one bounded round, then independent artifact re-review PASS. DOM-only canonical merge refreshed source/renders/native provenance and preserved 43 other native pages, 35 other manifest records and historical candidates/evidence. Full/detail visual acceptance PASS.
+
+**Tests:** T-CLASS-REVIEW-001; required Class checks, native validator, render/export and whitespace PASS. Broad verifier already FAIL at entry on unrelated DEP-01 source hash (17 non-DOM hashes stale); preserved, not repaired or claimed PASS. Evidence/file purposes: docs/modeling/current-target/class-review-2026-10-16.md.
+**Result:** CLASS DIAGRAM COMPLETE; accepted logical/domain baseline. Physical/database design NOT STARTED / NOT APPROVED by this task; implementation/planning NOT AUTHORIZED. No follow-on task.
+**Commit:** None; no push. Design changes remain reviewable in working tree.
+
+
+## MODELING-CLOSEOUT-001 - Finish Activity v2 and provenance (2026-10-17)
+
+Completed the user's continuation request for both identified leftovers. Corrected ambiguous Activity branch/return routes and three native endpoint attributes to reproduce unchanged ACT-06/09 PUML. Resumed interrupted executor self-fix: corrected nonexistent ACT-01 edge e_27 to e_26, regenerated and independently reviewed the final eight native pages. Merged only those pages; other 36 including DOM preserved byte-for-byte.
+
+Reconciled 17 stale source hashes. Targeted reproduction showed apparent title drift is PlantUML normalization; 20/21 pairs identical, ACT-07 differs only in minor grayscale raster values. Added current artifact-integrity and scoped preservation checks instead of changing historical task-specific verification evidence. Updated current pointers and completion snapshot; all canonical sources, application code and historical approvals/candidates preserved from maintenance entry.
+
+Independent Activity and provenance review PASS; post-merge checks PASS (T-MODELING-CLOSEOUT-001). No product, architecture, physical design, database or implementation decisions. No new work package needed for DESIGN maintenance. Disk-full tool failure resolved by removing only the already-extracted Draw.io download ZIP from tool cache; installed tool and repository artifacts retained.
+
+**Result:** COMPLETE. No follow-on task. Physical/database design and implementation planning remain unauthorized.
+**Commit:** Accompanying `docs(modeling): finish class and activity closeout`; includes previously accepted, uncommitted Class artifacts with existing independent evidence plus current preservation checks. No push or history rewrite. Commit SHA available in Git history and final user report.

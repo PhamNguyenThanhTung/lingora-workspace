@@ -1,0 +1,297 @@
+@startuml
+!include ../style.puml
+' diagram-id: DOM-01
+' classification: TARGET
+' Authority: ADR-030–036/041/042 + yêu cầu PO 2026-10-12 class-design-completion.
+' Model logical design; không schema/SQL/FK/API/implementation.
+' Assignment là lượt giao; giữ prior episode, at most 1 active per content target.
+' AssessmentBlueprintVersion/Item immutable sau publish/use; gradingData chỉ server.
+' Plan/Progress dẫn xuất; không default persisted; score != completion/proficiency.
+' Course/Unit visibility derived; không copy content lifecycle hoặc fixed English counts.
+title Sơ đồ lớp thiết kế miền Lingora
+hide circle
+hide empty methods
+skinparam classAttributeIconSize 0
+skinparam nodesep 85
+skinparam ranksep 130
+skinparam defaultFontSize 16
+skinparam linetype spline
+skinparam minClassWidth 360
+skinparam packageStyle rectangle
+left to right direction
+
+package "Identity / Learner" {
+  class User {
+    id: Identifier
+    email: String
+    role: Admin | Teacher | Learner
+    status: AccountStatus
+  }
+
+  class Profile {
+    displayName: String
+    locale: String
+    nativeLanguage: Reference[0..1]
+    timezone: TimeZone
+    streak: Integer
+  }
+
+  class LearningContext {
+    id: Identifier
+    status: ACTIVE | PAUSED
+    purpose: LearningPurpose
+    studyFocus: StudyFocus = BALANCED
+    studyPreferences: Reference[0..1]
+    startingPoint: Level
+    startingPointSource: String
+    selfReportedLevel: Reference[0..1]
+    /workingLevel: Level
+    assessmentAttempts: Reference[*]
+  }
+
+  enum StudyFocus {
+    BALANCED
+    VOCABULARY
+    GRAMMAR
+    READING
+    LISTENING
+  }
+
+  class LessonAttempt {
+    id: Identifier
+    completed: Boolean
+    performance: Percentage[0..1]
+    completedAt: DateTime[0..1]
+    contributionSum: Number
+    responseCount: Integer
+    responses: Reference[*]
+  }
+
+}
+
+package "Curriculum / Content" {
+  class Language {
+    code: String
+    name: String
+  }
+
+  class ProficiencyFramework {
+    name: String
+    version: String
+  }
+
+  class Level {
+    label: String
+  }
+
+  class Course {
+    id: Identifier
+    title: String
+    curriculumGate: Reference
+  }
+
+  class Unit {
+    id: Identifier
+    code: String
+    title: String
+    orderIndex: Integer
+  }
+
+  class Lesson {
+    id: Identifier
+    title: String
+    orderIndex: Integer
+    required: Boolean
+    availability: CurriculumAvailability
+    topicRefs: Reference[*]
+    skillRefs: Reference[*]
+    purposeTags: LearningPurpose[*]
+  }
+
+  class Vocabulary {
+    id: Identifier
+    term: String
+    definition: String
+    pronunciation: String[0..1]
+    partOfSpeech: String[0..1]
+    example: String[0..1]
+  }
+
+}
+
+package "Authoring / Governance" {
+  class Exercise {
+    id: Identifier
+    orderIndex: Integer
+    type: ExerciseType
+    core: Boolean
+    practiceSkillRefs: Reference[*]
+    knowledgeArea: String
+    prompt: String
+    options: String[*]
+    gradingData: Reference {server-only}
+    mediaRefs: Reference[*]
+  }
+
+  class Assignment {
+    id: Identifier
+    assignedAt: DateTime
+    endedAt: DateTime[0..1]
+    /active: Boolean
+    requirements: String
+    scope: String
+    checklist: String[*]
+    previousAssignment: Reference[0..1]
+  }
+
+  class ContentRevision {
+    id: Identifier
+    revisionNumber: Integer
+    status: ContentStatus
+    author: Reference
+    createdAt: DateTime
+    previousRevision: Reference[0..1]
+    changeSummary: String[0..1]
+    assignment: Assignment
+    learnerContent: Reference
+    mediaRefs: Reference[*]
+    vocabularyMemberships: Reference[*]
+    submissionReviewHistory: Reference[*]
+  }
+
+  class SecurityAuditEvent {
+    id: Identifier
+    action: String
+    targetType: String
+    targetId: Identifier
+    targetVersion: Reference[0..1]
+    serverTime: DateTime
+    outcome: String
+    reason: String[0..1]
+  }
+
+}
+
+package "Assessment" {
+  class AssessmentBlueprint {
+    id: Identifier
+    purpose: Placement | LevelUp
+    language: Reference
+    framework: Reference
+    levelScope: Reference[0..1]
+    nextLevelScope: Reference[0..1]
+    coverage: Reference[*]
+    itemRequirements: Reference[*]
+    curriculumScope: Course
+    configuredBy: User {Admin}
+  }
+
+  class AssessmentBlueprintVersion {
+    id: Identifier
+    versionNumber: Integer
+    status: ContentStatus
+    purposeSnapshot: Placement | LevelUp
+    languageSnapshot: Reference
+    frameworkSnapshot: Reference
+    levelScopeSnapshot: Reference[0..1]
+    nextLevelSnapshot: Reference[0..1]
+    topicCoverageSnapshot: Reference[*]
+    skillCoverageSnapshot: Reference[*]
+    curriculumCoverageSnapshot: Reference
+    itemRequirementsSnapshot: Reference[*]
+    itemCount: Integer
+    timeLimitMinutes: Integer[0..1]
+    passThreshold: Percentage[0..1]
+    resultPolicySnapshot: Reference
+    gradingPolicySnapshot: Reference {server-only}
+    publishedAt: DateTime[0..1]
+    /immutable: Boolean
+    submissionReviewHistory: Reference[*]
+  }
+
+  class AssessmentResult {
+    id: Identifier
+    purpose: Placement | LevelUp
+    assessmentType: Reference
+    deliveryMode: Reference
+    score: Percentage
+    outcome: String[0..1]
+    recommendation: Level[0..1]
+    completedAt: DateTime
+    provenance: Reference
+  }
+
+  class AssessmentItem {
+    id: Identifier
+    type: ExerciseType
+    prompt: String
+    options: String[*]
+    topicSkillRefs: Reference[*]
+    levelScope: Reference[0..1]
+    gradingData: Reference {server-only}
+    mediaRefs: Reference[*]
+    authoring: Reference
+  }
+
+}
+
+package "Progress / SRS" {
+  class LearningPlan <<derived>> {
+    orderedLessons: Lesson[*]
+  }
+
+  class Progress <<derived>> {
+    /completedRequiredLessons: Integer
+    /eligibleRequiredLessons: Integer
+    /completionRatio: Number[0..1]
+  }
+
+  class SrsCard {
+    id: Identifier
+    stage: Integer
+    dueAt: DateTime
+    enrollmentSource: String
+    reviewHistory: Reference[*]
+  }
+
+}
+
+User "1" *-- "1" Profile
+User "1" -- "0..*" LearningContext : Learner sở hữu
+LearningContext "1" -- "0..1" LearningPlan : dẫn xuất
+LearningContext "1" -- "0..*" Progress : tiến độ
+Language "1" -- "0..*" Course : chương trình
+ProficiencyFramework "1" -- "1..*" Level : định nghĩa
+Course "1" *-- "0..*" Unit : các nhóm bài
+Unit "1" *-- "0..*" Lesson : các bài học
+Lesson "0..*" -- "0..*" Vocabulary : nội dung từ
+LearningContext "1" -- "0..*" LessonAttempt : lượt học
+LessonAttempt "0..*" -- "1" Lesson : bài đã học
+User "1" -- "0..*" SrsCard : Learner ghi nhớ
+SrsCard "0..*" -- "1" Vocabulary : từ được ôn
+AssessmentBlueprint "1" -- "0..*" AssessmentBlueprintVersion : các snapshot
+AssessmentBlueprintVersion "1" -- "0..*" AssessmentResult : bằng chứng
+LearningContext "1" -- "0..*" AssessmentResult : kết quả
+Assignment "0..*" -- "1" User : Teacher được giao
+Assignment "0..*" -- "1" Lesson : gói nội dung
+Lesson "1" *-- "0..*" ContentRevision : các bản sửa
+ContentRevision "1" *-- "0..*" Exercise : bài tập
+AssessmentBlueprintVersion "1" *-- "0..*" AssessmentItem : item snapshots
+User "1" -- "0..*" SecurityAuditEvent : thao tác
+LearningContext "0..*" -- "1" Language : ngôn ngữ học
+Unit "0..*" -- "1" Level : cấp nội dung
+User "1" -- "0..*" Assignment : Admin giao việc
+Vocabulary "0..*" -- "1" Language : ngôn ngữ từ
+Progress "0..*" -- "1" Level : phạm vi cấp
+LessonAttempt "0..*" -- "1" ContentRevision : bản đã học
+
+' Bounded references and relationship constraints: class-review-2026-10-16.md.
+' assessmentAttempts pins Context+Version before any Result; no persistence/resume assumed.
+' Core/optional vocabularyMemberships belong to the completed ContentRevision.
+' authoring/assignment and submissionReviewHistory retain Teacher attribution and feedback.
+' Composition never means cascade deletion of referenced learning evidence.
+' Supplementary SRS/focus practice never enters pinned assessments or core performance.
+' Version/Revision draft có thể 0 items; publish cần readiness theo configuration.
+' User→Context 0..* gồm cả lịch sử PAUSED; tối đa 2 ACTIVE là rule, không tổng số rows.
+' Không Enrollment, generic workflow/versioning/item pool hoặc CRUD methods.
+@enduml

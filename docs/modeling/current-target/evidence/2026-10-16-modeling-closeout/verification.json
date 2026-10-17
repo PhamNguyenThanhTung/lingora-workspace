@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-17",
+  "verdict": "PASS",
+  "results": [
+    {
+      "check": "current-integrity",
+      "command": [
+        "C:\\Users\\tungt\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "docs/modeling/current-target/verify_current.py"
+      ],
+      "exit": 0,
+      "output": "PASS: source/render integrity ACT-01\nPASS: source/render integrity ACT-02\nPASS: source/render integrity ACT-03\nPASS: source/render integrity ACT-04\nPASS: source/render integrity ACT-05\nPASS: source/render integrity ACT-06\nPASS: source/render integrity ACT-07\nPASS: source/render integrity ACT-08\nPASS: source/render integrity ACT-09\nPASS: source/render integrity DATA-01\nPASS: source/render integrity DATA-02\nPASS: source/render integrity DATA-03\nPASS: source/render integrity DEP-01\nPASS: source/render integrity DEP-02\nPASS: source/render integrity DOM-01\nPASS: source/render integrity SEC-01\nPASS: source/render integrity SEQ-01\nPASS: source/render integrity SEQ-02\nPASS: source/render integrity SEQ-03\nPASS: source/render integrity SEQ-04\nPASS: source/render integrity SEQ-05\nPASS: source/render integrity SEQ-06\nPASS: source/render integrity SEQ-07\nPASS: source/render integrity SEQ-08\nPASS: source/render integrity SEQ-09\nPASS: source/render integrity STA-01\nPASS: source/render integrity STA-02\nPASS: source/render integrity STA-03\nPASS: source/render integrity SYS-01\nPASS: source/render integrity SYS-02\nPASS: source/render integrity SYS-03\nPASS: source/render integrity SYS-04\nPASS: source/render integrity VIEW-UC-01\nPASS: source/render integrity VIEW-UC-02\nPASS: source/render integrity VIEW-UC-03\nPASS: source/render integrity VIEW-UC-04\nPASS: 36 source/PNG/SVG records, visible source parity, 44 native pages/payloads and native export provenance.\nArtifact integrity only; no downstream design or implementation approval.\n",
+      "stderr": ""
+    },
+    {
+      "check": "closeout-scope",
+      "command": [
+        "C:\\Users\\tungt\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "docs/modeling/current-target/evidence/2026-10-16-modeling-closeout/verify_closeout.py"
+      ],
+      "exit": 0,
+      "output": "PASS: eight exact candidate Activity pages; other 36 pages including DOM byte-identical.\nPASS: all canonical sources, historical evidence, application code and unrelated tracked files preserved.\nPASS: DOM manifest unchanged; independent Activity and provenance reviews recorded.\nPASS: current documentation links resolve.\n",
+      "stderr": ""
+    },
+    {
+      "check": "whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "output": "",
+      "stderr": "warning: in the working copy of 'docs/modeling/current-target/lingora-all-diagrams.drawio', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'logs/development-log.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'logs/test-log.md', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "check": "staged-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 0,
+      "output": "",
+      "stderr": ""
+    }
+  ]
+}

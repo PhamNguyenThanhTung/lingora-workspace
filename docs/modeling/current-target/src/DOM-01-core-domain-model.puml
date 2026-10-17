@@ -12,10 +12,12 @@ title Sơ đồ lớp thiết kế miền Lingora
 hide circle
 hide empty methods
 skinparam classAttributeIconSize 0
-skinparam nodesep 65
-skinparam ranksep 95
+skinparam nodesep 85
+skinparam ranksep 130
 skinparam defaultFontSize 16
-skinparam linetype ortho
+skinparam linetype spline
+skinparam minClassWidth 360
+skinparam packageStyle rectangle
 left to right direction
 
 package "Identity / Learner" {
@@ -43,6 +45,8 @@ package "Identity / Learner" {
     startingPoint: Level
     startingPointSource: String
     selfReportedLevel: Reference[0..1]
+    /workingLevel: Level
+    assessmentAttempts: Reference[*]
   }
 
   enum StudyFocus {
@@ -60,6 +64,7 @@ package "Identity / Learner" {
     completedAt: DateTime[0..1]
     contributionSum: Number
     responseCount: Integer
+    responses: Reference[*]
   }
 
 }
@@ -82,6 +87,7 @@ package "Curriculum / Content" {
   class Course {
     id: Identifier
     title: String
+    curriculumGate: Reference
   }
 
   class Unit {
@@ -124,6 +130,7 @@ package "Authoring / Governance" {
     prompt: String
     options: String[*]
     gradingData: Reference {server-only}
+    mediaRefs: Reference[*]
   }
 
   class Assignment {
@@ -145,6 +152,11 @@ package "Authoring / Governance" {
     createdAt: DateTime
     previousRevision: Reference[0..1]
     changeSummary: String[0..1]
+    assignment: Assignment
+    learnerContent: Reference
+    mediaRefs: Reference[*]
+    vocabularyMemberships: Reference[*]
+    submissionReviewHistory: Reference[*]
   }
 
   class SecurityAuditEvent {
@@ -170,6 +182,8 @@ package "Assessment" {
     nextLevelScope: Reference[0..1]
     coverage: Reference[*]
     itemRequirements: Reference[*]
+    curriculumScope: Course
+    configuredBy: User {Admin}
   }
 
   class AssessmentBlueprintVersion {
@@ -183,6 +197,8 @@ package "Assessment" {
     nextLevelSnapshot: Reference[0..1]
     topicCoverageSnapshot: Reference[*]
     skillCoverageSnapshot: Reference[*]
+    curriculumCoverageSnapshot: Reference
+    itemRequirementsSnapshot: Reference[*]
     itemCount: Integer
     timeLimitMinutes: Integer[0..1]
     passThreshold: Percentage[0..1]
@@ -190,11 +206,14 @@ package "Assessment" {
     gradingPolicySnapshot: Reference {server-only}
     publishedAt: DateTime[0..1]
     /immutable: Boolean
+    submissionReviewHistory: Reference[*]
   }
 
   class AssessmentResult {
     id: Identifier
     purpose: Placement | LevelUp
+    assessmentType: Reference
+    deliveryMode: Reference
     score: Percentage
     outcome: String[0..1]
     recommendation: Level[0..1]
@@ -210,7 +229,8 @@ package "Assessment" {
     topicSkillRefs: Reference[*]
     levelScope: Reference[0..1]
     gradingData: Reference {server-only}
-    practiceExposureEligible: Boolean
+    mediaRefs: Reference[*]
+    authoring: Reference
   }
 
 }
@@ -237,7 +257,7 @@ package "Progress / SRS" {
 }
 
 User "1" *-- "1" Profile
-User "1" -- "0..*" LearningContext : sở hữu
+User "1" -- "0..*" LearningContext : Learner sở hữu
 LearningContext "1" -- "0..1" LearningPlan : dẫn xuất
 LearningContext "1" -- "0..*" Progress : tiến độ
 Language "1" -- "0..*" Course : chương trình
@@ -247,7 +267,7 @@ Unit "1" *-- "0..*" Lesson : các bài học
 Lesson "0..*" -- "0..*" Vocabulary : nội dung từ
 LearningContext "1" -- "0..*" LessonAttempt : lượt học
 LessonAttempt "0..*" -- "1" Lesson : bài đã học
-User "1" -- "0..*" SrsCard : ghi nhớ
+User "1" -- "0..*" SrsCard : Learner ghi nhớ
 SrsCard "0..*" -- "1" Vocabulary : từ được ôn
 AssessmentBlueprint "1" -- "0..*" AssessmentBlueprintVersion : các snapshot
 AssessmentBlueprintVersion "1" -- "0..*" AssessmentResult : bằng chứng
@@ -265,7 +285,12 @@ Vocabulary "0..*" -- "1" Language : ngôn ngữ từ
 Progress "0..*" -- "1" Level : phạm vi cấp
 LessonAttempt "0..*" -- "1" ContentRevision : bản đã học
 
-' Quy tắc/DEFER/reference dictionary xem class-design-completion-2026-10-12.md.
+' Bounded references and relationship constraints: class-review-2026-10-16.md.
+' assessmentAttempts pins Context+Version before any Result; no persistence/resume assumed.
+' Core/optional vocabularyMemberships belong to the completed ContentRevision.
+' authoring/assignment and submissionReviewHistory retain Teacher attribution and feedback.
+' Composition never means cascade deletion of referenced learning evidence.
+' Supplementary SRS/focus practice never enters pinned assessments or core performance.
 ' Version/Revision draft có thể 0 items; publish cần readiness theo configuration.
 ' User→Context 0..* gồm cả lịch sử PAUSED; tối đa 2 ACTIVE là rule, không tổng số rows.
 ' Không Enrollment, generic workflow/versioning/item pool hoặc CRUD methods.

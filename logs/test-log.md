@@ -3224,3 +3224,50 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Scope & Safety Invariant:** Zero changes to runtime code (`lingora-web`, `lingora-admin`, `lingora-ai`), Prisma schema, SQL migrations, database state, UI, or API implementation. Class Diagram remains `IN PROGRESS`. **Verdict:** PASS.
 - **Evidence:** Updated canonical and reference docs, `plans/current-task.md`, `logs/decision-log.md`, `HANDOFF.md`.
 - **Commit:** accompanying Conventional Commit; no push.
+
+
+## T-CLASS-REVIEW-001 - Logical/domain Class Diagram completion (2026-10-16)
+
+- **Environment:** Windows; Python 3.11; JDK 17; PlantUML 1.2026.8; portable Draw.io Desktop 32.4.1 cached outside repo. DESIGN MODE; entry HEAD recorded in current Class baseline.json.
+- **Command:** `py -3.11 docs/modeling/current-target/evidence/2026-10-16-class-review/build_candidate.py`.
+- **Output:** `PASS: bounded DOM candidate built; canonical primary/source untouched.` Existing IDs/positions preserved; review before canonical merge. **Verdict:** PASS.
+- **Command:** Existing PlantUML CLI `--check-before-run --no-error-image --format svg/png` on DOM-01 only; exact arrays/stdout/stderr in current evidence plantuml-svg.json / plantuml-png.json.
+- **Output:** Both exit 0; source PNG 3384x2738. **Verdict:** PASS.
+- **Command:** Draw.io `--export --format png/svg --page-index 29 --border 30 --theme light` on reviewed candidate; canonical DOM page hash equals candidate.
+- **Output:** Both exit 0; native PNG 4205x2737. Page index is one-based; exploratory page28 export showed the preceding State page and was replaced with verified DOM page29 before acceptance. **Verdict:** PASS for final DOM exports.
+- **Command:** `py -3.11 docs/modeling/current-target/evidence/2026-10-16-class-review/verify_class.py`.
+- **Output:** Exit 0; `CLASS DIAGRAM DETERMINISTIC VERIFICATION PASS; manual/independent review recorded separately.` 22 classes + one enum, 147 attributes + five literals, 28 exact relation/multiplicity tuples, six compositions; native bounds/header/labels/routes, source SVG text; canonical/render/native/reviewer hashes; 43 untouched pages, 35 other manifest records, unrelated tracked files and local links. **Verdict:** PASS.
+- **Command:** `py -3.11 scripts/validate_drawio.py`.
+- **Output:** Exit 0; ordered native pages and matching standalone source payloads. Its legacy success message says 35; actual 44-page count (35 active canonical + nine report views) independently asserted by focused check. **Verdict:** PASS.
+- **Command:** `git diff --check`.
+- **Output:** Exit 0; no whitespace errors. **Verdict:** PASS.
+- **Observed review:** Independent read-only reviewer reconciled all 14 UC identities/eight active Activities; corrected semantic review PASS. Initial derived-class header overlap corrected in one bounded round; final independent/coordinator full/detail visual acceptance PASS. **Verdict:** PASS.
+- **Baseline command:** `py -3.11 docs/modeling/current-target/verify.py` before canonical edits.
+- **Output:** Exit 1; `FAIL: fresh source DEP-01`. Seventeen non-DOM source hashes already stale at entry; exact result retained in all-bundle-entry-check.txt. **Verdict:** FAIL (pre-existing broad check; no whole-bundle PASS claim). Required Class acceptance checks all PASS.
+- **Evidence:** docs/modeling/current-target/class-review-2026-10-16.md; current evidence verification.json, class-check.txt, native-check.txt, diff-check.txt, independent-review.md, visual-review.md.
+- **Boundary:** Physical/database design NOT STARTED / NOT APPROVED by this task; implementation/planning NOT AUTHORIZED. No product/schema/API changes.
+- **Commit:** None; no push. Working-tree design changes remain reviewable.
+
+
+## T-MODELING-CLOSEOUT-001 - Activity/provenance maintenance (2026-10-17)
+
+- **Environment:** Windows PowerShell; Python 3.11/Pillow; JDK 17; local PlantUML 1.2026.8 and portable Draw.io 32.4.1. DESIGN maintenance; task started 2026-10-16, resumed 2026-10-17.
+- **Command:** `py -3.11 docs/modeling/current-target/evidence/2026-10-16-activity-layout/correct.py` at resume.
+- **Output:** Exit 1, `KeyError: 'e_27'`; interrupted self-fix referenced a nonexistent ACT-01 edge and had not generated the pending pause/self-report routes. **Verdict:** FAIL, resolved by correcting the native edge ID to `e_26`.
+- **Command:** Same correction command after mechanical ID fix; then `py -3.11 docs/modeling/current-target/evidence/2026-10-16-activity-layout/render.py`.
+- **Output:** Both exit 0; `PASS: layout and three source-traced endpoint attribute repairs; remaining pages invariant`; all eight Activity PNG/SVG exports PASS. **Verdict:** PASS.
+- **Command:** Targeted PlantUML reproduction via `evidence/2026-10-16-modeling-closeout/refresh_renders.py`; exact Java/JAR command arrays and exits in render-refresh.json.
+- **Output:** 21 PNG/SVG pairs reproduced, all commands exit 0. 20 pairs byte-identical; ACT-07 SVG identical, PNG differs at 290 pixels by 3 grayscale levels. 17 stale source hashes reconciled; no canonical source edits. Title differences reflect renderer normalization, not stale visible content. **Verdict:** PASS.
+- **Command:** `py -3.11 docs/modeling/current-target/evidence/2026-10-16-modeling-closeout/merge_activity.py`.
+- **Output:** Exit 0; eight reviewed Activity blocks merged, 36 other pages byte-identical; native export provenance recorded. **Verdict:** PASS.
+- **Command:** `py -3.11 docs/modeling/current-target/verify_current.py` after merge.
+- **Output:** Exit 0; 36 source/PNG/SVG records, visible source parity, 44 native pages/payloads and native export provenance PASS. **Verdict:** PASS for artifact integrity, not downstream design approval.
+- **Command:** `py -3.11 docs/modeling/current-target/evidence/2026-10-16-modeling-closeout/verify_closeout.py`.
+- **Output:** Exit 0; exact eight-page candidate merge, 36 preserved pages, canonical source/history/runtime preservation, unchanged DOM manifest, independent review records and documentation links PASS. **Verdict:** PASS.
+- **Command:** `git diff --check`.
+- **Output:** Exit 0; no whitespace errors. Git emitted line-ending conversion notices only. **Verdict:** PASS.
+- **Independent review:** Separate Activity and provenance reviewers inspected actual sources/artifacts and full native images. Final candidate SHA256 `b953f9469b2375fa1c4cbcb49d8088668d6c46393cbbcb18d921b0e43e633b30`; both final reviews PASS. Title normalization negative checks preserve body and title-word differences. **Verdict:** PASS.
+- **Evidence:** docs/modeling/current-target/modeling-closeout-2026-10-16.md and dated Activity/modeling-closeout evidence directories. Historical broad/Class task checks are not rerun as current acceptance; their archived evidence is unchanged.
+- **Commit:** Accompanying `docs(modeling): finish class and activity closeout`; no push. App/runtime/live database checks are outside scope.
+
+- **Final packaging check (T-MODELING-CLOSEOUT-001):** Initial `git diff --cached --check` flagged trailing blank lines in the two newly staged Activity scripts (FAIL). Removed only trailing whitespace; reviewed logic/candidate/export hashes unchanged. Final staged whitespace check PASS.

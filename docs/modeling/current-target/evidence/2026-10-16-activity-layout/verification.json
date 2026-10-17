@@ -1,0 +1,28 @@
+{
+  "verdict": "PASS",
+  "changed_pages": [
+    "page-ACT-01",
+    "page-ACT-03",
+    "page-ACT-06",
+    "page-ACT-08",
+    "page-ACT-09"
+  ],
+  "all_ids_labels_payloads_preserved": true,
+  "source_traced_endpoint_exceptions": [
+    [
+      "page-ACT-06",
+      "e_16",
+      "target"
+    ],
+    [
+      "page-ACT-06",
+      "e_18",
+      "source"
+    ],
+    [
+      "page-ACT-09",
+      "e_12",
+      "target"
+    ]
+  ]
+}

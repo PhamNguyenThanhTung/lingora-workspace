@@ -1,14 +1,16 @@
 # Lingora — Canonical Modeling / Bộ sơ đồ báo cáo
 
-**Trạng thái hiện tại (2026-10-16): CLASS DIAGRAM IN PROGRESS.** Use Case và Activity là baseline hành vi để tiếp tục review lớp. Kết luận MODELING APPROVED / READY FOR PHYSICAL DESIGN trong [final-review.md](final-review.md) là kết quả lịch sử của vòng trước; không xác nhận class completion hiện tại hoặc cho phép bước downstream.
+**Trạng thái hiện tại (2026-10-16): CLASS DIAGRAM COMPLETE.** DOM-01 được chấp nhận làm baseline logical/domain sau semantic review, traceability, independent review, source/native parity và visual acceptance trong [class review](class-review-2026-10-16.md). Use Case và Activity baseline được giữ nguyên. Physical/database design NOT STARTED / NOT APPROVED by this task; implementation và implementation planning NOT AUTHORIZED. Kết luận READY FOR PHYSICAL DESIGN trong [final-review.md](final-review.md) vẫn là lịch sử, không cho phép bước downstream.
 
-**DOM chưa đồng bộ:** [PUML](src/DOM-01-core-domain-model.puml), PNG/SVG và [candidate](evidence/2026-10-12-class-design-completion/candidate.drawio) có 22 class + 1 enum, 28 relations, `Unit` / `AssessmentBlueprintVersion`; primary Draw.io vẫn 24 relations, `LogicalUnit` / `AssessmentVersion`. [Báo cáo completion](class-design-completion-2026-10-12.md) chưa có closeout. Giữ hai trạng thái để review/merge riêng; không regenerate cả bundle. [Audit](../../repository-audit-2026-10-16.md) phân loại rõ source/exports/history. Sequence/logical data/security/deployment bên dưới là tài liệu downstream cần đối chiếu lại sau lớp.
+**DOM đã đồng bộ:** [PUML](src/DOM-01-core-domain-model.puml), PNG/SVG và primary Draw.io page 29 hiện cùng 22 class + 1 enum, 28 relations, `Unit` / `AssessmentBlueprintVersion`. Trong task Class ngày 2026-10-16, chỉ DOM-01 được merge/render; 43 trang còn lại và các candidate Use Case/Activity được giữ byte-identical tại thời điểm đó. [Evidence hiện tại](evidence/2026-10-16-class-review/independent-review.md) giữ inventory, provenance, review và checks. [Candidate cũ](evidence/2026-10-12-class-design-completion/candidate.drawio), [completion chưa đóng](class-design-completion-2026-10-12.md) và [audit tại entry](../../repository-audit-2026-10-16.md) là lịch sử được giữ nguyên. Sequence/logical data/security/deployment bên dưới cần đối chiếu riêng sau baseline lớp; không được phê duyệt lại bởi task này.
 
 **Authority:** PO decisions → ADR-036 → ADR-030–035 trong phạm vi tương thích → [requirements](../../02-requirements.md) → [UC catalog](../../use-case-specifications.md) → [traceability](../../05-traceability-matrix.md) → modeling. [Decision log](../../../logs/decision-log.md), [correction report](review.md), [final review report](final-review.md).
 
 Bộ canonical gồm **36 sources: 30 TARGET + 5 CURRENT + 1 DEFERRED**, 35 views active. ID diagram VIEW-UC-01–04 khác UC-01–14 của catalog; giữ nguyên filename `UC-*.puml`. Catalog vẫn 13 UC active và reminder UC-03 deferred. Supporting “Đăng nhập / Xác thực” trong Overall chỉ là presentation của UC-01; không tạo UC-15. Report-oriented functional views are maintained separately in [report-usecases](../report-usecases/README.md); their VIEW-RUC labels are not canonical UCs and do not enter the 36-source canonical inventory. `<<include>>` diễn tả phụ thuộc phiên xác thực theo yêu cầu PO, không yêu cầu nhập mật khẩu lại ở mỗi hành động.
 
 Các hình dùng nền trắng, chữ/association đen, border đen/xám, tiêu đề tiếng Việt. Tên lớp/entity và thuộc tính logic giữ English để map model. Metadata/authority/mapping nằm trong source comment và index. SVG là bản vector dùng để dàn trang; PNG dùng xem nhanh.
+
+**Maintenance 2026-10-17 COMPLETE:** [Activity/provenance closeout](modeling-closeout-2026-10-16.md) records eight corrected Activity pages saved to primary, independent visual/source acceptance and preservation of the other 36 pages including DOM. Seventeen stale source hashes reconciled; 36 source/export records and 44 native pages pass current integrity checks. Original candidates and historical approvals remain unchanged.
 
 ## Main Report Diagrams
 
@@ -84,12 +86,14 @@ Từ repository root:
 
 ```powershell
 $env:PYTHONUTF8='1'
-py -3.13 docs/modeling/current-target/render.py
-py -3.13 docs/modeling/current-target/verify.py
+py -3.11 docs/modeling/current-target/verify_current.py
+py -3.11 docs/modeling/current-target/evidence/2026-10-16-modeling-closeout/verify_closeout.py
 git diff --check
 ```
 
 Renderer dùng Java/local PlantUML jar; có thể đặt `PLANTUML_JAR` khi vị trí khác mặc định. `render.py` ghi đè exports/manifest; không chạy để audit read-only hoặc tự đồng bộ native. Manifest ghi identity/classification từ source comments và hash source/style/output. [Static evidence](verification-output.txt), [manual visual record](evidence/visual-review.md), [task](../../../plans/current-task.md). Static checks không thay manual review.
+
+Historical Class acceptance (2026-10-16) remains recorded in [Class verification](evidence/2026-10-16-class-review/verification.json) and [visual acceptance](evidence/2026-10-16-class-review/visual-review.md). The old `verify.py` and `verify_class.py` contain task-specific preservation assertions; they are not the current aggregate acceptance commands after the authorized Activity/provenance maintenance. Do not rerun a full builder/renderer to fix a single page. Current checks above verify artifacts, not downstream semantic approval.
 
 Prior review/verifier/output được giữ nguyên nội dung trong `evidence/2026-10-11-prior-*` để truy vết trước correction; approval/archive snapshots cũ không bị sửa. Vòng này dừng trước final approval/physical design/implementation.
 
@@ -97,7 +101,7 @@ Prior review/verifier/output được giữ nguyên nội dung trong `evidence/2
 
 The current primary deliverable is [lingora-all-diagrams.drawio](lingora-all-diagrams.drawio), with **44 pages: 35 active canonical views and nine report functional Use Case views**. The report views occupy pages 09–17 immediately after page 08 Admin; deferred ACT-05 remains excluded. All nine report pages were corrected on 2026-10-12 with editable native actors, boundaries, ellipses and connectors, no note boxes or redundant dependencies. [Before/after report and current native previews](../report-usecases/cleanup-review-2026-10-12.md) document the targeted correction. The other 35 page fragments were preserved byte-for-byte from this task's entry backup. Earlier 35-page export evidence in [the native render review](evidence/native-render-review.md) and [its preview manifest](evidence/native-render-review/final/manifest.csv) remains historical evidence. The full-bundle builder resynchronizes every page from PUML; it was not run for this nine-page correction. SVG-backed alternatives remain comparison artifacts only.
 
-**Historical native draw.io layout task — TESTING snapshot:** The earlier readability pass covered the 35-page canonical set then present. See [native-render-review.md](evidence/native-render-review.md) for dated evidence. The bundle is now tracked in synchronization commit `bc40d0f`; former untracked/no-commit statements describe their task-time state, not a current Git blocker. Source/native differences remain explicitly unresolved; committing files did not validate or merge them.
+**Historical native draw.io layout task — TESTING snapshot:** The earlier readability pass covered the 35-page canonical set then present. See [native-render-review.md](evidence/native-render-review.md) for dated evidence. The bundle is tracked in synchronization commit `bc40d0f`; former untracked/no-commit statements describe their task-time state. DOM source/native divergence was resolved by the focused 2026-10-16 review; this does not reaccept or regenerate downstream views.
 
 
 ## Study Focus targeted addendum (ADR-042, 2026-10-12)

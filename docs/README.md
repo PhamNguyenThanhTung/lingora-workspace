@@ -1,6 +1,6 @@
 # Lingora Documentation
 
-> **Current redesign boundary — 2026-10-16:** Use Case and Activity are the behavioral starting point; **Class Diagram is IN PROGRESS**. Read the [verified repository audit](repository-audit-2026-10-16.md) and [modeling entry point](modeling/current-target/README.md) before continuing. DOM PUML/render/candidate and primary native DOM differ; neither the old completeness review nor downstream physical readiness is a current completion claim. Physical design, later sequence/data/architecture diagrams and Phase 2 roadmaps are retained downstream references, not active next work or implementation approval. Scoped approved ADR semantics remain in force.
+> **Current redesign boundary — 2026-10-16:** Use Case, Activity and **Class Diagram logical/domain baselines are established**. [Class review and closeout](modeling/current-target/class-review-2026-10-16.md) synchronizes DOM-01 source/renders and primary native page after independent semantic/trace/cardinality and visual acceptance. The [entry audit](repository-audit-2026-10-16.md) and earlier unfinished completion records remain historical evidence. Physical/database design is NOT STARTED / NOT APPROVED by this task; later sequence/data/architecture diagrams and Phase 2 roadmaps remain downstream references. Implementation and implementation planning are NOT AUTHORIZED. Scoped approved ADR semantics remain in force.
 
 ## Source-of-truth policy
 
@@ -14,7 +14,7 @@ To determine current Lingora product, domain, and behavioral design, agents MUST
 2. **Current requirements & behavioral/modeling sources**:
    - [`docs/use-case-specifications.md`](use-case-specifications.md) (Current 14-entry behavioral catalog; UC-03 reminder deferred; Reassessment absent from MVP).
    - [`docs/02-requirements.md`](02-requirements.md) (Current MVP Baseline Addendum: ADR-036 attempt scoring, vocabulary SRS enrollment, curriculum availability; ADR-041 SRS session boundaries; ADR-042 Study Focus).
-   - [`docs/modeling/current-target/`](modeling/current-target/) (Canonical 36-source baseline: Use Case baseline, Activity baseline, Class Diagram DOM-01 IN PROGRESS).
+   - [`docs/modeling/current-target/`](modeling/current-target/) (Canonical 36-source inventory: Use Case and Activity baselines; Class Diagram DOM-01 COMPLETE per [2026-10-16 review](modeling/current-target/class-review-2026-10-16.md). Downstream views are not reapproved by class completion).
 3. **Current active task & authorized scope**:
    - [`plans/current-task.md`](../plans/current-task.md) controls what work is currently active and authorized.
    - Completed snapshots in `plans/approved/` and archived plans in `plans/archive/` are historical evidence; they do not authorize new work or override current domain rules.
@@ -51,7 +51,7 @@ lingora-ai/     # Supporting AI Capability Service (Python 3.11, FastAPI, GEC)
 
 ## Historical modeling review and downstream physical proposals (2026-10-11–12)
 
-The dated outcomes and next-step statements below describe those earlier tasks only. The current design stage is Class Diagram; they do not select today's next task or approve downstream artifacts against its unfinished changes.
+The dated outcomes and next-step statements below describe those earlier tasks only. The Class baseline and [Activity/provenance maintenance](modeling/current-target/modeling-closeout-2026-10-16.md) are complete; historical next-step statements do not select a new task or approve downstream artifacts.
 
 - **Correction Pass:** [Canonical correction report](modeling/current-target/review.md) records all 36 sources (30 TARGET, 5 CURRENT repository/configuration views, 1 deferred scope marker). Presentation, UML/data abstraction, and 11-concern consistency were corrected.
 - **Final Modeling Review and 3-point correction:** [Final review report](modeling/current-target/final-review.md) records the bounded recheck after the previous review. Verdict: **MODELING APPROVED** / **READY FOR PHYSICAL DESIGN**. It confirms there is no Assignment `CLOSED` state, Level-up readiness/pass parameters are configured without a platform-wide 100% lesson gate, and progress counts published active required lessons even when normal progression has not unlocked them. Unpublished/unavailable and withdrawn-incomplete content remains excluded. Only ACT-01 and ACT-09 were changed and rerendered; no physical design or implementation was started. See [diagram index](modeling/current-target/README.md) and [correction evidence](modeling/current-target/evidence/final-three-point-correction.md).
@@ -96,7 +96,7 @@ The dated outcomes and next-step statements below describe those earlier tasks o
 | [06-system-analysis.md](06-system-analysis.md) and [07-data-dictionary.md](07-data-dictionary.md) | Historical Phase 0 analysis/data-dictionary sources. Neither is current role or physical-schema authority; use ADR-034/035 for business/logical security policy and Full CURRENT + TARGET Modeling Review for physical reconciliation. |
 | [00-master-plan.md](00-master-plan.md) | `HISTORICAL` Phase 0 priorities and roadmap; not Phase 2 task authorization. Its old P0 AI/GEC items are not current Phase 2 priorities. |
 
-Workflow authority lives in [AGENTS.md](../AGENTS.md). [plans/current-task.md](../plans/current-task.md) is the sole task-status pointer; [HANDOFF.md](../HANDOFF.md) supplies current operational context. Prior Phase 2 planning remains historical reference. Accepted decisions remain in `logs/decision-log.md` (ADR-030–036, ADR-041/042, each within scope); evidence belongs in `logs/test-log.md` and `logs/development-log.md`. Today's next design action is Class Diagram review, not physical approval or implementation planning.
+Workflow authority lives in [AGENTS.md](../AGENTS.md). [plans/current-task.md](../plans/current-task.md) is the sole task-status pointer; [HANDOFF.md](../HANDOFF.md) supplies current operational context. Prior Phase 2 planning remains historical reference. Accepted decisions remain in `logs/decision-log.md` (ADR-030–036, ADR-041/042, each within scope); evidence belongs in `logs/test-log.md` and `logs/development-log.md`. Class review and the scoped Activity/provenance closeout are complete; no further task, physical approval or implementation planning is active.
 
 ## Classification legend
 
