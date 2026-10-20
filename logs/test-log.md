@@ -3320,3 +3320,17 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Final closeout check:** Initial inline prefix assertion compared Git LF bytes with worktree CRLF and failed at logs/test-log.md (exit 1; check-definition failure). Repeated with CRLF normalized in memory only: exit 0, seven review-only files, 45 local links, historical log content prefixes unchanged, seven findings and correct DONE boundary. **Verdict:** PASS after correcting the comparison; no prior log content rewritten.
 - **Final whitespace:** `git diff --check` exit 0; line-ending notices only. **Verdict:** PASS.
 - **Commit:** Accompanying `docs(review): assess full design consistency`; no push.
+
+
+## T-DESIGN-CORRECTION-PLAN-001 — Detailed fixes plan (2026-10-20)
+
+- **Environment:** D:/school/btl; Windows PowerShell, Python 3.11; entry HEAD b9cb978 (full-review documentation). DESIGN planning only.
+- **Command:** Inline Python pathlib/re/ElementTree assertions on plan local links, seven FDR sections/DC acceptance groups, canonical source/native IDs and Git changed-path scope.
+- **Output:** Exit 0; nine initial plan links resolve; FDR-01–07 and DC01–07 present; six source/native candidates exist in 44-page bundle, 38 outside candidate set; only current-task/new plan changed at that point. **Verdict:** PASS.
+- **Command:** `git diff --check` during planning.
+- **Output:** Exit 0; no whitespace errors. **Verdict:** PASS.
+- **Independent review:** Read-only reviewer checked scope/dependencies/acceptance, exact composite keys, receipt replay/auth and targeted artifacts. Requested qualification of proposed purpose nullability/code/empty tags and purpose-session behavior; one bounded correction applied. Re-review: plan-accuracy PASS, no remaining blocking correction. **Verdict:** PASS for plan only; FDR findings remain OPEN.
+- **Not executed:** Proposed corrections, diagram rendering, runtime/app/DB mutation/security/concurrency cases. No test or design approval inferred from planning checks. No live DB/credentials inspected.
+- **Final planning closeout:** Inline Python checks exit 0: seven planning-only files, 48 local links, seven FDR/DC groups, six existing candidate page IDs/38 other pages, historical log prefixes retained (line endings normalized in memory only), reviewed design/app/DB/history unchanged and correct OPEN/DONE boundary. **Verdict:** PASS.
+- **Final whitespace:** `git diff --check` exit 0; line-ending conversion notices only. **Verdict:** PASS.
+- **Commit:** Accompanying `docs(plan): detail corrections for design review findings`; no push.

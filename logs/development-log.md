@@ -3160,3 +3160,13 @@ Independent logical/database reviewers verified sources and reread report: repor
 
 **Result:** Review COMPLETE; design has seven open findings. Updated current-task/HANDOFF/QUICK-REF and archived review closeout. No product decision/ADR, canonical/proposed design edits, application/dependency/API/schema/migration or live-data changes. No follow-on task active. Existing log bytes preserved by appending UTF-8.
 **Commit:** Accompanying `docs(review): assess full design consistency`; actual SHA from successful Git result/final user response. No push/history rewrite.
+
+
+## DESIGN-CORRECTION-PLAN-001 — Plan fixes for each review finding (2026-10-20)
+
+Delivered plans/2026-10-20-design-correction-plan.md with seven detailed FDR fixes, concrete source/derived artifact scope, dependencies, DC01–07 acceptance and bounded entry-to-closeout process. Plan groups shared DATA and physical edits sequentially and preserves 38 pages outside the six initial native edit candidates; expands scope only with evidence. Distinguishes documentation checks from future runtime tests and plan completion from correction approval/execution.
+
+Independent plan review found purpose nullability/code/tag representation and purpose session timing needed explicit proposed classification. Corrected once and re-reviewed: plan-accuracy PASS. No new product policy/ADR. Logs record observed planning checks under T-DESIGN-CORRECTION-PLAN-001; no render or runtime tests for unchanged artifacts.
+
+**Result:** Planning COMPLETE; correction execution NOT STARTED; all FDR-01–07 remain OPEN. Updated current-task/HANDOFF/QUICK-REF and archived planning closeout. Canonical/proposed design artifacts, review history, application/Prisma/migrations untouched; log history preserved by UTF-8 append.
+**Commit:** Accompanying `docs(plan): detail corrections for design review findings`; actual SHA from successful Git/final response. No push/history rewrite.
