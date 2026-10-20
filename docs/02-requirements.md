@@ -10,6 +10,10 @@
 
 ---
 
+## Current assessment assembly addendum — ADR-043 (2026-10-20)
+
+Teacher submits question contributions within the assigned Lesson/content package. The system assembles eligible submitted packages according to the Admin-configured blueprint; Admin reviews, requests corrections, approves and publishes. No separate Teacher assignment for a whole assessment, lead author, manual Admin composition or new canonical use case is added. Preserve per-contribution authorship/assignment episodes and source submissions. Route feedback to the current responsible Teacher; corrected contributions produce a successor assembled version. Existing secure-item readiness, grading secrecy and immutable learner version pins remain in force. [Proposed physical reconciliation and DB43 acceptance](design/physical/database-reconciliation-2026-10-20.md) do not establish installed tables or successful runtime tests.
+
 ## Current MVP Product Baseline Addendum — ADR-036 (2026-10-10)
 
 This addendum controls current MVP product behavior where older requirement prose conflicts. It records PO-approved product rules only; it does not authorize application implementation or physical database design. Historical sections below remain unchanged evidence.

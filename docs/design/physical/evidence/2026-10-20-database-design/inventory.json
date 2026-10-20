@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-20",
+  "entry_head": "90429f2637ffc66cc2cbc5681b75382b5c973479",
+  "live_database": "UNVERIFIED; no connection attempted",
+  "prisma_models": [
+    "Language",
+    "Profile",
+    "Course",
+    "CourseTranslation",
+    "Unit",
+    "UnitTranslation",
+    "Lesson",
+    "LessonTranslation",
+    "Vocabulary",
+    "VocabularyTranslation",
+    "LessonVocabulary",
+    "Exercise",
+    "UserProgress",
+    "UserVocabSrs",
+    "ReviewLog",
+    "ChatScenario",
+    "ChatScenarioTranslation",
+    "AuditLog"
+  ],
+  "migration_files": [
+    "lingora-admin\\prisma\\migrations\\202608140001_init\\migration.sql",
+    "lingora-admin\\prisma\\migrations\\202608140002_auth_rls_storage_record_review\\migration.sql",
+    "lingora-admin\\prisma\\migrations\\202608140003_storage_two_bucket_size_enforcement\\migration.sql"
+  ],
+  "entry_sha256": {
+    "lingora-admin/prisma/schema.prisma": "d71512e7af45fd8255df0f553a70a5345c0e5da9f90a94aec40cb0b3ade4fd9c",
+    "lingora-admin\\prisma\\migrations\\202608140001_init\\migration.sql": "7ce558f6a3b12021afdbd05b48c079a5b667a33b39f34e3a6414fcbca8b0d005",
+    "lingora-admin\\prisma\\migrations\\202608140002_auth_rls_storage_record_review\\migration.sql": "faa5d4b8e4fb1a82dbdafa95aa6c5b83b1cb0116649ab8329573b08b322bb9c5",
+    "lingora-admin\\prisma\\migrations\\202608140003_storage_two_bucket_size_enforcement\\migration.sql": "bc44b53d95cd9acdf176060d509e587075a904b4b2d1f466edd5acdd7a9a983f",
+    "docs/modeling/current-target/src/DOM-01-core-domain-model.puml": "6b7a33451a3e406f9141629cf742a7bbef0437adb93b8816cb4a0856eef24a03",
+    "docs/modeling/current-target/lingora-all-diagrams.drawio": "0bb4d8a12ca6638fc09b6ba45e1f9da4565ec867f1e69eb8664187ca0e788156",
+    "docs/design/physical/README.md": "093eaaa7359cee2ca18a4709253491caa9dc756382552853bef4917536c1e629",
+    "docs/design/physical/security-and-rls.md": "34b6d3ab02081311ab613ef1cf10dbdcceec57695afc1b51614c682b982e9790",
+    "docs/design/physical/rebuild-plan.md": "a5978757edb4120a16ebb282428ab77726935746d5fac13d02ab18564601790f",
+    "docs/design/physical/physical-erd.puml": "9938aa943c615cfa78019d4acfb1469edeec2e7673f24eb6a2ec004b6c7a44f3"
+  }
+}

@@ -1,5 +1,7 @@
 # Legacy Inventory, Conditional Rebuild and Future Acceptance Plan
 
+> **Current reconciliation — 2026-10-20:** The inventory and dated rebuild comparison below are retained historical proposals. [Database reconciliation](database-reconciliation-2026-10-20.md) and ADR-043 control the revised Lesson-only assignment, immutable source episode/submission and system-assembly design. DB43-01–13 supplement these future tests and supersede any older case assuming Teacher edits/submits a whole assessment version, a blueprint assignment, or reopening frozen source bytes. Interpret retained Teacher package tests as Lesson-source tests. No CLEAN REBUILD selection or destructive execution is made by the current task; live inventory/preservation/restore/cutover gates remain separate. All runtime cases are **NOT EXECUTED** here.
+
 > **PROPOSED PHYSICAL DESIGN — NOT IMPLEMENTED** · 2026-10-11
 > **Recommendation: CLEAN REBUILD.** Execution requires separate approved physical review, Implementation Plan and environment-specific preservation/cutover authorization.
 > **LIVE DB UNVERIFIED:** credentials absent from the process and conventional root/Admin/Web local env files. No DB connection, catalog inspection, learner-content read or mutation occurred. Do not assume an empty database.

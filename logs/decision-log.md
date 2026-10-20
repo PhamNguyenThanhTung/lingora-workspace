@@ -2130,3 +2130,28 @@ docs/study-focus-addendum.md controls semantics/PERS-01–10; requirements, UC-0
 
 ### Status
 ACCEPTED — PO PRODUCT ADDENDUM; PROPOSED PHYSICAL REALIZATION; NO IMPLEMENTATION AUTHORIZATION
+
+## ADR-043 — System assembly of submitted assessment contributions
+
+### Date
+2026-10-20
+
+### Category
+product-behavior / assessment-authoring
+
+### Approval Evidence
+Direct PO answer to the multi-Lesson assessment assembly/submission ownership question: **“Hệ thống ghép các gói câu hỏi Teacher đã nộp theo blueprint, Admin chỉ duyệt/xuất bản”**. The preceding request “database đã có chưa chưa có thì bắt đầu làm đi” authorizes database-design work; neither statement approves a deployed schema, destructive migration or live cutover.
+
+### Context
+UC-09 and the accepted Class baseline assign one Lesson/content package and related items to one responsible Teacher at a time. A complete assessment can use several such packages. The retained physical proposal incorrectly assumed a standalone blueprint assignment and a Teacher submitting the entire assessment version. The logical sources had not assigned assembly ownership.
+
+### Decision
+Teacher authors and submits question contributions within the current Lesson assignment, following the Admin-configured blueprint. The system assembles eligible submitted question packages into a complete version according to that blueprint. Admin reviews, requests corrections, approves and publishes the assembled version; Admin does not author or manually compose its items. There is no lead-Teacher whole-exam submission role and no separate assessment Assignment target.
+
+Preserve creation authorship, assignment episodes, source submissions and review history for every contribution. Feedback routes to the current Teacher responsible for the affected Lesson; corrected contributions are submitted again and assembled into a successor version. Published versions and learner attempt pins remain immutable. Existing readiness, coverage, grading secrecy and distinct secure-item rules remain in force. No new canonical use case, generic question bank or extra business role is introduced.
+
+### Consequences / Evidence
+UC-09–12, requirements and traceability record this ownership. [Database reconciliation](../docs/design/physical/database-reconciliation-2026-10-20.md) supplies proposed keys, copy-on-edit snapshots, assembly idempotency/security and future DB43-01–13 acceptance cases. Physical implementation choices remain PROPOSED; runtime tests are NOT EXECUTED and live DB is UNVERIFIED. The unchanged logical diagram bundle is a prior baseline; downstream Sequence/DATA/state views still require reconciliation with this addendum.
+
+### Status
+ACCEPTED — PO PRODUCT CLARIFICATION; PHYSICAL REALIZATION PROPOSED; NO LIVE MIGRATION APPROVAL

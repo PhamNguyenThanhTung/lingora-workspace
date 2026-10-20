@@ -1,14 +1,14 @@
-# Lingora - Current handoff
+# Lingora — Current handoff
 
-**2026-10-20 - NEXT DESIGN PLAN DELIVERED.**
+**2026-10-20 — DATABASE-DESIGN RECONCILIATION COMPLETE.**
 
-[Current task](plans/current-task.md) is DONE: planning only. [Plan](plans/2026-10-20-next-design-plan.md); [completion snapshot](plans/archive/2026-10-20-next-design-plan-DONE.md). Proposed execution steps have not started; no follow-on task active.
+[Current task](plans/current-task.md) is DONE for design reconciliation. [Report](docs/design/physical/database-reconciliation-2026-10-20.md), [completion snapshot](plans/archive/2026-10-20-database-design-DONE.md), [independent review](docs/design/physical/evidence/2026-10-20-database-design/review.md). No follow-on task active.
 
-- **Recommended next task:** Review and reconcile SEQ-01–09 with current UC/Activity/Class and ADRs. Plan defines trace, file scope, acceptance, nine native pages and preservation of the other 35 pages.
-- **Then:** Logical data reconciliation; state/security/architecture consistency; separately authorized physical-design reconciliation/review. Implementation specification comes only after the relevant design boundary and user implementation request.
-- **Existing baseline:** Use Case, Activity and Class accepted. Class 22 classes + one enum / 28 relationships. Commit `04da119` saved Class/Activity maintenance; 44-page native primary, 36 sources / 72 outputs. [Prior closeout](docs/modeling/current-target/modeling-closeout-2026-10-16.md) remains historical evidence for that maintenance task.
-- **Planning checks:** Independent plan review PASS, link and inventory checks PASS; logs T-NEXT-DESIGN-PLAN-001 / NEXT-DESIGN-PLAN-001. No diagram or application edits.
-- **Verification boundary:** `verify_current.py` remains the reusable artifact integrity command. Historical per-task scope verifiers are not acceptance gates for a later task. Raw source hashes are checkout-byte-sensitive.
-- **Runtime:** Existing learner auth/locale foundation only per current snapshot; this planning task did not inspect live DB/deployment or execute runtime tests.
-- **Next permitted action:** User may start the proposed Sequence review; then record that task and inspect controlling sources. Physical design approval, implementation, migrations and live database operations are not authorized by the planning request.
-- **Git:** Accompanying documentation commit records this plan; no push.
+- **PO decision:** ADR-043 accepts system assembly of Teacher-submitted Lesson question packages by blueprint; Admin reviews/approves/publishes. No standalone assessment assignment/lead Teacher or Admin manual composition.
+- **Delivered:** 22-class/enum mapping, 34-table catalog/security, four ERD views and eight renders. Lesson-only assignments, immutable creation/submission episodes, exact contribution provenance, system-only immutable version assembly, successor correction and own-assignee feedback routing. Physical mechanisms remain PROPOSED / NOT IMPLEMENTED.
+- **Review:** Independent PASS after one bounded correction. Rejected/older inputs cannot outrank corrected submissions; latest submitted Lesson package replaces prior contributions, with no fallback on omissions/invalid input. Empty version feedback expands all source Lessons/items. Old snapshots/history retained.
+- **Checks:** T-DATABASE-DESIGN-043: static table/diagram/render/link/scope/preservation checks PASS; verify_current.py PASS for existing 36-source/72-output/44-page artifact integrity. One inherited missing historical ERD link remains in docs/04-data-model.md. Future runtime scenarios are specified, NOT EXECUTED.
+- **Actual DB:** Repository has 18-model legacy Prisma and three migrations, preserved. No live connection or credential inspection; deployed database/security UNVERIFIED. No migration/reset/seed/app change. CLEAN REBUILD not selected by this task.
+- **Remaining design:** The earlier Sequence-first plan was reprioritized by the PO database request. Sequence/DATA/state/security/deployment logical diagrams still need reconciliation with accepted Class and ADR-043; the 44-page bundle was preserved, not declared semantically updated. Formal physical approval/implementation spec precedes database implementation; live preservation/restore/cutover gates precede destructive work.
+- **Next permitted action:** Record the next authorized task before work. Existing product ADRs control their explicit scopes; historical physical READY statements do not authorize implementation.
+- **Git:** Accompanying documentation commit records closeout; no push/history rewrite. Actual SHA is returned in the completion report.

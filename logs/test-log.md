@@ -3283,3 +3283,21 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Output:** Local links/documentation-only scope PASS; staged diff has no whitespace errors. **Verdict:** PASS.
 - **Not run:** Diagram semantic acceptance, renderer or application tests; no such artifacts or runtime code changed.
 - **Commit:** Accompanying `docs(plan): outline next design reconciliation`; no push.
+
+
+## T-DATABASE-DESIGN-043 — Database-design reconciliation (2026-10-20)
+
+- **Environment:** D:/school/btl; Windows PowerShell; Python 3.11/Pillow; JDK17 D:/Android/jdk-17/bin/java.exe; cached PlantUML 1.2026.8; entry commit 90429f2637ffc66cc2cbc5681b75382b5c973479. DESIGN mode; no credentials/live connection or runtime code changes.
+- **Command:** `& 'D:/Android/jdk-17/bin/java.exe' '-Djava.awt.headless=true' '-DPLANTUML_LIMIT_SIZE=16384' '-jar' 'C:/Users/tungt/.cache/lingora-diagram-tools/plantuml-1.2026.8.jar' '-charset' 'UTF-8' '--check-before-run' '--no-error-image' '--format' 'svg' '--output-dir' 'D:/school/btl/docs/design/physical' 'D:/school/btl/docs/design/physical/physical-erd.puml'`; repeat with `--format png`.
+- **Output:** Drafting executor observed both exit 0; four SVG/PNG pairs produced. Parent independently checked all eight files, PNG embedded-source parity and XML/no renderer errors; independent reviewer inspected content/assessment PNGs, parent inspected identity/learning PNGs. **Verdict:** PASS for rendering/legibility.
+- **Command:** `py -3.11 docs/design/physical/evidence/2026-10-20-database-design/verify_design.py` (initial all-link assertion).
+- **Output:** Table/render/preservation checks passed; exit 1 at inherited missing `docs/04-data-model.md -> plantuml/erd-mvp-learning.puml`. **Verdict:** FAIL for initial broad link check. Confirmed the same unresolved link exists at entry HEAD; narrowed the task check to reject new broken targets and explicitly report inherited unresolved targets without rewriting historical prose.
+- **Command:** `py -3.11 docs/design/physical/evidence/2026-10-20-database-design/verify_design.py` after correction/closeout edits, UTF-8 output.
+- **Output:** Exit 0; 18 legacy models/three migrations, accepted DOM/native bundle preserved; 34 catalog/detail/ERD table definitions agree; four views with unique aliases/defined edges; eight valid renders and PNG/source parity; documentation-only scope and 168 local links PASS. Explicit LIMIT: one inherited unresolved historical ERD link. **Verdict:** PASS within declared scope; no new broken links.
+- **Command:** `py -3.11 docs/modeling/current-target/verify_current.py`, UTF-8 output.
+- **Output:** Exit 0; all 36 source/render integrity rows PASS, 72 output records/source parity, 44 native pages/payloads and native export provenance PASS. **Verdict:** PASS for unchanged logical artifact integrity; not semantic reapproval against ADR-043.
+- **Independent review:** Read-only database_design_review inspected actual report/catalog/security/ERD and accepted Class/UC boundaries. Initial NEEDS CORRECTION, F-DB43-01 P1: rejected source could outrank corrected successor. One bounded correction applied. Final independent output: PASS — F-DB43-01 CLOSED; no remaining blocking documentation findings. **Verdict:** PASS. Full scope/fix recorded in docs/design/physical/evidence/2026-10-20-database-design/review.md.
+- **Future tests:** DB43-01–13 are specified, NOT EXECUTED. No typecheck/unit/integration/database security/live deployment result is claimed by this documentation task. Physical remains PROPOSED; live DB UNVERIFIED.
+- **Commit:** Accompanying `docs(database): reconcile assignment provenance and system assembly`; no push/history rewrite. SHA is supplied by Git completion output/final report.
+
+- **Final packaging:** Scoped verifier after all closeout/evidence/log edits exited 0 (215 local links; one inherited missing historical target reported). `git diff --cached --check` exited 0 with no output. **Verdict:** PASS.

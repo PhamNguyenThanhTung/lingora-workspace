@@ -1,5 +1,7 @@
 # 04 - Lingora Data Model (Historical & Target Physical Reference)
 
+> **Current database-design entry — 2026-10-20:** [Reconciliation and Class mapping](design/physical/database-reconciliation-2026-10-20.md), [34-table physical catalog](design/physical/README.md), [security](design/physical/security-and-rls.md) and [four-view ERD](design/physical/physical-erd.puml) are the revised PROPOSED physical package. ADR-043 accepts system assembly of Teacher-submitted Lesson question packages; physical realization remains unapproved/unimplemented. Legacy schema below is historical; live DB UNVERIFIED.
+
 > **CLASSIFICATION: HISTORICAL SCHEMA & TARGET PHYSICAL REFERENCE — NOT CURRENT LOGICAL DOMAIN AUTHORITY.**
 > - **Domain authority:** ADR-030–036 and current canonical modeling (`docs/modeling/current-target/`) control logical domain entities, relationships, and invariants. Physical data structures do NOT define domain design.
 > - **Role model:** The legacy 6-role descriptions and 2-role SQL schemas below are `HISTORICAL / SUPERSEDED`. The current business role model is strictly 3 roles (`Admin`, `Teacher`, `Learner`) per ADR-034.

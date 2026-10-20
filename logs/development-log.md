@@ -3138,3 +3138,15 @@ Read current source authority and the historical master-plan roadmap without rea
 
 **Result:** Planning COMPLETE; execution steps NOT STARTED; no follow-on task active.
 **Commit:** Accompanying `docs(plan): outline next design reconciliation`; no push.
+
+
+## DATABASE-DESIGN-043 — Reconcile physical database proposal (2026-10-20)
+
+PO prioritized database work over the earlier proposed Sequence-first ordering. Read-only inventory established 18 legacy Prisma models and three historical SQL migrations, preserved with hashes; live database unverified. No credentials/remote catalog read, migration, reset, seed or application changes.
+
+Recorded the explicit PO choice in ADR-043: system assembles Teacher-submitted question contributions by blueprint, Admin reviews/approves/publishes. Reconciled the retained 34-table catalog/security/four-view ERD with the accepted 22-class/enum baseline. Removed standalone blueprint Assignment/Teacher whole-version submission; pinned creation/submission episodes and source provenance; separated system audit from human actors; defined immutable source/version corrections, own-assignee feedback, scope/generation/readiness and assembly idempotency/principals. Added missing Unit.code, change_summary and optional vocabulary attributes; clarified derived working-level projection. Updated current requirement/UC/trace/authority pointers and closeout snapshot.
+
+Independent review found one P1 selection gap: rejected earlier items could win stable-ID ordering after correction. One bounded correction introduced effective latest submitted full Lesson snapshot, no older fallback, retained feedback exclusions and version-wide routing; corrected input changes version hash. Final independent re-review PASS, F-DB43-01 CLOSED. Static/render/legibility/preservation checks PASS under T-DATABASE-DESIGN-043. Initial broad link check exposed one pre-existing historical missing ERD link; preserved and explicitly reported, with no new broken links. The existing development log contains legacy non-UTF8 bytes: appended this UTF8 record without re-encoding or rewriting its prior bytes.
+
+**Result:** Design reconciliation COMPLETE. Physical mechanisms remain PROPOSED, not deployed or finally approved. DB43 runtime tests NOT EXECUTED. Unchanged logical Sequence/DATA/state/security/deployment views still need their own reconciliation with ADR-043. No follow-on task active; formal physical approval/implementation spec and live preservation/cutover gates remain separate.
+**Commit:** Accompanying `docs(database): reconcile assignment provenance and system assembly`; actual SHA reported from successful Git result. No push/history rewrite.

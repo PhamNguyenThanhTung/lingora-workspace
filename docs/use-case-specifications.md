@@ -213,6 +213,10 @@ Focus bias is separate from due selection: GRAMMAR still keeps due VOCABULARY el
 
 ---
 
+## Current assessment assembly clarification — ADR-043 (2026-10-20)
+
+UC-09–12 retain their identities. Admin configures the blueprint and assigns Lesson/content packages, including related assessment questions. Teacher submits those assigned packages. The system assembles submitted eligible contributions from one or more Teachers into a complete assessment version according to the blueprint, then queues it for Admin review/approval/publication. Teacher does not submit a whole assembled exam; Admin does not manually compose or author its items. Feedback on version items routes to the current Teacher for their source Lesson. Corrections use successor contributions and a newly assembled version, retaining authorship, assignment episodes and prior review history. This paragraph controls assembly ownership where older wording below is less specific; exact physical mechanisms remain proposed in the [database reconciliation](design/physical/database-reconciliation-2026-10-20.md). Logical diagrams predating ADR-043 have not been reapproved by this addendum.
+
 ## 9. Lập đề cương, ma trận đề thi và Phân công
 
 | Thuộc tính | Chi tiết |

@@ -1,5 +1,16 @@
 # 05 - Lingora Traceability Matrix
 
+## Current assessment assembly traceability — ADR-043
+
+| Requirement | Current behavioral authority | Future design acceptance |
+|---|---|---|
+| Lesson assignment; system assembles submitted multi-Teacher contributions | ADR-043; UC-09/10/11 | DB43-01/02/03/05 |
+| Creation/submission episode provenance; current-assignee rights and routed correction | ADR-035/043; UC-09–12; accepted Class Assignment/ContentRevision/AssessmentItem | DB43-06/07/08/12 |
+| Immutable secure version, Admin review/publish and private grading | ADR-035/036/043; UC-02/05/12 | DB43-04/09/10/11 |
+| Complete Class-to-storage mapping | Accepted Class baseline; ADR-030–036/041/042 | DB43-13 and database reconciliation mapping |
+
+[DB43-01–13](design/physical/database-reconciliation-2026-10-20.md) are specified runtime cases, **NOT EXECUTED**. Physical design is proposed. Existing logical diagram sources are preserved pending their own reconciliation; they are not claimed synchronized with ADR-043 by this text update.
+
 ## Current Study Focus traceability — ADR-042
 
 | Requirement | Canonical behavior / affected views | Design acceptance |

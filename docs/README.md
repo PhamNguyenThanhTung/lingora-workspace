@@ -1,6 +1,6 @@
 # Lingora Documentation
 
-> **Current redesign boundary — 2026-10-16:** Use Case, Activity and **Class Diagram logical/domain baselines are established**. [Class review and closeout](modeling/current-target/class-review-2026-10-16.md) synchronizes DOM-01 source/renders and primary native page after independent semantic/trace/cardinality and visual acceptance. The [entry audit](repository-audit-2026-10-16.md) and earlier unfinished completion records remain historical evidence. Physical/database design is NOT STARTED / NOT APPROVED by this task; later sequence/data/architecture diagrams and Phase 2 roadmaps remain downstream references. Implementation and implementation planning are NOT AUTHORIZED. Scoped approved ADR semantics remain in force.
+> **Current redesign boundary — 2026-10-20:** Use Case, Activity and **Class Diagram logical/domain baselines are established**. [Class review](modeling/current-target/class-review-2026-10-16.md) records that accepted baseline. The authorized [database reconciliation](design/physical/database-reconciliation-2026-10-20.md) updates the proposed physical catalog/security/four-view ERD against it and ADR-043. Database work now takes priority over the earlier Sequence-first proposal. Physical mechanisms remain PROPOSED / NOT IMPLEMENTED; live DB UNVERIFIED. Existing logical Sequence/DATA/state/deployment views still need reconciliation, including assembly ownership. Implementation/planning and destructive operations are not authorized by documentation acceptance.
 
 ## Source-of-truth policy
 
@@ -10,7 +10,7 @@ The repository has topic-specific authorities; `docs/` membership alone does not
 
 To determine current Lingora product, domain, and behavioral design, agents MUST follow this strict precedence:
 
-1. **Current accepted product/domain ADRs** that are not superseded (`logs/decision-log.md`: ADR-030–036, ADR-041/042). A decision controls only the subject it explicitly resolves.
+1. **Current accepted product/domain ADRs** that are not superseded (`logs/decision-log.md`: ADR-030–036, ADR-041–043). A decision controls only the subject it explicitly resolves.
 2. **Current requirements & behavioral/modeling sources**:
    - [`docs/use-case-specifications.md`](use-case-specifications.md) (Current 14-entry behavioral catalog; UC-03 reminder deferred; Reassessment absent from MVP).
    - [`docs/02-requirements.md`](02-requirements.md) (Current MVP Baseline Addendum: ADR-036 attempt scoring, vocabulary SRS enrollment, curriculum availability; ADR-041 SRS session boundaries; ADR-042 Study Focus).
@@ -57,6 +57,8 @@ The dated outcomes and next-step statements below describe those earlier tasks o
 - **Final Modeling Review and 3-point correction:** [Final review report](modeling/current-target/final-review.md) records the bounded recheck after the previous review. Verdict: **MODELING APPROVED** / **READY FOR PHYSICAL DESIGN**. It confirms there is no Assignment `CLOSED` state, Level-up readiness/pass parameters are configured without a platform-wide 100% lesson gate, and progress counts published active required lessons even when normal progression has not unlocked them. Unpublished/unavailable and withdrawn-incomplete content remains excluded. Only ACT-01 and ACT-09 were changed and rerendered; no physical design or implementation was started. See [diagram index](modeling/current-target/README.md) and [correction evidence](modeling/current-target/evidence/final-three-point-correction.md).
 
 ## Proposed Physical Data & Runtime Design (2026-10-11)
+
+**Current revision (2026-10-20):** [Database reconciliation](design/physical/database-reconciliation-2026-10-20.md) controls the revised physical delta: 34 retained tables, Lesson-only assignments, immutable creation/submission episodes, system assembly and Admin-only assessment review/publication. ADR-043 approves product assembly ownership only. The current catalog/security/ERD are reconciled proposals; independent documentation review does not approve deployment. The dated review statements below describe prior versions and are retained for provenance. Current task status is only in plans/current-task.md.
 
 [Physical design](design/physical/README.md) and [conditional rebuild plan](design/physical/rebuild-plan.md) are **PROPOSED PHYSICAL DESIGN — NOT IMPLEMENTED**. They map approved logical modeling to 34 proposed tables, auth/RLS/runtime boundaries, four-view physical ERD and future acceptance tests. The task authorizes inspection/design only; technical choices are not yet approved. Live DB remains **LIVE DB UNVERIFIED**. Design review must precede any Implementation Plan, Prisma/migration/database or application change. [Review evidence](design/physical/review-and-verification.md) records independent defects/corrections and observed documentation checks.
 
