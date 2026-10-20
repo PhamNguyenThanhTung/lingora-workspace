@@ -3271,3 +3271,15 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Commit:** Accompanying `docs(modeling): finish class and activity closeout`; no push. App/runtime/live database checks are outside scope.
 
 - **Final packaging check (T-MODELING-CLOSEOUT-001):** Initial `git diff --cached --check` flagged trailing blank lines in the two newly staged Activity scripts (FAIL). Removed only trailing whitespace; reviewed logic/candidate/export hashes unchanged. Final staged whitespace check PASS.
+
+
+## T-NEXT-DESIGN-PLAN-001 - Next design plan (2026-10-20)
+
+- **Environment:** Windows PowerShell, Python 3.11; documentation-only planning after commit 04da119.
+- **Command:** Inline Python `pathlib`/`re` local-link assertions on plans/2026-10-20-next-design-plan.md, source glob `SEQ-*.puml`, and ElementTree parse of the primary Draw.io page IDs.
+- **Output:** `PASS: 7 plan links resolve; nine Sequence sources/pages; 35 other pages; planning-only boundary explicit.` **Verdict:** PASS.
+- **Independent review:** Separate read-only reviewer verified plan against authority/current snapshot and XML inventory. **Output:** PASS; no implicit physical/implementation approval, nine Sequence/35 preserved pages, appropriate acceptance and task-specific verification. **Verdict:** PASS for plan only.
+- **Command:** Final inline Python checks all local links in the new plan/current pointer/handoff/archive and asserts Git changed paths remain within the declared documentation scope; `git diff --cached --check` after staging.
+- **Output:** Local links/documentation-only scope PASS; staged diff has no whitespace errors. **Verdict:** PASS.
+- **Not run:** Diagram semantic acceptance, renderer or application tests; no such artifacts or runtime code changed.
+- **Commit:** Accompanying `docs(plan): outline next design reconciliation`; no push.

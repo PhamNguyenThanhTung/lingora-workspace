@@ -3128,3 +3128,13 @@ Independent Activity and provenance review PASS; post-merge checks PASS (T-MODEL
 
 **Result:** COMPLETE. No follow-on task. Physical/database design and implementation planning remain unauthorized.
 **Commit:** Accompanying `docs(modeling): finish class and activity closeout`; includes previously accepted, uncommitted Class artifacts with existing independent evidence plus current preservation checks. No push or history rewrite. Commit SHA available in Git history and final user report.
+
+
+## NEXT-DESIGN-PLAN-001 - Next design roadmap (2026-10-20)
+
+Delivered the requested next plan after Class/Activity closeout. Recommended first task is SEQ-01–09 reconciliation with trace to current UC/Activity/Class/ADRs and preservation of 35 other native pages. Subsequent proposals cover logical data, state/security/architecture and separately authorized physical review. Detailed implementation planning remains deferred until relevant design approval and an implementation request.
+
+Read current source authority and the historical master-plan roadmap without reactivating its old role/AI/priorities. Recorded source-level review targets as questions, not approved findings or schema decisions. Independent plan review and documentation checks PASS (T-NEXT-DESIGN-PLAN-001). Updated planning pointer, quick reference and handoff; no diagrams, code, product rules or database changes. No new ADR or execution approval snapshot.
+
+**Result:** Planning COMPLETE; execution steps NOT STARTED; no follow-on task active.
+**Commit:** Accompanying `docs(plan): outline next design reconciliation`; no push.

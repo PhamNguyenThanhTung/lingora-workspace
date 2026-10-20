@@ -1,14 +1,14 @@
 # Lingora - Current handoff
 
-**2026-10-17 - MODELING MAINTENANCE COMPLETE.**
+**2026-10-20 - NEXT DESIGN PLAN DELIVERED.**
 
-[Current task](plans/current-task.md) is DONE; [completion snapshot](plans/archive/2026-10-17-modeling-maintenance-DONE.md). No follow-on task is active.
+[Current task](plans/current-task.md) is DONE: planning only. [Plan](plans/2026-10-20-next-design-plan.md); [completion snapshot](plans/archive/2026-10-20-next-design-plan-DONE.md). Proposed execution steps have not started; no follow-on task active.
 
-- **Accepted boundary:** Use Case, Activity and logical/domain Class baselines established. Class remains 22 classes + one enum, 28 relationships; no new product policy or ADR.
-- **Saved artifacts:** Eight corrected Activity pages merged into the [44-page primary Draw.io](docs/modeling/current-target/lingora-all-diagrams.drawio). Other 36 pages, including accepted DOM, preserved byte-for-byte. Three native endpoint attributes repaired to match unchanged ACT-06/09 sources; original candidates and historical evidence preserved.
-- **Provenance:** 17 stale source hashes reconciled. All 36 canonical sources unchanged from maintenance entry. PlantUML title punctuation normalization confirmed; 20 of 21 reproduced pairs identical, ACT-07 PNG has only minor grayscale raster differences.
-- **Acceptance:** [Maintenance closeout](docs/modeling/current-target/modeling-closeout-2026-10-16.md), [independent Activity review](docs/modeling/current-target/evidence/2026-10-16-activity-layout/independent-review.md), [provenance review](docs/modeling/current-target/evidence/2026-10-16-modeling-closeout/provenance-review.md). Current artifact integrity, exact merge/scope/DOM preservation and visual review PASS. Logs T-MODELING-CLOSEOUT-001 / MODELING-CLOSEOUT-001 recorded.
-- **Current checks:** `py -3.11 docs/modeling/current-target/verify_current.py` and `py -3.11 docs/modeling/current-target/evidence/2026-10-16-modeling-closeout/verify_closeout.py`. Old `verify.py` and Class verifier retain historical task-specific restrictions; their dated results remain unchanged. Raw source hashes are checkout-byte-sensitive.
-- **Git:** Accompanying Conventional Commit includes the previously accepted uncommitted Class completion and this maintenance closeout; no push. See latest modeling commit for SHA.
-- **Runtime:** Learner SSR auth/register/logout and vi/en foundation only. No learning/Admin/AI runtime or live database/deployment was inspected in this task.
-- **Next permitted action:** Await a separately scoped task. Physical/database design, downstream semantic reconciliation, implementation planning, migration and application work remain unauthorized.
+- **Recommended next task:** Review and reconcile SEQ-01–09 with current UC/Activity/Class and ADRs. Plan defines trace, file scope, acceptance, nine native pages and preservation of the other 35 pages.
+- **Then:** Logical data reconciliation; state/security/architecture consistency; separately authorized physical-design reconciliation/review. Implementation specification comes only after the relevant design boundary and user implementation request.
+- **Existing baseline:** Use Case, Activity and Class accepted. Class 22 classes + one enum / 28 relationships. Commit `04da119` saved Class/Activity maintenance; 44-page native primary, 36 sources / 72 outputs. [Prior closeout](docs/modeling/current-target/modeling-closeout-2026-10-16.md) remains historical evidence for that maintenance task.
+- **Planning checks:** Independent plan review PASS, link and inventory checks PASS; logs T-NEXT-DESIGN-PLAN-001 / NEXT-DESIGN-PLAN-001. No diagram or application edits.
+- **Verification boundary:** `verify_current.py` remains the reusable artifact integrity command. Historical per-task scope verifiers are not acceptance gates for a later task. Raw source hashes are checkout-byte-sensitive.
+- **Runtime:** Existing learner auth/locale foundation only per current snapshot; this planning task did not inspect live DB/deployment or execute runtime tests.
+- **Next permitted action:** User may start the proposed Sequence review; then record that task and inspect controlling sources. Physical design approval, implementation, migrations and live database operations are not authorized by the planning request.
+- **Git:** Accompanying documentation commit records this plan; no push.
