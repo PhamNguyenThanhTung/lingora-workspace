@@ -3301,3 +3301,22 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Commit:** Accompanying `docs(database): reconcile assignment provenance and system assembly`; no push/history rewrite. SHA is supplied by Git completion output/final report.
 
 - **Final packaging:** Scoped verifier after all closeout/evidence/log edits exited 0 (215 local links; one inherited missing historical target reported). `git diff --cached --check` exited 0 with no output. **Verdict:** PASS.
+
+
+## T-FULL-DESIGN-REVIEW-001 — Full design review (2026-10-20)
+
+- **Environment:** D:/school/btl, Windows PowerShell, Python 3.11/Pillow; entry HEAD 0cde607c857255971976aca293891b49ef6ffeb0. DESIGN review only.
+- **Command:** `py -3.11 docs/modeling/current-target/verify_current.py` (PYTHONUTF8=1).
+- **Output:** Exit 0; all 36 source/PNG/SVG records, visible parity, 44 native pages/payloads and native export provenance PASS. **Verdict:** PASS for artifact integrity only.
+- **Command:** `py -3.11 docs/design/physical/evidence/2026-10-20-database-design/verify_design.py`, before creating review report outside that historical task allowlist.
+- **Output:** Exit 0; 18 legacy models/three migrations preserved, 34 catalog/detail/ERD definitions, four views/eight valid renders/PNG parity and 214 local links PASS; one inherited unresolved historical ERD link retained. **Verdict:** PASS within scoped static check; not runtime/design approval. Do not reuse its task-specific scope gate after adding unrelated review documents.
+- **Command:** Inline Python local-link inventory on DESIGN.md, architecture and M2.3/M2.4.
+- **Output:** Exit 0; DESIGN has two broken controlling links; M2.4 has three unresolved legacy diagram links; 01 architecture and M2.3 Markdown links resolve. **Verdict:** FAIL for link completeness of reviewed documents, recorded as open findings/limitations; no new broken links introduced.
+- **Command:** Inline Python report assertions and Git changed-path check; `git diff --check`.
+- **Output:** Exit 0; 10 report links resolve, seven findings (3 P1/4 P2), only review pointer/report edited at that stage; whitespace check exit 0. **Verdict:** PASS.
+- **Independent review:** Logical reviewer read 36 canonical/nine report PUML; database reviewer read current physical/catalog/security/rebuild/ERD and authority. Both independently reread report: report-accuracy PASS, one minor context-lifecycle wording corrected. Coordinator checked evidence. **Verdict:** PASS for report accuracy; overall design NEEDS DESIGN RECONCILIATION, seven findings remain open.
+- **Visual:** Coordinator inspected DOM-01, ACT-03 and physical assessment ERD PNGs. No obvious clipping/renderer errors in sample; no full native/page visual acceptance claimed.
+- **Not executed:** Runtime DB43/PERS/security/concurrency, application tests or live SQL; live DB/deployment UNVERIFIED. Canonical/proposed design artifacts unchanged.
+- **Final closeout check:** Initial inline prefix assertion compared Git LF bytes with worktree CRLF and failed at logs/test-log.md (exit 1; check-definition failure). Repeated with CRLF normalized in memory only: exit 0, seven review-only files, 45 local links, historical log content prefixes unchanged, seven findings and correct DONE boundary. **Verdict:** PASS after correcting the comparison; no prior log content rewritten.
+- **Final whitespace:** `git diff --check` exit 0; line-ending notices only. **Verdict:** PASS.
+- **Commit:** Accompanying `docs(review): assess full design consistency`; no push.

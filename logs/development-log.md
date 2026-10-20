@@ -3150,3 +3150,13 @@ Independent review found one P1 selection gap: rejected earlier items could win 
 
 **Result:** Design reconciliation COMPLETE. Physical mechanisms remain PROPOSED, not deployed or finally approved. DB43 runtime tests NOT EXECUTED. Unchanged logical Sequence/DATA/state/security/deployment views still need their own reconciliation with ADR-043. No follow-on task active; formal physical approval/implementation spec and live preservation/cutover gates remain separate.
 **Commit:** Accompanying `docs(database): reconcile assignment provenance and system assembly`; actual SHA reported from successful Git result. No push/history rewrite.
+
+
+## FULL-DESIGN-REVIEW-001 — Full design review (2026-10-20)
+
+Reviewed current product/domain authorities, 36 canonical and nine report PUML, UI/UX entry-point, architecture/API/traceability and proposed physical database/security/rebuild/ERD. Recorded seven findings (3 P1/4 P2) with line evidence, scenarios, bounded recommendations and owner backlog in docs/design/full-design-review-2026-10-20.md. UI index remains outdated; ADR-043 assembly and Class revision/provenance need logical reconciliation; physical proposal lacks two target UNIQUE declarations, review receipt identities and complete purpose mapping/update capability. No design correction performed.
+
+Independent logical/database reviewers verified sources and reread report: report-accuracy PASS after a minor wording correction. Modeling and scoped physical static checks PASS; inherited broken links recorded. T-FULL-DESIGN-REVIEW-001 distinguishes integrity, review accuracy and overall NEEDS DESIGN RECONCILIATION. Visual checks sampled three images; runtime/live DB tests NOT EXECUTED.
+
+**Result:** Review COMPLETE; design has seven open findings. Updated current-task/HANDOFF/QUICK-REF and archived review closeout. No product decision/ADR, canonical/proposed design edits, application/dependency/API/schema/migration or live-data changes. No follow-on task active. Existing log bytes preserved by appending UTF-8.
+**Commit:** Accompanying `docs(review): assess full design consistency`; actual SHA from successful Git result/final user response. No push/history rewrite.
