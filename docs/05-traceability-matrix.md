@@ -1,5 +1,19 @@
 # 05 - Lingora Traceability Matrix
 
+## FDR-01–07 correction trace (2026-10-20)
+
+| Correction / authority | Corrected design | Design acceptance / future runtime cases |
+|---|---|---|
+| UI roles/entry/retry/states — ADR-031–036/041–043, current UC | DESIGN.md current screen index | DC01-A–E; actual documentation review only |
+| System assembly/current-assignee feedback — ADR-043 | ACT-08, SEQ-03/04, STA-03 | DC02-A–E; existing DB43-01/02/03/06/07/08/09/10 |
+| Completed-revision membership — Class dictionary/ADR-036 | DATA-03, SEQ-08 | DC03-A–D; PD-SRS-01, PD-LESSON-04/05 |
+| Exact creation/submission/contribution episodes — Class/ADR-035/043 | DATA-03 | DC04-A–D; DB43-06/07/12 |
+| Supporting composite target keys — proposed physical integrity | Physical catalog/learning ERD | DC05-A–D; PD-DC05-KEYS/SCOPE |
+| Review receipt replay/capabilities — proposed physical realization of trusted commands | Physical catalog/security/learning ERD | DC06-A–D; PD-DC06-REPLAY/HASH/RACE/AUTH |
+| Purpose mapping/narrow update — Class/ADR-030/031/032/033 plus proposed representation | Physical catalog/security/content ERD | DC07-A–D; PD-DC07-PURPOSE/CONTEXT/HISTORY/ELIGIBILITY |
+
+[Correction report/evidence](design/design-correction-2026-10-20.md) records observed documentation/artifact checks; [DC plan](../plans/2026-10-20-design-correction-plan.md) and [future physical cases](design/physical/rebuild-plan.md) distinguish runtime NOT EXECUTED. Purpose code/null/empty-tag/session representation remains PROPOSED, not new product approval. No canonical UC renumbering or runtime acceptance is implied.
+
 ## Current assessment assembly traceability — ADR-043
 
 | Requirement | Current behavioral authority | Future design acceptance |
@@ -9,7 +23,7 @@
 | Immutable secure version, Admin review/publish and private grading | ADR-035/036/043; UC-02/05/12 | DB43-04/09/10/11 |
 | Complete Class-to-storage mapping | Accepted Class baseline; ADR-030–036/041/042 | DB43-13 and database reconciliation mapping |
 
-[DB43-01–13](design/physical/database-reconciliation-2026-10-20.md) are specified runtime cases, **NOT EXECUTED**. Physical design is proposed. Existing logical diagram sources are preserved pending their own reconciliation; they are not claimed synchronized with ADR-043 by this text update.
+[DB43-01–13](design/physical/database-reconciliation-2026-10-20.md) are specified runtime cases, **NOT EXECUTED**. Physical design is proposed. The later FDR correction trace above synchronizes only its six named logical sources with relevant current rules; other views and historical evidence are preserved, not blanket reapproved.
 
 ## Current Study Focus traceability — ADR-042
 

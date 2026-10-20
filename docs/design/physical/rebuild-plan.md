@@ -190,3 +190,21 @@ No production/read-only/live test has been substituted for these cases. Later im
 No new product decision was required to write this proposal. Before implementation, approve physical choices and verify provider/RLS/provisioning mechanics. Before destructive execution, approve exact preservation mapping/environment plus restore proof and rollback/cutover. Unknown data disposition is an execution precondition, not a reason to stop the present design.
 
 **STOP after this correction. Next separate task: FINAL PHYSICAL APPROVAL RECHECK.** No Prisma edits, production migrations, reset/drop/truncate, real seeds, upload, deploy, API or UI implementation, staging or commit in this task.
+
+
+## FDR-05–07 future acceptance addendum (2026-10-20)
+
+**PROPOSED acceptance — NOT EXECUTED.** The correction task only verifies documentation/diagram consistency. These cases require a separately authorized disposable implementation environment; never run mutation harnesses against the unknown live DB to accept this design.
+
+| ID | Setup/action | Expected observed runtime assertion |
+|---|---|---|
+| PD-DC05-KEYS | Create proposed lesson_attempts supporting UNIQUE(id,lesson_revision_id) and UNIQUE(id,context_id,lesson_id), then response/completion composite FKs | DDL creates successfully; every referenced exact tuple has its supporting key; dropping scope FK is not an acceptable fix |
+| PD-DC05-SCOPE | Correct attempt UUID with foreign revision, context or Lesson in child | Composite FK rejects mismatches; valid completed attempt child passes; incomplete attempt completion fails guard; redo retains first completion provenance |
+| PD-DC06-REPLAY | For each REQUEST_CHANGES/APPROVE/ARCHIVE/WITHDRAW, commit and lose response, retry same actor/command/key/hash | Same safe IDs/status; exactly one transition, review/success audit and receipt; old expected state/version is not revalidated on committed replay |
+| PD-DC06-HASH | Same key changes typed target/expected version/comment/reason/feedback IDs | Canonical hash mismatch conflicts with zero new effects; same feedback set with different order has equal canonical hash |
+| PD-DC06-RACE | Two identical concurrent operations, then failure before transaction commit | One committed set of effects; loser replays safely; failed transaction leaves no success receipt/partial lifecycle/history/success audit |
+| PD-DC06-AUTH | Other actor, role spoof or disabled Admin retries a known key | Deny before receipt result; no secret/full-exam leak or domain transition; denial auditing follows existing policy |
+| PD-DC07-PURPOSE | Assigned Teacher submits R1/R2 with configured purpose tags; foreign/inactive/duplicate/unknown code attempts | Authorized current tags/mapping generation snapshot correctly; invalid mappings reject; historical revision tags unchanged; no new table or Course/Track |
+| PD-DC07-CONTEXT | ACTIVE Learner updates owned context purpose through checked preferences command; foreign context/role/version/code invalid | Only purpose/preferences/version fields may change; invalid input rejected; no direct runtime generic update capability. Null/omitted-purpose case validates the PROPOSED nullable mapping only, not product optionality approval |
+| PD-DC07-HISTORY | Change purpose with completed attempts, assessment pins, SRS/streak/history and an existing proposed supplementary snapshot | Later plan derivation uses new purpose and eligible active revision tags; evidence/pins/schedules unchanged; proposed session snapshot checked as transport behavior, no universal new purpose-session timing policy |
+| PD-DC07-ELIGIBILITY | Matching-purpose draft/withdrawn/foreign-scope content coexists with current eligible core | Purpose cannot bypass scope/access or alter core completion/gates; empty neutral tags cannot silently remove required content; no new numeric routing policy inferred |

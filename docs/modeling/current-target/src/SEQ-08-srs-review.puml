@@ -3,7 +3,7 @@
 !include ../style.puml
 ' diagram-id: SEQ-08
 ' classification: TARGET
-' authority: ADR-030, ADR-031, ADR-033, ADR-035, ADR-036, ADR-041; UC-07, UC-08
+' authority: ADR-030/031/033/035/036/041/042; UC-06/07/08
 ' One global Learner+Vocabulary card. Due selection stays server-side; client schedule is never authoritative.
 ' Same-operation retry is idempotent; reinforcement has no second scheduling operation.
 title Sơ đồ trình tự – Thêm từ vựng và ôn tập ngắt quãng
@@ -15,11 +15,11 @@ database "Cơ sở dữ liệu" as DB
 
 opt Hoàn thành bài học hoặc learner thêm từ tùy chọn
   alt Hoàn thành bài học hợp lệ
-    Server -> Server : Chọn core vocabulary của lesson
+    Server -> Server : Chọn core membership của đúng completed revision
   else Learner chủ động Add to Review từ tùy chọn
     Learner -> Web : Thêm từ tùy chọn vào ôn tập
     Web -> Server : Yêu cầu thêm từ
-    Server -> Server : Kiểm tra tài khoản, quyền và vocabulary
+    Server -> Server : Kiểm tra tài khoản, quyền và optional membership của source revision
   end
   Server -> DB : Tìm card Learner + Vocabulary
   DB --> Server : Card đã có hoặc chưa có

@@ -107,7 +107,7 @@ entity "app.lesson_revisions" as lesson_revisions {
   UQ lesson + revision_no
   status / content_blocks / row_version
   change_summary?
-  topic_ids / skill_ids / catalog_generation
+  topic_ids / skill_ids / purpose_tags / catalog_generation
   coverage_snapshot / assignment_scope_snapshot?
   submitted_assignment_generation?
   FK created / edited / submitted actors
@@ -235,6 +235,8 @@ caption PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED | PK=UUID; FK=RESTRICT; ?=nul
 entity "app.lesson_attempts" as lesson_attempts {
   PK id / FK context_id
   FK lesson_revision_id / lesson_id
+  UQ id + lesson_revision_id
+  UQ id + context_id + lesson_id
   n_core / k_first_wrong?
   contribution_units? / response_count?
   started_at / completed_at?
@@ -286,6 +288,8 @@ entity "app_private.command_receipts" as command_receipts {
   PK id / FK actor_id
   UQ actor + command + operation_key
   target_id / input_hash / safe_result
+  review commands: REQUEST_CHANGES / APPROVE
+  ARCHIVE / WITHDRAW; typed target in input hash
   PRIVATE - bounded retry receipt
 }
 entity "app_private.audit_events" as audit_events {

@@ -2,48 +2,68 @@
 !include ../style.puml
 ' diagram-id: SEQ-04
 ' classification: TARGET
-' authority: ADR-034, ADR-035, ADR-036; UC-12
-' Admin reviews Teacher-authored work; no Admin authoring/self-approval.
-' Lesson/revision is the publication unit; no whole-Unit transaction required.
-' Approved/Published content cannot be edited in place.
-title Sơ đồ trình tự – Thẩm định, phê duyệt và xuất bản nội dung
+' authority: ADR-034/035/036/043; UC-10/11/12
+' Admin reviews a Lesson submission OR a complete system-assembled assessment version.
+' Feedback never reopens immutable version composition; corrected sources produce a successor.
+title Sơ đồ trình tự – Duyệt, phản hồi nguồn và xuất bản
 autonumber
 actor "Quản trị viên" as Admin
+actor "Giáo viên hiện phụ trách Lesson" as Teacher
 boundary "Ứng dụng web" as Web
 control "Backend" as Server
 database "Cơ sở dữ liệu" as DB
-
-Admin -> Web : Mở nội dung chờ thẩm định
+Admin -> Web : Mở target/version chờ duyệt
 Web -> Server : Yêu cầu nội dung và lịch sử
-Server -> Server : Kiểm tra trạng thái và quyền quản trị
-Server -> DB : Lấy bản nộp, đề cương và lịch sử
-DB --> Server : Nội dung cần thẩm định
-Server --> Web : Hiển thị nội dung và mức đáp ứng yêu cầu
-alt Yêu cầu chỉnh sửa
-  Admin -> Web : Nhập phản hồi chỉnh sửa
-  Web -> Server : Gửi yêu cầu chỉnh sửa
-  Server -> DB : Lưu trạng thái, phản hồi và nhật ký
-  Server --> Web : Chờ Giáo viên sửa và nộp lại
-else Phê duyệt
-  Admin -> Web : Phê duyệt bản đã thẩm định
-  Web -> Server : Gửi quyết định phê duyệt
-  Server -> Server : Kiểm tra phiên bản và mức đáp ứng yêu cầu
-  Server -> DB : Lưu phê duyệt và nhật ký
-  Server --> Web : Xác nhận đã phê duyệt
-  Admin -> Web : Xuất bản bản đã phê duyệt
-  Web -> Server : Yêu cầu xuất bản
-  Server -> Server : Kiểm tra lại quyền, phê duyệt và độ sẵn sàng
-  alt Không đủ điều kiện hoặc xuất bản thất bại
-    Server -> DB : Ghi nhật ký từ chối hoặc thất bại
-    Server --> Web : Giữ phiên bản đang dùng
-  else Xuất bản thành công
-    Server -> DB : Xuất bản bất biến; chuyển bản đang dùng nguyên tử
-    opt Có gói kiểm tra được phê duyệt
-      Server -> DB : Xuất bản phiên bản kiểm tra bất biến
+Server -> Server : Xác thực ACTIVE Admin
+Server -> DB : Đọc Lesson submission hoặc complete assembled version
+DB --> Server : Nội dung, blueprint, exact sources và lịch sử
+Server --> Web : Target/version và mức đáp ứng yêu cầu
+alt Yêu cầu sửa
+  Admin -> Web : Feedback cho item hoặc toàn version
+  Web -> Server : Target/version + feedback + operation identity
+  Server -> Server : Kiểm tra quyền, target và valid feedback membership
+  Server -> DB : Ghi feedback/lifecycle/audit; giữ composition cũ
+  alt Target là assessment version
+    Server -> DB : Map item feedback → exact source Lessons
+    Server -> Server : Empty item list mở rộng tất cả source Lessons/items
+  else Target là Lesson
+    Server -> Server : Feedback thuộc Lesson đã nộp
+  end
+  Server -> DB : Resolve current assigned Teacher của từng affected Lesson
+  loop Mỗi source Lesson cần correction
+    Server --> Teacher : Chỉ feedback/nội dung của Lesson hiện được giao
+    Teacher -> Web : Sửa nguồn được phép và nộp lại Lesson
+    Web -> Server : Lesson submission; flow SEQ-03
+    Server -> DB : Giữ creator cũ, ghi submission/episode mới
+  end
+  opt Feedback cho assessment version
+    Server -> Server : Loại rejected sources; latest submitted sources, không old fallback
+    alt Đủ readiness sau correction
+      Server -> DB : System assembly tạo successor version hoàn chỉnh, IN_REVIEW
+    else Còn thiếu hoặc sai source
+      Server --> Admin : Unmet requirements; không partial version/publish
     end
-    Server -> DB : Giữ bằng chứng học tập; ghi nhật ký xuất bản
-    Server --> Web : Phiên bản mới sẵn sàng cho lượt học mới
+  end
+  Server --> Web : Target sửa cần review lại; không tự approve/publish
+else Phê duyệt và xuất bản
+  Admin -> Web : Phê duyệt đúng target/version
+  Web -> Server : Quyết định approve + operation identity
+  Server -> Server : Kiểm tra version/readiness và current requirement/source pins
+  Server -> DB : Ghi Admin approval và audit
+  Server --> Web : Đã phê duyệt
+  Admin -> Web : Xuất bản target đã duyệt
+  Web -> Server : Yêu cầu publish + operation identity
+  Server -> Server : Kiểm tra lại quyền, phê duyệt, scope và readiness
+  alt Không đủ điều kiện hoặc publish thất bại
+    Server -> DB : Ghi audit từ chối/thất bại
+    Server --> Web : Giữ active target và lịch sử
+  else Publish thành công
+    Server -> DB : Xuất bản đúng Lesson hoặc assessment version bất biến
+    Server -> DB : Chuyển active target nguyên tử; giữ old version/history/results
+    Server -> Server : Assessment attempt đang làm giữ pinned V1 khi publish V2
+    Server -> DB : Ghi audit xuất bản
+    Server --> Web : Target mới sẵn sàng cho lượt mới
   end
 end
-Web --> Admin : Hiển thị kết quả
+Web --> Admin : Hiển thị trạng thái an toàn
 @enduml

@@ -2,53 +2,61 @@
 !include ../style.puml
 ' diagram-id: SEQ-03
 ' classification: TARGET
-' authority: ADR-034, ADR-035, ADR-036; UC-09, UC-10, UC-11
-' One assignment covers one lesson/content package and related exercise/assessment items.
-' Exactly one responsible Teacher; reassignment retains attribution and history.
-' Admin defines requirements/blueprint, never authors items or self-approves.
-' Minimal optimistic version check; no collaboration/workflow subsystem implied.
-title Sơ đồ trình tự – Phân công, soạn và nộp nội dung
+' authority: ADR-034/035/036/043; UC-09/10/11/12
+' One Lesson package per assignment, not a whole assessment assignment.
+' Submission/creation episodes are distinct; source history survives reassignment.
+title Sơ đồ trình tự – Nộp Lesson và hệ thống ghép đề
 autonumber
 actor "Quản trị viên" as Admin
 actor "Giáo viên" as Teacher
 boundary "Ứng dụng web" as Web
 control "Backend" as Server
 database "Cơ sở dữ liệu" as DB
-
-Admin -> Web : Lập yêu cầu; phân công một Giáo viên
+Admin -> Web : Yêu cầu Lesson/blueprint; giao từng Lesson cho Teacher
 Web -> Server : Gửi yêu cầu và phân công
-Server -> Server : Kiểm tra trạng thái và quyền quản trị
-Server -> DB : Lưu đề cương, người phụ trách và lịch sử
-Server -> DB : Ghi nhật ký phân công hoặc đổi phân công
+Server -> Server : Kiểm tra trạng thái và quyền Admin
+Server -> DB : Lưu Lesson assignment, current Teacher và episode/scope
+Server -> DB : Ghi audit phân công; giữ attribution cũ khi giao lại
 Server --> Web : Xác nhận phân công
-
-Teacher -> Web : Mở nội dung được giao
-Web -> Server : Yêu cầu nội dung và phản hồi
-Server -> Server : Kiểm tra trạng thái và phân công hiện hành
-Server -> DB : Lấy nội dung và lịch sử được phép xem
-DB --> Server : Nội dung được giao
-Server --> Web : Hiển thị nội dung và phản hồi
-Teacher -> Web : Soạn và lưu bản sửa
-Web -> Server : Gửi bản sửa
-Server -> Server : Kiểm tra phân công, trạng thái và phiên bản
-alt Ngoài phân công, không được sửa hoặc xung đột phiên bản
+Teacher -> Web : Mở Lesson được giao và feedback của mình
+Web -> Server : Yêu cầu nội dung được phép xem
+Server -> Server : Kiểm tra current Teacher, trạng thái và scope
+Server -> DB : Đọc Lesson, nguồn tác giả và lịch sử thuộc phân công
+DB --> Server : Package và feedback được phép
+Server --> Web : Nội dung được giao; không cấp full exam
+Teacher -> Web : Soạn/lưu bài và question contributions
+Web -> Server : Bản sửa + expected version
+alt Ngoài phân công, không editable hoặc stale version
   Server --> Web : Từ chối; giữ bản trước
-else Bản Nháp hoặc Yêu cầu chỉnh sửa hợp lệ
-  Server -> DB : Lưu bản sửa và lịch sử tác giả
-  Server --> Web : Xác nhận lưu; cho phép xem trước
+else Bản sửa được phép
+  Server -> DB : Lưu bản sửa; giữ immutable creator/creation episode
+  Server --> Web : Xác nhận; cho phép preview
 end
-
-Teacher -> Web : Nộp hoặc nộp lại nội dung
-Web -> Server : Yêu cầu gửi thẩm định
-Server -> Server : Kiểm tra lại phân công và phiên bản
-Server -> Server : Kiểm tra đề cương, câu hỏi, đáp án và học liệu
-Server -> Server : Kiểm tra không dùng câu hỏi luyện tập đã lộ đáp án
-alt Không đủ quyền, xung đột hoặc nội dung chưa đạt yêu cầu
-  Server --> Web : Từ chối nộp; hiển thị lỗi
-else Nội dung hợp lệ và đủ quyền
-  Server -> DB : Chuyển sang Chờ thẩm định; giữ lịch sử
-  Server -> DB : Ghi nhật ký nộp nội dung
-  Server --> Web : Xác nhận đã gửi thẩm định
+Teacher -> Web : Nộp hoặc nộp lại Lesson package
+Web -> Server : Yêu cầu submit + operation identity
+Server -> Server : Kiểm tra current assignment/episode/version và readiness
+Server -> Server : Validate scope/blueprint, grading/media và chống practice reuse
+alt Package không hợp lệ
+  Server --> Web : Từ chối nộp; chỉ rõ lỗi được phép
+else Valid Lesson submission
+  Server -> DB : Ghi exact source revision/submission/submitter/episode
+  Server -> DB : Giữ creation history; ghi submission/audit theo operation
+  Server --> Web : Đã nộp Lesson; không phải nộp cả đề
+  opt Package có contribution đánh giá
+    Server -> DB : Lấy effective submitted sources theo blueprint
+    DB --> Server : Source revisions/items/submissions và rejection feedback
+    Server -> Server : Nguồn mới nhất mỗi Lesson; loại rejected input; không fallback cũ
+    Server -> Server : Validate đủ count/coverage/scope/keys/media
+    alt Thiếu hoặc sai input
+      Server -> DB : Không tạo partial reviewable version
+      Server --> Web : Trạng thái package; unmet assembly requirements chỉ cho Admin
+    else Đủ đầu vào hợp lệ
+      Server -> DB : Hệ thống tạo/reuse immutable assembled version theo input identity
+      Server -> DB : Lưu exact source membership/provenance và SYSTEM audit
+      Server --> Web : Xác nhận contribution đã nhận; không lộ full exam cho Teacher
+      Server --> Admin : Version hoàn chỉnh sẵn sàng trong review queue
+    end
+  end
 end
-Web --> Teacher : Hiển thị kết quả
+Web --> Teacher : Hiển thị kết quả thuộc Lesson được giao
 @enduml

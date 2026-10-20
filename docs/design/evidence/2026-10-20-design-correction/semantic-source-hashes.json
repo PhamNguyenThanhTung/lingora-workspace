@@ -1,0 +1,13 @@
+{
+  "DESIGN.md": "4d607dab23b277612822b72fb6031c4f28c1fb6906b5d3a567bb90dbc4dd7187",
+  "docs/modeling/current-target/src/ACT-08-content-governance.puml": "a3c0d7ec928ac74c31cb7f7ac9aef385de36faa9edc0654c00ab9d85ffe3fa13",
+  "docs/modeling/current-target/src/DATA-03-target-logical-erd.puml": "11432184726e766805a117baff057d9b632030bf84713694d39e2f9066c38a98",
+  "docs/modeling/current-target/src/SEQ-03-assignment-authoring-submit.puml": "546cfbd9823b0ab05361eb9120a42d31bbf5f826020eed060cf2724fa433e651",
+  "docs/modeling/current-target/src/SEQ-04-review-approve-publish.puml": "1afb41178d6f0a5fc9ebb3ebb54172e196bb123883d00098402904e6770a76b9",
+  "docs/modeling/current-target/src/SEQ-08-srs-review.puml": "e2725134a9fb65108b7c58100a5cd27ed18bb69aaecf2009dfc4f6a8e0fc682d",
+  "docs/modeling/current-target/src/STA-03-content-revision-lifecycle.puml": "d4ffa116260b3176e68f858441b7e139ff841935bc89db35103f0a0497cecce8",
+  "docs/design/physical/README.md": "1ab7adfb3e29bab517e172c340ef71fb432510778c0f90a4b98b8f2b20d252a8",
+  "docs/design/physical/security-and-rls.md": "e3b9f395b8eb4f9210f0a8fe00ebfab842d49b547aec54bef0fc02848442295b",
+  "docs/design/physical/rebuild-plan.md": "31298bd920a65cdfdc2b37838c0d4368654ebfb9fbcef3caa891c187d127d06f",
+  "docs/design/physical/physical-erd.puml": "492ae791236a896c366740160e404922b9f3f7a07d45309860a4d87ad33e1dfc"
+}

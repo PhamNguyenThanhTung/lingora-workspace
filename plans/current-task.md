@@ -1,13 +1,13 @@
 # Current task pointer
 
-**Active task:** Detailed correction plan for full-design-review findings (2026-10-20).
-**Authorization:** User “ok vậy lên plan chi tiết fix tuungwf lỗi”.
-**Mode:** DESIGN — planning only.
-**Status:** DONE — detailed correction plan complete; FDR-01–07 remain OPEN.
-**Scope:** Plan corrections for FDR-01–07 with file scope, dependencies, acceptance and verification; preserve reviewed findings and distinguish design checks from future runtime tests.
+**Active task:** Execute FDR-01–07 design corrections (2026-10-20).
+**Authorization:** User “ok bám sát plan và làm”.
+**Mode:** DESIGN — documentation/modeling corrections, no runtime implementation.
+**Status:** DONE — FDR-01–07 CLOSED at design-document level; physical mechanisms remain PROPOSED.
+**Scope:** Follow detailed correction plan phases 0–4. Six initial canonical page IDs, 38 preserved pages; proposed physical corrections remain unapproved mechanisms.
 **Implementation Spec / Work Packages:** Not applicable to design review.
-**Deliverable:** [Detailed correction plan](2026-10-20-design-correction-plan.md), grounded in the [full review](../docs/design/full-design-review-2026-10-20.md); steps, file ownership/dependencies, DC01–07 acceptance and verification.
-**Verification:** Independent plan-accuracy PASS after one bounded wording/classification correction; plan links/coverage and six existing candidate native pages/38 preserved pages checked. T-DESIGN-CORRECTION-PLAN-001.
-**Completion snapshot:** [Planning closeout](archive/2026-10-20-design-correction-plan-DONE.md).
-**Next permitted action:** No execution task active. On a user request to execute, record the correction task and follow phases 0–4. This planning task does not authorize corrections, implementation or database execution.
+**Plan:** [Detailed correction plan](2026-10-20-design-correction-plan.md); [original findings](../docs/design/full-design-review-2026-10-20.md) preserved.
+**Deliverable:** [Correction report/ledger](../docs/design/design-correction-2026-10-20.md), [evidence](../docs/design/evidence/2026-10-20-design-correction/), [closeout](archive/2026-10-20-design-correction-DONE.md).
+**Verification:** Independent DC01–07 semantic/native/physical visual PASS. Accepted native SHA f3fe7bf7...331a5 merged unchanged; current 36-source/72-output/44-page and task-specific checks PASS: 38 fragments/30 records/909 protected hashes preserved, 21 DATA relation tuples, 34 physical tables/four views/eight renders. T-DESIGN-CORRECTION-001. Runtime NOT EXECUTED, live DB UNVERIFIED.
+**Next permitted action:** No follow-on task active. Relevant physical approval, core transport/config/UI-slice/NFR detail and implementation authorization/spec remain separate; this closeout does not authorize database/runtime execution.
 **Boundary:** Prior database reconciliation remains complete: [closeout](archive/2026-10-20-database-design-DONE.md). Physical proposals remain unapproved; live DB remains unverified.

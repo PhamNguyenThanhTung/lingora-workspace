@@ -159,23 +159,23 @@
       "id": "ACT-08",
       "classification": "TARGET",
       "source": "src/ACT-08-content-governance.puml",
-      "source_sha256": "44a06e57db9a22c6e42244cdcb660062fd7a3879168bdead59a72c5c8313ab75",
+      "source_sha256": "a3c0d7ec928ac74c31cb7f7ac9aef385de36faa9edc0654c00ab9d85ffe3fa13",
       "outputs": {
         "svg": "rendered/ACT-08-content-governance.svg",
         "png": "rendered/ACT-08-content-governance.png"
       },
       "output_sha256": {
-        "svg": "93fa39fb71f9e505af922d37d19e718cc49b55133d200fb20f19b521e6cf1ff3",
-        "png": "5db69a94ef759bd8ed77dc233d7fb3cabeb4b1e03d4750828d28af99bff1c09c"
+        "svg": "e42daa24f78cf682df994dbac4f697142aae93ea7df6a478fcdb6d9c88de10d3",
+        "png": "ff7333d7c3ad73e8cc35e7dff7643b6172506774b2ef6812416cdc5ab02f4111"
       },
-      "native_page_sha256": "5f0da9a9931ab64bb4cef9eb9f7888d30cd20ad2149d16f856bc872df7d4ec29",
+      "native_page_sha256": "f519ecd11457b6bbde2bdc7df4bd8f29e3b18c1d80682fa2cb06dd9b7c92dffc",
       "native_outputs": {
-        "png": "evidence/2026-10-16-activity-layout/ACT-08.png",
-        "svg": "evidence/2026-10-16-activity-layout/ACT-08.svg"
+        "png": "../../design/evidence/2026-10-20-design-correction/native/ACT-08.png",
+        "svg": "../../design/evidence/2026-10-20-design-correction/native/ACT-08.svg"
       },
       "native_output_sha256": {
-        "png": "1fa97292503f6872a3bf1b0a25d1930de67a09b738fe85435661d963c8b72533",
-        "svg": "6cc5fabbf2cb5d6c373bc418247aa00918f3d5fe4bf7c239c86c01604b83a498"
+        "png": "ad3cbbedef117949d159523d8d46ce3bf1576c5151338da5c6f339120bdac43f",
+        "svg": "7ed3eb6494d81a878fd1bc8cedc08a58fb1680138f90a1c9648305e887363422"
       }
     },
     {
@@ -233,14 +233,23 @@
       "id": "DATA-03",
       "classification": "TARGET",
       "source": "src/DATA-03-target-logical-erd.puml",
-      "source_sha256": "dcc85e2af2fbb9db9a116e679b6eca55ba8eda58a2789ab42f5e252ee2ba343b",
+      "source_sha256": "11432184726e766805a117baff057d9b632030bf84713694d39e2f9066c38a98",
       "outputs": {
         "svg": "rendered/DATA-03-target-logical-erd.svg",
         "png": "rendered/DATA-03-target-logical-erd.png"
       },
       "output_sha256": {
-        "svg": "cf2408aa18f9d4eee64c7abce57027296bc7bb5bfe7b746994247e60c352916d",
-        "png": "9f4732185eadd14e9667b99334088672b45422a6e2413a25138fdb54f3d317f5"
+        "svg": "f14a6a0c7eed582c2106452d14c803860d1542e54987fc4ceddc2d04e305ef63",
+        "png": "fc86e3b6bb52b1d5be8434e5915cd7388fdac787f9ea583a62db7f7d23078f94"
+      },
+      "native_page_sha256": "f6d29fe5365c36e46cafe2f1b0aacce3053e205abe3da8320dfd72973f66dec6",
+      "native_outputs": {
+        "png": "../../design/evidence/2026-10-20-design-correction/native/DATA-03.png",
+        "svg": "../../design/evidence/2026-10-20-design-correction/native/DATA-03.svg"
+      },
+      "native_output_sha256": {
+        "png": "f0b7e60b436f761affa2e80c20191ddcd96cf899e2b39543a59eeecd00c6a6fe",
+        "svg": "c87a5d1bb6e19249dba1489e4ec9b2f116e26ac62b26501b3e1957ad3d77e0d2"
       }
     },
     {
@@ -343,28 +352,46 @@
       "id": "SEQ-03",
       "classification": "TARGET",
       "source": "src/SEQ-03-assignment-authoring-submit.puml",
-      "source_sha256": "bc09c45712671642bbe16482866d801e743cb1c628ee282737d33eea56f7f477",
+      "source_sha256": "546cfbd9823b0ab05361eb9120a42d31bbf5f826020eed060cf2724fa433e651",
       "outputs": {
         "svg": "rendered/SEQ-03-assignment-authoring-submit.svg",
         "png": "rendered/SEQ-03-assignment-authoring-submit.png"
       },
       "output_sha256": {
-        "svg": "3842cef8dd928bdb49bb6032afaf945dafa281c0f61d44917ab6790d6e0a223c",
-        "png": "75f33b9f29e4732dd549eb54514c6aa46dfd918ab9df286418440731f54f7fd5"
+        "svg": "162a0da5fcda0ebbdea916c236b97c27c3d369a195c8eadef0bc26e54fcfc83f",
+        "png": "44c36e8b43031e3a977989c33c34e0b833dd70dc33e3dfa1eb247cf00dfe998d"
+      },
+      "native_page_sha256": "03f0192e21d0b840d0f13288ec35361583092d3f0e423f4a67b729fc0f82dd5b",
+      "native_outputs": {
+        "png": "../../design/evidence/2026-10-20-design-correction/native/SEQ-03.png",
+        "svg": "../../design/evidence/2026-10-20-design-correction/native/SEQ-03.svg"
+      },
+      "native_output_sha256": {
+        "png": "d5df1a5ba26bb167910c8e937bbccebbfc47e80f2b5d50d9eed8d93533e5c3dc",
+        "svg": "0945179ff2631416fad92824c3c7a882f8950aade66032dbc852d7ade4699039"
       }
     },
     {
       "id": "SEQ-04",
       "classification": "TARGET",
       "source": "src/SEQ-04-review-approve-publish.puml",
-      "source_sha256": "1b9b6ae1843290a125269448d13abda7eaf21794c9e55e6d4cbe7a1f22d2a6ff",
+      "source_sha256": "1afb41178d6f0a5fc9ebb3ebb54172e196bb123883d00098402904e6770a76b9",
       "outputs": {
         "svg": "rendered/SEQ-04-review-approve-publish.svg",
         "png": "rendered/SEQ-04-review-approve-publish.png"
       },
       "output_sha256": {
-        "svg": "a137f7082ef0d27107ee61a7c97cdc8367996eb124abe9dbfaf1bc0e94d9f717",
-        "png": "3e6faba850935a0c978892e18f0a0a1d9b0b970fcb779589af194eb01609a9e5"
+        "svg": "20503d98120f36880dfb4e05cbc5949b73885198c46e5fa1e5454f2f7e7ac87c",
+        "png": "3395a56f93fad2768c83d70ff9bde5acae6bc35652c2941ce6a6f36fd2169ad0"
+      },
+      "native_page_sha256": "24dc7369b273ae46b4885d7d7393ebba724e4682e00f27b07d5fe56ea5a8bb15",
+      "native_outputs": {
+        "png": "../../design/evidence/2026-10-20-design-correction/native/SEQ-04.png",
+        "svg": "../../design/evidence/2026-10-20-design-correction/native/SEQ-04.svg"
+      },
+      "native_output_sha256": {
+        "png": "00fc74362ebe749f180c6da3023c5d2a73cdf499d8aa0d0cbe4ac52d4bdbdccc",
+        "svg": "11894f3de334bbbeb068b0826b6d334ef94d636dee82bf80a78a967eb8f18bfc"
       }
     },
     {
@@ -413,14 +440,23 @@
       "id": "SEQ-08",
       "classification": "TARGET",
       "source": "src/SEQ-08-srs-review.puml",
-      "source_sha256": "44b453197278e9d5ae54cf4d644c3b27ee0f4265dda2b71a9b9fba25d23f691e",
+      "source_sha256": "e2725134a9fb65108b7c58100a5cd27ed18bb69aaecf2009dfc4f6a8e0fc682d",
       "outputs": {
         "svg": "rendered/SEQ-08-srs-review.svg",
         "png": "rendered/SEQ-08-srs-review.png"
       },
       "output_sha256": {
-        "svg": "8560ca4adab53c6fe3e6079c093ee40bc24e5a8e8b37434aa2a590da48486d57",
-        "png": "75c3e87c014a16cd47adb79275bd23d6cd27b849b579ccda85d4b7bd28c0107e"
+        "svg": "96b857d4a76b4ed9ca3bfd7452e182370d3c2b331ad6b2d2d537ddecd05ce554",
+        "png": "0a18050dfb62fdd6e7486ee9531a9e7483a5b3b8d1a1f4cbe87525e1d5c4f298"
+      },
+      "native_page_sha256": "e03e6cdbaaa71f2ec6a283c4e0473c2f11d304f8156a682729be92681e71ab60",
+      "native_outputs": {
+        "png": "../../design/evidence/2026-10-20-design-correction/native/SEQ-08.png",
+        "svg": "../../design/evidence/2026-10-20-design-correction/native/SEQ-08.svg"
+      },
+      "native_output_sha256": {
+        "png": "70f18aa2c25163df446f61ce001fedcbfedc15ebee91a04294536e34078a4480",
+        "svg": "7bd4eb72e12de846077e6f4f9e019c77225e7d8b2bb4ef1954b068f40d3771db"
       }
     },
     {
@@ -469,14 +505,23 @@
       "id": "STA-03",
       "classification": "TARGET",
       "source": "src/STA-03-content-revision-lifecycle.puml",
-      "source_sha256": "33bf02b34fc3e75334d54adbf7e2b56b2f0a55b12e12e4606aeec5fcb51115bf",
+      "source_sha256": "d4ffa116260b3176e68f858441b7e139ff841935bc89db35103f0a0497cecce8",
       "outputs": {
         "svg": "rendered/STA-03-content-revision-lifecycle.svg",
         "png": "rendered/STA-03-content-revision-lifecycle.png"
       },
       "output_sha256": {
-        "svg": "ae25776b9d02b01e6580c45a8d26761b53c0e3bff7a52f5a2e5512b9a1ae2ab7",
-        "png": "63bdbfbf6f3d5305aeb9b3e7eb2d805f2af5befd8b773217ad6176b35d9de241"
+        "svg": "8b47233caea4192325800d65962cc9d0acc6d6cbc456f983d5ca50cf767d29bc",
+        "png": "7c0514d1d0b19eb086c1b1d85c0cef72884f0b492a0b39e437aa06b7b6c88c9f"
+      },
+      "native_page_sha256": "6173f088087da875b26ab13dfaa53904632760fd3f2f186cea24736fd1e6db70",
+      "native_outputs": {
+        "png": "../../design/evidence/2026-10-20-design-correction/native/STA-03.png",
+        "svg": "../../design/evidence/2026-10-20-design-correction/native/STA-03.svg"
+      },
+      "native_output_sha256": {
+        "png": "74ad95f471f00f5037a01ee6c36aa32e36f59f1792e14483b6fdb55e00284168",
+        "svg": "df12a166315cbdab02f3a582918fb972e6bf890ae0803207d44069cc4faa9aba"
       }
     },
     {

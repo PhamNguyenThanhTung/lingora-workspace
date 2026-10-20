@@ -2,71 +2,69 @@
 !include ../style.puml
 ' diagram-id: ACT-08
 ' classification: TARGET
-' authority: ADR-034/035/036; UC-09/10/11/12/14
-title Sơ đồ hoạt động – Soạn thảo, duyệt và xuất bản nội dung
+' authority: ADR-034/035/036/043; UC-09/10/11/12
+' Logical review targets are distinct: submitted Lesson versus system-assembled assessment.
+' Exact source submissions/creation episodes remain retained; no physical schema prescribed.
+title Sơ đồ hoạt động – Soạn thảo, ghép đề và thẩm định
 |Quản trị viên|
 start
-:Xác định yêu cầu nội dung;
-if (Có gói đánh giá?) then (Có)
-  :Xác định đặc tả và độ bao phủ bài đánh giá;
-else (Không)
-endif
-:Giao gói nội dung cho một giáo viên;
+:Xác định yêu cầu Lesson và blueprint đánh giá;
+:Giao từng Lesson package cho một Giáo viên;
 |Hệ thống|
-:Ghi người phụ trách và lịch sử giao việc;
+:Ghi người phụ trách, scope và lịch sử giao việc;
 repeat
   |Giáo viên|
-  :Mở bản nháp được giao;
-  :Soạn bài học, bài tập và câu hỏi đánh giá;
-  :Xem thử nội dung và phương tiện;
+  :Mở Lesson được giao và phản hồi thuộc công việc;
+  :Soạn bài học, bài tập và contribution đánh giá;
   |Hệ thống|
-  :Kiểm tra quyền và phiên bản hiện hành;
-  :Kiểm tra độ bao phủ, cấu hình,\nchấm điểm, phương tiện và độ đầy đủ;
-  :Kiểm tra không dùng câu đã lộ đáp án;
-  while (Chưa đủ điều kiện gửi duyệt?) is (Có)
-    :Hiển thị lỗi cần sửa;
+  :Kiểm tra phân công hiện tại và phiên bản;
+  :Kiểm tra scope, cấu hình, chấm điểm, media\nkhông dùng câu luyện tập đã lộ đáp án;
+  while (Chưa đủ điều kiện nộp package?) is (Có)
+    :Hiển thị yêu cầu còn thiếu;
     |Giáo viên|
-    :Sửa bản nháp được giao;
+    :Sửa nội dung được phép trong Lesson được giao;
     |Hệ thống|
-    :Kiểm tra lại;
+    :Kiểm tra lại package;
   endwhile (Không)
   |Giáo viên|
-  :Gửi bản soạn thảo;
+  :Nộp hoặc nộp lại Lesson package;
   |Hệ thống|
-  :Chuyển sang chờ duyệt, giữ lịch sử;
+  :Lưu exact source submission, actor và episode\ngiữ tác giả tạo, lịch sử và nội dung nguồn;
+  if (Đối tượng thẩm định?) then (Đề đánh giá)
+    :Lấy contributions đã nộp từ các Lesson theo blueprint\nchọn lần nộp mới nhất mỗi Lesson rồi lọc hợp lệ\nloại nguồn bị trả;
+    :Kiểm tra count, coverage, scope, grading và media\nkhông fallback nguồn cũ khi thiếu hoặc bị bỏ;
+    if (Đủ đầu vào ghép đề?) then (Có)
+      :Hệ thống tạo version hoàn chỉnh bất biến\ngiữ membership và provenance, đưa vào chờ duyệt;
+    else (Không)
+      :Báo yêu cầu chưa đạt cho Admin\nkhông tạo partial version hoặc xuất bản;
+      stop
+    endif
+  else (Lesson)
+    :Đưa Lesson đã nộp vào chờ duyệt;
+  endif
   |Quản trị viên|
-  :Xem nội dung và lịch sử phản hồi;
+  :Thẩm định đúng target và version\nkhông tự soạn hoặc ghép câu hỏi;
   if (Yêu cầu chỉnh sửa?) then (Có)
-    :Ghi phản hồi;
+    :Ghi phản hồi item hoặc toàn version;
     |Hệ thống|
-    :Chuyển sang cần chỉnh sửa;
+    :Lưu feedback và giữ nguyên composition cũ\nfeedback toàn đề mở rộng mọi source Lesson;
+    :Chuyển phản hồi tới Teacher hiện phụ trách\ncủa từng source Lesson, chỉ phần được giao;
+    :Corrections được nộp từ nguồn Lesson\nđề đánh giá được ghép thành successor version;
   else (Không)
   endif
-repeat while (Cần chỉnh sửa?) is (Có)
+repeat while (Cần sửa và nộp nguồn lại?) is (Có)
 ->Không;
 |Quản trị viên|
-:Phê duyệt;
-:Yêu cầu xuất bản;
+:Phê duyệt đúng target/version;
+:Yêu cầu xuất bản target đã duyệt;
 |Hệ thống|
-:Kiểm tra quyền, bản được duyệt và độ đầy đủ;
+:Kiểm tra lại quyền, readiness và current scope pins;
 if (Xuất bản thành công?) then (Có)
-  :Xuất bản phiên bản bất biến;
-  :Chuyển bản bài học đang dùng một cách nguyên tử;
-  if (Có gói đánh giá?) then (Có)
-    :Xuất bản phiên bản đánh giá bất biến;
-    :Lượt đang làm giữ phiên bản đã gắn;
-  else (Không)
-  endif
-  :Giữ tác giả, lịch sử và bằng chứng học;
+  :Xuất bản bất biến đúng Lesson hoặc assessment version\nchuyển active target nguyên tử, không buộc publish cả Unit;
+  :Giữ bản cũ, tác giả và bằng chứng học\nattempt đánh giá đang làm giữ version đã pin;
 else (Không)
-  :Giữ bản đang xuất bản;
-  :Báo lỗi xuất bản;
+  :Giữ active target và lịch sử; báo lỗi;
 endif
-:Ghi nhật ký hành động và kết quả;
+:Ghi audit hành động và kết quả;
 stop
-' Blueprint covers language/framework/level or transition/purpose, curriculum/topic/skill/knowledge coverage,
-' item requirements/distribution and necessary configuration. Admin does not author actual items.
-' Assigned Teacher edits Draft/Changes Requested only, with minimal optimistic version check.
-' Different assessment items/variants may test the same concept; no generic QuestionBank/workflow.
-' Lesson/revision is publication unit; no requirement for atomic entire Unit or physical transaction design.
 @enduml

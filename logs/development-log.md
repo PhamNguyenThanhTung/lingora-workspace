@@ -3170,3 +3170,13 @@ Independent plan review found purpose nullability/code/tag representation and pu
 
 **Result:** Planning COMPLETE; correction execution NOT STARTED; all FDR-01–07 remain OPEN. Updated current-task/HANDOFF/QUICK-REF and archived planning closeout. Canonical/proposed design artifacts, review history, application/Prisma/migrations untouched; log history preserved by UTF-8 append.
 **Commit:** Accompanying `docs(plan): detail corrections for design review findings`; actual SHA from successful Git/final response. No push/history rewrite.
+
+
+## DESIGN-CORRECTION-001 — Close seven full-design-review findings (2026-10-20)
+
+Executed approved-scope correction plan under user instruction. Reconciled DESIGN.md current role/screen/state/entry/retry/account flows; six logical sources and derived artifacts distinguish Lesson submissions/system assembly, scoped feedback/successors, revision vocabulary and exact creation/submission/contribution episodes. Proposed physical catalog/security/ERD now have exact supporting FK keys, four finite review receipt commands with trusted replay/atomic effects, and bounded revision purpose metadata plus narrow preferences/planner capabilities. No new product choice/ADR, table, runtime service or generic subsystem.
+
+Independent UI review required one bounded staff-activation/shared-account subflow correction; re-review PASS. Logical and physical semantic reviews PASS. Drafter self-fixed native state overlap, DATA field/duplicate mapping, Activity guard clearance/routes; source ACT multiline and task relation-check parser failures preserved with corrected results. Final independent native visual/artifact and physical PNG reviews PASS. Merged exact accepted candidate f3fe7bf7fa729479331ff4beaca9ac4c15b28eff52c8d55ee14015d9d5b331a5; six changed pages/38 preserved fragments and30 other manifest records. All current/task checks PASS including21 DATA tuples,909 protected hashes,34tables/four views/eight physical outputs and source parity. Evidence/log commands in T-DESIGN-CORRECTION-001.
+
+**Result:** FDR-01–07 CLOSED at design-document level; report/ledger/current indexes/traceability/pointers/handoff/archive updated. Original review/plan/approvals/history preserved; existing log bytes retained by UTF8 append. Physical mechanisms PROPOSED/NOT IMPLEMENTED, runtime/DDL/security/concurrency NOT EXECUTED, live DB UNVERIFIED. No application/Prisma/migration/dependency/credential/live-data edits or automatic follow-on task.
+**Commit:** Accompanying `docs(design): reconcile seven full-review findings`; actual SHA from Git/final response. No push/history rewrite.

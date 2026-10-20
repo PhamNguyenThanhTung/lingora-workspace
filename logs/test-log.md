@@ -3334,3 +3334,36 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Final planning closeout:** Inline Python checks exit 0: seven planning-only files, 48 local links, seven FDR/DC groups, six existing candidate page IDs/38 other pages, historical log prefixes retained (line endings normalized in memory only), reviewed design/app/DB/history unchanged and correct OPEN/DONE boundary. **Verdict:** PASS.
 - **Final whitespace:** `git diff --check` exit 0; line-ending conversion notices only. **Verdict:** PASS.
 - **Commit:** Accompanying `docs(plan): detail corrections for design review findings`; no push.
+
+
+## T-DESIGN-CORRECTION-001 — Execute FDR-01–07 (2026-10-20)
+
+- **Environment:** D:/school/btl, Windows PowerShell, Python 3.11/Pillow, JDK17 D:/Android/jdk-17/bin/java.exe, cached PlantUML 1.2026.8, portable Draw.io 32.4.1. Clean entry cb06373c126c864d278816d1f18590fac58795d9; DESIGN corrections only.
+- **Command:** Inline Python inventory of selected tracked files, native XML fragments and manifest.
+- **Output:** Exit 0; 944 affected/protected file hashes, 44 native page hashes, clean status and exact six-ID allowlist captured in docs/design/evidence/2026-10-20-design-correction/baseline.json. **Verdict:** PASS.
+- **Command:** Exact-source Java/PlantUML SVG command for initial ACT-08 draft (command array and stderr in render-initial-failure.json).
+- **Output:** Exit 200; `Some diagram description contains errors / No diagram found`; draft multiline labels had actual newlines after completed statements. **Verdict:** FAIL, worker self-fixed escaped multiline text before successful rerender.
+- **Command:** Twelve targeted Java/PlantUML commands in render-results.json, plus four changed physical-block commands in physical-render-results.json.
+- **Output:** Every final command exit 0; six canonical PNG/SVG pairs and two physical pairs. Initial filename-width selection omitted DATA-03; corrected explicit coverage before asserting all 12 commands. Other source/output sets preserved for final checks. **Verdict:** PASS for render execution; parity/visual checked separately.
+- **Command:** `py -3.11 -m py_compile docs/design/evidence/2026-10-20-design-correction/verify_corrections.py`; inline import calling actual target-key resolver against catalog and two in-memory removed-UNIQUE fixtures.
+- **Output:** Exit 0; exact FK target declarations resolve and both missing-key fixtures rejected. No SQL executed. **Verdict:** PASS for checker self-check, not runtime FK test.
+- **Independent semantic review:** DC01 initially missing staff activation/shared account subflows; one bounded correction, re-review PASS. DC02–04 six sources PASS without further semantic correction; DC05–07 actual physical diff PASS. Review messages/hashes recorded in semantic-review.md and semantic-source-hashes.json. **Verdict:** PASS for semantic documentation only.
+- **Visual:** Root directly viewed all six canonical source PNGs and both changed physical PNGs; independent physical reviewer viewed content/learning PNGs and accepted readable purpose/UQ/receipt lines, no clipping. **Verdict:** PASS for these images; native candidate acceptance pending separately.
+- **Boundary:** DB43/PERS/new PD-DC runtime/SQL/security/concurrency NOT EXECUTED; live DB UNVERIFIED. No application/Prisma/migration/dependency/live-data changes.
+- **Native drafting evidence:** native/README.md and final-report.json record scoped conversion/layout/export commands. Initial helper root/state offset problems, DATA clipping/duplicate row and flat Activity guards were mechanically corrected before final review. All final twelve native exports exit 0; source labels/terminals/44-page structure and 38 exact preserved fragments PASS. No full builder invoked.
+- **Independent final native review:** Frozen candidate f3fe7bf7fa729479331ff4beaca9ac4c15b28eff52c8d55ee14015d9d5b331a5; reviewer inspected all six full PNGs and ACT/STA/DATA crops, checked current source payloads/labels/endpoints, 21 DATA relation/cardinality tuples and twelve output hashes. **Verdict:** PASS, no final correction requested; native-independent-review.md.
+- **Command:** `py -3.11 docs/design/evidence/2026-10-20-design-correction/merge_candidate.py` after independent acceptance.
+- **Output:** Exit 0; six accepted fragments/provenance merged, 38 pages/30 records preserved; primary hash exactly equals accepted candidate. **Verdict:** PASS.
+- **Command:** `py -3.11 docs/modeling/current-target/verify_current.py`; `py -3.11 scripts/validate_drawio.py`.
+- **Output:** Both exit 0; 36 sources/PNG/SVG, visible parity,44 native pages/current payloads/native export provenance PASS. Native validator inherited stdout says35; actual44 confirmed independently, code unchanged. Raw current-check.txt/native-check.txt. **Verdict:** PASS for integrity/structure.
+- **Command:** `py -3.11 docs/design/evidence/2026-10-20-design-correction/verify_corrections.py` initial/full reruns.
+- **Output:** First exit1 because task relation regex omitted leading indentation; second exit1 KeyError o| because right-side optional-one marker missing. Raw correction-initial-check.txt/correction-marker-check-failure.txt preserved. **Verdict:** FAIL for initial checker definitions; artifacts independently had correct21 relations. Corrected only task checker indentation/marker parser.
+- **Command:** Same task checker after self-fix.
+- **Output:** Exit0;909 protected hashes unchanged, six changed/38 exact preserved fragments, all21 DATA tuples,30 other manifest records, current payloads and wrong-payload negative, exact target keys and two removed-key negatives,34tables/4views/8physical renders and source parity,321 resolving links/no new broken links/log prefixes PASS. Raw correction-check.txt. **Verdict:** PASS; no runtime/SQL acceptance implied.
+- **Command:** `git diff --check` after artifact merge.
+- **Output:** Exit0; no whitespace errors, line-ending notices only. **Verdict:** PASS.
+- **Final closeout metadata/task check:** Same task checker exit0 after report/index/ledger/handoff/log/archive updates:909 protected hashes,38 exact preserved pages/30 records/21 DATA tuples,34tables/4views/8renders,371 local links/no new broken links and historical log prefixes retained. Raw final-closeout-check.txt. **Verdict:** PASS.
+- **Independent closeout consistency:** Reviewer checked final report/ledger/pointer/archive/log tails. Final execution logs completed after its sequencing observation; bounded recheck PASS, no artifact correction required. **Verdict:** PASS for documented closeout, not physical/runtime approval.
+- **Commit:** Accompanying `docs(design): reconcile seven full-review findings`; no push/history rewrite.
+- **Initial staged whitespace:** `git diff --cached --check` exit1: trailing blank lines at EOF in five newly staged native helper scripts (convert.js,draft.py,fix_activity.py,fix_rows.py,verify.py). **Verdict:** FAIL. Removed only extra EOF blank lines; logic/candidate/source/export hashes unchanged; final staged check rerun below.
+- **Final staged whitespace:** `git diff --cached --check` after EOF cleanup exit0, no errors. **Verdict:** PASS. No logic/artifact changes or extra runtime tests.

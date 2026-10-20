@@ -2,30 +2,46 @@
 !include ../style.puml
 ' diagram-id: STA-03
 ' classification: TARGET
-' authority: ADR-034/035/036; UC-10/11/12
-title Sơ đồ trạng thái – Phiên bản nội dung
-top to bottom direction
-state "Bản nháp" as DRAFT
-state "Chờ duyệt" as IN_REVIEW
-state "Cần chỉnh sửa" as CHANGES_REQUESTED
-state "Đã phê duyệt" as APPROVED
-state "Đã xuất bản" as PUBLISHED
-state "Đã lưu trữ" as ARCHIVED
-state "Đã thu hồi" as WITHDRAWN
-[*] --> DRAFT : Tạo mới / nhân bản thành phiên bản mới
-DRAFT --> IN_REVIEW : Giáo viên gửi duyệt
-IN_REVIEW --> CHANGES_REQUESTED : Quản trị viên yêu cầu sửa
-CHANGES_REQUESTED --> IN_REVIEW : Giáo viên gửi lại
-IN_REVIEW --> APPROVED : Quản trị viên phê duyệt
-APPROVED --> PUBLISHED : Quản trị viên xuất bản thành công
-PUBLISHED --> PUBLISHED : Cần sửa: tạo bản nháp mới\nGiữ bản này bất biến
-PUBLISHED --> ARCHIVED : Bản thay thế xuất bản thành công
-PUBLISHED --> WITHDRAWN : Quản trị viên thu hồi
-ARCHIVED --> [*]
-WITHDRAWN --> [*]
-' Teacher edits only DRAFT or CHANGES_REQUESTED. APPROVED/PUBLISHED are never edited in place.
-' New revision follows the same review/approval flow; active version switches atomically only on successful publish.
-' Withdrawal/replacement preserves attribution and learner completion/results/performance/history.
-' Completed prior revision does not force repeat; incomplete learner follows active replacement.
-' Content with learner references is not hard-deleted. No physical statuses/tables prescribed.
+' authority: ADR-034/035/036/043; UC-10/11/12
+' Two lifecycles on one page; immutable assessment composition has no Teacher draft/edit path.
+' Logical source retention does not choose physical Lesson source-freeze fields.
+title Sơ đồ trạng thái – Lesson và version đánh giá
+left to right direction
+state "Lesson revision / package" as LessonFlow {
+  state "Nháp / correction được phép" as L_DRAFT
+  state "Lesson chờ duyệt" as L_REVIEW
+  state "Lesson cần sửa" as L_CHANGES
+  state "Lesson đã duyệt" as L_APPROVED
+  state "Lesson đã xuất bản" as L_PUBLISHED
+  state "Lesson đã lưu trữ" as L_ARCHIVED
+  state "Lesson đã thu hồi" as L_WITHDRAWN
+  [*] --> L_DRAFT : Teacher hiện được giao tạo/correction
+  L_DRAFT --> L_REVIEW : Teacher submit Lesson; giữ nguồn và episode
+  L_REVIEW --> L_CHANGES : Admin feedback
+  L_CHANGES --> L_REVIEW : Teacher hiện phụ trách sửa/nộp nguồn; giữ history
+  L_REVIEW --> L_APPROVED : Admin approve
+  L_APPROVED --> L_PUBLISHED : Admin publish thành công
+  L_PUBLISHED --> L_PUBLISHED : Bản sửa là revision mới; bản này giữ nguyên
+  L_PUBLISHED --> L_ARCHIVED : Replacement publish thành công
+  L_PUBLISHED --> L_WITHDRAWN : Admin withdraw
+}
+state "Assessment version do hệ thống ghép" as AssessmentFlow {
+  state "Version hoàn chỉnh chờ duyệt" as A_REVIEW
+  state "Version nhận feedback; composition giữ nguyên" as A_CHANGES
+  state "Version đã duyệt" as A_APPROVED
+  state "Version đã xuất bản" as A_PUBLISHED
+  state "Version đã lưu trữ" as A_ARCHIVED
+  state "Version đã thu hồi" as A_WITHDRAWN
+  [*] --> A_REVIEW : System assembly đủ submitted sources theo blueprint
+  A_REVIEW --> A_CHANGES : Admin feedback item/toàn version → source Lessons
+  A_CHANGES --> [*] : Giữ version; nguồn sửa/nộp lại tạo successor A_REVIEW mới
+  A_REVIEW --> A_APPROVED : Admin approve đúng version/readiness
+  A_APPROVED --> A_PUBLISHED : Admin publish thành công
+  A_PUBLISHED --> A_PUBLISHED : Nguồn sửa → version mới; attempt vẫn pin version này
+  A_PUBLISHED --> A_ARCHIVED : Successor publish thành công
+  A_PUBLISHED --> A_WITHDRAWN : Admin withdraw
+}
+' Assembly with insufficient/invalid inputs creates no partial version/state instance.
+' Creator/creation episode, source submission/submitter and current Teacher are distinct.
+' Completed evidence/history survives replacement/withdrawal; no hard delete or forced repeat.
 @enduml

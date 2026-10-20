@@ -1,0 +1,130 @@
+@startuml physical-erd-content
+' classification: PROPOSED PHYSICAL DESIGN - NOT IMPLEMENTED
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+hide circle
+left to right direction
+title Sơ đồ dữ liệu vật lý đề xuất – Nội dung và phân công
+entity "app.lesson_revisions" as lesson_revisions {
+  PK id / FK lesson_id / assignment_id
+  FK creation_assignment_episode_id
+  FK prior_revision_id?
+  prior revision belongs to same lesson
+  UQ lesson + revision_no
+  status / content_blocks / row_version
+  change_summary?
+  topic_ids / skill_ids / purpose_tags / catalog_generation
+  coverage_snapshot / assignment_scope_snapshot?
+  submitted_assignment_generation?
+  FK created / edited / submitted actors
+  FK approved / published actors
+}
+entity "app.vocabulary_concepts" as vocabulary_concepts {
+  PK id / FK language_id
+  UQ language + normalized_form + sense_key
+  meaning_labels / frozen_at?
+  part_of_speech? / example?
+  FK created_by
+}
+entity "app.lesson_vocabulary_links" as lesson_vocabulary_links {
+  PK id / FK lesson_revision_id
+  FK vocabulary_id
+  UQ revision + vocabulary / position
+  is_core / display_snapshot
+}
+entity "app.item_identities" as item_identities {
+  PK id / FK variant_of_id?
+  FK created_by
+  origin / exact_fingerprint
+  practice_exposed_at?
+}
+entity "app.item_revisions" as item_revisions {
+  PK id / FK item_id
+  FK created_by
+  FK creation_assignment_episode_id
+  UQ item + revision_no
+  type / prompt_data / exact_fingerprint
+  practice_skill_ids / practice_coverage_snapshot?
+  FK authoring_lesson_revision_id (required)
+  FK assessment_blueprint_id? / blueprint_generation?
+  ASSESSMENT: pair required; PRACTICE: pair null
+  frozen_at? / row_version
+}
+entity "app_private.item_grading_secrets" as item_grading_secrets {
+  PK id / FK item_revision_id UNIQUE
+  grading_data / feedback_data?
+  PRIVATE - no generic SELECT
+}
+entity "app.lesson_exercises" as lesson_exercises {
+  PK id / FK lesson_revision_id
+  FK item_revision_id / item_id
+  UQ revision + position / item
+  is_core
+}
+entity "app.media_assets" as media_assets {
+  PK id / UQ bucket_id + object_key
+  FK uploaded_by / owner_account_id?
+  FK assignment_id?
+  kind / sha256 / ready_at?
+  retired_at? (reservation / tombstone)
+}
+entity "app.media_bindings" as media_bindings {
+  PK id / FK media_asset_id
+  FK lesson_revision_id? OR item_revision_id?
+  XOR owner / position / usage
+  draft-only association removal
+}
+entity "app.content_assignments" as content_assignments {
+  PK id / FK created_by / current_teacher_id
+  FK lesson_id UNIQUE (required)
+  requirement / scope / scope_generation / row_version
+}
+entity "app.assignment_history" as assignment_history {
+  PK id / FK assignment_id
+  FK previous_teacher_id? / next_teacher_id / changed_by
+  event_type / scope_generation
+  scope_snapshot / sequence_no
+  UQ assignment + sequence_no
+  immutable resulting assignment episode
+}
+entity "app.revision_reviews" as revision_reviews {
+  PK id / FK actor_id
+  FK lesson_revision_id? OR assessment_version_id?
+  XOR owner / action / occurred_at
+  FK assignment_episode_id? (lesson only)
+  assignment_generation? / assignment_scope_snapshot?
+  blueprint_generation? (version only)
+  SUBMIT: lesson only; account actor required
+}
+entity "lessons" as lessons <<reference>> {
+  defined in another ERD view
+}
+entity "assessment_blueprints" as assessment_blueprints <<reference>> {
+  defined in another ERD view
+}
+lessons ||--o{ lesson_revisions
+lessons ||--o| content_assignments
+content_assignments ||--o{ lesson_revisions
+content_assignments ||--o{ assignment_history
+assignment_history ||--o{ lesson_revisions
+assignment_history ||--o{ item_revisions
+assignment_history |o--o{ revision_reviews
+lesson_revisions |o--o{ revision_reviews
+lesson_revisions ||--o{ item_revisions
+assessment_blueprints |o--o{ item_revisions
+lesson_revisions ||--o{ lesson_exercises
+lesson_revisions ||--o{ lesson_vocabulary_links
+vocabulary_concepts ||--o{ lesson_vocabulary_links
+item_identities ||--o{ item_revisions
+item_revisions ||--o| item_grading_secrets
+item_revisions ||--o{ lesson_exercises
+media_assets ||--o{ media_bindings
+lesson_revisions |o--o{ media_bindings
+item_revisions |o--o{ media_bindings
+@enduml

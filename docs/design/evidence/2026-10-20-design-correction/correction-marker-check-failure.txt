@@ -1,0 +1,13 @@
+PASS: bounded changed paths; 909 protected artifact/app/schema/history hashes unchanged.
+warning: in the working copy of 'docs/modeling/current-target/lingora-all-diagrams.drawio', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'logs/test-log.md', LF will be replaced by CRLF the next time Git touches it
+Traceback (most recent call last):
+  File "D:\school\btl\docs\design\evidence\2026-10-20-design-correction\verify_corrections.py", line 169, in <module>
+    main()
+  File "D:\school\btl\docs\design\evidence\2026-10-20-design-correction\verify_corrections.py", line 86, in main
+    expected_relations = {
+                         ^
+  File "D:\school\btl\docs\design\evidence\2026-10-20-design-correction\verify_corrections.py", line 87, in <setcomp>
+    (aliases[a], aliases[b], markers[left], markers[right])
+                                            ~~~~~~~^^^^^^^
+KeyError: 'o|'

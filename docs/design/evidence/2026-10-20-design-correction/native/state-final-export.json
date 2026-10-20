@@ -1,0 +1,36 @@
+[
+  {
+    "command": [
+      "C:/Users/tungt/.cache/lingora-diagram-tools/drawio-32.4.1/draw.io.exe",
+      "--no-sandbox",
+      "--export",
+      "--format",
+      "png",
+      "--page-index",
+      "28",
+      "--output",
+      "D:\\school\\btl\\docs\\design\\evidence\\2026-10-20-design-correction\\native\\STA-03.png",
+      "D:\\school\\btl\\docs\\design\\evidence\\2026-10-20-design-correction\\native\\candidate.drawio"
+    ],
+    "exit": 0,
+    "stdout": "\nD:\\school\\btl\\docs\\design\\evidence\\2026-10-20-design-correction\\native\\candidate.drawio -> D:\\school\\btl\\docs\\design\\evidence\\2026-10-20-design-correction\\native\\STA-03.png\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "C:/Users/tungt/.cache/lingora-diagram-tools/drawio-32.4.1/draw.io.exe",
+      "--no-sandbox",
+      "--export",
+      "--format",
+      "svg",
+      "--page-index",
+      "28",
+      "--output",
+      "D:\\school\\btl\\docs\\design\\evidence\\2026-10-20-design-correction\\native\\STA-03.svg",
+      "D:\\school\\btl\\docs\\design\\evidence\\2026-10-20-design-correction\\native\\candidate.drawio"
+    ],
+    "exit": 0,
+    "stdout": "\nD:\\school\\btl\\docs\\design\\evidence\\2026-10-20-design-correction\\native\\candidate.drawio -> D:\\school\\btl\\docs\\design\\evidence\\2026-10-20-design-correction\\native\\STA-03.svg\n",
+    "stderr": ""
+  }
+]
