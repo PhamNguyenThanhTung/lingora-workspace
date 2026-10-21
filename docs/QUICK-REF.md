@@ -4,6 +4,8 @@
 
 ## Current redesign boundary
 
+**Full re-review (2026-10-21):** [Current review](design/full-design-review-2026-10-21.md) records three P2 findings: logical audit actor cardinality, assessment contribution omission in drafts, and cross-scope fingerprint-check privileges. Prior FDR-01–07 corrections remain closed within scope. Verdict NEEDS BOUNDED DESIGN RECONCILIATION; this review does not approve physical design or implementation. No correction task is automatically active.
+
 **Latest review (2026-10-20):** [Full design review](design/full-design-review-2026-10-20.md) recorded seven findings (3 P1 / 4 P2): UI guidance, logical assembly/revision/provenance and physical key/receipt/purpose mapping. Its dated verdict was NEEDS DESIGN RECONCILIATION; the current correction disposition follows below. Original review remains unchanged.
 
 **Corrections COMPLETE (2026-10-20):** [FDR-01–07 correction report](design/design-correction-2026-10-20.md) closes all seven design-document findings after independent semantic/native/physical visual acceptance and static parity/preservation checks. [Detailed plan](../plans/2026-10-20-design-correction-plan.md) followed; exactly six canonical pages changed, 38 native fragments and 30 other manifest records preserved. Physical mechanisms remain PROPOSED / NOT IMPLEMENTED; runtime NOT EXECUTED, live DB UNVERIFIED. Current-task is DONE for corrections; no follow-on task active.

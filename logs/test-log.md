@@ -3367,3 +3367,19 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Commit:** Accompanying `docs(design): reconcile seven full-review findings`; no push/history rewrite.
 - **Initial staged whitespace:** `git diff --cached --check` exit1: trailing blank lines at EOF in five newly staged native helper scripts (convert.js,draft.py,fix_activity.py,fix_rows.py,verify.py). **Verdict:** FAIL. Removed only extra EOF blank lines; logic/candidate/source/export hashes unchanged; final staged check rerun below.
 - **Final staged whitespace:** `git diff --cached --check` after EOF cleanup exit0, no errors. **Verdict:** PASS. No logic/artifact changes or extra runtime tests.
+
+
+## T-FULL-DESIGN-REVIEW-002 — Full design re-review (2026-10-21)
+
+- **Environment:** D:/school/btl, Windows PowerShell, Python 3.11/Pillow; clean entry HEAD 752b4e147ca841cac83670bb8a21f5a2fa5f5cf5. DESIGN review only.
+- **Command:** `py -3.11 docs/modeling/current-target/verify_current.py` with PYTHONUTF8=1.
+- **Output:** Exit 0; all 36 source/PNG/SVG records, visible parity, 44 native pages/payloads and native export provenance PASS. **Verdict:** PASS for artifact integrity only.
+- **Command:** Inline Python read-only inventory: regex catalog/detail/ERD table sets; parse four PUML blocks; Pillow verify and compare embedded PNG PlantUML visible source; parse four SVGs and reject renderer error strings.
+- **Output:** Exit 0; PASS physical-erd-identity/content/learning/assessment; 34 matching tables, four views/eight valid exports with PNG/source parity. **Verdict:** PASS for static artifact checks only; no SQL.
+- **Independent review:** Logical/domain reviewer, physical/security reviewer and architecture/UI/trace reviewer read current sources; coordinator checked exact evidence and scenarios. Logical and physical reviewers reread report: report-accuracy PASS, no correction requested. **Verdict:** PASS for report accuracy; design verdict NEEDS BOUNDED DESIGN RECONCILIATION, three P2 findings OPEN.
+- **Visual:** Coordinator directly inspected current SEQ-03 and physical identity PNGs; no obvious clipping or renderer failure in samples. No full 44-page visual acceptance claimed.
+- **Not executed:** Runtime/app/DB43/PERS/SQL/security/concurrency or live database checks. Physical remains PROPOSED, live DB UNVERIFIED. No canonical/proposed design corrections.
+
+- **Command:** Inline Python final scope/link/log-prefix/report assertions; `git diff --check`.
+- **Output:** Exit 0; seven review-only files, 45 local links, historical log prefixes preserved (CRLF normalized in memory only), three P2 findings and DONE review/open-design boundary. Whitespace exit 0 with line-ending notices only. **Verdict:** PASS.
+- **Commit:** Accompanying `docs(review): recheck full design after corrections`; no push.

@@ -3180,3 +3180,13 @@ Independent UI review required one bounded staff-activation/shared-account subfl
 
 **Result:** FDR-01–07 CLOSED at design-document level; report/ledger/current indexes/traceability/pointers/handoff/archive updated. Original review/plan/approvals/history preserved; existing log bytes retained by UTF8 append. Physical mechanisms PROPOSED/NOT IMPLEMENTED, runtime/DDL/security/concurrency NOT EXECUTED, live DB UNVERIFIED. No application/Prisma/migration/dependency/credential/live-data edits or automatic follow-on task.
 **Commit:** Accompanying `docs(design): reconcile seven full-review findings`; actual SHA from Git/final response. No push/history rewrite.
+
+
+## FULL-DESIGN-REVIEW-002 — Full design re-review (2026-10-21)
+
+Reviewed current design after FDR corrections with three independent read-only reviewers covering logical/domain, physical/security and architecture/UI/traceability. Coordinator validated exact lines and counterexamples; logical/physical report rereads PASS without correction. Recorded three P2 findings in docs/design/full-design-review-2026-10-21.md: mandatory account audit cardinality versus system assembly; absent same-draft assessment-contribution omission command; cross-scope fingerprint checks without an explicit privilege path. No new P0/P1 confirmed. Prior FDR-01–07 closures retained within scope.
+
+Current 36-source/72-export/44-page integrity and physical 34-table/four-view/eight-export checks PASS. Visual sampling only SEQ-03 and identity ERD; runtime/SQL/security/concurrency NOT EXECUTED, live DB UNVERIFIED. T-FULL-DESIGN-REVIEW-002 records observed evidence. Core transport/config/UI-slice/NFR gaps remain known prerequisites, not new defects.
+
+**Result:** Review COMPLETE; overall design NEEDS BOUNDED DESIGN RECONCILIATION with RDR-01–03 OPEN. Updated review/status/handoff/index/archive and appended logs only; canonical/proposed diagrams, schema/security, ADRs and applications unchanged. No follow-on correction task active; no physical/implementation approval. Historical log bytes preserved by UTF-8 append.
+**Commit:** Accompanying `docs(review): recheck full design after corrections`; actual SHA from successful Git/final response. No push/history rewrite.
