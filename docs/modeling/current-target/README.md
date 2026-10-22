@@ -1,5 +1,7 @@
 # Lingora — Canonical Modeling / Bộ sơ đồ báo cáo
 
+**2026-10-22 — code cũ đã xóa:** Dự án mới đang design. DATA-01/02, DEP-01 và SYS-01/03 là **snapshot lịch sử của code/config trước cleanup**, đọc cùng Git `84baa85`; không chứng minh checkout hiện có app, Prisma hay migrations. Giữ nguyên source/ảnh/native/manifest và nhãn `CURRENT` của snapshot để bảo toàn provenance, không coi nhãn cũ là trạng thái hiện tại. [Kế hoạch mới](../../../plans/2026-10-22-design-corrections-and-legacy-cleanup-plan.md) chưa thực hiện sửa RDR-01–03; review mới nhất vẫn còn ba P2.
+
 **Current correction 2026-10-20 COMPLETE:** [FDR-01–07 correction report](../../design/design-correction-2026-10-20.md) reconciles ACT-08, SEQ-03/04/08, STA-03 and DATA-03 with ADR-043 and accepted revision/provenance rules. Source/render/native acceptance and current integrity PASS. Other 38 native pages, Class and historical acceptance remain preserved; this is not blanket acceptance of all downstream views. Physical mechanisms stay proposed; no runtime implementation.
 
 
@@ -59,9 +61,9 @@ Các hình dùng nền trắng, chữ/association đen, border đen/xám, tiêu 
 | STA-03 | Sơ đồ trạng thái – Phiên bản nội dung | [PUML](src/STA-03-content-revision-lifecycle.puml) | [SVG](rendered/STA-03-content-revision-lifecycle.svg) | [PNG](rendered/STA-03-content-revision-lifecycle.png) |
 | SYS-04 | Sơ đồ kiến trúc thành phần logic của Lingora | [PUML](src/SYS-04-target-components.puml) | [SVG](rendered/SYS-04-target-components.svg) | [PNG](rendered/SYS-04-target-components.png) |
 
-## CURRENT Evidence Diagrams
+## Historical implementation snapshots (retained CURRENT metadata)
 
-5 hình CURRENT chỉ chứng minh repository/configuration artifacts. DATA-01 là subset 8/17 bảng migrations; DATA-02 là subset 7/18 Prisma models. Hai artifacts không khớp nhau. Không lấy chúng làm CSDL TARGET; live DB/deployed enforcement chưa kiểm chứng.
+5 hình mang nhãn CURRENT bên dưới chỉ mô tả repository/configuration **trước khi xóa code ngày 2026-10-22**. DATA-01 là subset 8/17 bảng migrations cũ; DATA-02 là subset 7/18 Prisma models cũ. Hai artifacts không khớp nhau và nay chỉ còn trong Git history. Không lấy chúng làm CSDL TARGET hoặc bằng chứng runtime hiện có; live DB/deployed enforcement chưa kiểm chứng.
 
 | ID | Hình | Source | SVG | PNG |
 |---|---|---|---|---|

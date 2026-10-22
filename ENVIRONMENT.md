@@ -1,5 +1,7 @@
 # Lingora Local Environment
 
+> **Current state — 2026-10-22:** Design-only checkout. The owner requested removal of the legacy Web/Admin code, tests, npm configuration, Prisma schema, migrations and seed; these are recoverable at Git commit `84baa85`. All M1.x install/startup instructions and project-specific connection settings below are **HISTORICAL**, not usable configuration for this checkout. Do not reuse their project host/user or run old migrations. Supabase is the owner-confirmed provider; use the [current connection guide](plans/2026-10-22-design-corrections-and-legacy-cleanup-plan.md#3-supabase-mở-database-online-và-kết-nối) and copy settings from the intended project's Connect panel. No new app/migration exists; live DB remains UNVERIFIED.
+
 > **State notice (2026-10-07):** The tool versions and M1.x run instructions below are dated `HISTORICAL` observations, not a fresh environment check or a claim about the current working tree. Repository files and ordered migrations are `CURRENT` evidence of checked-in artifacts only. No live Supabase catalog, deployment, or service availability was inspected for this reconciliation. Remote applied database/runtime state is `UNVERIFIED`.
 
 This file records the M1.1/M1.2 environment boundary and the approved M1.6W Web foundation runtime.
@@ -50,7 +52,7 @@ M1.1 creates boundaries and non-secret configuration templates only. Later gated
 
 This connection strategy is a historical M1.2 record. Later Prisma, migration, seed, and execution artifacts exist in the repository and logs. Whether any particular migration is applied to a live database is `UNVERIFIED` without current catalog evidence.
 
-## Current startup state
+## Historical startup state (before 2026-10-22 removal)
 
 Checked 2026-10-16: learner routes are `/`, `/login` and `/register`, with Supabase SSR authentication and vi/en messages. There is no learner AI route, contract module or `src/lib/api/proxy.ts` in this checkout. No Admin application source exists; root `dev:admin` / `build:admin` aliases target scripts absent from the Prisma-only Admin package. Main learning flows and AI runtime are absent. Package contents are not a successful startup/deployment check; live services were not contacted. Historical M1.x observations above do not verify today's runtime.
 

@@ -1,6 +1,8 @@
 # Lingora — Quick Reference
 
-> **CURRENT snapshot: 2026-10-20.** [Authority map](README.md), [repository audit](repository-audit-2026-10-16.md). Task status lives only in [current-task](../plans/current-task.md); operational context in [HANDOFF](../HANDOFF.md).
+> **CURRENT snapshot: 2026-10-22.** [Authority map](README.md), [historical repository audit](repository-audit-2026-10-16.md). Task status lives only in [current-task](../plans/current-task.md); operational context in [HANDOFF](../HANDOFF.md).
+
+**Design-only checkout (2026-10-22):** Owner confirms the Web/Admin implementation is obsolete. Removed 54 tracked legacy app/config/test/schema/migration/seed files and root npm aliases; recoverable at Git `84baa85`. Design/report tooling and all diagram artifacts are retained. [Current plan](../plans/2026-10-22-design-corrections-and-legacy-cleanup-plan.md) specifies RDR-01–03 corrections and Supabase connection guidance. RDR corrections are PLANNED, not executed; old runtime does not count toward new-design progress. Supabase is confirmed by the owner; no account/database connection or remote change was performed.
 
 ## Current redesign boundary
 
@@ -18,10 +20,10 @@ Exactly three business roles: **Admin, Teacher, Learner**, one role per account 
 
 | Area | Verified repository state |
 |---|---|
-| Learner web | Supabase SSR auth/register/logout, session middleware, vi/en UI; routes `/`, `/login`, `/register`. Home is a foundation shell. |
-| Learning flows | Placement, learning contexts, course/lesson execution, progress and SRS runtime absent. Tables or seed data do not implement them. |
-| Admin | Prisma/schema/migrations/seed and historical DB harnesses; no Admin web app. Root Admin startup/build aliases target missing package scripts. |
-| Database | Prisma six roles plus assignedRoles versus SQL LEARNER/ADMIN; legacy artifacts disagree. Live DB and deployed security unverified. |
+| Learner web | Legacy Web app removed; no implementation of the new design. |
+| Learning flows | Placement, learning contexts, course/lesson execution, progress and SRS runtime absent. |
+| Admin | Legacy Prisma/schema/migrations/seed and DB harnesses removed; no new Admin application or root npm startup/build aliases. |
+| Database | 34-table design remains PROPOSED. No new executable schema/migrations. Old incompatible Prisma/SQL artifacts are Git history only; live DB and deployed security unverified. |
 | AI | No tracked AI runtime or learner AI proxy/routes. Ignored local cache and separate public staging are not current app source. |
 
 ## Design sources and boundaries
@@ -36,7 +38,7 @@ Exactly three business roles: **Admin, Teacher, Learner**, one role per account 
 | Native editing | [44-page Draw.io](modeling/current-target/lingora-all-diagrams.drawio); Latest six-page FDR correction preserved other 38 pages, including DOM, byte-for-byte; native and artifact integrity checks PASS. Do not run a full-bundle builder for a single page. |
 | Database design | [Reconciled proposal](design/physical/database-reconciliation-2026-10-20.md): 34-table catalog/security/four-view ERD; system assembly, Lesson-only assignments and exact source episodes. Database reconciliation review PASS after one correction round; later FDR supporting keys/receipts/purpose corrections independently reviewed, static checks/render/source parity PASS. Live DB UNVERIFIED; older READY verdicts are historical. |
 | Later logical views | ACT-08, SEQ-03/04/08, STA-03 and DATA-03 now reconcile the seven findings. Other logical views are preserved, not blanket reapproved; core API/config/NFR/implementation-slice readiness remain separate. |
-| Planning | [Next design plan (2026-10-20)](../plans/2026-10-20-next-design-plan.md) originally proposed Sequence first; PO subsequently prioritized database reconciliation. Remaining logical tasks are proposals, not automatic follow-on authorization. [Old Phase 2 roadmap](../plans/archive/2026-10-07-master-implementation-and-report-plan-SUPERSEDED.md) remains historical, not execution instructions. |
+| Planning | [2026-10-22 plan](../plans/2026-10-22-design-corrections-and-legacy-cleanup-plan.md) covers cleanup, RDR-01–03 and Supabase connection guidance. Earlier Sequence-first and Phase 2 roadmaps remain historical proposals. Current-task controls execution scope. |
 
 DOM closeout is in [current class evidence](modeling/current-target/evidence/2026-10-16-class-review/independent-review.md); [old completion evidence](modeling/current-target/evidence/2026-10-12-class-design-completion/) and its [unfinished report](modeling/current-target/class-design-completion-2026-10-12.md) remain historical. The [original Activity v2 evidence](modeling/current-target/evidence/2026-10-12-ad-layout-v2/) is unchanged; [corrected Activity acceptance](modeling/current-target/evidence/2026-10-16-activity-layout/independent-review.md) covers the saved primary layout. Seventeen stale source hashes are reconciled. [Maintenance closeout](modeling/current-target/modeling-closeout-2026-10-16.md) records current verification. Use `verify_current.py` for current 36-source/72-output and 44-page integrity; old task-specific verifiers and snapshots remain historical. Artifact integrity does not approve downstream designs.
 

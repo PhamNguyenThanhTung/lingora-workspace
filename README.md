@@ -1,10 +1,10 @@
 # Lingora
 
-Lingora is being redesigned as a language-learning platform with three business roles: **Admin, Teacher, Learner**. Use Case and Activity form the behavioral baseline; **Class Diagram is in progress**. Later sequence/data/physical designs and implementation roadmaps are retained references requiring reconciliation after class review.
+Lingora is in the **design stage** for a language-learning platform with three business roles: **Admin, Teacher, Learner**. Use Case, Activity and Class baselines are established. The [latest design review](docs/design/full-design-review-2026-10-21.md) leaves three P2 findings open; the physical database design remains a proposal.
 
-The repository contains learner authentication/registration and a Vietnamese/English UI foundation in `lingora-web/`. `lingora-admin/` contains older Prisma/migration/seed artifacts, not an Admin application. Main learning flows and AI runtime are absent; database deployment is unverified.
+On 2026-10-22, the owner identified the old application as obsolete and requested its removal. The legacy `lingora-web/`, `lingora-admin/` and root npm workspace configuration have been removed from the checkout. Their code, tests, Prisma schema, migrations and seed remain recoverable from Git at `84baa85`. They do not count toward implementation progress of the new design. Design/report tooling remains available; no application for the new design is implemented here.
 
-The [2026-10-16 cleanup audit](docs/repository-audit-2026-10-16.md) identifies current design sources, the unfinished PUML/native class merge, retained legacy artifacts and verification limits.
+The [current correction and cleanup plan](plans/2026-10-22-design-corrections-and-legacy-cleanup-plan.md) covers RDR-01–03 and Supabase connection instructions. Database deployment remains unverified; no online database was modified. The [2026-10-16 audit](docs/repository-audit-2026-10-16.md) is a dated historical snapshot.
 
 ## Start here
 

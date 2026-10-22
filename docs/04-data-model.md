@@ -5,7 +5,7 @@
 > **CLASSIFICATION: HISTORICAL SCHEMA & TARGET PHYSICAL REFERENCE — NOT CURRENT LOGICAL DOMAIN AUTHORITY.**
 > - **Domain authority:** ADR-030–036 and current canonical modeling (`docs/modeling/current-target/`) control logical domain entities, relationships, and invariants. Physical data structures do NOT define domain design.
 > - **Role model:** The legacy 6-role descriptions and 2-role SQL schemas below are `HISTORICAL / SUPERSEDED`. The current business role model is strictly 3 roles (`Admin`, `Teacher`, `Learner`) per ADR-034.
-> - **Legacy implementation:** [`lingora-admin/prisma/schema.prisma`](../lingora-admin/prisma/schema.prisma) and SQL migrations in `lingora-admin/prisma/migrations/` represent legacy implementation evidence; live database state remains UNVERIFIED.
+> - **Legacy implementation (removed from checkout 2026-10-22; linked Git snapshot):** [`lingora-admin/prisma/schema.prisma`](https://github.com/PhamNguyenThanhTung/lingora-workspace/blob/84baa8521272c38c613a75f2d93144d734c5d4fa/lingora-admin/prisma/schema.prisma) and SQL migrations in `lingora-admin/prisma/migrations/` represent legacy implementation evidence; live database state remains UNVERIFIED.
 > - **Physical proposals:** Detailed physical schema proposals (e.g. `docs/design/physical/`) remain PROPOSED / UNAPPROVED; physical mapping remains deferred under P0-D07.
 >
 > **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014 — Historical Reference):**

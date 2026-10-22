@@ -3190,3 +3190,16 @@ Current 36-source/72-export/44-page integrity and physical 34-table/four-view/ei
 
 **Result:** Review COMPLETE; overall design NEEDS BOUNDED DESIGN RECONCILIATION with RDR-01–03 OPEN. Updated review/status/handoff/index/archive and appended logs only; canonical/proposed diagrams, schema/security, ADRs and applications unchanged. No follow-on correction task active; no physical/implementation approval. Historical log bytes preserved by UTF-8 append.
 **Commit:** Accompanying `docs(review): recheck full design after corrections`; actual SHA from successful Git/final response. No push/history rewrite.
+
+
+## LEGACY-CLEANUP-PLAN-001 — Design-only checkout and correction plan (2026-10-22)
+
+Owner clarified that existing code is obsolete and the new project is only being designed, explicitly requested removal and a plan covering design fixes, and confirmed Supabase as the remembered provider. Removed exactly 54 tracked files: legacy Web 41, Admin 12 and root npm config one, including obsolete tests/config/locks/Prisma/SQL migrations/seed. Recovery source is entry Git 84baa85; no duplicate code archive, new app or replacement schema created. No ignored/untracked app files or nested repositories were present.
+
+Preserved modeling and physical catalog/security/ERD artifacts, design/report tooling, ADRs, historical reviews/reports and previous log bytes. Updated current entry/status documents to stop counting old auth/locale code as progress of the new design; five prior CURRENT implementation views are now dated historical snapshots, with source/manifest metadata retained. Pinned 17 legacy source links to entry Git and marked old keep/extend guidance superseded.
+
+Saved plans/2026-10-22-design-corrections-and-legacy-cleanup-plan.md with RDR-01 actor semantics, RDR-02 unfrozen draft omission, RDR-03 cross-scope collision-check privileges, affected files, dependency order and acceptance. Design fixes are PLANNED ONLY; all three remain OPEN. Included Supabase dashboard, SQL Editor, session-pooler/SSL and future deployment instructions sourced from official docs. No provider login, remote database mutation, SQL migration or app deployment performed; no Antigravity delegation.
+
+Verification: T-LEGACY-CLEANUP-PLAN-001. Exact deletion/preservation/link/whitespace checks PASS; single-agent diff/plan review. Aggregate verifier FAIL is pre-existing CRLF/LF style hash drift, reproduced from entry; no hash/threshold rewrite to mask it. All 36 source hashes match recorded Windows CRLF encoding, and raw 72 source renders/28 native exports match. Future corrections must handle portable verification first. Runtime tests NOT EXECUTED; physical design remains PROPOSED and live DB UNVERIFIED.
+
+Result: local cleanup and planning COMPLETE; RDR correction execution not active. Commit: accompanying Conventional Commit, no push/history rewrite.

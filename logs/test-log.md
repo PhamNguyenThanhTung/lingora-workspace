@@ -3383,3 +3383,23 @@ if (($checks.Values | Where-Object { -not $_ }).Count -gt 0) { exit 1 }
 - **Command:** Inline Python final scope/link/log-prefix/report assertions; `git diff --check`.
 - **Output:** Exit 0; seven review-only files, 45 local links, historical log prefixes preserved (CRLF normalized in memory only), three P2 findings and DONE review/open-design boundary. Whitespace exit 0 with line-ending notices only. **Verdict:** PASS.
 - **Commit:** Accompanying `docs(review): recheck full design after corrections`; no push.
+
+
+## T-LEGACY-CLEANUP-PLAN-001 — Remove obsolete implementation and plan corrections (2026-10-22)
+
+- **Environment:** Linux, Python 3.12, Git; /home/tung/workspace/school/project1/lingora-workspace. Clean entry HEAD 84baa85. Owner explicitly requests local legacy removal, design correction planning and Supabase guidance; provider confirmed by owner. No Antigravity delegation.
+- **Command:** Read-only git ls-files/status plus Python tracked/untracked/nested-repository inventory and SHA-256 baseline before removal; git rm -r -- lingora-web lingora-admin package.json.
+- **Output:** Entry clean; Web 41 tracked files, Admin 12, root config one; no untracked/ignored files or nested repositories in app folders. Exactly 54 tracked files removed. **Verdict:** PASS for authorized local removal; no remote mutation.
+- **Command:** python3 docs/modeling/current-target/verify_current.py.
+- **Output:** Exit 1, AssertionError: stale style. **Verdict:** FAIL for aggregate modeling integrity on this Linux checkout. Do not claim prior Windows PASS was rerun successfully.
+- **Command:** Reconstruct verifier/style/manifest/36 sources/validator from entry HEAD into temporary directory and run original verifier; compare raw SHA-256 and CRLF-normalized diagnostic hashes without writing repository artifacts.
+- **Output:** Entry verifier also exits 1 with stale style. Style bytes unchanged from entry; CRLF style hash matches manifest. All 36 CRLF-normalized source hashes match; raw 72 source renders and 28 native exports match recorded hashes. **Verdict:** PASS for reproducing pre-existing newline portability cause and diagnostic checks only, not aggregate verifier acceptance. Source/style/manifest/native/export files left untouched. Future corrections must address verifier portability explicitly.
+- **Command:** Inline Python exact deletion/documentation allowlists, 1162 protected tracked SHA-256 checks, historical log-prefix preservation, local-link comparison with entry, and untracked-file inventory.
+- **Initial output:** Read-only link parser stopped on non-UTF-8 legacy log bytes. **Verdict:** FAIL for initial helper; no repository bytes changed by helper. Used replacement decoding only for link extraction; retained raw byte-prefix/hash checks.
+- **Observed output after helper correction:** Exit 0; exact 54 deletions; 1162 protected tracked files unchanged; only 11 existing documentation/log files allowlisted and two new plan/closeout files; 295 local links checked, no newly broken links; historical log prefixes preserved. **Verdict:** PASS for cleanup/documentation scope. Final metadata/log updates receive a final recheck before commit.
+- **Command:** git diff --check; git diff --cached --check.
+- **Output:** Both exit 0, no whitespace errors. **Verdict:** PASS; staged final content rechecked before commit.
+- **Review:** Single-agent inspection of actual removal list, documentation diff, preserved design/tooling and plan scope. RDR-01/02/03 each have exact areas, dependencies, acceptance scenarios and review/verification requirements. Supabase guide checked against official database overview, connecting-to-postgres and psql docs on 2026-10-22. No independent design closure is claimed.
+- **Not executed / inapplicable:** Removed application builds/tests inapplicable; no RDR source changes, SQL/migrations/seeds, security/concurrency runtime tests, login, live DB connection or deployment. Physical PROPOSED, RDR-01–03 OPEN, live DB UNVERIFIED.
+- **Commit:** Accompanying chore(repo): remove legacy implementation and plan design corrections; no push/history rewrite.
+- **Final recheck before staging:** Exit 0; exact deletion/documentation scope, 1162 protected hashes, 296 local links/no newly broken links, historical log prefixes and DONE cleanup/planning versus OPEN RDR distinction PASS.

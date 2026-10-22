@@ -1,12 +1,12 @@
 # Current task pointer
 
-**Active task:** Full design re-review (2026-10-21).
-**Authorization:** User “review lại full phần thiết kế”.
-**Mode:** DESIGN — review and documentation only.
-**Status:** DONE — review complete; three P2 design findings remain OPEN.
-**Implementation Spec / Work Packages:** Not applicable to design review.
-**Deliverable:** [Full review and active finding backlog](../docs/design/full-design-review-2026-10-21.md).
-**Closeout:** [Review completion](archive/2026-10-21-full-design-review-DONE.md).
-**Verification:** Current modeling integrity 36 sources/72 exports/44 native pages PASS; physical 34 tables/four views/eight exports and PNG source parity PASS. Independent source/report review and coordinator validation; T-FULL-DESIGN-REVIEW-002.
-**Next permitted action:** No follow-on task active. User may select correction work for RDR-01–03 or other explicitly open design prerequisites.
-**Boundary:** Prior FDR-01–07 correction remains complete within scope. Physical mechanisms PROPOSED, runtime NOT EXECUTED, live DB UNVERIFIED. No design correction or new behavior/implementation approval.
+**Active task:** Legacy code removal + design correction plan + Supabase guidance (2026-10-22).
+**Authorization:** Owner identifies current code as obsolete, asks to remove it, plan design corrections and explain connecting Supabase.
+**Mode:** DESIGN planning + explicitly authorized local legacy cleanup; no new application implementation.
+**Status:** DONE — 54 legacy files removed; correction plan and Supabase guidance saved. RDR-01–03 remain OPEN and unexecuted.
+**Plan / scope:** [Correction and cleanup plan](2026-10-22-design-corrections-and-legacy-cleanup-plan.md).
+**Active Work Packages:** Not applicable; design correction work is planned only, not executing.
+**Closeout:** [Cleanup and planning completion](archive/2026-10-22-design-corrections-and-legacy-cleanup-DONE.md).
+**Verification:** Exact 54-file deletion, 1162 protected tracked hashes, no newly broken local links and historical log-prefix preservation PASS; whitespace PASS. T-LEGACY-CLEANUP-PLAN-001. Aggregate modeling verifier has entry-reproduced `stale style` CRLF/LF failure, not a new cleanup regression; no overall integrity PASS claimed.
+**Next permitted action:** No correction task active. When owner starts corrections, use the saved plan: address cross-platform verification, then RDR-01 → RDR-02 → RDR-03 with scoped edits and review.
+**Boundary:** RDR-01–03 OPEN; FDR-01–07 retain prior closure. Physical mechanisms PROPOSED; runtime/SQL/security/concurrency NOT EXECUTED; live DB UNVERIFIED. No online database changes, deployment, new migrations or Antigravity delegation.
