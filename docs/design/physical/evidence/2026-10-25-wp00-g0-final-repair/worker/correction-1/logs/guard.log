@@ -1,0 +1,45 @@
+✔ 1. Initial unbound state check without existing binding file (2.627325ms)
+✔ 2. Positive database URL allowlist check (0.480697ms)
+✔ 3. Positive API URL allowlist check (0.318818ms)
+✔ 4. Negative check: foreign host IP is rejected (0.590413ms)
+✔ 5. Negative check: remote domain is rejected (0.472182ms)
+✔ 6. Negative check: swapped or mismatched port is rejected (0.387571ms)
+✔ 7. Negative check: malformed protocol is rejected (0.29157ms)
+✔ 8. Negative check: missing, altered, or escaping config file is rejected (0.354272ms)
+✔ 9. Canary secret, token, quoted S3, and unrecognized field redaction across all sanitization functions (1.649662ms)
+✔ P01: First-start allocates new run, persists reservation before prepare, binds full ID (402.905578ms)
+✔ P02: Existing start on running or stopped stack resumes same ID with zero prepare calls (284.440645ms)
+✔ P03: Full lifecycle suite: status, stop, already-stopped, destroy, repeated destroy on tombstone (401.817298ms)
+✔ N01 Matrix: start/status/stop/destroy/data x local invalid variations (CLI=0, HTTP=0, SQL=0) (7.493844ms)
+✔ N02 Matrix: 5 entry points x native registry mismatch executes ONLY safe inspection (CLI=2) and 0 action/HTTP/SQL (587.188002ms)
+✔ N03: Returned ID or runtime mismatch rejects fail-closed with zero data probes (112.733444ms)
+✔ N04: Recreated same-ID initialized counterexample with mismatched member UUIDs rejected with RECONCILE_FAIL (563.812995ms)
+✔ F01: Lock acquisition failure aborts before any provider calls (4.859557ms)
+✔ F02: Prepare failure retains durable intent without second prepare (154.616315ms)
+✔ F02b: Fresh start rejects before prepare if stack name already exists in native registry (154.98625ms)
+✔ F03: Orphan lock denies acquisition and fails closed without unsafe auto-unlock (M05) (1.134463ms)
+✔ F04: In-flight crash / lost response: one-match same-intent recovery vs zero-match RECOVERY_REQUIRED (249.47997ms)
+✔ F05: Stop failure or quiescence violation rejects without claiming stopped (118.275559ms)
+✔ F06: Destroy postcheck failure retains recovery state and does ZERO file deletion (117.290783ms)
+✔ F07: Crash after destroy tombstone enables safe idempotent cleanup retry (3.438313ms)
+✔ E01 & E02: Synthetic owner-control-secret canary is NEVER leaked across any dispatcher or error path (4467.331279ms)
+✔ L01: Real child-process concurrency enforces mutual exclusion (loser executes 0 adapters) (125.893531ms)
+✔ 16b. Production CLI rejects custom --runs-dir namespace before create/adopt/inspect/mutate/data (103.670161ms)
+✔ 17. Command dispatcher nonzero path: CLI invocation exits 1 with safe diagnostic and no unredacted canaries (94.369442ms)
+✔ F1 (Correction): Symlink escape in home_dir and ambient environment rejection (5.069006ms)
+✔ F2 (Correction): Parent directory fsync failure during prepare intent persistence prevents provider calls (247.295657ms)
+✔ F3 (Correction): BOUND missing member_map denies; duplicate registry entries deny; pending stop/destroy deny (183.164157ms)
+✔ F4 (Correction): Live endpoints & credentials validation, Paused client through-close, PG close failure (435.670119ms)
+✔ F5 (Correction): Targeted termination: Required observation UNKNOWN retains BOUND and performs ZERO deletion (128.933209ms)
+✔ F5b (Correction): Required known owned process read error remains UNKNOWN and preserves recovery state (120.934192ms)
+✔ F6 (Correction): Initial contradictory same-ID candidates reject before start without filtering (163.204836ms)
+✔ F7 (Correction): Representative unregistered provider-derived canary through actual public sink never leaks to stdout/stderr (176.967554ms)
+✔ F7b (Correction): Representative unregistered pending-operation canary never leaks across public library/child output (57.803727ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9613.852307

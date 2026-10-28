@@ -1,0 +1,74 @@
+{
+  "task": "WP-DB-REMAIN-01",
+  "stage": "STAGE_A_CORRECTION",
+  "timestamp": "2026-10-28T11:15:00+07:00",
+  "authorization": "User turn quote: 'ok sửa đi rôi đưa 1 cái ảnh database cho tôi xem với cả code database nữa' (Single task-wide Anti correction round authorized)",
+  "repository": {
+    "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+    "gitHead": "c39806cb45c908135f240c93d68546b6ac5d7784",
+    "gitStatusSummary": "dirty_with_untracked_admin_harness"
+  },
+  "environment": {
+    "node": "v24.22.1",
+    "npm": "11.7.0",
+    "dot": "2.43.0",
+    "python3": "3.12.3"
+  },
+  "entryPreservedHashes": {
+    "lingora-admin/prisma/product/migrations/20261027000000_product_baseline/migration.sql": "69093deb1f9ed8d2350fda757a86546044c2a66eb6d58a4cef326928188d9862",
+    "lingora-admin/prisma/product/migrations/20261027010000_product_finalize/migration.sql": "b3cea3d36ab2072b6ef839b957a96c484f9c79d63e01b13cadd4407e31545f16",
+    "lingora-admin/prisma/product/migrations/20261027020000_product_correction/migration.sql": "3a5847261839367edd608065be3bcb8359bb11eeaaf7c0f51813231dbc1d9029",
+    "lingora-admin/prisma/product/migrations/20261027030000_product_remediation/migration.sql": "5026899d25e2bfd04bec69e7e74d8c84a71d13ce92344dde3f8999cf4e23dbf6",
+    "lingora-admin/prisma/product/schema.prisma": "67d5805124e0172bd628969f14d2d9fb75e399cad87d2f7d1524d710177817b9",
+    "lingora-admin/prisma/product/seed.mjs": "11619f56cf66befd761ee0778dc03d4dd1684f3300b5c0d0dd3ed7e91c9f2be6"
+  },
+  "finalTestedSourceHashes": {
+    "lingora-admin/prisma/product/migrations/20261028000000_product_remaining_repair/migration.sql": "c078345384710e5425e8af02529926abd9aec518ec8dc8bc2c9eac5cca42ae75",
+    "lingora-admin/scripts/product-catalog-contract.mjs": "1e54830c3b16b4f289c4faac3ed19bf42c85cf8bce06b3beca4f4ef38e963b95",
+    "lingora-admin/scripts/product-preflight.mjs": "34eec790d8376c12c17050d619154adfd9ab7680b3a4d05b290fd67f65c52433",
+    "lingora-admin/scripts/product-database-smoke.mjs": "6683d9392f89abf2d7f74cb1a096d926e70db43d93b4847087324b1525ada780",
+    "docs/design/physical/evidence/2026-10-28-database-remaining-repair/database-source.sql": "b63d974a05acb5badb0c074876dc67a028b844ef9b476fd9458b1ed5347d8da3",
+    "docs/design/physical/evidence/2026-10-28-database-remaining-repair/database-overview.dot": "89c55e2cc5d40fc3a9de11f64f857d22c082ae290a81fa3e0313e8e54f21985f",
+    "docs/design/physical/evidence/2026-10-28-database-remaining-repair/database-overview.svg": "595e1c4b2cfdfdfb9417f05a7c34090437a68577f872efc5b06ac2e27eba6909",
+    "docs/design/physical/evidence/2026-10-28-database-remaining-repair/database-overview.png": "8efe93cfcd2149f40f913dff5182e188b60b1ae94067ffc65a3e07ce6602b498",
+    "docs/design/physical/evidence/2026-10-28-database-remaining-repair/README.md": "175dd5dee41852079de0ac0751b38134fb8bd5de28ed9292bb22d8a43eafdf73"
+  },
+  "readOnlyDevInventory": {
+    "serverVersion": "17.11",
+    "currentUser": "postgres",
+    "currentDatabase": "postgres",
+    "canonicalTableCount": 34,
+    "appTableCount": 29,
+    "appPrivateTableCount": 5,
+    "finishedMigrationsCount": 4,
+    "migrationChecksumsVerified": true,
+    "authUsersCount": 0,
+    "seedRows": {
+      "languages": 2,
+      "frameworks": 1,
+      "levels": 4,
+      "courses": 1,
+      "units": 1,
+      "lessons": 1
+    },
+    "otherTablesRowCount": 0,
+    "storedSnapshots": {
+      "assessment_versions": 0,
+      "assignment_history": 0,
+      "revision_reviews": 0,
+      "lesson_revisions": 0
+    },
+    "incompatiblePersistedDataFound": false,
+    "bDataBlocker": false,
+    "cleanProofCapability": {
+      "role": "postgres",
+      "rolcreatedb": true,
+      "rolsuper": false,
+      "authOwner": "supabase_admin",
+      "pg_dump": false,
+      "psql": false,
+      "procedureStatus": "PROCEDURE_DELIVERED_UNESTABLISHED_STAGE_A",
+      "stageBRequired": true
+    }
+  }
+}

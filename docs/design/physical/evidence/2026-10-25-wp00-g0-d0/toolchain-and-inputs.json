@@ -1,0 +1,46 @@
+{
+  "utc": "2026-10-25T06:19:10.499358+00:00",
+  "platform": [
+    "Linux",
+    "tung-Lenovo-G5000-APH8",
+    "6.8.0-147-generic",
+    "#147-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep 24 11:33:16 UTC 2026",
+    "x86_64"
+  ],
+  "boot_id": "41685b60-c998-4809-a5dc-276c4f522079",
+  "node": {
+    "command": [
+      "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "--version"
+    ],
+    "cwd": "/tmp/lingora-d0-p17ehk7h",
+    "exit_code": 0,
+    "stdout": "v24.22.1\n",
+    "stderr": "",
+    "sha256": "61ab14cd750fc24d5db53490ec5fc40f756e4b6e136b78cf7004265471d9bd1d"
+  },
+  "cli_sha256": "e91fc61f09c4fbb9c65dadc37d415640cb6d2398e65eba6d384eec74b2dbbe10",
+  "cli_version_evidence": "00-version.json",
+  "fixture_sha256": {
+    "project-a": "a9067406c77c9e0b4a43f6e96cbb5d19f2b9e85dc1c3f461ee7a7cec3de190e9",
+    "project-b": "a9067406c77c9e0b4a43f6e96cbb5d19f2b9e85dc1c3f461ee7a7cec3de190e9"
+  },
+  "repository_input_sha256": {
+    "supabase/config.toml": "a9067406c77c9e0b4a43f6e96cbb5d19f2b9e85dc1c3f461ee7a7cec3de190e9",
+    "package.json": "3f687e63661109b27251cad4d326fe388b9999ff2853e485fa947cde5b08990f",
+    "package-lock.json": "d8a033435ae1a00812126e0cdb42a619246e1e1f69fdfe3a83031d8205105a68",
+    "lingora-admin/package.json": "9379961b4d670dc2bc4d1c185fee1cf58a15377b5fbb3415781cf6c622879d73",
+    "lingora-admin/tests/database/env/stack-manager.mjs": "71ae8c2136ef0b78cf7aa43d38c71090638017a708616ff4387f71eb3f891295",
+    "lingora-admin/tests/database/env/env-guard.mjs": "6595eec6ce7d75875cee2626ae79db6f40d1251ded0921ce81281c24bec6ea33",
+    "lingora-admin/tests/database/scaffolds/runner-base.mjs": "e159fbba2c11b0cc97404728c870956a1a23e8d08f897654de7475726a4b0a40",
+    "scripts/verify-dependencies.mjs": "38733da92610aa806a9db3e3410069e5be259798f7c6d74f41d8c9efd3b5eed3",
+    "scripts/verify-provenance.py": "725aa8ec4910dc18d429e2f9258b15a3f09fc4bf032653217c21e0db57cf6c87"
+  },
+  "recorder_final_sha256": "987a1a5bc86b85677dda613bf4a8ff98ee6f1d36bbadfee75e35c531d2cea44c",
+  "recorder_evolution": "optional HOME-factor inputs and recorder/config hashes added during experiments; earlier observations not retroactively assigned the final recorder hash",
+  "package_versions": {
+    "supabase": "2.121.0",
+    "pg": "8.13.1",
+    "@supabase/cli-linux-x64": "2.121.0"
+  }
+}

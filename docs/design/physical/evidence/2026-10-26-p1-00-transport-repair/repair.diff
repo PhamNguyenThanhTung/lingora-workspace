@@ -1,0 +1,449 @@
+diff --git a/home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/entry-source/lingora-admin/tests/database/test-context.test.mjs b/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs
+index f44edbe..cca60bf 100644
+--- a/home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/entry-source/lingora-admin/tests/database/test-context.test.mjs
++++ b/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs
+@@ -14,6 +14,8 @@
+  * - Positive context retrieval returns typed endpoints and credentials.
+  * - assertLockHeld detects lock removal in real-time.
+  * - createTargetPgClient strips PG* ambient vars and enforces lock validity.
++ * - Rejection of transport/stream/connection injections, aliases, and unsupported options before factory entry.
++ * - Zero factory and connection side-effects across all invalid configs and default pg Client stream protection.
+  * - Zero SQL and zero HTTP side-effects across all negative branches.
+  */
+ 
+@@ -24,6 +26,8 @@ import os from 'node:os';
+ import path from 'node:path';
+ import crypto from 'node:crypto';
+ import { fileURLToPath } from 'node:url';
++import pg from 'pg';
++const { Client } = pg;
+ 
+ import {
+   CANONICAL_WORKSPACE_ROOT,
+@@ -450,6 +454,117 @@ test('13. createTargetPgClient strips ambient PG* env vars, enforces lock assert
+       () => createTargetPgClient(ctx, { connectionString: 'postgresql://evil@127.0.0.1:54322/db', ClientClass: MockClient }),
+       { code: 'ALLOWLIST_FAIL' }
+     );
++
++    // Rejection of stream and connection transport injections in clientConfig
++    assert.throws(
++      () => createTargetPgClient(ctx, { clientConfig: { stream: () => {} }, ClientClass: MockClient }),
++      (err) => {
++        assert.equal(err.code, 'ALLOWLIST_FAIL');
++        assert.match(err.message, /Destination\/connection parameter "stream" cannot be overridden in clientConfig/);
++        return true;
++      }
++    );
++    assert.throws(
++      () => createTargetPgClient(ctx, { clientConfig: { connection: {} }, ClientClass: MockClient }),
++      (err) => {
++        assert.equal(err.code, 'ALLOWLIST_FAIL');
++        assert.match(err.message, /Destination\/connection parameter "connection" cannot be overridden in clientConfig/);
++        return true;
++      }
++    );
++
++    // Rejection of stream and connection transport injections in top-level options
++    assert.throws(
++      () => createTargetPgClient(ctx, { stream: () => {}, ClientClass: MockClient }),
++      (err) => {
++        assert.equal(err.code, 'ALLOWLIST_FAIL');
++        assert.match(err.message, /Destination\/connection parameter "stream" cannot be overridden in options/);
++        return true;
++      }
++    );
++    assert.throws(
++      () => createTargetPgClient(ctx, { connection: {}, ClientClass: MockClient }),
++      (err) => {
++        assert.equal(err.code, 'ALLOWLIST_FAIL');
++        assert.match(err.message, /Destination\/connection parameter "connection" cannot be overridden in options/);
++        return true;
++      }
++    );
++
++    // Rejection of destination aliases and routing options in clientConfig
++    const routingAliases = [
++      { hostname: 'foreign.example.com' },
++      { hostaddr: '192.168.1.50' },
++      { dbname: 'other_db' },
++      { db: 'other_db' },
++      { username: 'other_user' },
++      { pass: 'secret' },
++      { connection_string: 'postgresql://evil@127.0.0.1:54322/db' },
++      { socketPath: '/tmp/pg.sock' },
++      { socket: '/tmp/pg.sock' },
++      { sslmode: 'require' },
++      { sslcert: '/tmp/cert.pem' },
++      { sslkey: '/tmp/key.pem' },
++      { sslrootcert: '/tmp/ca.pem' },
++      { sslca: '/tmp/ca.pem' },
++      { sslnegotiation: 'direct' },
++      { client_encoding: 'latin1' },
++      { encoding: 'latin1' },
++      { replication: 'database' },
++    ];
++    for (const aliasObj of routingAliases) {
++      assert.throws(
++        () => createTargetPgClient(ctx, { clientConfig: aliasObj, ClientClass: MockClient }),
++        { code: 'ALLOWLIST_FAIL' }
++      );
++    }
++
++    // Rejection of unsupported arbitrary options in clientConfig and top-level options
++    assert.throws(
++      () => createTargetPgClient(ctx, { clientConfig: { arbitrary_unsupported_key: 'malicious' }, ClientClass: MockClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.throws(
++      () => createTargetPgClient(ctx, { arbitrary_top_level_option: 'malicious', ClientClass: MockClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++
++    // Non-object options or clientConfig must fail closed
++    assert.throws(
++      () => createTargetPgClient(ctx, 'not-an-object'),
++      { code: 'TEST_CONTEXT_INVALID' }
++    );
++    assert.throws(
++      () => createTargetPgClient(ctx, { clientConfig: 'not-an-object', ClientClass: MockClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++
++    // Positive contrast: safe non-routing allowlisted clientConfig options pass through without mutating routing
++    capturedConfig = null;
++    const safeClient = createTargetPgClient(ctx, {
++      clientConfig: {
++        statement_timeout: 3000,
++        query_timeout: 4000,
++        lock_timeout: 2000,
++        idle_in_transaction_session_timeout: 5000,
++        application_name: 'lingora-test-app',
++        connectionTimeoutMillis: 7000,
++      },
++      ClientClass: MockClient,
++    });
++    assert.ok(safeClient);
++    assert.equal(capturedConfig.statement_timeout, 3000);
++    assert.equal(capturedConfig.query_timeout, 4000);
++    assert.equal(capturedConfig.lock_timeout, 2000);
++    assert.equal(capturedConfig.idle_in_transaction_session_timeout, 5000);
++    assert.equal(capturedConfig.application_name, 'lingora-test-app');
++    assert.equal(capturedConfig.connectionTimeoutMillis, 7000);
++    // Routing parameters strictly preserved
++    assert.equal(capturedConfig.host, '127.0.0.1');
++    assert.equal(capturedConfig.port, 54322);
++    assert.equal(capturedConfig.user, 'postgres');
++    assert.equal(capturedConfig.database, 'postgres');
++    assert.equal(capturedConfig.ssl, false);
+   } finally {
+     if (savedPgHost !== undefined) process.env.PGHOST = savedPgHost;
+     else delete process.env.PGHOST;
+@@ -545,6 +660,92 @@ test('14. Critical negative effect assertion: zero SQL connections across failur
+     assert.equal(factoryCallCount, 0, 'Factory must not be called when connectionString override is attempted');
+     assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted when connectionString override is attempted');
+ 
++    // Failure mode 8: Stream transport injection via clientConfig
++    assert.throws(
++      () => createTargetPgClient(validCtx, { clientConfig: { stream: () => {} }, ClientClass: InstrumentingClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called when stream injection in clientConfig is attempted');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted when stream injection in clientConfig is attempted');
++
++    // Failure mode 9: Connection transport injection via clientConfig
++    assert.throws(
++      () => createTargetPgClient(validCtx, { clientConfig: { connection: {} }, ClientClass: InstrumentingClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called when connection injection in clientConfig is attempted');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted when connection injection in clientConfig is attempted');
++
++    // Failure mode 10: Stream transport injection via top-level options
++    assert.throws(
++      () => createTargetPgClient(validCtx, { stream: () => {}, ClientClass: InstrumentingClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called when top-level stream injection is attempted');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted when top-level stream injection is attempted');
++
++    // Failure mode 11: Connection transport injection via top-level options
++    assert.throws(
++      () => createTargetPgClient(validCtx, { connection: {}, ClientClass: InstrumentingClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called when top-level connection injection is attempted');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted when top-level connection injection is attempted');
++
++    // Failure mode 12: Destination aliases and protocol overrides in clientConfig
++    const invalidConfigs = [
++      { hostname: 'foreign.example.com' },
++      { hostaddr: '192.168.1.50' },
++      { port: 5432 },
++      { database: 'other_db' },
++      { dbname: 'other_db' },
++      { db: 'other_db' },
++      { user: 'other_user' },
++      { username: 'other_user' },
++      { password: 'pwd' },
++      { pass: 'pwd' },
++      { connection_string: 'postgresql://evil@127.0.0.1:54322/db' },
++      { socketPath: '/tmp/pg.sock' },
++      { socket: '/tmp/pg.sock' },
++      { ssl: true },
++      { sslmode: 'require' },
++      { sslcert: '/tmp/cert.pem' },
++      { sslkey: '/tmp/key.pem' },
++      { sslrootcert: '/tmp/ca.pem' },
++      { sslca: '/tmp/ca.pem' },
++      { sslnegotiation: 'direct' },
++      { client_encoding: 'latin1' },
++      { encoding: 'latin1' },
++      { replication: 'database' },
++      { arbitrary_unsupported_key: 123 },
++    ];
++    for (const invalidCfg of invalidConfigs) {
++      assert.throws(
++        () => createTargetPgClient(validCtx, { clientConfig: invalidCfg, ClientClass: InstrumentingClient }),
++        { code: 'ALLOWLIST_FAIL' }
++      );
++      assert.equal(factoryCallCount, 0, `Factory must not be called for invalid config ${JSON.stringify(invalidCfg)}`);
++      assert.equal(connectionAttemptCount, 0, `Connection must not be attempted for invalid config ${JSON.stringify(invalidCfg)}`);
++    }
++
++    // Failure mode 13: Unsupported keys in top-level options
++    const invalidTopLevelOptions = [
++      { host: 'foreign.example.com' },
++      { port: 5432 },
++      { database: 'other_db' },
++      { user: 'other_user' },
++      { password: 'pwd' },
++      { arbitrary_top_level_option: 123 },
++    ];
++    for (const invalidOpt of invalidTopLevelOptions) {
++      assert.throws(
++        () => createTargetPgClient(validCtx, { ...invalidOpt, ClientClass: InstrumentingClient }),
++        { code: 'ALLOWLIST_FAIL' }
++      );
++      assert.equal(factoryCallCount, 0, `Factory must not be called for invalid top-level option ${JSON.stringify(invalidOpt)}`);
++      assert.equal(connectionAttemptCount, 0, `Connection must not be attempted for invalid top-level option ${JSON.stringify(invalidOpt)}`);
++    }
++
+     // Positive contrast check: authorized context -> client creation genuinely increments factory and connect counters
+     const positiveClient = createTargetPgClient(validCtx, { ClientClass: InstrumentingClient });
+     assert.equal(factoryCallCount, 1, 'Factory MUST genuinely increment when authorized client is instantiated');
+@@ -552,6 +753,73 @@ test('14. Critical negative effect assertion: zero SQL connections across failur
+ 
+     await positiveClient.connect();
+     assert.equal(connectionAttemptCount, 1, 'Connection counter MUST genuinely increment when connect() is called');
++
++    // Positive contrast check with safe allowlisted options: increments factory and connect counters
++    const safeClient = createTargetPgClient(validCtx, {
++      clientConfig: { statement_timeout: 1000 },
++      ClientClass: InstrumentingClient,
++    });
++    assert.equal(factoryCallCount, 2, 'Factory MUST increment for safe allowlisted options');
++    await safeClient.connect();
++    assert.equal(connectionAttemptCount, 2, 'Connection counter MUST increment for safe allowlisted options');
++  } finally {
++    fs.rmSync(tempRunsDir, { recursive: true, force: true });
++  }
++});
++
++test('15. Default pg Client transport factory verification: zero stream invocation on invalid options and validated target contrast', () => {
++  const tempRunsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-test-default-client-'));
++  try {
++    const { explicitContext } = createTestAuthorityAndLock(tempRunsDir);
++    const validCtx = getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir });
++
++    // Negative check: default pg Client constructor is never reached when clientConfig.stream is injected
++    let clientConfigStreamInvoked = false;
++    assert.throws(
++      () => createTargetPgClient(validCtx, {
++        clientConfig: {
++          stream: () => {
++            clientConfigStreamInvoked = true;
++            throw new Error('STREAM_INVOKED_UNEXPECTEDLY');
++          },
++        },
++      }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(clientConfigStreamInvoked, false, 'Default pg Client constructor/stream must not be invoked on clientConfig.stream injection');
++
++    // Negative check: default pg Client constructor is never reached when options.stream is injected
++    let topLevelStreamInvoked = false;
++    assert.throws(
++      () => createTargetPgClient(validCtx, {
++        stream: () => {
++          topLevelStreamInvoked = true;
++          throw new Error('STREAM_INVOKED_UNEXPECTEDLY');
++        },
++      }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(topLevelStreamInvoked, false, 'Default pg Client constructor/stream must not be invoked on top-level stream injection');
++
++    // Negative check: default pg Client constructor is never reached on connection injection
++    assert.throws(
++      () => createTargetPgClient(validCtx, { clientConfig: { connection: {} } }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.throws(
++      () => createTargetPgClient(validCtx, { connection: {} }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++
++    // Positive contrast check: default pg Client creates genuine Client instance bound to validated local target
++    const defaultClient = createTargetPgClient(validCtx);
++    assert.ok(defaultClient instanceof Client, 'Must instantiate real pg Client');
++    assert.equal(defaultClient.host, '127.0.0.1');
++    assert.equal(defaultClient.port, 54322);
++    assert.equal(defaultClient.user, 'postgres');
++    assert.equal(defaultClient.database, 'postgres');
++    assert.equal(defaultClient.ssl, false);
++    assert.equal(typeof defaultClient.connect, 'function');
+   } finally {
+     fs.rmSync(tempRunsDir, { recursive: true, force: true });
+   }
+diff --git a/home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/entry-source/lingora-admin/tests/database/test-context.mjs b/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.mjs
+index 366e754..1d0226d 100644
+--- a/home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/entry-source/lingora-admin/tests/database/test-context.mjs
++++ b/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.mjs
+@@ -325,6 +325,54 @@ export function getTestContext(options = {}) {
+   return testContext;
+ }
+ 
++const ALLOWED_TOP_LEVEL_OPTIONS = new Set([
++  'ClientClass',
++  'connectionTimeoutMillis',
++  'clientConfig',
++]);
++
++const PROHIBITED_ROUTING_KEYS = new Set([
++  // Transport / stream / connection injections
++  'stream',
++  'connection',
++  // Destination parameters and aliases
++  'host',
++  'hostname',
++  'hostaddr',
++  'port',
++  'database',
++  'dbname',
++  'db',
++  'user',
++  'username',
++  'password',
++  'pass',
++  'connectionString',
++  'connection_string',
++  // Socket / protocol / security parameters
++  'socketPath',
++  'socket',
++  'ssl',
++  'sslmode',
++  'sslcert',
++  'sslkey',
++  'sslrootcert',
++  'sslca',
++  'sslnegotiation',
++  'client_encoding',
++  'encoding',
++  'replication',
++]);
++
++const SAFE_NON_ROUTING_CLIENT_CONFIG_KEYS = new Set([
++  'statement_timeout',
++  'query_timeout',
++  'lock_timeout',
++  'idle_in_transaction_session_timeout',
++  'application_name',
++  'connectionTimeoutMillis',
++]);
++
+ /**
+  * Create a PostgreSQL client wired to the validated test target.
+  *
+@@ -338,6 +386,12 @@ export function createTargetPgClient(ctx, options = {}) {
+     throw err;
+   }
+ 
++  if (options === null || typeof options !== 'object' || Array.isArray(options)) {
++    const err = new Error('TEST_CONTEXT_INVALID: options must be a plain object.');
++    err.code = 'TEST_CONTEXT_INVALID';
++    throw err;
++  }
++
+   // Reject destination or connection parameter overrides before transport factory
+   if (options.connectionString) {
+     const err = new Error('ALLOWLIST_FAIL: Destination override via options.connectionString is prohibited.');
+@@ -345,23 +399,37 @@ export function createTargetPgClient(ctx, options = {}) {
+     throw err;
+   }
+ 
+-  if (options.clientConfig) {
+-    const forbiddenOverrides = [
+-      'host',
+-      'port',
+-      'database',
+-      'user',
+-      'password',
+-      'connectionString',
+-      'ssl',
+-      'client_encoding',
+-    ];
+-    for (const key of forbiddenOverrides) {
+-      if (key in options.clientConfig) {
++  for (const key of Object.keys(options)) {
++    if (!ALLOWED_TOP_LEVEL_OPTIONS.has(key)) {
++      if (PROHIBITED_ROUTING_KEYS.has(key)) {
++        const err = new Error(`ALLOWLIST_FAIL: Destination/connection parameter "${key}" cannot be overridden in options.`);
++        err.code = 'ALLOWLIST_FAIL';
++        throw err;
++      }
++      const err = new Error(`ALLOWLIST_FAIL: Unsupported option "${key}" is prohibited.`);
++      err.code = 'ALLOWLIST_FAIL';
++      throw err;
++    }
++  }
++
++  if (options.clientConfig !== undefined) {
++    if (options.clientConfig === null || typeof options.clientConfig !== 'object' || Array.isArray(options.clientConfig)) {
++      const err = new Error('ALLOWLIST_FAIL: options.clientConfig must be a plain object.');
++      err.code = 'ALLOWLIST_FAIL';
++      throw err;
++    }
++
++    for (const key of Object.keys(options.clientConfig)) {
++      if (PROHIBITED_ROUTING_KEYS.has(key)) {
+         const err = new Error(`ALLOWLIST_FAIL: Destination/connection parameter "${key}" cannot be overridden in clientConfig.`);
+         err.code = 'ALLOWLIST_FAIL';
+         throw err;
+       }
++      if (!SAFE_NON_ROUTING_CLIENT_CONFIG_KEYS.has(key)) {
++        const err = new Error(`ALLOWLIST_FAIL: Unsupported parameter "${key}" is prohibited in clientConfig.`);
++        err.code = 'ALLOWLIST_FAIL';
++        throw err;
++      }
+     }
+   }
+ 
+@@ -387,9 +455,17 @@ export function createTargetPgClient(ctx, options = {}) {
+     password: parsed.password,
+     connectionTimeoutMillis: options.connectionTimeoutMillis || 5000,
+     ssl: false,
+-    ...(options.clientConfig || {}),
+   };
+ 
++  // Only copy small, safe allowlist of demonstrably non-routing parameters (never arbitrary spread)
++  if (options.clientConfig) {
++    for (const key of Object.keys(options.clientConfig)) {
++      if (SAFE_NON_ROUTING_CLIENT_CONFIG_KEYS.has(key)) {
++        clientConfig[key] = options.clientConfig[key];
++      }
++    }
++  }
++
+   let client;
+   try {
+     const Factory = options.ClientClass || Client;

@@ -1,0 +1,123 @@
+{
+  "start_exit": 0,
+  "status_exit": 0,
+  "env_check_exit": 0,
+  "scaffold_bound_exit": 1,
+  "stop_exit": 0,
+  "destroy_exit": 0,
+  "runtime_state": {
+    "id": "dae13709f1c5d47e2f9aa68e375bc2a9534496ae7c9c06da28f2f8078730c401",
+    "runtime": "native",
+    "endpoints": {
+      "database.sql": {
+        "protocol": "tcp",
+        "address": "127.0.0.1",
+        "port": 54322,
+        "url": "tcp://127.0.0.1:54322"
+      },
+      "pgmeta.http": {
+        "protocol": "http",
+        "address": "127.0.0.1",
+        "port": 26471,
+        "url": "http://127.0.0.1:26471"
+      },
+      "rest.http": {
+        "protocol": "http",
+        "address": "127.0.0.1",
+        "port": 54321,
+        "url": "http://127.0.0.1:54321"
+      },
+      "auth.http": {
+        "protocol": "http",
+        "address": "127.0.0.1",
+        "port": 54321,
+        "url": "http://127.0.0.1:54321"
+      },
+      "realtime.http": {
+        "protocol": "http",
+        "address": "127.0.0.1",
+        "port": 54321,
+        "url": "http://127.0.0.1:54321"
+      },
+      "realtime.rpc": {
+        "protocol": "tcp",
+        "address": "127.0.0.1",
+        "port": 23628,
+        "url": "tcp://127.0.0.1:23628"
+      },
+      "storage.http": {
+        "protocol": "http",
+        "address": "127.0.0.1",
+        "port": 54321,
+        "url": "http://127.0.0.1:54321"
+      },
+      "functions.http": {
+        "protocol": "http",
+        "address": "127.0.0.1",
+        "port": 54321,
+        "url": "http://127.0.0.1:54321"
+      },
+      "functions.inspector": {
+        "protocol": "tcp",
+        "address": "127.0.0.1",
+        "port": 27432,
+        "url": "tcp://127.0.0.1:27432"
+      },
+      "studio.http": {
+        "protocol": "http",
+        "address": "127.0.0.1",
+        "port": 54323,
+        "url": "http://127.0.0.1:54323"
+      },
+      "mail.http": {
+        "protocol": "http",
+        "address": "127.0.0.1",
+        "port": 54324,
+        "url": "http://127.0.0.1:54324"
+      },
+      "mail.smtp": {
+        "protocol": "tcp",
+        "address": "127.0.0.1",
+        "port": 54325,
+        "url": "tcp://127.0.0.1:54325"
+      },
+      "mail.pop3": {
+        "protocol": "tcp",
+        "address": "127.0.0.1",
+        "port": 54326,
+        "url": "tcp://127.0.0.1:54326"
+      }
+    },
+    "lazy_services": [
+      "pgmeta",
+      "rest",
+      "auth",
+      "realtime",
+      "storage",
+      "functions",
+      "studio",
+      "mail"
+    ],
+    "env": {
+      "API_URL": "http://127.0.0.1:54321",
+      "REST_URL": "http://127.0.0.1:54321/rest/v1",
+      "FUNCTIONS_URL": "http://127.0.0.1:54321/functions/v1",
+      "DB_URL": "postgresql://postgres:[REDACTED_PASSWORD]@127.0.0.1:54322/postgres",
+      "STUDIO_URL": "http://127.0.0.1:54323",
+      "MCP_URL": "http://127.0.0.1:54321/mcp",
+      "MAILPIT_URL": "http://127.0.0.1:54324",
+      "INBUCKET_URL": "http://127.0.0.1:54324",
+      "PUBLISHABLE_KEY": "[REDACTED]",
+      "SECRET_KEY": "[REDACTED]",
+      "ANON_KEY": "[REDACTED]",
+      "SERVICE_ROLE_KEY": "[REDACTED]",
+      "STORAGE_S3_URL": "http://127.0.0.1:54321/storage/v1/s3",
+      "S3_PROTOCOL_ACCESS_KEY_ID": "[REDACTED]",
+      "S3_PROTOCOL_ACCESS_KEY_SECRET": "[REDACTED]",
+      "S3_PROTOCOL_REGION": "local"
+    },
+    "message": "",
+    "dbReachable": true,
+    "probedAt": "2026-10-22T08:12:39.189Z"
+  }
+}

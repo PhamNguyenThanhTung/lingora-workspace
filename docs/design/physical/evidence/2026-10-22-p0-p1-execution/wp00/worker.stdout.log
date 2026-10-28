@@ -1,0 +1,57 @@
+STATUS: PASS
+
+CHANGED FILES:
+- [.gitignore](file:///home/tung/workspace/school/project1/lingora-workspace/.gitignore)
+- [package.json](file:///home/tung/workspace/school/project1/lingora-workspace/package.json)
+- [lingora-admin/package.json](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/package.json)
+- [lingora-admin/tests/database/env/env-guard.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/env/env-guard.mjs)
+- [lingora-admin/tests/database/env/stack-manager.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/env/stack-manager.mjs)
+- [lingora-admin/tests/database/scaffolds/runner-base.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/runner-base.mjs)
+- [lingora-admin/tests/database/scaffolds/a1-runner.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/a1-runner.mjs)
+- [lingora-admin/tests/database/scaffolds/a2-runner.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/a2-runner.mjs)
+- [lingora-admin/tests/database/scaffolds/a3-runner.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/a3-runner.mjs)
+- [lingora-admin/tests/database/scaffolds/integrity-runner.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/integrity-runner.mjs)
+- [lingora-admin/tests/database/scaffolds/security-runner.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/security-runner.mjs)
+- [lingora-admin/tests/database/scaffolds/concurrency-runner.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/concurrency-runner.mjs)
+- [lingora-admin/tests/database/scaffolds/smoke-runner.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/smoke-runner.mjs)
+- [supabase/config.toml](file:///home/tung/workspace/school/project1/lingora-workspace/supabase/config.toml)
+- [supabase/docker-compose.fallback.yml](file:///home/tung/workspace/school/project1/lingora-workspace/supabase/docker-compose.fallback.yml)
+- [supabase/README.md](file:///home/tung/workspace/school/project1/lingora-workspace/supabase/README.md)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/01-provenance-snapshot.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/01-provenance-snapshot.json)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/01-provenance-snapshot.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/01-provenance-snapshot.log)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/02-dependency-versions.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/02-dependency-versions.json)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/02-dependency-versions.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/02-dependency-versions.log)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/03-env-guard-negative-checks.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/03-env-guard-negative-checks.json)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/03-env-guard-negative-checks.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/03-env-guard-negative-checks.log)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/04-scaffolds-not-executed.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/04-scaffolds-not-executed.json)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/04-scaffolds-not-executed.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/04-scaffolds-not-executed.log)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/05-provider-stack-lifecycle.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/05-provider-stack-lifecycle.json)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/05-provider-stack-lifecycle.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/05-provider-stack-lifecycle.log)
+- [docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/acceptance-summary.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/acceptance-summary.json)
+
+SHORT DIFF SUMMARY:
+- Restored minimal root and `lingora-admin` package manifests pinned exactly to `@prisma/client@6.19.3`, `prisma@6.19.3`, and `@supabase/supabase-js@2.112.3`, keeping historical `package-lock.json` intact.
+- Created fail-closed environment allowlist guard and stack manager in `lingora-admin/tests/database/env/` enforcing strictly `127.0.0.1`/`localhost`, task-local stack identity, and automated secret redaction.
+- Configured task-local Supabase configuration (`supabase/config.toml`), compose fallback, and documentation with experimental native stack execution (`SUPABASE_EXPERIMENTAL_STACK=1`, `--runtime native`) without Docker/Podman or root dependencies.
+- Added test scaffolds for all 7 database suites (`test:db:a1`, `a2`, `a3`, `integrity`, `security`, `concurrency`, `smoke`) in `lingora-admin` that fail closed with exit code 1 (`STATUS: NOT EXECUTED`) when fixtures are absent, strictly forbidding false `PASS` on skip.
+- Updated `.gitignore` to ignore only task-local runtime state and tools (`.supabase/`, `.supabase-home/`, `supabase/.temp/`, `.local-stack/`, `*.local.json`), preserving all preexisting dirty docs, diagrams, and logs.
+
+COMMANDS/TESTS:
+- `python3 (provenance check)` | cwd: `/home/tung/workspace/school/project1/lingora-workspace` | tested rev: `c39806c` | exit: `0` | log: [01-provenance-snapshot.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/01-provenance-snapshot.log)
+- `node -v && npm -v && check installed node_modules` | cwd: `/home/tung/workspace/school/project1/lingora-workspace` | tested rev: `c39806c` | exit: `0` | log: [02-dependency-versions.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/02-dependency-versions.log)
+- `node env-guard validation test suite` | cwd: `/home/tung/workspace/school/project1/lingora-workspace` | tested rev: `c39806c` | exit: `0` | log: [03-env-guard-negative-checks.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/03-env-guard-negative-checks.log)
+- `npm run test:db:a1..smoke -w lingora-admin` | cwd: `/home/tung/workspace/school/project1/lingora-workspace` | tested rev: `c39806c` | exit: `1` (all 7 fail closed / NOT EXECUTED) | log: [04-scaffolds-not-executed.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/04-scaffolds-not-executed.log)
+- `npm run stack:start -> status -> env:check -> test:db:a1 -> stop -> destroy` | cwd: `/home/tung/workspace/school/project1/lingora-workspace` | tested rev: `c39806c` | exit: `0` (lifecycle stages 0, scaffold bound 1) | log: [05-provider-stack-lifecycle.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/05-provider-stack-lifecycle.log)
+
+RESULTS:
+- **Provider Infrastructure Feasibility**: Verified that Supabase CLI 2.121.0 native runtime (`--runtime native` under `SUPABASE_EXPERIMENTAL_STACK=1`) runs successfully on Ubuntu 24.04 (Linux 6.8, glibc 2.39) without root, sudo, Docker, or Podman.
+- **Observed Provider Stack**: Successfully spawned native PostgreSQL 17.11 (port `54322`, TCP probe verified reachable), GoTrue Auth v2.197.0 (port `54321`), Storage v1.82.1, PostgREST v16.4, Realtime v2.143.4, and Inbucket/Mailpit (port `54324`), then stopped and destroyed all task-local state cleanly.
+- **Fail-Closed Allowlist**: `env-guard.mjs` enforces strictly `127.0.0.1`/`localhost` and task-local stack ID; foreign IPs (`192.168.1.100`), remote domains (`supabase.co`), and non-postgres protocols abort immediately with `ALLOWLIST_FAIL`.
+- **Honest Test Scaffolds**: All 7 database test runners (`test:db:a1`, `a2`, `a3`, `integrity`, `security`, `concurrency`, `smoke`) fail closed with exit code 1 and `STATUS: NOT EXECUTED` when test fixtures are absent, even while the local stack is running.
+- **Dated Provenance**: `physical-erd.puml` matches source hash `6100c66d...`; exactly 6 stale historical output hashes in `verification-manifest.json` are identified and documented per spec §1 without altering historical manifest files.
+- **G0 Verdict**: **PASS** — provider runtime feasibility proven, reproducible harness established, secret-free identity recorded in [acceptance-summary.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/acceptance-summary.json).
+
+REMAINING RISKS/BLOCKERS:
+- **A1/A2/A3 Execution**: Unstarted. Per `plans/2026-10-22-p0-p1-execution-plan.md`, P1-A1 (Auth lifecycle), P1-A2 (RLS/Prisma/locks), and P1-A3 (migration replay) are strictly gated on Codex's review of this G0 evidence packet.
+- **P1 DDL & Migrations**: Intentionally omitted from WP-00; P1-DDL / A3 integration owner will supply minimal schema and migration fixtures once G0 is reviewed.
+- **CR2-04 Helper Gap**: Preexisting helper/negative fixture coverage remains open in design docs and uncarried into DB tests per spec §1.

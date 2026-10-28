@@ -1,0 +1,50 @@
+{
+  "utc": "2026-10-25T05:55:21.510358+00:00",
+  "native_records": [
+    {
+      "home": "home-a",
+      "relative_directory": "home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee",
+      "id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee",
+      "identity": {
+        "projectRoot": "/tmp/lingora-d0-p17ehk7h/project-a",
+        "branchContext": "refs/heads/d0-main",
+        "stackName": "d0-runtime-main"
+      },
+      "runtime": "native",
+      "state_shape": {
+        "id": "string",
+        "lifetime": "string",
+        "identity": {
+          "projectRoot": "string",
+          "branchContext": "string",
+          "stackName": "string"
+        },
+        "runtime": "string",
+        "instances": {
+          "type": "array",
+          "items_observed": []
+        },
+        "composition": {
+          "members": {
+            "type": "array",
+            "items_observed": []
+          },
+          "dependencies": {
+            "type": "array",
+            "items_observed": []
+          }
+        }
+      },
+      "instances_count": 0,
+      "owner": {
+        "pid": null,
+        "port": null,
+        "role": null,
+        "release": null,
+        "lifetime": null,
+        "startedAt": null
+      }
+    }
+  ],
+  "private_root_processes": []
+}

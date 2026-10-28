@@ -1,0 +1,63 @@
+### Delivery Summary: WP-DB-REMAIN-01 (Stage A Complete)
+
+- **STATUS:** `READY FOR PREAPPLY REVIEW`
+- **PACKAGE:** `WP-DB-REMAIN-01` (Stage A: Local Code Repair, 5th Forward Migration, Catalog Parity Machinery, Visual ERD & SQL Source Bundle)
+- **SESSION / CONVERSATION ID:** `bbd318d2-8eae-4c6c-b275-776f2d2345d7`
+- **BLOCKER:** None for Stage A. Remote database mutations, `CREATE DATABASE`, `migrate deploy`, live seed, and live smoke remain strictly gated pending coordinator Stage B pre-apply review and dispatch. `DATABASE READY` remains withheld.
+
+---
+
+### Ảnh sơ đồ Database (ERD) & Mã nguồn Database (Database Code)
+
+Theo yêu cầu của bạn (*"ok sửa đi rôi đưa 1 cái ảnh database cho tôi xem với cả code database nữa"*), toàn bộ sơ đồ trực quan và mã nguồn cơ sở dữ liệu đã được tổng hợp đầy đủ:
+
+#### 1. Ảnh sơ đồ cơ sở dữ liệu (Database Overview ERD)
+Sơ đồ bao gồm đầy đủ **34 bảng chuẩn hoá** (29 bảng schema `app` + 5 bảng schema `app_private`) cùng mối liên kết với `auth.users`, được phân nhóm trực quan theo 5 miền nghiệp vụ (Identity & Access, Curriculum, Authoring & Review, Assessment Engine, Audit & Learner Progress):
+- **Ảnh PNG (Độ phân giải cao):** [database-overview.png](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-28-database-remaining-repair/database-overview.png)
+- **File vector SVG:** [database-overview.svg](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-28-database-remaining-repair/database-overview.svg)
+- **Mã nguồn Graphviz DOT:** [database-overview.dot](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-28-database-remaining-repair/database-overview.dot)
+
+#### 2. Mã nguồn Database (Database Code & Migrations)
+- **Forward Migration thứ 5 (Bản vá hoàn thiện):** [20261028000000_product_remaining_repair/migration.sql](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/prisma/product/migrations/20261028000000_product_remaining_repair/migration.sql)
+  - Khôi phục kiểm tra bất biến `prior_revision_id` và `created_at` khi submit Lesson Revision (`guard_lesson_revision_submitted_payload()`).
+  - Khôi phục đối chiếu `assignment_generation` và `assignment_scope_snapshot` trên hàng Review Revision (`check_revision_review_provenance()`).
+  - Khôi phục kiểm định chặt chẽ 14 khóa snapshot và ràng buộc Blueprint/Course (`check_assessment_version_snapshot()`).
+  - Kiểm tra tính hợp lệ cấu trúc JSON mảng `coverage_tags` (`check_assessment_version_item_eligibility()`).
+- **File Prisma Schema sản phẩm:** [schema.prisma](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/prisma/product/schema.prisma) (đầy đủ 34 models).
+- **Bộ mã nguồn SQL tổng hợp (Concatenated SQL Bundle):** [database-source.sql](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-28-database-remaining-repair/database-source.sql) (5.679 dòng SQL ghép nối tuần tự 5 bản migration, kèm ranh giới và ghi chú rõ ràng).
+- **Mã nguồn Seed:** [product-seed.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/scripts/product-seed.mjs).
+- **Hợp đồng Catalog & Parity Verification:** [product-catalog-contract.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/scripts/product-catalog-contract.mjs).
+- **Tài liệu hướng dẫn code:** [docs/.../README.md](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-28-database-remaining-repair/README.md).
+
+---
+
+### CHANGED & CREATED FILES
+
+| Đường dẫn file | Thao tác | Mô tả |
+|---|---|---|
+| [lingora-admin/prisma/product/migrations/20261028000000_product_remaining_repair/migration.sql](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/prisma/product/migrations/20261028000000_product_remaining_repair/migration.sql) | Tạo mới | Bản migration thứ 5 khắc phục FDB-05 và FDB-06 (SHA-256: `8ca114e3...`) |
+| [lingora-admin/scripts/product-catalog-contract.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/scripts/product-catalog-contract.mjs) | Tạo mới | Module đối soát catalog gốc từ Prisma và migration DDL |
+| [lingora-admin/scripts/product-preflight.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/scripts/product-preflight.mjs) | Sửa đổi | Thêm checksum migration thứ 5, bổ sung trạng thái `UPGRADE_REPAIR` / `REPLAY_REPAIRED`, kiểm tra drift read-only |
+| [lingora-admin/scripts/product-migrate.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/scripts/product-migrate.mjs) | Sửa đổi | Cập nhật postflight kiểm tra trạng thái `REPLAY_REPAIRED` |
+| [lingora-admin/scripts/product-database-smoke.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/scripts/product-database-smoke.mjs) | Sửa đổi | `testRegistry` kiểm tra tồn dư sau ngắt kết nối; đánh giá biểu thức CHECK an toàn; bảo vệ tài khoản thật |
+| [lingora-admin/prisma/product/README.md](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/prisma/product/README.md) | Sửa đổi | Ghi nhận tài liệu các envelope storage và hợp đồng catalog |
+| [plans/current-task.md](file:///home/tung/workspace/school/project1/lingora-workspace/plans/current-task.md) | Sửa đổi | Cập nhật trạng thái `IMPLEMENTING / STAGE A ONLY / NOT READY` |
+| [HANDOFF.md](file:///home/tung/workspace/school/project1/lingora-workspace/HANDOFF.md) | Sửa đổi | Cập nhật ranh giới vận hành và ủy quyền Stage A |
+| [logs/development-log.md](file:///home/tung/workspace/school/project1/lingora-workspace/logs/development-log.md) | Bổ sung | Ghi nhận chi tiết kết quả triển khai Stage A |
+| [logs/test-log.md](file:///home/tung/workspace/school/project1/lingora-workspace/logs/test-log.md) | Bổ sung | Ghi nhận bằng chứng kiểm thử offline và kiểm kê DEV read-only |
+| [docs/design/physical/evidence/2026-10-28-database-remaining-repair/entry-and-source.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-28-database-remaining-repair/entry-and-source.json) | Tạo mới | Hash gốc, môi trường, baseline DEV inventory |
+| [docs/design/physical/evidence/2026-10-28-database-remaining-repair/checks.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-28-database-remaining-repair/checks.log) | Tạo mới | Nhật ký lệnh thực thi offline và hash |
+| [docs/design/physical/evidence/2026-10-28-database-remaining-repair/stage-a-result.md](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-28-database-remaining-repair/stage-a-result.md) | Tạo mới | Báo cáo chi tiết Stage A theo tiêu chuẩn đặc tả |
+
+---
+
+### TESTS & EVIDENCE
+
+- **Kiểm tra cú pháp Node.js:** `node --check lingora-admin/scripts/*.mjs` -> **PASS (EXIT 0)**
+- **Kiểm thử Preflight Offline:** `node lingora-admin/scripts/product-preflight.mjs --static` -> **PASS (22/22 tests PASS, EXIT 0)**
+- **Kiểm thử Static Smoke & Migration Checksums:** `node lingora-admin/scripts/product-database-smoke.mjs --static` -> **PASS (8/8 static checks PASS, EXIT 0)**
+- **Xác thực mô hình Prisma:** `npm run db:product:validate -w lingora-admin` -> **PASS (34 models validated, EXIT 0)**
+- **Sinh Prisma Client:** `npm run db:product:generate -w lingora-admin` -> **PASS (Client v6.19.3 generated, EXIT 0)**
+- **Kiểm kê DEV read-only (`BEGIN READ ONLY` ... `ROLLBACK`):** Đã xác nhận trên máy chủ DEV (`sncfyvpzwedqgwfpffkh`): 34 bảng hợp lệ, 4 migration áp dụng khớp mã băm cục bộ, 0 tài khoản, 0 snapshot tồn dư, không có xung đột dữ liệu `B-DATA`.
+
+Toàn bộ công việc Stage A đã hoàn tất. Hệ thống sẵn sàng cho **Pre-apply Review** và chờ lệnh điều phối tiếp theo trước khi tiến hành các thao tác remote tại Stage B.

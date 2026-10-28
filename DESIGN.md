@@ -2,9 +2,9 @@
 
 ## Status and controlling sources
 
-**CURRENT SUPPORTING REFERENCE — reconciled 2026-10-20 (FDR-01).** This index maps approved behavior to logical screens; it does not approve new product rules or claim implemented screens. Current authorities: [documentation map](docs/README.md), [UC catalog](docs/use-case-specifications.md), [requirements addenda](docs/02-requirements.md), [Class baseline](docs/modeling/current-target/class-review-2026-10-16.md), [modeling index](docs/modeling/current-target/README.md), ADR-030–036/041–043 in the [decision log](logs/decision-log.md). Task status: [current task](plans/current-task.md).
+**CURRENT SUPPORTING REFERENCE — reconciled 2026-10-20 (FDR-01).** This index maps approved behavior to logical screens; it does not approve new product rules or claim implemented screens. Current authorities: [documentation map](docs/README.md), [UC catalog](docs/use-case-specifications.md), [requirements addenda](docs/02-requirements.md), [Class baseline](docs/modeling/current-target/class-review-2026-10-16.md), [modeling index](docs/modeling/current-target/README.md), ADR-030–036/041–044 in the [decision log](logs/decision-log.md). Task status: [current task](plans/current-task.md).
 
-Learner UI belongs to `lingora-web`; Teacher/Admin UI belongs to `lingora-admin`. Only learner auth/locale foundation is evidenced in the current checkout; the learning and staff screens below are TARGET, not implemented UI. Historical M2.2/M2.3 screens/UC labels are crosswalk inputs, not current behavior authority. Current UC identities are never inferred from screen numbers.
+Learner UI belongs to `lingora-web`; Teacher/Admin UI belongs to `lingora-admin`. In the current checkout, no web/admin UI framework or learner auth application exists; all learning and staff screens below are TARGET, not implemented UI. Historical M2.2/M2.3 screens/UC labels are crosswalk inputs, not current behavior authority. Current UC identities are never inferred from screen numbers.
 
 ## Roles and entry
 
@@ -64,7 +64,7 @@ Every active inventory row inherits these states, with domain-specific variation
 
 Shared account subflows apply to all three roles within their account boundaries. SCR-A-01 shows invalid/expired invitation or recovery links safely, permits the supported retry/recovery route and does not grant domain access while Teacher account is PENDING.
 
-Additional cases: SCR-L-02 explains two-ACTIVE capacity; SCR-L-04/05 distinguish interrupted versus completed assessment; SCR-L-07A/B handle unavailable media/invalid input; SCR-L-09/10 allow empty supplementary pools without failing completed core; SCR-A-03/08 report stale version/reassignment and refresh own work; SCR-A-04 reports unmet assembly requirements; SCR-A-05/06 preserve target/version identity and active content on failed transition. See [correction acceptance](plans/2026-10-20-design-correction-plan.md) DC01–07 for documentation checks and future runtime cases.
+Additional cases: SCR-L-02 explains two-ACTIVE capacity; SCR-L-04/05 distinguish interrupted versus completed assessment; SCR-L-07A/B handle unavailable media/invalid input; SCR-L-09/10 allow empty supplementary pools without failing completed core; SCR-A-03/08 report stale version/reassignment and refresh own work; SCR-A-04 reports unmet assembly requirements; SCR-A-05/06 preserve target/version identity and active content on failed transition. See [correction acceptance](docs/design/design-correction-2026-10-20.md) DC01–07 for documentation checks and future runtime cases.
 
 ## Compatible visual foundation
 

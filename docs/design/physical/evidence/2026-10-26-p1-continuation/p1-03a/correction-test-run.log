@@ -1,0 +1,136 @@
+# P1-03a Correction Test Execution Log
+Recorded At: 2026-10-26T10:33:02+07:00
+Runner: lingora-admin a3-runner.mjs / Node.js test runner (v24.22.1)
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+PostgreSQL Engine: PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit (via Supabase CLI 2.121.0)
+Prisma CLI & Client: 6.19.3 (local pin verified against node_modules/prisma/package.json)
+
+======================================================================
+1. Scaffold Fail-Closed Command Validation Check
+Command: npm run test:db:a3 -w lingora-admin
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+Exit Code: 1
+Output:
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:a3
+[TEST-SCAFFOLD] Description: A3 Fresh baseline replay, incremental custom migration, catalog diff
+[TEST-SCAFFOLD] Gate: G0 reviewed PASS and P1-A3 assignment (Migration replay and incremental delta)
+================================================================================
+[TEST-SCAFFOLD] FAIL_CLOSED: COMMAND_INVALID: test-scaffold requires explicit --run <run-id>.
+npm error Lifecycle script `test:db:a3` failed with error:
+npm error code 1
+
+======================================================================
+2. Shared Transport & Unit Regression Check
+Command: node --test lingora-admin/tests/database/test-context.test.mjs lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+Exit Code: 0
+Output:
+✔ 1. Scaffold fails closed (exit 1) on unbound environment (missing --run flag)
+✔ 2. Forged test env flags do NOT bypass reconciliation (fails closed with exit 1)
+✔ 3. Scaffold with bound state but absent test files returns NOT EXECUTED (exit 1) and never mutates canonical state
+✔ 4. Scaffold with deliberately failing test fixture ACTUALLY runs and propagates test failure without touching canonical state
+✔ 5. Scaffold with pending operation denies execution (exit 1 / RECOVERY_REQUIRED) without touching data or executing tests
+✔ 6. Representative unregistered pending-secret canary in authority.pending_operation never leaks to scaffold stdout or stderr
+✔ 7. Scaffold passes explicit trusted owned-run context (LINGORA_TEST_CONTEXT) to child test runner
+✔ 8. Scaffold safely captures child test output, extracts finite summary, and sanitizes secrets
+✔ 9. Real paused child test holds parent run lock through completion, and contender is demonstrably BLOCKED through close
+✔ 1. Missing explicit context throws TEST_CONTEXT_MISSING and strictly ignores ambient environment
+✔ 2. Malformed explicit context payload throws TEST_CONTEXT_INVALID
+✔ 3. Forbidden or legacy runsDir throws ALLOWLIST_FAIL
+✔ 4. Stale context: absent lock file throws TEST_CONTEXT_STALE
+✔ 5. Stale context: dead parent PID in lock throws TEST_CONTEXT_STALE
+✔ 6. Foreign context: lock token mismatch (lock steal attempt) throws TEST_CONTEXT_FORBIDDEN
+✔ 7. Foreign context: run_id mismatch throws TEST_CONTEXT_MISMATCH
+✔ 8. Pending operation denial: authority with pending operation throws RECOVERY_REQUIRED
+✔ 9. Unbound authority (RESERVED or DESTROYED) throws TEST_CONTEXT_DENIED
+✔ 10. Foreign database endpoint (non-local host or wrong port) throws ALLOWLIST_FAIL
+✔ 11. Positive test: valid context yields typed endpoints and credentials
+✔ 12. Lock removal after context retrieval is immediately detected by assertLockHeld
+✔ 13. createTargetPgClient strips ambient PG* env vars, enforces lock assertion, and rejects destination overrides
+✔ 14. Critical negative effect assertion: zero SQL connections across failure modes and positive factory increment
+✔ 15. Default pg Client transport factory verification: zero stream invocation on invalid options and validated target contrast
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1945.156846
+
+======================================================================
+3. Full A3 Suite Execution on Fresh Disposable Run (run-3be6d5ff41229fac)
+Run ID: run-3be6d5ff41229fac
+Stack ID: dee2fbc0e119e37b92bbf4fe0673140b3bf0c3d0120ae2c556ba8b639df6e141
+Command: npm run test:db:a3 -w lingora-admin -- --run run-3be6d5ff41229fac
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+Exit Code: 0
+Output:
+> lingora-admin@1.0.0 test:db:a3
+> node tests/database/scaffolds/a3-runner.mjs --run run-3be6d5ff41229fac
+
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:a3
+[TEST-SCAFFOLD] Description: A3 Fresh baseline replay, incremental custom migration, catalog diff
+[TEST-SCAFFOLD] Gate: G0 reviewed PASS and P1-A3 assignment (Migration replay and incremental delta)
+================================================================================
+[TEST-SCAFFOLD] Environment: BOUND (Stack: dee2fbc0e119e37b92bbf4fe0673140b3bf0c3d0120ae2c556ba8b639df6e141, Runtime: native)
+[TEST-SCAFFOLD] Found 2 test files. Executing via Node test runner...
+[TEST-SCAFFOLD] Test execution summary: 16/16 tests passed.
+[TEST-SCAFFOLD] Test suite "test:db:a3" PASSED.
+
+Test Breakdown (16/16 pass across 2 test files):
+File 1: ac03-baseline-and-prerequisites.test.mjs (9 tests)
+- TC-03-01: Bootstrap cluster roles and schemas idempotently
+- TC-03-02: Deploy baseline migration via guarded Prisma CLI
+- TC-03-03: Table inventory and absence of accounts.display_name (20 tables verified, 17 app, 3 app_private)
+- TC-03-04: Schema integrity: circular FK, partial index, external Auth FK
+- TC-03-05: Seed data: languages, CEFR framework, levels, initial course
+- TC-03-06: Security definer functions, role ownership, and FORCE RLS
+- TC-03-07: Real Auth trigger creates learner account and honors staff reservations
+- TC-03-08: Composite relations and constraint name parity between Prisma and SQL
+- TC-03-09: Complete schema and catalog parity check against manifest
+
+File 2: ac04-guarded-prisma-workflow.test.mjs (7 tests)
+- TC-04-01: Operation allowlist and destination/config flag rejection with zero process launch
+- TC-04-02: Local Prisma CLI pin verification (strictly 6.19.3)
+- TC-04-03: Credential storage security: reject symlinks and non-0600 modes
+- TC-04-04: Target and lock revalidation (pre-construction denial)
+- TC-04-05: Positive guarded Prisma commands (validate, generate, migrate status)
+- TC-04-06: RLS non-owner denials for missing/PENDING/DISABLED/foreign actors and private table writes
+- TC-04-07: Real interactive transaction with lingora_runtime role under active learner context
+
+Live Target Observations:
+- PostgreSQL engine version: PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit
+- Live catalog tables: 17 app tables, 3 app_private tables (total 20)
+- Live constraints count: 143 table constraints
+- runtime-credentials.json mode: 0600 (-rw-------), owned by current UID, regular file, in runDir
+- a3-baseline-state.json mode: 0600 (-rw-------)
+
+======================================================================
+4. Teardown and Destruction Check
+Command: node lingora-admin/tests/database/env/stack-manager.mjs destroy --run run-3be6d5ff41229fac
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+Exit Code: 0
+Teardown Receipt:
+{
+  "command": "destroy",
+  "stage": "completed",
+  "status": "DESTROYED",
+  "code": "SUCCESS",
+  "run_id": "run-3be6d5ff41229fac",
+  "instance_id": "dee2fbc0e119e37b92bbf4fe0673140b3bf0c3d0120ae2c556ba8b639df6e141",
+  "phase": "DESTROYED",
+  "exit_code": 0,
+  "count": null,
+  "retry_disposition": null,
+  "message": "Operation completed successfully."
+}
+
+Tombstone Verification:
+- run_id: run-3be6d5ff41229fac
+- phase: DESTROYED
+- tombstone: true
+- destroyed_at: 2026-10-26T03:33:02.598Z
+- Socket quiescence: verified true (ports 54321, 54322, 54323, 54324, 54325, 54326 verified free)

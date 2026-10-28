@@ -1,0 +1,26 @@
+{
+  "check_id": "03-boundary-and-negative-checks",
+  "command": "node --test lingora-admin/tests/database/env/test-env-guard.mjs",
+  "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+  "exit_code": 0,
+  "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/03-boundary-and-negative-checks.log",
+  "tested_state_hashes": {
+    "lingora-admin/tests/database/env/env-guard.mjs": "903cedd149bbb34e80e9ccee5e508026e068656bb2b7331123fdca080cbaa41b",
+    "lingora-admin/tests/database/env/stack-manager.mjs": "bc7efeb9210ee80d806a838ad3818df0204a38a99b139dc71a057c6ebd4b3e46",
+    "lingora-admin/tests/database/env/test-env-guard.mjs": "e6f9429f27560afa24217f043a11598678c7ba21e465db2f5c171a1d9bd42933",
+    "supabase/config.toml": "a9067406c77c9e0b4a43f6e96cbb5d19f2b9e85dc1c3f461ee7a7cec3de190e9"
+  },
+  "tests_passed": 14,
+  "tests_failed": 0,
+  "verdict": "PASS",
+  "coverage_summary": {
+    "url_allowlist": "PASS",
+    "config_validation_and_root_escape": "PASS",
+    "canary_secret_jwt_password_s3_redaction": "PASS",
+    "binding_validation_negatives": "PASS",
+    "zero_adapters_on_invalid_binding": "PASS (CLI=0, HTTP=0, SQL=0)",
+    "reconcile_mismatch_safe_inspection_only": "PASS (CLI=1 safe inspection, 0 actions, 0 network/SQL)",
+    "malformed_status_failure_containment": "PASS",
+    "failed_teardown_recovery_retention": "PASS"
+  }
+}

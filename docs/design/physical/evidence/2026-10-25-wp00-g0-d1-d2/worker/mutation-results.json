@@ -1,0 +1,32 @@
+[
+  {
+    "mutation": "Mutation 1: Pre-dispatch guard (bypassing phase check in startStack)",
+    "file": "lingora-admin/tests/database/env/stack-manager.mjs",
+    "mutated_hash": "336c22a79d542a11dca3aba299baf3c2ecc4df2a2683d3b46faebc93529ba358",
+    "restored_hash": "98ae51b8cbba62b4512871b5e035d7915bc184f1b78de2b9eaf8631194dbdd7f",
+    "exit_code": 1,
+    "detected": true,
+    "stdout": "\u2716 N01 Matrix: start/status/stop/destroy/data x local invalid variations (CLI=0, HTTP=0, SQL=0) (203.655695ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 0\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 331.458498\n\n\u2716 failing tests:\n\ntest at lingora-admin/tests/database/env/test-env-guard.mjs:591:1\n\u2716 N01",
+    "stderr": ""
+  },
+  {
+    "mutation": "Mutation 2: Post-destroy absence check inverted (stillPresent check inverted)",
+    "file": "lingora-admin/tests/database/env/stack-manager.mjs",
+    "mutated_hash": "6bbbb4acd690fbd7e0b32313225db66c9210543274a24c0e189495dc2b27c60e",
+    "restored_hash": "98ae51b8cbba62b4512871b5e035d7915bc184f1b78de2b9eaf8631194dbdd7f",
+    "exit_code": 1,
+    "detected": true,
+    "stdout": "\u2716 P03: Full lifecycle suite: status, stop, already-stopped, destroy, repeated destroy on tombstone (560.230776ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 0\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 681.338615\n\n\u2716 failing tests:\n\ntest at lingora-admin/tests/database/env/test-env-guard.mjs:486:1\n\u2716",
+    "stderr": ""
+  },
+  {
+    "mutation": "Mutation 3: Password redaction boundary disabled in sanitizeString",
+    "file": "lingora-admin/tests/database/env/env-guard.mjs",
+    "mutated_hash": "7bd928e5ee48fc7237100f01e6db3a76f68f5308388e920b85bd5b3eec626f1b",
+    "restored_hash": "93948150ce9e2fdd7c9fc5ccef8ae819aa8791fa56f0cc6fa1679dcfb5ca6033",
+    "exit_code": 1,
+    "detected": true,
+    "stdout": "\u2716 9. Canary secret, token, quoted S3, and unrecognized field redaction across all sanitization functions (2.142623ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 0\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 90.465745\n\n\u2716 failing tests:\n\ntest at lingora-admin/tests/database/env/test-env-guard.mjs:234:1",
+    "stderr": ""
+  }
+]

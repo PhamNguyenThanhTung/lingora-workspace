@@ -1,0 +1,273 @@
+--- before-correction/lingora-admin/tests/database/env/env-guard.mjs
++++ lingora-admin/tests/database/env/env-guard.mjs
+@@ -1,11 +1,13 @@
+ /**
+  * Environment Allowlist, Identity Binding, and Security Guard for Lingora Database Runtime Harness.
+  *
+- * Implements:
+- * - G0-R1: Fail-closed before any network/SQL on unbound/nonlocal/unknown/swapped targets.
+- * - G0-R1: Task-local private state roots (.wp00-state, .wp00-home), canonical real paths, symlink escape rejection.
+- * - G0-R1: Exact native identity tuple (workdir, git branch, stack name, runtime, full 64-char ID).
+- * - G0-R2: Complete secret sanitization across all output paths (passwords, JWTs, quoted S3 secrets, OTPs, tokens).
++ * Implements G0-R1, G0-R2:
++ * - Fail-closed before any network/SQL on unbound/nonlocal/unknown/swapped targets.
++ * - Task-local private state roots (.wp00-state, .wp00-home), canonical real paths, symlink escape rejection.
++ * - Strict safe child path containment (no unsafe string prefix matching).
++ * - Exact native identity tuple (workdir, git branch, stack name, runtime, full 64-char ID).
++ * - Explicit rejection of unowned historical roots (.local-stack, .supabase-home).
++ * - Complete secret sanitization across all output paths (passwords, JWTs, quoted S3 secrets, OTPs, tokens).
+  * - Safe native inspection via reconcileNativeRegistry() before any lifecycle or data action.
+  */
+ 
+@@ -26,7 +28,11 @@
+ export const TASK_HOME_ROOT = path.resolve(CANONICAL_WORKSPACE_ROOT, '.wp00-home');
+ export const TASK_BINDING_FILE = path.resolve(TASK_STATE_ROOT, 'runtime-binding.json');
+ 
+-// Aliases for compatibility
++// Unowned legacy roots that must never be adopted
++export const FORBIDDEN_UNOWNED_STATE_ROOT = path.resolve(CANONICAL_WORKSPACE_ROOT, '.local-stack');
++export const FORBIDDEN_UNOWNED_HOME_ROOT = path.resolve(CANONICAL_WORKSPACE_ROOT, '.supabase-home');
++
++// Compatibility aliases
+ export const CANONICAL_STATE_ROOT = TASK_STATE_ROOT;
+ export const CANONICAL_STATE_FILE = path.resolve(TASK_STATE_ROOT, 'runtime-state.json');
+ export const CANONICAL_RAW_STATE_FILE = path.resolve(TASK_STATE_ROOT, 'runtime-raw.local.json');
+@@ -39,6 +45,17 @@
+   mail: 54324,
+   studio: 54323,
+ };
++
++/**
++ * Verify that targetPath is safely contained within parentDir without symlink escape.
++ */
++export function isSafeChildPath(parentDir, targetPath) {
++  if (!fs.existsSync(parentDir) || !fs.existsSync(targetPath)) return false;
++  const realParent = fs.realpathSync(parentDir);
++  const realTarget = fs.realpathSync(targetPath);
++  const rel = path.relative(realParent, realTarget);
++  return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
++}
+ 
+ /**
+  * Compute SHA-256 hex digest of a file or string.
+@@ -97,6 +114,10 @@
+       lowerKey.includes('jwt') ||
+       lowerKey.includes('otp') ||
+       lowerKey.includes('key') ||
++      lowerKey.includes('credential') ||
++      lowerKey.includes('authorization') ||
++      lowerKey.includes('auth_token') ||
++      lowerKey.includes('auth_secret') ||
+       lowerKey === 'anon_key' ||
+       lowerKey === 'service_role_key' ||
+       lowerKey === 'secret_key' ||
+@@ -160,13 +181,12 @@
+     throw new Error(`ALLOWLIST_FAIL: Project configuration file missing at: ${configPath}`);
+   }
+ 
+-  // Canonical realpath check (reject symlink escape)
++  // Canonical realpath check with safe child containment (reject symlink escape)
++  if (!isSafeChildPath(CANONICAL_WORKSPACE_ROOT, configPath)) {
++    throw new Error(`ALLOWLIST_FAIL: Config path ${configPath} escapes canonical workspace root.`);
++  }
++
+   const realConfigPath = fs.realpathSync(configPath);
+-  const realWorkspaceRoot = fs.realpathSync(CANONICAL_WORKSPACE_ROOT);
+-  if (!realConfigPath.startsWith(realWorkspaceRoot)) {
+-    throw new Error(`ALLOWLIST_FAIL: Config path ${configPath} escapes canonical workspace root.`);
+-  }
+-
+   const content = fs.readFileSync(realConfigPath, 'utf8');
+ 
+   // Verify project_id
+@@ -236,12 +256,19 @@
+     throw new Error(`ALLOWLIST_FAIL: Port ${port} does not match expected database port ${expectedPort}.`);
+   }
+ 
++  const database = parsed.pathname.replace(/^\//, '');
++  if (!database) {
++    throw new Error('ALLOWLIST_FAIL: Database name is missing from database URL.');
++  }
++
+   return {
+     valid: true,
+     protocol: parsed.protocol,
+     hostname,
+     port,
+-    database: parsed.pathname.replace(/^\//, ''),
++    database,
++    username: parsed.username || 'postgres',
++    password: parsed.password || '',
+   };
+ }
+ 
+@@ -285,7 +312,7 @@
+ /**
+  * Validate local task binding record (Step A: Pure local validation).
+  * Enforces canonical paths, non-symlink roots, exact config digest, git branch,
+- * full 64-character hex ID, and required loopback endpoints.
++ * full 64-character hex ID, safe child containment, and required loopback endpoints.
+  */
+ export function validateTaskBinding(bindingPath = TASK_BINDING_FILE, options = {}) {
+   const configPath = options.configPath || CANONICAL_CONFIG_PATH;
+@@ -308,14 +335,22 @@
+   try {
+     binding = JSON.parse(fs.readFileSync(bindingPath, 'utf8'));
+   } catch (err) {
+-    throw new Error(`ALLOWLIST_FAIL: Corrupted or unparseable task binding: ${err.message}`);
++    throw new Error('ALLOWLIST_FAIL: Corrupted or unparseable task binding JSON.');
+   }
+ 
+   if (!binding || typeof binding !== 'object') {
+     throw new Error('ALLOWLIST_FAIL: Task binding is not an object.');
+   }
+ 
+-  // 1. Check required identifier fields
++  // Check task metadata and version
++  if (binding.version !== '1.0') {
++    throw new Error(`ALLOWLIST_FAIL: Unsupported task binding version "${binding.version}". Expected "1.0".`);
++  }
++  if (!binding.taskId || typeof binding.taskId !== 'string') {
++    throw new Error('ALLOWLIST_FAIL: taskId is missing or invalid in task binding.');
++  }
++
++  // Check required identifier fields
+   if (!binding.stackId || typeof binding.stackId !== 'string') {
+     throw new Error('ALLOWLIST_FAIL: stackId is missing or empty in task binding.');
+   }
+@@ -331,7 +366,21 @@
+     throw new Error(`ALLOWLIST_FAIL: Unexpected runtime "${binding.runtime}". Only "native" permitted.`);
+   }
+ 
+-  // 2. Canonical realpath validation (reject symlink escape and foreign paths)
++  // Reject unowned legacy roots (.local-stack, .supabase-home)
++  if (binding.stateRoot && fs.existsSync(binding.stateRoot)) {
++    const realState = fs.realpathSync(binding.stateRoot);
++    if (fs.existsSync(FORBIDDEN_UNOWNED_STATE_ROOT) && realState === fs.realpathSync(FORBIDDEN_UNOWNED_STATE_ROOT)) {
++      throw new Error('ALLOWLIST_FAIL: Auto-adoption of unowned .local-stack root is strictly forbidden.');
++    }
++  }
++  if (binding.homeDir && fs.existsSync(binding.homeDir)) {
++    const realHome = fs.realpathSync(binding.homeDir);
++    if (fs.existsSync(FORBIDDEN_UNOWNED_HOME_ROOT) && realHome === fs.realpathSync(FORBIDDEN_UNOWNED_HOME_ROOT)) {
++      throw new Error('ALLOWLIST_FAIL: Auto-adoption of unowned .supabase-home root is strictly forbidden.');
++    }
++  }
++
++  // Canonical realpath validation (reject symlink escape and foreign paths)
+   const realWorkspace = fs.realpathSync(options.workspaceRoot || CANONICAL_WORKSPACE_ROOT);
+   if (!binding.projectRoot || fs.realpathSync(binding.projectRoot) !== realWorkspace) {
+     throw new Error('ALLOWLIST_FAIL: projectRoot in task binding does not match canonical workspace root.');
+@@ -343,14 +392,42 @@
+     throw new Error('ALLOWLIST_FAIL: configPath in task binding does not match canonical config path.');
+   }
+ 
+-  // 3. Config digest check
++  // Binding file canonical location: must reside directly inside binding.stateRoot
++  if (!binding.stateRoot || !fs.existsSync(binding.stateRoot)) {
++    throw new Error('ALLOWLIST_FAIL: stateRoot is missing or does not exist on disk.');
++  }
++  const realStateRoot = fs.realpathSync(binding.stateRoot);
++  const realBindingPath = fs.realpathSync(bindingPath);
++  if (path.dirname(realBindingPath) !== realStateRoot) {
++    throw new Error('ALLOWLIST_FAIL: Binding file does not reside directly inside binding.stateRoot.');
++  }
++
++  if (!binding.homeDir || !fs.existsSync(binding.homeDir)) {
++    throw new Error('ALLOWLIST_FAIL: homeDir is missing or does not exist on disk.');
++  }
++  const realHomeDir = fs.realpathSync(binding.homeDir);
++
++  // Safe child path check: stateRoot and homeDir must reside within workspace or explicit test temp
++  const isWorkspaceState = isSafeChildPath(realWorkspace, realStateRoot);
++  const isWorkspaceHome = isSafeChildPath(realWorkspace, realHomeDir);
++  const isTestState = options.allowTempRoots && (realStateRoot.startsWith('/tmp') || realStateRoot.startsWith('/var/tmp'));
++  const isTestHome = options.allowTempRoots && (realHomeDir.startsWith('/tmp') || realHomeDir.startsWith('/var/tmp'));
++
++  if (!isWorkspaceState && !isTestState) {
++    throw new Error('ALLOWLIST_FAIL: stateRoot escapes permitted workspace boundary.');
++  }
++  if (!isWorkspaceHome && !isTestHome) {
++    throw new Error('ALLOWLIST_FAIL: homeDir escapes permitted workspace boundary.');
++  }
++
++  // Config digest check
+   if (binding.configDigest !== configInfo.configDigest) {
+     throw new Error(
+       `ALLOWLIST_FAIL: Config digest mismatch (binding: ${binding.configDigest}, config.toml: ${configInfo.configDigest}).`
+     );
+   }
+ 
+-  // 4. Git branch check
++  // Git branch check
+   const currentBranch = getGitBranch(realWorkspace);
+   const normalizedBindingBranch = binding.gitBranch.replace(/^refs\/heads\//, '');
+   const normalizedCurrentBranch = currentBranch.replace(/^refs\/heads\//, '');
+@@ -360,7 +437,7 @@
+     );
+   }
+ 
+-  // 5. Endpoints validation
++  // Endpoints validation
+   const endpoints = binding.endpoints || {};
+   const requiredEndpoints = ['database.sql', 'auth.http', 'rest.http', 'storage.http', 'mail.http'];
+   for (const epKey of requiredEndpoints) {
+@@ -401,11 +478,14 @@
+   return {
+     valid: true,
+     bound: true,
++    taskId: binding.taskId,
+     stackId: binding.stackId,
++    id: binding.stackId,
+     stackName: binding.stackName,
+     runtime: binding.runtime,
+     projectRoot: binding.projectRoot,
+     workdir: binding.workdir,
++    configPath: binding.configPath,
+     gitBranch: binding.gitBranch,
+     homeDir: binding.homeDir,
+     stateRoot: binding.stateRoot,
+@@ -442,13 +522,13 @@
+ 
+   let parsed;
+   try {
+-    const jsonMatch = res.stdout.match(/\{[\s\S]*\}/);
++    const jsonMatch = (res.stdout || '').match(/\{[\s\S]*\}/);
+     if (!jsonMatch) {
+       throw new Error('No JSON output returned by stack list.');
+     }
+     parsed = JSON.parse(jsonMatch[0]);
+   } catch (err) {
+-    throw new Error(`RECONCILE_FAIL: Malformed JSON from native stack list: ${sanitizeString(err.message)}`);
++    throw new Error('RECONCILE_FAIL: Malformed JSON from native stack list (syntax error).');
+   }
+ 
+   const stacks = parsed.stacks || [];
+@@ -458,7 +538,7 @@
+     throw new Error(`RECONCILE_FAIL: Task stack ID "${binding.stackId}" was not found in native registry.`);
+   }
+ 
+-  // Reconcile identity tuple
++  // Reconcile complete identity tuple
+   if (matching.name !== binding.stackName) {
+     throw new Error(
+       `RECONCILE_FAIL: Native stack name mismatch (expected "${binding.stackName}", found "${matching.name}").`
+@@ -493,15 +573,13 @@
+ 
+ /**
+  * Public entry for validating runtime state.
+- * Validates canonical config and task-local binding.
+- */
+-export function getValidatedRuntimeState(targetFile = TASK_BINDING_FILE) {
+-  // If targetFile is CANONICAL_STATE_FILE and does not exist but TASK_BINDING_FILE exists, use TASK_BINDING_FILE
++ */
++export function getValidatedRuntimeState(targetFile = TASK_BINDING_FILE, options = {}) {
+   let effectiveFile = targetFile;
+   if (!fs.existsSync(effectiveFile) && fs.existsSync(TASK_BINDING_FILE)) {
+     effectiveFile = TASK_BINDING_FILE;
+   }
+-  return validateTaskBinding(effectiveFile);
++  return validateTaskBinding(effectiveFile, options);
+ }
+ 
+ // CLI entry for manual validation

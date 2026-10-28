@@ -1,0 +1,31 @@
+{
+  "classification": "current file-byte provenance; not a fresh render or runtime verification",
+  "files": {
+    "docs/02-requirements.md": "48d6b9e1309d0ade2f1bee028a448553d76cd3d13e98b308211c950d191d1907",
+    "docs/use-case-specifications.md": "b410963e09e3a3c65da7e39da789a0742047d8b3d38c9f7741f537efcafca212",
+    "docs/design/physical/README.md": "98655541367f3b1f8a4b93403b60a91162faaa9c562472b18980fb054e727483",
+    "docs/design/physical/security-and-rls.md": "00ed91a92e3e868b6745b28c234348bfac72bd140097b36b6228dfdd8bbd1144",
+    "docs/design/physical/database-reconciliation-2026-10-20.md": "77b80d6bada3175ced91c982ca60beb5bb5d628dd612e0237c19ab875e699522",
+    "docs/design/physical/physical-erd.puml": "6100c66d0270cc778e4d0d354aeb05d136c05813801c5047217b0de7e4f37ecb",
+    "docs/design/physical/physical-erd-identity.png": "a1df85a2277ee7efdb1cf63475dcdc29b1b18af44a80cb57625fd09889a1ebfb",
+    "docs/design/physical/physical-erd-content.png": "14188dbfc0efaaa31fa00f9bdc8e330fd17973f088e7af9673ed64ac3a33519a",
+    "docs/design/physical/physical-erd-learning.png": "b8339a9889c5c88e74b365ef232fabe02887d885b04ee0cbd9611efb80ed7be5",
+    "docs/design/physical/physical-erd-assessment.png": "bad762541c11b311c4d3452bafcdcc3b318e0569d61ff0992a854d04257c4451",
+    "docs/design/physical/final-technical-review-2026-10-22.md": "ca3457e464a4078740825b7205e92f390794fa86b730874f44e13be354d95286",
+    "plans/2026-10-22-database-runtime-implementation-spec.md": "1443c37c9954245a628c1a7f39f706535b66d12ce3b5213c92938484fa23cafa",
+    "docs/design/physical/ftr-disposition-2026-10-22.md": "d4883849c602341950fdc366dfa41000260f57760f747c538c3d49f40f816b0b"
+  },
+  "historical_manifest_note": "Six previous physical-output hashes remain historical; prior source/render parity evidence preserved unchanged. No diagram rerender in this task.",
+  "official_sources_checked_2026_10_22": [
+    "https://github.com/supabase/supabase-js/blob/v2.112.3/packages/core/auth-js/src/GoTrueAdminApi.ts",
+    "https://github.com/supabase/supabase-js/blob/v2.112.3/packages/core/auth-js/src/lib/types.ts",
+    "https://github.com/supabase/auth/blob/master/internal/api/invite.go",
+    "https://www.postgresql.org/docs/15/sql-createpolicy.html",
+    "https://www.postgresql.org/docs/15/explicit-locking.html",
+    "https://www.postgresql.org/docs/15/sql-set.html",
+    "https://www.prisma.io/docs/orm/v6/prisma-client/queries/transactions",
+    "https://www.prisma.io/docs/orm/v6/prisma-migrate/workflows/unsupported-database-features",
+    "https://supabase.com/docs/guides/database/connecting-to-postgres"
+  ],
+  "auth_server_version": "Master source supports selected invite contract; actual deployed version/config still must be proved by A1."
+}

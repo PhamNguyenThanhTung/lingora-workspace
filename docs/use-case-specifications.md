@@ -177,6 +177,10 @@ The `VIEW-RUC-01`–`VIEW-RUC-07` diagrams and `VIEW-RUC-08A`/`VIEW-RUC-08B` sub
 
 ---
 
+### Completable Lesson readiness — ADR-044 (2026-10-22)
+
+UC-06/UC-10–12 consume the explicit PO decision: a published Lesson available for Learner completion requires `N >= 1` core exercise. Draft/save may have zero; submit, approve and publish reject zero, and runtime start rechecks the pinned revision. Optional review, vocabulary and assessment contributions do not satisfy this core count. Keep `lesson_attempts.n_core > 0`; N=0 completion/performance and a special content-only lifecycle are outside MVP. This refines the count boundary without changing ADR-036 scoring, redo, SRS or Class draft cardinality `0..*`. See [disposition](design/physical/ftr-disposition-2026-10-22.md).
+
 ### Supplementary practice — ADR-042
 
 After valid core completion, learner may start a supplementary block: independent internal due/overdue SRS plus configured focus-biased eligible authored practice. Other-area fallback handles scarce focus material; an empty optional practice pool never fails core completion. Restrict to published AVAILABLE accessible same-context curriculum with active finite practice-skill/area metadata and PRACTICE origin; no secure assessment reuse. Temporary feedback stays outside core N/K, performance/completion/unlocks, secure assessment result and progression. No extra canonical UC or persisted composition/history is required.

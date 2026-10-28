@@ -1,0 +1,24 @@
+================================================================================
+[P1-00-INTEGRATION] Starting Focused Fresh Disposable Child-Path Integration
+================================================================================
+[P1-00-INTEGRATION] Pre-check socket quiescence: PASS (all ports free)
+[P1-00-INTEGRATION] Allocating and starting fresh disposable native stack...
+[P1-00-INTEGRATION] Fresh stack started: runId=run-bbcd679f424993b2, stackId=44a6dc179174c4b674a5cd2e348727f6a1a102854e3a7e8bde7e11dedf34a972
+[P1-00-INTEGRATION] Invoking runScaffold with child test fixture...
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:p1-00-child-path
+[TEST-SCAFFOLD] Description: Focused child-path integration with live synthetic stack
+[TEST-SCAFFOLD] Gate: P1-00 runner-context integration
+================================================================================
+[TEST-SCAFFOLD] Environment: BOUND (Stack: 44a6dc179174c4b674a5cd2e348727f6a1a102854e3a7e8bde7e11dedf34a972, Runtime: native)
+[TEST-SCAFFOLD] Found 1 test files. Executing via Node test runner...
+[TEST-SCAFFOLD] Test execution summary: 1/1 tests passed.
+[TEST-SCAFFOLD] Test suite "test:db:p1-00-child-path" PASSED.
+[P1-00-INTEGRATION] Scaffold execution result: status=PASSED, exitCode=0
+[P1-00-INTEGRATION] Destroying fresh disposable stack...
+[P1-00-INTEGRATION] Stack destroyed: status=DESTROYED, code=SUCCESS, exit_code=0
+[P1-00-INTEGRATION] Post-destroy socket quiescence: PASS (all ports free)
+[P1-00-INTEGRATION] Tombstone record verified on disk: PASS (phase=DESTROYED, tombstone=true)
+================================================================================
+[P1-00-INTEGRATION] Focused Child-Path Integration: COMPLETE (PASS)
+================================================================================

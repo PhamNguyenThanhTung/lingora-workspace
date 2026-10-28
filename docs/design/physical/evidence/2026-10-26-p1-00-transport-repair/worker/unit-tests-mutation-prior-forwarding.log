@@ -1,0 +1,104 @@
+✔ 1. Scaffold fails closed (exit 1) on unbound environment (missing --run flag) (89.924979ms)
+✔ 2. Forged test env flags do NOT bypass reconciliation (fails closed with exit 1) (84.299278ms)
+✔ 3. Scaffold with bound state but absent test files returns NOT EXECUTED (exit 1) and never mutates canonical state (201.513976ms)
+✔ 4. Scaffold with deliberately failing test fixture ACTUALLY runs and propagates test failure without touching canonical state (253.186008ms)
+✔ 5. Scaffold with pending operation denies execution (exit 1 / RECOVERY_REQUIRED) without touching data or executing tests (6.684087ms)
+✔ 6. Representative unregistered pending-secret canary in authority.pending_operation never leaks to scaffold stdout or stderr (2.940872ms)
+✔ 7. Scaffold passes explicit trusted owned-run context (LINGORA_TEST_CONTEXT) to child test runner (245.830702ms)
+✔ 8. Scaffold safely captures child test output, extracts finite summary, and sanitizes secrets (116.940693ms)
+✔ 9. Real paused child test holds parent run lock through completion, and contender is demonstrably BLOCKED through close (908.510864ms)
+✔ 1. Missing explicit context throws TEST_CONTEXT_MISSING and strictly ignores ambient environment (2.355186ms)
+✔ 2. Malformed explicit context payload throws TEST_CONTEXT_INVALID (0.434485ms)
+✔ 3. Forbidden or legacy runsDir throws ALLOWLIST_FAIL (0.929176ms)
+✔ 4. Stale context: absent lock file throws TEST_CONTEXT_STALE (2.86707ms)
+✔ 5. Stale context: dead parent PID in lock throws TEST_CONTEXT_STALE (2.330088ms)
+✔ 6. Foreign context: lock token mismatch (lock steal attempt) throws TEST_CONTEXT_FORBIDDEN (1.65993ms)
+✔ 7. Foreign context: run_id mismatch throws TEST_CONTEXT_MISMATCH (1.496686ms)
+✔ 8. Pending operation denial: authority with pending operation throws RECOVERY_REQUIRED (2.951112ms)
+✔ 9. Unbound authority (RESERVED or DESTROYED) throws TEST_CONTEXT_DENIED (2.231719ms)
+✔ 10. Foreign database endpoint (non-local host or wrong port) throws ALLOWLIST_FAIL (3.333336ms)
+✔ 11. Positive test: valid context yields typed endpoints and credentials (3.52281ms)
+✔ 12. Lock removal after context retrieval is immediately detected by assertLockHeld (2.702894ms)
+✖ 13. createTargetPgClient strips ambient PG* env vars, enforces lock assertion, and rejects destination overrides (4.345261ms)
+✖ 14. Critical negative effect assertion: zero SQL connections across failure modes and positive factory increment (6.089833ms)
+✖ 15. Default pg Client transport factory verification: zero stream invocation on invalid options and validated target contrast (3.524733ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 21
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2049.910742
+
+✖ failing tests:
+
+test at lingora-admin/tests/database/test-context.test.mjs:406:1
+✖ 13. createTargetPgClient strips ambient PG* env vars, enforces lock assertion, and rejects destination overrides (4.345261ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs:459:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at lingora-admin/tests/database/test-context.test.mjs:575:1
+✖ 14. Critical negative effect assertion: zero SQL connections across failure modes and positive factory increment (6.089833ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs:664:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'ALLOWLIST_FAIL' },
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at lingora-admin/tests/database/test-context.test.mjs:770:1
+✖ 15. Default pg Client transport factory verification: zero stream invocation on invalid options and validated target contrast (3.524733ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'ALLOWLIST_FAIL'
+  - }
+  
+      at TestContext.<anonymous> (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs:778:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: STREAM_INVOKED_UNEXPECTEDLY
+        at Connection.stream (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs:783:19)
+        at new Connection (/home/tung/workspace/school/project1/lingora-workspace/node_modules/pg/lib/connection.js:20:26)
+        at new Client (/home/tung/workspace/school/project1/lingora-workspace/node_modules/pg/lib/client.js:48:7)
+        at createTargetPgClient (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.mjs:396:14)
+        at assert.throws.code (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs:779:13)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs:778:12)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1402:25),
+    expected: { code: 'ALLOWLIST_FAIL' },
+    operator: 'throws',
+    diff: 'simple'
+  }

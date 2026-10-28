@@ -1,0 +1,618 @@
+--- delivery1/lingora-admin/tests/database/scaffolds/runner-base.mjs
++++ corrected/lingora-admin/tests/database/scaffolds/runner-base.mjs
+@@ -39,14 +39,13 @@
+ 
+ /**
+  * Safely parse child Node test runner output into a finite summary.
+- * Uses sanitizeString so secrets and unredacted canaries never leak.
++ * Emits strictly finite counts (total, pass, fail); never copies or echoes
++ * arbitrary child test names, test labels, or error strings to public sinks.
+  */
+ export function parseTestOutputSummary(stdout = '') {
+   let passCount = 0;
+   let failCount = 0;
+   let totalCount = 0;
+-  const failedTests = [];
+-  const passedTests = [];
+ 
+   const clean = sanitizeString(stdout);
+   const lines = clean.split('\n');
+@@ -58,27 +57,14 @@
+       failCount = parseInt(line.match(/fail\s+(\d+)/)[1], 10);
+     } else if (/^(?:#|ℹ)\s+tests\s+(\d+)/.test(line)) {
+       totalCount = parseInt(line.match(/tests\s+(\d+)/)[1], 10);
+-    } else if (/^(?:not ok\s+\d+\s+-\s+|✖\s+)(.+)/.test(line)) {
+-      const match = line.match(/^(?:not ok\s+\d+\s+-\s+|✖\s+)(.+)/);
+-      if (match && match[1]) {
+-        const name = match[1].replace(/\s+\(\d+(?:\.\d+)?m?s\)$/, '').trim();
+-        failedTests.push(name);
+-      }
+-    } else if (/^(?:ok\s+\d+\s+-\s+|✔\s+)(.+)/.test(line)) {
+-      const match = line.match(/^(?:ok\s+\d+\s+-\s+|✔\s+)(.+)/);
+-      if (match && match[1]) {
+-        const name = match[1].replace(/\s+\(\d+(?:\.\d+)?m?s\)$/, '').trim();
+-        passedTests.push(name);
+-      }
+-    }
+-  }
+-
++    }
++  }
++
++  const resolvedTotal = totalCount || (passCount + failCount);
+   return {
+-    total: totalCount || (passCount + failCount),
++    total: resolvedTotal,
+     pass: passCount,
+     fail: failCount,
+-    failedTests,
+-    passedTests,
+   };
+ }
+ 
+@@ -211,10 +197,7 @@
+     const summary = parseTestOutputSummary(cleanStdout);
+ 
+     if (nodeRes.status !== 0) {
+-      errFn(`[TEST-SCAFFOLD] Test suite "${testSuiteName}" FAILED with exit code ${nodeRes.status}.`);
+-      if (summary.failedTests.length > 0) {
+-        errFn(`[TEST-SCAFFOLD] Failed tests: ${summary.failedTests.join(', ')}`);
+-      }
++      errFn(`[TEST-SCAFFOLD] Test suite "${testSuiteName}" FAILED with exit code ${nodeRes.status}. (pass: ${summary.pass}, fail: ${summary.fail})`);
+       if (setProcessExitCode) process.exitCode = nodeRes.status || 1;
+       return { status: 'FAILED', exitCode: nodeRes.status || 1, code: 'SCAFFOLD_TEST_FAILED', summary };
+     }
+--- delivery1/lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs
++++ corrected/lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs
+@@ -654,6 +654,7 @@
+ 
+     const secretPassword = 'RAW_SECRET_PASSWORD_' + crypto.randomBytes(6).toString('hex');
+     const secretJwt = 'sb_secret_' + crypto.randomBytes(8).toString('hex');
++    const unregisteredCanary = 'unreg_canary_child_failure_' + crypto.randomBytes(8).toString('hex');
+ 
+     const res = await runScaffold({
+       testSuiteName: 'test:db:a1-output',
+@@ -718,7 +719,7 @@
+         fetch: async () => ({ status: 200, text: async () => '{}' }),
+         testExecutor: () => ({
+           status: 1,
+-          stdout: `not ok 1 - failing secret test\n# pass 0\n# fail 1\n# tests 1\npostgresql://postgres:${secretPassword}@127.0.0.1:54322/postgres ${secretJwt}`,
++          stdout: `not ok 1 - ${unregisteredCanary}\n# pass 0\n# fail 1\n# tests 1\npostgresql://postgres:${secretPassword}@127.0.0.1:54322/postgres ${secretJwt}`,
+           stderr: `Error with postgresql://postgres:${secretPassword}@127.0.0.1:54322/postgres and ${secretJwt}`,
+         }),
+       },
+@@ -733,7 +734,13 @@
+     assert.ok(res.summary);
+     assert.equal(res.summary.fail, 1);
+     assert.equal(res.summary.pass, 0);
+-    assert.deepEqual(res.summary.failedTests, ['failing secret test']);
++    assert.equal(res.summary.total, 1);
++    assert.deepEqual(res.summary, { total: 1, pass: 0, fail: 1 });
++
++    // Negative assertions: unregistered canary test name NEVER reaches public stdout/stderr or returned summary
++    assert.equal(capturedStdout.includes(unregisteredCanary), false, 'Captured stdout must not leak unregistered test-name canary');
++    assert.equal(capturedStderr.includes(unregisteredCanary), false, 'Captured stderr must not leak unregistered test-name canary');
++    assert.equal(JSON.stringify(res).includes(unregisteredCanary), false, 'Returned scaffold summary must not contain unregistered test-name canary');
+ 
+     // Negative assertions: raw credentials and raw secret streams NEVER leak
+     assert.equal(capturedStdout.includes(secretPassword), false, 'Captured stdout must not leak password');
+@@ -762,7 +769,7 @@
+ import { getTestContext } from '../test-context.mjs';
+ 
+ test('paused child holds lock and obtains valid context', async () => {
+-  const ctx = getTestContext();
++  const ctx = getTestContext({ expectedRunsDir: '${tempRunsDir}' });
+   assert.ok(ctx.runId, 'runId must be present');
+   assert.equal(ctx.endpoints.database.port, 54322);
+   assert.equal(typeof ctx.credentials.databaseUrl, 'string');
+--- delivery1/lingora-admin/tests/database/test-child-integration.mjs
++++ corrected/lingora-admin/tests/database/test-child-integration.mjs
+@@ -14,6 +14,7 @@
+ import fs from 'node:fs';
+ import path from 'node:path';
+ import assert from 'node:assert/strict';
++import { spawnSync } from 'node:child_process';
+ import { fileURLToPath } from 'node:url';
+ 
+ import {
+@@ -23,6 +24,7 @@
+   snapshotRunSockets,
+   verifySocketsQuiescent,
+   validateAuthorityRecord,
++  sanitizeString,
+ } from './env/env-guard.mjs';
+ import { startStack, destroyStack } from './env/stack-manager.mjs';
+ import { runScaffold } from './scaffolds/runner-base.mjs';
+@@ -42,13 +44,20 @@
+   if (initialSockets.activePorts && initialSockets.activePorts.length > 0) {
+     throw new Error(`PRECHECK_FAIL: Ports already in use: ${initialSockets.activePorts.map(p => p.port).join(', ')}`);
+   }
++  const preQuiescent = verifySocketsQuiescent();
++  assert.equal(preQuiescent, true, 'Pre-check sockets must be quiescent');
+   console.log('[P1-00-INTEGRATION] Pre-check socket quiescence: PASS (all ports free)');
+ 
+   // 1. Allocate and start fresh disposable native stack
+   console.log('[P1-00-INTEGRATION] Allocating and starting fresh disposable native stack...');
+-  const startResult = await startStack({ newRun: true });
++  const startResult = await startStack({
++    newRun: true,
++    adapters: {
++      cliExecutor: (cmd, args, opts) => spawnSync(cmd, args, { ...opts, timeout: Math.max(opts?.timeout || 0, 360000) }),
++    },
++  });
+   const runId = startResult.runId;
+-  const runDir = startResult.runDir;
++  const runDir = path.resolve(DEFAULT_RUNS_DIR, runId);
+   console.log(`[P1-00-INTEGRATION] Fresh stack started: runId=${runId}, stackId=${startResult.stackId}`);
+ 
+   // Create temporary fixture directory and child test file
+@@ -134,23 +143,23 @@
+ 
+     // 3. Destroy fresh disposable stack cleanly
+     console.log('[P1-00-INTEGRATION] Destroying fresh disposable stack...');
+-    const destroyRes = await destroyStack({ runId });
+-    console.log(`[P1-00-INTEGRATION] Stack destroyed: status=${destroyRes.status}, tombstone=${destroyRes.tombstone}`);
++    const destroyRes = destroyStack({ runId, runsDir: DEFAULT_RUNS_DIR });
++    console.log(`[P1-00-INTEGRATION] Stack destroyed: status=${destroyRes.status}, code=${destroyRes.code}, exit_code=${destroyRes.exit_code}`);
+ 
+     // Verify postconditions
+     assert.equal(destroyRes.status, 'DESTROYED', 'Destroy result status must be DESTROYED');
+     assert.equal(destroyRes.phase, 'DESTROYED', 'Destroy result phase must be DESTROYED');
+     assert.equal(destroyRes.exit_code, 0, 'Destroy exit code must be 0');
+ 
+-    const postSockets = verifySocketsQuiescent();
+-    assert.equal(postSockets.quiescent, true, 'All ports must be verified quiescent after destroy');
++    const postQuiescent = verifySocketsQuiescent();
++    assert.equal(postQuiescent, true, 'All ports must be verified quiescent after destroy');
+     console.log('[P1-00-INTEGRATION] Post-destroy socket quiescence: PASS (all ports free)');
+ 
+     // Verify tombstone on disk via validateAuthorityRecord
+-    const authRecord = validateAuthorityRecord(path.resolve(runDir, 'owner.json'), { expectedRunId: runId });
++    const authRecord = validateAuthorityRecord(path.resolve(runDir, 'owner.json'), { runsDir: DEFAULT_RUNS_DIR, expectedRunId: runId });
+     assert.equal(authRecord.phase, 'DESTROYED');
+     assert.equal(authRecord.tombstone, true);
+-    console.log('[P1-00-INTEGRATION] Tombstone record verified on disk: PASS');
++    console.log('[P1-00-INTEGRATION] Tombstone record verified on disk: PASS (phase=DESTROYED, tombstone=true)');
+   }
+ 
+   console.log('================================================================================');
+@@ -159,6 +168,7 @@
+ }
+ 
+ runChildIntegration().catch((err) => {
+-  console.error('[P1-00-INTEGRATION] FATAL:', err);
++  const safeMsg = sanitizeString(err && err.message ? err.message : String(err));
++  console.error(`[P1-00-INTEGRATION] FAILED: ${safeMsg}`);
+   process.exit(1);
+ });
+--- delivery1/lingora-admin/tests/database/test-context.mjs
++++ corrected/lingora-admin/tests/database/test-context.mjs
+@@ -161,7 +161,7 @@
+   }
+ 
+   // 2. Validate payload structure
+-  const { runId, runsDir, runDir: explicitRunDir, recordPath: explicitRecordPath, lockToken } = rawContext;
++  const { runId, runsDir: untrustedRunsDir, runDir: explicitRunDir, recordPath: explicitRecordPath, lockToken } = rawContext;
+ 
+   if (!runId || typeof runId !== 'string' || !/^run-[a-f0-9]{8,32}$/i.test(runId)) {
+     const err = new Error('TEST_CONTEXT_INVALID: runId missing or malformed in test context.');
+@@ -175,13 +175,32 @@
+     throw err;
+   }
+ 
+-  // 3. Validate runsDir and runDir allowlists
+-  const normRunsDir = assertAllowlistedRunsDir(runsDir || DEFAULT_RUNS_DIR);
+-  const expectedRunDir = path.resolve(normRunsDir, runId);
++  // 3. Resolve independently trusted runs namespace (default DEFAULT_RUNS_DIR; code override only for test fixtures)
++  const trustedRunsDir = options.expectedRunsDir ? path.resolve(options.expectedRunsDir) : DEFAULT_RUNS_DIR;
++  assertAllowlistedRunsDir(trustedRunsDir);
++
++  if (untrustedRunsDir) {
++    const normUntrusted = path.resolve(untrustedRunsDir);
++    if (normUntrusted !== trustedRunsDir) {
++      const err = new Error(`ALLOWLIST_FAIL: Context runsDir "${untrustedRunsDir}" does not match trusted runs namespace "${trustedRunsDir}".`);
++      err.code = 'ALLOWLIST_FAIL';
++      throw err;
++    }
++  }
++
++  const expectedRunDir = path.resolve(trustedRunsDir, runId);
+   const runDir = explicitRunDir ? path.resolve(explicitRunDir) : expectedRunDir;
+ 
+   if (runDir !== expectedRunDir) {
+     const err = new Error(`ALLOWLIST_FAIL: runDir does not match exact lexical runsDir/runId path.`);
++    err.code = 'ALLOWLIST_FAIL';
++    throw err;
++  }
++
++  const expectedRecordPath = path.resolve(runDir, 'owner.json');
++  const recordPath = explicitRecordPath ? path.resolve(explicitRecordPath) : expectedRecordPath;
++  if (recordPath !== expectedRecordPath) {
++    const err = new Error('ALLOWLIST_FAIL: recordPath does not match exact lexical runDir/owner.json path.');
+     err.code = 'ALLOWLIST_FAIL';
+     throw err;
+   }
+@@ -214,10 +233,9 @@
+   const lockCtx = { runId, runDir, _lockToken: lockToken };
+   assertLockHeld(lockCtx, lockToken);
+ 
+-  // 5. Validate authority record under parent lock
+-  const recordPath = explicitRecordPath ? path.resolve(explicitRecordPath) : path.resolve(runDir, 'owner.json');
++  // 5. Validate authority record under parent lock against trusted namespace
+   const authority = validateAuthorityRecord(recordPath, {
+-    runsDir: normRunsDir,
++    runsDir: trustedRunsDir,
+     expectedRunId: runId,
+   });
+ 
+@@ -283,7 +301,7 @@
+   // 7. Construct and return typed test context
+   const testContext = {
+     runId,
+-    runsDir: normRunsDir,
++    runsDir: trustedRunsDir,
+     runDir,
+     stackId: authority.instance_id,
+     stackName: authority.stack_name,
+@@ -320,6 +338,33 @@
+     throw err;
+   }
+ 
++  // Reject destination or connection parameter overrides before transport factory
++  if (options.connectionString) {
++    const err = new Error('ALLOWLIST_FAIL: Destination override via options.connectionString is prohibited.');
++    err.code = 'ALLOWLIST_FAIL';
++    throw err;
++  }
++
++  if (options.clientConfig) {
++    const forbiddenOverrides = [
++      'host',
++      'port',
++      'database',
++      'user',
++      'password',
++      'connectionString',
++      'ssl',
++      'client_encoding',
++    ];
++    for (const key of forbiddenOverrides) {
++      if (key in options.clientConfig) {
++        const err = new Error(`ALLOWLIST_FAIL: Destination/connection parameter "${key}" cannot be overridden in clientConfig.`);
++        err.code = 'ALLOWLIST_FAIL';
++        throw err;
++      }
++    }
++  }
++
+   // Assert lock is actively held before instantiating or connecting
+   ctx.assertLockHeld();
+ 
+@@ -342,7 +387,7 @@
+     password: parsed.password,
+     connectionTimeoutMillis: options.connectionTimeoutMillis || 5000,
+     ssl: false,
+-    ...options.clientConfig,
++    ...(options.clientConfig || {}),
+   };
+ 
+   let client;
+--- delivery1/lingora-admin/tests/database/test-context.test.mjs
++++ corrected/lingora-admin/tests/database/test-context.test.mjs
+@@ -170,8 +170,10 @@
+ });
+ 
+ test('3. Forbidden or legacy runsDir throws ALLOWLIST_FAIL', () => {
++  // 3a. Forbidden roots as expectedRunsDir override throw ALLOWLIST_FAIL (forbidden root)
+   assert.throws(
+     () => getTestContext({
++      expectedRunsDir: FORBIDDEN_UNOWNED_STATE_ROOT,
+       context: {
+         runId: 'run-12345678',
+         runsDir: FORBIDDEN_UNOWNED_STATE_ROOT,
+@@ -182,6 +184,7 @@
+   );
+   assert.throws(
+     () => getTestContext({
++      expectedRunsDir: FORBIDDEN_OLD_WP00_STATE,
+       context: {
+         runId: 'run-12345678',
+         runsDir: FORBIDDEN_OLD_WP00_STATE,
+@@ -190,6 +193,22 @@
+     }),
+     /ALLOWLIST_FAIL.*forbidden root/
+   );
++
++  // 3b. Untrusted arbitrary runsDir in context payload does not match default trusted runs namespace
++  assert.throws(
++    () => getTestContext({
++      context: {
++        runId: 'run-12345678',
++        runsDir: '/tmp/arbitrary-untrusted-namespace',
++        lockToken: crypto.randomUUID(),
++      },
++    }),
++    (err) => {
++      assert.equal(err.code, 'ALLOWLIST_FAIL');
++      assert.match(err.message, /Context runsDir.*does not match trusted runs namespace/);
++      return true;
++    }
++  );
+ });
+ 
+ test('4. Stale context: absent lock file throws TEST_CONTEXT_STALE', () => {
+@@ -197,7 +216,7 @@
+   try {
+     const { explicitContext } = createTestAuthorityAndLock(tempRunsDir, { skip_lock: true });
+     assert.throws(
+-      () => getTestContext({ context: explicitContext }),
++      () => getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir }),
+       (err) => {
+         assert.equal(err.code, 'TEST_CONTEXT_STALE');
+         assert.match(err.message, /TEST_CONTEXT_STALE.*lock held by parent is no longer present/);
+@@ -219,7 +238,7 @@
+       start_ticks: '999999',
+     });
+     assert.throws(
+-      () => getTestContext({ context: explicitContext }),
++      () => getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir }),
+       (err) => {
+         assert.equal(err.code, 'TEST_CONTEXT_STALE');
+         assert.match(err.message, /TEST_CONTEXT_STALE.*Run lock holder PID.*is not alive/);
+@@ -242,7 +261,7 @@
+     });
+ 
+     assert.throws(
+-      () => getTestContext({ context: explicitContext }),
++      () => getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir }),
+       (err) => {
+         assert.equal(err.code, 'TEST_CONTEXT_FORBIDDEN');
+         assert.match(err.message, /TEST_CONTEXT_FORBIDDEN.*Lock token mismatch/);
+@@ -265,7 +284,7 @@
+     });
+ 
+     assert.throws(
+-      () => getTestContext({ context: explicitContext }),
++      () => getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir }),
+       (err) => {
+         assert.equal(err.code, 'TEST_CONTEXT_MISMATCH');
+         assert.match(err.message, /TEST_CONTEXT_MISMATCH.*Lock run_id mismatch/);
+@@ -285,7 +304,7 @@
+     });
+ 
+     assert.throws(
+-      () => getTestContext({ context: explicitContext }),
++      () => getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir }),
+       (err) => {
+         assert.equal(err.code, 'RECOVERY_REQUIRED');
+         assert.match(err.message, /RECOVERY_REQUIRED.*contains pending operation/);
+@@ -305,7 +324,7 @@
+     });
+ 
+     assert.throws(
+-      () => getTestContext({ context: explicitContext }),
++      () => getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir }),
+       (err) => {
+         assert.equal(err.code, 'TEST_CONTEXT_DENIED');
+         assert.match(err.message, /TEST_CONTEXT_DENIED.*Environment is not bound/);
+@@ -325,7 +344,7 @@
+     });
+ 
+     assert.throws(
+-      () => getTestContext({ context: explicitContext }),
++      () => getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir }),
+       /ALLOWLIST_FAIL/
+     );
+   } finally {
+@@ -338,7 +357,7 @@
+   try {
+     const { explicitContext, runId, authority } = createTestAuthorityAndLock(tempRunsDir);
+ 
+-    const ctx = getTestContext({ context: explicitContext });
++    const ctx = getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir });
+     assert.equal(ctx.runId, runId);
+     assert.equal(ctx.stackId, authority.instance_id);
+     assert.equal(ctx.endpoints.database.host, '127.0.0.1');
+@@ -360,7 +379,7 @@
+   try {
+     const { explicitContext, runDir } = createTestAuthorityAndLock(tempRunsDir);
+ 
+-    const ctx = getTestContext({ context: explicitContext });
++    const ctx = getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir });
+     assert.equal(ctx.assertLockHeld(), true);
+ 
+     // Parent completes and unlinks lock file
+@@ -380,14 +399,14 @@
+   }
+ });
+ 
+-test('13. createTargetPgClient strips ambient PG* env vars and enforces lock assertion', () => {
++test('13. createTargetPgClient strips ambient PG* env vars, enforces lock assertion, and rejects destination overrides', () => {
+   const tempRunsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-test-pg-client-'));
+   const savedPgHost = process.env.PGHOST;
+   try {
+     process.env.PGHOST = 'ambient-malicious-host';
+     const { explicitContext } = createTestAuthorityAndLock(tempRunsDir);
+ 
+-    const ctx = getTestContext({ context: explicitContext });
++    const ctx = getTestContext({ context: explicitContext, expectedRunsDir: tempRunsDir });
+ 
+     let capturedConfig = null;
+     class MockClient {
+@@ -405,6 +424,32 @@
+ 
+     // Ambient PGHOST was restored after client instantiation
+     assert.equal(process.env.PGHOST, 'ambient-malicious-host');
++
++    // Rejection of destination overrides in clientConfig
++    assert.throws(
++      () => createTargetPgClient(ctx, { clientConfig: { host: 'foreign-target.example.com' }, ClientClass: MockClient }),
++      (err) => {
++        assert.equal(err.code, 'ALLOWLIST_FAIL');
++        assert.match(err.message, /Destination\/connection parameter "host" cannot be overridden/);
++        return true;
++      }
++    );
++    assert.throws(
++      () => createTargetPgClient(ctx, { clientConfig: { port: 5432 }, ClientClass: MockClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.throws(
++      () => createTargetPgClient(ctx, { clientConfig: { database: 'other_db' }, ClientClass: MockClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.throws(
++      () => createTargetPgClient(ctx, { clientConfig: { connectionString: 'postgresql://evil@127.0.0.1:54322/db' }, ClientClass: MockClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.throws(
++      () => createTargetPgClient(ctx, { connectionString: 'postgresql://evil@127.0.0.1:54322/db', ClientClass: MockClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
+   } finally {
+     if (savedPgHost !== undefined) process.env.PGHOST = savedPgHost;
+     else delete process.env.PGHOST;
+@@ -412,50 +457,102 @@
+   }
+ });
+ 
+-test('14. Critical negative effect assertion: zero SQL connections and zero HTTP probes across failure modes', async () => {
++test('14. Critical negative effect assertion: zero SQL connections across failure modes and positive factory increment', async () => {
+   const tempRunsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-test-zero-effects-'));
+   try {
+-    let sqlConnectionsAttempted = 0;
+-    let httpRequestsAttempted = 0;
++    let factoryCallCount = 0;
++    let connectionAttemptCount = 0;
++
++    class InstrumentingClient {
++      constructor(cfg) {
++        factoryCallCount++;
++        this.cfg = cfg;
++      }
++      async connect() {
++        connectionAttemptCount++;
++      }
++      async query() {
++        return { rows: [] };
++      }
++      async end() {}
++    }
++
++    function attemptContextToClient(options, clientOpts = {}) {
++      const ctx = getTestContext(options);
++      return createTargetPgClient(ctx, { ClientClass: InstrumentingClient, ...clientOpts });
++    }
+ 
+     // Failure mode 1: Missing context
+-    try {
+-      getTestContext();
+-    } catch {
+-      // Expected failure
+-    }
+-
+-    // Failure mode 2: Stale lock
++    assert.throws(
++      () => attemptContextToClient({}),
++      { code: 'TEST_CONTEXT_MISSING' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called on missing context');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted on missing context');
++
++    // Failure mode 2: Custom / unallowlisted runsDir namespace in context payload
++    const validData = createTestAuthorityAndLock(tempRunsDir);
++    assert.throws(
++      () => attemptContextToClient({ context: { ...validData.explicitContext, runsDir: '/tmp/foreign-untrusted-namespace' } }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called on untrusted runs namespace');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted on untrusted runs namespace');
++
++    // Failure mode 3: Stale lock (absent lock file)
+     const staleData = createTestAuthorityAndLock(tempRunsDir, { skip_lock: true });
+-    try {
+-      getTestContext({ context: staleData.explicitContext });
+-    } catch {
+-      // Expected failure
+-    }
+-
+-    // Failure mode 3: Pending operation
++    assert.throws(
++      () => attemptContextToClient({ context: staleData.explicitContext, expectedRunsDir: tempRunsDir }),
++      { code: 'TEST_CONTEXT_STALE' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called on stale lock');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted on stale lock');
++
++    // Failure mode 4: Token mismatch (lock steal attempt)
++    const foreignTokenData = createTestAuthorityAndLock(tempRunsDir, {
++      context: { lockToken: crypto.randomUUID() },
++    });
++    assert.throws(
++      () => attemptContextToClient({ context: foreignTokenData.explicitContext, expectedRunsDir: tempRunsDir }),
++      { code: 'TEST_CONTEXT_FORBIDDEN' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called on token mismatch');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted on token mismatch');
++
++    // Failure mode 5: Pending operation on authority record
+     const pendingData = createTestAuthorityAndLock(tempRunsDir, { pending_operation: 'destroy' });
+-    try {
+-      getTestContext({ context: pendingData.explicitContext });
+-    } catch {
+-      // Expected failure
+-    }
+-
+-    // Failure mode 4: Token mismatch
+-    const mismatchData = createTestAuthorityAndLock(tempRunsDir, {
+-      lock_token: crypto.randomUUID(),
+-      context: { lockToken: crypto.randomUUID() },
+-    });
+-    try {
+-      getTestContext({ context: mismatchData.explicitContext });
+-    } catch {
+-      // Expected failure
+-    }
+-
+-    // Strict assertion: zero SQL effects and zero HTTP effects across all failures
+-    assert.equal(sqlConnectionsAttempted, 0, 'Negative context failures must produce zero SQL effects');
+-    assert.equal(httpRequestsAttempted, 0, 'Negative context failures must produce zero HTTP effects');
+-  } finally {
+-    fs.rmSync(tempRunsDir, { recursive: true, force: true });
+-  }
+-});
++    assert.throws(
++      () => attemptContextToClient({ context: pendingData.explicitContext, expectedRunsDir: tempRunsDir }),
++      { code: 'RECOVERY_REQUIRED' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called on pending operation');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted on pending operation');
++
++    // Failure mode 6: Destination override in clientConfig
++    const validCtx = getTestContext({ context: validData.explicitContext, expectedRunsDir: tempRunsDir });
++    assert.throws(
++      () => createTargetPgClient(validCtx, { clientConfig: { host: 'malicious-foreign.example.com' }, ClientClass: InstrumentingClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called when destination override is attempted');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted when destination override is attempted');
++
++    // Failure mode 7: Destination override via connectionString
++    assert.throws(
++      () => createTargetPgClient(validCtx, { connectionString: 'postgresql://evil@127.0.0.1:54322/db', ClientClass: InstrumentingClient }),
++      { code: 'ALLOWLIST_FAIL' }
++    );
++    assert.equal(factoryCallCount, 0, 'Factory must not be called when connectionString override is attempted');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not be attempted when connectionString override is attempted');
++
++    // Positive contrast check: authorized context -> client creation genuinely increments factory and connect counters
++    const positiveClient = createTargetPgClient(validCtx, { ClientClass: InstrumentingClient });
++    assert.equal(factoryCallCount, 1, 'Factory MUST genuinely increment when authorized client is instantiated');
++    assert.equal(connectionAttemptCount, 0, 'Connection must not occur prior to connect()');
++
++    await positiveClient.connect();
++    assert.equal(connectionAttemptCount, 1, 'Connection counter MUST genuinely increment when connect() is called');
++  } finally {
++    fs.rmSync(tempRunsDir, { recursive: true, force: true });
++  }
++});

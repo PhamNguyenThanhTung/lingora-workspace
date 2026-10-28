@@ -1,0 +1,27 @@
+{
+  ".wp00-state": {
+    "exists": true,
+    "immediate_names": []
+  },
+  ".wp00-home": {
+    "exists": true,
+    "immediate_names": [
+      "cache",
+      "stacks",
+      "telemetry.json"
+    ]
+  },
+  ".local-stack": {
+    "exists": true,
+    "immediate_names": []
+  },
+  ".supabase-home": {
+    "exists": true,
+    "immediate_names": [
+      "cache",
+      "stacks",
+      "telemetry.json"
+    ]
+  },
+  "provider_process_inventory": ""
+}

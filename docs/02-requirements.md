@@ -1,14 +1,19 @@
 # 02 - Lingora Requirements and Report Scope
 
+> **Historical Snapshot (2026-10-10 / 2026-10-22):** Các ghi nhận trạng thái triển khai, runtime và database trong tài liệu là ảnh chụp lịch sử tại các mốc này; không phản ánh trạng thái checkout hiện tại. Tham chiếu `plans/current-task.md` và `docs/design/physical/README.md` để xem hiện trạng.
 > **Classification: MIXED HISTORICAL REQUIREMENTS AND PROPOSED ENGINEERING REQUIREMENTS; NOT A GLOBAL APPROVAL RECORD.** Validate each requirement against its controlling ADR and current use case before implementation; implementation is not authorized by this document.
 > **Current business/security authority:** ADR-034 approves exactly three business roles (`Admin`, `Teacher`, `Learner`), one role per account, and role responsibilities. ADR-035 approves logical identity/authorization, content lifecycle, assessment secrecy, SRS trust, and audit policies only. Six-role content below is historical and superseded only where it conflicts with current business/logical policy.
 > **Current behavioral authority:** `docs/use-case-specifications.md`, controlled by ADR-030 through ADR-036 and the SRS interaction clarification in ADR-041, each within its explicit scope. ADR-036 is the MVP addendum for lesson attempts, SRS enrollment, curriculum availability, assessment packages/purposes, and Admin Learner support; ADR-041 controls learner-visible SRS interaction and assessment-session boundaries. P0-D07 is resolved only as a logical product/security target; physical mapping and live state remain deferred. `plans/archive/2026-10-07-master-implementation-and-report-plan-SUPERSEDED.md` is an unapproved historical roadmap draft, not implementation authority.
-> **Platform evidence:** Web (`lingora-web`) learner-auth foundation and Admin Prisma/migration artifacts exist; this document does not establish that other behaviors are implemented.
+> **Platform evidence — Historical Snapshot (2026-10-10 / 2026-10-22):** Legacy Web/Admin implementation and Prisma/migration artifacts were removed locally and remain in Git `84baa85`. The current checkout is design-only; no new-design runtime or executable database baseline exists.
 > **Legacy Phase 2 scope values:** Mapping A, fixed assessment values, Jump, and physical role/RLS details are not approved by this header; apply ADR-032/033/035. Logical content states and security behavior follow ADR-035; physical status/schema representation remains deferred.
 > **AI Scope Status in Phase 2:** AI / ML / GEC is retained strictly for historical context and canonical traceability (`ML-GEC-*`, `P1-FR-007`); it is **OUT OF CURRENT PHASE 2 IMPLEMENTATION, TESTING, DEMO, AND ACCEPTANCE**.
 > **Sections below marked `[SUPERSEDED / HISTORICAL REFERENCE]` are preserved solely for academic report evolution and traceability.**
 
 ---
+
+## Current completable Lesson readiness — ADR-044 (2026-10-22)
+
+PO resolves FTR-01: every Lesson publishable for Learner completion has **at least one core exercise (`N >= 1`)**. Draft may contain zero while being authored. Submit, approve and publish readiness reject zero; runtime start rechecks the exact published revision. Keep physical `lesson_attempts.n_core > 0`. Completion/performance for `N = 0` is outside MVP; no special content-only table, state or completion mechanism is added. ADR-036 scoring/completion rules otherwise remain unchanged. [FTR disposition](design/physical/ftr-disposition-2026-10-22.md) and [implementation spec](../plans/2026-10-22-database-runtime-implementation-spec.md) specify future acceptance; no runtime was executed.
 
 ## Current assessment assembly addendum — ADR-043 (2026-10-20)
 

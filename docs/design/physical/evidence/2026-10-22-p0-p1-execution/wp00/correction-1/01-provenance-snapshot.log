@@ -1,0 +1,12 @@
+COMMAND: python3 scripts/verify-provenance.py
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+EXIT_CODE: 0
+TESTED_COMMIT: c39806cb45c908135f240c93d68546b6ac5d7784
+OUTPUT:
+docs/design/physical/physical-erd.puml sha256: 6100c66d0270cc778e4d0d354aeb05d136c05813801c5047217b0de7e4f37ecb
+Historical verification-manifest.json comparison:
+- physical-erd-content.png: MATCH (14188dbfc0efaaa31fa00f9bdc8e330fd17973f088e7af9673ed64ac3a33519a)
+- physical-erd-content.svg: MATCH (2b1e395709cb031e85ce35bcc531bcb00472e322d76c90a7877f9c051d13ac87)
+- 6 output files noted as STALE_IN_HISTORICAL_MANIFEST due to pre-existing unreconciled state.
+- CR2-04 negative fixture/helper remains open and uncarried into execution evidence per spec §1.
+All 12 physical design files hashed and verified. Result saved to 01-provenance-snapshot.json.

@@ -1,0 +1,68 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+local.properties
+
+# Editor / operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Node / Next.js
+node_modules/
+.next/
+/out/
+!docs/diagrams/**/out/
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Android / Gradle
+.gradle/
+build/
+**/build/
+*.apk
+*.aab
+
+# Local model/data artifacts (tracked only through an approved task)
+artifacts/
+checkpoints/
+
+# Staging public snapshot (managed as separate git repo)
+staging/
+
+# Backup archives
+*.bundle
+
+# Temporary build & diagram caches
+tmp/
+.docx-render*/
+.five-report-render/
+
+# Local Supabase runtime state and tools
+.supabase/
+.supabase-home/
+supabase/.temp/
+.local-stack/
+.wp00-state/
+.wp00-home/
+
+# Private internal scripts & report build tools
+tools/
+
+# Slide PNG previews (keep PPTX only on git)
+**/XÂY DỰNG NỀN TẢNG HỌC NGOẠI NGỮ TRỰC TUYẾN LINGORA/
+**/Lingora-Project-1-Requirements-Presentation/
+

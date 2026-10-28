@@ -1,0 +1,195 @@
+{
+  "instance_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee",
+  "before_process_identities": [
+    {
+      "pid": 39266,
+      "start_ticks": "790877",
+      "ppid": 2669,
+      "comm": "supabase",
+      "exe": "/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "private_supabase_home",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39497,
+      "start_ticks": "794453",
+      "ppid": 39266,
+      "comm": "supabase",
+      "exe": "/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "ownership_observation": [
+        "private_supabase_home",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39503,
+      "start_ticks": "794456",
+      "ppid": 39497,
+      "comm": "ld-linux-x86-64",
+      "exe": "/tmp/lingora-d0-p17ehk7h/home-a/cache/stack/slim-services/postgres/17.11.0.004-r1/linux-amd64/a9d374c950ec50cb59ead868662f0dd44d358b3917a10346b4bf131f567207f7/lib/ld-linux-x86-64.so.2",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee/data/3cddf646-a214-49c0-952d-cbf56407271e/data",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39655,
+      "start_ticks": "794573",
+      "ppid": 39503,
+      "comm": "ld-linux-x86-64",
+      "exe": "/tmp/lingora-d0-p17ehk7h/home-a/cache/stack/slim-services/postgres/17.11.0.004-r1/linux-amd64/a9d374c950ec50cb59ead868662f0dd44d358b3917a10346b4bf131f567207f7/lib/ld-linux-x86-64.so.2",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee/data/3cddf646-a214-49c0-952d-cbf56407271e/data",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39656,
+      "start_ticks": "794574",
+      "ppid": 39503,
+      "comm": "ld-linux-x86-64",
+      "exe": "/tmp/lingora-d0-p17ehk7h/home-a/cache/stack/slim-services/postgres/17.11.0.004-r1/linux-amd64/a9d374c950ec50cb59ead868662f0dd44d358b3917a10346b4bf131f567207f7/lib/ld-linux-x86-64.so.2",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee/data/3cddf646-a214-49c0-952d-cbf56407271e/data",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39658,
+      "start_ticks": "794574",
+      "ppid": 39503,
+      "comm": "ld-linux-x86-64",
+      "exe": "/tmp/lingora-d0-p17ehk7h/home-a/cache/stack/slim-services/postgres/17.11.0.004-r1/linux-amd64/a9d374c950ec50cb59ead868662f0dd44d358b3917a10346b4bf131f567207f7/lib/ld-linux-x86-64.so.2",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee/data/3cddf646-a214-49c0-952d-cbf56407271e/data",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39659,
+      "start_ticks": "794574",
+      "ppid": 39503,
+      "comm": "ld-linux-x86-64",
+      "exe": "/tmp/lingora-d0-p17ehk7h/home-a/cache/stack/slim-services/postgres/17.11.0.004-r1/linux-amd64/a9d374c950ec50cb59ead868662f0dd44d358b3917a10346b4bf131f567207f7/lib/ld-linux-x86-64.so.2",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee/data/3cddf646-a214-49c0-952d-cbf56407271e/data",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39660,
+      "start_ticks": "794574",
+      "ppid": 39503,
+      "comm": "ld-linux-x86-64",
+      "exe": "/tmp/lingora-d0-p17ehk7h/home-a/cache/stack/slim-services/postgres/17.11.0.004-r1/linux-amd64/a9d374c950ec50cb59ead868662f0dd44d358b3917a10346b4bf131f567207f7/lib/ld-linux-x86-64.so.2",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee/data/3cddf646-a214-49c0-952d-cbf56407271e/data",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39661,
+      "start_ticks": "794574",
+      "ppid": 39503,
+      "comm": "ld-linux-x86-64",
+      "exe": "/tmp/lingora-d0-p17ehk7h/home-a/cache/stack/slim-services/postgres/17.11.0.004-r1/linux-amd64/a9d374c950ec50cb59ead868662f0dd44d358b3917a10346b4bf131f567207f7/lib/ld-linux-x86-64.so.2",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee/data/3cddf646-a214-49c0-952d-cbf56407271e/data",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    },
+    {
+      "pid": 39662,
+      "start_ticks": "794574",
+      "ppid": 39503,
+      "comm": "ld-linux-x86-64",
+      "exe": "/tmp/lingora-d0-p17ehk7h/home-a/cache/stack/slim-services/postgres/17.11.0.004-r1/linux-amd64/a9d374c950ec50cb59ead868662f0dd44d358b3917a10346b4bf131f567207f7/lib/ld-linux-x86-64.so.2",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/home-a/stacks/16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee/data/3cddf646-a214-49c0-952d-cbf56407271e/data",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "cwd_in_private_root"
+      ],
+      "stack_ids_in_cwd": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "stack_ids_in_cmdline": [
+        "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+      ],
+      "native_owner_ancestry_id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+    }
+  ],
+  "same_process_identities_remaining": [],
+  "before": "45-before-running-stop.json",
+  "after": "47-after-stop-before-inspection.json"
+}

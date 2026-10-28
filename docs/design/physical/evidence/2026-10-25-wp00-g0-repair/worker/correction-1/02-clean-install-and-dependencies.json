@@ -1,0 +1,66 @@
+{
+  "check_id": "02-clean-install-and-dependencies",
+  "command": "node scripts/verify-dependencies.mjs --clean-install",
+  "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+  "exit_code": 0,
+  "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/correction-1/02-clean-install-and-dependencies.log",
+  "tested_state_hashes": {
+    "scripts/verify-dependencies.mjs": "38733da92610aa806a9db3e3410069e5be259798f7c6d74f41d8c9efd3b5eed3",
+    "package.json": "3f687e63661109b27251cad4d326fe388b9999ff2853e485fa947cde5b08990f",
+    "package-lock.json": "d8a033435ae1a00812126e0cdb42a619246e1e1f69fdfe3a83031d8205105a68",
+    "lingora-admin/package.json": "9379961b4d670dc2bc4d1c185fee1cf58a15377b5fbb3415781cf6c622879d73"
+  },
+  "verdict": "PASS",
+  "clean_install_proof": {
+    "proof_status": "PASS",
+    "command": "/home/tung/.local/bin/npm ci --ignore-scripts=false",
+    "cwd": "/tmp/lingora-clean-ci-2EN2st/repo",
+    "duration_ms": 50357,
+    "exit_code": 0,
+    "node_binary": "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "node_version": "v24.22.1",
+    "npm_bootstrap_binary": "/home/tung/.local/bin/npm",
+    "npm_version": "10.8.2",
+    "isolation_parameters": {
+      "isolated_home": "/tmp/lingora-clean-ci-2EN2st/home",
+      "isolated_cache": "/tmp/lingora-clean-ci-2EN2st/npm-cache",
+      "isolated_userconfig": "/tmp/lingora-clean-ci-2EN2st/home/.npmrc",
+      "isolated_globalconfig": "/tmp/lingora-clean-ci-2EN2st/global.npmrc",
+      "inherited_env_stripped": true
+    },
+    "manifest_hashes": {
+      "package.json": "3f687e63661109b27251cad4d326fe388b9999ff2853e485fa947cde5b08990f",
+      "package-lock.json": "d8a033435ae1a00812126e0cdb42a619246e1e1f69fdfe3a83031d8205105a68",
+      "lingora-admin/package.json": "9379961b4d670dc2bc4d1c185fee1cf58a15377b5fbb3415781cf6c622879d73"
+    },
+    "installed_packages": {
+      "@prisma/client": "6.19.3",
+      "@supabase/supabase-js": "2.112.3",
+      "prisma": "6.19.3",
+      "supabase": "2.121.0",
+      "pg": "8.13.1"
+    },
+    "matches_expected_pins": true,
+    "resolved_binaries": {
+      "supabase": {
+        "command": "/tmp/lingora-clean-ci-2EN2st/repo/node_modules/.bin/supabase --version",
+        "cwd": "/tmp/lingora-clean-ci-2EN2st/repo",
+        "exit_code": 0,
+        "resolved_version": "2.121.0",
+        "matches_pin": true,
+        "realpath": "/tmp/lingora-clean-ci-2EN2st/repo/node_modules/supabase/dist/supabase.js",
+        "sha256": "21d25b4bfb1870db0aaf0963c028b10d0b0b431485f119abd704c1396c7991e6"
+      },
+      "prisma": {
+        "command": "/tmp/lingora-clean-ci-2EN2st/repo/node_modules/.bin/prisma --version",
+        "cwd": "/tmp/lingora-clean-ci-2EN2st/repo",
+        "exit_code": 0,
+        "resolved_version": "6.19.3",
+        "matches_pin": true,
+        "realpath": "/tmp/lingora-clean-ci-2EN2st/repo/node_modules/prisma/build/index.js",
+        "sha256": "c2a77456b70e8ba1e640e122824ed694433828a7c0d76ff3db7fc376b4b0e1a0"
+      }
+    },
+    "dependency_advisories_risk": "npm reports 3 high severity vulnerabilities in dev toolchain; pins preserved per G0 frozen lock specification."
+  }
+}

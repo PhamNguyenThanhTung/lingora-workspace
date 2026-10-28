@@ -233,23 +233,24 @@
       "id": "DATA-03",
       "classification": "TARGET",
       "source": "src/DATA-03-target-logical-erd.puml",
-      "source_sha256": "11432184726e766805a117baff057d9b632030bf84713694d39e2f9066c38a98",
+      "source_sha256": "1d697b639c801b8c6579ca4eecc74a00a5739fcf776299c5fb92de60f3a1caa6",
       "outputs": {
         "svg": "rendered/DATA-03-target-logical-erd.svg",
         "png": "rendered/DATA-03-target-logical-erd.png"
       },
       "output_sha256": {
-        "svg": "f14a6a0c7eed582c2106452d14c803860d1542e54987fc4ceddc2d04e305ef63",
-        "png": "fc86e3b6bb52b1d5be8434e5915cd7388fdac787f9ea583a62db7f7d23078f94"
+        "svg": "0a9226074da427b1c248392b9e025fbc17be65dc32d6456b5733d3e9d2ba1ae2",
+        "png": "8753a3d6dde400ab2349058567ae08e15c02b0f1d96b00d192b8ecca05f95b75"
       },
-      "native_page_sha256": "f6d29fe5365c36e46cafe2f1b0aacce3053e205abe3da8320dfd72973f66dec6",
+      "native_page_sha256": "fdc2f2c6099be7f9d60a383e40f7b2840986427cdc55fa1daec262bb3beaed2b",
+      "native_renderer": "Draw.io Desktop 24.7.17; page-index 31",
       "native_outputs": {
-        "png": "../../design/evidence/2026-10-20-design-correction/native/DATA-03.png",
-        "svg": "../../design/evidence/2026-10-20-design-correction/native/DATA-03.svg"
+        "svg": "../../design/evidence/2026-10-22-rdr-correction/native/DATA-03.svg",
+        "png": "../../design/evidence/2026-10-22-rdr-correction/native/DATA-03.png"
       },
       "native_output_sha256": {
-        "png": "f0b7e60b436f761affa2e80c20191ddcd96cf899e2b39543a59eeecd00c6a6fe",
-        "svg": "c87a5d1bb6e19249dba1489e4ec9b2f116e26ac62b26501b3e1957ad3d77e0d2"
+        "svg": "b29510b051a3aa1ef262607637da96935a7bd8dce615e069290ca06c0df72500",
+        "png": "0c05807a7fe4f6c061151a1430e8d46b27478642811bbbe16beec30c9d4da288"
       }
     },
     {
@@ -284,24 +285,24 @@
       "id": "DOM-01",
       "classification": "TARGET",
       "source": "src/DOM-01-core-domain-model.puml",
-      "source_sha256": "6b7a33451a3e406f9141629cf742a7bbef0437adb93b8816cb4a0856eef24a03",
+      "source_sha256": "5b04c94511faefd8e01d2935955d70b505ac8fedf3dfba2b6656bdd436ae433a",
       "outputs": {
         "svg": "rendered/DOM-01-core-domain-model.svg",
         "png": "rendered/DOM-01-core-domain-model.png"
       },
       "output_sha256": {
-        "svg": "c1ef7057fa860e3b3954eac70f043a82f966573204aa21663cbe9c1d0c2e4132",
-        "png": "de966666f103c9814e7d906e119402a70815bc7e2a62ba903869bdeb6e237619"
+        "svg": "653be0ce200c21b98491515c2391ea4f72665f3e377e82771e52cb3c7a72ef0d",
+        "png": "e79c2be6d3869bbc5cc914793b58a960d08060fe0cc032f0f366140414e62030"
       },
-      "native_page_sha256": "c3f553a9d88567138ccd58e2095877518cd8bb08ee0af81f2afe7d811456868f",
-      "native_renderer": "Draw.io Desktop 32.4.1; page-index 29",
+      "native_page_sha256": "744b037fb9f9c19c37a35af51aa31227e036ce4a34a849df53e5776ceffbb27f",
+      "native_renderer": "Draw.io Desktop 24.7.17; page-index 28",
       "native_outputs": {
-        "svg": "evidence/2026-10-16-class-review/native-DOM-01.svg",
-        "png": "evidence/2026-10-16-class-review/native-DOM-01.png"
+        "svg": "../../design/evidence/2026-10-22-rdr-correction/native/DOM-01.svg",
+        "png": "../../design/evidence/2026-10-22-rdr-correction/native/DOM-01.png"
       },
       "native_output_sha256": {
-        "svg": "f0bd5f761f24bd990d9fad02cdc0e9bb21dbeea92d58d2392618faad5a19d025",
-        "png": "0132b3feae21dcd02a263c0def0d48538b77dfb52b7f65e797b44b499385f293"
+        "svg": "392f9a50c3c8b63e917bb840a3b0077a33de0902aaa953ddeab095495ed58aad",
+        "png": "e67099959cef7bd14a08b942c942674028a442c549ce6c643e49b881252c1149"
       },
       "visual_review": "evidence/2026-10-16-class-review/visual-review.md",
       "semantic_review": "class-review-2026-10-16.md"

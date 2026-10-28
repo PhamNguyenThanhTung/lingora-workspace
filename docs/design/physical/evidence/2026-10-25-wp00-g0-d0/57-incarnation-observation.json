@@ -1,0 +1,7 @@
+{
+  "old_id": "6b85353829b4d6d3d55ff5e737f9e289225af206e0a471d229b407f51145ac89",
+  "recreated_id": "6b85353829b4d6d3d55ff5e737f9e289225af206e0a471d229b407f51145ac89",
+  "same_id_after_destroy_recreate": true,
+  "env_field_equality": {},
+  "meaning": "exact tuple recreation experiment, not a permitted D1 retry; no secret values emitted"
+}

@@ -1,0 +1,1 @@
+PASS: /home/tung/workspace/school/project1/lingora-workspace/docs/modeling/current-target/lingora-all-diagrams.drawio contains 35 ordered active native pages with matching standalone PUML edit payloads

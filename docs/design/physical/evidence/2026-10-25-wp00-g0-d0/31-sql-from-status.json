@@ -1,0 +1,19 @@
+{
+  "command_argv": [
+    "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/tmp/lingora-d0-p17ehk7h/sql-observation.mjs",
+    "/tmp/lingora-d0-p17ehk7h/captures/27-status-running-exact-id.stdout",
+    "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee"
+  ],
+  "cwd": "/tmp/lingora-d0-p17ehk7h/project-a",
+  "exit_code": 0,
+  "script_sha256": "e69650dad3e393f094452988ca454f3a5a918c9709e19544d24485fd00eff408",
+  "stdout_sanitized": "{\"instance_id\":\"16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee\",\"observation\":{\"db\":\"postgres\",\"usr\":\"postgres\",\"server_version\":\"17.11\",\"server_addr\":null,\"server_port\":null,\"backend_pid\":40153}}\n",
+  "stderr_sanitized": "",
+  "environment_keys": [
+    "HOME",
+    "LANG",
+    "PATH"
+  ],
+  "correction": "D0 recorder SQL string quoting only; prior failing invocation retained"
+}

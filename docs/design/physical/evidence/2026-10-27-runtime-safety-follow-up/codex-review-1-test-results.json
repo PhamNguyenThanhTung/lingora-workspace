@@ -1,0 +1,24 @@
+[
+  {
+    "command": [
+      "node",
+      "lingora-admin/tests/database/env/test-cleanup.mjs"
+    ],
+    "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+    "start": "2026-10-27T03:15:37.869704+00:00",
+    "end": "2026-10-27T03:15:52.062899+00:00",
+    "exit": 0,
+    "log": "/home/tung/workspace/school/runtime-safety-follow-up-20261027/codex-test-cleanup.mjs.log"
+  },
+  {
+    "command": [
+      "node",
+      "lingora-admin/tests/database/env/test-env-guard.mjs"
+    ],
+    "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+    "start": "2026-10-27T03:15:52.063057+00:00",
+    "end": "2026-10-27T03:16:01.936216+00:00",
+    "exit": 0,
+    "log": "/home/tung/workspace/school/runtime-safety-follow-up-20261027/codex-test-env-guard.mjs.log"
+  }
+]

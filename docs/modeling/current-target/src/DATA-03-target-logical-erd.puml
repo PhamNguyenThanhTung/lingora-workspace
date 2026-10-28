@@ -148,7 +148,7 @@ skinparam ranksep 50
  entity "SecurityAuditRecord" as Audit {
   * auditEventIdentity
   --
-  actorRef; action
+  actorKind; verifiedAuthSubjectRef[0..1]; action
   targetVersionRef
   serverTime; outcome; reason
  }
@@ -161,13 +161,14 @@ Account ||--o{ Card
 Vocabulary ||--o{ Card
 Context ||--o{ AssessmentAttempt
 Lesson ||--o{ Assignment
-Account ||--o{ Audit
+Account |o--o{ Audit
 Blueprint -[hidden]down- Account
 Assignment -[hidden]right- Revision
 ' References without drawn joins: attempt→revision, completion→lesson, assignment→current Teacher.
 ' Revision creator/creationEpisode differs from exact source submission/submitter/episode.
 ' VersionItem sourceSubmissionRef pins retained actor/action/time/target/episode review history,
 ' distinct from SecurityAuditRecord; it must match sourceLessonRevisionRef and contributionEpisodeRef.
+' SecurityAuditRecord.actorKind is ACCOUNT, SYSTEM or VERIFIED_AUTH_SUBJECT. ACCOUNT requires one Account reference and no verifiedAuthSubjectRef; SYSTEM requires neither reference; VERIFIED_AUTH_SUBJECT requires a verifiedAuthSubjectRef and no Account. Account actions cannot omit their actor; this adds no business role or table.
 ' Assessment contribution blueprint scope is checked through the source item, not a second Assignment target.
 ' Lesson–Vocabulary is the structural union/view; completion enrolls exact completed-revision core links.
 ' Version membership remains complete (one or more configured items); empty drafts are not assembled versions.

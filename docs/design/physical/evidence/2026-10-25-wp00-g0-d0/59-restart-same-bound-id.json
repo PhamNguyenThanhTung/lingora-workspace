@@ -1,0 +1,147 @@
+{
+  "label": "59-restart-same-bound-id",
+  "utc": "2026-10-25T06:04:54.003763+00:00",
+  "command_argv": [
+    "/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase",
+    "stack",
+    "start",
+    "--stack-id",
+    "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee",
+    "--preparation",
+    "on-demand",
+    "--workdir",
+    "/tmp/lingora-d0-p17ehk7h/project-a",
+    "--output-format",
+    "json"
+  ],
+  "cwd": "/tmp/lingora-d0-p17ehk7h/project-a",
+  "environment_keys": [
+    "HOME",
+    "LANG",
+    "PATH",
+    "SUPABASE_EXPERIMENTAL_STACK",
+    "SUPABASE_HOME",
+    "TMPDIR"
+  ],
+  "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+  "binary_sha256": "e91fc61f09c4fbb9c65dadc37d415640cb6d2398e65eba6d384eec74b2dbbe10",
+  "exit_code": 0,
+  "timeout_injected": false,
+  "duration_seconds": 2.115,
+  "pause_observation": null,
+  "recorder_sha256": "0a690f7f368f00742430e4060e632be465fe2ba366745b04234f7f6d6a36a72a",
+  "fixture_config_sha256": "a9067406c77c9e0b4a43f6e96cbb5d19f2b9e85dc1c3f461ee7a7cec3de190e9",
+  "stdout_json_valid": true,
+  "stdout_shape": {
+    "id": "string",
+    "runtime": "string",
+    "endpoints": {
+      "database.sql": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "pgmeta.http": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "rest.http": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "auth.http": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "realtime.http": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "realtime.rpc": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "storage.http": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "functions.http": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "functions.inspector": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "studio.http": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "mail.http": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "mail.smtp": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      },
+      "mail.pop3": {
+        "protocol": "string",
+        "address": "string",
+        "port": "integer",
+        "url": "string"
+      }
+    },
+    "lazy_services": {
+      "type": "array",
+      "items_observed": [
+        "string"
+      ]
+    },
+    "env": {
+      "API_URL": "string",
+      "REST_URL": "string",
+      "FUNCTIONS_URL": "string",
+      "DB_URL": "string",
+      "STUDIO_URL": "string",
+      "MCP_URL": "string",
+      "MAILPIT_URL": "string",
+      "INBUCKET_URL": "string",
+      "PUBLISHABLE_KEY": "string",
+      "SECRET_KEY": "string",
+      "ANON_KEY": "string",
+      "SERVICE_ROLE_KEY": "string",
+      "STORAGE_S3_URL": "string",
+      "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+      "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+      "S3_PROTOCOL_REGION": "string"
+    },
+    "message": "string"
+  },
+  "stdout_sanitized": "{\n  \"id\": \"16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee\",\n  \"runtime\": \"native\",\n  \"endpoints\": {\n    \"database.sql\": {\n      \"protocol\": \"tcp\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54322,\n      \"url\": \"tcp://127.0.0.1:54322\"\n    },\n    \"pgmeta.http\": {\n      \"protocol\": \"http\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 30859,\n      \"url\": \"http://127.0.0.1:30859\"\n    },\n    \"rest.http\": {\n      \"protocol\": \"http\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54321,\n      \"url\": \"http://127.0.0.1:54321\"\n    },\n    \"auth.http\": {\n      \"protocol\": \"http\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54321,\n      \"url\": \"http://127.0.0.1:54321\"\n    },\n    \"realtime.http\": {\n      \"protocol\": \"http\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54321,\n      \"url\": \"http://127.0.0.1:54321\"\n    },\n    \"realtime.rpc\": {\n      \"protocol\": \"tcp\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 32638,\n      \"url\": \"tcp://127.0.0.1:32638\"\n    },\n    \"storage.http\": {\n      \"protocol\": \"http\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54321,\n      \"url\": \"http://127.0.0.1:54321\"\n    },\n    \"functions.http\": {\n      \"protocol\": \"http\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54321,\n      \"url\": \"http://127.0.0.1:54321\"\n    },\n    \"functions.inspector\": {\n      \"protocol\": \"tcp\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 27310,\n      \"url\": \"tcp://127.0.0.1:27310\"\n    },\n    \"studio.http\": {\n      \"protocol\": \"http\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54323,\n      \"url\": \"http://127.0.0.1:54323\"\n    },\n    \"mail.http\": {\n      \"protocol\": \"http\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54324,\n      \"url\": \"http://127.0.0.1:54324\"\n    },\n    \"mail.smtp\": {\n      \"protocol\": \"tcp\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54325,\n      \"url\": \"tcp://127.0.0.1:54325\"\n    },\n    \"mail.pop3\": {\n      \"protocol\": \"tcp\",\n      \"address\": \"127.0.0.1\",\n      \"port\": 54326,\n      \"url\": \"tcp://127.0.0.1:54326\"\n    }\n  },\n  \"lazy_services\": [\n    \"pgmeta\",\n    \"rest\",\n    \"auth\",\n    \"realtime\",\n    \"storage\",\n    \"functions\",\n    \"studio\",\n    \"mail\"\n  ],\n  \"env\": \"<WITHHELD_ENV_MAP_VALUES>\",\n  \"message\": \"\"\n}",
+  "stderr_sanitized": "WARN: config section [inbucket] is deprecated and will be removed in v3, use [local_smtp] instead.\n[task] start: Starting local Supabase stack...\n[task] done: Stack is ready.\nA new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n",
+  "projection": "all env map values and generated credentials withheld; raw streams private only"
+}

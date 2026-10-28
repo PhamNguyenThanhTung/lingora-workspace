@@ -1,0 +1,909 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["app", "app_private"]
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/product-client"
+}
+
+model Account {
+  id               String       @id @db.Uuid
+  role             String       @db.Text
+  status           String       @default("PENDING") @db.Text
+  displayName      String?      @map("display_name") @db.Text
+  uiLocale         String       @default("en") @map("ui_locale") @db.Text
+  nativeLanguageId String?      @map("native_language_id") @db.Uuid
+  timezone         String       @default("UTC") @db.Text
+  avatarMediaId    String?      @map("avatar_media_id") @db.Uuid
+  activatedAt      DateTime?    @map("activated_at") @db.Timestamptz(6)
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion       BigInt       @default(1) @map("row_version")
+
+  uiLanguage       Language     @relation("AccountUiLanguage", fields: [uiLocale], references: [code], onUpdate: NoAction, onDelete: Restrict)
+  nativeLanguage   Language?    @relation("AccountNativeLanguage", fields: [nativeLanguageId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  avatarMedia      MediaAsset?  @relation("AccountAvatarMedia", fields: [avatarMediaId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  learningContexts     LearningContext[]
+  uploadedMedia        MediaAsset[]          @relation("MediaUploadedBy")
+  ownedMedia           MediaAsset[]          @relation("MediaOwnerAccount")
+
+  createdAssignments   ContentAssignment[]   @relation("AssignmentCreatedBy")
+  teacherAssignments   ContentAssignment[]   @relation("AssignmentCurrentTeacher")
+  historyPrevious      AssignmentHistory[]   @relation("HistoryPreviousTeacher")
+  historyNext          AssignmentHistory[]   @relation("HistoryNextTeacher")
+  historyChangedBy     AssignmentHistory[]   @relation("HistoryChangedBy")
+
+  createdLessons       LessonRevision[]      @relation("LessonRevisionCreatedBy")
+  lastEditedLessons    LessonRevision[]      @relation("LessonRevisionLastEditedBy")
+  submittedLessons     LessonRevision[]      @relation("LessonRevisionSubmittedBy")
+  approvedLessons      LessonRevision[]      @relation("LessonRevisionApprovedBy")
+  publishedLessons     LessonRevision[]      @relation("LessonRevisionPublishedBy")
+
+  createdVocabulary    VocabularyConcept[]   @relation("VocabularyCreatedBy")
+  srsCards             SrsCard[]             @relation("SrsCardLearner")
+  srsReviewOperations  SrsReviewOperation[]  @relation("SrsReviewOperationLearner")
+
+  createdItems         ItemIdentity[]        @relation("ItemIdentityCreatedBy")
+  createdItemRevs      ItemRevision[]        @relation("ItemRevisionCreatedBy")
+
+  createdBlueprints    AssessmentBlueprint[] @relation("BlueprintCreatedBy")
+  approvedVersions     AssessmentVersion[]   @relation("VersionApprovedBy")
+  publishedVersions    AssessmentVersion[]   @relation("VersionPublishedBy")
+
+  reviews              RevisionReview[]      @relation("ReviewActor")
+  receipts             CommandReceipt[]
+  auditEvents          AuditEvent[]          @relation("AuditActor")
+  provisioningRequests ProvisioningRequest[] @relation("ProvisioningRequestedBy")
+
+  @@map("accounts")
+  @@schema("app")
+}
+
+model Language {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String   @unique @db.Text
+  names       Json     @db.JsonB
+  isLearnable Boolean  @default(false) @map("is_learnable")
+  isUiLocale  Boolean  @default(false) @map("is_ui_locale")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  accountsUiLanguage     Account[]             @relation("AccountUiLanguage")
+  accountsNativeLanguage Account[]             @relation("AccountNativeLanguage")
+  courses                Course[]
+  learningContexts       LearningContext[]
+  assessmentBlueprints   AssessmentBlueprint[]
+  vocabularyConcepts     VocabularyConcept[]
+
+  @@map("languages")
+  @@schema("app")
+}
+
+model Framework {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code      String   @db.Text
+  version   String   @db.Text
+  names     Json     @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  levels               Level[]
+  courses              Course[]
+  assessmentBlueprints AssessmentBlueprint[]
+
+  @@unique([code, version], map: "frameworks_code_version_key")
+  @@map("frameworks")
+  @@schema("app")
+}
+
+model Level {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  frameworkId String    @map("framework_id") @db.Uuid
+  code        String    @db.Text
+  label       Json      @db.JsonB
+  position    Int
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  framework           Framework             @relation(fields: [frameworkId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  units               Unit[]
+  coursesDefaultStart Course[]              @relation("CourseDefaultStartLevel")
+  targetBlueprints    AssessmentBlueprint[] @relation("BlueprintTargetLevel")
+  nextBlueprints      AssessmentBlueprint[] @relation("BlueprintNextLevel")
+  startContexts       LearningContext[]     @relation("ContextStartLevel")
+  workingContexts     LearningContext[]     @relation("ContextWorkingLevel")
+  assessmentResults   AssessmentResult[]    @relation("AssessmentResultRecommendedLevel")
+
+  @@unique([frameworkId, code], map: "levels_framework_id_code_key")
+  @@unique([frameworkId, position], map: "levels_framework_id_position_key")
+  @@map("levels")
+  @@schema("app")
+}
+
+model Course {
+  id                         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  languageId                 String    @map("language_id") @db.Uuid
+  frameworkId                String    @map("framework_id") @db.Uuid
+  names                      Json      @db.JsonB
+  isActive                   Boolean   @default(true) @map("is_active")
+  curriculumGeneration       BigInt    @default(1) @map("curriculum_generation")
+  defaultStartLevelId        String    @map("default_start_level_id") @db.Uuid
+  gateConfig                 Json      @default("{}") @map("gate_config") @db.JsonB
+  practiceConfig             Json      @default("{}") @map("practice_config") @db.JsonB
+  coverageCatalog            Json      @default("{}") @map("coverage_catalog") @db.JsonB
+  coverageCatalogGeneration  BigInt    @default(1) @map("coverage_catalog_generation")
+  createdAt                  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion                 BigInt    @default(1) @map("row_version")
+
+  language                   Language  @relation(fields: [languageId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  framework                  Framework @relation(fields: [frameworkId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  defaultStartLevel          Level     @relation("CourseDefaultStartLevel", fields: [defaultStartLevelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  units                      Unit[]
+  learningContexts           LearningContext[]
+  assessmentBlueprints       AssessmentBlueprint[]
+
+  @@map("courses")
+  @@schema("app")
+}
+
+model Unit {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId   String   @map("course_id") @db.Uuid
+  levelId    String   @map("level_id") @db.Uuid
+  code       String   @db.Text
+  position   Int
+  names      Json     @db.JsonB
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion BigInt   @default(1) @map("row_version")
+
+  course     Course   @relation(fields: [courseId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  level      Level    @relation(fields: [levelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  lessons    Lesson[]
+
+  @@unique([courseId, levelId, position], map: "units_course_id_level_id_position_key")
+  @@map("units")
+  @@schema("app")
+}
+
+model Lesson {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  unitId           String             @map("unit_id") @db.Uuid
+  position         Int
+  isRequired       Boolean            @default(true) @map("is_required")
+  availability     String             @default("PLANNED") @db.Text
+  activeRevisionId String?            @map("active_revision_id") @db.Uuid
+  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion       BigInt             @default(1) @map("row_version")
+
+  unit             Unit               @relation(fields: [unitId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  revisions        LessonRevision[]   @relation("LessonRevisions")
+  activeRevision   LessonRevision?    @relation("ActiveLessonRevision", fields: [activeRevisionId, id], references: [id, lessonId], onUpdate: NoAction, onDelete: Restrict, map: "lessons_active_revision_fkey")
+  assignment       ContentAssignment?
+  attempts         LessonAttempt[]
+  completions      LessonCompletion[]
+
+  @@unique([unitId, position], map: "lessons_unit_id_position_key")
+  @@map("lessons")
+  @@schema("app")
+}
+
+model ContentAssignment {
+  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdBy        String              @map("created_by") @db.Uuid
+  currentTeacherId String              @map("current_teacher_id") @db.Uuid
+  lessonId         String              @unique(map: "content_assignments_lesson_id_key") @map("lesson_id") @db.Uuid
+  requirement      Json                @default("{}") @db.JsonB
+  scope            Json                @default("{}") @db.JsonB
+  scopeGeneration  BigInt              @default(1) @map("scope_generation")
+  createdAt        DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion       BigInt              @default(1) @map("row_version")
+
+  creator          Account             @relation("AssignmentCreatedBy", fields: [createdBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  currentTeacher   Account             @relation("AssignmentCurrentTeacher", fields: [currentTeacherId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "content_assignments_current_teacher_fkey")
+  lesson           Lesson              @relation(fields: [lessonId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  history          AssignmentHistory[]
+  revisions        LessonRevision[]
+  mediaAssets      MediaAsset[]
+
+  @@unique([id, lessonId], map: "content_assignments_id_lesson_id_key")
+  @@map("content_assignments")
+  @@schema("app")
+}
+
+model AssignmentHistory {
+  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assignmentId      String            @map("assignment_id") @db.Uuid
+  sequenceNo        Int               @map("sequence_no")
+  eventType         String            @map("event_type") @db.Text
+  previousTeacherId String?           @map("previous_teacher_id") @db.Uuid
+  nextTeacherId     String            @map("next_teacher_id") @db.Uuid
+  scopeGeneration   BigInt            @map("scope_generation")
+  changedBy         String            @map("changed_by") @db.Uuid
+  reason            String?           @db.Text
+  changedAt         DateTime          @default(now()) @map("changed_at") @db.Timestamptz(6)
+  scopeSnapshot     Json              @default("{}") @map("scope_snapshot") @db.JsonB
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  assignment        ContentAssignment @relation(fields: [assignmentId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  previousTeacher   Account?          @relation("HistoryPreviousTeacher", fields: [previousTeacherId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "assignment_history_previous_teacher_fkey")
+  nextTeacher       Account           @relation("HistoryNextTeacher", fields: [nextTeacherId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "assignment_history_next_teacher_fkey")
+  changer           Account           @relation("HistoryChangedBy", fields: [changedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  creationEpisodes     LessonRevision[]        @relation("RevisionCreationEpisode")
+  itemCreationEpisodes ItemRevision[]          @relation("ItemRevisionCreationEpisode")
+  reviewEpisodes       RevisionReview[]        @relation("ReviewAssignmentEpisode")
+  assessmentVersionItems AssessmentVersionItem[]
+
+  @@unique([assignmentId, sequenceNo], map: "assignment_history_assignment_id_sequence_no_key")
+  @@unique([id, assignmentId], map: "assignment_history_id_assignment_id_key")
+  @@map("assignment_history")
+  @@schema("app")
+}
+
+model LessonRevision {
+  id                            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lessonId                      String             @map("lesson_id") @db.Uuid
+  revisionNo                    Int                @map("revision_no")
+  priorRevisionId               String?            @map("prior_revision_id") @db.Uuid
+  changeSummary                 String?            @map("change_summary") @db.Text
+  assignmentId                  String             @map("assignment_id") @db.Uuid
+  creationAssignmentEpisodeId   String             @map("creation_assignment_episode_id") @db.Uuid
+  status                        String             @default("DRAFT") @db.Text
+  title                         Json               @db.JsonB
+  contentBlocks                 Json               @default("[]") @map("content_blocks") @db.JsonB
+  topicIds                      String[]           @default([]) @map("topic_ids")
+  skillIds                      String[]           @default([]) @map("skill_ids")
+  purposeTags                   String[]           @default([]) @map("purpose_tags")
+  coverageCatalogGeneration     BigInt?            @map("coverage_catalog_generation")
+  coverageSnapshot              Json?              @map("coverage_snapshot") @db.JsonB
+  submittedAssignmentGeneration BigInt?            @map("submitted_assignment_generation")
+  assignmentScopeSnapshot       Json?              @map("assignment_scope_snapshot") @db.JsonB
+  createdBy                     String             @map("created_by") @db.Uuid
+  lastEditedBy                  String             @map("last_edited_by") @db.Uuid
+  submittedBy                   String?            @map("submitted_by") @db.Uuid
+  submittedAt                   DateTime?          @map("submitted_at") @db.Timestamptz(6)
+  approvedBy                    String?            @map("approved_by") @db.Uuid
+  approvedAt                    DateTime?          @map("approved_at") @db.Timestamptz(6)
+  publishedBy                   String?            @map("published_by") @db.Uuid
+  publishedAt                   DateTime?          @map("published_at") @db.Timestamptz(6)
+  endedAt                       DateTime?          @map("ended_at") @db.Timestamptz(6)
+  createdAt                     DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                     DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion                    BigInt             @default(1) @map("row_version")
+
+  lesson                        Lesson             @relation("LessonRevisions", fields: [lessonId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  priorRevision                 LessonRevision?    @relation("PriorLessonRevision", fields: [priorRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "lesson_revisions_prior_revision_fkey")
+  successorRevisions            LessonRevision[]   @relation("PriorLessonRevision")
+  assignment                    ContentAssignment  @relation(fields: [assignmentId, lessonId], references: [id, lessonId], onUpdate: NoAction, onDelete: Restrict, map: "lesson_revisions_assignment_lesson_fkey")
+  creationEpisode               AssignmentHistory  @relation("RevisionCreationEpisode", fields: [creationAssignmentEpisodeId, assignmentId], references: [id, assignmentId], onUpdate: NoAction, onDelete: Restrict, map: "lesson_revisions_creation_assignment_episode_fkey")
+
+  creator                       Account            @relation("LessonRevisionCreatedBy", fields: [createdBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  lastEditor                    Account            @relation("LessonRevisionLastEditedBy", fields: [lastEditedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  submitter                     Account?           @relation("LessonRevisionSubmittedBy", fields: [submittedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  approver                      Account?           @relation("LessonRevisionApprovedBy", fields: [approvedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  publisher                     Account?           @relation("LessonRevisionPublishedBy", fields: [publishedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  activeForLessons              Lesson[]           @relation("ActiveLessonRevision")
+  authoredItemRevisions         ItemRevision[]     @relation("ItemRevisionAuthoringLesson")
+  reviews                       RevisionReview[]   @relation("ReviewLessonRevision")
+  vocabularyLinks               LessonVocabularyLink[]
+  exercises                     LessonExercise[]
+  mediaBindings                 MediaBinding[]
+  attempts                      LessonAttempt[]    @relation("LessonAttemptRevision")
+  assessmentVersionItems        AssessmentVersionItem[] @relation("VersionItemSourceLessonRevision")
+
+  @@unique([lessonId, revisionNo], map: "lesson_revisions_lesson_id_revision_no_key")
+  @@unique([id, lessonId], map: "lesson_revisions_id_lesson_id_key")
+  @@map("lesson_revisions")
+  @@schema("app")
+}
+
+model VocabularyConcept {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  languageId     String    @map("language_id") @db.Uuid
+  canonicalForm  String    @map("canonical_form") @db.Text
+  normalizedForm String    @map("normalized_form") @db.Text
+  senseKey       String    @map("sense_key") @db.Text
+  meaningLabels  Json      @map("meaning_labels") @db.JsonB
+  phonetic       String?   @db.Text
+  partOfSpeech   String?   @map("part_of_speech") @db.Text
+  example        String?   @db.Text
+  createdBy      String    @map("created_by") @db.Uuid
+  frozenAt       DateTime? @map("frozen_at") @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion     BigInt    @default(1) @map("row_version")
+
+  language       Language  @relation(fields: [languageId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  creator        Account   @relation("VocabularyCreatedBy", fields: [createdBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  lessonLinks    LessonVocabularyLink[]
+  srsCards       SrsCard[]
+
+  @@unique([languageId, normalizedForm, senseKey], map: "vocabulary_concepts_lang_norm_sense_key")
+  @@map("vocabulary_concepts")
+  @@schema("app")
+}
+
+model LessonVocabularyLink {
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lessonRevisionId String            @map("lesson_revision_id") @db.Uuid
+  vocabularyId     String            @map("vocabulary_id") @db.Uuid
+  position         Int
+  isCore           Boolean           @default(true) @map("is_core")
+  displaySnapshot  Json              @map("display_snapshot") @db.JsonB
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  lessonRevision   LessonRevision    @relation(fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  vocabulary       VocabularyConcept @relation(fields: [vocabularyId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  srsCards         SrsCard[]         @relation("SrsCardSourceLink")
+
+  @@unique([lessonRevisionId, vocabularyId], map: "lesson_vocabulary_links_lesson_rev_vocab_key")
+  @@unique([lessonRevisionId, position], map: "lesson_vocabulary_links_lesson_rev_pos_key")
+  @@map("lesson_vocabulary_links")
+  @@schema("app")
+}
+
+model ItemIdentity {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  origin            String         @db.Text
+  createdBy         String         @map("created_by") @db.Uuid
+  variantOfId       String?        @map("variant_of_id") @db.Uuid
+  exactFingerprint  String         @map("exact_fingerprint") @db.Text
+  practiceExposedAt DateTime?      @map("practice_exposed_at") @db.Timestamptz(6)
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  creator           Account        @relation("ItemIdentityCreatedBy", fields: [createdBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  variantOf         ItemIdentity?  @relation("ItemVariantOf", fields: [variantOfId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  variants          ItemIdentity[] @relation("ItemVariantOf")
+  revisions         ItemRevision[]
+  lessonExercises   LessonExercise[]
+  assessmentVersionItems AssessmentVersionItem[]
+
+  @@map("item_identities")
+  @@schema("app")
+}
+
+model ItemRevision {
+  id                          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  itemId                      String               @map("item_id") @db.Uuid
+  revisionNo                  Int                  @map("revision_no")
+  type                        String               @db.Text
+  promptData                  Json                 @map("prompt_data") @db.JsonB
+  practiceSkillIds            String[]             @default([]) @map("practice_skill_ids")
+  practiceCoverageSnapshot    Json?                @map("practice_coverage_snapshot") @db.JsonB
+  schemaVersion               Int                  @default(1) @map("schema_version")
+  exactFingerprint            String               @map("exact_fingerprint") @db.Text
+  createdBy                   String               @map("created_by") @db.Uuid
+  creationAssignmentEpisodeId String               @map("creation_assignment_episode_id") @db.Uuid
+  authoringLessonRevisionId   String               @map("authoring_lesson_revision_id") @db.Uuid
+  assessmentBlueprintId       String?              @map("assessment_blueprint_id") @db.Uuid
+  blueprintGeneration         BigInt?              @map("blueprint_generation")
+  isDraftOmitted              Boolean              @default(false) @map("is_draft_omitted")
+  frozenAt                    DateTime?            @map("frozen_at") @db.Timestamptz(6)
+  createdAt                   DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                   DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion                  BigInt               @default(1) @map("row_version")
+
+  item                        ItemIdentity         @relation(fields: [itemId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  creator                     Account              @relation("ItemRevisionCreatedBy", fields: [createdBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  creationEpisode             AssignmentHistory    @relation("ItemRevisionCreationEpisode", fields: [creationAssignmentEpisodeId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "item_revisions_creation_assignment_episode_fkey")
+  authoringLessonRevision     LessonRevision       @relation("ItemRevisionAuthoringLesson", fields: [authoringLessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  assessmentBlueprint         AssessmentBlueprint? @relation(fields: [assessmentBlueprintId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  gradingSecret               ItemGradingSecret?
+  lessonExercises             LessonExercise[]
+  mediaBindings               MediaBinding[]
+  assessmentVersionItems      AssessmentVersionItem[] @relation("VersionItemRevisionItem")
+  provenanceVersionItems      AssessmentVersionItem[] @relation("VersionItemSourceLessonProvenance")
+
+  @@unique([itemId, revisionNo], map: "item_revisions_item_id_revision_no_key")
+  @@unique([id, itemId], map: "item_revisions_id_item_id_key")
+  @@unique([id, authoringLessonRevisionId], map: "item_revisions_id_authoring_lesson_revision_id_key")
+  @@map("item_revisions")
+  @@schema("app")
+}
+
+model ItemGradingSecret {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  itemRevisionId String       @unique(map: "item_grading_secrets_item_revision_id_key") @map("item_revision_id") @db.Uuid
+  gradingData    Json         @map("grading_data") @db.JsonB
+  feedbackData   Json?        @map("feedback_data") @db.JsonB
+  schemaVersion  Int          @default(1) @map("schema_version")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  itemRevision   ItemRevision @relation(fields: [itemRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@map("item_grading_secrets")
+  @@schema("app_private")
+}
+
+model LessonExercise {
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lessonRevisionId String         @map("lesson_revision_id") @db.Uuid
+  itemRevisionId   String         @map("item_revision_id") @db.Uuid
+  itemId           String         @map("item_id") @db.Uuid
+  position         Int
+  isCore           Boolean        @default(true) @map("is_core")
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  lessonRevision   LessonRevision @relation(fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  itemRevision     ItemRevision   @relation(fields: [itemRevisionId, itemId], references: [id, itemId], onUpdate: NoAction, onDelete: Restrict, map: "lesson_exercises_item_revision_item_fkey")
+  item             ItemIdentity   @relation(fields: [itemId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  responses        LessonResponse[]
+
+  @@unique([lessonRevisionId, position], map: "lesson_exercises_lesson_revision_id_position_key")
+  @@unique([lessonRevisionId, itemId], map: "lesson_exercises_lesson_revision_id_item_id_key")
+  @@unique([id, lessonRevisionId], map: "lesson_exercises_id_lesson_revision_id_key")
+  @@map("lesson_exercises")
+  @@schema("app")
+}
+
+model MediaAsset {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bucketId       String             @default("lingora-media") @map("bucket_id") @db.Text
+  objectKey      String             @map("object_key") @db.Text
+  sha256         String             @db.Text
+  mimeType       String             @map("mime_type") @db.Text
+  byteSize       BigInt             @map("byte_size")
+  uploadedBy     String             @map("uploaded_by") @db.Uuid
+  ownerAccountId String?            @map("owner_account_id") @db.Uuid
+  assignmentId   String?            @map("assignment_id") @db.Uuid
+  kind           String             @db.Text
+  readyAt        DateTime?          @map("ready_at") @db.Timestamptz(6)
+  frozenAt       DateTime?          @map("frozen_at") @db.Timestamptz(6)
+  retiredAt      DateTime?          @map("retired_at") @db.Timestamptz(6)
+  createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  uploader       Account            @relation("MediaUploadedBy", fields: [uploadedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  ownerAccount   Account?           @relation("MediaOwnerAccount", fields: [ownerAccountId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "media_assets_owner_account_fkey")
+  assignment     ContentAssignment? @relation(fields: [assignmentId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  accountsWithAvatar Account[]      @relation("AccountAvatarMedia")
+  bindings           MediaBinding[]
+
+  @@unique([bucketId, objectKey], map: "media_assets_bucket_id_object_key_key")
+  @@map("media_assets")
+  @@schema("app")
+}
+
+model MediaBinding {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mediaAssetId     String          @map("media_asset_id") @db.Uuid
+  lessonRevisionId String?         @map("lesson_revision_id") @db.Uuid
+  itemRevisionId   String?         @map("item_revision_id") @db.Uuid
+  position         Int
+  usage            String          @db.Text
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  mediaAsset       MediaAsset      @relation(fields: [mediaAssetId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  lessonRevision   LessonRevision? @relation(fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  itemRevision     ItemRevision?   @relation(fields: [itemRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@map("media_bindings")
+  @@schema("app")
+}
+
+model LearningContext {
+  id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  learnerId            String            @map("learner_id") @db.Uuid
+  languageId           String            @map("language_id") @db.Uuid
+  courseId             String            @map("course_id") @db.Uuid
+  status               String            @default("ACTIVE") @db.Text
+  purpose              String?           @db.Text
+  studyPreferences     Json              @default("{}") @map("study_preferences") @db.JsonB
+  studyFocus           String            @default("BALANCED") @map("study_focus") @db.Text
+  selectedStartLevelId String?           @map("selected_start_level_id") @db.Uuid
+  startSource          String?           @map("start_source") @db.Text
+  startResultId        String?           @map("start_result_id") @db.Uuid
+  selfReport           Json?             @map("self_report") @db.JsonB
+  workingLevelId       String?           @map("working_level_id") @db.Uuid
+  createdAt            DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion           BigInt            @default(1) @map("row_version")
+
+  learner              Account           @relation(fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  language             Language          @relation(fields: [languageId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  course               Course            @relation(fields: [courseId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  selectedStartLevel   Level?            @relation("ContextStartLevel", fields: [selectedStartLevelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  workingLevel         Level?            @relation("ContextWorkingLevel", fields: [workingLevelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  startResult          AssessmentResult? @relation("ContextStartResult", fields: [startResultId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  lessonAttempts       LessonAttempt[]
+  lessonCompletions    LessonCompletion[]
+  assessmentAttempts   AssessmentAttempt[]
+
+  @@unique([learnerId, languageId], map: "learning_contexts_learner_id_language_id_key")
+  @@map("learning_contexts")
+  @@schema("app")
+}
+
+model LessonAttempt {
+  id                     String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contextId              String             @map("context_id") @db.Uuid
+  lessonRevisionId       String             @map("lesson_revision_id") @db.Uuid
+  lessonId               String             @map("lesson_id") @db.Uuid
+  startedAt              DateTime           @default(now()) @map("started_at") @db.Timestamptz(6)
+  completedAt            DateTime?          @map("completed_at") @db.Timestamptz(6)
+  nCore                  Int                @map("n_core")
+  kFirstWrong            Int?               @map("k_first_wrong")
+  contributionUnits      Int?               @map("contribution_units")
+  responseCount          Int?               @map("response_count")
+  completionOperationKey String?            @map("completion_operation_key") @db.Uuid
+  qualifyingLocalDate    DateTime?          @map("qualifying_local_date") @db.Date
+  timezoneAtCompletion   String?            @map("timezone_at_completion") @db.Text
+  createdAt              DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion             BigInt             @default(1) @map("row_version")
+
+  context                LearningContext    @relation(fields: [contextId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  lesson                 Lesson             @relation(fields: [lessonId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  lessonRevision         LessonRevision     @relation("LessonAttemptRevision", fields: [lessonRevisionId, lessonId], references: [id, lessonId], onUpdate: NoAction, onDelete: Restrict, map: "lesson_attempts_lesson_revision_lesson_fkey")
+
+  responses              LessonResponse[]
+  completions            LessonCompletion[]
+  srsCards               SrsCard[]          @relation("SrsCardSourceAttempt")
+
+  @@unique([id, lessonRevisionId], map: "lesson_attempts_id_lesson_revision_id_key")
+  @@unique([id, contextId, lessonId], map: "lesson_attempts_id_context_id_lesson_id_key")
+  @@map("lesson_attempts")
+  @@schema("app")
+}
+
+model LessonResponse {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  attemptId         String         @map("attempt_id") @db.Uuid
+  lessonExerciseId  String         @map("lesson_exercise_id") @db.Uuid
+  lessonRevisionId  String         @map("lesson_revision_id") @db.Uuid
+  responseOrdinal   Int            @map("response_ordinal")
+  queuePosition     Int            @map("queue_position")
+  operationKey      String         @map("operation_key") @db.Uuid
+  input             Json           @db.JsonB
+  inputHash         String         @map("input_hash") @db.Text
+  isCorrect         Boolean        @map("is_correct")
+  contributionUnits Int            @map("contribution_units")
+  respondedAt       DateTime       @default(now()) @map("responded_at") @db.Timestamptz(6)
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  attempt           LessonAttempt  @relation(fields: [attemptId, lessonRevisionId], references: [id, lessonRevisionId], onUpdate: NoAction, onDelete: Restrict, map: "lesson_responses_attempt_revision_fkey")
+  lessonExercise    LessonExercise @relation(fields: [lessonExerciseId, lessonRevisionId], references: [id, lessonRevisionId], onUpdate: NoAction, onDelete: Restrict, map: "lesson_responses_exercise_revision_fkey")
+
+  @@unique([attemptId, lessonExerciseId, responseOrdinal], map: "lesson_responses_attempt_exercise_ordinal_key")
+  @@unique([attemptId, operationKey], map: "lesson_responses_attempt_operation_key_key")
+  @@unique([attemptId, queuePosition], map: "lesson_responses_attempt_queue_position_key")
+  @@map("lesson_responses")
+  @@schema("app")
+}
+
+model LessonCompletion {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contextId      String          @map("context_id") @db.Uuid
+  lessonId       String          @map("lesson_id") @db.Uuid
+  firstAttemptId String          @map("first_attempt_id") @db.Uuid
+  completedAt    DateTime        @default(now()) @map("completed_at") @db.Timestamptz(6)
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  context        LearningContext @relation(fields: [contextId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  lesson         Lesson          @relation(fields: [lessonId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  firstAttempt   LessonAttempt   @relation(fields: [firstAttemptId, contextId, lessonId], references: [id, contextId, lessonId], onUpdate: NoAction, onDelete: Restrict, map: "lesson_completions_attempt_context_lesson_fkey")
+
+  @@unique([contextId, lessonId], map: "lesson_completions_context_id_lesson_id_key")
+  @@map("lesson_completions")
+  @@schema("app")
+}
+
+model SrsCard {
+  id                      String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  learnerId               String                @map("learner_id") @db.Uuid
+  vocabularyId            String                @map("vocabulary_id") @db.Uuid
+  stage                   Int                   @default(1) @db.SmallInt
+  dueAt                   DateTime              @map("due_at") @db.Timestamptz(6)
+  lastReviewedAt          DateTime?             @map("last_reviewed_at") @db.Timestamptz(6)
+  enrollmentSource        String                @map("enrollment_source") @db.Text
+  sourceAttemptId         String?               @map("source_attempt_id") @db.Uuid
+  sourceLessonVocabularyId String?              @map("source_lesson_vocabulary_id") @db.Uuid
+  createdAt               DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime              @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion              BigInt                @default(1) @map("row_version")
+
+  learner                 Account               @relation("SrsCardLearner", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  vocabulary              VocabularyConcept     @relation(fields: [vocabularyId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  sourceAttempt           LessonAttempt?        @relation("SrsCardSourceAttempt", fields: [sourceAttemptId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  sourceLessonVocabulary  LessonVocabularyLink? @relation("SrsCardSourceLink", fields: [sourceLessonVocabularyId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  reviewOperations        SrsReviewOperation[]
+
+  @@unique([learnerId, vocabularyId], map: "srs_cards_learner_id_vocabulary_id_key")
+  @@unique([id, learnerId], map: "srs_cards_id_learner_id_key")
+  @@map("srs_cards")
+  @@schema("app")
+}
+
+model SrsReviewOperation {
+  id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cardId                String              @map("card_id") @db.Uuid
+  learnerId             String              @map("learner_id") @db.Uuid
+  operationKey          String              @map("operation_key") @db.Uuid
+  kind                  String              @db.Text
+  rating                String              @db.Text
+  sessionKey            String              @map("session_key") @db.Uuid
+  reinforcesOperationId String?             @map("reinforces_operation_id") @db.Uuid
+  priorStage            Int?                @map("prior_stage") @db.SmallInt
+  priorDueAt            DateTime?           @map("prior_due_at") @db.Timestamptz(6)
+  nextStage             Int                 @map("next_stage") @db.SmallInt
+  nextDueAt             DateTime            @map("next_due_at") @db.Timestamptz(6)
+  reviewedAt            DateTime            @default(now()) @map("reviewed_at") @db.Timestamptz(6)
+  qualifyingLocalDate   DateTime?           @map("qualifying_local_date") @db.Date
+  inputHash             String              @map("input_hash") @db.Text
+  createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  card                  SrsCard             @relation(fields: [cardId, learnerId], references: [id, learnerId], onUpdate: NoAction, onDelete: Restrict, map: "srs_review_operations_card_learner_fkey")
+  learner               Account             @relation("SrsReviewOperationLearner", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  reinforcesOperation   SrsReviewOperation? @relation("SrsReinforcement", fields: [reinforcesOperationId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  reinforcements        SrsReviewOperation[] @relation("SrsReinforcement")
+
+  @@unique([learnerId, operationKey], map: "srs_review_operations_learner_id_operation_key_key")
+  @@map("srs_review_operations")
+  @@schema("app")
+}
+
+model AssessmentBlueprint {
+  id                         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdBy                  String              @map("created_by") @db.Uuid
+  languageId                 String              @map("language_id") @db.Uuid
+  frameworkId                String              @map("framework_id") @db.Uuid
+  courseId                   String              @map("course_id") @db.Uuid
+  purpose                    String              @db.Text
+  targetLevelId              String?             @map("target_level_id") @db.Uuid
+  nextLevelId                String?             @map("next_level_id") @db.Uuid
+  coverage                   Json                @default("{}") @db.JsonB
+  requirements               Json                @default("{}") @db.JsonB
+  config                     Json                @default("{}") @db.JsonB
+  coverageCatalogGeneration  BigInt              @default(1) @map("coverage_catalog_generation")
+  generation                 BigInt              @default(1)
+  createdAt                  DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion                 BigInt              @default(1) @map("row_version")
+
+  creator                    Account             @relation("BlueprintCreatedBy", fields: [createdBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  language                   Language            @relation(fields: [languageId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  framework                  Framework           @relation(fields: [frameworkId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  course                     Course              @relation(fields: [courseId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  targetLevel                Level?              @relation("BlueprintTargetLevel", fields: [targetLevelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  nextLevel                  Level?              @relation("BlueprintNextLevel", fields: [nextLevelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  versions                   AssessmentVersion[]
+  itemRevisions              ItemRevision[]
+
+  @@map("assessment_blueprints")
+  @@schema("app")
+}
+
+model AssessmentVersion {
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  blueprintId         String              @map("blueprint_id") @db.Uuid
+  versionNo           Int                 @map("version_no")
+  blueprintGeneration BigInt              @map("blueprint_generation")
+  blueprintSnapshot   Json                @map("blueprint_snapshot") @db.JsonB
+  assembledAt         DateTime            @default(now()) @map("assembled_at") @db.Timestamptz(6)
+  assemblyInputHash   String              @map("assembly_input_hash") @db.Text
+  status              String              @default("IN_REVIEW") @db.Text
+  isActive            Boolean             @default(false) @map("is_active")
+  approvedBy          String?             @map("approved_by") @db.Uuid
+  approvedAt          DateTime?           @map("approved_at") @db.Timestamptz(6)
+  publishedBy         String?             @map("published_by") @db.Uuid
+  publishedAt         DateTime?           @map("published_at") @db.Timestamptz(6)
+  endedAt             DateTime?           @map("ended_at") @db.Timestamptz(6)
+  createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion          BigInt              @default(1) @map("row_version")
+
+  blueprint           AssessmentBlueprint @relation(fields: [blueprintId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  approver            Account?            @relation("VersionApprovedBy", fields: [approvedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  publisher           Account?            @relation("VersionPublishedBy", fields: [publishedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  reviews             RevisionReview[]    @relation("ReviewAssessmentVersion")
+  items               AssessmentVersionItem[]
+  attempts            AssessmentAttempt[]
+
+  @@unique([blueprintId, versionNo], map: "assessment_versions_blueprint_id_version_no_key")
+  @@unique([blueprintId, blueprintGeneration, assemblyInputHash], map: "assessment_versions_blueprint_id_generation_input_hash_key")
+  @@map("assessment_versions")
+  @@schema("app")
+}
+
+model AssessmentVersionItem {
+  id                              String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assessmentVersionId             String             @map("assessment_version_id") @db.Uuid
+  itemRevisionId                  String             @map("item_revision_id") @db.Uuid
+  itemId                          String             @map("item_id") @db.Uuid
+  sourceLessonRevisionId          String             @map("source_lesson_revision_id") @db.Uuid
+  sourceSubmissionId              String             @map("source_submission_id") @db.Uuid
+  contributionAssignmentEpisodeId String             @map("contribution_assignment_episode_id") @db.Uuid
+  position                        Int
+  weight                          Decimal            @db.Decimal(10, 4)
+  coverageTags                    Json               @default("{}") @map("coverage_tags") @db.JsonB
+  createdAt                       DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  assessmentVersion               AssessmentVersion  @relation(fields: [assessmentVersionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  itemRevision                    ItemRevision       @relation("VersionItemRevisionItem", fields: [itemRevisionId, itemId], references: [id, itemId], onUpdate: NoAction, onDelete: Restrict, map: "assessment_version_items_item_revision_item_fkey")
+  itemProvenance                  ItemRevision       @relation("VersionItemSourceLessonProvenance", fields: [itemRevisionId, sourceLessonRevisionId], references: [id, authoringLessonRevisionId], onUpdate: NoAction, onDelete: Restrict, map: "assessment_version_items_item_source_owner_fkey")
+  item                            ItemIdentity       @relation(fields: [itemId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  sourceLessonRevision            LessonRevision     @relation("VersionItemSourceLessonRevision", fields: [sourceLessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  sourceSubmission                RevisionReview     @relation(fields: [sourceSubmissionId, sourceLessonRevisionId, contributionAssignmentEpisodeId], references: [id, lessonRevisionId, assignmentEpisodeId], onUpdate: NoAction, onDelete: Restrict, map: "assessment_version_items_source_review_tuple_fkey")
+  assignmentEpisode               AssignmentHistory  @relation(fields: [contributionAssignmentEpisodeId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  responses                       AssessmentResponse[]
+
+  @@unique([assessmentVersionId, position], map: "assessment_version_items_version_position_key")
+  @@unique([assessmentVersionId, itemId], map: "assessment_version_items_version_item_id_key")
+  @@unique([id, assessmentVersionId], map: "assessment_version_items_id_version_id_key")
+  @@map("assessment_version_items")
+  @@schema("app")
+}
+
+model AssessmentAttempt {
+  id                          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contextId                   String             @map("context_id") @db.Uuid
+  assessmentVersionId         String             @map("assessment_version_id") @db.Uuid
+  startedAt                   DateTime           @default(now()) @map("started_at") @db.Timestamptz(6)
+  finalizedAt                 DateTime?          @map("finalized_at") @db.Timestamptz(6)
+  submissionKey               String?            @map("submission_key") @db.Uuid
+  submissionHash              String?            @map("submission_hash") @db.Text
+  contextRowVersionAtStart    BigInt             @map("context_row_version_at_start")
+  curriculumGenerationAtStart BigInt             @map("curriculum_generation_at_start")
+  createdAt                   DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                   DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion                  BigInt             @default(1) @map("row_version")
+
+  context                     LearningContext    @relation(fields: [contextId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  assessmentVersion           AssessmentVersion  @relation(fields: [assessmentVersionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  responses                   AssessmentResponse[]
+  result                      AssessmentResult?
+
+  @@unique([id, assessmentVersionId], map: "assessment_attempts_id_version_id_key")
+  @@map("assessment_attempts")
+  @@schema("app")
+}
+
+model AssessmentResponse {
+  id                      String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  attemptId               String                @map("attempt_id") @db.Uuid
+  assessmentVersionItemId String                @map("assessment_version_item_id") @db.Uuid
+  assessmentVersionId     String                @map("assessment_version_id") @db.Uuid
+  input                   Json                  @db.JsonB
+  awardedPoints           Decimal               @map("awarded_points") @db.Decimal(10, 4)
+  answeredAt              DateTime              @default(now()) @map("answered_at") @db.Timestamptz(6)
+  createdAt               DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  attempt                 AssessmentAttempt     @relation(fields: [attemptId, assessmentVersionId], references: [id, assessmentVersionId], onUpdate: NoAction, onDelete: Restrict, map: "assessment_responses_attempt_version_fkey")
+  versionItem             AssessmentVersionItem @relation(fields: [assessmentVersionItemId, assessmentVersionId], references: [id, assessmentVersionId], onUpdate: NoAction, onDelete: Restrict, map: "assessment_responses_version_item_fkey")
+
+  @@unique([attemptId, assessmentVersionItemId], map: "assessment_responses_attempt_item_key")
+  @@map("assessment_responses")
+  @@schema("app_private")
+}
+
+model AssessmentResult {
+  id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  attemptId            String            @unique(map: "assessment_results_attempt_id_key") @map("attempt_id") @db.Uuid
+  rawPoints            Decimal           @map("raw_points") @db.Decimal(10, 4)
+  possiblePoints       Decimal           @map("possible_points") @db.Decimal(10, 4)
+  passed               Boolean?
+  recommendedLevelId   String?           @map("recommended_level_id") @db.Uuid
+  assessmentType       String            @map("assessment_type") @db.Text
+  deliveryMode         String            @map("delivery_mode") @db.Text
+  completedAt          DateTime          @default(now()) @map("completed_at") @db.Timestamptz(6)
+  progressionAppliedAt DateTime?         @map("progression_applied_at") @db.Timestamptz(6)
+  createdAt            DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  attempt              AssessmentAttempt @relation(fields: [attemptId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  recommendedLevel     Level?            @relation("AssessmentResultRecommendedLevel", fields: [recommendedLevelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  startingContexts     LearningContext[] @relation("ContextStartResult")
+
+  @@map("assessment_results")
+  @@schema("app")
+}
+
+model RevisionReview {
+  id                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lessonRevisionId        String?            @map("lesson_revision_id") @db.Uuid
+  assessmentVersionId     String?            @map("assessment_version_id") @db.Uuid
+  action                  String             @db.Text
+  actorId                 String             @map("actor_id") @db.Uuid
+  assignmentEpisodeId     String?            @map("assignment_episode_id") @db.Uuid
+  assignmentGeneration    BigInt?            @map("assignment_generation")
+  assignmentScopeSnapshot Json?              @map("assignment_scope_snapshot") @db.JsonB
+  blueprintGeneration     BigInt?            @map("blueprint_generation")
+  feedbackItemIds         String[]           @default([]) @map("feedback_item_ids") @db.Uuid
+  occurredAt              DateTime           @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  revisionRowVersion      BigInt             @map("revision_row_version")
+  comment                 String?            @db.Text
+  createdAt               DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  lessonRevision          LessonRevision?    @relation("ReviewLessonRevision", fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  assessmentVersion       AssessmentVersion? @relation("ReviewAssessmentVersion", fields: [assessmentVersionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  actor                   Account            @relation("ReviewActor", fields: [actorId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  assignmentEpisode       AssignmentHistory? @relation("ReviewAssignmentEpisode", fields: [assignmentEpisodeId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  assessmentVersionItems  AssessmentVersionItem[]
+
+  @@unique([id, lessonRevisionId, assignmentEpisodeId], map: "revision_reviews_id_lesson_rev_assignment_ep_key")
+  @@map("revision_reviews")
+  @@schema("app")
+}
+
+model ProvisioningRequest {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  operationKey          String    @unique(map: "provisioning_requests_operation_key_key") @map("operation_key") @db.Uuid
+  normalizedEmail       String    @unique(map: "provisioning_requests_normalized_email_key") @map("normalized_email") @db.Text
+  requestedRole         String    @map("requested_role") @db.Text
+  requestedBy           String?   @map("requested_by") @db.Uuid
+  authUserId            String?   @map("auth_user_id") @db.Uuid
+  state                 String    @default("REQUESTED") @db.Text
+  providerCorrelationId String?   @map("provider_correlation_id") @db.Text
+  lastErrorCode         String?   @map("last_error_code") @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion            BigInt    @default(1) @map("row_version")
+
+  requester             Account?  @relation("ProvisioningRequestedBy", fields: [requestedBy], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@map("provisioning_requests")
+  @@schema("app_private")
+}
+
+model CommandReceipt {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorId      String   @map("actor_id") @db.Uuid
+  command      String   @db.Text
+  operationKey String   @map("operation_key") @db.Uuid
+  inputHash    String   @map("input_hash") @db.Text
+  targetId     String   @map("target_id") @db.Uuid
+  safeResult   Json     @default("{}") @map("safe_result") @db.JsonB
+  committedAt  DateTime @default(now()) @map("committed_at") @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  actor        Account  @relation(fields: [actorId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@unique([actorId, command, operationKey], map: "command_receipts_actor_id_command_operation_key_key")
+  @@map("command_receipts")
+  @@schema("app_private")
+}
+
+model AuditEvent {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorKind             String    @map("actor_kind") @db.Text
+  actorId               String?   @map("actor_id") @db.Uuid
+  verifiedAuthSubjectId String?   @map("verified_auth_subject_id") @db.Uuid
+  action                String    @db.Text
+  targetType            String    @map("target_type") @db.Text
+  targetId              String?   @map("target_id") @db.Uuid
+  targetVersionId       String?   @map("target_version_id") @db.Uuid
+  outcome               String    @db.Text
+  reason                String?   @db.Text
+  correlationId         String?   @map("correlation_id") @db.Uuid
+  safeContext           Json?     @map("safe_context") @db.JsonB
+  occurredAt            DateTime  @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  actor                 Account?  @relation("AuditActor", fields: [actorId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@map("audit_events")
+  @@schema("app_private")
+}

@@ -1,0 +1,21 @@
+{
+  "check_id": "04-scaffolds-behavior-and-failures",
+  "command": "node --test lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs",
+  "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+  "exit_code": 0,
+  "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/04-scaffolds-behavior-and-failures.log",
+  "tested_state_hashes": {
+    "lingora-admin/tests/database/scaffolds/runner-base.mjs": "835d47978fd0a8e1dbe383e484ebfd9f99fe8139b0c3134691645a202bc293c9",
+    "lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs": "73a67a5518f38b78bc19641c82594a475351923820a30b22883b6331e81d3128",
+    "lingora-admin/tests/database/scaffolds/a1-runner.mjs": "04ee20f2021cd59a9a853255dc7d8892887df065294e4da96b62319730bc25ca"
+  },
+  "tests_passed": 3,
+  "tests_failed": 0,
+  "verdict": "PASS",
+  "coverage_summary": {
+    "unbound_fail_closed": "PASS (exit 1)",
+    "bound_missing_tests_fail_closed": "PASS (NOT EXECUTED, exit 1)",
+    "failing_fixture_propagation": "PASS (exit 1, failure propagated)",
+    "canonical_state_immutability": "PASS (canonical state directory untouched)"
+  }
+}

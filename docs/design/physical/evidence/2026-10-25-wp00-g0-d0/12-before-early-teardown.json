@@ -1,0 +1,63 @@
+{
+  "utc": "2026-10-25T05:51:16.016266+00:00",
+  "native_records": [
+    {
+      "home": "home-a",
+      "relative_directory": "home-a/stacks/b1a3a0571a8b7fd1ef8e26edcab0fa430bac30868f3c549f92db6074f1353410",
+      "id": "b1a3a0571a8b7fd1ef8e26edcab0fa430bac30868f3c549f92db6074f1353410",
+      "identity": {
+        "projectRoot": "/tmp/lingora-d0-p17ehk7h/project-a",
+        "branchContext": "refs/heads/d0-main",
+        "stackName": "d0-reserved-a"
+      },
+      "runtime": "native",
+      "state_shape": {
+        "id": "string",
+        "lifetime": "string",
+        "identity": {
+          "projectRoot": "string",
+          "branchContext": "string",
+          "stackName": "string"
+        },
+        "runtime": "string",
+        "instances": {
+          "type": "array",
+          "items_observed": []
+        },
+        "composition": {
+          "members": {
+            "type": "array",
+            "items_observed": []
+          },
+          "dependencies": {
+            "type": "array",
+            "items_observed": []
+          }
+        }
+      },
+      "instances_count": 0,
+      "owner": {
+        "pid": 37344,
+        "port": 41371,
+        "role": "owner",
+        "release": "0.1.0+a559977f2134f3a5",
+        "lifetime": "detached",
+        "startedAt": "2026-10-25T05:48:25.588Z"
+      }
+    }
+  ],
+  "private_root_processes": [
+    {
+      "pid": 37344,
+      "start_ticks": "749233",
+      "comm": "supabase",
+      "exe": "/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase",
+      "cwd": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "ownership_observation": [
+        "cmdline_contains_private_root",
+        "private_supabase_home",
+        "cwd_in_private_root"
+      ]
+    }
+  ]
+}

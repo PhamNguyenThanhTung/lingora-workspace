@@ -1,0 +1,344 @@
+COMMAND ["/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase", "stack", "status", "--stack-id", "16b7302a1834", "--workdir", "/tmp/lingora-d0-p17ehk7h/project-a", "--output-format", "json"]
+CWD /tmp/lingora-d0-p17ehk7h/project-a
+EXIT 0
+STDOUT (SANITIZED)
+{
+  "identity": {
+    "id": "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee",
+    "name": "d0-runtime-main",
+    "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+    "branch_context": "refs/heads/d0-main"
+  },
+  "runtime": "native",
+  "owner": "reachable",
+  "lifecycle": "running",
+  "readiness": "sleeping",
+  "composition": {
+    "members": [
+      {
+        "id": "3cddf646-a214-49c0-952d-cbf56407271e",
+        "service": "database",
+        "activation": "eager",
+        "state": "running",
+        "lifecycle": "running",
+        "health": "healthy"
+      },
+      {
+        "id": "8b88cec9-277f-4421-a796-9e299b7fc054",
+        "service": "pgmeta",
+        "activation": "lazy",
+        "state": "sleeping",
+        "lifecycle": "stopped",
+        "health": null
+      },
+      {
+        "id": "23a8bfd5-0242-4439-9611-f29fff9c9d2f",
+        "service": "rest",
+        "activation": "lazy",
+        "state": "sleeping",
+        "lifecycle": "stopped",
+        "health": null
+      },
+      {
+        "id": "7cf9832b-461d-42b9-aa78-96e8e824462d",
+        "service": "auth",
+        "activation": "lazy",
+        "state": "sleeping",
+        "lifecycle": "stopped",
+        "health": null
+      },
+      {
+        "id": "877c428e-efbe-43a7-b260-5487d217ea3a",
+        "service": "realtime",
+        "activation": "lazy",
+        "state": "sleeping",
+        "lifecycle": "stopped",
+        "health": null
+      },
+      {
+        "id": "25a09fa1-ad3e-49b5-b86a-314ecd7340a6",
+        "service": "storage",
+        "activation": "lazy",
+        "state": "sleeping",
+        "lifecycle": "stopped",
+        "health": null
+      },
+      {
+        "id": "8a9dd710-946c-435e-9fd0-f90be7cbcbee",
+        "service": "functions",
+        "activation": "lazy",
+        "state": "sleeping",
+        "lifecycle": "stopped",
+        "health": null
+      },
+      {
+        "id": "df6de512-cc3c-4fd8-b60f-58a53c1598ef",
+        "service": "studio",
+        "activation": "lazy",
+        "state": "sleeping",
+        "lifecycle": "stopped",
+        "health": null
+      },
+      {
+        "id": "192ee302-97e6-4039-89b8-c71797f6c19a",
+        "service": "mail",
+        "activation": "lazy",
+        "state": "sleeping",
+        "lifecycle": "stopped",
+        "health": null
+      }
+    ]
+  },
+  "services": [
+    {
+      "id": "3cddf646-a214-49c0-952d-cbf56407271e",
+      "service": "database",
+      "state": "running",
+      "lifecycle": "running",
+      "health": "healthy",
+      "endpoints": {
+        "sql": {
+          "protocol": "tcp",
+          "address": "127.0.0.1",
+          "port": 54322,
+          "url": "tcp://127.0.0.1:54322"
+        }
+      }
+    },
+    {
+      "id": "8b88cec9-277f-4421-a796-9e299b7fc054",
+      "service": "pgmeta",
+      "state": "sleeping",
+      "lifecycle": "stopped",
+      "health": null,
+      "endpoints": {
+        "http": {
+          "protocol": "http",
+          "address": "127.0.0.1",
+          "port": 30859,
+          "url": "http://127.0.0.1:30859"
+        }
+      }
+    },
+    {
+      "id": "23a8bfd5-0242-4439-9611-f29fff9c9d2f",
+      "service": "rest",
+      "state": "sleeping",
+      "lifecycle": "stopped",
+      "health": null,
+      "endpoints": {
+        "http": {
+          "protocol": "http",
+          "address": "127.0.0.1",
+          "port": 54321,
+          "url": "http://127.0.0.1:54321"
+        }
+      }
+    },
+    {
+      "id": "7cf9832b-461d-42b9-aa78-96e8e824462d",
+      "service": "auth",
+      "state": "sleeping",
+      "lifecycle": "stopped",
+      "health": null,
+      "endpoints": {
+        "http": {
+          "protocol": "http",
+          "address": "127.0.0.1",
+          "port": 54321,
+          "url": "http://127.0.0.1:54321"
+        }
+      }
+    },
+    {
+      "id": "877c428e-efbe-43a7-b260-5487d217ea3a",
+      "service": "realtime",
+      "state": "sleeping",
+      "lifecycle": "stopped",
+      "health": null,
+      "endpoints": {
+        "http": {
+          "protocol": "http",
+          "address": "127.0.0.1",
+          "port": 54321,
+          "url": "http://127.0.0.1:54321"
+        },
+        "rpc": {
+          "protocol": "tcp",
+          "address": "127.0.0.1",
+          "port": 32638,
+          "url": "tcp://127.0.0.1:32638"
+        }
+      }
+    },
+    {
+      "id": "25a09fa1-ad3e-49b5-b86a-314ecd7340a6",
+      "service": "storage",
+      "state": "sleeping",
+      "lifecycle": "stopped",
+      "health": null,
+      "endpoints": {
+        "http": {
+          "protocol": "http",
+          "address": "127.0.0.1",
+          "port": 54321,
+          "url": "http://127.0.0.1:54321"
+        }
+      }
+    },
+    {
+      "id": "8a9dd710-946c-435e-9fd0-f90be7cbcbee",
+      "service": "functions",
+      "state": "sleeping",
+      "lifecycle": "stopped",
+      "health": null,
+      "endpoints": {
+        "http": {
+          "protocol": "http",
+          "address": "127.0.0.1",
+          "port": 54321,
+          "url": "http://127.0.0.1:54321"
+        },
+        "inspector": {
+          "protocol": "tcp",
+          "address": "127.0.0.1",
+          "port": 27310,
+          "url": "tcp://127.0.0.1:27310"
+        }
+      }
+    },
+    {
+      "id": "df6de512-cc3c-4fd8-b60f-58a53c1598ef",
+      "service": "studio",
+      "state": "sleeping",
+      "lifecycle": "stopped",
+      "health": null,
+      "endpoints": {
+        "http": {
+          "protocol": "http",
+          "address": "127.0.0.1",
+          "port": 54323,
+          "url": "http://127.0.0.1:54323"
+        }
+      }
+    },
+    {
+      "id": "192ee302-97e6-4039-89b8-c71797f6c19a",
+      "service": "mail",
+      "state": "sleeping",
+      "lifecycle": "stopped",
+      "health": null,
+      "endpoints": {
+        "http": {
+          "protocol": "http",
+          "address": "127.0.0.1",
+          "port": 54324,
+          "url": "http://127.0.0.1:54324"
+        },
+        "smtp": {
+          "protocol": "tcp",
+          "address": "127.0.0.1",
+          "port": 54325,
+          "url": "tcp://127.0.0.1:54325"
+        },
+        "pop3": {
+          "protocol": "tcp",
+          "address": "127.0.0.1",
+          "port": 54326,
+          "url": "tcp://127.0.0.1:54326"
+        }
+      }
+    }
+  ],
+  "endpoints": {
+    "database.sql": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 54322,
+      "url": "tcp://127.0.0.1:54322"
+    },
+    "pgmeta.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 30859,
+      "url": "http://127.0.0.1:30859"
+    },
+    "rest.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "auth.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "realtime.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "realtime.rpc": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 32638,
+      "url": "tcp://127.0.0.1:32638"
+    },
+    "storage.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "functions.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "functions.inspector": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 27310,
+      "url": "tcp://127.0.0.1:27310"
+    },
+    "studio.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54323,
+      "url": "http://127.0.0.1:54323"
+    },
+    "mail.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54324,
+      "url": "http://127.0.0.1:54324"
+    },
+    "mail.smtp": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 54325,
+      "url": "tcp://127.0.0.1:54325"
+    },
+    "mail.pop3": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 54326,
+      "url": "tcp://127.0.0.1:54326"
+    }
+  },
+  "config_drift": {
+    "status": "unchanged",
+    "message": "Project configuration matches the saved composition members."
+  },
+  "env": "<WITHHELD_ENV_MAP_VALUES>",
+  "message": ""
+}
+STDERR (SANITIZED)
+WARN: config section [inbucket] is deprecated and will be removed in v3, use [local_smtp] instead.
+A new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+

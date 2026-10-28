@@ -1,0 +1,95 @@
+{
+  "catalog_count": 34,
+  "detail_count": 34,
+  "erd_entity_count": 34,
+  "catalog_details_erd_sets_equal": true,
+  "physical_source_manifest_hash_match": true,
+  "views": [
+    {
+      "view": "physical-erd-identity",
+      "dimensions": [
+        1369,
+        627
+      ],
+      "png_embedded_source_equal": false,
+      "manifest_output_hash_match": {
+        "png": false,
+        "svg": false
+      },
+      "svg_syntax_error_marker": false,
+      "png_source_parity_with_title_dash_normalized": true
+    },
+    {
+      "view": "physical-erd-content",
+      "dimensions": [
+        2173,
+        915
+      ],
+      "png_embedded_source_equal": false,
+      "manifest_output_hash_match": {
+        "png": true,
+        "svg": true
+      },
+      "svg_syntax_error_marker": false,
+      "png_source_parity_with_title_dash_normalized": true
+    },
+    {
+      "view": "physical-erd-learning",
+      "dimensions": [
+        910,
+        1312
+      ],
+      "png_embedded_source_equal": true,
+      "manifest_output_hash_match": {
+        "png": false,
+        "svg": false
+      },
+      "svg_syntax_error_marker": false,
+      "png_source_parity_with_title_dash_normalized": true
+    },
+    {
+      "view": "physical-erd-assessment",
+      "dimensions": [
+        1805,
+        798
+      ],
+      "png_embedded_source_equal": true,
+      "manifest_output_hash_match": {
+        "png": false,
+        "svg": false
+      },
+      "svg_syntax_error_marker": false,
+      "png_source_parity_with_title_dash_normalized": true
+    }
+  ],
+  "current_prisma_files": [],
+  "current_sql_files": [],
+  "legacy_git_ref": "84baa85",
+  "legacy_prisma_model_count": 18,
+  "legacy_init_table_count": 17,
+  "legacy_env_variable_names_only": {
+    "lingora-admin/.env.example": [
+      "DATABASE_URL",
+      "DIRECT_URL",
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_JWT_SECRET"
+    ],
+    "lingora-web/.env.example": [
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "AI_API_BASE_URL",
+      "E2E_LEARNER_EMAIL",
+      "E2E_LEARNER_PASSWORD",
+      "E2E_REGISTER_EMAIL",
+      "E2E_REGISTER_PASSWORD"
+    ]
+  },
+  "actual_native_page_count": 44,
+  "static_command_exits": {
+    "python3 docs/modeling/current-target/verify_current.py": 0,
+    "python3 scripts/validate_drawio.py": 0
+  },
+  "interpretation": "Raw source parity differs only by title en-dash normalization in identity/content PNG metadata. Six hashes in the mixed historical physical verification manifest do not describe current exports; content pair matches. This is evidence metadata, not deployed schema or RLS proof."
+}

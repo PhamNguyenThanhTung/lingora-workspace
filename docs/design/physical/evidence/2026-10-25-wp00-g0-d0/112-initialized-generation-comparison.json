@@ -1,0 +1,36 @@
+{
+  "first_id": "3787306e60c0a03e1d0ffb8dcf0350d48c001950294de69c6a4b4bde3e5a39d0",
+  "second_id": "3787306e60c0a03e1d0ffb8dcf0350d48c001950294de69c6a4b4bde3e5a39d0",
+  "same_logical_id": true,
+  "member_ids_equal": false,
+  "member_id_equality": {
+    "database": false,
+    "pgmeta": false,
+    "rest": false,
+    "auth": false,
+    "realtime": false,
+    "storage": false,
+    "functions": false,
+    "studio": false,
+    "mail": false
+  },
+  "env_field_equality": {
+    "API_URL": true,
+    "REST_URL": true,
+    "FUNCTIONS_URL": true,
+    "DB_URL": true,
+    "STUDIO_URL": true,
+    "MCP_URL": true,
+    "MAILPIT_URL": true,
+    "INBUCKET_URL": true,
+    "PUBLISHABLE_KEY": true,
+    "SECRET_KEY": true,
+    "ANON_KEY": true,
+    "SERVICE_ROLE_KEY": true,
+    "STORAGE_S3_URL": true,
+    "S3_PROTOCOL_ACCESS_KEY_ID": true,
+    "S3_PROTOCOL_ACCESS_KEY_SECRET": true,
+    "S3_PROTOCOL_REGION": true
+  },
+  "interpretation": "explicit D0 destroy/recreate experiment; equality booleans only; not an authorized D1 retry"
+}

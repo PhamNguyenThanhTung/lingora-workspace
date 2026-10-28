@@ -1,0 +1,1409 @@
+--- review1/lingora-admin/tests/database/env/stack-manager.mjs
++++ correction/lingora-admin/tests/database/env/stack-manager.mjs
+@@ -1,20 +1,22 @@
+ /**
+  * Task-Local Supabase Stack Manager for Lingora WP-00 Harness.
+  *
+- * Implements WP-00/G0 D1 + D2:
+- * - Run selection: start --new-run allocates a unique task-owned run; start/status/stop/destroy/data
+- *   require explicit --run <run-id>. No default current-run adoption.
++ * Implements WP-00/G0 D1 + D2 (Corrected for Codex Review Round 1):
++ * - Run selection: start --new-run allocates a unique task-owned run with isolated config-only Git fixture;
++ *   start/status/stop/destroy/data require explicit --run <run-id>. No default current-run adoption.
+  * - Atomic authority record (owner.json, mode 0600) with phases: RESERVED -> BOUND -> DESTROYED.
+  * - Durable operation intents persisted before side effects (temp file + fsync + atomic rename).
+- * - Exclusive per-run locking (.run.lock) with process/start-tick/boot identity. Guaranteed release in finally.
++ * - Exclusive per-run locking (.run.lock) with process/start-tick/boot identity.
++ *   Orphan lock clearance requires verified harness PID death AND provider process quiescence AND socket quiescence.
+  * - Pinned local Supabase CLI 2.121.0 resolution and binary hash verification.
+  * - Explicit clean child environment (no inherited PG*, NODE_OPTIONS, or provider env).
+  * - Safe native inspection and registry reconciliation (exact full 64-char ID and identity tuple).
++ * - Member UUID map continuity verification: fresh status composition validated before mutation/data.
+  * - Linux /proc process and socket observation: verified postcondition quiescence on stop and destroy.
+- * - Exact typed PostgreSQL configuration (no connectionString, strict URL parser, PG* env stripped, closed in finally).
+- * - Guarded HTTP health probes (strict 200 OK, redirect: 'error', no logged headers/bodies).
+- * - Finite diagnostic projections only (never forward raw provider streams or parser error snippets).
+- * - Complete incident regression prevention: synthetic canary redaction across all output and error paths.
++ * - Exact typed PostgreSQL configuration (lowest transport adapter pgClientFactory, connection/query/close lifecycle).
++ * - Guarded HTTP health probes (lowest transport adapter fetch, strict 200 OK, redirect: 'error', timeouts cleared in finally).
++ * - Strict full JSON parsing (parseStrictJson) without substring extraction or message interpolation.
++ * - Finite diagnostic projections only (strictly defined enums and static messages; never raw provider/error strings).
+  */
+ 
+ import { spawnSync } from 'node:child_process';
+@@ -27,11 +29,9 @@
+ import {
+   CANONICAL_WORKSPACE_ROOT,
+   CANONICAL_CONFIG_PATH,
++  CANONICAL_CONFIG_DIGEST,
+   TASK_ID,
+   DEFAULT_RUNS_DIR,
+-  TASK_STATE_ROOT,
+-  TASK_HOME_ROOT,
+-  TASK_BINDING_FILE,
+   ALLOWED_HOSTS,
+   EXPECTED_PORTS,
+   PINNED_CLI_VERSION,
+@@ -46,32 +46,21 @@
+   getGitBranch,
+   getLinuxBootId,
+   parseProcStat,
+-  getProcessIdentity,
+   isProcessAlive,
+   snapshotRunProcesses,
+-  snapshotProcessSockets,
++  snapshotRunSockets,
+   verifyProcessesQuiescent,
+   verifySocketsQuiescent,
+   sanitizeString,
+-  sanitizeObject,
+   projectFiniteOutput,
+-  registerRedactionCanary,
+-  clearRedactionCanaries,
+-  isCanaryRegistered,
++  parseStrictJson,
+ } from './env-guard.mjs';
+ 
+-export {
+-  registerRedactionCanary,
+-  clearRedactionCanaries,
+-  isCanaryRegistered,
+-};
+-
+-/**
+- * Resolve pinned local Supabase CLI executable.
+- * Strictly enforces local binary, exact version 2.121.0 and SHA-256 digest.
++/**
++ * Resolve local Supabase CLI platform binary and verify pinned hash.
+  */
+ export function resolveSupabaseCli({ adapters = {} } = {}) {
+-  const cliPath = PINNED_CLI_PATH;
++  const cliPath = adapters.cliPath || PINNED_CLI_PATH;
+   if (!fs.existsSync(cliPath)) {
+     throw new Error(
+       `PINNED_CLI_FAIL: Local Supabase CLI not found at "${cliPath}". Global CLI fallback is prohibited.`
+@@ -87,52 +76,51 @@
+   }
+ 
+   const cliExecutor = adapters.cliExecutor || spawnSync;
+-  const cleanEnv = buildCleanChildEnv(TASK_HOME_ROOT);
++  const cleanEnv = buildCleanChildEnv(DEFAULT_RUNS_DIR);
+   const res = cliExecutor(cliPath, ['--version'], {
+     cwd: CANONICAL_WORKSPACE_ROOT,
+     env: cleanEnv,
+     encoding: 'utf8',
++    timeout: 10000,
+   });
+ 
+   if (res.status !== 0) {
+     throw new Error(`PINNED_CLI_FAIL: Local Supabase CLI execution failed with exit code ${res.status}.`);
+   }
+ 
+-  const lines = (res.stdout || '').trim().split('\n');
+-  const versionLine = lines[0].trim();
+-  const match = versionLine.match(/^(\d+\.\d+\.\d+)/);
+-  const version = match ? match[1] : versionLine;
+-
+-  if (version !== PINNED_CLI_VERSION) {
+-    throw new Error(`PINNED_CLI_FAIL: CLI version mismatch. Expected exact ${PINNED_CLI_VERSION}, found "${version}".`);
+-  }
+-
+-  return { cliPath, version, sha256: binaryHash };
+-}
+-
+-/**
+- * Atomically write authority record with fsync and safe temp-file rename.
+- */
+-export function persistAuthorityAtomic(recordPath, authorityData) {
++  const outputVersion = (res.stdout || '').trim();
++  if (outputVersion !== PINNED_CLI_VERSION) {
++    throw new Error(
++      `PINNED_CLI_FAIL: CLI version mismatch. Expected exact ${PINNED_CLI_VERSION}, found "${outputVersion}".`
++    );
++  }
++
++  return { cliPath, version: PINNED_CLI_VERSION, binaryHash };
++}
++
++/**
++ * Persist authority record atomically with mode 0600 and fsync.
++ */
++export function persistAuthorityAtomic(recordPath, authority) {
+   const dir = path.dirname(recordPath);
+   if (!fs.existsSync(dir)) {
+     fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+   }
+ 
+-  const tempPath = path.resolve(dir, `.authority.tmp.${crypto.randomBytes(4).toString('hex')}`);
+-  const payload = JSON.stringify(authorityData, null, 2);
+-
+-  const fd = fs.openSync(tempPath, 'w', 0o600);
++  const tempFile = path.resolve(dir, `.tmp-owner-${crypto.randomBytes(6).toString('hex')}.json`);
++  const content = JSON.stringify(authority, null, 2);
++
++  const fd = fs.openSync(tempFile, 'wx', 0o600);
+   try {
+-    fs.writeSync(fd, payload, 0, 'utf8');
++    fs.writeSync(fd, content, 0, 'utf8');
+     fs.fsyncSync(fd);
+   } finally {
+     fs.closeSync(fd);
+   }
+ 
+-  fs.renameSync(tempPath, recordPath);
+-
+-  // Sync parent directory if supported
++  fs.renameSync(tempFile, recordPath);
++
++  // fsync parent directory on Linux
+   try {
+     const dirFd = fs.openSync(dir, 'r');
+     try {
+@@ -144,13 +132,14 @@
+ }
+ 
+ /**
+- * Allocate a new task-owned run directory and initial RESERVED authority record.
++ * Allocate a new task-owned run directory, config-only Git fixture, and initial RESERVED authority record.
+  */
+ export function allocateRun({
+   runsDir = DEFAULT_RUNS_DIR,
+-  workdir = CANONICAL_WORKSPACE_ROOT,
+-  configPath = CANONICAL_CONFIG_PATH,
++  workdir = null,
++  configPath = null,
+   stackName = null,
++  useFixture = true,
+ } = {}) {
+   if (!fs.existsSync(runsDir)) {
+     fs.mkdirSync(runsDir, { recursive: true, mode: 0o700 });
+@@ -163,16 +152,36 @@
+   const homeDir = path.resolve(runDir, 'home');
+   fs.mkdirSync(homeDir, { mode: 0o700 });
+ 
+-  const globalCache = path.resolve(CANONICAL_WORKSPACE_ROOT, '.supabase-home/cache');
+-  if (fs.existsSync(globalCache)) {
+-    try {
+-      spawnSync('cp', ['-al', globalCache, path.resolve(homeDir, 'cache')]);
+-    } catch {}
++  let effectiveWorkdir;
++  let effectiveConfigPath;
++
++  if (useFixture && !workdir) {
++    // Create isolated config-only Git fixture
++    const fixtureDir = path.resolve(runDir, 'fixture');
++    fs.mkdirSync(fixtureDir, { mode: 0o700 });
++    const fixtureSupabaseDir = path.resolve(fixtureDir, 'supabase');
++    fs.mkdirSync(fixtureSupabaseDir, { mode: 0o700 });
++    const targetConfig = path.resolve(fixtureSupabaseDir, 'config.toml');
++    fs.copyFileSync(CANONICAL_CONFIG_PATH, targetConfig);
++    fs.chmodSync(targetConfig, 0o600);
++
++    // Initialize Git repo with refs/heads/main
++    spawnSync('git', ['init', '-b', 'main'], { cwd: fixtureDir });
++    spawnSync('git', ['config', 'user.email', 'wp00-runner@lingora.local'], { cwd: fixtureDir });
++    spawnSync('git', ['config', 'user.name', 'WP00 Runner'], { cwd: fixtureDir });
++    spawnSync('git', ['add', 'supabase/config.toml'], { cwd: fixtureDir });
++    spawnSync('git', ['commit', '-m', 'initial config fixture'], { cwd: fixtureDir });
++
++    effectiveWorkdir = fs.realpathSync(fixtureDir);
++    effectiveConfigPath = fs.realpathSync(targetConfig);
++  } else {
++    effectiveWorkdir = fs.realpathSync(workdir || CANONICAL_WORKSPACE_ROOT);
++    effectiveConfigPath = fs.realpathSync(configPath || CANONICAL_CONFIG_PATH);
+   }
+ 
+   const uniqueStackName = stackName || `lingora-wp00-${crypto.randomBytes(4).toString('hex')}`;
+-  const configInfo = validateCanonicalConfig(configPath);
+-  const gitBranch = getGitBranch(workdir);
++  const configInfo = validateCanonicalConfig(effectiveConfigPath);
++  const gitBranch = getGitBranch(effectiveWorkdir);
+ 
+   const authority = {
+     format_version: '1.0',
+@@ -182,11 +191,11 @@
+     pending_operation: null,
+     instance_id: null,
+     stack_name: uniqueStackName,
+-    project_root: fs.realpathSync(CANONICAL_WORKSPACE_ROOT),
+-    repo_root: fs.realpathSync(CANONICAL_WORKSPACE_ROOT),
++    project_root: effectiveWorkdir,
++    repo_root: effectiveWorkdir,
+     control_root: fs.realpathSync(runDir),
+     home_dir: fs.realpathSync(homeDir),
+-    workdir: fs.realpathSync(workdir),
++    workdir: effectiveWorkdir,
+     config_path: configInfo.configPath,
+     config_digest: configInfo.configDigest,
+     branch_ref: gitBranch.startsWith('refs/heads/') ? gitBranch : `refs/heads/${gitBranch}`,
+@@ -214,19 +223,21 @@
+   const recordPath = path.resolve(runDir, 'owner.json');
+   persistAuthorityAtomic(recordPath, authority);
+ 
+-  return { runId, runDir, homeDir, authority, recordPath };
++  return { runId, runDir, homeDir, authority, recordPath, fixtureDir: effectiveWorkdir };
+ }
+ 
+ /**
+  * Acquire exclusive per-run lock.
++ * Strict orphan lock check: requires BOTH harness process death AND provider process quiescence AND socket quiescence.
+  */
+ export function acquireRunLock(runDir, runId, options = {}) {
+   const lockFile = path.resolve(runDir, '.run.lock');
+   const token = crypto.randomUUID();
+   const pid = process.pid;
+-  const stat = parseProcStat(pid);
+-  const startTicks = stat ? stat.start_ticks : '0';
+-  const bootId = getLinuxBootId();
++  const statRes = parseProcStat(pid);
++  const startTicks = statRes.status === 'KNOWN' && statRes.stat ? statRes.stat.start_ticks : '0';
++  const bootRes = getLinuxBootId();
++  const bootId = bootRes.status === 'KNOWN' ? bootRes.boot_id : 'unknown-boot';
+ 
+   const lockData = {
+     token,
+@@ -245,6 +256,15 @@
+     } finally {
+       fs.closeSync(fd);
+     }
++    // fsync parent dir
++    try {
++      const dirFd = fs.openSync(runDir, 'r');
++      try {
++        fs.fsyncSync(dirFd);
++      } finally {
++        fs.closeSync(dirFd);
++      }
++    } catch {}
+     return { lockFile, token };
+   } catch (err) {
+     if (err.code === 'EEXIST') {
+@@ -254,9 +274,19 @@
+       } catch {}
+ 
+       if (options.allowRecovery && existingLock) {
+-        const isAlive = isProcessAlive(existingLock.pid, existingLock.start_ticks, existingLock.boot_id);
+-        if (!isAlive) {
+-          // Orphan lock verified quiescent
++        // Step 1: Check harness process death
++        const harnessAlive = isProcessAlive(existingLock.pid, existingLock.start_ticks, existingLock.boot_id);
++
++        // Step 2: Check provider processes quiescence
++        const homeDir = path.resolve(runDir, 'home');
++        const fixtureDir = path.resolve(runDir, 'fixture');
++        const procSnapshot = snapshotRunProcesses(homeDir, fixtureDir, null);
++        const processesQuiescent = verifyProcessesQuiescent(procSnapshot, homeDir, fixtureDir, null);
++
++        // Step 3: Check socket quiescence
++        const socketsQuiescent = verifySocketsQuiescent([54321, 54322, 54324]);
++
++        if (!harnessAlive && processesQuiescent && socketsQuiescent) {
+           try {
+             fs.unlinkSync(lockFile);
+             return acquireRunLock(runDir, runId, { ...options, allowRecovery: false });
+@@ -276,7 +306,7 @@
+ }
+ 
+ /**
+- * Release exclusive per-run lock only if token matches.
++ * Release run lock safely verifying token ownership.
+  */
+ export function releaseRunLock(runDir, token) {
+   const lockFile = path.resolve(runDir, '.run.lock');
+@@ -284,8 +314,16 @@
+     if (fs.existsSync(lockFile)) {
+       const content = fs.readFileSync(lockFile, 'utf8');
+       const data = JSON.parse(content);
+-      if (data && data.token === token) {
++      if (data.token === token) {
+         fs.unlinkSync(lockFile);
++        try {
++          const dirFd = fs.openSync(runDir, 'r');
++          try {
++            fs.fsyncSync(dirFd);
++          } finally {
++            fs.closeSync(dirFd);
++          }
++        } catch {}
+       }
+     }
+   } catch {}
+@@ -293,62 +331,49 @@
+ 
+ /**
+  * Resolve run directory and authority record path from options.
+- */
+-function resolveRunContext(options = {}, commandName = 'command') {
+-  const runsDir = options.runsDir || DEFAULT_RUNS_DIR;
++ * Requires explicit run ID. No derivation from arbitrary bindingFile.
++ */
++export function resolveRunContext(options = {}, commandName = 'command') {
++  const runsDir = options.runsDir || process.env.LINGORA_RUNS_DIR || DEFAULT_RUNS_DIR;
+   let runId = options.runId;
+-  let runDir;
+-  let recordPath;
+-
+-  if (options.bindingFile) {
+-    recordPath = options.bindingFile;
+-    runDir = options.stateRoot || path.dirname(recordPath);
+-    runId = options.runId || (fs.existsSync(recordPath) ? (() => {
+-      try {
+-        const d = JSON.parse(fs.readFileSync(recordPath, 'utf8'));
+-        return d.run_id || d.runId || path.basename(runDir);
+-      } catch {
+-        return path.basename(runDir);
+-      }
+-    })() : path.basename(runDir));
+-  } else if (runId) {
+-    runDir = path.resolve(runsDir, runId);
+-    recordPath = path.resolve(runDir, 'owner.json');
+-  } else {
+-    throw new Error(`COMMAND_INVALID: ${commandName} requires explicit --run <run-id>.`);
+-  }
++
++  // Support explicit command line flag: --run <run-id>
++  if (!runId && process.argv) {
++    for (let i = 2; i < process.argv.length; i++) {
++      if (process.argv[i] === '--run' && process.argv[i + 1]) {
++        runId = process.argv[i + 1];
++        break;
++      }
++    }
++  }
++  if (!runId && process.env.LINGORA_RUN_ID) {
++    runId = process.env.LINGORA_RUN_ID;
++  }
++
++  if (!runId || typeof runId !== 'string' || !/^run-[a-f0-9]{8,32}$/i.test(runId)) {
++    const err = new Error(`COMMAND_INVALID: ${commandName} requires explicit --run <run-id>.`);
++    err.code = 'COMMAND_INVALID';
++    throw err;
++  }
++
++  const runDir = path.resolve(runsDir, runId);
++  const recordPath = path.resolve(runDir, 'owner.json');
+ 
+   return { runId, runDir, recordPath, runsDir };
+ }
+ 
+ /**
+- * Parse CLI JSON stdout safely without dumping raw strings or parser error snippets.
++ * Parse CLI JSON stdout safely with strict JSON parser.
+  */
+ export function parseCliJson(stdout, contextName) {
+-  if (!stdout || typeof stdout !== 'string') {
+-    throw new Error(`CLI_OUTPUT_ERROR: Empty output returned by ${contextName}.`);
+-  }
+-  const jsonMatch = stdout.match(/\{[\s\S]*\}/);
+-  if (!jsonMatch) {
+-    throw new Error(`CLI_OUTPUT_ERROR: No JSON payload found in output returned by ${contextName}.`);
+-  }
+-  try {
+-    return JSON.parse(jsonMatch[0]);
+-  } catch {
+-    // Intentionally NEVER interpolate error message or raw string
+-    throw new Error(`CLI_OUTPUT_ERROR: Failed to parse JSON from ${contextName} (syntax error).`);
+-  }
+-}
+-
+-/**
+- * Execute real SQL queries against PostgreSQL using explicit pg Client config.
++  return parseStrictJson(stdout, contextName);
++}
++
++/**
++ * Execute real SQL queries against PostgreSQL using lowest client transport (pgClientFactory).
+  * Strips PG* env overrides and closes client in finally block.
+  */
+-async function probeSqlReadiness(dbUrl, sqlAdapter = null, timeoutMs = 10000) {
+-  if (sqlAdapter) {
+-    return sqlAdapter(dbUrl);
+-  }
+-
++async function probeSqlReadiness(dbUrl, adapters = {}, timeoutMs = 10000) {
+   const parsed = validateDatabaseUrl(dbUrl, EXPECTED_PORTS.database);
+ 
+   // Strip inherited PG env variables at transport level
+@@ -361,7 +386,7 @@
+   }
+ 
+   // Explicit config without connectionString
+-  const client = new Client({
++  const clientConfig = {
+     host: parsed.hostname,
+     port: parsed.port,
+     database: parsed.database,
+@@ -369,15 +394,18 @@
+     password: parsed.password,
+     connectionTimeoutMillis: timeoutMs,
+     ssl: false,
+-  });
++  };
++
++  const client = (adapters.pgClientFactory || (cfg => new Client(cfg)))(clientConfig);
+ 
+   try {
+     await client.connect();
+ 
+     const resVersion = await client.query('SELECT version(), current_database(), current_user;');
+-    const pgVersionStr = resVersion.rows[0].version;
+-    const currentDb = resVersion.rows[0].current_database;
+-    const currentUser = resVersion.rows[0].current_user;
++    const row = resVersion.rows[0];
++    const pgVersionStr = row.version;
++    const currentDb = row.current_database;
++    const currentUser = row.current_user;
+ 
+     const resSchemas = await client.query(
+       "SELECT schema_name FROM information_schema.schemata WHERE schema_name IN ('public', 'auth', 'storage', 'extensions') ORDER BY schema_name;"
+@@ -392,7 +420,7 @@
+       foundSchemas,
+     };
+   } catch (err) {
+-    throw new Error(`SQL_READINESS_FAIL: ${sanitizeString(err.message)}`);
++    throw new Error('SQL_READINESS_FAIL: Query execution failed.');
+   } finally {
+     try {
+       await client.end();
+@@ -404,38 +432,37 @@
+ }
+ 
+ /**
+- * Probe HTTP endpoint with redirect: 'error' and strict 200 requirement.
+- * Never logs bodies or headers.
+- */
+-async function probeHttpEndpoint(url, headers = {}, httpAdapter = null, retries = 5, delayMs = 1000) {
+-  if (httpAdapter) {
+-    return httpAdapter(url, { headers });
+-  }
++ * Probe HTTP endpoint using lowest transport (fetch adapter).
++ * Requires status 200, redirect: 'error', timeouts cleared in finally.
++ */
++async function probeHttpEndpoint(url, headers = {}, adapters = {}, retries = 5, delayMs = 500) {
++  validateApiUrl(url, null);
+ 
+   for (let i = 0; i < retries; i++) {
++    const controller = new AbortController();
++    const timer = setTimeout(() => controller.abort(), 4000);
+     try {
+-      const controller = new AbortController();
+-      const timer = setTimeout(() => controller.abort(), 4000);
+-      const res = await fetch(url, {
++      const fetchFn = adapters.fetch || fetch;
++      const res = await fetchFn(url, {
+         headers,
+         signal: controller.signal,
+         redirect: 'error',
+       });
++      if (res && res.status === 200) {
++        return { ready: true, status: 200 };
++      }
++    } catch {
++      // Retry
++    } finally {
+       clearTimeout(timer);
+-      if (res.status === 200) {
+-        return {
+-          status: res.status,
+-          ready: true,
+-        };
+-      }
+-    } catch {}
++    }
+     await new Promise(r => setTimeout(r, delayMs));
+   }
+   return { ready: false, status: 0 };
+ }
+ 
+ /**
+- * Private guarded data readiness probe executed under lock.
++ * Private guarded data readiness probe executed under run lock.
+  */
+ async function probeGuardedDataReadinessUnderLock({ authority, credentials, adapters = {} }) {
+   const rawDbUrl = credentials.DB_URL;
+@@ -443,19 +470,19 @@
+     throw new Error('DATA_READINESS_FAIL: Provider failed to return database URL (DB_URL missing).');
+   }
+ 
+-  const sqlEvidence = await probeSqlReadiness(rawDbUrl, adapters.sqlExecutor);
++  const sqlEvidence = await probeSqlReadiness(rawDbUrl, adapters);
+ 
+   const authBase = authority.validatedEndpoints?.auth?.url || 'http://127.0.0.1:54321';
+   const authUrl = `${authBase}/auth/v1/health`;
+   const authEvidence = await probeHttpEndpoint(
+     authUrl,
+     { apikey: credentials.ANON_KEY || '' },
+-    adapters.httpFetcher,
++    adapters,
+     8,
+     500
+   );
+   if (!authEvidence.ready) {
+-    throw new Error(`AUTH_READINESS_FAIL: Auth health probe failed at ${authUrl}`);
++    throw new Error('AUTH_READINESS_FAIL: Auth health probe failed.');
+   }
+ 
+   const storageBase = authority.validatedEndpoints?.storage?.url || 'http://127.0.0.1:54321';
+@@ -463,19 +490,19 @@
+   const storageEvidence = await probeHttpEndpoint(
+     storageUrl,
+     { apikey: credentials.ANON_KEY || '' },
+-    adapters.httpFetcher,
++    adapters,
+     8,
+     500
+   );
+   if (!storageEvidence.ready) {
+-    throw new Error(`STORAGE_READINESS_FAIL: Storage status probe failed at ${storageUrl}`);
++    throw new Error('STORAGE_READINESS_FAIL: Storage status probe failed.');
+   }
+ 
+   const mailBase = authority.validatedEndpoints?.mail?.url || 'http://127.0.0.1:54324';
+   const mailUrl = `${mailBase}/api/v1/messages`;
+-  const mailEvidence = await probeHttpEndpoint(mailUrl, {}, adapters.httpFetcher, 8, 500);
++  const mailEvidence = await probeHttpEndpoint(mailUrl, {}, adapters, 8, 500);
+   if (!mailEvidence.ready) {
+-    throw new Error(`MAIL_READINESS_FAIL: Mail sink probe failed at ${mailUrl}`);
++    throw new Error('MAIL_READINESS_FAIL: Mail sink probe failed.');
+   }
+ 
+   const readiness = {
+@@ -503,59 +530,7 @@
+ }
+ 
+ /**
+- * Dedicated public entry point for guarded data readiness probe.
+- */
+-export async function probeDataReadiness(options = {}) {
+-  const { runId, runDir, recordPath } = resolveRunContext(options, 'probeDataReadiness');
+-  const adapters = options.adapters || {};
+-
+-  const authority = validateAuthorityRecord(recordPath, options);
+-  if (!authority.bound && authority.phase !== 'BOUND') {
+-    throw new Error(`DATA_READINESS_FAIL: Local binding is invalid (${authority.reason || 'not bound'})`);
+-  }
+-
+-  const { lockFile, token } = acquireRunLock(runDir, runId, options);
+-  try {
+-    const { cliPath } = resolveSupabaseCli({ adapters });
+-    reconcileNativeRegistry({ authority, adapters, cliPath });
+-
+-    const credFile = path.resolve(runDir, 'credentials.json');
+-    let credentials = {};
+-    if (fs.existsSync(credFile)) {
+-      credentials = JSON.parse(fs.readFileSync(credFile, 'utf8'));
+-    } else if (authority.rawBinding?.env) {
+-      credentials = authority.rawBinding.env;
+-    } else {
+-      throw new Error('DATA_READINESS_FAIL: Private credentials file missing for bound run.');
+-    }
+-
+-    const probeResults = await probeGuardedDataReadinessUnderLock({ authority, credentials, adapters });
+-
+-    const out = projectFiniteOutput({
+-      command: 'data',
+-      stage: 'completed',
+-      status: 'READY',
+-      code: 'SUCCESS',
+-      run_id: runId,
+-      instance_id: authority.instance_id,
+-      phase: authority.phase,
+-      exit_code: 0,
+-      readiness: probeResults,
+-    });
+-    return {
+-      ...out,
+-      sql: probeResults.sql,
+-      auth: probeResults.auth,
+-      storage: probeResults.storage,
+-      mail: probeResults.mail,
+-    };
+-  } finally {
+-    releaseRunLock(runDir, token);
+-  }
+-}
+-
+-/**
+- * Start task-local native Supabase stack.
++ * Start disposable stack (handles new-run allocation and existing start under lock).
+  */
+ export async function startStack(options = {}) {
+   const adapters = options.adapters || {};
+@@ -570,9 +545,10 @@
+   if (options.newRun) {
+     const alloc = allocateRun({
+       runsDir: options.runsDir || DEFAULT_RUNS_DIR,
+-      workdir: options.workdir || CANONICAL_WORKSPACE_ROOT,
+-      configPath: options.configPath || CANONICAL_CONFIG_PATH,
++      workdir: options.workdir,
++      configPath: options.configPath,
+       stackName: options.stackName,
++      useFixture: options.useFixture !== false,
+     });
+     runId = alloc.runId;
+     runDir = alloc.runDir;
+@@ -584,77 +560,86 @@
+     runId = resolved.runId;
+     runDir = resolved.runDir;
+     recordPath = resolved.recordPath;
+-    authority = validateAuthorityRecord(recordPath, options);
++    authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId });
+     if (!authority.bound && authority.phase !== 'BOUND' && authority.phase !== 'RESERVED') {
+       throw new Error(`ALLOWLIST_FAIL: Existing binding is invalid (${authority.reason || 'not bound'})`);
+     }
+-    homeDir = authority.home_dir || path.resolve(runDir, 'home');
++    homeDir = authority.home_dir;
+   }
+ 
+   const { lockFile, token } = acquireRunLock(runDir, runId, options);
+-
+   try {
++    // Reread authority under lock
++    authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId });
+     const { cliPath } = resolveSupabaseCli({ adapters });
+     const cleanEnv = buildCleanChildEnv(homeDir);
+ 
+-    // If RESERVED: prepare stopped stack
++    let fullStackId = authority.instance_id;
++
+     if (authority.phase === 'RESERVED') {
+-      // 1. Verify no matching tuple in registry prior to dispatch
++      // Pre-prepare check: List native registry. Strict check: must NOT already exist.
+       const preListRes = cliExecutor(
+         cliPath,
+         ['stack', 'list', '--workdir', authority.workdir, '--output-format', 'json'],
+-        { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
++        { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 }
+       );
+-      if (preListRes.status === 0) {
+-        try {
+-          const preList = parseCliJson(preListRes.stdout, 'stack list (pre-allocation)');
+-          const existing = (preList.stacks || []).find(s => s.name === authority.stack_name);
+-          if (existing) {
+-            throw new Error(`ALLOCATION_FAIL: Stack name "${authority.stack_name}" already exists in native registry.`);
+-          }
+-        } catch (err) {
+-          if (err.message.includes('ALLOCATION_FAIL')) throw err;
++      if (preListRes.status !== 0) {
++        throw new Error(`PREPARE_FAIL: Pre-prepare stack list failed with exit code ${preListRes.status}`);
++      }
++      const preListParsed = parseStrictJson(preListRes.stdout, 'stack list');
++      if (!Array.isArray(preListParsed.stacks)) {
++        throw new Error('PREPARE_FAIL: Invalid stacks array in pre-prepare list output.');
++      }
++      // Same-intent recovery check
++      if (authority.pending_operation === 'prepare') {
++        const found = preListParsed.stacks.find(s => s.name === authority.stack_name);
++        if (!found) {
++          throw new Error('PREPARE_FAIL: Uncertain prepare dispatch state. Recovery required.');
+         }
+-      }
+-
+-      // 2. Persist operation intent
+-      authority.pending_operation = 'prepare';
+-      authority.updated_at = new Date().toISOString();
+-      persistAuthorityAtomic(recordPath, authority);
+-
+-      // 3. Dispatch prepare
+-      const prepRes = cliExecutor(
+-        cliPath,
+-        ['stack', 'prepare', '--runtime', 'native', '--stack', authority.stack_name, '--workdir', authority.workdir, '--output-format', 'json'],
+-        { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
+-      );
+-
+-      if (prepRes.status !== 0) {
+-        throw new Error(`STACK_PREPARE_FAIL: prepare command failed with exit code ${prepRes.status}.`);
+-      }
+-
+-      const prepParsed = parseCliJson(prepRes.stdout, 'stack prepare');
+-      if (!prepParsed.id || !/^[a-f0-9]{64}$/i.test(prepParsed.id)) {
+-        throw new Error('STACK_PREPARE_FAIL: prepare output missing full 64-character hex ID.');
+-      }
+-      const fullStackId = prepParsed.id;
+-
+-      // 4. Reconcile tuple in native registry after prepare
++        fullStackId = found.id;
++      } else {
++        if (preListParsed.stacks.some(s => s.name === authority.stack_name)) {
++          throw new Error(`PREPARE_FAIL: Stack name "${authority.stack_name}" already exists in native registry.`);
++        }
++
++        // Persist prepare intent
++        authority.pending_operation = 'prepare';
++        authority.updated_at = new Date().toISOString();
++        persistAuthorityAtomic(recordPath, authority);
++
++        // Dispatch stack prepare
++        const prepRes = cliExecutor(
++          cliPath,
++          ['stack', 'prepare', '--stack', authority.stack_name, '--runtime', 'native', '--workdir', authority.workdir, '--output-format', 'json'],
++          { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 180000, maxBuffer: 10 * 1024 * 1024 }
++        );
++        if (prepRes.status !== 0) {
++          throw new Error(`PREPARE_FAIL: stack prepare failed with exit code ${prepRes.status}.`);
++        }
++
++        const prepParsed = parseStrictJson(prepRes.stdout, 'stack prepare');
++        if (!prepParsed.id || !/^[a-f0-9]{64}$/i.test(prepParsed.id)) {
++          throw new Error('PREPARE_FAIL: prepare output missing full 64-character hex ID.');
++        }
++        fullStackId = prepParsed.id;
++      }
++
++      // Reconcile exactly ONE matching full tuple after prepare
+       const postPrepListRes = cliExecutor(
+         cliPath,
+         ['stack', 'list', '--workdir', authority.workdir, '--output-format', 'json'],
+-        { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
++        { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 }
+       );
+       if (postPrepListRes.status !== 0) {
+-        throw new Error(`STACK_REGISTRY_FAIL: stack list failed with exit code ${postPrepListRes.status}.`);
+-      }
+-      const listParsed = parseCliJson(postPrepListRes.stdout, 'stack list');
+-      const matched = (listParsed.stacks || []).find(s => s.id === fullStackId);
+-      if (!matched) {
+-        throw new Error(`STACK_REGISTRY_FAIL: Stack ID ${fullStackId} was not found in native registry after prepare.`);
+-      }
+-
+-      // 5. Bind ID atomically
++        throw new Error(`RECONCILE_FAIL: stack list failed with exit code ${postPrepListRes.status}.`);
++      }
++      const listParsed = parseStrictJson(postPrepListRes.stdout, 'stack list');
++      const matches = (listParsed.stacks || []).filter(s => s.id === fullStackId);
++      if (matches.length !== 1) {
++        throw new Error(`RECONCILE_FAIL: Expected exactly 1 matching tuple for ${fullStackId}, found ${matches.length}.`);
++      }
++
++      // Bind ID atomically
+       authority.instance_id = fullStackId;
+       authority.phase = 'BOUND';
+       authority.pending_operation = null;
+@@ -664,10 +649,8 @@
+       // Reconcile existing bound stack
+       reconcileNativeRegistry({ authority, adapters, cliPath });
+     } else {
+-      throw new Error(`STACK_START_FAIL: Refusing to start stack in phase "${authority.phase}".`);
+-    }
+-
+-    const fullStackId = authority.instance_id;
++      throw new Error(`START_FAIL: Refusing to start stack in phase "${authority.phase}".`);
++    }
+ 
+     // Persist start intent
+     authority.pending_operation = 'start';
+@@ -678,39 +661,52 @@
+     const startRes = cliExecutor(
+       cliPath,
+       ['stack', 'start', '--stack-id', fullStackId, '--workdir', authority.workdir, '--output-format', 'json'],
+-      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
++      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 120000, maxBuffer: 10 * 1024 * 1024 }
+     );
+-
+     if (startRes.status !== 0) {
+-      throw new Error(`STACK_START_FAIL: stack start failed with exit code ${startRes.status}.`);
+-    }
+-
+-    const startParsed = parseCliJson(startRes.stdout, 'stack start');
++      throw new Error(`START_FAIL: stack start failed with exit code ${startRes.status}.`);
++    }
++
++    const startParsed = parseStrictJson(startRes.stdout, 'stack start');
+     if (startParsed.id !== fullStackId) {
+-      throw new Error(`STACK_START_FAIL: Returned ID ${startParsed.id} does not match bound stack ${fullStackId}`);
+-    }
+-
+-    // Query status to verify running state and composition
++      throw new Error('START_FAIL: Returned ID does not match bound stack.');
++    }
++
++    // Query status to verify running composition
+     const statusRes = cliExecutor(
+       cliPath,
+       ['stack', 'status', '--stack-id', fullStackId, '--workdir', authority.workdir, '--output-format', 'json'],
+-      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
++      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 }
+     );
+     if (statusRes.status !== 0) {
+-      throw new Error(`STACK_STATUS_FAIL: stack status failed with exit code ${statusRes.status}.`);
+-    }
+-    const statusParsed = parseCliJson(statusRes.stdout, 'stack status (post-start)');
+-
+-    // Save member UUID map
+-    const memberMap = {};
++      throw new Error(`STATUS_FAIL: stack status failed with exit code ${statusRes.status}.`);
++    }
++    const statusParsed = parseStrictJson(statusRes.stdout, 'stack status (post-start)');
++
++    // Extract member UUID map from status
++    const currentMemberMap = {};
+     if (statusParsed.composition && Array.isArray(statusParsed.composition.members)) {
+       for (const m of statusParsed.composition.members) {
+-        memberMap[m.service] = m.id;
+-      }
+-    }
+-    const memberMapFile = path.resolve(runDir, 'member-map.json');
+-    fs.writeFileSync(memberMapFile, JSON.stringify(memberMap, null, 2), { mode: 0o600 });
+-    authority.member_map = memberMap;
++        currentMemberMap[m.service] = m.id;
++      }
++    }
++
++    // CONTINUITY CHECK:
++    if (authority.member_map && Object.keys(authority.member_map).length > 0) {
++      for (const [service, expectedId] of Object.entries(authority.member_map)) {
++        if (!currentMemberMap[service]) {
++          throw new Error(`RECONCILE_FAIL: Required service "${service}" missing from active status composition.`);
++        }
++        if (currentMemberMap[service] !== expectedId) {
++          throw new Error(`RECONCILE_FAIL: Member UUID mismatch for service "${service}". Incarnation continuity broken.`);
++        }
++      }
++    } else {
++      // First initialization: save member map
++      authority.member_map = currentMemberMap;
++      const memberMapFile = path.resolve(runDir, 'member-map.json');
++      fs.writeFileSync(memberMapFile, JSON.stringify(currentMemberMap, null, 2), { mode: 0o600 });
++    }
+ 
+     // Save private credentials mode 0600
+     const rawEnv = startParsed.env || statusParsed.env || {};
+@@ -748,7 +744,7 @@
+       ...out,
+       id: fullStackId,
+       stackId: fullStackId,
+-      runtime: authority.runtime || 'native',
++      runtime: 'native',
+       readiness: probeResults,
+       runId,
+     };
+@@ -758,14 +754,14 @@
+ }
+ 
+ /**
+- * Status of disposable stack.
++ * Status of disposable stack under lock.
+  */
+ export function statusStack(options = {}) {
+-  const { runId, runDir, recordPath } = resolveRunContext(options, 'status');
++  const { runId, runDir, recordPath, runsDir } = resolveRunContext(options, 'status');
+   const adapters = options.adapters || {};
+   const cliExecutor = adapters.cliExecutor || spawnSync;
+ 
+-  const authority = validateAuthorityRecord(recordPath, options);
++  let authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId, runsDir });
+ 
+   if (!authority.bound && authority.phase !== 'BOUND' && authority.phase !== 'DESTROYED') {
+     throw new Error(`STATUS_FAIL: Stack is not bound (${authority.reason || 'not bound'})`);
+@@ -786,23 +782,36 @@
+ 
+   const { lockFile, token } = acquireRunLock(runDir, runId, options);
+   try {
++    authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId, runsDir });
+     const { cliPath } = resolveSupabaseCli({ adapters });
+     reconcileNativeRegistry({ authority, adapters, cliPath });
+ 
+-    const cleanEnv = buildCleanChildEnv(authority.home_dir || path.resolve(runDir, 'home'));
++    const cleanEnv = buildCleanChildEnv(authority.home_dir);
+     const res = cliExecutor(
+       cliPath,
+       ['stack', 'status', '--stack-id', authority.instance_id, '--workdir', authority.workdir, '--output-format', 'json'],
+-      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
++      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 }
+     );
+-
+     if (res.status !== 0) {
+       throw new Error(`STATUS_FAIL: CLI status failed with exit code ${res.status}.`);
+     }
+ 
+-    const parsed = parseCliJson(res.stdout, 'stack status');
++    const parsed = parseStrictJson(res.stdout, 'stack status');
+     if (parsed.identity?.id !== authority.instance_id) {
+-      throw new Error(`STATUS_FAIL: ID returned by status (${parsed.identity?.id}) does not match bound ID.`);
++      throw new Error('STATUS_FAIL: ID returned by status does not match bound ID.');
++    }
++
++    // Verify member UUID continuity if recorded
++    if (authority.member_map && parsed.composition && Array.isArray(parsed.composition.members)) {
++      const currentMembers = {};
++      for (const m of parsed.composition.members) {
++        currentMembers[m.service] = m.id;
++      }
++      for (const [srv, expId] of Object.entries(authority.member_map)) {
++        if (currentMembers[srv] !== expId) {
++          throw new Error(`RECONCILE_FAIL: Member UUID mismatch for service "${srv}". Incarnation continuity broken.`);
++        }
++      }
+     }
+ 
+     return projectFiniteOutput({
+@@ -822,28 +831,27 @@
+ }
+ 
+ /**
+- * Stop disposable stack.
++ * Stop disposable stack with postcheck process and socket quiescence.
+  */
+ export function stopStack(options = {}) {
+-  const { runId, runDir, recordPath } = resolveRunContext(options, 'stop');
++  const { runId, runDir, recordPath, runsDir } = resolveRunContext(options, 'stop');
+   const adapters = options.adapters || {};
+   const cliExecutor = adapters.cliExecutor || spawnSync;
+ 
+-  const authority = validateAuthorityRecord(recordPath, options);
+-
+-  if (!authority.bound && authority.phase !== 'BOUND') {
+-    throw new Error(`STOP_FAIL: Refusing to stop unbound stack (${authority.reason || 'not bound'})`);
++  let authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId, runsDir });
++
++  if (authority.phase === 'DESTROYED') {
++    throw new Error('STOP_FAIL: Stack is already destroyed.');
+   }
+ 
+   const { lockFile, token } = acquireRunLock(runDir, runId, options);
+-
+   try {
++    authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId, runsDir });
+     const { cliPath } = resolveSupabaseCli({ adapters });
+     reconcileNativeRegistry({ authority, adapters, cliPath });
+ 
+-    // Snapshot known active processes before stop
+-    const homeDir = authority.home_dir || path.resolve(runDir, 'home');
+-    const knownProcesses = snapshotRunProcesses(homeDir, authority.workdir, authority.instance_id);
++    const homeDir = authority.home_dir;
++    const knownProcSnapshot = snapshotRunProcesses(homeDir, authority.workdir, authority.instance_id);
+ 
+     authority.pending_operation = 'stop';
+     authority.updated_at = new Date().toISOString();
+@@ -853,40 +861,32 @@
+     const res = cliExecutor(
+       cliPath,
+       ['stack', 'stop', '--stack-id', authority.instance_id, '--workdir', authority.workdir, '--output-format', 'json'],
+-      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
++      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 }
+     );
+-
+     if (res.status !== 0) {
+-      throw new Error(`STOP_FAIL: CLI stop command failed with exit code ${res.status}.`);
+-    }
+-
+-    const parsed = parseCliJson(res.stdout, 'stack stop');
+-    const stoppedList = parsed.stopped || [];
+-    const notRunningList = parsed.not_running || [];
+-
+-    if (!stoppedList.includes(authority.instance_id) && !notRunningList.includes(authority.instance_id)) {
+-      throw new Error(`STOP_FAIL: Stop response did not acknowledge target stack ${authority.instance_id}`);
+-    }
+-
+-    // Postcheck: verify known processes are quiescent
+-    const quiescent = verifyProcessesQuiescent(knownProcesses);
+-    if (!quiescent) {
++      throw new Error(`STOP_FAIL: Stop command failed with exit code ${res.status}.`);
++    }
++
++    const parsed = parseStrictJson(res.stdout, 'stack stop');
++    const inStopped = Array.isArray(parsed.stopped) && parsed.stopped.includes(authority.instance_id);
++    const inNotRunning = Array.isArray(parsed.not_running) && parsed.not_running.includes(authority.instance_id);
++    if (!inStopped && !inNotRunning) {
++      throw new Error('STOP_FAIL: Target stack ID was not confirmed stopped or not_running.');
++    }
++
++    // Postcheck 1: Exact tuple still registered
++    reconcileNativeRegistry({ authority, adapters, cliPath });
++
++    // Postcheck 2: Processes quiescent
++    const processesQuiescent = verifyProcessesQuiescent(knownProcSnapshot, homeDir, authority.workdir, authority.instance_id);
++    if (!processesQuiescent) {
+       throw new Error('STOP_POSTCHECK_FAIL: Known provider processes are still active after stop.');
+     }
+ 
+-    // Postcheck: verify stack remains registered in native registry
+-    const listRes = cliExecutor(
+-      cliPath,
+-      ['stack', 'list', '--workdir', authority.workdir, '--output-format', 'json'],
+-      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
+-    );
+-    if (listRes.status !== 0) {
+-      throw new Error(`STOP_POSTCHECK_FAIL: Registry list failed after stop with code ${listRes.status}.`);
+-    }
+-    const listParsed = parseCliJson(listRes.stdout, 'stack list (post-stop)');
+-    const stillRegistered = (listParsed.stacks || []).find(s => s.id === authority.instance_id);
+-    if (!stillRegistered) {
+-      throw new Error('STOP_POSTCHECK_FAIL: Stack disappeared from native registry after stop.');
++    // Postcheck 3: Sockets quiescent
++    const socketsQuiescent = verifySocketsQuiescent([54321, 54322, 54324]);
++    if (!socketsQuiescent) {
++      throw new Error('STOP_POSTCHECK_FAIL: Provider sockets still listening after stop.');
+     }
+ 
+     authority.pending_operation = null;
+@@ -909,53 +909,46 @@
+ }
+ 
+ /**
+- * Permanently destroy disposable stack.
++ * Destroy disposable stack with strict acknowledgment, registry absence, and quiescence.
+  */
+ export function destroyStack(options = {}) {
+-  const { runId, runDir, recordPath } = resolveRunContext(options, 'destroy');
++  const { runId, runDir, recordPath, runsDir } = resolveRunContext(options, 'destroy');
+   const adapters = options.adapters || {};
+   const cliExecutor = adapters.cliExecutor || spawnSync;
+ 
+-  const authority = validateAuthorityRecord(recordPath, options);
+-
++  let authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId, runsDir });
++
++  // Safe idempotence on already destroyed tombstone
+   if (authority.phase === 'DESTROYED') {
+-    const { lockFile, token } = acquireRunLock(runDir, runId, options);
+-    try {
+-      const credFile = path.resolve(runDir, 'credentials.json');
+-      const memberMapFile = path.resolve(runDir, 'member-map.json');
+-      if (fs.existsSync(credFile)) fs.unlinkSync(credFile);
+-      if (fs.existsSync(memberMapFile)) fs.unlinkSync(memberMapFile);
+-
+-      return projectFiniteOutput({
+-        command: 'destroy',
+-        stage: 'completed',
+-        status: 'DESTROYED',
+-        code: 'ALREADY_DESTROYED',
+-        run_id: runId,
+-        instance_id: authority.instance_id,
+-        phase: 'DESTROYED',
+-        exit_code: 0,
+-      });
+-    } finally {
+-      releaseRunLock(runDir, token);
+-    }
+-  }
+-
+-  if (!authority.bound && authority.phase !== 'BOUND') {
+-    throw new Error(`DESTROY_FAIL: Refusing to destroy unbound stack (${authority.reason || 'not bound'})`);
++    const credFile = path.resolve(runDir, 'credentials.json');
++    const memberMapFile = path.resolve(runDir, 'member-map.json');
++    if (fs.existsSync(credFile)) fs.unlinkSync(credFile);
++    if (fs.existsSync(memberMapFile)) fs.unlinkSync(memberMapFile);
++
++    return projectFiniteOutput({
++      command: 'destroy',
++      stage: 'completed',
++      status: 'DESTROYED',
++      code: 'ALREADY_DESTROYED',
++      run_id: runId,
++      instance_id: authority.instance_id,
++      phase: 'DESTROYED',
++      exit_code: 0,
++    });
+   }
+ 
+   const { lockFile, token } = acquireRunLock(runDir, runId, options);
+-
+   try {
++    authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId, runsDir });
+     const { cliPath } = resolveSupabaseCli({ adapters });
+-    reconcileNativeRegistry({ authority, adapters, cliPath });
+-
+-    const homeDir = authority.home_dir || path.resolve(runDir, 'home');
+-    // Snapshot known processes and sockets before destroy
+-    const knownProcesses = snapshotRunProcesses(homeDir, authority.workdir, authority.instance_id);
+-    const pids = knownProcesses.map(p => p.pid);
+-    const knownSockets = snapshotProcessSockets(pids);
++
++    // Pending-destroy recovery: if already pending destroy, verify absence
++    if (authority.pending_operation !== 'destroy') {
++      reconcileNativeRegistry({ authority, adapters, cliPath });
++    }
++
++    const homeDir = authority.home_dir;
++    const knownProcSnapshot = snapshotRunProcesses(homeDir, authority.workdir, authority.instance_id);
+ 
+     authority.pending_operation = 'destroy';
+     authority.updated_at = new Date().toISOString();
+@@ -965,30 +958,27 @@
+     const res = cliExecutor(
+       cliPath,
+       ['stack', 'destroy', '--stack-id', authority.instance_id, '--workdir', authority.workdir, '--yes', '--output-format', 'json'],
+-      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
++      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 }
+     );
+-
+     if (res.status !== 0) {
+       throw new Error(`DESTROY_FAIL: Destroy command failed with exit code ${res.status}. Retaining recovery state.`);
+     }
+ 
+-    if (res.stdout && res.stdout.includes('{')) {
+-      const parsed = parseCliJson(res.stdout, 'stack destroy');
+-      if (parsed.destroyed !== true) {
+-        throw new Error('DESTROY_FAIL: CLI destroy did not report destroyed=true. Retaining recovery state.');
+-      }
+-    }
+-
+-    // Postcheck 1: fresh stack list in correct home must not contain stack ID
++    const parsed = parseStrictJson(res.stdout, 'stack destroy');
++    if (parsed.destroyed !== true || parsed.id !== authority.instance_id) {
++      throw new Error('DESTROY_FAIL: CLI destroy did not report destroyed=true for target ID. Retaining recovery state.');
++    }
++
++    // Postcheck 1: Target stack ID strictly absent from native registry
+     const listRes = cliExecutor(
+       cliPath,
+       ['stack', 'list', '--workdir', authority.workdir, '--output-format', 'json'],
+-      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8' }
++      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 }
+     );
+     if (listRes.status !== 0) {
+       throw new Error(`DESTROY_POSTCHECK_FAIL: Registry check failed after destroy with code ${listRes.status}.`);
+     }
+-    const listParsed = parseCliJson(listRes.stdout, 'stack list (post-destroy)');
++    const listParsed = parseStrictJson(listRes.stdout, 'stack list (post-destroy)');
+     if (!Array.isArray(listParsed.stacks)) {
+       throw new Error('DESTROY_POSTCHECK_FAIL: Malformed stack list returned during destroy postcheck.');
+     }
+@@ -997,23 +987,22 @@
+       throw new Error(`DESTROY_POSTCHECK_FAIL: Stack ID ${authority.instance_id} still present in native registry.`);
+     }
+ 
+-    // Postcheck 2: processes quiescent
+-    const processesQuiescent = verifyProcessesQuiescent(knownProcesses);
++    // Postcheck 2: Processes quiescent
++    const processesQuiescent = verifyProcessesQuiescent(knownProcSnapshot, homeDir, authority.workdir, authority.instance_id);
+     if (!processesQuiescent) {
+       throw new Error('DESTROY_POSTCHECK_FAIL: Native processes still active after destroy.');
+     }
+ 
+-    // Postcheck 3: sockets quiescent
+-    const socketsQuiescent = verifySocketsQuiescent(knownSockets);
++    // Postcheck 3: Sockets quiescent
++    const socketsQuiescent = verifySocketsQuiescent([54321, 54322, 54324]);
+     if (!socketsQuiescent) {
+       throw new Error('DESTROY_POSTCHECK_FAIL: Native sockets still open after destroy.');
+     }
+ 
+     // Atomically persist DESTROYED tombstone receipt
+     const tombstoneReceipt = {
+-      ...(authority.rawAuthority || authority.rawBinding || {}),
+       format_version: '1.0',
+-      task_id: authority.task_id || TASK_ID,
++      task_id: TASK_ID,
+       run_id: authority.run_id,
+       phase: 'DESTROYED',
+       tombstone: true,
+@@ -1028,7 +1017,7 @@
+       config_path: authority.config_path,
+       config_digest: authority.config_digest,
+       branch_ref: authority.branch_ref,
+-      runtime: authority.runtime,
++      runtime: 'native',
+       cli_version: PINNED_CLI_VERSION,
+       cli_digest: PINNED_CLI_SHA256,
+       destroyed_at: new Date().toISOString(),
+@@ -1075,59 +1064,153 @@
+   }
+ }
+ 
+-// CLI entry point wrapper
++/**
++ * Dedicated public entry point for guarded data readiness probe.
++ */
++export async function probeDataReadiness(options = {}) {
++  const { runId, runDir, recordPath, runsDir } = resolveRunContext(options, 'probeDataReadiness');
++  const adapters = options.adapters || {};
++
++  let authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId, runsDir });
++  if (!authority.bound && authority.phase !== 'BOUND') {
++    throw new Error(`DATA_READINESS_FAIL: Local binding is invalid (${authority.reason || 'not bound'})`);
++  }
++
++  const { lockFile, token } = acquireRunLock(runDir, runId, options);
++  try {
++    authority = validateAuthorityRecord(recordPath, { ...options, expectedRunId: runId, runsDir });
++    const { cliPath } = resolveSupabaseCli({ adapters });
++    reconcileNativeRegistry({ authority, adapters, cliPath });
++
++    // Live status query to verify composition and member map continuity
++    const cliExecutor = adapters.cliExecutor || spawnSync;
++    const cleanEnv = buildCleanChildEnv(authority.home_dir);
++    const statusRes = cliExecutor(
++      cliPath,
++      ['stack', 'status', '--stack-id', authority.instance_id, '--workdir', authority.workdir, '--output-format', 'json'],
++      { cwd: authority.workdir, env: cleanEnv, encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 }
++    );
++    if (statusRes.status !== 0) {
++      throw new Error(`DATA_READINESS_FAIL: Status query failed with exit code ${statusRes.status}.`);
++    }
++    const statusParsed = parseStrictJson(statusRes.stdout, 'stack status (data readiness)');
++
++    // Verify member UUID continuity against established member_map
++    if (authority.member_map && statusParsed.composition && Array.isArray(statusParsed.composition.members)) {
++      const currentMembers = {};
++      for (const m of statusParsed.composition.members) {
++        currentMembers[m.service] = m.id;
++      }
++      for (const [srv, expId] of Object.entries(authority.member_map)) {
++        if (!currentMembers[srv]) {
++          throw new Error(`RECONCILE_FAIL: Required service "${srv}" missing from active status composition.`);
++        }
++        if (currentMembers[srv] !== expId) {
++          throw new Error(`RECONCILE_FAIL: Member UUID mismatch for service "${srv}". Incarnation continuity broken.`);
++        }
++      }
++    }
++
++    const credFile = path.resolve(runDir, 'credentials.json');
++    let credentials = null;
++    if (fs.existsSync(credFile)) {
++      try {
++        credentials = JSON.parse(fs.readFileSync(credFile, 'utf8'));
++      } catch {}
++    }
++    if (!credentials && statusParsed.env) {
++      credentials = statusParsed.env;
++    }
++    if (!credentials) {
++      throw new Error('DATA_READINESS_FAIL: Private credentials missing for bound run.');
++    }
++
++    const probeResults = await probeGuardedDataReadinessUnderLock({ authority, credentials, adapters });
++
++    const out = projectFiniteOutput({
++      command: 'data',
++      stage: 'completed',
++      status: 'READY',
++      code: 'SUCCESS',
++      run_id: runId,
++      instance_id: authority.instance_id,
++      phase: authority.phase,
++      exit_code: 0,
++    });
++    return {
++      ...out,
++      readiness: probeResults,
++      sql: probeResults.sql,
++      auth: probeResults.auth,
++      storage: probeResults.storage,
++      mail: probeResults.mail,
++    };
++  } finally {
++    releaseRunLock(runDir, token);
++  }
++}
++
++// -----------------------------------------------------------------------------
++// Production CLI Dispatcher Wrapper
++// -----------------------------------------------------------------------------
++
++async function main() {
++  const args = process.argv.slice(2);
++  const cmd = args[0] || 'status';
++
++  let runId = null;
++  let newRun = false;
++  for (let i = 1; i < args.length; i++) {
++    if (args[i] === '--run' && args[i + 1]) {
++      runId = args[i + 1];
++    } else if (args[i] === '--new-run') {
++      newRun = true;
++    }
++  }
++
++  try {
++    let result;
++    if (cmd === 'start') {
++      result = await startStack({ newRun, runId });
++    } else if (cmd === 'status') {
++      result = statusStack({ runId });
++    } else if (cmd === 'stop') {
++      result = stopStack({ runId });
++    } else if (cmd === 'destroy') {
++      result = destroyStack({ runId });
++    } else if (cmd === 'data') {
++      result = await probeDataReadiness({ runId });
++    } else {
++      throw new Error(`COMMAND_UNKNOWN: Unsupported command "${cmd}".`);
++    }
++
++    const projected = projectFiniteOutput(result);
++    console.log(JSON.stringify(projected, null, 2));
++    if (projected.exit_code !== 0) {
++      process.exit(projected.exit_code);
++    }
++  } catch (err) {
++    let code = err.code;
++    if (!code) {
++      if (err.message && err.message.startsWith('COMMAND_INVALID:')) code = 'COMMAND_INVALID';
++      else if (err.message && err.message.startsWith('LOCKED:')) code = 'LOCKED';
++      else if (err.message && err.message.startsWith('RECONCILE_FAIL:')) code = 'RECONCILE_FAIL';
++      else if (err.message && err.message.startsWith('ALLOWLIST_FAIL:')) code = 'ALLOWLIST_FAIL';
++      else code = 'UNKNOWN_ERROR';
++    }
++    const errOut = projectFiniteOutput({
++      command: cmd,
++      stage: 'error',
++      status: 'FAILED',
++      code: code || 'UNKNOWN_ERROR',
++      run_id: runId,
++      exit_code: 1,
++    });
++    console.error(JSON.stringify(errOut, null, 2));
++    process.exit(1);
++  }
++}
++
+ if (process.argv[1] && path.basename(process.argv[1]) === 'stack-manager.mjs') {
+-  const cmd = process.argv[2] || 'status';
+-  const args = process.argv.slice(3);
+-
+-  let newRun = false;
+-  let runId = null;
+-  let runsDir = DEFAULT_RUNS_DIR;
+-
+-  for (let i = 0; i < args.length; i++) {
+-    if (args[i] === '--new-run') {
+-      newRun = true;
+-    } else if (args[i] === '--run' && args[i + 1]) {
+-      runId = args[i + 1];
+-      i++;
+-    } else if (args[i] === '--runs-dir' && args[i + 1]) {
+-      runsDir = path.resolve(args[i + 1]);
+-      i++;
+-    }
+-  }
+-
+-  (async () => {
+-    try {
+-      let result;
+-      if (cmd === 'start') {
+-        result = await startStack({ newRun, runId, runsDir });
+-      } else if (cmd === 'status') {
+-        result = statusStack({ runId, runsDir });
+-      } else if (cmd === 'stop') {
+-        result = stopStack({ runId, runsDir });
+-      } else if (cmd === 'destroy') {
+-        result = destroyStack({ runId, runsDir });
+-      } else if (cmd === 'data') {
+-        result = await probeDataReadiness({ runId, runsDir });
+-      } else {
+-        console.error(`[STACK-MGR] Unknown command: ${sanitizeString(cmd)}`);
+-        process.exit(1);
+-      }
+-      console.log(JSON.stringify(result, null, 2));
+-      if (result.exit_code !== 0) {
+-        process.exit(result.exit_code);
+-      }
+-    } catch (err) {
+-      const errOut = projectFiniteOutput({
+-        command: cmd,
+-        stage: 'error',
+-        status: 'FAILED',
+-        code: err.code || 'UNKNOWN_ERROR',
+-        message: err.message,
+-        exit_code: 1,
+-      });
+-      console.error('[STACK-MGR] ERROR:', sanitizeString(errOut.message));
+-      process.exit(1);
+-    }
+-  })();
+-}
++  main();
++}

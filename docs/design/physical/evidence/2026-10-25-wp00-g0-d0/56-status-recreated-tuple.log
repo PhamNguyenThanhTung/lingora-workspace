@@ -1,0 +1,32 @@
+COMMAND ["/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase", "stack", "status", "--stack", "d0-paused-intent", "--workdir", "/tmp/lingora-d0-p17ehk7h/project-b", "--output-format", "json"]
+CWD /tmp/lingora-d0-p17ehk7h/project-b
+EXIT 0
+STDOUT (SANITIZED)
+{
+  "identity": {
+    "id": "6b85353829b4d6d3d55ff5e737f9e289225af206e0a471d229b407f51145ac89",
+    "name": "d0-paused-intent",
+    "project_root": "/tmp/lingora-d0-p17ehk7h/project-b",
+    "branch_context": "refs/heads/d0-main"
+  },
+  "runtime": "native",
+  "owner": "reachable",
+  "lifecycle": null,
+  "readiness": "unavailable",
+  "composition": {
+    "members": []
+  },
+  "services": [],
+  "endpoints": {},
+  "config_drift": {
+    "status": "unchanged",
+    "message": "Project configuration matches the saved composition members."
+  },
+  "env": "<WITHHELD_ENV_MAP_VALUES>",
+  "message": ""
+}
+STDERR (SANITIZED)
+WARN: config section [inbucket] is deprecated and will be removed in v3, use [local_smtp] instead.
+A new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+

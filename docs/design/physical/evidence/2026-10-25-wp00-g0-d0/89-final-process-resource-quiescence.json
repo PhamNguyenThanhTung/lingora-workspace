@@ -1,0 +1,14 @@
+{
+  "before_process_count": 10,
+  "same_process_identities_alive_after_destroy": [],
+  "remaining_owned_socket_inodes": [],
+  "registered_records_after": 0,
+  "private_root_processes_after": [],
+  "state_file_exists": false,
+  "owner_file_exists": false,
+  "data_directory_exists": true,
+  "retained_stack_directory_entries": [
+    "data"
+  ],
+  "scope": "exact D0 instance/process/socket identities; no global empty-port assumption"
+}

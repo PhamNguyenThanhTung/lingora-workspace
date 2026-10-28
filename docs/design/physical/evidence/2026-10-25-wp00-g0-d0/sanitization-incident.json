@@ -1,0 +1,12 @@
+{
+  "incident": "D0 exploratory owner metadata inspection printed the newly generated synthetic owner-control secret in a tool result. Value intentionally not repeated or saved here.",
+  "scope": "disposable native owner control only; no production credential/data",
+  "correction": "Do not emit raw owner/state JSON; collect sensitive values privately and project only identity/process fields. Teardown affected owned instance to invalidate control secret; record final postcondition.",
+  "status": "affected instance stopped/destroyed; native owner PID no longer present; registry absent; no private-root provider process",
+  "cleanup_evidence": [
+    "13-stop-prepared.json",
+    "15-destroy-prepared.json",
+    "16-list-after-early-destroy.json",
+    "17-after-early-destroy.json"
+  ]
+}

@@ -1,0 +1,30 @@
+ .gitignore                                         |   10 +
+ HANDOFF.md                                         |   24 +-
+ docs/02-requirements.md                            |    6 +-
+ docs/QUICK-REF.md                                  |   24 +-
+ docs/README.md                                     |    8 +-
+ docs/design/physical/README.md                     |   26 +-
+ .../physical/database-reconciliation-2026-10-20.md |    6 +-
+ docs/design/physical/physical-erd-content.png      |  Bin 67267 -> 72163 bytes
+ docs/design/physical/physical-erd-content.svg      |    2 +-
+ docs/design/physical/physical-erd.puml             |    2 +-
+ docs/design/physical/rebuild-plan.md               |    5 +
+ docs/design/physical/security-and-rls.md           |   60 +-
+ docs/design/physical/verification-manifest.json    |   12 +-
+ docs/modeling/current-target/README.md             |    2 +-
+ .../current-target/lingora-all-diagrams.drawio     |   12 +-
+ docs/modeling/current-target/render-manifest.json  |   35 +-
+ .../rendered/DATA-03-target-logical-erd.png        |  Bin 79013 -> 83233 bytes
+ .../rendered/DATA-03-target-logical-erd.svg        |    2 +-
+ .../rendered/DOM-01-core-domain-model.png          |  Bin 264556 -> 270787 bytes
+ .../rendered/DOM-01-core-domain-model.svg          |    2 +-
+ .../src/DATA-03-target-logical-erd.puml            |    5 +-
+ .../src/DOM-01-core-domain-model.puml              |    5 +-
+ docs/modeling/current-target/verify_current.py     |   27 +-
+ docs/use-case-specifications.md                    |    4 +
+ logs/decision-log.md                               |   24 +
+ logs/development-log.md                            |  142 +
+ logs/test-log.md                                   |  172 +
+ package-lock.json                                  | 9234 ++------------------
+ plans/current-task.md                              |   18 +-
+ 29 files changed, 1221 insertions(+), 8648 deletions(-)

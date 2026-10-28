@@ -1,0 +1,279 @@
+{
+  "captured_at": "2026-10-26T06:01:06.335Z",
+  "environment": {
+    "run_id": "run-bcdc41a8b995232f",
+    "instance_id": "run-bcdc41a8b995232f",
+    "stack_name": null,
+    "runtime": "native",
+    "workspace_root": "/home/tung/workspace/school/project1/lingora-workspace"
+  },
+  "source_hashes": {
+    "lingora-admin/prisma/schema.prisma": "889381783e41336a086e27e4cd6b233f53c91cce150f3aa5e6e885085c98d5b5",
+    "lingora-admin/prisma/migrations/20261026000000_a3_baseline/migration.sql": "c2e1083d15497b9aa5a0890344f2285daa1bc4aa1276dbd4f7df2fa3dbcb6851",
+    "lingora-admin/prisma/bootstrap/bootstrap-cluster.mjs": "20cb9a5bc3699be568359f32a9e27f75eee65d3d8eefbc2f7224e4ebec6f4dad",
+    "lingora-admin/prisma/bootstrap/manifest.json": "e1a1d13794f23d6fcb1fcf64b9eb7fbfb5957d038b41cdd5f30ffae1cbfed4d9",
+    "lingora-admin/tests/database/a3/prisma-helper.mjs": "779971d5b41c2ed44004b7a7870fd120a831d13f6998bae8c37f77cf32c99a07",
+    "lingora-admin/tests/database/a3/fixture-lifecycle.mjs": "a07bb619918b155dd849af28bc565054a8c16df039f034338b8310d7b64c244f",
+    "lingora-admin/tests/database/a3/a3-database.test.mjs": "a8c90c21606dda7af5979eba8d423a989f042fb02f32110bcc6981b73604a025",
+    "docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/repair/fixture-interface.md": "97faaf28e5713724b3b7c8b84851c4a2336046084f981eb6c15d84826bd62639"
+  },
+  "guarded_commands": {
+    "setup_lifecycle": {
+      "status": "READY",
+      "source": "PROVISIONED",
+      "runId": "run-bcdc41a8b995232f",
+      "stateFile": "/home/tung/workspace/school/project1/lingora-workspace/.wp00-runs/pkg-g0-minimal/run-bcdc41a8b995232f/a3-baseline-state.json"
+    },
+    "validate": {
+      "exitCode": 0,
+      "stdout": "Prisma schema loaded from prisma/schema.prisma\nThe schema at prisma/schema.prisma is valid 🚀\n"
+    },
+    "generate": {
+      "exitCode": 0,
+      "stdout": "Prisma schema loaded from prisma/schema.prisma\n\n✔ Generated Prisma Client (v6.19.3) to ./../node_modules/@prisma/client in 230ms\n\nStart by importing your Prisma Client (See: https://pris.ly/d/importing-client)\n\nTip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints\n\n"
+    },
+    "status": {
+      "exitCode": 0,
+      "stdout": "Prisma schema loaded from prisma/schema.prisma\nDatasource \"db\": PostgreSQL database \"postgres\", schemas \"app, app_private\" at \"127.0.0.1:54322\"\n\n1 migration found in prisma/migrations\n\nDatabase schema is up to date!\n"
+    }
+  },
+  "database_projections": {
+    "roles": {
+      "login_roles": [
+        {
+          "rolname": "lingora_assembly",
+          "rolcanlogin": true,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_auth_adapter",
+          "rolcanlogin": true,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_runtime",
+          "rolcanlogin": true,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        }
+      ],
+      "nologin_roles": [
+        {
+          "rolname": "lingora_assembly_writer",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_audit_writer",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_auth_provisioner",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_authz_reader",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_content_writer",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_fingerprint_reader",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_grader",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_learner_writer",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_scoped_locker",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        },
+        {
+          "rolname": "lingora_transition_writer",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false
+        }
+      ],
+      "schemas": [
+        "app",
+        "app_private"
+      ]
+    },
+    "migration": {
+      "name": "20261026000000_a3_baseline",
+      "checksum": "c2e1083d15497b9aa5a0890344f2285daa1bc4aa1276dbd4f7df2fa3dbcb6851",
+      "finished_at": "2026-10-26T05:46:44.219Z",
+      "postgresql_version": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+      "status_stdout": "Prisma schema loaded from prisma/schema.prisma\nDatasource \"db\": PostgreSQL database \"postgres\", schemas \"app, app_private\" at \"127.0.0.1:54322\"\n\n1 migration found in prisma/migrations\n\nDatabase schema is up to date!\n",
+      "status_exit": 0
+    },
+    "catalog_tables": [
+      "app.accounts",
+      "app.assessment_blueprints",
+      "app.assessment_versions",
+      "app.assignment_history",
+      "app.content_assignments",
+      "app.courses",
+      "app.frameworks",
+      "app.item_identities",
+      "app.item_revisions",
+      "app.languages",
+      "app.learning_contexts",
+      "app.lesson_revisions",
+      "app.lessons",
+      "app.levels",
+      "app.media_assets",
+      "app.revision_reviews",
+      "app.units",
+      "app_private.audit_events",
+      "app_private.command_receipts",
+      "app_private.provisioning_requests"
+    ],
+    "parity": {
+      "total_columns": 250,
+      "updated_at_count": 15,
+      "created_at_count": 17,
+      "foreign_keys_count": 60,
+      "sql_only_inventory_count": 9
+    },
+    "representative_tx": {
+      "subject": "a40bf910-84ab-4eee-9313-32a51288f53a",
+      "createdContextId": "cb25ea6f-dedc-4cb0-b931-d628a4b5a592",
+      "languageCount": 2,
+      "firstLang": "en"
+    },
+    "cache_validation": {
+      "valid_cache_hit": true,
+      "stale_source_negative_rejected": true,
+      "changed_credentials_negative_rejected": true,
+      "wrong_catalog_negative_rejected": true,
+      "missing_credentials_negative_rejected": true
+    }
+  },
+  "security_and_rls": {
+    "functions": [
+      {
+        "proname": "check_fingerprint_collision",
+        "owner": "lingora_fingerprint_reader",
+        "prosecdef": true
+      },
+      {
+        "proname": "get_auth_subject_account",
+        "owner": "lingora_authz_reader",
+        "prosecdef": true
+      },
+      {
+        "proname": "set_draft_assessment_contribution_omitted",
+        "owner": "lingora_content_writer",
+        "prosecdef": true
+      }
+    ],
+    "force_rls_tables": [
+      "accounts",
+      "assessment_blueprints",
+      "assessment_versions",
+      "assignment_history",
+      "audit_events",
+      "command_receipts",
+      "content_assignments",
+      "courses",
+      "frameworks",
+      "item_identities",
+      "item_revisions",
+      "languages",
+      "learning_contexts",
+      "lesson_revisions",
+      "lessons",
+      "levels",
+      "media_assets",
+      "provisioning_requests",
+      "revision_reviews",
+      "units"
+    ]
+  },
+  "zero_boundary_counters": {
+    "context_denials": {
+      "denial_executor_calls": 0,
+      "denial_constructor_calls": 0,
+      "positive_executor_calls": 1,
+      "positive_constructor_calls": 1
+    },
+    "command_options": {
+      "denial_executor_calls": 0,
+      "positive_control_executor_calls": 1
+    },
+    "client_options": {
+      "denial_constructor_calls": 0,
+      "positive_control_constructor_calls": 1
+    },
+    "bootstrap_preflight": {
+      "denial_db_connect_calls": 0,
+      "positive_control_reconcile": true
+    }
+  },
+  "locker_outcomes": {
+    "own_account_lock": "PERMITTED",
+    "foreign_account_lock": "DENIED",
+    "non_active_account_lock": "DENIED",
+    "admin_lock_learner": "PERMITTED",
+    "admin_lock_teacher": "PERMITTED",
+    "admin_lock_admin": "DENIED",
+    "frozen_lesson_revision_lock": "PERMITTED",
+    "learner_lesson_revision_lock": "DENIED",
+    "genuine_update_attempt": "DENIED_42501_OR_44000",
+    "runtime_set_role_shortcut": "DENIED_42501"
+  }
+}

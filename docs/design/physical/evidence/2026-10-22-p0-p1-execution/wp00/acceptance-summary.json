@@ -1,0 +1,66 @@
+{
+  "task": "P0/WP-00",
+  "status": "PASS",
+  "gate": "G0",
+  "tested_commit": "c39806cb45c908135f240c93d68546b6ac5d7784",
+  "timestamp": "2026-10-22T08:13:00Z",
+  "acceptance_coverage": {
+    "P0_ENV": {
+      "status": "PASS",
+      "summary": "New task-local disposable Supabase full stack demonstrated via experimental native runtime (glibc 2.39). Database TCP, REST, Auth, Storage, and Mailpit endpoints verified on 127.0.0.1. Clean stop and destroy lifecycle verified.",
+      "evidence_log": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/05-provider-stack-lifecycle.log",
+      "evidence_json": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/05-provider-stack-lifecycle.json"
+    },
+    "P0_HARNESS": {
+      "status": "PASS",
+      "summary": "Minimal root and lingora-admin dependency manifests installed with exact pins (@prisma/client 6.19.3, prisma 6.19.3, @supabase/supabase-js 2.112.3). Test command scaffolds for A1-A3, integrity, security, concurrency, and smoke fail closed with exit 1 (NOT EXECUTED) when tests are absent; no false PASS on skip.",
+      "evidence_log": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/04-scaffolds-not-executed.log",
+      "evidence_json": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/04-scaffolds-not-executed.json"
+    },
+    "P0_ALLOWLIST_AND_SECURITY": {
+      "status": "PASS",
+      "summary": "Environment guard enforces 127.0.0.1/localhost and task-local stack identity before network or SQL. Foreign hosts, remote domains, and malformed URLs fail closed with ALLOWLIST_FAIL. Synthetic secrets sanitized in all outputs.",
+      "evidence_log": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/03-env-guard-negative-checks.log",
+      "evidence_json": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/03-env-guard-negative-checks.json"
+    },
+    "P0_DEPENDENCY_VERSIONS": {
+      "status": "PASS",
+      "summary": "Reproducible dependency setup verified. Historical package-lock.json preserved. Node v24.19.0, npm 10.8.2.",
+      "evidence_log": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/02-dependency-versions.log",
+      "evidence_json": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/02-dependency-versions.json"
+    },
+    "P0_PROVENANCE_SNAPSHOT": {
+      "status": "PASS",
+      "summary": "Dated provenance snapshot recorded for 34-table physical catalog, security, and ERD files. PUML source hash matches historical manifest (6100c66d...). Stale historical output hashes (6) identified and documented per spec §1 without altering historical manifest. CR2-04 coverage open.",
+      "evidence_log": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/01-provenance-snapshot.log",
+      "evidence_json": "docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/01-provenance-snapshot.json"
+    }
+  },
+  "runtime_identity": {
+    "engine": "native",
+    "cli_version": "2.121.0",
+    "glibc_version": "2.39",
+    "host_platform": "Linux x86_64 (Ubuntu 24.04.5 LTS)",
+    "capabilities": {
+      "database": "PostgreSQL 17.11 (native linux-amd64)",
+      "auth": "GoTrue v2.197.0 (native linux-amd64)",
+      "storage": "Supabase Storage v1.82.1 (native linux-amd64)",
+      "rest": "PostgREST v16.4 (native linux-amd64)",
+      "realtime": "Realtime v2.143.4 (native linux-amd64)",
+      "mail": "Mailpit / Inbucket (native linux-amd64)",
+      "studio": "Supabase Studio (native linux-amd64)"
+    },
+    "state_root": ".supabase-home/stacks/",
+    "allowlisted_hosts": ["127.0.0.1", "localhost"],
+    "ports": {
+      "database": 54322,
+      "api": 54321,
+      "studio": 54323,
+      "mail_http": 54324,
+      "mail_smtp": 54325,
+      "mail_pop3": 54326
+    }
+  },
+  "g0_verdict": "PASS — reproducible minimal harness, provider stack feasibility proven natively, secret-free environment identity verified, future test commands wired and fail-closed.",
+  "g1_gated": "A1/A2/A3 are NOT STARTED, gated on Codex review of G0."
+}

@@ -1,0 +1,118 @@
+{
+  "private_root": "/tmp/lingora-d0-p17ehk7h",
+  "intents": {
+    "03-prepare-help": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-main",
+      "name": "",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T05:48:02.323828+00:00"
+    },
+    "04-prepare-reserved-a": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-reserved-a",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T05:48:25.035003+00:00"
+    },
+    "18-prepare-runtime-main": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-runtime-main",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T05:52:24.443795+00:00"
+    },
+    "32-prepare-default-main": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-main",
+      "name": "",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T05:57:44.837731+00:00"
+    },
+    "36-prepare-default-alt": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-alt",
+      "name": "",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T05:58:16.162343+00:00"
+    },
+    "38-paused-prepare-intent": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-b",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-paused-intent",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T05:59:01.282360+00:00"
+    },
+    "43-invalid-runtime-no-allocation": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-invalid-input",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T06:00:33.291973+00:00"
+    },
+    "55-recreate-exact-same-tuple": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-b",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-paused-intent",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T06:04:42.290222+00:00"
+    },
+    "68-hard-kill-caller-after-registration": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-b",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-killed-caller",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T06:07:56.884070+00:00"
+    },
+    "77-never-dispatched-intent": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-b",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-never-dispatched",
+      "runtime": "native",
+      "prepare_dispatched": false
+    },
+    "91-prepare-home-factor-target": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-b",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-home-factor",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T06:13:47.211194+00:00"
+    },
+    "95-other-project-same-name": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-home-factor",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T06:13:53.099116+00:00"
+    },
+    "101-prepare-generation-probe": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-generation-probe",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T06:17:41.319079+00:00"
+    },
+    "108-recreate-generation-tuple": {
+      "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+      "project_root": "/tmp/lingora-d0-p17ehk7h/project-a",
+      "branch_context": "refs/heads/d0-main",
+      "name": "d0-generation-probe",
+      "runtime": "native",
+      "reserved_utc": "2026-10-25T06:17:54.846614+00:00"
+    }
+  },
+  "interpretation": "recorded before prepare except explicitly never-dispatched reservation; no secret values; branch transition fixture is separately recorded"
+}

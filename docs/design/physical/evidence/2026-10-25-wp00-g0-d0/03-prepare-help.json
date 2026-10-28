@@ -1,0 +1,109 @@
+{
+  "label": "03-prepare-help",
+  "utc": "2026-10-25T05:48:02.782661+00:00",
+  "command_argv": [
+    "/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase",
+    "stack",
+    "prepare",
+    "--help",
+    "--workdir",
+    "/tmp/lingora-d0-p17ehk7h/project-a",
+    "--output-format",
+    "json"
+  ],
+  "cwd": "/tmp/lingora-d0-p17ehk7h/project-a",
+  "environment_keys": [
+    "HOME",
+    "LANG",
+    "PATH",
+    "SUPABASE_EXPERIMENTAL_STACK",
+    "SUPABASE_HOME",
+    "TMPDIR"
+  ],
+  "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+  "binary_sha256": "e91fc61f09c4fbb9c65dadc37d415640cb6d2398e65eba6d384eec74b2dbbe10",
+  "exit_code": 0,
+  "timeout_injected": false,
+  "duration_seconds": 0.61,
+  "stdout_json_valid": true,
+  "stdout_shape": {
+    "_tag": "string",
+    "doc": {
+      "description": "string",
+      "usage": "string",
+      "flags": {
+        "type": "array",
+        "items_observed": [
+          {
+            "name": "string",
+            "aliases": {
+              "type": "array",
+              "items_observed": []
+            },
+            "type": "string",
+            "description": {
+              "_id": "string",
+              "_tag": "string",
+              "value": "string"
+            },
+            "required": "boolean"
+          }
+        ]
+      },
+      "annotations": {
+        "_id": "string",
+        "services": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "examples": {
+        "type": "array",
+        "items_observed": [
+          {
+            "command": "string",
+            "description": "string"
+          }
+        ]
+      },
+      "globalFlags": {
+        "type": "array",
+        "items_observed": [
+          {
+            "name": "string",
+            "aliases": {
+              "type": "array",
+              "items_observed": [
+                "string"
+              ]
+            },
+            "type": "string",
+            "description": {
+              "_id": "string",
+              "_tag": "string",
+              "value": "string"
+            },
+            "required": "boolean"
+          },
+          {
+            "name": "string",
+            "aliases": {
+              "type": "array",
+              "items_observed": []
+            },
+            "type": "string",
+            "description": {
+              "_id": "string",
+              "_tag": "string",
+              "value": "string"
+            },
+            "required": "boolean"
+          }
+        ]
+      }
+    }
+  },
+  "stdout_sanitized": "{\n  \"_tag\": \"Help\",\n  \"doc\": {\n    \"description\": \"Download artifacts for a managed local Supabase stack without starting its services. If the target does not exist, it is created and registered for later listing or destruction.\",\n    \"usage\": \"supabase stack prepare [flags]\",\n    \"flags\": [\n      {\n        \"name\": \"stack\",\n        \"aliases\": [],\n        \"type\": \"string\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Name this stack.\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"stack-id\",\n        \"aliases\": [],\n        \"type\": \"string\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Open an existing stack by id or unique id prefix.\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"runtime\",\n        \"aliases\": [],\n        \"type\": \"choice\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Runtime to use for a new stack. auto selects Docker, then Podman, then native, based on what is available. (choices: auto, docker, podman, native)\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"capability\",\n        \"aliases\": [],\n        \"type\": \"choice\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Capability to prepare (repeatable). (choices: database, rest, auth, realtime, storage, functions, studio, mail, analytics, pooler)\"\n        },\n        \"required\": true\n      }\n    ],\n    \"annotations\": {\n      \"_id\": \"Context\",\n      \"services\": []\n    },\n    \"examples\": [\n      {\n        \"command\": \"supabase stack prepare\",\n        \"description\": \"Prepare all enabled stack capabilities\"\n      },\n      {\n        \"command\": \"supabase stack prepare --stack feature-a --capability rest\",\n        \"description\": \"Prepare one capability in a named stack\"\n      }\n    ],\n    \"globalFlags\": [\n      {\n        \"name\": \"help\",\n        \"aliases\": [\n          \"-h\"\n        ],\n        \"type\": \"boolean\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Show help information\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"version\",\n        \"aliases\": [\n          \"-v\"\n        ],\n        \"type\": \"boolean\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Show version information\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"wizard\",\n        \"aliases\": [],\n        \"type\": \"boolean\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Start wizard mode for a command\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"completions\",\n        \"aliases\": [],\n        \"type\": \"<bash|zsh|fish|sh>\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Print shell completion script (choices: bash, zsh, fish, sh)\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"log-level\",\n        \"aliases\": [],\n        \"type\": \"<all|trace|debug|info|warn|warning|error|fatal|none>\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Sets the minimum log level (choices: all, trace, debug, info, warn, warning, error, fatal, none)\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"output-format\",\n        \"aliases\": [],\n        \"type\": \"choice\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Output format: text (default), json, or stream-json (NDJSON) (choices: text, json, stream-json)\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"output\",\n        \"aliases\": [\n          \"-o\"\n        ],\n        \"type\": \"choice\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"output format of status variables (choices: env, pretty, json, toml, yaml, table, csv)\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"profile\",\n        \"aliases\": [],\n        \"type\": \"string\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"use a specific profile for connecting to Supabase API\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"debug\",\n        \"aliases\": [],\n        \"type\": \"boolean\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"output debug logs to stderr\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"workdir\",\n        \"aliases\": [],\n        \"type\": \"string\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"path to the directory containing your supabase/ folder; used exactly as given, with no ancestor directory search (defaults to searching upward from the current directory)\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"experimental\",\n        \"aliases\": [],\n        \"type\": \"boolean\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"enable experimental features\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"network-id\",\n        \"aliases\": [],\n        \"type\": \"string\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"use the specified docker network instead of a generated one\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"yes\",\n        \"aliases\": [],\n        \"type\": \"boolean\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"answer yes to all prompts\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"dns-resolver\",\n        \"aliases\": [],\n        \"type\": \"choice\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"lookup domain names using the specified resolver (choices: native, https)\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"create-ticket\",\n        \"aliases\": [],\n        \"type\": \"boolean\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"create a support ticket for any CLI error\"\n        },\n        \"required\": false\n      },\n      {\n        \"name\": \"agent\",\n        \"aliases\": [],\n        \"type\": \"choice\",\n        \"description\": {\n          \"_id\": \"Option\",\n          \"_tag\": \"Some\",\n          \"value\": \"Override agent detection: yes, no, or auto (default auto) (choices: auto, yes, no)\"\n        },\n        \"required\": false\n      }\n    ]\n  }\n}",
+  "stderr_sanitized": "A new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n",
+  "projection": "all env map values and generated credentials withheld; raw streams private only"
+}

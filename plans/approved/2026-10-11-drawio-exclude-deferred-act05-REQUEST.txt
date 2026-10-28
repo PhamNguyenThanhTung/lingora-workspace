@@ -1,3 +1,0 @@
-User instruction received 2026-10-11: “tại sao cái 13 ngoài phạm vi còn vẻ vào làm gì bỏ nó luôn đi được mà” (remove item/page 13 because it is outside scope).
-
-Authorized bounded action: omit the deferred ACT-05 Reassessment page from the primary native editable draw.io package, leaving 35 active pages; update builder, validator, baseline verifier, and preview evidence to match. Preserve the 36 canonical sources and rendered references, including ACT-05 marked DEFERRED — NOT IN MVP. Do not change model semantics or unrelated files.

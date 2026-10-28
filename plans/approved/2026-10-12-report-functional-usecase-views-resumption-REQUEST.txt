@@ -1,5 +1,0 @@
-User authorization to resume the report-oriented Use Case task, 2026-10-12:
-
-“tiếp tục đi chưa thấy các sơ đồ uc mới đó đâu hnhu bị dừng giữa chừng”
-
-The user asks to continue because the new Use Case diagrams are not visible and the work appears interrupted. Resume the previously interrupted bounded documentation/modeling task, verify and surface the already-rendered report diagrams, finish any necessary presentation synchronization, and close the task workflow. The report views and script are within the explicitly requested documentation-only scope. Do not modify the physical-design package, application code, database, Prisma, SQL/migrations, seed, deployment, Git staging, or commit.

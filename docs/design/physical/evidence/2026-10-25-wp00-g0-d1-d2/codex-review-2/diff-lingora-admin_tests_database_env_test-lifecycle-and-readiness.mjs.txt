@@ -1,0 +1,11 @@
+--- review1/lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs
++++ correction/lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs
+@@ -29,7 +29,7 @@
+   destroyStack,
+ } from './stack-manager.mjs';
+ 
+-test('Provider stack lifecycle and real readiness verification (R01)', async () => {
++test('Provider stack lifecycle and real readiness verification (R01)', { timeout: 300000 }, async () => {
+   let runId = null;
+   let runDir = null;
+   let started = false;

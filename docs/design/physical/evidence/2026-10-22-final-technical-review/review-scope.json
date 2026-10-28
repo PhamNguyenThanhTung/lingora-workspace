@@ -1,0 +1,10 @@
+{
+  "protected_file_count": 1188,
+  "changed_protected_files": [],
+  "local_links_checked": 106,
+  "broken_local_links": [],
+  "historical_log_prefixes_preserved": true,
+  "git_diff_check_exit": 0,
+  "runtime_or_database_tests": "NOT EXECUTED",
+  "new_files_limited_to": "review report and evidence folder; status/index/log updates only"
+}

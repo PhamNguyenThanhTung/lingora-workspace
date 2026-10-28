@@ -1,0 +1,35 @@
+root agent idle; waiting up to 30m0s for 1 background task(s)
+I have launched the fresh owned disposable stack allocation and startup command (`node lingora-admin/tests/database/env/stack-manager.mjs start --new-run`) in the background. Awaiting notification upon completion to obtain the fresh owned run ID and run `test:db:a3`.
+I have initiated the startup of a fresh second owned disposable stack (`node lingora-admin/tests/database/env/stack-manager.mjs start --new-run`) to verify clean end-to-end replay from greenfield. Waiting for startup completion notification.
+STATUS: DELIVERED
+PACKAGE: P1-03a
+CHANGED FILES:
+- [schema.prisma](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/prisma/schema.prisma)
+- [manifest.json](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/prisma/bootstrap/manifest.json)
+- [bootstrap-cluster.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/prisma/bootstrap/bootstrap-cluster.mjs)
+- [migration.sql](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/prisma/migrations/20261026000000_a3_baseline/migration.sql)
+- [prisma-helper.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/a3/prisma-helper.mjs)
+- [ac03-baseline-and-prerequisites.test.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/a3/ac03-baseline-and-prerequisites.test.mjs)
+- [ac04-guarded-prisma-workflow.test.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/a3/ac04-guarded-prisma-workflow.test.mjs)
+- [fixture-interface.md](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/fixture-interface.md)
+- [test-run.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/test-run.log)
+- [delivery-record.md](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/delivery-record.md)
+- [test-log.md](file:///home/tung/workspace/school/project1/lingora-workspace/logs/test-log.md)
+- [development-log.md](file:///home/tung/workspace/school/project1/lingora-workspace/logs/development-log.md)
+
+TESTS:
+- `node --test lingora-admin/tests/database/test-context.test.mjs lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs` — exit 0 (24 passed / 0 failed, 2.28s) [cwd: `/home/tung/workspace/school/project1/lingora-workspace`]
+- `npm run test:db:a3 -w lingora-admin` — exit 1 (scaffold fail-closed rejection on missing `--run <run-id>`) [cwd: `/home/tung/workspace/school/project1/lingora-workspace`]
+- `npm run test:db:a3 -w lingora-admin -- --run run-3256c3b16f733619` — exit 0 (11 passed / 0 failed across 2 test files, 3.39s) [cwd: `/home/tung/workspace/school/project1/lingora-workspace`, target: fresh owned disposable native stack `run-3256c3b16f733619`]
+  - `ac03-baseline-and-prerequisites.test.mjs`: 7/7 pass (`TC-03-01` bootstrap cluster roles/schemas, `TC-03-02` deploy migration `20261026000000_a3_baseline`, `TC-03-03` 20-table catalog inventory with `accounts.display_name` strictly omitted, `TC-03-04` circular FK `lessons/lesson_revisions` + partial unique index + external Auth FK, `TC-03-05` seed data `en`/`vi` + `CEFR` + `A1`-`B2` + initial course, `TC-03-06` security definer function ownership by least-privilege roles + ENABLE/FORCE RLS, `TC-03-07` Auth trigger with staff reservation skip)
+  - `ac04-guarded-prisma-workflow.test.mjs`: 4/4 pass (`TC-04-01` pre-construction denial on missing context, stale lock, unproved shadow targets, arbitrary URL overrides; `TC-04-02` positive guarded Prisma `validate`, `generate`, `migrate status`; `TC-04-03` real interactive transaction with `lingora_runtime` role under transaction-local `SET LOCAL app.auth_subject`; `TC-04-04` runtime credential separation and shadow database safety)
+- Lifecycle teardowns verified:
+  - `run-6e06a876bbd1c498`: phase `DESTROYED`, `tombstone: true`, ports 54321–54326 quiescent
+  - `run-3256c3b16f733619`: phase `DESTROYED`, `tombstone: true`, ports 54321–54326 quiescent
+
+EVIDENCE:
+- [delivery-record.md](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/delivery-record.md)
+- [fixture-interface.md](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/fixture-interface.md)
+- [test-run.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/test-run.log)
+
+BLOCKER: none

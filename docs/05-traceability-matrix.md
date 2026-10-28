@@ -1,5 +1,7 @@
 # 05 - Lingora Traceability Matrix
 
+> **Historical Snapshot (2026-10-10 / 2026-10-22):** Các bảng dưới đây giữ nguyên ghi nhận thiết kế/triển khai/kiểm thử tại thời điểm lịch sử; không xác nhận runtime hoặc database hiện tại. Xem `plans/current-task.md` và `docs/design/physical/README.md` cho hiện trạng.
+
 ## FDR-01–07 correction trace (2026-10-20)
 
 | Correction / authority | Corrected design | Design acceptance / future runtime cases |
@@ -12,7 +14,7 @@
 | Review receipt replay/capabilities — proposed physical realization of trusted commands | Physical catalog/security/learning ERD | DC06-A–D; PD-DC06-REPLAY/HASH/RACE/AUTH |
 | Purpose mapping/narrow update — Class/ADR-030/031/032/033 plus proposed representation | Physical catalog/security/content ERD | DC07-A–D; PD-DC07-PURPOSE/CONTEXT/HISTORY/ELIGIBILITY |
 
-[Correction report/evidence](design/design-correction-2026-10-20.md) records observed documentation/artifact checks; [DC plan](../plans/2026-10-20-design-correction-plan.md) and [future physical cases](design/physical/rebuild-plan.md) distinguish runtime NOT EXECUTED. Purpose code/null/empty-tag/session representation remains PROPOSED, not new product approval. No canonical UC renumbering or runtime acceptance is implied.
+[Correction report/evidence](design/design-correction-2026-10-20.md) records observed documentation/artifact checks; [DC plan / report](design/design-correction-2026-10-20.md) and [future physical cases](design/physical/rebuild-plan.md) distinguish runtime NOT EXECUTED. Purpose code/null/empty-tag/session representation remains PROPOSED, not new product approval. No canonical UC renumbering or runtime acceptance is implied.
 
 ## Current assessment assembly traceability — ADR-043
 
@@ -43,11 +45,11 @@ Canonical UC-01–14 identity/count is unchanged. [Addendum](study-focus-addendu
 
 ---
 
-## Current Traceability Addendum — 2026-10-10
+## Traceability Addendum — Historical Snapshot (2026-10-10 / 2026-10-22)
 
-This addendum is the current role/governance/security trace for ADR-034/035. It supplements, but does not rewrite, the historical Phase 0 matrix below. “Implemented” is reported only where a current source artifact was inspected; design docs and old test logs are not implementation evidence. ADR-035 resolves logical policy only; physical/live database conformance remains unverified.
+This addendum preserves the role/governance/security trace for ADR-034/035 at the snapshot dates. It supplements, but does not rewrite, the historical Phase 0 matrix below. Repository evidence describes artifacts inspected at that time, not the current checkout. For current implementation state, see [current task](../plans/current-task.md) and [product database](design/physical/README.md). Approved business rules remain governed by their controlling ADRs.
 
-| Business flow / requirement | Current UC | Approved rule | Diagram / controlling source | Repository evidence and current state |
+| Business flow / requirement | Current UC | Approved rule | Diagram / controlling source | Repository evidence — Historical Snapshot (2026-10-10 / 2026-10-22) |
 |---|---|---|---|---|
 | Learner signup and session | UC-01; P1-FR-001 (scope subject to current auth source) | Learners self-register; exactly one business role/account; Teacher/Admin do not public-signup (ADR-034). `auth.uid()` is the trusted subject; role/status is server-controlled; disabled accounts are blocked on the next request; ambiguous legacy roles require review, never blanket mapping (ADR-035). | [VIEW-UC-01](modeling/current-target/src/UC-01-target-overall.puml); ADR-034/035; current auth code | `lingora-web` contains learner auth UI/service calls. This does not implement Teacher/Admin provisioning, account-disable enforcement, or prove role claims/RLS match policy. Live DB state is unverified. |
 | Placement and starting point | UC-02 | Placement/self-report/default are distinct; completed evidence is retained; no permanent lock/lifetime limit; no verified proficiency from Placement (ADR-032). Assessment grading is server-authoritative; generic content reads omit answer keys; incomplete attempts create no completed Result; Placement result is aggregate-only after submit (ADR-035). | ADR-032/035; `docs/use-case-specifications.md` | No Placement runtime was found in current web/admin source inspected. Migration `202608140002` gives authenticated readers row-level SELECT on published lesson exercises; the policy does not field-filter JSON payloads, so it does not prove answer secrecy if a payload contains a key. Result/attempt storage, answer filtering, and runtime conformance are not evidenced; inspect live state and access path before implementation. |
@@ -88,9 +90,9 @@ The inherited catalog rows in sections 1–3 below retain their original UC labe
 
 ---
 
-## 1. Phase 0 MVP Function ➔ Use Case Traceability Matrix
+## 1. Phase 0 MVP Function ➔ Use Case Traceability Matrix — Historical Snapshot (2026-10-10 / 2026-10-22)
 
-| MVP ID | MVP Chức Năng | Owner Chính | Canonical Use Case | Requirements | Runtime Surface | Test Evidence | Trạng Thái (Status) |
+| MVP ID | MVP Chức Năng | Owner Chính | Canonical Use Case | Requirements | Runtime Surface | Test Evidence | Trạng Thái (Status — Historical Snapshot) |
 |---|---|---|---|---|---|---|---|
 | **MVP-01** | Đăng ký, đăng nhập, quên mật khẩu (design spec), khôi phục phiên | Administrator, All Roles | `UC-01 Authenticate & Manage Session` | `P1-FR-001`, `P1-NFR-001` | `lingora-web` (`/login`, `/register`, `@supabase/ssr`), Supabase GoTrue | `M1.6W-T-003/004/005` (PASS; Password Recovery: DESIGN SPEC ONLY / Runtime Pending) | `IMPLEMENTED (Auth Foundation) / PENDING (Recovery Runtime)` |
 | **MVP-02** | Onboarding mục tiêu học | Learner | `UC-02 Configure Goals & Study Time` | `P1-FR-010`, `P1-FR-014` | `lingora-web` (`/profile`, `Profile.dailyGoalMin`, `uiLocale`) | `P1-T-018`, `M1.6W-T-002` (PASS) | `PARTIAL (Profile ready, Onboarding UI pending M2)` |
@@ -162,12 +164,12 @@ The inherited catalog rows in sections 1–3 below retain their original UC labe
 | **P1-NFR-003**| Must | AI API | `docs/01` Contract | N/A | snake_case, error envelope, compatibility | Historical 37-test suite (PASS) | `CONTRACT LOCKED` |
 | **P1-NFR-004**| Must | All Web UI | `docs/01` UX | N/A | Resilient UI States (Loading/Empty/Error) | `M1.6W-T-002/008/009/010` (PASS) | `IMPLEMENTED (M1.6W)` |
 | **ML-GEC-FR-001** | Must | GEC Pipeline | `docs/01` ML boundary | Dataset artifacts outside DB | Preprocessing pipeline | Future dataset tests | `APPROVED / PENDING` |
-| **ML-GEC-FR-002** | Must | GEC Inference | `docs/01` T5-small | `logs/model-registry.csv` | `/v1/gec/correct`, `/v1/model/info` | Future training tests | `APPROVED / PENDING` |
+| **ML-GEC-FR-002** | Must | GEC Inference | `docs/01` T5-small | Future evidence; no registry/results yet | `/v1/gec/correct`, `/v1/model/info` | Future training tests | `APPROVED / PENDING` |
 | **ML-GEC-FR-003** | Must | GEC Alignment | `docs/01` Derived output | None; transient response | GEC corrections / error_type | Future diff tests | `APPROVED / PENDING` |
-| **ML-GEC-FR-004** | Must | GEC Evaluation | `docs/01` Evaluation | `logs/model-registry.csv` | `/v1/model/info` | Future F0.5/ERRANT evidence | `APPROVED / PENDING` |
+| **ML-GEC-FR-004** | Must | GEC Evaluation | `docs/01` Evaluation | Future evidence; no registry/results yet | `/v1/model/info` | Future F0.5/ERRANT evidence | `APPROVED / PENDING` |
 | **ML-GEC-FR-005** | Should | GEC Optional | Optional derived modules | None; transient response | Optional suggestion/explanation | Future optional tests | `APPROVED OPTIONAL / PENDING` |
 | **ML-GEC-NFR-001** | Must | GEC Security | Stateless boundary | None | GEC endpoint + standard errors | Future contract tests | `APPROVED / PENDING` |
-| **ML-GEC-NFR-002** | Must | GEC Latency | CPU deployment | `logs/model-registry.csv` | latency_ms + 8s Web timeout | Future latency tests | `APPROVED / PENDING` |
+| **ML-GEC-NFR-002** | Must | GEC Latency | CPU deployment | Future evidence; no registry/results yet | latency_ms + 8s Web timeout | Future latency tests | `APPROVED / PENDING` |
 
 ---
 

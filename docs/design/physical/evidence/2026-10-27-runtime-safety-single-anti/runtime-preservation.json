@@ -1,0 +1,206 @@
+{
+  "timestamp": "2026-10-27T05:46:17.275Z",
+  "total_runs": 24,
+  "protected_pending_stop_run": {
+    "run": "run-af1371dc4e4b01d7",
+    "phase": "BOUND",
+    "pending": "stop",
+    "tombstone": false,
+    "instance_id": "512acb5c6fd861351354f78a582068c628a35c464b1bb1db080d5b1a07ffa114",
+    "locks": []
+  },
+  "all_runs": [
+    {
+      "run": "run-114b6d3f60299bc0",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "fca5123f10909dc0bd02228ce011b3bf85cd72cd5a37a69a987c399c66d787ec",
+      "locks": []
+    },
+    {
+      "run": "run-2327ebb821be5c86",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "95297ef29e6a4379e0ed377e14709f75b659c37fbf2dac2a843371c1be1f90d5",
+      "locks": []
+    },
+    {
+      "run": "run-3256c3b16f733619",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "5a0adfe1f1937c78562f72a577f130d3461a333a289a6868bfe3fe4c630a3ccd",
+      "locks": []
+    },
+    {
+      "run": "run-378047f173289603",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "68ff2a1d9557d5dd0ba06d50e69cf83b5993476b1a29ea6e6abd028b188c73ae",
+      "locks": []
+    },
+    {
+      "run": "run-3b11f1e70c9273ad",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "308410d933bbe88d79dc0812f2b3167ca9897928a17efbf9d3dfa3c631e59144",
+      "locks": []
+    },
+    {
+      "run": "run-3be6d5ff41229fac",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "dee2fbc0e119e37b92bbf4fe0673140b3bf0c3d0120ae2c556ba8b639df6e141",
+      "locks": []
+    },
+    {
+      "run": "run-554f9aa2348e317e",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "e7f946b66379b6bb284b3fb2f49b47c3c4a53c6c11f71df68633bc951dedcd19",
+      "locks": []
+    },
+    {
+      "run": "run-5949880c78efd0a1",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "b98b62fe8ef64c197188372c6b0076f321a42c10769b980640f0bd8b4b0682d1",
+      "locks": []
+    },
+    {
+      "run": "run-62d62e7c1961079a",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "ac9416eaa0a613551c57c7372db0a0e91377f47739c67c9c934985404c59cd0c",
+      "locks": []
+    },
+    {
+      "run": "run-63ad4dd983d690e1",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "4fb9b8342bc1bac18712bbaa17db0d5ee4b397fb2a62baa413fba1888e7f5c95",
+      "locks": []
+    },
+    {
+      "run": "run-6e06a876bbd1c498",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "d1793d4c84b5a9c7dd0c4ee10f619e57f398b677ca22fa5a265b035d08b9fcee",
+      "locks": []
+    },
+    {
+      "run": "run-75e7f7eeb707ef51",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "553abceb6946b9b2d212fb3614023a82903ac97c413811558c102b2315523039",
+      "locks": []
+    },
+    {
+      "run": "run-77931baeef6362d1",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "1d07e4ceccd5f7ce81fc845ddb323a1ebd728fcf9eb99db42181af7bf5565f2d",
+      "locks": []
+    },
+    {
+      "run": "run-823006cc1b9e0057",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "e8d71734b91d3c4b58bb400900cbcb44bdf3ca021f59f11299ee5999d9aa92a8",
+      "locks": []
+    },
+    {
+      "run": "run-a0a95601256fd486",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "d9f4159eb90aac7cf286b9ae1af7abc322ebfb93e06f93c9890ac2b7413dc5b1",
+      "locks": []
+    },
+    {
+      "run": "run-af1371dc4e4b01d7",
+      "phase": "BOUND",
+      "pending": "stop",
+      "tombstone": false,
+      "instance_id": "512acb5c6fd861351354f78a582068c628a35c464b1bb1db080d5b1a07ffa114",
+      "locks": []
+    },
+    {
+      "run": "run-bbcd679f424993b2",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "44a6dc179174c4b674a5cd2e348727f6a1a102854e3a7e8bde7e11dedf34a972",
+      "locks": []
+    },
+    {
+      "run": "run-bcdc41a8b995232f",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "66d43dc6bf0d397801ab3c94b3d7ec0c23977d023206fb881b8e2c146e9bf16b",
+      "locks": []
+    },
+    {
+      "run": "run-cc071b5e323529a9",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "d98de327357e987bf78d61ccec776b179468187ccd5a83358c7a45bd7bf889f9",
+      "locks": []
+    },
+    {
+      "run": "run-dba39f772e58027a",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "98fb309b7995bc3648e1c572d0349ab23bc7063383074059cf1dcee1ff8e6d72",
+      "locks": []
+    },
+    {
+      "run": "run-dca84591a0dbc8f5",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "2c33fce89e8865f9238d9a0d18150868f587ce5f1628febad355428ea452f4f4",
+      "locks": []
+    },
+    {
+      "run": "run-eedf23a5f38066d5",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "4608e130b1736173a8b133e0dc821912f5e3c5223224a7f9e3e69f54a0fb3e6e",
+      "locks": []
+    },
+    {
+      "run": "run-faf1493de3463ab0",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "00e7ee259bb9447f1e5469587a06c8a088f02e5dc02139d810058cdbdd5d7638",
+      "locks": []
+    },
+    {
+      "run": "run-fd9e322f1523f768",
+      "phase": "DESTROYED",
+      "pending": null,
+      "tombstone": true,
+      "instance_id": "988d7e2e4d38bb3de27f1247a9a0d6021903cbec833932fda316423f6f847ce4",
+      "locks": []
+    }
+  ]
+}

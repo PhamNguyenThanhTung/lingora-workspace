@@ -1,0 +1,16 @@
+✔ RSF-L01: buildStrictLockRecord enforces complete schema, caller stat, and valid boot (1.737452ms)
+✔ RSF-L02: Lock release strictly denies malformed, missing identity, foreign PID, and mismatched run/resource (2.753358ms)
+✔ RSF-L03: Held namespace reservation reuse strictly validates boot_id, caller stat, and resource (3.323847ms)
+✔ RSF-P01: validateProcessSnapshot rejects malformed, non-array, and invalid process items (0.278141ms)
+✔ RSF-P02: Minimal legacy prune-only validator validates both real retained legacy roots read-only (2.142324ms)
+✔ RSF-P03: Legacy authority validator strictly denies malformed variants (1.539444ms)
+✔ RSF-R01: validateRegistryResponse matrix covers malformed, missing, invalid enum, and contradictory identity (0.858747ms)
+✔ RSF-R02: Pending stop real resource run-af1371dc4e4b01d7 remains untouched BLOCKED (1.62105ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18.515795

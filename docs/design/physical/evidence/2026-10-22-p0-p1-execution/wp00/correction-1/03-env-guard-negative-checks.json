@@ -1,0 +1,88 @@
+{
+  "command": "node --test lingora-admin/tests/database/env/test-env-guard.mjs",
+  "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+  "exit_code": 0,
+  "tested_commit": "c39806cb45c908135f240c93d68546b6ac5d7784",
+  "file_hashes": {
+    "lingora-admin/tests/database/env/env-guard.mjs": "ce4ad65159ffa141fea70f14218bc44b68dd4b63a3665c014eeb9f5222ac4252",
+    "lingora-admin/tests/database/env/test-env-guard.mjs": "176c695afdf382009715aa81b414ed134dd6cbeed6596d6e073e92ccff4eac83"
+  },
+  "guard_configuration": {
+    "canonical_project_id": "lingora-local-dev",
+    "expected_db_port": 54322,
+    "expected_api_port": 54321,
+    "expected_mail_port": 54324,
+    "state_file": ".local-stack/runtime-state.json"
+  },
+  "test_results": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "test_cases": [
+      {
+        "id": 1,
+        "name": "Initial unbound state check without existing state file",
+        "result": "PASS",
+        "assertion": "Returns UNBOUND status when state file does not exist, without error"
+      },
+      {
+        "id": 2,
+        "name": "Positive database URL allowlist check",
+        "result": "PASS",
+        "assertion": "Permits 127.0.0.1:54322 postgresql protocol"
+      },
+      {
+        "id": 3,
+        "name": "Positive API URL allowlist check",
+        "result": "PASS",
+        "assertion": "Permits 127.0.0.1:54321 http protocol"
+      },
+      {
+        "id": 4,
+        "name": "Negative check: foreign host IP is rejected",
+        "result": "PASS",
+        "assertion": "Throws error when DB URL attempts to connect to 192.168.1.50"
+      },
+      {
+        "id": 5,
+        "name": "Negative check: remote domain is rejected",
+        "result": "PASS",
+        "assertion": "Throws error when API URL attempts to connect to remote domain example.supabase.co"
+      },
+      {
+        "id": 6,
+        "name": "Negative check: swapped or mismatched port is rejected",
+        "result": "PASS",
+        "assertion": "Throws error when DB port is not 54322"
+      },
+      {
+        "id": 7,
+        "name": "Negative check: malformed protocol is rejected",
+        "result": "PASS",
+        "assertion": "Throws error when protocol is not postgresql:/postgres:"
+      },
+      {
+        "id": 8,
+        "name": "Negative check: missing or altered config file is rejected",
+        "result": "PASS",
+        "assertion": "Throws error when supabase/config.toml is missing or project_id != lingora-local-dev"
+      },
+      {
+        "id": 9,
+        "name": "Canary secret and token redaction across all fields",
+        "result": "PASS",
+        "assertion": "Zero canary secrets, JWTs, or passwords appear in projected/sanitized state"
+      },
+      {
+        "id": 10,
+        "name": "Process and network spy test: forbidden target checks trigger NO network or spawn calls",
+        "result": "PASS",
+        "assertion": "Zero network connections or subprocess spawns are attempted when validating invalid targets"
+      }
+    ]
+  },
+  "review_findings_addressed": [
+    "G0-R1: Bound canonical task/workspace/config/state root, exact instance ID, required endpoint set and ports. Fails closed before network/process invocation.",
+    "G0-R2: Complete canary secret/JWT/password redaction verified across all state inspection paths."
+  ]
+}

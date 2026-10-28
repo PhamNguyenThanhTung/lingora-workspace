@@ -1,0 +1,82 @@
+### STATUS: PASS
+
+### CHANGED FILES
+- [lingora-admin/package.json](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/package.json)
+- [package-lock.json](file:///home/tung/workspace/school/project1/lingora-workspace/package-lock.json)
+- [.gitignore](file:///home/tung/workspace/school/project1/lingora-workspace/.gitignore)
+- `supabase/docker-compose.fallback.yml` (deleted)
+- [supabase/README.md](file:///home/tung/workspace/school/project1/lingora-workspace/supabase/README.md)
+- [lingora-admin/tests/database/env/env-guard.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/env/env-guard.mjs)
+- [lingora-admin/tests/database/env/stack-manager.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/env/stack-manager.mjs)
+- [lingora-admin/tests/database/env/test-env-guard.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/env/test-env-guard.mjs)
+- [lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs)
+- [lingora-admin/tests/database/scaffolds/runner-base.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/runner-base.mjs)
+- [lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs)
+- [scripts/verify-provenance.py](file:///home/tung/workspace/school/project1/lingora-workspace/scripts/verify-provenance.py)
+- [scripts/verify-dependencies.mjs](file:///home/tung/workspace/school/project1/lingora-workspace/scripts/verify-dependencies.mjs)
+- `docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/*` (all corrected evidence, logs, and summary)
+
+### SHORT DIFF SUMMARY
+- **G0-R1 & G0-R2 (Guard & Sanitization):** Bound canonical project config (`lingora-local-dev`, ports 54322/54321/54324, state root `.local-stack/runtime-state.json`) with strict fail-closed pre-validation before any network/SQL probes; verified complete secret/canary redaction and zero network/spawn calls on invalid targets via process/network spies.
+- **G0-R3 (Provider Readiness):** Probed real PostgreSQL 17.11 via SQL connection (`SELECT version()`), verified prerequisite schemas (`auth`, `extensions`, `public`, `storage`), and confirmed HTTP 200 responses for Auth (GoTrue v2.197.0), Storage (v1.82.1), and Mail sink. Accurately reported session pooler status as `DISABLED_IN_NATIVE_STACK` (direct PostgreSQL port 54322).
+- **G0-R4 (Dependencies & Lock):** Regenerated minimal `package-lock.json` without legacy `lingora-web`, pinned `supabase: 2.121.0` and `pg: 8.13.1` in `lingora-admin`, and resolved local executable `./node_modules/.bin/supabase`.
+- **G0-R5 (Scaffold Honesty):** Updated scaffold runner to execute test files via child node processes with cleaned test context; proved unbound targets fail closed (exit 1), bound targets with absent test files return NOT EXECUTED (exit 1), and failing fixtures propagate failure (exit 1).
+- **G0-R6 & G0-R7 (Cleanup & Evidence):** Removed unused `supabase/docker-compose.fallback.yml`, narrowed `.gitignore` to exact local runtime state directories, produced valid JSON evidence with persistent reproducible scripts, and preserved all initial `wp00/` files byte-identical.
+
+### COMMANDS/TESTS
+1. **Provenance Verification (G0-R7):**
+   - Command: `python3 scripts/verify-provenance.py`
+   - Cwd: `/home/tung/workspace/school/project1/lingora-workspace`
+   - Tested Commit: `c39806cb45c908135f240c93d68546b6ac5d7784`
+   - Exit Code: `0`
+   - Saved Log: [01-provenance-snapshot.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/01-provenance-snapshot.log) | [01-provenance-snapshot.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/01-provenance-snapshot.json)
+
+2. **Dependency & Lock Verification (G0-R4):**
+   - Command: `node scripts/verify-dependencies.mjs`
+   - Cwd: `/home/tung/workspace/school/project1/lingora-workspace`
+   - Tested Commit: `c39806cb45c908135f240c93d68546b6ac5d7784`
+   - Tested Lock sha256: `d8a033435ae1a00812126e0cdb42a619246e1e1f69fdfe3a83031d8205105a68`
+   - Exit Code: `0`
+   - Saved Log: [02-dependency-versions.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/02-dependency-versions.log) | [02-dependency-versions.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/02-dependency-versions.json)
+
+3. **Env-Guard & Allowlist Adversarial Tests (G0-R1, G0-R2):**
+   - Command: `node --test lingora-admin/tests/database/env/test-env-guard.mjs`
+   - Cwd: `/home/tung/workspace/school/project1/lingora-workspace`
+   - Tested File sha256: `ce4ad65159ffa141fea70f14218bc44b68dd4b63a3665c014eeb9f5222ac4252` (`env-guard.mjs`)
+   - Exit Code: `0` (10/10 tests pass)
+   - Saved Log: [03-env-guard-negative-checks.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/03-env-guard-negative-checks.log) | [03-env-guard-negative-checks.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/03-env-guard-negative-checks.json)
+
+4. **Scaffold Fail-Closed and Execution Tests (G0-R5):**
+   - Commands:
+     - `node --test lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs` (exit `0`, 3/3 pass)
+     - `npm run test:db:a1 -w lingora-admin` (exit `1`, honest fail-closed on unbound environment)
+   - Cwd: `/home/tung/workspace/school/project1/lingora-workspace`
+   - Tested File sha256: `fb88e48c3691640d8fd94d17e49ac1f5a6669d79a87017cb4cb0a4de82eb6b9e` (`runner-base.mjs`)
+   - Saved Log: [04-scaffolds-behavior-and-failures.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/04-scaffolds-behavior-and-failures.log) | [04-scaffolds-behavior-and-failures.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/04-scaffolds-behavior-and-failures.json)
+
+5. **Provider Stack Lifecycle & Real Readiness Test (G0-R1, G0-R2, G0-R3):**
+   - Command: `node --test lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs`
+   - Cwd: `/home/tung/workspace/school/project1/lingora-workspace`
+   - Tested File sha256: `51f4fc7ae7edfb43fe5d8f910e14694eadd0ef4aa01856646c2c3eebbfa5adaf` (`stack-manager.mjs`)
+   - Exit Code: `0`
+   - Saved Log: [05-provider-stack-lifecycle-and-readiness.log](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/05-provider-stack-lifecycle-and-readiness.log) | [05-provider-stack-lifecycle-and-readiness.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/05-provider-stack-lifecycle-and-readiness.json)
+
+6. **Acceptance Summary:**
+   - Saved File: [acceptance-summary.json](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-22-p0-p1-execution/wp00/correction-1/acceptance-summary.json)
+
+### RESULTS
+- **G0-R1..G0-R7 All Satisfied:**
+  - `G0-R1`: Strict canonical binding (`lingora-local-dev`, ports 54322/54321/54324) pre-validated before probes; zero network or spawn operations on invalid targets.
+  - `G0-R2`: Status, error, and lifecycle records sanitized with safe projections; zero canary secret/JWT/password leaks.
+  - `G0-R3`: Real SQL query executed via `pg` (`SELECT version()` -> PostgreSQL 17.11), prerequisite schemas present (`auth`, `extensions`, `public`, `storage`), and HTTP 200 verified on Auth (GoTrue v2.197.0), Storage (v1.82.1), and Mail sink.
+  - `G0-R4`: Active minimal `package-lock.json` regenerated and pinned to `supabase: 2.121.0` and `pg: 8.13.1`.
+  - `G0-R5`: Scaffolds actually run test files and propagate test failures; absent tests return NOT EXECUTED (exit 1).
+  - `G0-R6`: Unused docker-compose fallback deleted; `.gitignore` narrowed; native runtime documented.
+  - `G0-R7`: All evidence JSON files validated; persistent small test scripts created; initial `wp00/` files preserved byte-identical.
+- **Provider Readiness Status:** Operational native Supabase stack on Ubuntu 24.04 (glibc 2.39).
+- **Session Pooler Clarification:** `db.pooler` is disabled in `supabase/config.toml`; native stack routes database connections directly to PostgreSQL port 54322 (`DISABLED_IN_NATIVE_STACK`).
+
+### REMAINING RISKS/BLOCKERS
+- **Downstream Packages Gated:** P1 (A1/A2/A3) is unstarted and remains gated on Codex acceptance of G0.
+- **Pooler Architecture for A2:** Because native runtime does not enable Supabase session pooling by default, downstream A2 fixtures should connect directly to PostgreSQL on port 54322 rather than expecting a separate pooler port.
+- **CR2-04 Open:** Negative fixture/helper coverage remains open in design documentation and uncarried into execution evidence per spec §1.

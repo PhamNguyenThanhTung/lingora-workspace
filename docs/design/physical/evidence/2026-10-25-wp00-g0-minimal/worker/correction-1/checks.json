@@ -1,0 +1,248 @@
+{
+  "task_id": "wp00-g0-minimal",
+  "correction_round": 1,
+  "generated_at": "2026-10-25T12:45:00Z",
+  "status": "PASS",
+  "codex_review_reference": "docs/design/physical/evidence/2026-10-25-wp00-g0-minimal/codex-review-1.md",
+  "findings_addressed": ["F1", "F2", "F3", "F4", "F5", "F6"],
+  "acceptance_note": "Worker correction-1 implementation and test execution complete. Acceptance authority belongs to Codex; G0 not claimed accepted.",
+  "baseline": {
+    "entry_head": "c39806cb45c908135f240c93d68546b6ac5d7784",
+    "entry_json": "docs/design/physical/evidence/2026-10-25-wp00-g0-minimal/entry.json",
+    "runs_namespace": ".wp00-runs/pkg-g0-minimal",
+    "forbidden_older_roots": [
+      ".wp00-runs/run-1fab09c87d538b05",
+      ".wp00-runs/run-70c765fff1ad8203",
+      ".wp00-state",
+      ".wp00-home",
+      ".supabase-home",
+      ".local-stack"
+    ]
+  },
+  "final_tested_sources": {
+    "lingora-admin/tests/database/env/env-guard.mjs": "24b4c1164abba89ec97e8233d1bf6b0134ea759331e478cbace200adaad552c0",
+    "lingora-admin/tests/database/env/stack-manager.mjs": "db2d701376fa3d3b60f0b37794900665a157b49d83e5023601816a7beb592feb",
+    "lingora-admin/tests/database/scaffolds/runner-base.mjs": "d6f35e40b337d35ad5711b1c4e3c36bbfb31c4f50120b403d1a7f786bf8b777f",
+    "lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs": "822d316959f89eea41c1ee708bdb4b15ecd86f8d62886926346cf7245138d646",
+    "lingora-admin/tests/database/env/test-env-guard.mjs": "40c03d796112eb29fab2727f907d996fa88f2c422cc7bc2b5bb3ccbc2e9efc3b",
+    "lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs": "2b57aa658aefc05a999cd4675836dcc10ade1312dbd5cfc3430fc63d0ece0e76",
+    "node_modules/@supabase/cli-linux-x64/bin/supabase": "e91fc61f09c4fbb9c65dadc37d415640cb6d2398e65eba6d384eec74b2dbbe10",
+    "pinned_node": "61ab14cd750fc24d5db53490ec5fc40f756e4b6e136b78cf7004265471d9bd1d"
+  },
+  "carried_forward_proofs": {
+    "clean_install": {
+      "log": "docs/design/physical/evidence/2026-10-25-wp00-g0-d1-d2/worker/correction-1/logs/v01-dependencies-clean-install.log",
+      "disposition": "CARRIED_FORWARD",
+      "reason": "manifests, lockfile, verifier, bootstrap, platform, and isolation inputs remain unchanged"
+    },
+    "provenance_parity": {
+      "log": "docs/design/physical/evidence/2026-10-25-wp00-g0-d1-d2/worker/correction-1/logs/v01-provenance-parity.log",
+      "disposition": "CARRIED_FORWARD",
+      "reason": "title-normalization, SVG preservation, and 34-entity scope inputs remain unchanged"
+    },
+    "d0_native_characterization": {
+      "report": "docs/design/physical/wp00-g0-d0-result-2026-10-25.md",
+      "disposition": "CARRIED_FORWARD",
+      "reason": "pinned CLI 2.121.0 binary hash and platform facts remain unchanged"
+    }
+  },
+  "test_commands": [
+    {
+      "command": "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --test lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0,
+      "passed": 4,
+      "failed": 0,
+      "duration_ms": 788.8,
+      "log": "docs/design/physical/evidence/2026-10-25-wp00-g0-minimal/worker/correction-1/logs/scaffold-behavior.log"
+    },
+    {
+      "command": "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --test lingora-admin/tests/database/env/test-env-guard.mjs",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0,
+      "passed": 32,
+      "failed": 0,
+      "duration_ms": 8994.9,
+      "log": "docs/design/physical/evidence/2026-10-25-wp00-g0-minimal/worker/correction-1/logs/env-guard.log"
+    },
+    {
+      "command": "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --test lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "duration_ms": 190817.5,
+      "log": "docs/design/physical/evidence/2026-10-25-wp00-g0-minimal/worker/correction-1/logs/lifecycle-readiness.log",
+      "execution_details": {
+        "instance_id": "4fb9b8342bc1bac18712bbaa17db0d5ee4b397fb2a62baa413fba1888e7f5c95",
+        "stack_name": "lingora-wp00-90152fc4",
+        "runtime": "native",
+        "final_phase": "DESTROYED",
+        "registry_status": "CONFIRMED_ABSENT",
+        "native_state_files": "ABSENT",
+        "active_run_processes": 0,
+        "quiescent_ports": [54321, 54322, 54324],
+        "tombstone_retained": true,
+        "credentials_deleted": true,
+        "member_map_deleted": true,
+        "termination_verdict": "VERIFIED_ABSENT"
+      }
+    }
+  ],
+  "gates": {
+    "M01_isolation": {
+      "verdict": "PASS",
+      "finding_map": "F1",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: Test 1 (unbound state fails closed)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: Test 8 (missing/altered/escaping config denied)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: P01 (fresh allocation strictly under private namespace)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F1 (Correction: symlink escape in home_dir and ambient env rejection)"
+      ],
+      "assertions": [
+        "Unbound state fails closed with NOT_BOUND (exit 1)",
+        "Config escaping or altered digest rejected with CONFIG_ERROR",
+        "isSafeChildPath enforces strict lexical containment before realpath; symlinks on control_root/home/workdir rejected with ALLOWLIST_FAIL",
+        "Ambient LINGORA_RUN_ID / LINGORA_RUNS_DIR ignored across all public library entry points"
+      ]
+    },
+    "M02_intent": {
+      "verdict": "PASS",
+      "finding_map": "F2",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: P01 (persists RESERVED reservation before prepare adapter is dispatched)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F02 (prepare failure retains durable intent without duplicate dispatch)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F2 (Correction: directory fsync failure prevents CLI prepare dispatch)"
+      ],
+      "assertions": [
+        "Durable reservation and prepare intent persisted and verified on disk before CLI stack prepare dispatch",
+        "persistAuthorityAtomic does not swallow directory fsync errors; parent fsync failure immediately aborts before CLI side-effects",
+        "Prepare failure retains pending_operation='prepare', ZERO data probes, and no second prepare call"
+      ]
+    },
+    "M03_exact_target": {
+      "verdict": "PASS",
+      "finding_map": "F1/F3",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: P01 (full 64-char ID binding and full-tuple registry matching)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: P02 (existing start resumes exact ID with zero prepare calls)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: N02 Matrix (5 entry points verify exact 4-tuple before effects)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: N03 (returned ID/runtime mismatch rejects fail-closed with 0 data probes)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: N04 (member UUID continuity mismatch rejected with RECONCILE_FAIL)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F3 (Correction: BOUND missing member_map anchor denies with RECONCILE_FAIL; duplicate registry entries deny with RECONCILE_FAIL)"
+      ],
+      "assertions": [
+        "Exact 4-tuple verified: id, name, project_root realpath, branch_context",
+        "verifyIncarnationContinuity fails closed with RECONCILE_FAIL if BOUND authority record lacks initialized member_map anchor",
+        "reconcileNativeRegistry requires exact uniqueness: duplicate ID or duplicate stack name under different ID fails closed with RECONCILE_FAIL",
+        "Zero prefix matching, zero default fallback, zero cross-stack adoption"
+      ]
+    },
+    "M04_denial": {
+      "verdict": "PASS",
+      "finding_map": "F1/F3",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: N01 Matrix (5 entry points x local invalid variations)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: N02 Matrix (5 entry points x registry mismatch execute 0 action/HTTP/SQL)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: Tests 4, 5, 6, 7 (foreign host IP, remote domain, mismatched port, malformed protocol denied)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F1 (Correction: symlink escape in home_dir and ambient env rejection)",
+        "lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs :: Tests 1, 2 (missing/forged run flag fails closed with exit 1)"
+      ],
+      "assertions": [
+        "Shared boundary enforces rejection across start, status, stop, destroy, data, and scaffold runners",
+        "Zero CLI mutation, zero HTTP requests, and zero SQL queries executed on invalid binding or unverified authority"
+      ]
+    },
+    "M05_serialization": {
+      "verdict": "PASS",
+      "finding_map": "F4",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F01 (lock failure aborts before provider calls)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F03 (orphan lock fails closed without unsafe auto-unlock)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: L01 (real child-process concurrency enforces mutual exclusion)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F4 (Correction: paused client through close blocks destroy contender)"
+      ],
+      "assertions": [
+        "acquireRunLock fails closed with LOCKED (recovery-required) when lock exists",
+        "Unsafe auto-orphan-lock recovery disabled; zero provider calls made by lock contender",
+        "Data client probe holds lock through query execution and close, blocking concurrent destroy contenders"
+      ]
+    },
+    "M06_ambiguity": {
+      "verdict": "PASS",
+      "finding_map": "F3",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F04 (in-flight crash: pending prepare denies with RECOVERY_REQUIRED and zero provider mutations)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F02b (stack name collision before prepare rejects fail-closed)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F3 (Correction: pending stop and pending destroy deny further mutations with RECOVERY_REQUIRED)"
+      ],
+      "assertions": [
+        "Speculative auto-recovery removed in favor of fail-closed denial (RECOVERY_REQUIRED, disposition: 'recovery-required')",
+        "Existing pending_operation !== null immediately aborts with ZERO provider mutations, ZERO HTTP requests, and ZERO SQL queries",
+        "Durable authority record preserved on disk without mutation"
+      ]
+    },
+    "M07_termination": {
+      "verdict": "PASS",
+      "finding_map": "F5",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F05 (stop failure rejects without claiming stopped; authority remains BOUND)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F06 (destroy postcheck failure retains BOUND and deletes zero files)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F07 (idempotent destroy retry on existing tombstone)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: P03 (full stop/destroy lifecycle)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F5 (Correction: required observation UNKNOWN retains BOUND and performs zero deletion)",
+        "lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs :: Steps 5, 7, 8 (stop, destroy, tombstone verification)"
+      ],
+      "assertions": [
+        "checkFileAbsence distinguishes ENOENT (ABSENT) from EACCES/read errors (UNKNOWN)",
+        "verifyNativeStateFilesAbsent fails closed with UNKNOWN if state.json or owner.json cannot be read",
+        "snapshotRunProcesses consults known native owner identity from owner.json and isolates target processes",
+        "Destroy postchecks require CLI absence, native state file absence (ABSENT), process quiescence, and socket quiescence; any UNKNOWN retains BOUND and performs ZERO deletion"
+      ]
+    },
+    "M08_data": {
+      "verdict": "PASS",
+      "finding_map": "F4",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: Tests 2, 3, 4, 5, 6 (endpoint URL validation)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: F4 (Correction: executeUnderLockDataAuthorization validates live endpoints and credentials; PG client close failure fails closed)",
+        "lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs :: Tests 3, 4 (scaffolds use locked validated path)",
+        "lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs :: Step 1 (real SQL + Auth + Storage + Mail probes)"
+      ],
+      "assertions": [
+        "Shared executeUnderLockDataAuthorization validates fresh live identity, runtime, lifecycle, composition, endpoints, and credentials before any transport",
+        "PG client end() close failure in finally propagates and fails closed (DATA_FAIL), never reporting READY",
+        "No synthesized endpoint/default fallbacks; no stale start.env authorization"
+      ]
+    },
+    "M09_output": {
+      "verdict": "PASS",
+      "finding_map": "F6",
+      "tests": [
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: Test 9 (canary, token, S3, unrecognized field redaction)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: Tests E01, E02 (reachable failing PG query and fetch probes assert canary never leaks; adapter-reached counters > 0)",
+        "lingora-admin/tests/database/env/test-env-guard.mjs :: Test 17 (CLI invocation exits 1 with safe diagnostic and no unredacted canaries)",
+        "lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs :: Tests 1, 2, 3, 4 (finite scaffold output, no raw child stdout/stderr forwarding)"
+      ],
+      "assertions": [
+        "Scaffold runner outputs bounded finite static messages (SCAFFOLD_TEST_FAILED, SCAFFOLD_ERROR); child stdout/stderr and raw exception messages are never forwarded",
+        "E01/E02 tests use reachable failing PG client and fetch adapters; assert.rejects confirms failure and verifies canary does NOT appear in error messages, stdout, stderr, or files",
+        "Adapter reached assertions verify failing query and fetch branches were actually executed"
+      ]
+    },
+    "M10_native": {
+      "verdict": "PASS",
+      "finding_map": "F5/F6 integration",
+      "tests": [
+        "lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs :: R01 (complete native stack lifecycle on fresh synthetic native state)"
+      ],
+      "assertions": [
+        "Sequential native run allocated and started: full 64-char ID 4fb9b8342bc1bac18712bbaa17db0d5ee4b397fb2a62baa413fba1888e7f5c95",
+        "Real SQL + Auth + Storage + Mail readiness verified against live services via executeUnderLockDataAuthorization",
+        "Honest scaffold refusal verified under active stack (exit 1, STATUS: NOT EXECUTED)",
+        "Stack stopped and resumed with zero prepare calls, verifying exact member map continuity",
+        "Stack cleanly destroyed with compact exact-target termination summary logged: confirmed registry absence, state files ABSENT (ENOENT), 0 active run processes, quiescent ports [54321, 54322, 54324], tombstone retained, credentials unlinked"
+      ]
+    }
+  }
+}

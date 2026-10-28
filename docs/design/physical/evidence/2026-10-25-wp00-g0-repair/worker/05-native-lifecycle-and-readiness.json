@@ -1,0 +1,34 @@
+{
+  "check_id": "05-native-lifecycle-and-readiness",
+  "command": "node --test lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs",
+  "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+  "exit_code": 0,
+  "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/05-native-lifecycle-and-readiness.log",
+  "tested_state_hashes": {
+    "lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs": "8ec4f62d1517c1789cbe1fde6346525de84eeda2a21fc8f85856c045fda13c9d",
+    "lingora-admin/tests/database/env/stack-manager.mjs": "bc7efeb9210ee80d806a838ad3818df0204a38a99b139dc71a057c6ebd4b3e46",
+    "lingora-admin/tests/database/env/env-guard.mjs": "903cedd149bbb34e80e9ccee5e508026e068656bb2b7331123fdca080cbaa41b",
+    "supabase/config.toml": "a9067406c77c9e0b4a43f6e96cbb5d19f2b9e85dc1c3f461ee7a7cec3de190e9"
+  },
+  "observed_stack_id": "c368102dc378626e726bdb45625037e9cb9789f48abe706c6b1043b979ad0efd",
+  "observed_stack_id_length": 64,
+  "runtime": "native",
+  "verdict": "PASS",
+  "safe_projections": {
+    "sql_readiness": "PASS (PostgreSQL 17.11 on x86_64)",
+    "prerequisite_schemas": [
+      "auth",
+      "extensions",
+      "public",
+      "storage"
+    ],
+    "auth_readiness": "PASS (HTTP 200 at /auth/v1/health)",
+    "storage_readiness": "PASS (HTTP 200 at /storage/v1/status)",
+    "mail_readiness": "PASS (HTTP 200 at /api/v1/messages)",
+    "session_pooler": "DISABLED_IN_NATIVE_STACK (direct connection on 54322; pooler disabled in config.toml)",
+    "status_reconciliation": "PASS",
+    "scaffold_refusal_on_live_stack": "PASS (NOT EXECUTED, exit 1)",
+    "stop_and_destroy": "PASS",
+    "state_cleanup": "PASS (binding and state unlinked on destroy; storage uploads retained per CLI contract)"
+  }
+}

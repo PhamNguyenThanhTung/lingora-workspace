@@ -1,69 +1,27 @@
 # Lingora Local Environment
 
-> **Current state — 2026-10-22:** Design-only checkout. The owner requested removal of the legacy Web/Admin code, tests, npm configuration, Prisma schema, migrations and seed; these are recoverable at Git commit `84baa85`. All M1.x install/startup instructions and project-specific connection settings below are **HISTORICAL**, not usable configuration for this checkout. Do not reuse their project host/user or run old migrations. Supabase is the owner-confirmed provider; use the [current connection guide](plans/2026-10-22-design-corrections-and-legacy-cleanup-plan.md#3-supabase-mở-database-online-và-kết-nối) and copy settings from the intended project's Connect panel. No new app/migration exists; live DB remains UNVERIFIED.
+> **Current setup reference (2026-10-28):** Reconciled under documentation cleanup package `DOC-CLEAN-01`.
 
-> **State notice (2026-10-07):** The tool versions and M1.x run instructions below are dated `HISTORICAL` observations, not a fresh environment check or a claim about the current working tree. Repository files and ordered migrations are `CURRENT` evidence of checked-in artifacts only. No live Supabase catalog, deployment, or service availability was inspected for this reconciliation. Remote applied database/runtime state is `UNVERIFIED`.
+## 1. Repository Structure & Toolchain
 
-This file records the M1.1/M1.2 environment boundary and the approved M1.6W Web foundation runtime.
+- **Workspace:** Single npm package/workspace under `lingora-admin/`. Package dependencies are defined in `lingora-admin/package.json` and locked in `package-lock.json`.
+- **Runtime & Build:** Currently, no web framework (Next.js/React runtime), API routes, UI components, or `dev`/`build` execution scripts are implemented in this checkout.
+- **Node & Tooling:** Node.js (v20+ recommended) and standard npm.
 
-## Required toolchain from the canonical architecture
+## 2. Environment Variables
 
-| Area | Required baseline | Detected on 2026-08-14 |
-|---|---|---|
-| Version control | Git | Git 2.53.0 |
-| Admin tooling | Node.js/npm; exact project dependencies belong to an approved subtask | Node.js 24.14.0; npm 11.9.0 |
-| AI API | Python 3.11 | Python 3.11 available through `py -3.11`; the `python` command is not currently usable |
-| Web learner | Node.js/npm; exact project dependencies belong to an approved `M1.6W` subtask | Node.js 24.14.0; npm 11.9.0 |
+- Configuration variables reside in `lingora-admin/.env` (ignored by Git; never commit credentials, secret keys, or real endpoints).
+- Standard connection variable names:
+  - `DATABASE_URL`: Connection string for Prisma Client and runtime queries.
+  - `DIRECT_URL`: Direct database connection string (if pooler is used).
+- Do not commit service role keys, JWT secrets, or administrative credentials.
 
-The M1.6W dependency lockfile is `lingora-web/package-lock.json`. Install with `npm ci` from `lingora-web/`.
-Playwright Chromium is installed separately by `npx playwright install chromium` when the local browser cache
-is absent.
+## 3. Database Operations
 
-Tool versions in `docs/01-architecture.md` remain authoritative. Detected versions are observations, not automatic approvals to upgrade or change the baseline.
+- The product database foundation is maintained in `lingora-admin/prisma/product/`.
+- Standard Prisma CLI commands (e.g., `npm run db:product:generate`, `npm run db:product:migrate`, `npm run db:product:seed`) are documented in [lingora-admin/prisma/product/README.md](lingora-admin/prisma/product/README.md).
+- Note: Neither `npm ci`, Prisma client generation, nor database connections/migrations were executed as part of this documentation cleanup.
 
-## Repository boundaries
+## 4. Test Harness Status
 
-- `lingora-web/`: Project 1 Web learner application (Next.js App Router).
-- `lingora-admin/`: Project 1 administration boundary and future Prisma owner.
-- `lingora-ai/api/`: FastAPI integration surface.
-
-M1.1 creates boundaries and non-secret configuration templates only. Later gated subtasks create build files, dependencies, schemas, endpoints, UI, and model code.
-
-## Secret handling
-
-1. Copy the relevant `.env.example` to a local ignored `.env` file only when its implementation subtask begins.
-2. Never commit real Supabase URLs, keys, JWT secrets, database credentials, model paths, access tokens, or local environment files.
-3. `SUPABASE_SERVICE_ROLE_KEY` is server/Admin-only and must never be placed in `lingora-web` or any client-side code.
-4. `SUPABASE_JWT_SECRET` is server-only and must not be logged.
-5. `MOCK_MODE` belongs to the FastAPI runtime, not to the Web application.
-
-## Supabase database connection strategy (M1.2)
-
-- Canonical provider: Supabase PostgreSQL, region `ap-southeast-1`.
-- Approved mode: Shared Pooler / Session mode.
-- Host: `aws-0-ap-southeast-1.pooler.supabase.com`.
-- Port: `5432`; database: `postgres`.
-- User: `postgres.oazmbpifslcpolkepyge`.
-- `DATABASE_URL` is supplied privately through the pooler connection configuration.
-- Direct connection is not used because the current project requires IPv6 for it.
-- No Dedicated IPv4 Add-on is required or approved.
-- `DIRECT_URL` remains an environment-name placeholder only until a separately approved connectivity decision changes this strategy.
-- Never commit the password or a complete connection URI; keep credentials in ignored local/host configuration.
-
-This connection strategy is a historical M1.2 record. Later Prisma, migration, seed, and execution artifacts exist in the repository and logs. Whether any particular migration is applied to a live database is `UNVERIFIED` without current catalog evidence.
-
-## Historical startup state (before 2026-10-22 removal)
-
-Checked 2026-10-16: learner routes are `/`, `/login` and `/register`, with Supabase SSR authentication and vi/en messages. There is no learner AI route, contract module or `src/lib/api/proxy.ts` in this checkout. No Admin application source exists; root `dev:admin` / `build:admin` aliases target scripts absent from the Prisma-only Admin package. Main learning flows and AI runtime are absent. Package contents are not a successful startup/deployment check; live services were not contacted. Historical M1.x observations above do not verify today's runtime.
-
-## Git repositories & remote strategy
-
-- **Private Workspace Repository (Full workspace with Agent logs & plans):**
-  - Remote: `origin`
-  - URL: `https://github.com/PhamNguyenThanhTung/lingora-workspace`
-  - Purpose: Preserves the entire development history, code, database migrations, plans, test logs, and agent configurations.
-
-- **Public Submission Repository (Clean submission for instructors):**
-  - Source snapshot: `staging/lingora-workspace-public/`
-  - URL: `https://github.com/PhamNguyenThanhTung/BTL`
-  - Purpose: Contains only clean source code, canonical architecture/requirements docs, and READMEs for academic review, excluding internal agent plumbing and logs.
+- The disposable native Supabase test harness in `lingora-admin/tests/database/` is **PARKED** and not part of normal application startup or development.

@@ -1,0 +1,15 @@
+{
+  "package.json": "3f687e63661109b27251cad4d326fe388b9999ff2853e485fa947cde5b08990f",
+  "package-lock.json": "86b9280512412ffaf11148dfbd5ff81f0ef3ba8c58c408adf37d8b918938b997",
+  "lingora-admin/package.json": "646bf009de92b87869886672d0c13fce3f43e656fd3cc977d981671910582b94",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/env/stack-manager.mjs": "c51959dff4eced546422891ef672c1e39c5d0ac42de5ebfed7fb22a0ca4e6193",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/env/env-guard.mjs": "8c2dfb3d8c74d8ce5ed51f7642a2939f3ffdbbed89e831b6a7813308d2d8bb11",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/runner-base.mjs": "79b580de43df524577bdb1a3544fa9519d0e2251fcda2ee552557e9b06dbf59f",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/concurrency-runner.mjs": "801cfbb7ec76aa4901abb2b4abbfa5b3ca5cdb58d005290d7f9ff230b9204205",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/smoke-runner.mjs": "6f36c910ab228143781eb359c09de8842af4620ee92cc08cfe4b07b040c678d7",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/integrity-runner.mjs": "b8bc20a454ac5e3377403910461fd0dbe809998d1771cd3fea446cc20de201fa",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/a1-runner.mjs": "04ee20f2021cd59a9a853255dc7d8892887df065294e4da96b62319730bc25ca",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/a3-runner.mjs": "c698692cd9f1e4500afdc0f3264a8023e74f6097cca972a13a36f6568d58622a",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/security-runner.mjs": "48007d8fa56c27f823799b62cdb8c7814d97ef562b3a08d8a35dcca10ba16efe",
+  "/home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/scaffolds/a2-runner.mjs": "fbcc0eca07931a880657f4af3687f3f7fb28d5caf2bc2ede04781d88525068ed"
+}

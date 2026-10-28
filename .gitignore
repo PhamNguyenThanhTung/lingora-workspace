@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!.env.product.example
 local.properties
 
 # Editor / operating system
@@ -19,6 +20,7 @@ coverage/
 test-results/
 playwright-report/
 *.tsbuildinfo
+lingora-admin/generated/
 
 # Python
 __pycache__/
@@ -50,6 +52,16 @@ staging/
 tmp/
 .docx-render*/
 .five-report-render/
+
+# Local Supabase runtime state and tools
+.supabase/
+.supabase-home/
+supabase/.temp/
+.local-stack/
+.wp00-state/
+.wp00-home/
+.wp00-runs/
+.wp00-fixtures/
 
 # Private internal scripts & report build tools
 tools/

@@ -1,0 +1,21 @@
+COMMAND ["/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase", "stack", "prepare", "--stack-id", "d09af89d6fdca918939fbf01bad457bb1df78cea2ff3bded861a01103b195865", "--capability", "database", "--workdir", "/tmp/lingora-d0-p17ehk7h/project-b", "--output-format", "json"]
+CWD /tmp/lingora-d0-p17ehk7h/project-b
+EXIT 0
+STDOUT (SANITIZED)
+{
+  "id": "d09af89d6fdca918939fbf01bad457bb1df78cea2ff3bded861a01103b195865",
+  "capabilities": [
+    {
+      "capability": "database",
+      "version": "17",
+      "outcome": "prepared"
+    }
+  ],
+  "message": ""
+}
+STDERR (SANITIZED)
+WARN: config section [inbucket] is deprecated and will be removed in v3, use [local_smtp] instead.
+[task] start: Preparing local Supabase stack...
+A new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+

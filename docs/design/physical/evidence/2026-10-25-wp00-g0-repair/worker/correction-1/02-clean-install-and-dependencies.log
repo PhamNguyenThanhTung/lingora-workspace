@@ -1,0 +1,143 @@
+{
+  "node_version": "v24.22.1",
+  "npm_version": "10.8.2",
+  "installed": {
+    "@prisma/client": "6.19.3",
+    "@supabase/supabase-js": "2.112.3",
+    "prisma": "6.19.3",
+    "supabase": "2.121.0",
+    "pg": "8.13.1"
+  },
+  "expected_pins": {
+    "@prisma/client": "6.19.3",
+    "@supabase/supabase-js": "2.112.3",
+    "prisma": "6.19.3",
+    "supabase": "2.121.0",
+    "pg": "8.13.1"
+  },
+  "matches_pins": true,
+  "local_binaries": {
+    "supabase": {
+      "path": "/home/tung/workspace/school/project1/lingora-workspace/node_modules/.bin/supabase",
+      "exists": true,
+      "version_output": "2.121.0",
+      "matches_pin": true
+    },
+    "prisma": {
+      "path": "/home/tung/workspace/school/project1/lingora-workspace/node_modules/.bin/prisma",
+      "exists": true,
+      "version_output": "6.19.3",
+      "matches_pin": true
+    }
+  },
+  "file_hashes": {
+    "package.json": "3f687e63661109b27251cad4d326fe388b9999ff2853e485fa947cde5b08990f",
+    "package-lock.json": "d8a033435ae1a00812126e0cdb42a619246e1e1f69fdfe3a83031d8205105a68",
+    "lingora-admin/package.json": "9379961b4d670dc2bc4d1c185fee1cf58a15377b5fbb3415781cf6c622879d73"
+  },
+  "package_json_root": {
+    "name": "lingora-workspace",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+      "lingora-admin"
+    ],
+    "scripts": {
+      "test:db:a1": "npm run test:db:a1 -w lingora-admin",
+      "test:db:a2": "npm run test:db:a2 -w lingora-admin",
+      "test:db:a3": "npm run test:db:a3 -w lingora-admin",
+      "test:db:integrity": "npm run test:db:integrity -w lingora-admin",
+      "test:db:security": "npm run test:db:security -w lingora-admin",
+      "test:db:concurrency": "npm run test:db:concurrency -w lingora-admin",
+      "test:db:smoke": "npm run test:db:smoke -w lingora-admin"
+    }
+  },
+  "package_json_admin": {
+    "name": "lingora-admin",
+    "version": "1.0.0",
+    "description": "Project 1 administration boundary and database runtime harness for Lingora.",
+    "private": true,
+    "type": "module",
+    "scripts": {
+      "test:db:a1": "node tests/database/scaffolds/a1-runner.mjs",
+      "test:db:a2": "node tests/database/scaffolds/a2-runner.mjs",
+      "test:db:a3": "node tests/database/scaffolds/a3-runner.mjs",
+      "test:db:integrity": "node tests/database/scaffolds/integrity-runner.mjs",
+      "test:db:security": "node tests/database/scaffolds/security-runner.mjs",
+      "test:db:concurrency": "node tests/database/scaffolds/concurrency-runner.mjs",
+      "test:db:smoke": "node tests/database/scaffolds/smoke-runner.mjs",
+      "env:check": "node tests/database/env/env-guard.mjs check",
+      "stack:start": "node tests/database/env/stack-manager.mjs start",
+      "stack:stop": "node tests/database/env/stack-manager.mjs stop",
+      "stack:status": "node tests/database/env/stack-manager.mjs status",
+      "stack:destroy": "node tests/database/env/stack-manager.mjs destroy"
+    },
+    "dependencies": {
+      "@prisma/client": "6.19.3",
+      "@supabase/supabase-js": "2.112.3",
+      "pg": "8.13.1"
+    },
+    "devDependencies": {
+      "prisma": "6.19.3",
+      "supabase": "2.121.0"
+    }
+  },
+  "clean_install_proof": {
+    "proof_status": "PASS",
+    "command": "/home/tung/.local/bin/npm ci --ignore-scripts=false",
+    "cwd": "/tmp/lingora-clean-ci-2EN2st/repo",
+    "duration_ms": 50357,
+    "exit_code": 0,
+    "node_binary": "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "node_version": "v24.22.1",
+    "npm_bootstrap_binary": "/home/tung/.local/bin/npm",
+    "npm_version": "10.8.2",
+    "isolation_parameters": {
+      "isolated_home": "/tmp/lingora-clean-ci-2EN2st/home",
+      "isolated_cache": "/tmp/lingora-clean-ci-2EN2st/npm-cache",
+      "isolated_userconfig": "/tmp/lingora-clean-ci-2EN2st/home/.npmrc",
+      "isolated_globalconfig": "/tmp/lingora-clean-ci-2EN2st/global.npmrc",
+      "inherited_env_stripped": true
+    },
+    "manifest_hashes": {
+      "package.json": "3f687e63661109b27251cad4d326fe388b9999ff2853e485fa947cde5b08990f",
+      "package-lock.json": "d8a033435ae1a00812126e0cdb42a619246e1e1f69fdfe3a83031d8205105a68",
+      "lingora-admin/package.json": "9379961b4d670dc2bc4d1c185fee1cf58a15377b5fbb3415781cf6c622879d73"
+    },
+    "installed_packages": {
+      "@prisma/client": "6.19.3",
+      "@supabase/supabase-js": "2.112.3",
+      "prisma": "6.19.3",
+      "supabase": "2.121.0",
+      "pg": "8.13.1"
+    },
+    "matches_expected_pins": true,
+    "resolved_binaries": {
+      "supabase": {
+        "command": "/tmp/lingora-clean-ci-2EN2st/repo/node_modules/.bin/supabase --version",
+        "cwd": "/tmp/lingora-clean-ci-2EN2st/repo",
+        "exit_code": 0,
+        "stdout": "2.121.0\n",
+        "stderr": "A new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n",
+        "resolved_version": "2.121.0",
+        "matches_pin": true,
+        "realpath": "/tmp/lingora-clean-ci-2EN2st/repo/node_modules/supabase/dist/supabase.js",
+        "sha256": "21d25b4bfb1870db0aaf0963c028b10d0b0b431485f119abd704c1396c7991e6"
+      },
+      "prisma": {
+        "command": "/tmp/lingora-clean-ci-2EN2st/repo/node_modules/.bin/prisma --version",
+        "cwd": "/tmp/lingora-clean-ci-2EN2st/repo",
+        "exit_code": 0,
+        "stdout": "prisma                  : 6.19.3\n@prisma/client          : 6.19.3\nComputed binaryTarget   : debian-openssl-3.0.x\nOperating System        : linux\nArchitecture            : x64\nNode.js                 : v24.22.1\nTypeScript              : 5.9.3\nQuery Engine (Node-API) : libquery-engine c2990dca591cba766e3b7ef5d9e8a84796e47ab7 (at node_modules/@prisma/engines/libquery_engine-debian-openssl-3.0.x.so.node)\nPSL                     : @prisma/prisma-schema-wasm 7.1.1-3.c2990dca591cba766e3b7ef5d9e8a84796e47ab7\nSchema Engine           : schema-engine-cli c2990dca591cba766e3b7ef5d9e8a84796e47ab7 (at node_modules/@prisma/engines/schema-engine-debian-openssl-3.0.x)\nDefault Engines Hash    : c2990dca591cba766e3b7ef5d9e8a84796e47ab7\nStudio                  : 0.511.0\n",
+        "stderr": "",
+        "resolved_version": "6.19.3",
+        "matches_pin": true,
+        "realpath": "/tmp/lingora-clean-ci-2EN2st/repo/node_modules/prisma/build/index.js",
+        "sha256": "c2a77456b70e8ba1e640e122824ed694433828a7c0d76ff3db7fc376b4b0e1a0"
+      }
+    },
+    "dependency_advisories_risk": "npm reports 3 high severity vulnerabilities in dev toolchain; pins preserved per G0 frozen lock specification.",
+    "sanitized_stdout": "\nadded 69 packages, and audited 72 packages in 50s\n\n9 packages are looking for funding\n  run `npm fund` for details\n\n3 high severity vulnerabilities\n\nTo address all issues (including breaking changes), run:\n  npm audit fix --force\n\nRun `npm audit` for details.\n",
+    "sanitized_stderr": "npm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.2.1\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1\nnpm notice To update run: npm install -g npm@12.2.1\nnpm notice\n"
+  }
+}

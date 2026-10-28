@@ -1,12 +1,6 @@
-# Current task pointer
+# Current task
 
-**Active task:** Legacy code removal + design correction plan + Supabase guidance (2026-10-22).
-**Authorization:** Owner identifies current code as obsolete, asks to remove it, plan design corrections and explain connecting Supabase.
-**Mode:** DESIGN planning + explicitly authorized local legacy cleanup; no new application implementation.
-**Status:** DONE — 54 legacy files removed; correction plan and Supabase guidance saved. RDR-01–03 remain OPEN and unexecuted.
-**Plan / scope:** [Correction and cleanup plan](2026-10-22-design-corrections-and-legacy-cleanup-plan.md).
-**Active Work Packages:** Not applicable; design correction work is planned only, not executing.
-**Closeout:** [Cleanup and planning completion](archive/2026-10-22-design-corrections-and-legacy-cleanup-DONE.md).
-**Verification:** Exact 54-file deletion, 1162 protected tracked hashes, no newly broken local links and historical log-prefix preservation PASS; whitespace PASS. T-LEGACY-CLEANUP-PLAN-001. Aggregate modeling verifier has entry-reproduced `stale style` CRLF/LF failure, not a new cleanup regression; no overall integrity PASS claimed.
-**Next permitted action:** No correction task active. When owner starts corrections, use the saved plan: address cross-platform verification, then RDR-01 → RDR-02 → RDR-03 with scoped edits and review.
-**Boundary:** RDR-01–03 OPEN; FDR-01–07 retain prior closure. Physical mechanisms PROPOSED; runtime/SQL/security/concurrency NOT EXECUTED; live DB UNVERIFIED. No online database changes, deployment, new migrations or Antigravity delegation.
+- **2026-10-28: Documentation closeout COMPLETE — Codex tự thực hiện.** [Spec closeout](2026-10-28-documentation-closeout-spec.md) đã xử lý hai điểm còn lại sau review FAIL: chỉ dẫn cũ trong mục lục và bằng chứng kiểm tra liên kết. Tự kiểm tra 12 file: 185 liên kết nội bộ hợp lệ, 0 gãy; xem [báo cáo dọn dẹp, mục 6](../docs/repository-cleanup-2026-10-28.md#6-closeout-2026-10-28). Hai review FAIL cũ được giữ làm lịch sử, không thay thành review độc lập PASS. Việc xóa plan/bản lưu và registry rỗng của đợt trước đã hoàn tất.
+- **Current foundation:** `lingora-admin/` with 34-model product schema, 4 applied migrations, seed, and `src/server/db/index.js`. No web framework, dev/build scripts, UI, or learner auth app currently exists.
+- **Workflow:** [AGENTS.md](../AGENTS.md) — KISS, validation tại Backend, phát triển từng vertical slice.
+- **Next proposal:** Proposed vertical slice 1: [Language Management](2026-10-27-next-app-slice.md) (minimal web/Admin auth foundation, backend role/status checks, safe CRUD/duplicate/FK error handling, UI acceptance). Explicitly remains a proposal; no implicit feature implementation authorization.

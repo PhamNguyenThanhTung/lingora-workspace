@@ -1,0 +1,72 @@
+ M .gitignore
+ M HANDOFF.md
+ M docs/02-requirements.md
+ M docs/QUICK-REF.md
+ M docs/README.md
+ M docs/design/physical/README.md
+ M docs/design/physical/database-reconciliation-2026-10-20.md
+ M docs/design/physical/physical-erd-content.png
+ M docs/design/physical/physical-erd-content.svg
+ M docs/design/physical/physical-erd.puml
+ M docs/design/physical/rebuild-plan.md
+ M docs/design/physical/security-and-rls.md
+ M docs/design/physical/verification-manifest.json
+ M docs/modeling/current-target/README.md
+ M docs/modeling/current-target/lingora-all-diagrams.drawio
+ M docs/modeling/current-target/render-manifest.json
+ M docs/modeling/current-target/rendered/DATA-03-target-logical-erd.png
+ M docs/modeling/current-target/rendered/DATA-03-target-logical-erd.svg
+ M docs/modeling/current-target/rendered/DOM-01-core-domain-model.png
+ M docs/modeling/current-target/rendered/DOM-01-core-domain-model.svg
+ M docs/modeling/current-target/src/DATA-03-target-logical-erd.puml
+ M docs/modeling/current-target/src/DOM-01-core-domain-model.puml
+ M docs/modeling/current-target/verify_current.py
+ M docs/use-case-specifications.md
+ M logs/decision-log.md
+ M logs/development-log.md
+ M logs/test-log.md
+ M package-lock.json
+ M plans/current-task.md
+?? docs/design/evidence/2026-10-22-rdr-correction/
+?? docs/design/physical/evidence/2026-10-22-final-technical-review/
+?? docs/design/physical/evidence/2026-10-22-implementation-spec/
+?? docs/design/physical/evidence/2026-10-22-p0-p1-execution/
+?? docs/design/physical/evidence/2026-10-25-p1-feasibility/
+?? docs/design/physical/evidence/2026-10-25-wp00-g0-d0/
+?? docs/design/physical/evidence/2026-10-25-wp00-g0-d1-d2/
+?? docs/design/physical/evidence/2026-10-25-wp00-g0-design-review/
+?? docs/design/physical/evidence/2026-10-25-wp00-g0-final-repair/
+?? docs/design/physical/evidence/2026-10-25-wp00-g0-minimal/
+?? docs/design/physical/evidence/2026-10-25-wp00-g0-repair/
+?? docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/
+?? docs/design/physical/final-technical-review-2026-10-22.md
+?? docs/design/physical/ftr-disposition-2026-10-22.md
+?? docs/design/physical/p0-p1-execution-result-2026-10-22.md
+?? docs/design/physical/p1-feasibility-execution-result-2026-10-25.md
+?? docs/design/physical/wp00-g0-d0-result-2026-10-25.md
+?? docs/design/physical/wp00-g0-d1-d2-result-2026-10-25.md
+?? docs/design/physical/wp00-g0-design-review-2026-10-25.md
+?? docs/design/physical/wp00-g0-final-repair-result-2026-10-25.md
+?? docs/design/physical/wp00-g0-minimal-execution-result-2026-10-25.md
+?? docs/design/physical/wp00-g0-repair-result-2026-10-25.md
+?? docs/design/physical/wp00-g0-scope-reduction-review-2026-10-25.md
+?? docs/design/rdr-correction-2026-10-22.md
+?? lingora-admin/
+?? package.json
+?? plans/2026-10-22-database-runtime-implementation-spec.md
+?? plans/2026-10-22-p0-p1-execution-plan.md
+?? plans/2026-10-22-rdr-correction-spec.md
+?? plans/2026-10-25-p1-a1-a2-a3-execution-plan.md
+?? plans/2026-10-25-wp00-g0-d1-d2-spec.md
+?? plans/2026-10-25-wp00-g0-final-repair-spec.md
+?? plans/2026-10-25-wp00-g0-minimal-execution-spec.md
+?? plans/2026-10-25-wp00-g0-repair-spec.md
+?? plans/approved/2026-10-25-p1-a1-a2-a3-execution-plan-APPROVED.md
+?? plans/approved/2026-10-25-wp00-g0-d1-d2-spec-APPROVED.md
+?? plans/approved/2026-10-25-wp00-g0-final-repair-spec-APPROVED.md
+?? plans/approved/2026-10-25-wp00-g0-minimal-execution-spec-APPROVED.md
+?? plans/approved/2026-10-25-wp00-g0-repair-spec-APPROVED.md
+?? plans/archive/2026-10-25-wp00-g0-final-repair-spec-DONE.md
+?? scripts/verify-dependencies.mjs
+?? scripts/verify-provenance.py
+?? supabase/

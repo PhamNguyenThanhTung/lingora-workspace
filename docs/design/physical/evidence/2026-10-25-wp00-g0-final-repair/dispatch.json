@@ -1,0 +1,11 @@
+{
+  "tool": "agy",
+  "model": "gemini-3.8-flash-high",
+  "effort": "high",
+  "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+  "prompt_file": "worker-prompt.txt",
+  "pid": 82211,
+  "private_logs": "/tmp/lingora-g0-final-agy-llruk1u1",
+  "corrections_used": 1,
+  "conversation_id": "a88c3432-92b6-4a44-b3c4-8c5426d1cd25"
+}

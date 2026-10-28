@@ -1,0 +1,30 @@
+{
+  "name": "lingora-admin",
+  "version": "1.0.0",
+  "description": "Project 1 administration boundary and database runtime harness for Lingora.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:db:a1": "node tests/database/scaffolds/a1-runner.mjs",
+    "test:db:a2": "node tests/database/scaffolds/a2-runner.mjs",
+    "test:db:a3": "node tests/database/scaffolds/a3-runner.mjs",
+    "test:db:integrity": "node tests/database/scaffolds/integrity-runner.mjs",
+    "test:db:security": "node tests/database/scaffolds/security-runner.mjs",
+    "test:db:concurrency": "node tests/database/scaffolds/concurrency-runner.mjs",
+    "test:db:smoke": "node tests/database/scaffolds/smoke-runner.mjs",
+    "env:check": "node tests/database/env/env-guard.mjs check",
+    "stack:start": "node tests/database/env/stack-manager.mjs start",
+    "stack:stop": "node tests/database/env/stack-manager.mjs stop",
+    "stack:status": "node tests/database/env/stack-manager.mjs status",
+    "stack:destroy": "node tests/database/env/stack-manager.mjs destroy"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "@supabase/supabase-js": "2.112.3",
+    "pg": "8.13.1"
+  },
+  "devDependencies": {
+    "prisma": "6.19.3",
+    "supabase": "2.121.0"
+  }
+}

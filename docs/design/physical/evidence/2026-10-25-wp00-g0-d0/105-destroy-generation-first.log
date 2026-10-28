@@ -1,0 +1,15 @@
+COMMAND ["/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase", "stack", "destroy", "--stack-id", "3787306e60c0a03e1d0ffb8dcf0350d48c001950294de69c6a4b4bde3e5a39d0", "--yes", "--workdir", "/tmp/lingora-d0-p17ehk7h/project-a", "--output-format", "json"]
+CWD /tmp/lingora-d0-p17ehk7h/project-a
+EXIT 0
+STDOUT (SANITIZED)
+{
+  "destroyed": true,
+  "id": "3787306e60c0a03e1d0ffb8dcf0350d48c001950294de69c6a4b4bde3e5a39d0",
+  "message": ""
+}
+STDERR (SANITIZED)
+Permanently destroying stack 3787306e60c0a03e1d0ffb8dcf0350d48c001950294de69c6a4b4bde3e5a39d0 at /tmp/lingora-d0-p17ehk7h/project-a and its owned data. Storage upload files will be preserved.
+[task] start: Destroying stack 3787306e60c0a03e1d0ffb8dcf0350d48c001950294de69c6a4b4bde3e5a39d0...
+A new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+

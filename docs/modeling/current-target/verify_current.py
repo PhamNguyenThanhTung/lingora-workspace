@@ -18,6 +18,25 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def text_bytes_matches(raw_bytes, expected_sha):
+    """Check text bytes hash compatibility symmetrically across LF and CRLF newlines.
+
+    Accepts raw exact binary match, normalized CRLF binary match, or normalized LF binary match.
+    Strictly forbids whitespace stripping, character replacement, or semantic normalization.
+    """
+    if hashlib.sha256(raw_bytes).hexdigest() == expected_sha:
+        return True
+    crlf_bytes = raw_bytes.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')
+    if hashlib.sha256(crlf_bytes).hexdigest() == expected_sha:
+        return True
+    lf_bytes = raw_bytes.replace(b'\r\n', b'\n')
+    return hashlib.sha256(lf_bytes).hexdigest() == expected_sha
+
+
+def text_sha_matches(path, expected_sha):
+    return text_bytes_matches(path.read_bytes(), expected_sha)
+
+
 def visible(text):
     # PlantUML 1.2026.8 normalizes en dashes in titles in both output and metadata.
     return '\n'.join(line.replace('\u2013', '-') if line.startswith('title ') else line for line in text.strip().splitlines()
@@ -31,16 +50,16 @@ def main():
     assert len({row['id'] for row in rows}) == 36
     assert Counter(row['classification'] for row in rows) == {'CURRENT': 5, 'TARGET': 30, 'DEFERRED — NOT MVP': 1}
     assert {row['source'] for row in rows} == {p.relative_to(BASE).as_posix() for p in (BASE/'src').glob('*.puml')}
-    assert manifest['style_sha256'] == sha(BASE/'style.puml'), 'stale style'
+    assert text_sha_matches(BASE/'style.puml', manifest['style_sha256']), 'stale style'
     outputs = set()
     primary = BASE/'lingora-all-diagrams.drawio'
     fragments = re.findall(rb'<diagram\b.*?</diagram>', primary.read_bytes(), re.S)
-    pages = {ET.fromstring(fragment).get('id'): hashlib.sha256(fragment).hexdigest() for fragment in fragments}
+    pages = {ET.fromstring(fragment).get('id'): fragment for fragment in fragments}
     assert len(fragments) == len(pages) == 44
     for row in rows:
         source = BASE/row['source']
         text = source.read_text(encoding='utf-8')
-        assert sha(source) == row['source_sha256'], 'stale source '+row['id']
+        assert text_sha_matches(source, row['source_sha256']), 'stale source '+row['id']
         assert re.search(r"^' diagram-id: (.+)$", text, re.M)[1].strip() == row['id']
         assert re.search(r"^' classification: (.+)$", text, re.M)[1].strip() == row['classification']
         assert set(row['outputs']) == {'svg', 'png'}
@@ -57,7 +76,7 @@ def main():
                 tree = ET.parse(path).getroot()
                 assert not re.search(r'Syntax Error|An error has occurred', ' '.join(tree.itertext()))
         if 'native_page_sha256' in row:
-            assert pages['page-'+row['id']] == row['native_page_sha256'], 'native page drift '+row['id']
+            assert text_bytes_matches(pages['page-'+row['id']], row['native_page_sha256']), 'native page drift '+row['id']
             for fmt, name in row['native_outputs'].items():
                 assert sha(BASE/name) == row['native_output_sha256'][fmt], 'native export drift '+row['id']
         print('PASS: source/render integrity '+row['id'])

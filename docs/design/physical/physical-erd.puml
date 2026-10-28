@@ -142,7 +142,7 @@ entity "app.item_revisions" as item_revisions {
   FK authoring_lesson_revision_id (required)
   FK assessment_blueprint_id? / blueprint_generation?
   ASSESSMENT: pair required; PRACTICE: pair null
-  frozen_at? / row_version
+  is_draft_omitted / frozen_at? / row_version
 }
 entity "app_private.item_grading_secrets" as item_grading_secrets {
   PK id / FK item_revision_id UNIQUE

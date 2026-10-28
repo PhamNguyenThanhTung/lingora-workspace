@@ -1,0 +1,26 @@
+Repository: /home/tung/workspace/school/project1/lingora-workspace
+Package: P1-03a — A3 baseline, sole task-wide external correction round (1/1)
+Original authority: `plans/2026-10-26-p1-continuation-spec.md` AC-03/04; `plans/approved/2026-10-25-p1-a1-a2-a3-execution-plan-APPROVED.md` P1-03a; `plans/2026-10-22-database-runtime-implementation-spec.md` §§2, 4–7, 9.
+Review findings: `docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/codex-review.md` (A3-R1 through A3-R6). Inspect those findings and exact source locations, then make one bounded correction pass covering every finding. No second external correction will be available.
+
+Owner remains P1-03a/A3 only: `lingora-admin/prisma/schema.prisma`, `lingora-admin/prisma/migrations/`, `lingora-admin/prisma/bootstrap/`, `lingora-admin/tests/database/a3/`, and this package evidence. You own all implementation, relevant tests, and ordinary self-fixes. Do not change A1/A2 code, shared runner/context transport, pooler/P1-T, product/architecture/security decision records, unrelated dirty files, or the selected A2 contract. No commit/push. Preserve all unrelated user changes.
+
+Resolve each finding:
+- A3-R1 / AC-02/03/04: saved logs and reports must be actual output from the claimed tests/commands on current final source, bound to exact file hashes at execution. Make assertions and claims match source. Capture safe exact command, cwd, exit/output projection, real provider/version/catalog/transaction observations, and exact valid teardown/destroy command plus receipt. Include real baseline Auth-trigger behavior and constraint assertions only if actually implemented; do not claim unsupported results. Show pre-construction denials with reachable executor/client counters and a valid positive control. Do not reuse prior logs as new proof.
+- A3-R2 / AC-04: expose only an explicit reviewed Prisma operation/option allowlist, force pinned local CLI and canonical schema/cwd, and deny caller destination/config/shadow/URL overrides and unproved dev/shadow workflows before spawn. Validate exact local Prisma pin. Add CLI and option-variant denial assertions with zero launch/client-construction counters, plus actual permitted command evidence.
+- A3-R3 / AC-03/04: serialize all A3 setup/deploy/generation/runtime tests within A3-owned entrypoints, with deterministic guarded setup completed before consumers on every fresh run; do not edit shared runner. Publish an executable consumer setup/context/cleanup lifecycle and demonstrate the complete A3 suite from one genuinely fresh target without prior provisioning.
+- A3-R4 / AC-03 and staged security contracts: remove unneeded privileged table grants/policies. Implement only minimal authorized representative paths with current account ACTIVE/role/target/scope checks; keep provisioning/success-receipt private; prevent ordinary runtime writes/forgery and foreign/private prompt/media reads. Lock-only scope must be constrained. Add real non-owner negative assertions for missing/PENDING/DISABLED/foreign actors and private writes, plus the required positive representative path. Full A2 pooled/race proof remains later; do not claim it now.
+- A3-R5 / AC-03: make Prisma supported relations/types/defaults match SQL migration exactly, including composite `lessons.active_revision_id` relation tuple, composite assignment-history creation-episode tuple, matching mapped constraint names and UUID-array native type. Keep unsupported SQL-only objects with explicit reasons in ownership inventory. Supply guarded Prisma validation/generation and a bounded schema/catalog parity comparison. Do not start AC-09 incremental apply.
+- A3-R6 / AC-02/04: reject symlink/non-regular/out-of-run/incorrect-owner or permission credential files before read/reuse/write; create safely with enforced 0600; validate record keys and fixed role identities. Do not interpolate untrusted password text unsafely. Fail closed or reconcile unsafe existing role flags/memberships; define A3 credential disposal. Prove denial before read/write/connect for unsafe file cases, and safe bootstrap/catalog proof on fresh owned target.
+
+Use only a fresh owned local disposable provider run through the existing guarded scaffold. Never inspect/adopt/mutate/clean `run-823006cc1b9e0057`, use prior/unknown targets, or connect to live/production/remote databases. No real data, legacy migration execution, db push, migrate reset, blanket drops, or unsafe shadow. If any finding requires an unapproved contract/cross-owner change or safe provenance cannot be established, stop with a concrete blocker and preserve evidence; do not invent a workaround.
+
+Write correction evidence under `docs/design/physical/evidence/2026-10-26-p1-continuation/p1-03a/`, preserving first review and prior logs; add a correction delivery record and fresh final-source command logs/hashes. Maintain required repository test/development logs by append only. Deliver exact changed paths, commands/cwd/exits/tested source binding, safe observations, fresh-run teardown receipts, and any unresolved finding IDs. Do not claim independent PASS.
+
+Delivery format:
+STATUS: DELIVERED | BLOCKED | FAILED
+PACKAGE: P1-03a correction
+CHANGED FILES: <paths>
+TESTS: <exact commands + exits; cwd/state if not in evidence>
+EVIDENCE: <paths>
+BLOCKER: <none or concrete blocker/findings>

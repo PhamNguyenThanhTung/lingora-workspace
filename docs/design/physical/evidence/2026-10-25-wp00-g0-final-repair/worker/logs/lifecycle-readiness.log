@@ -1,0 +1,34 @@
+[TEST-LIFECYCLE] Allocating and starting fresh disposable native stack...
+[TEST-LIFECYCLE] Querying stack status...
+[TEST-LIFECYCLE] Verifying scaffold honest refusal on active provider stack...
+[TEST-LIFECYCLE] Stopping stack...
+[TEST-LIFECYCLE] Resuming stack (existing start)...
+[TEST-LIFECYCLE] Stopping stack prior to destroy...
+[TEST-LIFECYCLE] Destroying stack...
+[TEST-LIFECYCLE] Compact Exact-Target Termination Summary:
+{
+  "target_stack_id": "fca5123f10909dc0bd02228ce011b3bf85cd72cd5a37a69a987c399c66d787ec",
+  "target_stack_name": "lingora-wp00-d39a8f44",
+  "registry_status": "CONFIRMED_ABSENT",
+  "native_state_files": "ABSENT",
+  "active_run_processes": 0,
+  "quiescent_ports": [
+    54321,
+    54322,
+    54324
+  ],
+  "tombstone_recorded": true,
+  "credentials_unlinked": true,
+  "termination_verdict": "VERIFIED_ABSENT"
+}
+[TEST-LIFECYCLE] Verifying repeated destroy on tombstone...
+[TEST-LIFECYCLE] Lifecycle test completed cleanly.
+✔ Provider stack lifecycle and real readiness verification (R01) (239977.229475ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 240161.624871

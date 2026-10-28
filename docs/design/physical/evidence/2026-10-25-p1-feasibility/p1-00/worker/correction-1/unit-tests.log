@@ -1,0 +1,31 @@
+✔ 1. Scaffold fails closed (exit 1) on unbound environment (missing --run flag) (94.749564ms)
+✔ 2. Forged test env flags do NOT bypass reconciliation (fails closed with exit 1) (77.58714ms)
+✔ 3. Scaffold with bound state but absent test files returns NOT EXECUTED (exit 1) and never mutates canonical state (193.164169ms)
+✔ 4. Scaffold with deliberately failing test fixture ACTUALLY runs and propagates test failure without touching canonical state (287.733851ms)
+✔ 5. Scaffold with pending operation denies execution (exit 1 / RECOVERY_REQUIRED) without touching data or executing tests (3.913004ms)
+✔ 6. Representative unregistered pending-secret canary in authority.pending_operation never leaks to scaffold stdout or stderr (3.631909ms)
+✔ 7. Scaffold passes explicit trusted owned-run context (LINGORA_TEST_CONTEXT) to child test runner (268.328344ms)
+✔ 8. Scaffold safely captures child test output, extracts finite summary, and sanitizes secrets (118.440675ms)
+✔ 9. Real paused child test holds parent run lock through completion, and contender is demonstrably BLOCKED through close (887.409266ms)
+✔ 1. Missing explicit context throws TEST_CONTEXT_MISSING and strictly ignores ambient environment (2.379312ms)
+✔ 2. Malformed explicit context payload throws TEST_CONTEXT_INVALID (0.437673ms)
+✔ 3. Forbidden or legacy runsDir throws ALLOWLIST_FAIL (0.971842ms)
+✔ 4. Stale context: absent lock file throws TEST_CONTEXT_STALE (2.748285ms)
+✔ 5. Stale context: dead parent PID in lock throws TEST_CONTEXT_STALE (2.820373ms)
+✔ 6. Foreign context: lock token mismatch (lock steal attempt) throws TEST_CONTEXT_FORBIDDEN (1.653831ms)
+✔ 7. Foreign context: run_id mismatch throws TEST_CONTEXT_MISMATCH (1.535936ms)
+✔ 8. Pending operation denial: authority with pending operation throws RECOVERY_REQUIRED (3.117189ms)
+✔ 9. Unbound authority (RESERVED or DESTROYED) throws TEST_CONTEXT_DENIED (2.517155ms)
+✔ 10. Foreign database endpoint (non-local host or wrong port) throws ALLOWLIST_FAIL (3.583736ms)
+✔ 11. Positive test: valid context yields typed endpoints and credentials (2.527425ms)
+✔ 12. Lock removal after context retrieval is immediately detected by assertLockHeld (2.463553ms)
+✔ 13. createTargetPgClient strips ambient PG* env vars, enforces lock assertion, and rejects destination overrides (3.075278ms)
+✔ 14. Critical negative effect assertion: zero SQL connections across failure modes and positive factory increment (6.018796ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2081.810349

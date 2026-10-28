@@ -1,0 +1,9 @@
+COMMAND ["/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase", "stack", "prepare", "--runtime", "native", "--stack", "d0-runtime-main", "--workdir", "/tmp/lingora-d0-p17ehk7h/project-a", "--output-format", "json"]
+CWD /tmp/lingora-d0-p17ehk7h/project-a
+EXIT 130
+STDOUT (SANITIZED)
+
+STDERR (SANITIZED)
+WARN: config section [inbucket] is deprecated and will be removed in v3, use [local_smtp] instead.
+[task] start: Preparing local Supabase stack...
+

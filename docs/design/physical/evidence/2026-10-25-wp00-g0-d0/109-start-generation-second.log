@@ -1,0 +1,108 @@
+COMMAND ["/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase", "stack", "start", "--stack-id", "3787306e60c0a03e1d0ffb8dcf0350d48c001950294de69c6a4b4bde3e5a39d0", "--preparation", "on-demand", "--workdir", "/tmp/lingora-d0-p17ehk7h/project-a", "--output-format", "json"]
+CWD /tmp/lingora-d0-p17ehk7h/project-a
+EXIT 0
+STDOUT (SANITIZED)
+{
+  "id": "3787306e60c0a03e1d0ffb8dcf0350d48c001950294de69c6a4b4bde3e5a39d0",
+  "runtime": "native",
+  "endpoints": {
+    "database.sql": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 54322,
+      "url": "tcp://127.0.0.1:54322"
+    },
+    "pgmeta.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 30249,
+      "url": "http://127.0.0.1:30249"
+    },
+    "rest.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "auth.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "realtime.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "realtime.rpc": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 28301,
+      "url": "tcp://127.0.0.1:28301"
+    },
+    "storage.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "functions.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54321,
+      "url": "http://127.0.0.1:54321"
+    },
+    "functions.inspector": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 20284,
+      "url": "tcp://127.0.0.1:20284"
+    },
+    "studio.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54323,
+      "url": "http://127.0.0.1:54323"
+    },
+    "mail.http": {
+      "protocol": "http",
+      "address": "127.0.0.1",
+      "port": 54324,
+      "url": "http://127.0.0.1:54324"
+    },
+    "mail.smtp": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 54325,
+      "url": "tcp://127.0.0.1:54325"
+    },
+    "mail.pop3": {
+      "protocol": "tcp",
+      "address": "127.0.0.1",
+      "port": 54326,
+      "url": "tcp://127.0.0.1:54326"
+    }
+  },
+  "lazy_services": [
+    "pgmeta",
+    "rest",
+    "auth",
+    "realtime",
+    "storage",
+    "functions",
+    "studio",
+    "mail"
+  ],
+  "env": "<WITHHELD_ENV_MAP_VALUES>",
+  "message": ""
+}
+STDERR (SANITIZED)
+WARN: config section [inbucket] is deprecated and will be removed in v3, use [local_smtp] instead.
+[task] start: Starting local Supabase stack...
+Seeding globals from roles.sql...
+[task] done: Stack is ready.
+A new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+

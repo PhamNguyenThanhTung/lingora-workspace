@@ -1,0 +1,12 @@
+{
+  "logs/development-log.md": {
+    "prefix_size": 307558,
+    "prefix_sha256": "62cba88ca00ed67ca0534d7deb663e39474dc4f7b02490889c2933ddd77629b4",
+    "prefix_preserved": true
+  },
+  "logs/test-log.md": {
+    "prefix_size": 388458,
+    "prefix_sha256": "243757bf460074c0804c78a66d2b49eef339a03673aeabfea00cebca55abf8d6",
+    "prefix_preserved": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "scope": "Codex filesystem metadata projection only; no CLI/SQL/HTTP or test rerun",
+  "records": [
+    {
+      "run_basename": "run-1fab09c87d538b05",
+      "phase": "DESTROYED",
+      "run_id_matches_path": true,
+      "task_id_matches_expected": true,
+      "workdir_is_repository": true,
+      "home_is_run_child": true,
+      "owner_mode": "0o600",
+      "run_mode": "0o700",
+      "credentials_file_present": false,
+      "native_registry_state_file_count": 0,
+      "native_owner_file_count": 0,
+      "receipt_has_process_observations": false,
+      "member_count": 9
+    }
+  ]
+}

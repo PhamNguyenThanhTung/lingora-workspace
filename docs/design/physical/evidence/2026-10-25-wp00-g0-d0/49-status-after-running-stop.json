@@ -1,0 +1,88 @@
+{
+  "label": "49-status-after-running-stop",
+  "utc": "2026-10-25T06:01:34.551120+00:00",
+  "command_argv": [
+    "/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase",
+    "stack",
+    "status",
+    "--stack-id",
+    "16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee",
+    "--workdir",
+    "/tmp/lingora-d0-p17ehk7h/project-a",
+    "--output-format",
+    "json"
+  ],
+  "cwd": "/tmp/lingora-d0-p17ehk7h/project-a",
+  "environment_keys": [
+    "HOME",
+    "LANG",
+    "PATH",
+    "SUPABASE_EXPERIMENTAL_STACK",
+    "SUPABASE_HOME",
+    "TMPDIR"
+  ],
+  "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+  "binary_sha256": "e91fc61f09c4fbb9c65dadc37d415640cb6d2398e65eba6d384eec74b2dbbe10",
+  "exit_code": 0,
+  "timeout_injected": false,
+  "duration_seconds": 1.334,
+  "pause_observation": null,
+  "recorder_sha256": "0a690f7f368f00742430e4060e632be465fe2ba366745b04234f7f6d6a36a72a",
+  "fixture_config_sha256": "a9067406c77c9e0b4a43f6e96cbb5d19f2b9e85dc1c3f461ee7a7cec3de190e9",
+  "stdout_json_valid": true,
+  "stdout_shape": {
+    "identity": {
+      "id": "string",
+      "name": "string",
+      "project_root": "string",
+      "branch_context": "string"
+    },
+    "runtime": "string",
+    "owner": "string",
+    "lifecycle": "null",
+    "readiness": "string",
+    "composition": {
+      "members": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "activation": "string",
+            "state": "string",
+            "lifecycle": "null",
+            "health": "null"
+          }
+        ]
+      }
+    },
+    "services": {
+      "type": "array",
+      "items_observed": [
+        {
+          "id": "string",
+          "service": "string",
+          "state": "string",
+          "lifecycle": "null",
+          "health": "null",
+          "endpoints": {}
+        }
+      ]
+    },
+    "endpoints": {},
+    "config_drift": {
+      "status": "string",
+      "message": "string"
+    },
+    "env": {
+      "PUBLISHABLE_KEY": "string",
+      "SECRET_KEY": "string",
+      "ANON_KEY": "string",
+      "SERVICE_ROLE_KEY": "string"
+    },
+    "message": "string"
+  },
+  "stdout_sanitized": "{\n  \"identity\": {\n    \"id\": \"16b7302a183466d67e93f941af148e0b78f4db97ed6e3ff3f00df79edd7504ee\",\n    \"name\": \"d0-runtime-main\",\n    \"project_root\": \"/tmp/lingora-d0-p17ehk7h/project-a\",\n    \"branch_context\": \"refs/heads/d0-main\"\n  },\n  \"runtime\": \"native\",\n  \"owner\": \"unavailable\",\n  \"lifecycle\": null,\n  \"readiness\": \"unavailable\",\n  \"composition\": {\n    \"members\": [\n      {\n        \"id\": \"3cddf646-a214-49c0-952d-cbf56407271e\",\n        \"service\": \"database\",\n        \"activation\": \"eager\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      },\n      {\n        \"id\": \"8b88cec9-277f-4421-a796-9e299b7fc054\",\n        \"service\": \"pgmeta\",\n        \"activation\": \"lazy\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      },\n      {\n        \"id\": \"23a8bfd5-0242-4439-9611-f29fff9c9d2f\",\n        \"service\": \"rest\",\n        \"activation\": \"lazy\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      },\n      {\n        \"id\": \"7cf9832b-461d-42b9-aa78-96e8e824462d\",\n        \"service\": \"auth\",\n        \"activation\": \"lazy\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      },\n      {\n        \"id\": \"877c428e-efbe-43a7-b260-5487d217ea3a\",\n        \"service\": \"realtime\",\n        \"activation\": \"lazy\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      },\n      {\n        \"id\": \"25a09fa1-ad3e-49b5-b86a-314ecd7340a6\",\n        \"service\": \"storage\",\n        \"activation\": \"lazy\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      },\n      {\n        \"id\": \"8a9dd710-946c-435e-9fd0-f90be7cbcbee\",\n        \"service\": \"functions\",\n        \"activation\": \"lazy\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      },\n      {\n        \"id\": \"df6de512-cc3c-4fd8-b60f-58a53c1598ef\",\n        \"service\": \"studio\",\n        \"activation\": \"lazy\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      },\n      {\n        \"id\": \"192ee302-97e6-4039-89b8-c71797f6c19a\",\n        \"service\": \"mail\",\n        \"activation\": \"lazy\",\n        \"state\": \"unavailable\",\n        \"lifecycle\": null,\n        \"health\": null\n      }\n    ]\n  },\n  \"services\": [\n    {\n      \"id\": \"3cddf646-a214-49c0-952d-cbf56407271e\",\n      \"service\": \"database\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    },\n    {\n      \"id\": \"8b88cec9-277f-4421-a796-9e299b7fc054\",\n      \"service\": \"pgmeta\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    },\n    {\n      \"id\": \"23a8bfd5-0242-4439-9611-f29fff9c9d2f\",\n      \"service\": \"rest\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    },\n    {\n      \"id\": \"7cf9832b-461d-42b9-aa78-96e8e824462d\",\n      \"service\": \"auth\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    },\n    {\n      \"id\": \"877c428e-efbe-43a7-b260-5487d217ea3a\",\n      \"service\": \"realtime\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    },\n    {\n      \"id\": \"25a09fa1-ad3e-49b5-b86a-314ecd7340a6\",\n      \"service\": \"storage\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    },\n    {\n      \"id\": \"8a9dd710-946c-435e-9fd0-f90be7cbcbee\",\n      \"service\": \"functions\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    },\n    {\n      \"id\": \"df6de512-cc3c-4fd8-b60f-58a53c1598ef\",\n      \"service\": \"studio\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    },\n    {\n      \"id\": \"192ee302-97e6-4039-89b8-c71797f6c19a\",\n      \"service\": \"mail\",\n      \"state\": \"unavailable\",\n      \"lifecycle\": null,\n      \"health\": null,\n      \"endpoints\": {}\n    }\n  ],\n  \"endpoints\": {},\n  \"config_drift\": {\n    \"status\": \"unchanged\",\n    \"message\": \"Project configuration matches the saved composition members.\"\n  },\n  \"env\": \"<WITHHELD_ENV_MAP_VALUES>\",\n  \"message\": \"\"\n}",
+  "stderr_sanitized": "WARN: config section [inbucket] is deprecated and will be removed in v3, use [local_smtp] instead.\nA new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n",
+  "projection": "all env map values and generated credentials withheld; raw streams private only"
+}

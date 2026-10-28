@@ -1,0 +1,18 @@
+✔ 1. Initial unbound state check without existing state file (3.581186ms)
+✔ 2. Positive database URL allowlist check (0.519974ms)
+✔ 3. Positive API URL allowlist check (0.417359ms)
+✔ 4. Negative check: foreign host IP is rejected (0.753285ms)
+✔ 5. Negative check: remote domain is rejected (0.419253ms)
+✔ 6. Negative check: swapped or mismatched port is rejected (0.3387ms)
+✔ 7. Negative check: malformed protocol is rejected (0.262296ms)
+✔ 8. Negative check: missing or altered config file is rejected (0.246076ms)
+✔ 9. Canary secret and token redaction across all fields (0.99365ms)
+✔ 10. Process and network spy test: forbidden target checks trigger NO network or spawn calls (0.67128ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.213151

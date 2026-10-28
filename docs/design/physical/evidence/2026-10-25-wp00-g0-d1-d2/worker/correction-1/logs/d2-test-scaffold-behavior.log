@@ -1,0 +1,12 @@
+✔ 1. Scaffold fails closed (exit 1) on unbound environment (missing --run flag) (56.954274ms)
+✔ 2. Forged test env flags do NOT bypass reconciliation (fails closed with exit 1) (56.872328ms)
+✔ 3. Scaffold with bound state but absent test files returns NOT EXECUTED (exit 1) and never mutates canonical state (127.323497ms)
+✔ 4. Scaffold with deliberately failing test fixture ACTUALLY runs and propagates test failure without touching canonical state (206.997387ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 531.56062

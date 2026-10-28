@@ -1,0 +1,10 @@
+[
+  {
+    "probe": "release_malformed_identity",
+    "released": true
+  },
+  {
+    "probe": "reuse_namespace_wrong_boot",
+    "acquired": true
+  }
+]

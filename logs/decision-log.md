@@ -1,5 +1,7 @@
 # Decision Log
 
+> **Current status notice (2026-10-28):** Completed repository documentation cleanup package `DOC-CLEAN-01` per [báo cáo dọn dẹp](../docs/repository-cleanup-2026-10-28.md). Old plan approvals and workflow gates referenced in historical context are historical evidence; current product ADR decisions (in particular ADR-030–036, ADR-041–044) remain authoritative within their scope.
+
 ## ADR-014 — Software Engineering Core & AI Supporting Capability Architecture (Superseding ADR-010 Two-Track Delivery)
 
 ### Date
@@ -520,38 +522,6 @@ Supabase enforces maximum upload size and MIME restrictions at bucket level. One
 - Follow-up: wait for a separate explicit IMPLEMENT command, then create an additive migration and rerun T-008. M1.3 remains non-DONE and M1.4 remains blocked.
 
 ---
-
-## ADR template
-
-### ADR-ID
-
-`ADR-XXX — [title]`
-
-### Date
-
-`YYYY-MM-DD`
-
-### Context
-
-`[What situation or constraint requires a decision?]`
-
-### Decision
-
-`[What was decided?]`
-
-### Reason
-
-`[Why is this the preferred choice?]`
-
-### Alternatives considered
-
-- `[alternative and why it was not chosen]`
-
-### Consequences
-
-- Positive: `[impact]`
-- Negative/trade-off: `[impact]`
-- Follow-up: `[required action]`
 
 ---
 
@@ -2155,3 +2125,27 @@ UC-09–12, requirements and traceability record this ownership. [Database recon
 
 ### Status
 ACCEPTED — PO PRODUCT CLARIFICATION; PHYSICAL REALIZATION PROPOSED; NO LIVE MIGRATION APPROVAL
+
+
+## ADR-044 — Completable published Lessons require at least one core exercise
+
+### Date
+2026-10-22
+
+### Category
+product-behavior / lesson-readiness
+
+### Approval Evidence
+Direct PO decision for FTR-01: **“Mọi Lesson có thể được publish để Learner hoàn thành phải có ít nhất 1 core exercise (`N >= 1`).”** The same instruction permits zero-core Draft, requires submit/approve/publish and runtime-start checks, retains `lesson_attempts.n_core > 0`, excludes N=0 completion/performance and prohibits a special content-only table/state/mechanism in MVP. The accompanying request authorizes dispositions and a formal staged implementation spec only; no Anti/Gemini, implementation, PoC or live database operation.
+
+### Context
+ADR-036 defines N/K scoring and processing every required response, but did not explicitly settle whether N=0 Lessons can complete. The Class revision-to-Exercise cardinality 0..* allows an empty Draft and does not require zero-core publication. FTR-01 identified this product boundary before implementation.
+
+### Decision
+Every Lesson publishable for Learner completion requires N>=1 core exercise on its exact revision. Draft authoring/save/preview may have zero. Readiness rejects zero at submit, approve and publish, and runtime start rechecks. Retain the physical positive n_core constraint. No N=0 performance/completion path or special content-only lifecycle is supported in MVP. Optional review, vocabulary and assessment contributions do not satisfy the core exercise count.
+
+### Consequences / Evidence
+ADR-036 completion, 2/1/0 half-unit scoring and N+K denominator, redo/history and SRS remain unchanged. The accepted Class cardinality remains valid without a diagram change. Requirements, UC clarification and physical readiness are synchronized. See [official FTR disposition](../docs/design/physical/ftr-disposition-2026-10-22.md) and [implementation spec](../plans/2026-10-22-database-runtime-implementation-spec.md). FTR-02/03 technical contracts are Codex-selected and runtime-gated, not newly asserted PO product decisions. A1/A2/A3 and all implementation acceptance tests remain NOT EXECUTED.
+
+### Status
+ACCEPTED — EXPLICIT PO PRODUCT DECISION; IMPLEMENTATION SPEC ISSUED; NO IMPLEMENTATION OR LIVE ACTION AUTHORIZATION

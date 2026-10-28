@@ -1,0 +1,11 @@
+=== Mutation 1: Pre-prepare registry check bypass ===
+Mutation 1 test exit code: 1
+Mutation 1 restored successfully. Hash: 45d74f2f662ddd0a11b792d5813c53c49d667a3ad86ce29052dd6074b5446da1
+
+=== Mutation 2: Invert post-destroy registry absence check ===
+Mutation 2 test exit code: 1
+Mutation 2 restored successfully. Hash: 45d74f2f662ddd0a11b792d5813c53c49d667a3ad86ce29052dd6074b5446da1
+
+=== Mutation 3: Echo raw exception text in projectFiniteOutput ===
+Mutation 3 test exit code: 1
+Mutation 3 restored successfully. Hash: 0cb1cb599ad6d061d48eb38b8b33e009bfb59fbcb46ed5762454646a66ace14d

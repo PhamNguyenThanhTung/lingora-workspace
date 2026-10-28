@@ -1,0 +1,4233 @@
+[
+  {
+    "evidence": "00-version.json",
+    "command": [
+      "--version"
+    ],
+    "exit_code": 0,
+    "shape": "non-JSON text"
+  },
+  {
+    "evidence": "01-empty-home-a.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "02-empty-home-b.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "03-prepare-help.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "_tag": "string",
+      "doc": {
+        "description": "string",
+        "usage": "string",
+        "flags": {
+          "type": "array",
+          "items_observed": [
+            {
+              "name": "string",
+              "aliases": {
+                "type": "array",
+                "items_observed": []
+              },
+              "type": "string",
+              "description": {
+                "_id": "string",
+                "_tag": "string",
+                "value": "string"
+              },
+              "required": "boolean"
+            }
+          ]
+        },
+        "annotations": {
+          "_id": "string",
+          "services": {
+            "type": "array",
+            "items_observed": []
+          }
+        },
+        "examples": {
+          "type": "array",
+          "items_observed": [
+            {
+              "command": "string",
+              "description": "string"
+            }
+          ]
+        },
+        "globalFlags": {
+          "type": "array",
+          "items_observed": [
+            {
+              "name": "string",
+              "aliases": {
+                "type": "array",
+                "items_observed": [
+                  "string"
+                ]
+              },
+              "type": "string",
+              "description": {
+                "_id": "string",
+                "_tag": "string",
+                "value": "string"
+              },
+              "required": "boolean"
+            },
+            {
+              "name": "string",
+              "aliases": {
+                "type": "array",
+                "items_observed": []
+              },
+              "type": "string",
+              "description": {
+                "_id": "string",
+                "_tag": "string",
+                "value": "string"
+              },
+              "required": "boolean"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "evidence": "04-prepare-reserved-a.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 130,
+    "shape": "non-JSON text"
+  },
+  {
+    "evidence": "05-list-during-prepare.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "06-status-after-prepare-timeout.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "07-other-home-list.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "08-other-home-same-id.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 1,
+    "shape": {
+      "_tag": "string",
+      "error": {
+        "code": "string",
+        "message": "string",
+        "suggestion": "string"
+      }
+    }
+  },
+  {
+    "evidence": "09-other-workdir-same-id.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "10-default-with-named-only.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 1,
+    "shape": {
+      "_tag": "string",
+      "error": {
+        "code": "string",
+        "message": "string",
+        "suggestion": "string"
+      }
+    }
+  },
+  {
+    "evidence": "101-prepare-generation-probe.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "102-start-generation-first.json",
+    "command": [
+      "stack",
+      "start"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "runtime": "string",
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "lazy_services": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "103-status-generation-first.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "string",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "string"
+            },
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "string",
+            "endpoints": {
+              "sql": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "rpc": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "inspector": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "smtp": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "pop3": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          }
+        ]
+      },
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "105-destroy-generation-first.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "106-list-between-generations.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "108-recreate-generation-tuple.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "109-start-generation-second.json",
+    "command": [
+      "stack",
+      "start"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "runtime": "string",
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "lazy_services": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "11-explicit-name-status.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "110-status-generation-second.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "string",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "string"
+            },
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "string",
+            "endpoints": {
+              "sql": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "rpc": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "inspector": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "smtp": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "pop3": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          }
+        ]
+      },
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "113-destroy-generation-second.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "114-final-registry-a.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "115-final-registry-b.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "13-stop-prepared.json",
+    "command": [
+      "stack",
+      "stop"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stopped": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "not_running": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "15-destroy-prepared.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "16-list-after-early-destroy.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "18-prepare-runtime-main.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 130,
+    "shape": "non-JSON text"
+  },
+  {
+    "evidence": "20-main-list-after-timeout.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "21-main-status-after-timeout.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "23-stop-to-quiesce-prepare.json",
+    "command": [
+      "stack",
+      "stop"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stopped": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "not_running": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "25-prepare-same-id-database.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "26-start-same-id.json",
+    "command": [
+      "stack",
+      "start"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "runtime": "string",
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "lazy_services": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "27-status-running-exact-id.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "string",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "string"
+            },
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "string",
+            "endpoints": {
+              "sql": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "rpc": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "inspector": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "smtp": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "pop3": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          }
+        ]
+      },
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "32-prepare-default-main.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "33-default-status-main.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "34-default-status-other-branch.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 1,
+    "shape": {
+      "_tag": "string",
+      "error": {
+        "code": "string",
+        "message": "string",
+        "suggestion": "string"
+      }
+    }
+  },
+  {
+    "evidence": "35-full-id-other-branch.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "string",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "string"
+            },
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "string",
+            "endpoints": {
+              "sql": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "rpc": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "inspector": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "smtp": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "pop3": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          }
+        ]
+      },
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "36-prepare-default-alt.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "37-default-status-alt.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "38-paused-prepare-intent.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "38a-zero-match-while-native-cli-paused.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "39-recovery-list-paused-intent.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "40-unique-prefix-status.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "string",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "string"
+            },
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "string",
+            "endpoints": {
+              "sql": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "rpc": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "inspector": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "smtp": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "pop3": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          }
+        ]
+      },
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "41-id-name-conflict.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 1,
+    "shape": {
+      "_tag": "string",
+      "error": {
+        "code": "string",
+        "message": "string"
+      }
+    }
+  },
+  {
+    "evidence": "42-malformed-stop-argv.json",
+    "command": [
+      "stack",
+      "stop"
+    ],
+    "exit_code": 1,
+    "shape": {
+      "_tag": "string",
+      "error": {
+        "code": "string",
+        "message": "string"
+      }
+    }
+  },
+  {
+    "evidence": "43-invalid-runtime-no-allocation.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 1,
+    "shape": {
+      "_tag": "string",
+      "error": {
+        "code": "string",
+        "message": "string"
+      }
+    }
+  },
+  {
+    "evidence": "44-list-after-invalid-input.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "46-stop-running-exact-id.json",
+    "command": [
+      "stack",
+      "stop"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stopped": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "not_running": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "48-list-after-running-stop.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "49-status-after-running-stop.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "null",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "null",
+            "health": "null",
+            "endpoints": {}
+          }
+        ]
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "51-destroy-unused-default-main.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "52-destroy-unused-default-alt.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "53-status-before-incarnation-test.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "54-destroy-before-incarnation-test.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "55-recreate-exact-same-tuple.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "56-status-recreated-tuple.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "58-destroy-recreated-owned-tuple.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "59-restart-same-bound-id.json",
+    "command": [
+      "stack",
+      "start"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "runtime": "string",
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "lazy_services": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "60-status-after-restart.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "string",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "string"
+            },
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "string",
+            "endpoints": {
+              "sql": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "rpc": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "inspector": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "smtp": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "pop3": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          }
+        ]
+      },
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "63-status-owner-unresponsive.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "null",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "null",
+            "health": "null",
+            "endpoints": {}
+          }
+        ]
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "64-list-owner-unresponsive.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "67-status-after-owner-resume.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "string",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "string"
+            },
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "string",
+            "endpoints": {
+              "sql": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "rpc": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "inspector": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "smtp": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "pop3": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          }
+        ]
+      },
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "69-list-after-caller-crash.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "70-status-after-caller-crash.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "null",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": []
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": []
+      },
+      "endpoints": {},
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {},
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "71-stop-crashed-caller-target.json",
+    "command": [
+      "stack",
+      "stop"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stopped": {
+        "type": "array",
+        "items_observed": []
+      },
+      "not_running": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "73-recover-crash-same-id.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "74-destroy-crash-target.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "75-list-after-crash-recovery.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "77-never-dispatched-registry-observation.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "78-stop-before-repeat-check.json",
+    "command": [
+      "stack",
+      "stop"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stopped": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "not_running": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "79-stop-already-stopped.json",
+    "command": [
+      "stack",
+      "stop"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stopped": {
+        "type": "array",
+        "items_observed": []
+      },
+      "not_running": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "80-start-before-active-destroy.json",
+    "command": [
+      "stack",
+      "start"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "runtime": "string",
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "lazy_services": {
+        "type": "array",
+        "items_observed": [
+          "string"
+        ]
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "81-status-before-active-destroy.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "identity": {
+        "id": "string",
+        "name": "string",
+        "project_root": "string",
+        "branch_context": "string"
+      },
+      "runtime": "string",
+      "owner": "string",
+      "lifecycle": "string",
+      "readiness": "string",
+      "composition": {
+        "members": {
+          "type": "array",
+          "items_observed": [
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "string"
+            },
+            {
+              "id": "string",
+              "service": "string",
+              "activation": "string",
+              "state": "string",
+              "lifecycle": "string",
+              "health": "null"
+            }
+          ]
+        }
+      },
+      "services": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "string",
+            "endpoints": {
+              "sql": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "rpc": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "inspector": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          },
+          {
+            "id": "string",
+            "service": "string",
+            "state": "string",
+            "lifecycle": "string",
+            "health": "null",
+            "endpoints": {
+              "http": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "smtp": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              },
+              "pop3": {
+                "protocol": "string",
+                "address": "string",
+                "port": "integer",
+                "url": "string"
+              }
+            }
+          }
+        ]
+      },
+      "endpoints": {
+        "database.sql": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "pgmeta.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "rest.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "auth.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "realtime.rpc": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "storage.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "functions.inspector": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "studio.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.http": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.smtp": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        },
+        "mail.pop3": {
+          "protocol": "string",
+          "address": "string",
+          "port": "integer",
+          "url": "string"
+        }
+      },
+      "config_drift": {
+        "status": "string",
+        "message": "string"
+      },
+      "env": {
+        "API_URL": "string",
+        "REST_URL": "string",
+        "FUNCTIONS_URL": "string",
+        "DB_URL": "string",
+        "STUDIO_URL": "string",
+        "MCP_URL": "string",
+        "MAILPIT_URL": "string",
+        "INBUCKET_URL": "string",
+        "PUBLISHABLE_KEY": "string",
+        "SECRET_KEY": "string",
+        "ANON_KEY": "string",
+        "SERVICE_ROLE_KEY": "string",
+        "STORAGE_S3_URL": "string",
+        "S3_PROTOCOL_ACCESS_KEY_ID": "string",
+        "S3_PROTOCOL_ACCESS_KEY_SECRET": "string",
+        "S3_PROTOCOL_REGION": "string"
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "83-destroy-running-exact-id.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "84-registry-after-active-destroy.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "86-status-destroyed-id.json",
+    "command": [
+      "stack",
+      "status"
+    ],
+    "exit_code": 1,
+    "shape": {
+      "_tag": "string",
+      "error": {
+        "code": "string",
+        "message": "string",
+        "suggestion": "string"
+      }
+    }
+  },
+  {
+    "evidence": "87-repeat-native-destroy.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 1,
+    "shape": {
+      "_tag": "string",
+      "error": {
+        "code": "string",
+        "message": "string",
+        "suggestion": "string"
+      }
+    }
+  },
+  {
+    "evidence": "88-final-home-b-registry.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "91-prepare-home-factor-target.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "92-supabase-home-a-home-b.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "93-supabase-home-b-home-a.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "94-default-home-only.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "95-other-project-same-name.json",
+    "command": [
+      "stack",
+      "prepare"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "id": "string",
+      "capabilities": {
+        "type": "array",
+        "items_observed": [
+          {
+            "capability": "string",
+            "version": "string",
+            "outcome": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "96-list-project-root-factor.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": [
+          {
+            "id": "string",
+            "project_root": "string",
+            "name": "string",
+            "branch_context": "string",
+            "runtime": "string",
+            "owner": "string"
+          }
+        ]
+      },
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "97-destroy-factor-project-b.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "98-destroy-factor-project-a.json",
+    "command": [
+      "stack",
+      "destroy"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "destroyed": "boolean",
+      "id": "string",
+      "message": "string"
+    }
+  },
+  {
+    "evidence": "99-final-registry-home-a.json",
+    "command": [
+      "stack",
+      "list"
+    ],
+    "exit_code": 0,
+    "shape": {
+      "stacks": {
+        "type": "array",
+        "items_observed": []
+      },
+      "message": "string"
+    }
+  }
+]

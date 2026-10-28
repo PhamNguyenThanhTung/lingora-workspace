@@ -1,0 +1,8 @@
+{
+  "observed_utc": "2026-10-25T08:29:51.734534+00:00",
+  "source_log": "docs/design/physical/evidence/2026-10-25-wp00-g0-d1-d2/worker/correction-1/logs/r01-native-lifecycle.log",
+  "source_sha256": "1b690e5bd9eebf1f16bea09a18e76a60c2aabdf25a156592163af8dc07da95cc",
+  "private_frozen_copy": "/tmp/lingora-d1d2-agy-jhrk7z50/codex-observed-correction-r01-first-failure.log",
+  "counter_lines": [],
+  "scope": "Codex read-only observation of worker output; no rerun, no provider action; first failure must not be discarded by later retries"
+}

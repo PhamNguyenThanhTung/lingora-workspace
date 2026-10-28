@@ -1,0 +1,59 @@
+### STATUS
+`PASS` (Worker implementation, test coverage, mutation proof, and regression checks complete; ready for independent Codex review)
+
+---
+
+### CHANGED FILES
+- [`lingora-admin/tests/database/test-context.mjs`](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.mjs)
+- [`lingora-admin/tests/database/test-context.test.mjs`](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs)
+- [`logs/test-log.md`](file:///home/tung/workspace/school/project1/lingora-workspace/logs/test-log.md)
+- [`logs/development-log.md`](file:///home/tung/workspace/school/project1/lingora-workspace/logs/development-log.md)
+- Saved evidence: [`docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/worker/`](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/worker/) (`checks.json`, `report.md`, `unit-tests-final.log`, `unit-tests-mutation-prior-forwarding.log`, `test-env-guard.log`)
+
+---
+
+### SHORT DIFF SUMMARY
+- Removed arbitrary `...(options.clientConfig || {})` forwarding in [`createTargetPgClient`](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.mjs#L377-L483), enforcing fixed typed connection parameters bound to the harness-validated local target (`127.0.0.1:54322`, `postgres`, `ssl: false`).
+- Implemented strict allowlists for top-level options (`ClientClass`, `connectionTimeoutMillis`, `clientConfig`) and non-routing clientConfig parameters (`statement_timeout`, `query_timeout`, `lock_timeout`, `idle_in_transaction_session_timeout`, `application_name`, `connectionTimeoutMillis`).
+- Enforced pre-factory rejection (`ALLOWLIST_FAIL`) of `stream` and `connection` injections, destination parameters/aliases (`host`, `hostname`, `hostaddr`, `port`, `database`, `dbname`, `db`, `user`, `username`, `password`, `pass`, `connectionString`, `connection_string`), socket/protocol options, and any unsupported options.
+- Extended [`test-context.test.mjs`](file:///home/tung/workspace/school/project1/lingora-workspace/lingora-admin/tests/database/test-context.test.mjs#L402-L824) (Tests 13–15) proving zero factory calls and zero connection attempts across 14 negative failure modes with `InstrumentingClient`, zero stream probe invocation with default `pg.Client`, and positive local target creation/connect control.
+
+---
+
+### COMMANDS/TESTS
+
+1. **Final Unit & Scaffold Test Suite**
+   - **Command:** `node --test lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs lingora-admin/tests/database/test-context.test.mjs`
+   - **CWD:** `/home/tung/workspace/school/project1/lingora-workspace`
+   - **Tested State:** `final` (`lingora-admin/tests/database/test-context.mjs`: `bb721ba0786dbe5e9b2e9f6436752cb03a52cd6e927d7b11f0348a6fdc3c78b9`, `lingora-admin/tests/database/test-context.test.mjs`: `b3f5ce2cc9daff60335c0cedaac105b3c9589b1e04dc77904dacef10823dae7c`)
+   - **Exit:** `0`
+   - **Log Path:** [`docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/worker/unit-tests-final.log`](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/worker/unit-tests-final.log)
+
+2. **Mutation Test against Prior Forwarding Baseline**
+   - **Command:** `node --test lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs lingora-admin/tests/database/test-context.test.mjs`
+   - **CWD:** `/home/tung/workspace/school/project1/lingora-workspace`
+   - **Tested State:** `mutated_prior_forwarding` (`lingora-admin/tests/database/test-context.mjs`: `d22ad7b6d594ae848c7c7234513d0a9eb889d830cf19baf1cfd616d6aad06f0a`, `lingora-admin/tests/database/test-context.test.mjs`: `b3f5ce2cc9daff60335c0cedaac105b3c9589b1e04dc77904dacef10823dae7c`)
+   - **Exit:** `1` (demonstrating test failure and flaw detection: 21 pass, 3 fail with `STREAM_INVOKED_UNEXPECTEDLY` in pg connection)
+   - **Log Path:** [`docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/worker/unit-tests-mutation-prior-forwarding.log`](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/worker/unit-tests-mutation-prior-forwarding.log)
+
+3. **Environment Guard Regression Suite**
+   - **Command:** `node --test lingora-admin/tests/database/env/test-env-guard.mjs`
+   - **CWD:** `/home/tung/workspace/school/project1/lingora-workspace`
+   - **Tested State:** `final` (`lingora-admin/tests/database/env/test-env-guard.mjs`: `360271f42f0202592252b053617840acb79468e425ab83e5514f5d85ac2594b7`)
+   - **Exit:** `0`
+   - **Log Path:** [`docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/worker/test-env-guard.log`](file:///home/tung/workspace/school/project1/lingora-workspace/docs/design/physical/evidence/2026-10-26-p1-00-transport-repair/worker/test-env-guard.log)
+
+---
+
+### RESULTS
+- **Final Unit Tests:** 24 passed / 0 failed (exit 0). All destination overrides, stream/connection injections, aliases, and unsupported parameters fail closed with `ALLOWLIST_FAIL` before transport instantiation. Reachable factory calls and connection attempts are verified to be strictly 0 across 14 failure modes, and positive control increments factory and connect counters normally. Default `pg.Client` constructor is never reached when stream/connection options are present.
+- **Mutation Verification:** Prior code baseline failed Tests 13, 14, and 15 (exit 1), proving that the new test assertions detect the previous transport bypass. Restoring final source restored green status (exit 0).
+- **Guard Regression:** 37 passed / 0 failed (exit 0). G0 guard, manager, pins, and contracts remain completely preserved and unmutated.
+
+---
+
+### REMAINING RISKS/BLOCKERS
+- Follow-on packages A3, A1, and A2 remain not yet dispatched, pending independent review of this repair package.
+- A2 session-pooler transport with Prisma 6.19.3 remains a mandatory dependency before runtime acceptance.
+- Ambiguous historical run `run-823006cc1b9e0057` remains untouched `RECOVERY_REQUIRED`.
+- Worker has not marked reviewer acceptance; Codex independently reviews final diff, assertions, and execution evidence.

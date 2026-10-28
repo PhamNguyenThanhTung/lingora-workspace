@@ -1,0 +1,39 @@
+{
+  "commands": [
+    {
+      "command": "node --test lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run test:db:a1 -w lingora-admin",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 1
+    }
+  ],
+  "tested_commit": "c39806cb45c908135f240c93d68546b6ac5d7784",
+  "file_hashes": {
+    "lingora-admin/tests/database/scaffolds/runner-base.mjs": "fb88e48c3691640d8fd94d17e49ac1f5a6669d79a87017cb4cb0a4de82eb6b9e",
+    "lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs": "f92566f7d04426f1801ebdd427dcc40c927625934288cf708ae8d5966c169904",
+    "lingora-admin/tests/database/scaffolds/a1-runner.mjs": "04ee20f2021cd59a9a853255dc7d8892887df065294e4da96b62319730bc25ca",
+    "lingora-admin/tests/database/scaffolds/a2-runner.mjs": "fbcc0eca07931a880657f4af3687f3f7fb28d5caf2bc2ede04781d88525068ed",
+    "lingora-admin/tests/database/scaffolds/a3-runner.mjs": "c698692cd9f1e4500afdc0f3264a8023e74f6097cca972a13a36f6568d58622a"
+  },
+  "scaffold_behavior_verification": {
+    "unbound_behavior": {
+      "observed": "Fails closed with exit code 1 when .local-stack/runtime-state.json is missing or unbound",
+      "verdict": "PASS"
+    },
+    "absent_fixtures_behavior": {
+      "observed": "Returns NOT EXECUTED and exits code 1 when state is bound but test files are absent",
+      "verdict": "PASS"
+    },
+    "present_fixtures_behavior": {
+      "observed": "Spawns child node test process and propagates nonzero exit code (exit 1) on failing fixture",
+      "verdict": "PASS"
+    }
+  },
+  "review_findings_addressed": [
+    "G0-R5: Scaffolds remain NOT EXECUTED/nonzero until actual execution is wired, and actually execute and propagate test failures when fixtures exist."
+  ]
+}

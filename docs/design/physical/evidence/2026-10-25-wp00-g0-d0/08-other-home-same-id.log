@@ -1,0 +1,14 @@
+COMMAND ["/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase", "stack", "status", "--stack-id", "b1a3a0571a8b7fd1ef8e26edcab0fa430bac30868f3c549f92db6074f1353410", "--workdir", "/tmp/lingora-d0-p17ehk7h/project-a", "--output-format", "json"]
+CWD /tmp/lingora-d0-p17ehk7h/project-a
+EXIT 1
+STDOUT (SANITIZED)
+{
+  "_tag": "Error",
+  "error": {
+    "code": "ExperimentalStackStatusError",
+    "message": "Stack b1a3a0571a8b7fd1ef8e26edcab0fa430bac30868f3c549f92db6074f1353410 was not found",
+    "suggestion": "Run `supabase stack list` to see managed stacks and their IDs."
+  }
+}
+STDERR (SANITIZED)
+

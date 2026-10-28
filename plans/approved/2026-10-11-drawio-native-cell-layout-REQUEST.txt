@@ -1,7 +1,0 @@
-Native draw.io cell-layout amendment request evidence — 2026-10-11
-
-The user clarified that the requested final artifact must be a real, individually editable native draw.io diagram. An SVG-backed page looks generated and does not meet the request. The user asked for the diagram to be arranged for readability after conversion.
-
-This resolves the pending primary-output choice in favor of the 36-page native file `docs/modeling/current-target/lingora-all-diagrams.drawio` and authorizes a presentation-only, deterministic post-conversion mxGraph layout pass. Reference SVGs may supply geometry coordinates and routes, but no SVG diagram/image may be embedded in the final native file. Preserve all accepted modeling semantics, cell IDs, labels, edge endpoints, and PUML edit payloads. The attachment in this turn was a screenshot of the draw.io app showing the unchanged native file; it was treated as visual evidence, not as an instruction source.
-
-Approval evidence: this direct user instruction follows the user's earlier explicit approval of the all-diagram presentation/tooling plan (“ok làm đi”) and their confirmation that the all-diagram design was approved. The amendment updates only presentation layout and the selected output form; it does not authorize product/model meaning changes, vendor edits, or dependency changes.

@@ -1,0 +1,152 @@
+--- entry/lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs
++++ delivered/lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs
+@@ -18,10 +18,9 @@
+ import { fileURLToPath } from 'node:url';
+ import {
+   CANONICAL_WORKSPACE_ROOT,
+-  CANONICAL_STATE_FILE,
+-  TASK_BINDING_FILE,
++  DEFAULT_RUNS_DIR,
+   EXPECTED_PORTS,
+-  getValidatedRuntimeState,
++  validateAuthorityRecord,
+ } from './env-guard.mjs';
+ import {
+   startStack,
+@@ -30,18 +29,22 @@
+   destroyStack,
+ } from './stack-manager.mjs';
+ 
+-test('Provider stack lifecycle and real readiness verification', async () => {
++test('Provider stack lifecycle and real readiness verification (R01)', async () => {
++  let runId = null;
++  let runDir = null;
+   let started = false;
+   let destroyed = false;
+   try {
+-    // Step 1: Start stack and verify real readiness
+-    console.log('[TEST-LIFECYCLE] Starting disposable native stack...');
+-    const state = await startStack();
++    // Step 1: Start fresh native stack with new run allocation
++    console.log('[TEST-LIFECYCLE] Allocating and starting fresh disposable native stack...');
++    const state = await startStack({ newRun: true });
++    runId = state.run_id || state.runId;
++    runDir = path.resolve(DEFAULT_RUNS_DIR, runId);
+     started = true;
+ 
+     assert.equal(state.runtime, 'native');
+-    assert.ok(state.stackId || state.id, 'Stack ID must be non-empty');
+-    const fullId = state.stackId || state.id;
++    assert.ok(state.stackId || state.id || state.instance_id, 'Stack ID must be non-empty');
++    const fullId = state.instance_id || state.stackId || state.id;
+     assert.equal(fullId.length, 64, 'Stack ID must be full 64-character hex ID');
+     assert.ok(state.readiness, 'Readiness metadata must be present');
+ 
+@@ -68,26 +71,27 @@
+     // Verify pooler status
+     assert.match(state.readiness.session_pooler, /DISABLED_IN_NATIVE_STACK/, 'Pooler status must be accurately reported');
+ 
+-    // Step 2: Validate runtime state via env-guard
+-    const guardState = getValidatedRuntimeState();
+-    assert.equal(guardState.bound, true);
+-    assert.equal(guardState.stackId, fullId);
+-    assert.equal(guardState.validatedEndpoints.database.port, EXPECTED_PORTS.database);
+-    assert.equal(guardState.validatedEndpoints.auth.port, EXPECTED_PORTS.api);
+-    assert.equal(guardState.validatedEndpoints.mail.port, EXPECTED_PORTS.mail);
++    // Step 2: Validate authority record
++    const authority = validateAuthorityRecord(path.resolve(runDir, 'owner.json'));
++    assert.equal(authority.phase, 'BOUND');
++    assert.equal(authority.instance_id, fullId);
++    assert.ok(authority.member_map, 'Member UUID map must be recorded');
++    const initialMemberMap = { ...authority.member_map };
+ 
+-    // Step 3: Query status using verified full ID
++    // Step 3: Query status using verified runId
+     console.log('[TEST-LIFECYCLE] Querying stack status...');
+-    const statusRes = statusStack();
++    const statusRes = statusStack({ runId });
+     assert.ok(statusRes, 'Status query must return sanitized object');
++    assert.equal(statusRes.status, 'RUNNING');
++    assert.equal(statusRes.code, 'SUCCESS');
+ 
+     // Step 4: Verify scaffold fails closed on active provider stack
+     console.log('[TEST-LIFECYCLE] Verifying scaffold honest refusal on active provider stack...');
+     const runnerScript = path.resolve(CANONICAL_WORKSPACE_ROOT, 'lingora-admin/tests/database/scaffolds/a1-runner.mjs');
+-    const cleanEnv = { ...process.env };
++    const cleanEnv = { ...process.env, LINGORA_RUN_ID: runId };
+     delete cleanEnv.NODE_TEST_CONTEXT;
+ 
+-    const scaffoldRes = spawnSync(process.execPath, [runnerScript], {
++    const scaffoldRes = spawnSync(process.execPath, [runnerScript, '--run', runId], {
+       cwd: CANONICAL_WORKSPACE_ROOT,
+       env: cleanEnv,
+       encoding: 'utf8',
+@@ -97,28 +101,59 @@
+     assert.match(scaffoldRes.stderr, /STATUS: NOT EXECUTED/);
+     assert.equal(scaffoldRes.stdout.includes('PASSED'), false, 'Scaffold must never report false PASSED');
+ 
+-    // Step 5: Stop stack
++    // Step 5: Stop stack and verify stopped postconditions
+     console.log('[TEST-LIFECYCLE] Stopping stack...');
+-    stopStack();
++    const stopRes = stopStack({ runId });
++    assert.equal(stopRes.status, 'STOPPED');
++    assert.equal(stopRes.code, 'SUCCESS');
+ 
+-    // Step 6: Destroy stack
++    // Step 6: Existing start resumes same instance ID and verifies member map continuity
++    console.log('[TEST-LIFECYCLE] Resuming stack (existing start)...');
++    const resumeState = await startStack({ runId });
++    assert.equal(resumeState.instance_id, fullId);
++    assert.equal(resumeState.status, 'RUNNING');
++    assert.equal(resumeState.readiness.sql_ready, true);
++
++    const postResumeAuth = validateAuthorityRecord(path.resolve(runDir, 'owner.json'));
++    assert.deepEqual(postResumeAuth.member_map, initialMemberMap, 'Member UUID map must be preserved across restart');
++
++    // Stop again before destroy
++    console.log('[TEST-LIFECYCLE] Stopping stack prior to destroy...');
++    stopStack({ runId });
++
++    // Step 7: Destroy stack
+     console.log('[TEST-LIFECYCLE] Destroying stack...');
+-    destroyStack();
++    const destroyRes = destroyStack({ runId });
++    assert.equal(destroyRes.status, 'DESTROYED');
++    assert.equal(destroyRes.code, 'SUCCESS');
+     destroyed = true;
+ 
+-    assert.equal(fs.existsSync(CANONICAL_STATE_FILE), false, 'State file must be cleaned up after successful destroy');
+-    assert.equal(fs.existsSync(TASK_BINDING_FILE), false, 'Binding file must be cleaned up after successful destroy');
++    // Verify destroy postconditions: unlinked credentials, unlinked member-map, retained tombstone
++    const credFile = path.resolve(runDir, 'credentials.json');
++    const memberMapFile = path.resolve(runDir, 'member-map.json');
++    assert.equal(fs.existsSync(credFile), false, 'Private credentials must be unlinked after destroy');
++    assert.equal(fs.existsSync(memberMapFile), false, 'Member map file must be unlinked after destroy');
++
++    const tombstoneAuth = validateAuthorityRecord(path.resolve(runDir, 'owner.json'));
++    assert.equal(tombstoneAuth.phase, 'DESTROYED');
++    assert.ok(tombstoneAuth.tombstone, 'Tombstone receipt must be retained in owner.json');
++
++    // Step 8: Safe idempotence on repeated destroy
++    console.log('[TEST-LIFECYCLE] Verifying repeated destroy on tombstone...');
++    const repeatDestroyRes = destroyStack({ runId });
++    assert.equal(repeatDestroyRes.code, 'ALREADY_DESTROYED');
++
+     console.log('[TEST-LIFECYCLE] Lifecycle test completed cleanly.');
+   } finally {
+-    if (started && !destroyed) {
++    if (started && !destroyed && runId) {
+       console.log('[TEST-LIFECYCLE] Running emergency teardown in finally...');
+       try {
+-        stopStack();
++        stopStack({ runId });
+       } catch (err) {
+         console.error('[TEST-LIFECYCLE] Emergency stop failed:', err.message);
+       }
+       try {
+-        destroyStack();
++        destroyStack({ runId });
+       } catch (err) {
+         console.error('[TEST-LIFECYCLE] Emergency destroy failed:', err.message);
+       }

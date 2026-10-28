@@ -1,0 +1,27 @@
+{
+  "label": "00-version",
+  "utc": "2026-10-25T05:47:22.406297+00:00",
+  "command_argv": [
+    "/home/tung/workspace/school/project1/lingora-workspace/node_modules/@supabase/cli-linux-x64/bin/supabase",
+    "--version"
+  ],
+  "cwd": "/tmp/lingora-d0-p17ehk7h/project-a",
+  "environment_keys": [
+    "HOME",
+    "LANG",
+    "PATH",
+    "SUPABASE_EXPERIMENTAL_STACK",
+    "SUPABASE_HOME",
+    "TMPDIR"
+  ],
+  "home": "/tmp/lingora-d0-p17ehk7h/home-a",
+  "binary_sha256": "e91fc61f09c4fbb9c65dadc37d415640cb6d2398e65eba6d384eec74b2dbbe10",
+  "exit_code": 0,
+  "timeout_injected": false,
+  "duration_seconds": 1.195,
+  "stdout_json_valid": false,
+  "stdout_shape": "non-JSON text",
+  "stdout_sanitized": "2.121.0\n",
+  "stderr_sanitized": "A new version of Supabase CLI is available: v2.122.0 (currently installed v2.121.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n",
+  "projection": "all env map values and generated credentials withheld; raw streams private only"
+}

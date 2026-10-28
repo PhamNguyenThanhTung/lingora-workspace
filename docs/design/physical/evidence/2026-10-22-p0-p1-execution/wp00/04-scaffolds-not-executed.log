@@ -1,0 +1,174 @@
+================================================================================
+COMMAND: npm run test:db:a1 -w lingora-admin
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+EXIT_CODE: 1
+STDOUT:
+> lingora-admin@1.0.0 test:db:a1
+> node tests/database/scaffolds/a1-runner.mjs
+
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:a1
+[TEST-SCAFFOLD] Description: A1 Auth Lifecycle, Admin bootstrap, private marker, invite/activation
+[TEST-SCAFFOLD] Gate: G0 reviewed PASS and P1-A1 assignment (Auth lifecycle/correlation/recovery)
+================================================================================
+STDERR:
+[TEST-SCAFFOLD] FAIL_CLOSED: Environment is not bound (No task-local runtime state file found at .local-stack/runtime-state.json.).
+[TEST-SCAFFOLD] Refusing execution on unbound target.
+npm error Lifecycle script `test:db:a1` failed with error:
+npm error code 1
+npm error path /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error workspace lingora-admin@1.0.0
+npm error location /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error command failed
+npm error command sh -c node tests/database/scaffolds/a1-runner.mjs
+================================================================================
+
+================================================================================
+COMMAND: npm run test:db:a2 -w lingora-admin
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+EXIT_CODE: 1
+STDOUT:
+> lingora-admin@1.0.0 test:db:a2
+> node tests/database/scaffolds/a2-runner.mjs
+
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:a2
+[TEST-SCAFFOLD] Description: A2 RLS enforcement, lock matrix, pooled transaction isolation, subject injection
+[TEST-SCAFFOLD] Gate: G0 reviewed PASS and P1-A2 assignment (RLS/Prisma/locks/custom login)
+================================================================================
+STDERR:
+[TEST-SCAFFOLD] FAIL_CLOSED: Environment is not bound (No task-local runtime state file found at .local-stack/runtime-state.json.).
+[TEST-SCAFFOLD] Refusing execution on unbound target.
+npm error Lifecycle script `test:db:a2` failed with error:
+npm error code 1
+npm error path /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error workspace lingora-admin@1.0.0
+npm error location /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error command failed
+npm error command sh -c node tests/database/scaffolds/a2-runner.mjs
+================================================================================
+
+================================================================================
+COMMAND: npm run test:db:a3 -w lingora-admin
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+EXIT_CODE: 1
+STDOUT:
+> lingora-admin@1.0.0 test:db:a3
+> node tests/database/scaffolds/a3-runner.mjs
+
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:a3
+[TEST-SCAFFOLD] Description: A3 Fresh baseline replay, incremental custom migration, catalog diff
+[TEST-SCAFFOLD] Gate: G0 reviewed PASS and P1-A3 assignment (Migration replay and incremental delta)
+================================================================================
+STDERR:
+[TEST-SCAFFOLD] FAIL_CLOSED: Environment is not bound (No task-local runtime state file found at .local-stack/runtime-state.json.).
+[TEST-SCAFFOLD] Refusing execution on unbound target.
+npm error Lifecycle script `test:db:a3` failed with error:
+npm error code 1
+npm error path /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error workspace lingora-admin@1.0.0
+npm error location /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error command failed
+npm error command sh -c node tests/database/scaffolds/a3-runner.mjs
+================================================================================
+
+================================================================================
+COMMAND: npm run test:db:integrity -w lingora-admin
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+EXIT_CODE: 1
+STDOUT:
+> lingora-admin@1.0.0 test:db:integrity
+> node tests/database/scaffolds/integrity-runner.mjs
+
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:integrity
+[TEST-SCAFFOLD] Description: Relational integrity, FK checks, circular FK staged inserts, CHECK constraints
+[TEST-SCAFFOLD] Gate: G1 reviewed PASS and WP-04 34-table baseline
+================================================================================
+STDERR:
+[TEST-SCAFFOLD] FAIL_CLOSED: Environment is not bound (No task-local runtime state file found at .local-stack/runtime-state.json.).
+[TEST-SCAFFOLD] Refusing execution on unbound target.
+npm error Lifecycle script `test:db:integrity` failed with error:
+npm error code 1
+npm error path /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error workspace lingora-admin@1.0.0
+npm error location /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error command failed
+npm error command sh -c node tests/database/scaffolds/integrity-runner.mjs
+================================================================================
+
+================================================================================
+COMMAND: npm run test:db:security -w lingora-admin
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+EXIT_CODE: 1
+STDOUT:
+> lingora-admin@1.0.0 test:db:security
+> node tests/database/scaffolds/security-runner.mjs
+
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:security
+[TEST-SCAFFOLD] Description: Principal privileges, SECURITY DEFINER search_path, RLS leak denial, grant auditing
+[TEST-SCAFFOLD] Gate: G1 reviewed PASS and WP-05 security matrix
+================================================================================
+STDERR:
+[TEST-SCAFFOLD] FAIL_CLOSED: Environment is not bound (No task-local runtime state file found at .local-stack/runtime-state.json.).
+[TEST-SCAFFOLD] Refusing execution on unbound target.
+npm error Lifecycle script `test:db:security` failed with error:
+npm error code 1
+npm error path /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error workspace lingora-admin@1.0.0
+npm error location /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error command failed
+npm error command sh -c node tests/database/scaffolds/security-runner.mjs
+================================================================================
+
+================================================================================
+COMMAND: npm run test:db:concurrency -w lingora-admin
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+EXIT_CODE: 1
+STDOUT:
+> lingora-admin@1.0.0 test:db:concurrency
+> node tests/database/scaffolds/concurrency-runner.mjs
+
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:concurrency
+[TEST-SCAFFOLD] Description: LOCK-01 total rank verification, multi-connection barriers, deadlock retries
+[TEST-SCAFFOLD] Gate: G3 reviewed PASS and WP-12 integrated race harness
+================================================================================
+STDERR:
+[TEST-SCAFFOLD] FAIL_CLOSED: Environment is not bound (No task-local runtime state file found at .local-stack/runtime-state.json.).
+[TEST-SCAFFOLD] Refusing execution on unbound target.
+npm error Lifecycle script `test:db:concurrency` failed with error:
+npm error code 1
+npm error path /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error workspace lingora-admin@1.0.0
+npm error location /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error command failed
+npm error command sh -c node tests/database/scaffolds/concurrency-runner.mjs
+================================================================================
+
+================================================================================
+COMMAND: npm run test:db:smoke -w lingora-admin
+CWD: /home/tung/workspace/school/project1/lingora-workspace
+EXIT_CODE: 1
+STDOUT:
+> lingora-admin@1.0.0 test:db:smoke
+> node tests/database/scaffolds/smoke-runner.mjs
+
+================================================================================
+[TEST-SCAFFOLD] Invocating: test:db:smoke
+[TEST-SCAFFOLD] Description: End-to-end provider smoke: Teacher author -> Admin publish -> Learner completion
+[TEST-SCAFFOLD] Gate: G3 reviewed PASS and WP-09/10/11 learner vertical slices
+================================================================================
+STDERR:
+[TEST-SCAFFOLD] FAIL_CLOSED: Environment is not bound (No task-local runtime state file found at .local-stack/runtime-state.json.).
+[TEST-SCAFFOLD] Refusing execution on unbound target.
+npm error Lifecycle script `test:db:smoke` failed with error:
+npm error code 1
+npm error path /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error workspace lingora-admin@1.0.0
+npm error location /home/tung/workspace/school/project1/lingora-workspace/lingora-admin
+npm error command failed
+npm error command sh -c node tests/database/scaffolds/smoke-runner.mjs
+================================================================================

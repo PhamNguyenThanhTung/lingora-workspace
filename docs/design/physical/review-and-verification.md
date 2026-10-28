@@ -4,7 +4,7 @@
 > This is documentation/diagram verification, not a runtime, migration, security-deployment or restore-test result. LIVE DB UNVERIFIED.
 > **Historical task evidence:** this records the earlier first-pass physical review and its then-current verdict. The subsequent F01–F12 findings and their corrections are tracked in the separate [physical correction pass](correction-pass.md); consult that report for current status.
 
-Scope: [authorized plan](../../../plans/approved/2026-10-11-physical-data-runtime-design-APPROVED.md), [exact PO request](../../../plans/approved/2026-10-11-physical-data-runtime-design-REQUEST.txt), [pre-change file/HEAD/index baseline](../../../plans/approved/2026-10-11-physical-data-runtime-design-BASELINE.json). Design: [catalog/runtime](README.md), [security/RLS](security-and-rls.md), [rebuild/tests](rebuild-plan.md).
+Scope: historical authorized plan, exact PO request, and pre-change baseline (historical approved package 2026-10-11, archived/mapped in cleanup report). Design: [catalog/runtime](README.md), [security/RLS](security-and-rls.md), [rebuild/tests](rebuild-plan.md).
 
 ## Independent review
 

@@ -1,0 +1,109 @@
+--- entry/lingora-admin/tests/database/scaffolds/runner-base.mjs
++++ current/lingora-admin/tests/database/scaffolds/runner-base.mjs
+@@ -17,6 +17,7 @@
+ import { fileURLToPath } from 'node:url';
+ import {
+   CANONICAL_WORKSPACE_ROOT,
++  DEFAULT_RUNS_DIR,
+   validateAuthorityRecord,
+   reconcileNativeRegistry,
+   verifyIncarnationContinuity,
+@@ -35,6 +36,51 @@
+ const __filename = fileURLToPath(import.meta.url);
+ const __dirname = path.dirname(__filename);
+ const ADMIN_ROOT = path.resolve(__dirname, '../../..');
++
++/**
++ * Safely parse child Node test runner output into a finite summary.
++ * Uses sanitizeString so secrets and unredacted canaries never leak.
++ */
++export function parseTestOutputSummary(stdout = '') {
++  let passCount = 0;
++  let failCount = 0;
++  let totalCount = 0;
++  const failedTests = [];
++  const passedTests = [];
++
++  const clean = sanitizeString(stdout);
++  const lines = clean.split('\n');
++  for (const rawLine of lines) {
++    const line = rawLine.trim();
++    if (/^(?:#|ℹ)\s+pass\s+(\d+)/.test(line)) {
++      passCount = parseInt(line.match(/pass\s+(\d+)/)[1], 10);
++    } else if (/^(?:#|ℹ)\s+fail\s+(\d+)/.test(line)) {
++      failCount = parseInt(line.match(/fail\s+(\d+)/)[1], 10);
++    } else if (/^(?:#|ℹ)\s+tests\s+(\d+)/.test(line)) {
++      totalCount = parseInt(line.match(/tests\s+(\d+)/)[1], 10);
++    } else if (/^(?:not ok\s+\d+\s+-\s+|✖\s+)(.+)/.test(line)) {
++      const match = line.match(/^(?:not ok\s+\d+\s+-\s+|✖\s+)(.+)/);
++      if (match && match[1]) {
++        const name = match[1].replace(/\s+\(\d+(?:\.\d+)?m?s\)$/, '').trim();
++        failedTests.push(name);
++      }
++    } else if (/^(?:ok\s+\d+\s+-\s+|✔\s+)(.+)/.test(line)) {
++      const match = line.match(/^(?:ok\s+\d+\s+-\s+|✔\s+)(.+)/);
++      if (match && match[1]) {
++        const name = match[1].replace(/\s+\(\d+(?:\.\d+)?m?s\)$/, '').trim();
++        passedTests.push(name);
++      }
++    }
++  }
++
++  return {
++    total: totalCount || (passCount + failCount),
++    pass: passCount,
++    fail: failCount,
++    failedTests,
++    passedTests,
++  };
++}
+ 
+ export async function runScaffold({
+   testSuiteName,
+@@ -143,6 +189,16 @@
+     const testRunnerEnv = { ...cleanEnv, NODE_ENV: 'test' };
+     delete testRunnerEnv.NODE_TEST_CONTEXT;
+ 
++    // Explicit trusted owned-run context handoff for child tests (P1-00)
++    const testContext = {
++      runId,
++      runsDir: explicitRunsDir || DEFAULT_RUNS_DIR,
++      runDir,
++      recordPath,
++      lockToken: lock.token,
++    };
++    testRunnerEnv.LINGORA_TEST_CONTEXT = JSON.stringify(testContext);
++
+     const testExecutor = adapters.testExecutor || spawnSync;
+     const nodeRes = testExecutor(process.execPath, ['--test', ...testFiles], {
+       cwd: CANONICAL_WORKSPACE_ROOT,
+@@ -150,15 +206,25 @@
+       encoding: 'utf8',
+     });
+ 
++    const stdoutStr = (nodeRes && typeof nodeRes.stdout === 'string') ? nodeRes.stdout : '';
++    const cleanStdout = sanitizeString(stdoutStr);
++    const summary = parseTestOutputSummary(cleanStdout);
++
+     if (nodeRes.status !== 0) {
+       errFn(`[TEST-SCAFFOLD] Test suite "${testSuiteName}" FAILED with exit code ${nodeRes.status}.`);
++      if (summary.failedTests.length > 0) {
++        errFn(`[TEST-SCAFFOLD] Failed tests: ${summary.failedTests.join(', ')}`);
++      }
+       if (setProcessExitCode) process.exitCode = nodeRes.status || 1;
+-      return { status: 'FAILED', exitCode: nodeRes.status || 1, code: 'SCAFFOLD_TEST_FAILED' };
+-    }
+-
++      return { status: 'FAILED', exitCode: nodeRes.status || 1, code: 'SCAFFOLD_TEST_FAILED', summary };
++    }
++
++    if (summary.total > 0) {
++      logFn(`[TEST-SCAFFOLD] Test execution summary: ${summary.pass}/${summary.total} tests passed.`);
++    }
+     logFn(`[TEST-SCAFFOLD] Test suite "${testSuiteName}" PASSED.`);
+     if (setProcessExitCode) process.exitCode = 0;
+-    return { status: 'PASSED', exitCode: 0, code: 'SUCCESS' };
++    return { status: 'PASSED', exitCode: 0, code: 'SUCCESS', summary };
+   } catch (err) {
+     errFn('[TEST-SCAFFOLD] FAIL_CLOSED: Scaffold execution failed.');
+     if (setProcessExitCode) process.exitCode = 1;

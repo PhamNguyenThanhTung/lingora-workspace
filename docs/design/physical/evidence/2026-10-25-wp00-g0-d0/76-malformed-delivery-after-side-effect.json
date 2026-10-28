@@ -1,0 +1,10 @@
+{
+  "source_command": "38-paused-prepare-intent.json",
+  "source_provider_stdout_was_valid_json": true,
+  "injection": "caller delivery truncated to 8 bytes after actual provider success; provider itself did not emit malformed JSON",
+  "delivered_json_parse_success": false,
+  "safe_recovery_source": "39-recovery-list-paused-intent.json",
+  "matching_tuple_count": 1,
+  "reconciled_id": "6b85353829b4d6d3d55ff5e737f9e289225af206e0a471d229b407f51145ac89",
+  "same_as_actual_prepare_id": true
+}

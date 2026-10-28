@@ -1,0 +1,166 @@
+{
+  "metadata_hash_mismatches": [],
+  "check_records": [
+    {
+      "check_id": "01-provenance-and-parity",
+      "command": "python3 scripts/verify-provenance.py",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0,
+      "tests_passed": null,
+      "tests_failed": null,
+      "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/correction-1/01-provenance-and-parity.log"
+    },
+    {
+      "check_id": "02-clean-install-and-dependencies",
+      "command": "node scripts/verify-dependencies.mjs --clean-install",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0,
+      "tests_passed": null,
+      "tests_failed": null,
+      "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/correction-1/02-clean-install-and-dependencies.log"
+    },
+    {
+      "check_id": "03-boundary-and-negative-checks",
+      "command": "node --test lingora-admin/tests/database/env/test-env-guard.mjs",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0,
+      "tests_passed": null,
+      "tests_failed": null,
+      "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/correction-1/03-boundary-and-negative-checks.log"
+    },
+    {
+      "check_id": "04-scaffolds-behavior-and-failures",
+      "command": "node --test lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0,
+      "tests_passed": null,
+      "tests_failed": null,
+      "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/correction-1/04-scaffolds-behavior-and-failures.log"
+    },
+    {
+      "check_id": "05-native-lifecycle-and-readiness",
+      "command": "node --test lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs",
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "exit_code": 0,
+      "tests_passed": null,
+      "tests_failed": null,
+      "log_path": "docs/design/physical/evidence/2026-10-25-wp00-g0-repair/worker/correction-1/05-native-lifecycle-and-readiness.log"
+    }
+  ],
+  "changed_entry_files": [
+    "lingora-admin/tests/database/env/env-guard.mjs",
+    "lingora-admin/tests/database/env/stack-manager.mjs",
+    "lingora-admin/tests/database/env/test-env-guard.mjs",
+    "lingora-admin/tests/database/env/test-lifecycle-and-readiness.mjs",
+    "lingora-admin/tests/database/scaffolds/runner-base.mjs",
+    "lingora-admin/tests/database/scaffolds/test-scaffold-behavior.mjs",
+    "scripts/verify-dependencies.mjs",
+    "scripts/verify-provenance.py",
+    ".gitignore",
+    "HANDOFF.md",
+    "plans/current-task.md"
+  ],
+  "new_non_evidence_files": [
+    "plans/2026-10-25-wp00-g0-repair-spec.md",
+    "plans/approved/2026-10-25-wp00-g0-repair-spec-APPROVED.md"
+  ],
+  "observed_log_tails": [
+    {
+      "log": "01-provenance-and-parity.log",
+      "size": 8378,
+      "tail": [
+        "    \"current_sql_files\": []",
+        "  }",
+        "}",
+        "",
+        "=== COMMAND 2: python3 scripts/verify-provenance.py --test-mutations ===",
+        "[TEST-MUTATIONS] Testing provenance and parity failure modes on simulated mutations...",
+        "✔ Mutated prior proof rejected fail-closed",
+        "✔ Mutated prior input-state rejected fail-closed",
+        "✔ Mutated current entry snapshot rejected fail-closed",
+        "✔ Mutated source puml rejected fail-closed",
+        "✔ Mutated PNG output rejected fail-closed",
+        "✔ Mutated verification manifest rejected fail-closed",
+        "✔ Missing protected file rejected fail-closed",
+        "[TEST-MUTATIONS] All 7 mutation failure modes PASSED."
+      ]
+    },
+    {
+      "log": "02-clean-install-and-dependencies.log",
+      "size": 7178,
+      "tail": [
+        "        \"exit_code\": 0,",
+        "        \"stdout\": \"prisma                  : 6.19.3\\n@prisma/client          : 6.19.3\\nComputed binaryTarget   : debian-openssl-3.0.x\\nOperating System        : linux\\nArchitecture            : x64\\nNode.js                 : v24.22.1\\nTypeScript              : 5.9.3\\nQuery Engine (Node-API) : libquery-engine c2990dca591cba766e3b7ef5d9e8a84796e47ab7 (at node_modules/@prisma/engines/libquery_engine-debian-openssl-3.0.x.so.node)\\nPSL                     : @prisma/prisma-schema-wasm 7.1.1-3.c2990dca591cba766e3b7ef5d9e8a84796e47ab7\\nSchema Engine           : schema-engine-cli c2990dca591cba766e3b7ef5d9e8a84796e47ab7 (at node_modules/@prisma/engines/schema-engine-debian-openssl-3.0.x)\\nDefault Engines Hash    : c2990dca591cba766e3b7ef5d9e8a84796e47ab7\\nStudio                  : 0.511.0\\n\",",
+        "        \"stderr\": \"\",",
+        "        \"resolved_version\": \"6.19.3\",",
+        "        \"matches_pin\": true,",
+        "        \"realpath\": \"/tmp/lingora-clean-ci-2EN2st/repo/node_modules/prisma/build/index.js\",",
+        "        \"sha256\": \"c2a77456b70e8ba1e640e122824ed694433828a7c0d76ff3db7fc376b4b0e1a0\"",
+        "      }",
+        "    },",
+        "    \"dependency_advisories_risk\": \"npm reports 3 high severity vulnerabilities in dev toolchain; pins preserved per G0 frozen lock specification.\",",
+        "    \"sanitized_stdout\": \"\\nadded 69 packages, and audited 72 packages in 50s\\n\\n9 packages are looking for funding\\n  run `npm fund` for details\\n\\n3 high severity vulnerabilities\\n\\nTo address all issues (including breaking changes), run:\\n  npm audit fix --force\\n\\nRun `npm audit` for details.\\n\",",
+        "    \"sanitized_stderr\": \"npm notice\\nnpm notice New major version of npm available! 10.8.2 -> 12.2.1\\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1\\nnpm notice To update run: npm install -g npm@12.2.1\\nnpm notice\\n\"",
+        "  }",
+        "}"
+      ]
+    },
+    {
+      "log": "04-scaffolds-behavior-and-failures.log",
+      "size": 455,
+      "tail": [
+        "✔ 1. Scaffold fails closed (exit 1) on unbound environment (80.812681ms)",
+        "✔ 2. Scaffold with isolated bound state but absent test files returns NOT EXECUTED (exit 1) and never mutates canonical state (92.209658ms)",
+        "✔ 3. Scaffold with deliberately failing test fixture ACTUALLY runs and propagates test failure without touching canonical state (219.551984ms)",
+        "ℹ tests 3",
+        "ℹ suites 0",
+        "ℹ pass 3",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 502.612081"
+      ]
+    },
+    {
+      "log": "05-native-lifecycle-and-readiness.log",
+      "size": 4028,
+      "tail": [
+        "[TEST-LIFECYCLE] Destroying stack...",
+        "[STACK-MGR] Destroying stack 2db1580982f03e08425b865ada10376051d2eac1b9a8e818817c45cc4c21e99c...",
+        "[STACK-MGR] Verifying stack destruction postcondition in native registry...",
+        "[STACK-MGR] Stack destroyed and disposable state cleared. Storage upload files are preserved per native CLI contract.",
+        "[TEST-LIFECYCLE] Lifecycle test completed cleanly.",
+        "✔ Provider stack lifecycle and real readiness verification (26405.267107ms)",
+        "ℹ tests 1",
+        "ℹ suites 0",
+        "ℹ pass 1",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 26534.342674"
+      ]
+    },
+    {
+      "log": "03-boundary-and-negative-checks.log",
+      "size": 1895,
+      "tail": [
+        "✔ 11. Boundary negative: Invalid local binding causes ZERO adapter invocations (CLI=0, HTTP=0, SQL=0) across ALL 5 manager lifecycle and data paths (6.793457ms)",
+        "✔ 12. Boundary negative: Native registry mismatch executes ONLY safe inspection (CLI=1) and ZERO action/HTTP/SQL calls across all entry paths (7.715952ms)",
+        "✔ 13. Positive data readiness executes real counting HTTP and SQL adapters (2.591405ms)",
+        "✔ 14. Failure containment: malformed status output produces structured error without leaking raw payloads or parser error snippets (2.524922ms)",
+        "✔ 15. Failure containment on failed teardown: retains recovery binding, releases lock, and enables retry (2.689096ms)",
+        "✔ 16. Command dispatcher nonzero path: CLI invocation exits 1 with safe diagnostic and no unredacted canaries (94.146135ms)",
+        "ℹ tests 16",
+        "ℹ suites 0",
+        "ℹ pass 16",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 286.478807"
+      ]
+    }
+  ]
+}
