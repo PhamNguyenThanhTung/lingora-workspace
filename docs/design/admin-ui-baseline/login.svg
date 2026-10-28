@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .header-bar { fill: #0F172A; }
+      .card { fill: #FFFFFF; stroke: #E2E8F0; stroke-width: 1px; rx: 12px; }
+      .text-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 22px; font-weight: 700; fill: #0F172A; }
+      .text-subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #475569; }
+      .label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 600; fill: #1E293B; }
+      .input-box { fill: #FFFFFF; stroke: #64748B; stroke-width: 1.5px; rx: 6px; }
+      .input-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; fill: #0F172A; }
+      .btn-primary { fill: #2563EB; rx: 6px; cursor: pointer; }
+      .btn-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 15px; font-weight: 700; fill: #FFFFFF; text-anchor: middle; }
+      .badge-watermark { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; font-size: 13px; font-weight: 700; fill: #38BDF8; letter-spacing: 0.5px; }
+      .ref-tag { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; font-weight: 600; fill: #CBD5E1; }
+      .notice-box { fill: #F8FAFC; stroke: #E2E8F0; stroke-width: 1px; rx: 6px; }
+      .notice-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #475569; line-height: 18px; }
+      .alert-box { fill: #FEF2F2; stroke: #FECACA; stroke-width: 1px; rx: 6px; }
+      .alert-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 600; fill: #991B1B; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="800" class="bg" />
+
+  <!-- Top Reference Strip -->
+  <rect width="1200" height="36" class="header-bar" />
+  <text x="24" y="23" class="badge-watermark">Lingora Admin / Teacher UI reference</text>
+  <text x="1176" y="23" text-anchor="end" class="ref-tag">MÀN HÌNH ĐĂNG NHẬP • SCR-A-01 • DESKTOP</text>
+
+  <!-- Centered Login Card -->
+  <g transform="translate(370, 75)">
+    <rect width="460" height="580" class="card" filter="drop-shadow(0 4px 16px rgba(0,0,0,0.06))" />
+
+    <!-- Brand Header -->
+    <g transform="translate(40, 36)">
+      <rect width="36" height="36" rx="8" fill="#2563EB" />
+      <text x="18" y="24" font-family="-apple-system, sans-serif" font-size="20" font-weight="900" fill="#FFFFFF" text-anchor="middle">L</text>
+      <text x="48" y="25" font-family="-apple-system, sans-serif" font-size="20" font-weight="800" fill="#0F172A">Lingora</text>
+      <rect x="135" y="8" width="120" height="22" rx="11" fill="#EFF6FF" stroke="#BFDBFE" />
+      <text x="195" y="23" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#1E3A8A" text-anchor="middle">Cổng nội bộ</text>
+    </g>
+
+    <text x="40" y="115" class="text-title">Đăng nhập hệ thống</text>
+    <text x="40" y="138" class="text-subtitle">Dành riêng cho Quản trị viên và Giáo viên được cấp quyền</text>
+
+    <!-- Email Field -->
+    <g transform="translate(40, 168)">
+      <text x="0" y="0" class="label">Địa chỉ email <tspan fill="#991B1B">*</tspan></text>
+      <rect y="10" width="380" height="42" class="input-box" />
+      <text x="14" y="36" class="input-text">admin@lingora.vn</text>
+    </g>
+
+    <!-- Password Field -->
+    <g transform="translate(40, 248)">
+      <text x="0" y="0" class="label">Mật khẩu <tspan fill="#991B1B">*</tspan></text>
+      <rect y="10" width="380" height="42" class="input-box" />
+      <text x="14" y="36" class="input-text">••••••••••••••••</text>
+    </g>
+
+    <!-- Submit Button (Clean, no phantom controls) -->
+    <g transform="translate(40, 328)">
+      <rect width="380" height="46" class="btn-primary" />
+      <text x="190" y="28" class="btn-text">Đăng nhập</text>
+    </g>
+
+    <!-- Divider -->
+    <line x1="40" y1="405" x2="420" y2="405" stroke="#E2E8F0" stroke-width="1" />
+
+    <!-- Helpful Plain Vietnamese Guidance Box -->
+    <g transform="translate(40, 430)">
+      <rect width="380" height="110" class="notice-box" />
+      <text x="16" y="26" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1E293B">HƯỚNG DẪN TRUY CẬP HỆ THỐNG:</text>
+      <text x="16" y="50" class="notice-text">• Đăng nhập bằng tài khoản Quản trị viên hoặc Giáo viên đã kích hoạt.</text>
+      <text x="16" y="72" class="notice-text">• Quản trị viên sau khi đăng nhập sẽ vào trang Quản lý ngôn ngữ.</text>
+      <text x="16" y="94" class="notice-text">• Tài khoản Giáo viên sẽ được hiển thị thông báo phân hệ giảng dạy.</text>
+    </g>
+  </g>
+
+  <!-- Clean Bottom Preview: Login Failure Alert State -->
+  <g transform="translate(370, 680)">
+    <rect width="460" height="52" class="alert-box" />
+    <circle cx="28" cy="26" r="10" fill="#991B1B" />
+    <text x="28" y="31" font-family="-apple-system, sans-serif" font-size="12" font-weight="900" fill="#FFFFFF" text-anchor="middle">!</text>
+    <text x="48" y="31" class="alert-text">Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.</text>
+  </g>
+</svg>

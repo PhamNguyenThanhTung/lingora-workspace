@@ -1,0 +1,321 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 850" width="1280" height="850">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .sidebar-bg { fill: #0F172A; }
+      .header-bg { fill: #FFFFFF; stroke: #E2E8F0; stroke-width: 1px; }
+      .card { fill: #FFFFFF; stroke: #E2E8F0; stroke-width: 1px; rx: 8px; }
+      .nav-active { fill: #1E293B; }
+      .nav-indicator { fill: #2563EB; }
+      .nav-text-disabled { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #64748B; }
+      .nav-text-active { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 600; fill: #FFFFFF; }
+      .title-page { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 22px; font-weight: 700; fill: #0F172A; }
+      .sub-page { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #475569; }
+      .badge-watermark { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; font-size: 13px; font-weight: 700; fill: #38BDF8; }
+      .th { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; font-weight: 700; fill: #334155; text-transform: uppercase; letter-spacing: 0.5px; }
+      .td-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #0F172A; }
+      .td-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; font-weight: 700; fill: #1D4ED8; }
+      .btn-primary { fill: #2563EB; rx: 6px; }
+      .btn-outline { fill: #FFFFFF; stroke: #64748B; stroke-width: 1px; rx: 6px; }
+      .badge-green { fill: #DCFCE7; stroke: #BBF7D0; rx: 10px; }
+      .badge-green-text { font-family: -apple-system, sans-serif; font-size: 12px; font-weight: 700; fill: #14532D; }
+      .badge-blue { fill: #EFF6FF; stroke: #BFDBFE; rx: 10px; }
+      .badge-blue-text { font-family: -apple-system, sans-serif; font-size: 12px; font-weight: 700; fill: #1E3A8A; }
+      .badge-gray { fill: #F1F5F9; stroke: #CBD5E1; rx: 10px; }
+      .badge-gray-text { font-family: -apple-system, sans-serif; font-size: 12px; font-weight: 600; fill: #334155; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="850" class="bg" />
+
+  <!-- Top Reference Watermark Strip -->
+  <rect width="1280" height="36" fill="#090D16" />
+  <text x="24" y="23" class="badge-watermark">Lingora Admin / Teacher UI reference</text>
+  <text x="1256" y="23" text-anchor="end" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#CBD5E1">DANH MỤC NGÔN NGỮ • SCR-A-LANG-01</text>
+
+  <!-- Shell: Left Sidebar (240px wide) -->
+  <g transform="translate(0, 36)">
+    <rect width="240" height="814" class="sidebar-bg" />
+
+    <!-- Logo / Brand Header -->
+    <g transform="translate(20, 24)">
+      <rect width="32" height="32" rx="8" fill="#2563EB" />
+      <text x="16" y="22" font-family="-apple-system, sans-serif" font-size="18" font-weight="900" fill="#FFFFFF" text-anchor="middle">L</text>
+      <text x="42" y="22" font-family="-apple-system, sans-serif" font-size="18" font-weight="800" fill="#FFFFFF">Lingora</text>
+      <text x="110" y="22" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#CBD5E1">Quản trị</text>
+    </g>
+
+    <!-- Navigation Items -->
+    <g transform="translate(12, 80)">
+      <!-- Item 1: Languages (ACTIVE in Slice 1) -->
+      <g transform="translate(0, 0)">
+        <rect width="216" height="38" rx="6" class="nav-active" />
+        <rect x="0" y="6" width="4" height="26" rx="2" class="nav-indicator" />
+        <text x="16" y="24" class="nav-text-active">Quản lý ngôn ngữ</text>
+      </g>
+
+      <!-- Non-clickable Deferred Items (Visual Reference Only) -->
+      <g transform="translate(0, 48)">
+        <rect width="216" height="36" rx="6" fill="transparent" />
+        <text x="16" y="23" class="nav-text-disabled">Khung năng lực &amp; Cấp độ</text>
+        <rect x="170" y="9" width="38" height="18" rx="4" fill="#1E293B" />
+        <text x="189" y="22" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Sắp có</text>
+      </g>
+
+      <g transform="translate(0, 92)">
+        <rect width="216" height="36" rx="6" fill="transparent" />
+        <text x="16" y="23" class="nav-text-disabled">Khóa học &amp; Học phần</text>
+        <rect x="170" y="9" width="38" height="18" rx="4" fill="#1E293B" />
+        <text x="189" y="22" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Sắp có</text>
+      </g>
+
+      <g transform="translate(0, 136)">
+        <rect width="216" height="36" rx="6" fill="transparent" />
+        <text x="16" y="23" class="nav-text-disabled">Tài khoản giáo viên</text>
+        <rect x="170" y="9" width="38" height="18" rx="4" fill="#1E293B" />
+        <text x="189" y="22" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Sắp có</text>
+      </g>
+
+      <g transform="translate(0, 180)">
+        <rect width="216" height="36" rx="6" fill="transparent" />
+        <text x="16" y="23" class="nav-text-disabled">Hàng đợi kiểm duyệt</text>
+        <rect x="170" y="9" width="38" height="18" rx="4" fill="#1E293B" />
+        <text x="189" y="22" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Sắp có</text>
+      </g>
+
+      <g transform="translate(0, 224)">
+        <rect width="216" height="36" rx="6" fill="transparent" />
+        <text x="16" y="23" class="nav-text-disabled">Đề cương đánh giá</text>
+        <rect x="170" y="9" width="38" height="18" rx="4" fill="#1E293B" />
+        <text x="189" y="22" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Sắp có</text>
+      </g>
+
+      <g transform="translate(0, 268)">
+        <rect width="216" height="36" rx="6" fill="transparent" />
+        <text x="16" y="23" class="nav-text-disabled">Nhật ký hệ thống</text>
+        <rect x="170" y="9" width="38" height="18" rx="4" fill="#1E293B" />
+        <text x="189" y="22" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Sắp có</text>
+      </g>
+    </g>
+
+    <!-- Sidebar Bottom User Area -->
+    <g transform="translate(16, 730)">
+      <line x1="0" y1="0" x2="208" y2="0" stroke="#334155" stroke-width="1" />
+      <circle cx="20" cy="36" r="16" fill="#3B82F6" />
+      <text x="20" y="41" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">AD</text>
+      <text x="46" y="30" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">Nguyễn Admin</text>
+      <text x="46" y="47" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#38BDF8">Quản trị viên</text>
+    </g>
+  </g>
+
+  <!-- Topbar Header -->
+  <g transform="translate(240, 36)">
+    <rect width="1040" height="56" class="header-bg" />
+    <text x="32" y="33" font-family="-apple-system, sans-serif" font-size="13" fill="#475569">Hệ thống <tspan fill="#94A3B8"> / </tspan> <tspan font-weight="700" fill="#0F172A">Quản lý ngôn ngữ</tspan></text>
+
+    <!-- Topbar Right Items -->
+    <g transform="translate(860, 12)">
+      <rect width="90" height="32" rx="16" fill="#EFF6FF" stroke="#BFDBFE" />
+      <circle cx="16" cy="16" r="4" fill="#16A34A" />
+      <text x="52" y="21" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">Quản trị viên</text>
+      <!-- Logout -->
+      <rect x="98" y="0" width="70" height="32" rx="6" class="btn-outline" />
+      <text x="133" y="21" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#1E293B" text-anchor="middle">Đăng xuất</text>
+    </g>
+  </g>
+
+  <!-- Main Workspace -->
+  <g transform="translate(272, 116)">
+    <!-- Page Header -->
+    <g transform="translate(0, 0)">
+      <text x="0" y="24" class="title-page">Quản lý ngôn ngữ</text>
+      <text x="0" y="48" class="sub-page">Khai báo mã ngôn ngữ, tên bản địa hóa và cấu hình mục đích học tập / giao diện</text>
+
+      <!-- Primary Action CTA Button -->
+      <g transform="translate(820, 10)">
+        <rect width="156" height="40" class="btn-primary" />
+        <text x="18" y="25" font-family="-apple-system, sans-serif" font-size="18" font-weight="400" fill="#FFFFFF">+</text>
+        <text x="88" y="25" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">Thêm ngôn ngữ</text>
+      </g>
+    </g>
+
+    <!-- Search Toolbar -->
+    <g transform="translate(0, 75)">
+      <!-- Search Input -->
+      <rect width="320" height="38" rx="6" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5" />
+      <text x="14" y="24" font-family="-apple-system, sans-serif" font-size="13" fill="#475569">🔍 Tìm kiếm theo mã hoặc tên...</text>
+
+      <!-- Filter Badges -->
+      <g transform="translate(340, 4)">
+        <rect width="80" height="30" rx="6" fill="#0F172A" />
+        <text x="40" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Tất cả (4)</text>
+
+        <rect x="90" y="0" width="125" height="30" rx="6" fill="#FFFFFF" stroke="#64748B" />
+        <text x="152" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#1E293B" text-anchor="middle">Khóa học (3)</text>
+
+        <rect x="225" y="0" width="115" height="30" rx="6" fill="#FFFFFF" stroke="#64748B" />
+        <text x="282" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#1E293B" text-anchor="middle">Giao diện (2)</text>
+      </g>
+    </g>
+
+    <!-- Languages Table Card -->
+    <g transform="translate(0, 130)">
+      <rect width="976" height="310" class="card" />
+
+      <!-- Table Header -->
+      <g transform="translate(0, 0)">
+        <rect width="976" height="44" fill="#F8FAFC" rx="8" />
+        <line x1="0" y1="44" x2="976" y2="44" stroke="#E2E8F0" stroke-width="1" />
+        <text x="24" y="27" class="th">Mã</text>
+        <text x="120" y="27" class="th">Tên ngôn ngữ</text>
+        <text x="420" y="27" class="th">Có thể học</text>
+        <text x="610" y="27" class="th">Làm giao diện</text>
+        <text x="770" y="27" class="th">Ngày tạo</text>
+        <text x="940" y="27" class="th" text-anchor="end">Thao tác</text>
+      </g>
+
+      <!-- Row 1: en -->
+      <g transform="translate(0, 44)">
+        <line x1="0" y1="52" x2="976" y2="52" stroke="#F1F5F9" stroke-width="1" />
+        <text x="24" y="32" class="td-code">en</text>
+        <text x="120" y="24" class="td-text font-weight-700">Tiếng Anh</text>
+        <text x="120" y="42" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">English</text>
+        <g transform="translate(420, 15)">
+          <rect width="90" height="24" class="badge-green" />
+          <text x="45" y="16" class="badge-green-text" text-anchor="middle">✓ Học được</text>
+        </g>
+        <g transform="translate(610, 15)">
+          <rect width="95" height="24" class="badge-blue" />
+          <text x="47" y="16" class="badge-blue-text" text-anchor="middle">✓ Hỗ trợ UI</text>
+        </g>
+        <text x="770" y="32" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">22/10/2026</text>
+        <g transform="translate(850, 12)">
+          <rect width="48" height="28" class="btn-outline" />
+          <text x="24" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1D4ED8" text-anchor="middle">Sửa</text>
+          <rect x="54" y="0" width="48" height="28" rx="6" fill="#FEF2F2" stroke="#FECACA" />
+          <text x="78" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#991B1B" text-anchor="middle">Xóa</text>
+        </g>
+      </g>
+
+      <!-- Row 2: vi -->
+      <g transform="translate(0, 96)">
+        <line x1="0" y1="52" x2="976" y2="52" stroke="#F1F5F9" stroke-width="1" />
+        <text x="24" y="32" class="td-code">vi</text>
+        <text x="120" y="24" class="td-text font-weight-700">Tiếng Việt</text>
+        <text x="120" y="42" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">Vietnamese</text>
+        <g transform="translate(420, 15)">
+          <rect width="90" height="24" class="badge-gray" />
+          <text x="45" y="16" class="badge-gray-text" text-anchor="middle">✕ Không học</text>
+        </g>
+        <g transform="translate(610, 15)">
+          <rect width="95" height="24" class="badge-blue" />
+          <text x="47" y="16" class="badge-blue-text" text-anchor="middle">✓ Hỗ trợ UI</text>
+        </g>
+        <text x="770" y="32" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">22/10/2026</text>
+        <g transform="translate(850, 12)">
+          <rect width="48" height="28" class="btn-outline" />
+          <text x="24" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1D4ED8" text-anchor="middle">Sửa</text>
+          <rect x="54" y="0" width="48" height="28" rx="6" fill="#FEF2F2" stroke="#FECACA" />
+          <text x="78" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#991B1B" text-anchor="middle">Xóa</text>
+        </g>
+      </g>
+
+      <!-- Row 3: ja -->
+      <g transform="translate(0, 148)">
+        <line x1="0" y1="52" x2="976" y2="52" stroke="#F1F5F9" stroke-width="1" />
+        <text x="24" y="32" class="td-code">ja</text>
+        <text x="120" y="24" class="td-text font-weight-700">Tiếng Nhật</text>
+        <text x="120" y="42" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">Japanese</text>
+        <g transform="translate(420, 15)">
+          <rect width="90" height="24" class="badge-green" />
+          <text x="45" y="16" class="badge-green-text" text-anchor="middle">✓ Học được</text>
+        </g>
+        <g transform="translate(610, 15)">
+          <rect width="95" height="24" class="badge-gray" />
+          <text x="47" y="16" class="badge-gray-text" text-anchor="middle">✕ Không</text>
+        </g>
+        <text x="770" y="32" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">24/10/2026</text>
+        <g transform="translate(850, 12)">
+          <rect width="48" height="28" class="btn-outline" />
+          <text x="24" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1D4ED8" text-anchor="middle">Sửa</text>
+          <rect x="54" y="0" width="48" height="28" rx="6" fill="#FEF2F2" stroke="#FECACA" />
+          <text x="78" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#991B1B" text-anchor="middle">Xóa</text>
+        </g>
+      </g>
+
+      <!-- Row 4: fr -->
+      <g transform="translate(0, 200)">
+        <line x1="0" y1="52" x2="976" y2="52" stroke="#F1F5F9" stroke-width="1" />
+        <text x="24" y="32" class="td-code">fr</text>
+        <text x="120" y="24" class="td-text font-weight-700">Tiếng Pháp</text>
+        <text x="120" y="42" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">French</text>
+        <g transform="translate(420, 15)">
+          <rect width="90" height="24" class="badge-green" />
+          <text x="45" y="16" class="badge-green-text" text-anchor="middle">✓ Học được</text>
+        </g>
+        <g transform="translate(610, 15)">
+          <rect width="95" height="24" class="badge-gray" />
+          <text x="47" y="16" class="badge-gray-text" text-anchor="middle">✕ Không</text>
+        </g>
+        <text x="770" y="32" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">28/10/2026</text>
+        <g transform="translate(850, 12)">
+          <rect width="48" height="28" class="btn-outline" />
+          <text x="24" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1D4ED8" text-anchor="middle">Sửa</text>
+          <rect x="54" y="0" width="48" height="28" rx="6" fill="#FEF2F2" stroke="#FECACA" />
+          <text x="78" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#991B1B" text-anchor="middle">Xóa</text>
+        </g>
+      </g>
+
+      <!-- Table Footer Summary -->
+      <g transform="translate(0, 256)">
+        <rect width="976" height="54" fill="#F8FAFC" rx="8" />
+        <text x="24" y="32" font-family="-apple-system, sans-serif" font-size="13" fill="#475569">Hiển thị <tspan font-weight="700" fill="#0F172A">4</tspan> trên tổng số 4 ngôn ngữ trong hệ thống</text>
+      </g>
+    </g>
+
+    <!-- Side Inset Previews: Empty State & Loading State -->
+    <g transform="translate(0, 460)">
+      <!-- Empty State -->
+      <g transform="translate(0, 0)">
+        <rect width="470" height="220" class="card" />
+        <rect width="470" height="32" fill="#F8FAFC" rx="8" />
+        <text x="16" y="21" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1E293B">GIAO DIỆN KHI CHƯA CÓ DỮ LIỆU (EMPTY STATE)</text>
+        <circle cx="235" cy="85" r="24" fill="#F1F5F9" stroke="#64748B" stroke-width="1.5" />
+        <text x="235" y="92" font-family="-apple-system, sans-serif" font-size="20" fill="#475569" text-anchor="middle">📂</text>
+        <text x="235" y="130" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">Chưa có ngôn ngữ nào được tạo</text>
+        <text x="235" y="152" font-family="-apple-system, sans-serif" font-size="12" fill="#475569" text-anchor="middle">Bắt đầu bằng cách thêm ngôn ngữ đào tạo hoặc ngôn ngữ giao diện đầu tiên</text>
+        <g transform="translate(170, 168)">
+          <rect width="130" height="32" class="btn-primary" />
+          <text x="65" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">+ Thêm ngôn ngữ</text>
+        </g>
+      </g>
+
+      <!-- Loading State -->
+      <g transform="translate(506, 0)">
+        <rect width="470" height="220" class="card" />
+        <rect width="470" height="32" fill="#F8FAFC" rx="8" />
+        <text x="16" y="21" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1E293B">GIAO DIỆN ĐANG TẢI (LOADING SKELETON)</text>
+        <g transform="translate(24, 60)">
+          <rect width="50" height="16" rx="4" fill="#E2E8F0" />
+          <rect x="70" width="160" height="16" rx="4" fill="#E2E8F0" />
+          <rect x="250" width="80" height="16" rx="4" fill="#E2E8F0" />
+          <rect x="350" width="80" height="16" rx="4" fill="#E2E8F0" />
+        </g>
+        <g transform="translate(24, 98)">
+          <rect width="50" height="16" rx="4" fill="#E2E8F0" opacity="0.6" />
+          <rect x="70" width="140" height="16" rx="4" fill="#E2E8F0" opacity="0.6" />
+          <rect x="250" width="80" height="16" rx="4" fill="#E2E8F0" opacity="0.6" />
+          <rect x="350" width="80" height="16" rx="4" fill="#E2E8F0" opacity="0.6" />
+        </g>
+        <g transform="translate(24, 136)">
+          <rect width="50" height="16" rx="4" fill="#E2E8F0" opacity="0.3" />
+          <rect x="70" width="180" height="16" rx="4" fill="#E2E8F0" opacity="0.3" />
+          <rect x="250" width="80" height="16" rx="4" fill="#E2E8F0" opacity="0.3" />
+          <rect x="350" width="80" height="16" rx="4" fill="#E2E8F0" opacity="0.3" />
+        </g>
+        <text x="24" y="185" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">Hiệu ứng tải dạng skeleton giữ nguyên cấu trúc bảng và vị trí các cột.</text>
+      </g>
+    </g>
+  </g>
+</svg>

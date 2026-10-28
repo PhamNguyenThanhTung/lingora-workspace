@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 850" width="1280" height="850">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .header-bar { fill: #0F172A; }
+      .card { fill: #FFFFFF; stroke: #E2E8F0; stroke-width: 1px; rx: 10px; }
+      .badge-watermark { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; font-size: 13px; font-weight: 700; fill: #38BDF8; }
+      .modal-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 18px; font-weight: 700; fill: #0F172A; }
+      .modal-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #475569; }
+      .label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 600; fill: #1E293B; }
+      .hint { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #475569; }
+      .input-normal { fill: #FFFFFF; stroke: #64748B; stroke-width: 1.5px; rx: 6px; }
+      .input-disabled { fill: #F1F5F9; stroke: #64748B; stroke-width: 1.5px; rx: 6px; }
+      .input-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; fill: #0F172A; }
+      .btn-primary { fill: #2563EB; rx: 6px; }
+      .btn-secondary { fill: #FFFFFF; stroke: #64748B; stroke-width: 1px; rx: 6px; }
+      .tag-mode { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; font-weight: 700; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="850" class="bg" />
+
+  <!-- Top Reference Strip -->
+  <rect width="1280" height="36" class="header-bar" />
+  <text x="24" y="23" class="badge-watermark">Lingora Admin / Teacher UI reference</text>
+  <text x="1256" y="23" text-anchor="end" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#CBD5E1">FORM THÊM MỚI &amp; CHỈNH SỬA NGÔN NGỮ</text>
+
+  <!-- Left: CREATE MODE (X = 48) -->
+  <g transform="translate(48, 56)">
+    <rect width="140" height="26" rx="13" fill="#DCFCE7" stroke="#BBF7D0" />
+    <text x="70" y="18" class="tag-mode" fill="#14532D">CHẾ ĐỘ THÊM MỚI</text>
+
+    <!-- Modal Box -->
+    <g transform="translate(0, 34)">
+      <rect width="560" height="690" class="card" filter="drop-shadow(0 8px 24px rgba(0,0,0,0.06))" />
+
+      <!-- Header -->
+      <g transform="translate(32, 28)">
+        <text x="0" y="20" class="modal-title">Thêm ngôn ngữ mới</text>
+        <text x="0" y="42" class="modal-sub">Khai báo mã ngôn ngữ và tên hiển thị trong hệ thống</text>
+        <text x="496" y="20" font-family="-apple-system, sans-serif" font-size="18" fill="#475569" cursor="pointer">✕</text>
+      </g>
+      <line x1="0" y1="90" x2="560" y2="90" stroke="#E2E8F0" stroke-width="1" />
+
+      <!-- Form Body -->
+      <g transform="translate(32, 110)">
+        <!-- Field 1: Code -->
+        <g transform="translate(0, 0)">
+          <text x="0" y="0" class="label">Mã ngôn ngữ <tspan fill="#991B1B">*</tspan></text>
+          <text x="0" y="18" class="hint">Chuẩn 2 đến 10 ký tự chữ thường (ví dụ: en, vi, ja, de, ko)</text>
+          <rect y="26" width="496" height="42" class="input-normal" />
+          <text x="14" y="52" class="input-text font-weight-700">ja</text>
+        </g>
+
+        <!-- Field 2: names.vi -->
+        <g transform="translate(0, 88)">
+          <text x="0" y="0" class="label">Tên tiếng Việt <tspan fill="#991B1B">*</tspan></text>
+          <text x="0" y="18" class="hint">Tên ngôn ngữ hiển thị chính trên giao diện</text>
+          <rect y="26" width="496" height="42" class="input-normal" />
+          <text x="14" y="52" class="input-text">Tiếng Nhật</text>
+        </g>
+
+        <!-- Field 3: names.en (Optional) -->
+        <g transform="translate(0, 176)">
+          <text x="0" y="0" class="label">Tên tiếng Anh (tùy chọn)</text>
+          <text x="0" y="18" class="hint">Tên chuẩn hóa quốc tế nếu có</text>
+          <rect y="26" width="496" height="42" class="input-normal" />
+          <text x="14" y="52" class="input-text">Japanese</text>
+        </g>
+
+        <!-- Checkbox 1 -->
+        <g transform="translate(0, 264)">
+          <rect x="0" y="2" width="20" height="20" rx="4" fill="#2563EB" />
+          <polyline points="4,12 8,16 16,8" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+          <text x="32" y="17" class="label">Có thể học</text>
+          <text x="32" y="34" class="hint">Cho phép tạo nội dung học tập cho ngôn ngữ này</text>
+        </g>
+
+        <!-- Checkbox 2 -->
+        <g transform="translate(0, 324)">
+          <rect x="0" y="2" width="20" height="20" rx="4" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5" />
+          <text x="32" y="17" class="label">Dùng làm ngôn ngữ giao diện</text>
+          <text x="32" y="34" class="hint">Cho phép người dùng chọn làm ngôn ngữ hiển thị hệ thống</text>
+        </g>
+      </g>
+
+      <!-- Useful Plain Vietnamese Helper Box -->
+      <g transform="translate(32, 500)">
+        <rect width="496" height="80" fill="#FEF2F2" stroke="#FECACA" rx="8" />
+        <text x="16" y="24" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#991B1B">XỬ LÝ TRÙNG MÃ NGÔN NGỮ:</text>
+        <text x="16" y="46" font-family="-apple-system, sans-serif" font-size="12" fill="#991B1B">Nếu mã đã tồn tại, hệ thống báo lỗi tại ô mã và giữ nguyên thông tin đã nhập.</text>
+        <text x="16" y="66" font-family="-apple-system, sans-serif" font-size="12" fill="#991B1B">Bạn có thể sửa lại mã ngôn ngữ khác mà không phải điền lại form từ đầu.</text>
+      </g>
+
+      <!-- Footer -->
+      <line x1="0" y1="605" x2="560" y2="605" stroke="#E2E8F0" stroke-width="1" />
+      <g transform="translate(32, 625)">
+        <rect width="110" height="42" class="btn-secondary" />
+        <text x="55" y="26" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#1E293B" text-anchor="middle">Hủy bỏ</text>
+
+        <rect x="336" y="0" width="160" height="42" class="btn-primary" />
+        <text x="416" y="26" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">Lưu ngôn ngữ</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Right: EDIT MODE (X = 672) -->
+  <g transform="translate(672, 56)">
+    <rect width="140" height="26" rx="13" fill="#EFF6FF" stroke="#BFDBFE" />
+    <text x="70" y="18" class="tag-mode" fill="#1E3A8A">CHẾ ĐỘ CHỈNH SỬA</text>
+
+    <!-- Modal Box -->
+    <g transform="translate(0, 34)">
+      <rect width="560" height="690" class="card" filter="drop-shadow(0 8px 24px rgba(0,0,0,0.06))" />
+
+      <!-- Header -->
+      <g transform="translate(32, 28)">
+        <text x="0" y="20" class="modal-title">Chỉnh sửa ngôn ngữ: <tspan fill="#1D4ED8">en</tspan></text>
+        <text x="0" y="42" class="modal-sub">Cập nhật tên hiển thị và cấu hình mục đích</text>
+        <text x="496" y="20" font-family="-apple-system, sans-serif" font-size="18" fill="#475569" cursor="pointer">✕</text>
+      </g>
+      <line x1="0" y1="90" x2="560" y2="90" stroke="#E2E8F0" stroke-width="1" />
+
+      <!-- Form Body -->
+      <g transform="translate(32, 110)">
+        <!-- Field 1: Code (Locked) -->
+        <g transform="translate(0, 0)">
+          <text x="0" y="0" class="label">Mã ngôn ngữ (Không thể thay đổi)</text>
+          <text x="0" y="18" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#92400E">Khóa cố định: Dùng làm khóa tham chiếu cho giao diện tài khoản</text>
+          <rect y="26" width="496" height="42" class="input-disabled" />
+          <text x="14" y="52" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#475569">en</text>
+          <text x="470" y="52" font-family="-apple-system, sans-serif" font-size="14" fill="#64748B">🔒</text>
+        </g>
+
+        <!-- Field 2: names.vi -->
+        <g transform="translate(0, 88)">
+          <text x="0" y="0" class="label">Tên tiếng Việt <tspan fill="#991B1B">*</tspan></text>
+          <text x="0" y="18" class="hint">Cập nhật tên tiếng Việt</text>
+          <rect y="26" width="496" height="42" class="input-normal" />
+          <text x="14" y="52" class="input-text">Tiếng Anh</text>
+        </g>
+
+        <!-- Field 3: names.en -->
+        <g transform="translate(0, 176)">
+          <text x="0" y="0" class="label">Tên tiếng Anh (tùy chọn)</text>
+          <text x="0" y="18" class="hint">Cập nhật tên tiếng Anh chuẩn hóa</text>
+          <rect y="26" width="496" height="42" class="input-normal" />
+          <text x="14" y="52" class="input-text">English</text>
+        </g>
+
+        <!-- Checkbox 1 -->
+        <g transform="translate(0, 264)">
+          <rect x="0" y="2" width="20" height="20" rx="4" fill="#2563EB" />
+          <polyline points="4,12 8,16 16,8" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+          <text x="32" y="17" class="label">Có thể học</text>
+          <text x="32" y="34" class="hint">Cho phép người học đăng ký học ngôn ngữ này</text>
+        </g>
+
+        <!-- Checkbox 2 -->
+        <g transform="translate(0, 324)">
+          <rect x="0" y="2" width="20" height="20" rx="4" fill="#2563EB" />
+          <polyline points="4,12 8,16 16,8" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+          <text x="32" y="17" class="label">Dùng làm ngôn ngữ giao diện</text>
+          <text x="32" y="34" class="hint">Sử dụng làm ngôn ngữ giao diện</text>
+        </g>
+      </g>
+
+      <!-- Data Preservation Box -->
+      <g transform="translate(32, 500)">
+        <rect width="496" height="80" fill="#EFF6FF" stroke="#BFDBFE" rx="8" />
+        <text x="16" y="24" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1E3A8A">BẢO TOÀN DỮ LIỆU KHI CẬP NHẬT:</text>
+        <text x="16" y="46" font-family="-apple-system, sans-serif" font-size="12" fill="#1E3A8A">Khi lưu, các bản dịch ngôn ngữ khác đã có trong hệ thống được bảo toàn.</text>
+        <text x="16" y="66" font-family="-apple-system, sans-serif" font-size="12" fill="#1E3A8A">Nếu gặp sự cố mạng hoặc lỗi máy chủ, thông tin bạn vừa sửa không bị mất.</text>
+      </g>
+
+      <!-- Footer -->
+      <line x1="0" y1="605" x2="560" y2="605" stroke="#E2E8F0" stroke-width="1" />
+      <g transform="translate(32, 625)">
+        <rect width="110" height="42" class="btn-secondary" />
+        <text x="55" y="26" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#1E293B" text-anchor="middle">Hủy bỏ</text>
+
+        <rect x="336" y="0" width="160" height="42" class="btn-primary" />
+        <text x="416" y="26" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">Lưu thay đổi</text>
+      </g>
+    </g>
+  </g>
+</svg>

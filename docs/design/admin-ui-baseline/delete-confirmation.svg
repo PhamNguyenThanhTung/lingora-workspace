@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 850" width="1280" height="850">
+  <defs>
+    <style>
+      .bg { fill: #0F172A; }
+      .header-bar { fill: #090D16; }
+      .card { fill: #FFFFFF; stroke: #E2E8F0; stroke-width: 1px; rx: 12px; }
+      .badge-watermark { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; font-size: 13px; font-weight: 700; fill: #38BDF8; }
+      .modal-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 18px; font-weight: 700; fill: #0F172A; }
+      .modal-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; fill: #1E293B; line-height: 22px; }
+      .btn-cancel-focused { fill: #FFFFFF; stroke: #2563EB; stroke-width: 2.5px; rx: 6px; }
+      .btn-cancel-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #1D4ED8; text-anchor: middle; }
+      .btn-danger { fill: #DC2626; rx: 6px; }
+      .btn-danger-disabled { fill: #FCA5A5; rx: 6px; }
+      .btn-danger-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #FFFFFF; text-anchor: middle; }
+      .code-badge { font-family: ui-monospace, monospace; font-size: 13px; font-weight: 700; fill: #0F172A; }
+      .alert-red { fill: #FEF2F2; stroke: #FECACA; stroke-width: 1.5px; rx: 8px; }
+      .alert-red-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #991B1B; }
+      .alert-red-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #991B1B; line-height: 18px; }
+    </style>
+  </defs>
+
+  <!-- Backdrop -->
+  <rect width="1280" height="850" class="bg" fill-opacity="0.88" />
+
+  <!-- Top Reference Strip -->
+  <rect width="1280" height="36" class="header-bar" />
+  <text x="24" y="23" class="badge-watermark">Lingora Admin / Teacher UI reference</text>
+  <text x="1256" y="23" text-anchor="end" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#CBD5E1">XÁC NHẬN XÓA &amp; AN TOÀN RÀNG BUỘC DỮ LIỆU</text>
+
+  <!-- Left: STANDARD CONFIRMATION WITH DEFAULT FOCUS ON CANCEL (X = 80) -->
+  <g transform="translate(80, 80)">
+    <rect width="520" height="660" class="card" filter="drop-shadow(0 12px 30px rgba(0,0,0,0.25))" />
+
+    <!-- Icon & Title -->
+    <g transform="translate(36, 40)">
+      <circle cx="28" cy="28" r="28" fill="#FEE2E2" />
+      <text x="28" y="36" font-family="-apple-system, sans-serif" font-size="24" font-weight="900" fill="#991B1B" text-anchor="middle">!</text>
+      <text x="72" y="28" class="modal-title">Xác nhận xóa ngôn ngữ</text>
+      <text x="72" y="48" font-family="-apple-system, sans-serif" font-size="13" fill="#475569">Thao tác xóa vĩnh viễn dữ liệu</text>
+    </g>
+
+    <line x1="0" y1="110" x2="520" y2="110" stroke="#E2E8F0" stroke-width="1" />
+
+    <!-- Content -->
+    <g transform="translate(36, 135)">
+      <text x="0" y="20" class="modal-text">Bạn có chắc chắn muốn xóa vĩnh viễn ngôn ngữ sau khỏi hệ thống?</text>
+
+      <!-- Target Language Card -->
+      <g transform="translate(0, 45)">
+        <rect width="448" height="90" rx="8" fill="#F8FAFC" stroke="#E2E8F0" />
+        <text x="20" y="32" font-family="-apple-system, sans-serif" font-size="15" font-weight="700" fill="#0F172A">Tiếng Pháp (French)</text>
+        <g transform="translate(20, 48)">
+          <rect width="36" height="22" rx="4" fill="#E2E8F0" />
+          <text x="18" y="16" class="code-badge" text-anchor="middle">fr</text>
+          <text x="50" y="16" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">• Có thể học: <tspan font-weight="700" fill="#14532D">Có</tspan> • Làm giao diện: <tspan font-weight="600" fill="#475569">Không</tspan></text>
+        </g>
+      </g>
+
+      <!-- Warning Note (properly wrapped) -->
+      <g transform="translate(0, 160)">
+        <text x="0" y="20" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#991B1B">Lưu ý: Dữ liệu ngôn ngữ sau khi xóa sẽ không thể khôi phục.</text>
+      </g>
+
+      <!-- Focus Safety Callout -->
+      <g transform="translate(0, 220)">
+        <rect width="448" height="150" rx="8" fill="#EFF6FF" stroke="#BFDBFE" />
+        <text x="16" y="26" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1E3A8A">QUY TẮC AN TOÀN TRUY CẬP (A11Y &amp; SAFETY UX):</text>
+        <text x="16" y="52" font-family="-apple-system, sans-serif" font-size="12" fill="#1E3A8A">• Tiêu điểm mặc định (focus) tự động đặt tại nút HỦY BỎ khi mở hộp thoại.</text>
+        <text x="16" y="74" font-family="-apple-system, sans-serif" font-size="12" fill="#1E3A8A">• Ngăn chặn hoàn toàn hành vi vô tình nhấn Enter hoặc Space gây mất dữ liệu.</text>
+        <text x="16" y="96" font-family="-apple-system, sans-serif" font-size="12" fill="#1E3A8A">• Phím ESC đóng hộp thoại và trả tiêu điểm về nút thao tác tương ứng.</text>
+        <text x="16" y="118" font-family="-apple-system, sans-serif" font-size="12" fill="#1E3A8A">• Độ tương phản màu chữ và viền nút đáp ứng đầy đủ chuẩn WCAG 2.1 AA.</text>
+      </g>
+    </g>
+
+    <!-- Footer -->
+    <line x1="0" y1="560" x2="520" y2="560" stroke="#E2E8F0" stroke-width="1" />
+    <g transform="translate(36, 585)">
+      <!-- CANCEL WITH FOCUS RING -->
+      <g transform="translate(0, 0)">
+        <rect x="-3" y="-3" width="126" height="48" rx="9" fill="none" stroke="#93C5FD" stroke-width="4" />
+        <rect width="120" height="42" class="btn-cancel-focused" />
+        <text x="60" y="26" class="btn-cancel-text">Hủy bỏ [Esc]</text>
+        <text x="60" y="-10" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#1D4ED8">▲ TIÊU ĐIỂM MẶC ĐỊNH</text>
+      </g>
+
+      <!-- CONFIRM DELETE -->
+      <g transform="translate(298, 0)">
+        <rect width="150" height="42" class="btn-danger" />
+        <text x="75" y="26" class="btn-danger-text">Xác nhận xóa</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Right: BLOCKED DELETE STATE (X = 680) -->
+  <g transform="translate(680, 80)">
+    <rect width="520" height="660" class="card" filter="drop-shadow(0 12px 30px rgba(0,0,0,0.25))" />
+
+    <!-- Icon & Title -->
+    <g transform="translate(36, 40)">
+      <circle cx="28" cy="28" r="28" fill="#FEE2E2" />
+      <text x="28" y="36" font-family="-apple-system, sans-serif" font-size="24" font-weight="900" fill="#991B1B" text-anchor="middle">✕</text>
+      <text x="72" y="28" class="modal-title">Không thể xóa ngôn ngữ</text>
+      <text x="72" y="48" font-family="-apple-system, sans-serif" font-size="13" fill="#991B1B">Dữ liệu đang được liên kết trong hệ thống</text>
+    </g>
+
+    <line x1="0" y1="110" x2="520" y2="110" stroke="#E2E8F0" stroke-width="1" />
+
+    <!-- Content (properly wrapped lines, NO overflow) -->
+    <g transform="translate(36, 135)">
+      <!-- Red Alert -->
+      <rect width="448" height="110" class="alert-red" />
+      <g transform="translate(18, 24)">
+        <text x="0" y="0" class="alert-red-title">KHÔNG THỂ THỰC HIỆN THAO TÁC XÓA</text>
+        <text x="0" y="26" class="alert-red-text">Ngôn ngữ <tspan font-weight="700">Tiếng Anh (en)</tspan> hiện đang được sử dụng</text>
+        <text x="0" y="48" class="alert-red-text">bởi các khóa học hoặc tài khoản trong hệ thống.</text>
+        <text x="0" y="70" class="alert-red-text">Hệ thống bảo vệ toàn vẹn dữ liệu và không thể xóa.</text>
+      </g>
+
+      <!-- Explanation -->
+      <g transform="translate(0, 140)">
+        <text x="0" y="18" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Nguyên tắc bảo vệ dữ liệu:</text>
+        <text x="0" y="42" font-family="-apple-system, sans-serif" font-size="13" fill="#1E293B">Để duy trì tính toàn vẹn hệ thống, một ngôn ngữ không thể bị xóa khi</text>
+        <text x="0" y="64" font-family="-apple-system, sans-serif" font-size="13" fill="#1E293B">vẫn còn dữ liệu người dùng hoặc nội dung đào tạo tham chiếu đến nó.</text>
+      </g>
+
+      <!-- Helpful Advice for Admin (no instruction to cancel courses) -->
+      <g transform="translate(0, 240)">
+        <rect width="448" height="130" rx="8" fill="#F8FAFC" stroke="#E2E8F0" />
+        <text x="16" y="26" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#1E293B">HƯỚNG DẪN DÀNH CHO QUẢN TRỊ VIÊN:</text>
+        <text x="16" y="52" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">1. Vui lòng giữ lại ngôn ngữ này để bảo đảm tính toàn vẹn của hệ thống.</text>
+        <text x="16" y="76" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">2. Nếu thực sự cần gỡ bỏ, trước tiên hãy chuyển các dữ liệu liên quan</text>
+        <text x="16" y="98" font-family="-apple-system, sans-serif" font-size="12" fill="#475569">   sang một ngôn ngữ khác đang hoạt động.</text>
+      </g>
+    </g>
+
+    <!-- Footer -->
+    <line x1="0" y1="560" x2="520" y2="560" stroke="#E2E8F0" stroke-width="1" />
+    <g transform="translate(36, 585)">
+      <!-- Understood / Close button -->
+      <g transform="translate(0, 0)">
+        <rect width="130" height="42" rx="6" fill="#0F172A" />
+        <text x="65" y="26" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">Đã hiểu / Đóng</text>
+      </g>
+
+      <!-- Disabled Delete button -->
+      <g transform="translate(298, 0)">
+        <rect width="150" height="42" class="btn-danger-disabled" />
+        <text x="75" y="26" class="btn-danger-text" fill-opacity="0.8">Xóa bị chặn</text>
+      </g>
+    </g>
+  </g>
+</svg>
