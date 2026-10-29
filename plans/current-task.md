@@ -1,10 +1,83 @@
 # Current task
 
+## 2026-10-29 — Slice 1 Final Acceptance Patch: PASS / ACCEPTED
+
+**SLICE 1 FINAL ACCEPTANCE PATCH: PASS. SLICE 1 ACCEPTED.** Codex direct planner/reviewer; one sequential Antigravity gemini-3.8-flash-high/high worker, operational same-conversation continuation after interrupted print CLI; no review correction required (0/1). [Spec](2026-10-29-slice-1-final-acceptance-patch.md), [independent final review](evidence/2026-10-29-slice-1-final-acceptance-patch/review.md), [live evidence](evidence/2026-10-29-slice-1-final-acceptance-patch/live-flows.md).
+
+401 root cause was test autofocus interference before any request; synchronized test now proves real401, correct payload, draft retention and explicit recovery/login.403 callback restored to denial/logout, distinct from401. Actual expired-session proxy/SDK integration proves changed cookie values, downstream/response propagation and protected auth boundary. Codex independently killed no-refresh, no-downstream, no-response and stale-result mutants; restored exactly and every restore PASS.
+
+Independent components12/12, features74/74(33auth+41CRUD), typecheck/build PASS. Build retains existing generated-Prisma trace warnings. Live C create/D edit/F duplicate-recovery/E delete PASS; owned zzf129a/zzf129b both deleted and absence confirmed after reload. Canonical en/vi and Accounts unchanged. Historical FAIL records below remain historical; foundation Owner Override/frozen UI remain accepted. Allowlisted commit/push authorized for this accepted state; final result recorded in Git history and closing report. Raw logs/screenshots/local artifacts, unrelated DB migration5/README/forensic files and protected provider log excluded. No Slice2.
+
+## 2026-10-29 — Slice 1 Stabilization (STAB-1): STOPPED / FAIL after correction 1/1
+
+New independent task after the earlier Slice 1 STOP. Codex directly plans/reviews; one sequential Anti worker implements/tests under [the stabilization spec](2026-10-29-slice-1-stabilization.md). No further senior planner/reviewer, worktree, database gate, Auth bootstrap or Slice 2.
+
+**SLICE 1 STABILIZATION: FAIL. SLICE 1 NOT ACCEPTED.** [First stabilization review](evidence/2026-10-29-slice-1-stabilization/review.md) and [final correction review](evidence/2026-10-29-slice-1-stabilization/review-correction.md) both returned FAIL. The single correction budget is exhausted; no further Anti correction or Codex implementation takeover follows this task.
+
+Independent final checks: feature 74/74 PASS, typecheck/build PASS, components **11/12 PASS / exit 1** (401 session-loss scenario still times out). Correction also bypassed the form's 403 denial/logout callback. Proxy refresh evidence remains inadequate: disabling the real proxy getUser call still left all 74 feature tests green; source was restored exactly. Worker 12/12/fully-resolved claims are marked unaccepted history.
+
+Actual live evidence: A owner manually signed in and Codex observed the guarded DEV catalogue; B anonymous page redirect and JSON API 401, plus removed test route 404. Live C/D/E/F were not run after the failed gate; no DEV Language fixture, Language mutation or app.accounts mutation was performed. The dev login no-feedback setup issue was resolved and verified with a matching local hostname; see [runtime evidence](evidence/2026-10-29-slice-1-stabilization/reviewer-runtime-setup.md).
+
+No active worker remains. Staging is empty; no commit/push. No Slice 2. Preserve existing dirty/untracked work, protected provider log, migration five, accepted foundation Owner Override and historical FAIL records below. The database closure/forensic/FA gates remain canceled.
+
+## 2026-10-29 — Owner Override: database accepted; Slice 1 authorized
+
+```text
+DATABASE READY: PASS (Accepted by Owner Override — 5 migrations applied on DEV)
+ADMIN AUTH READY: PASS
+UI BASELINE READY: PASS
+SLICE 1: AUTHORIZED FOR IMMEDIATE IMPLEMENTATION
+```
+
+The owner accepts current Supabase DEV as the official application foundation. Migration `20261028010000_database_closure` is retained byte-identical (checksum `d50e2255bc01165b11e0e2ada1cb2591beea13855fe7c60d065aec86160cde09`). Acceptance of the closure/forensic harness and R2-01–R2-12 is permanently canceled. Historical FAIL reviews below remain historical records, not active gates. No further preflight, forensic, closure-suite or database-audit work is authorized or required for Slice 1.
+
+Implement **Language Management + Admin Auth Foundation** in `lingora-admin` against the frozen [Admin UI Baseline](2026-10-28-admin-ui-baseline.md) and [Next App Slice](2026-10-27-next-app-slice.md). Add Next.js/React/TypeScript/Zod/Supabase SSR; verify `getUser()` and current ACTIVE ADMIN Account server-side; implement `/languages` and authenticated CRUD with immutable code, duplicate code →409 and FK restriction →409. Slice 1 planning and Anti implementation are authorized now.
+
+**Slice 1 execution: STOPPED / NOT ACCEPTED after correction 1/1.** Anti delivered Next.js/auth/Language CRUD source, then completed the single correction round. Independent GPT-6.1 Sol High [first review](evidence/2026-10-29-slice-1/review.md) and [final review](evidence/2026-10-29-slice-1/review-correction.md) both returned FAIL. Remaining blockers: shipped fixture `/test-harness` route (R11), dialog pending/focus behavior (R2), draft recovery lifecycle (R7), SSR cache-header preservation (R1), and incomplete/invalid actual-handler/UI verification (R9). Worker-reported typecheck/build/tests passing do not establish acceptance. No worker remains active; no further correction or coordinator implementation takeover is authorized by this workflow. Database/admin-auth/UI-baseline Owner Override PASS remains unchanged; canceled database gates remain canceled. No commit, push, or deployment performed.
+
+Cleanup: restored only the four tracked closure-tooling files to HEAD; removed the two untracked closure runners and the untracked `tests/database/product/` harness. Retained migration five and documentary evidence. The unrelated protected provider log is untouched. No database commands or old harness executed.
+
+## Historical records — superseded by Owner Override above
+
+
 - **2026-10-28: Documentation closeout COMPLETE — Codex tự thực hiện.** [Spec closeout](2026-10-28-documentation-closeout-spec.md) đã xử lý hai điểm còn lại sau review FAIL: chỉ dẫn cũ trong mục lục và bằng chứng kiểm tra liên kết. Tự kiểm tra 12 file: 185 liên kết nội bộ hợp lệ, 0 gãy; xem [báo cáo dọn dẹp, mục 6](../docs/repository-cleanup-2026-10-28.md#6-closeout-2026-10-28). Hai review FAIL cũ được giữ làm lịch sử, không thay thành review độc lập PASS. Việc xóa plan/bản lưu và registry rỗng của đợt trước đã hoàn tất.
-- **Current foundation:** `lingora-admin/` with 34-model product schema, 4 applied migrations, seed, and `src/server/db/index.js`. No web framework, dev/build scripts, UI, or learner auth app currently exists.
+- **Current foundation:** `lingora-admin/` with 34-model product schema, 5 migrations now recorded as applied on DEV (the fifth unexpectedly applied before independent acceptance; see stopped closure below), seed, and `src/server/db/index.js`. No web framework, dev/build scripts, UI, or learner auth app currently exists.
 - **Slice 0 Design Baseline: FROZEN — SLICE 0 UI BASELINE READY.** [Admin UI Baseline](2026-10-28-admin-ui-baseline.md) đã PASS độc lập (CLOSURE-0, 2026-10-28, AC1–AC10), giữ lịch sử redesign FAIL trong canonical. Commit riêng `40a0d5817185464e51c74e2ccd3b367398124252` — `docs(ui): freeze reviewed Slice 0 admin baseline` — đã push lên `origin/main`. Có 39 file UI/reference/documentation; không chứa DB/auth fix, env, secret hay log local. Preflight sau đó không sửa baseline/prototype/ảnh.
 - **Workflow:** [AGENTS.md](../AGENTS.md) — KISS, validation tại Backend, phát triển từng vertical slice.
 - **Next proposal:** Proposed vertical slice 1: [Language Management](2026-10-27-next-app-slice.md) (minimal web/Admin auth foundation, backend role/status checks, safe CRUD/duplicate/FK error handling, UI acceptance). Explicitly remains a proposal; no implicit feature implementation authorization.
+
+## Database forensic stabilization — 2026-10-28, STOPPED / FAIL after correction 1/1
+
+New independent task after the stopped closure. [Spec](2026-10-28-database-forensic-stabilization.md), [forensic findings and final acceptance map](evidence/2026-10-28-database-closure/forensic-findings.md), [first review FAIL](evidence/2026-10-28-database-closure/review-forensic.md), and [final correction review FAIL](evidence/2026-10-28-database-closure/review-forensic-correction.md) are preserved. Exactly one credential-contained Anti implementation package and one correction round were delivered and independently reviewed by GPT-6.1 Sol High. The correction budget is exhausted; no further implementation, worker, coordinator code takeover or DEV regression follows this task.
+
+```text
+LIVE MIGRATION RECONCILED: PASS — LIVE_MATCHES_LOCAL
+APPLY CAUSE: IDENTIFIED — high-confidence reconstructed command/mechanism; child resolved URL/provider actor UNKNOWN
+MIGRATION EXECUTION GUARD: FAIL
+HARNESS SAFE: FAIL
+FA-01: FAIL — overall acceptance unestablished
+FA-02: FAIL — overall acceptance unestablished
+FA-03: FAIL — required coverage incomplete
+DATABASE READY: FAIL
+UI BASELINE READY: PASS / frozen
+ADMIN AUTH READY: PASS
+SLICE 1: NOT READY; not started
+```
+
+- **Live/source:** Five migration checksums and all three complete closure function/trigger definitions match. Applied SQL is byte-identical; no rollback/history rewrite/new migration. Actual prior AGY steps recover the atomicity invocation that pinned DATABASE_URL but omitted DIRECT_URL, followed by its later repair. Exact effective child credential origin/provider attribution were not recorded.
+- **Preservation:** Independent READ ONLY snapshots at `2026-10-28T16:29:18.525Z` and `2026-10-28T17:37:24.297Z` have identical full-row fingerprints for all 34 product tables, migration records, functions/triggers/constraints/indexes and Admin digest/state; Auth count/eligibility booleans also match. All 71 triggers remain enabled and Admin remains ACTIVE/ADMIN. [Comparison](evidence/2026-10-28-database-closure/forensic-preservation-comparison.json) proves preservation of this post-incident baseline, not pre-incident history or behavioral acceptance. **No DEV mutation was executed in this task.**
+- **Why stopped:** R2-01–12 remain: hosted regression is only a validation stub; custom Prisma schema can bypass the checked destination; exported ownership/cleanup is incomplete; fixture/fault residue and failure-path checks remain incomplete; required FA-03 null/numeric catalog cases were dropped; ordinary local smoke still auto-provisions/migrates/seeds; exact target/coverage claims exceed source. Worker probe counts are not accepted readiness evidence.
+- **Disposition:** Preserve the delivered unaccepted source and both local logs; no additional correction. Runtime FA acceptance/targeted DEV tests remain NOT RUN. No live SQL bug is established, so no corrective migration is justified by current evidence. All database closure/forensic changes remain uncommitted, staging empty, no commit/push. The unrelated protected log remains outside scope and staging. Frozen UI/Auth and Slice 1 were not changed.
+
+## Database closure — 2026-10-28, STOPPED / FAIL after one correction
+
+**FA-01: FAIL / acceptance unestablished. FA-02: FAIL / acceptance unestablished. FA-03: FAIL / acceptance unestablished. DATABASE READY: FAIL. ADMIN AUTH READY: PASS. UI BASELINE READY: PASS/frozen. SLICE 1 NOT READY FOR IMPLEMENTATION.** [Implementation spec](2026-10-28-database-closure.md) defines the exact invariants and required proof. Auth commits `8847172`, `bd5ab57`, `12e77cd` were reviewed for scope/secrets and pushed separately to `origin/main` before this task. Database closure source/docs remain uncommitted; no database closure commit/push or Slice 1 implementation was performed.
+
+- **Review and stop boundary:** [First review FAIL](evidence/2026-10-28-database-closure/review.md) recorded REV1-01–09. After exactly one Anti correction round, [independent correction review FAIL](evidence/2026-10-28-database-closure/review-correction.md) records CR-01–06: unsafe local ownership and wrong hosted route, unresolved execution provenance, hand-created migration metadata/incomplete atomicity proof, incomplete fault containment, inferred SQLSTATE, and incomplete residue/preservation checks. Worker claims of 65 local PASS probes are not accepted. No further worker/correction, implementation, regression execution, apply/rollback or ready-state commit follows this FAIL.
+- **Exact implemented intent, not accepted closure:** FA-01 extends the ever-submitted revision guard to freeze `created_at`/`prior_revision_id`; FA-02 compares each Lesson review's own generation/scope to its exact immutable episode; FA-03 validates numeric version 1 and blueprint config/catalog correspondence at snapshot creation while preserving later lifecycle updates. Changes use the existing three guards in [the new migration](../lingora-admin/prisma/product/migrations/20261028010000_database_closure/migration.sql). Regression/smoke/target/runtime source and product README were changed, but safe execution and runtime acceptance remain unestablished; do not use the unaccepted runner for DEV verification.
+- **Historical read-back after first review:** A target-checked Prisma READ ONLY transaction returned four finished/nonrolledback migrations, zero rows in all six affected authoring/assessment tables, and the preserved Account `ADMIN/ACTIVE`, `vi`, `Asia/Ho_Chi_Minh`. This was before the unexpected application below; it is not the current migration count.
+- **Unexpected hosted application — unresolved incident:** Final target-checked READ ONLY observations now show five finished/nonrolledback migrations on canonical DEV. `20261028010000_database_closure` has checksum `d50e2255bc01165b11e0e2ada1cb2591beea13855fe7c60d065aec86160cde09`, `started_at=2026-10-28T15:51:06.411Z`, `finished_at=2026-10-28T15:51:07.218Z`, `applied_steps_count=1`, observed at `2026-10-28T16:06:13.299Z`. This occurred before correction review PASS; the coordinator never invoked migration/apply and Anti was instructed to perform local-only work. Actual actor/command is not established; the checked-in atomicity subprocess sets both URLs local and does not prove the cause. Reconcile execution provenance before any new readiness claim. Preserve the already-applied migration bytes; no automatic rollback or migration-history rewrite was attempted.
+- **Last bounded live observations:** 34 product tables (29 app + 5 app_private), 71 enabled noninternal triggers, the nonblank `assessment_type` CHECK, six affected authoring/assessment tables at 0 rows, and the same Account role/status/locale/timezone remain observed. These facts do not prove full data preservation or replace the missing safe regression/live acceptance. Coordinator's own DB operations were read-only; no hosted smoke, seed, Auth mutation or feature code was executed by the coordinator.
 
 ## DEV Admin Bootstrap — 2026-10-28, COMPLETE
 

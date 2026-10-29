@@ -30,6 +30,15 @@ export function getProductPrisma(databaseUrl) {
 }
 
 /**
+ * Set a test double for the product database client.
+ * For use strictly by test infrastructure.
+ * @param {PrismaClient|null} client
+ */
+export function setProductPrismaForTest(client) {
+  prismaInstance = client;
+}
+
+/**
  * Connect explicitly to the product database.
  * @param {PrismaClient} [client]
  */

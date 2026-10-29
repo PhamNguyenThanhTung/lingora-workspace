@@ -6,6 +6,13 @@
     "lingora-admin"
   ],
   "scripts": {
+    "dev": "npm run dev -w lingora-admin",
+    "build": "npm run build -w lingora-admin",
+    "start": "npm run start -w lingora-admin",
+    "typecheck": "npm run typecheck -w lingora-admin",
+    "test:feature": "npm run test:feature -w lingora-admin",
+    "test:e2e": "npm run test:e2e -w lingora-admin",
+    "test:all": "npm run test:all -w lingora-admin",
     "test:db:a1": "npm run test:db:a1 -w lingora-admin",
     "test:db:a2": "npm run test:db:a2 -w lingora-admin",
     "test:db:a3": "npm run test:db:a3 -w lingora-admin",
