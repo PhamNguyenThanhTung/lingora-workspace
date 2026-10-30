@@ -1,37 +1,31 @@
 # Lingora
 
-Dự án nền tảng học ngôn ngữ với ba vai trò: **Admin, Teacher, Learner**. Từ 2026-10-28, chuyển sang phát triển tính năng thực dụng theo [AGENTS.md](AGENTS.md): KISS, validation tại Backend, từng vertical slice Database Query → API Route → UI Component.
+Nền tảng học ngoại ngữ với ba vai trò: **Learner** học và ôn tập,
+**Teacher** biên soạn nội dung được phân công, **Admin** quản trị và duyệt nội dung.
+Ứng dụng hiện có trong workspace `lingora-admin/`.
 
-Chủ dự án đã hủy `WP-DB-REMAIN-01` cùng quy trình preapply/Stage A/Stage B. Các kế hoạch/review cũ được giữ làm lịch sử, không phải điều kiện bắt đầu code app. Đợt dọn dẹp tài liệu `DOC-CLEAN-01` đã hoàn tất theo [báo cáo dọn dẹp repository](docs/repository-cleanup-2026-10-28.md).
+## Stack
 
-## Hiện trạng
+Next.js 16, React 19, TypeScript, Zod, Prisma 6 và Supabase Auth/PostgreSQL.
+Dùng Node.js 24 và npm workspaces; dependency được khóa trong `package-lock.json`.
 
-- `lingora-admin/` chứa product Prisma schema (34 models), bốn migration đã áp dụng, seed, Prisma Client và module DB ở `src/server/db/index.js`.
-- Chưa có ứng dụng web/Admin của thiết kế mới: chưa có web framework, API routes, UI, đăng nhập, lệnh `dev` hoặc `build`.
-- Bốn migration up to date; Client đọc được ngôn ngữ/khóa học.
-- Harness cũ vẫn parked. Các công cụ preflight/smoke cũ còn lưu trên đĩa là công cụ lịch sử, không phải cổng chặn bắt buộc khi phát triển tính năng.
-- Đề xuất vertical slice tiếp theo: [Quản lý Ngôn ngữ](plans/2026-10-27-next-app-slice.md) (chưa bắt đầu).
-
-## Database
-
-Cấu hình kết nối ở `lingora-admin/.env` (không commit thông tin bí mật). Từ workspace root:
+## Chạy local
 
 ```sh
+npm install
+cp lingora-admin/.env.product.example lingora-admin/.env
+# Điền cấu hình môi trường trước các lệnh truy cập database bên dưới.
 npm run db:product:generate
 npm run db:product:migrate
 npm run db:product:seed
+npm run dev
 ```
 
-Migrate dùng `prisma migrate deploy`; seed dùng `prisma db seed`, không chạy preflight/catalog/smoke tự động. Xem [hướng dẫn database](lingora-admin/prisma/product/README.md).
+`DATABASE_URL` dùng cho Prisma runtime; `DIRECT_URL` dùng kết nối trực tiếp khi migrate.
+Auth cần `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (hoặc `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+Không commit `.env`, database credentials, service-role key hay thông tin đăng nhập.
 
-## Tài liệu
+## Tiến độ và tài liệu
 
-- [Báo cáo dọn dẹp repository](docs/repository-cleanup-2026-10-28.md)
-- [Báo cáo reset thực dụng](docs/pragmatic-reset-2026-10-28.md)
-- [Tác vụ hiện tại](plans/current-task.md)
-- [Đề xuất slice tiếp theo](plans/2026-10-27-next-app-slice.md)
-- [Handoff](HANDOFF.md)
-- [Tài liệu sản phẩm](docs/README.md)
-- [Môi trường](ENVIRONMENT.md)
-
-Chỉ đọc tài liệu liên quan đến tính năng đang làm. Tài liệu thiết kế/báo cáo học thuật vẫn được giữ làm tài liệu tham khảo.
+Slice 1 (Admin Auth + Languages) và Slice 2 (Frameworks/Levels) đã ACCEPTED; Slice 3 chưa bắt đầu.
+Xem [roadmap](plans/roadmap.md), [tài liệu](docs/README.md) và [quy tắc làm việc](AGENTS.md).

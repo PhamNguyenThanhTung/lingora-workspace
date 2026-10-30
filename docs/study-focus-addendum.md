@@ -1,6 +1,6 @@
 # Study Focus personalization — ADR-042 addendum
 
-**PO DECISION RECORDED · 2026-10-12 · documentation/modeling only.** This additive decision follows ADR-036 and the internal SRS interaction clarification ADR-041. It does not approve physical implementation. [Exact PO request](../plans/approved/2026-10-12-study-focus-personalization-f01-f02-REQUEST.txt) controls this scope.
+**PO DECISION RECORDED · 2026-10-12 · documentation/modeling only.** This additive decision follows ADR-036 and the internal SRS interaction clarification ADR-041. It does not approve physical implementation. Exact PO request controls this scope.
 
 Each LearningContext has exactly one primary `studyFocus`: `BALANCED` (default), `VOCABULARY`, `GRAMMAR`, `READING`, or `LISTENING`. Learners can choose/change it in their owned context preferences. Creation succeeds without choosing it. Changing it affects the next supplementary session; an already started session retains its selected composition. No preference-history subsystem is required. Existing purpose/preferences remain separate.
 
@@ -41,4 +41,4 @@ Placement and Level-up retain their pinned immutable Assessment Version composit
 | PERS-09 | Send a focus outside the five-value set or invalid/retired/out-of-course practice tags | Reject invalid preference/metadata; no mutation or unauthorized selection |
 | PERS-10 | Learner L2 requests a focus update or supplementary session for L1's context | Deny before reading private context/cards or mutating preferences; no side effects |
 
-Physical principal/transaction detail and F01/F02 acceptance are in [security and RLS](design/physical/security-and-rls.md), [physical design](design/physical/README.md) and [future acceptance](design/physical/rebuild-plan.md). No runtime acceptance verdict is claimed by this document.
+Physical principal/transaction detail and F01/F02 acceptance are in [security and RLS](design/physical/security-and-rls.md), [physical design](design/physical/README.md) and future acceptance. No runtime acceptance verdict is claimed by this document.

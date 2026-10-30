@@ -14,7 +14,7 @@
 | Review receipt replay/capabilities — proposed physical realization of trusted commands | Physical catalog/security/learning ERD | DC06-A–D; PD-DC06-REPLAY/HASH/RACE/AUTH |
 | Purpose mapping/narrow update — Class/ADR-030/031/032/033 plus proposed representation | Physical catalog/security/content ERD | DC07-A–D; PD-DC07-PURPOSE/CONTEXT/HISTORY/ELIGIBILITY |
 
-[Correction report/evidence](design/design-correction-2026-10-20.md) records observed documentation/artifact checks; [DC plan / report](design/design-correction-2026-10-20.md) and [future physical cases](design/physical/rebuild-plan.md) distinguish runtime NOT EXECUTED. Purpose code/null/empty-tag/session representation remains PROPOSED, not new product approval. No canonical UC renumbering or runtime acceptance is implied.
+Correction report/evidence records observed documentation/artifact checks; DC plan / report and future physical cases distinguish runtime NOT EXECUTED. Purpose code/null/empty-tag/session representation remains PROPOSED, not new product approval. No canonical UC renumbering or runtime acceptance is implied.
 
 ## Current assessment assembly traceability — ADR-043
 
@@ -25,7 +25,7 @@
 | Immutable secure version, Admin review/publish and private grading | ADR-035/036/043; UC-02/05/12 | DB43-04/09/10/11 |
 | Complete Class-to-storage mapping | Accepted Class baseline; ADR-030–036/041/042 | DB43-13 and database reconciliation mapping |
 
-[DB43-01–13](design/physical/database-reconciliation-2026-10-20.md) are specified runtime cases, **NOT EXECUTED**. Physical design is proposed. The later FDR correction trace above synchronizes only its six named logical sources with relevant current rules; other views and historical evidence are preserved, not blanket reapproved.
+DB43-01–13 are specified runtime cases, **NOT EXECUTED**. Physical design is proposed. The later FDR correction trace above synchronizes only its six named logical sources with relevant current rules; other views and historical evidence are preserved, not blanket reapproved.
 
 ## Current Study Focus traceability — ADR-042
 
@@ -38,7 +38,7 @@
 | No dynamic focus/SRS in scored pinned secure assessments | UC-02/05; existing secure-assessment views unchanged | PERS-07/08 |
 | Exact Teacher key projection/submit and own-context principal lock path | UC-10/11 and UC-04; proposed physical security correction | PD-F01-AUTHORING-ALLOW/OTHER-TEACHER/LEARNER-KEY-DENIED/PINNED-GRADER/MISSING-KEY/TEACHER-PUBLISH-DENIED; PD-F02-PARENT-LOCK-PRIVILEGES/LOCKER-CONTEXT-READ/CREATE-RESUME-PAUSE-RACE |
 
-Canonical UC-01–14 identity/count is unchanged. [Addendum](study-focus-addendum.md) and [physical correction](design/physical/personalization-and-final-correction.md) contain future design acceptance, **NOT EXECUTED**; no runtime implementation/test status is inferred. Earlier trace rows remain historical where marked.
+Canonical UC-01–14 identity/count is unchanged. [Addendum](study-focus-addendum.md) and physical correction contain future design acceptance, **NOT EXECUTED**; no runtime implementation/test status is inferred. Earlier trace rows remain historical where marked.
 
 
 > **HISTORICAL Phase 0 baseline (aligned 2026-09-14 & ADR-014):** This matrix preserves the inherited 19-function/15-use-case trace catalog and its then-reported implementation/test statuses. Those statuses are not evidence of the current checkout or current requirements. Its UC IDs are catalog-local. Use the versioned crosswalk in `docs/use-case-specifications.md` for comparison with the current 14-entry behavior catalog; ADR-034/035 control current business/logical security policy. Physical mappings remain deferred under P0-D07.
@@ -73,7 +73,7 @@ This table maps the six newly approved product decision groups to the current re
 | Reassessment removed from MVP; only Placement and Level-up active | `docs/02-requirements.md` → “MVP assessment scope” | No Reassessment UC in the current 14-entry catalog; UC-03 reminder remains deferred | ACT-05 retained only as explicitly deferred reference; VIEW-UC-01/02 learner maps omit Reassessment | `TARGET — approved scope; no catalog renumbering` |
 | Admin minimal Learner account support; no editing learning evidence | `docs/02-requirements.md` → “Admin learner-account operations” | UC-13 Account administration; UC-14 Reports/audit | Account identity/status, context summary, audited admin action; VIEW-UC-04 Admin, SEQ-09, SEC-01 | `TARGET — approved product rule; physical representation deferred` |
 
-The current detailed catalog has 14 entries: 13 active UCs and one deferred reminder UC-03. Diagram identities are VIEW-UC-01–04, separate from canonical UC-01–14; stable filenames are crosswalked in the UC specification. See the [correction cross-diagram consistency matrix](modeling/current-target/review.md#k-cross-diagram-consistency). Its UC-03 reminder entry is deferred; no standalone Reassessment entry exists to remove or renumber. Any local identifiers in diagrams remain subordinate to the catalog-versioned crosswalk.
+The current detailed catalog has 14 entries: 13 active UCs and one deferred reminder UC-03. Diagram identities are VIEW-UC-01–04, separate from canonical UC-01–14; stable filenames are crosswalked in the UC specification. See the correction cross-diagram consistency matrix. Its UC-03 reminder entry is deferred; no standalone Reassessment entry exists to remove or renumber. Any local identifiers in diagrams remain subordinate to the catalog-versioned crosswalk.
 
 ## Current SRS Interaction Clarification Traceability Addendum — ADR-041 (2026-10-12)
 

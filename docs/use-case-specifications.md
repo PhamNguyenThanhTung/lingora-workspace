@@ -179,7 +179,7 @@ The `VIEW-RUC-01`–`VIEW-RUC-07` diagrams and `VIEW-RUC-08A`/`VIEW-RUC-08B` sub
 
 ### Completable Lesson readiness — ADR-044 (2026-10-22)
 
-UC-06/UC-10–12 consume the explicit PO decision: a published Lesson available for Learner completion requires `N >= 1` core exercise. Draft/save may have zero; submit, approve and publish reject zero, and runtime start rechecks the pinned revision. Optional review, vocabulary and assessment contributions do not satisfy this core count. Keep `lesson_attempts.n_core > 0`; N=0 completion/performance and a special content-only lifecycle are outside MVP. This refines the count boundary without changing ADR-036 scoring, redo, SRS or Class draft cardinality `0..*`. See [disposition](design/physical/ftr-disposition-2026-10-22.md).
+UC-06/UC-10–12 consume the explicit PO decision: a published Lesson available for Learner completion requires `N >= 1` core exercise. Draft/save may have zero; submit, approve and publish reject zero, and runtime start rechecks the pinned revision. Optional review, vocabulary and assessment contributions do not satisfy this core count. Keep `lesson_attempts.n_core > 0`; N=0 completion/performance and a special content-only lifecycle are outside MVP. This refines the count boundary without changing ADR-036 scoring, redo, SRS or Class draft cardinality `0..*`. See disposition.
 
 ### Supplementary practice — ADR-042
 
@@ -219,7 +219,7 @@ Focus bias is separate from due selection: GRAMMAR still keeps due VOCABULARY el
 
 ## Current assessment assembly clarification — ADR-043 (2026-10-20)
 
-UC-09–12 retain their identities. Admin configures the blueprint and assigns Lesson/content packages, including related assessment questions. Teacher submits those assigned packages. The system assembles submitted eligible contributions from one or more Teachers into a complete assessment version according to the blueprint, then queues it for Admin review/approval/publication. Teacher does not submit a whole assembled exam; Admin does not manually compose or author its items. Feedback on version items routes to the current Teacher for their source Lesson. Corrections use successor contributions and a newly assembled version, retaining authorship, assignment episodes and prior review history. This paragraph controls assembly ownership where older wording below is less specific; exact physical mechanisms remain proposed in the [database reconciliation](design/physical/database-reconciliation-2026-10-20.md). Logical diagrams predating ADR-043 have not been reapproved by this addendum.
+UC-09–12 retain their identities. Admin configures the blueprint and assigns Lesson/content packages, including related assessment questions. Teacher submits those assigned packages. The system assembles submitted eligible contributions from one or more Teachers into a complete assessment version according to the blueprint, then queues it for Admin review/approval/publication. Teacher does not submit a whole assembled exam; Admin does not manually compose or author its items. Feedback on version items routes to the current Teacher for their source Lesson. Corrections use successor contributions and a newly assembled version, retaining authorship, assignment episodes and prior review history. This paragraph controls assembly ownership where older wording below is less specific; exact physical mechanisms remain proposed in the database reconciliation. Logical diagrams predating ADR-043 have not been reapproved by this addendum.
 
 ## 9. Lập đề cương, ma trận đề thi và Phân công
 

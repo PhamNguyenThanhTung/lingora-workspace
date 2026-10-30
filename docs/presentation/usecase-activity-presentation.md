@@ -9,15 +9,15 @@
 | Thời gian | Nội dung | Sơ đồ mở |
 |---|---|---|
 | 0:00–0:35 | Mở đầu | Chưa mở hình |
-| 0:35–1:00 | Use Case tổng quan | [VIEW-UC-01 PNG](../modeling/current-target/rendered/UC-01-target-overall.png) · [PlantUML](../modeling/current-target/src/UC-01-target-overall.puml) |
-| 1:00–1:45 | VIEW-RUC-01 — Tài khoản | [PNG](../modeling/report-usecases/rendered/VIEW-RUC-01-auth-profile.png) · [PlantUML](../modeling/report-usecases/VIEW-RUC-01-auth-profile.puml) |
-| 1:45–2:40 | VIEW-RUC-02 — Ngữ cảnh học | [PNG](../modeling/report-usecases/rendered/VIEW-RUC-02-learning-context.png) · [PlantUML](../modeling/report-usecases/VIEW-RUC-02-learning-context.puml) |
-| 2:40–3:55 | VIEW-RUC-03 — Bài học và luyện tập | [PNG](../modeling/report-usecases/rendered/VIEW-RUC-03-lesson-practice.png) · [PlantUML](../modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml) |
-| 3:55–5:30 | VIEW-RUC-04 — SRS | [PNG](../modeling/report-usecases/rendered/VIEW-RUC-04-srs-review.png) · [PlantUML](../modeling/report-usecases/VIEW-RUC-04-srs-review.puml) |
-| 5:30–6:25 | VIEW-RUC-05 — Đánh giá | [PNG](../modeling/report-usecases/rendered/VIEW-RUC-05-assessment.png) · [PlantUML](../modeling/report-usecases/VIEW-RUC-05-assessment.puml) |
-| 6:25–7:10 | VIEW-RUC-06 — Tiến độ và lịch sử | [PNG](../modeling/report-usecases/rendered/VIEW-RUC-06-progress-history.png) · [PlantUML](../modeling/report-usecases/VIEW-RUC-06-progress-history.puml) |
-| 7:10–8:10 | VIEW-RUC-07 — Giáo viên | [PNG](../modeling/report-usecases/rendered/VIEW-RUC-07-teacher-authoring.png) · [PlantUML](../modeling/report-usecases/VIEW-RUC-07-teacher-authoring.puml) |
-| 8:10–9:30 | VIEW-RUC-08A/08B — Quản trị nội dung và tài khoản | [08A PNG](../modeling/report-usecases/rendered/VIEW-RUC-08A-admin-content-governance.png) · [08B PNG](../modeling/report-usecases/rendered/VIEW-RUC-08B-admin-account-support.png) |
+| 0:35–1:00 | Use Case tổng quan | [VIEW-UC-01 PNG](../modeling/current-target/src/UC-01-target-overall.puml) · [PlantUML](../modeling/current-target/src/UC-01-target-overall.puml) |
+| 1:00–1:45 | VIEW-RUC-01 — Tài khoản | [PNG](../modeling/report-usecases/VIEW-RUC-01-auth-profile.puml) · [PlantUML](../modeling/report-usecases/VIEW-RUC-01-auth-profile.puml) |
+| 1:45–2:40 | VIEW-RUC-02 — Ngữ cảnh học | [PNG](../modeling/report-usecases/VIEW-RUC-02-learning-context.puml) · [PlantUML](../modeling/report-usecases/VIEW-RUC-02-learning-context.puml) |
+| 2:40–3:55 | VIEW-RUC-03 — Bài học và luyện tập | [PNG](../modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml) · [PlantUML](../modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml) |
+| 3:55–5:30 | VIEW-RUC-04 — SRS | [PNG](../modeling/report-usecases/VIEW-RUC-04-srs-review.puml) · [PlantUML](../modeling/report-usecases/VIEW-RUC-04-srs-review.puml) |
+| 5:30–6:25 | VIEW-RUC-05 — Đánh giá | [PNG](../modeling/report-usecases/VIEW-RUC-05-assessment.puml) · [PlantUML](../modeling/report-usecases/VIEW-RUC-05-assessment.puml) |
+| 6:25–7:10 | VIEW-RUC-06 — Tiến độ và lịch sử | [PNG](../modeling/report-usecases/VIEW-RUC-06-progress-history.puml) · [PlantUML](../modeling/report-usecases/VIEW-RUC-06-progress-history.puml) |
+| 7:10–8:10 | VIEW-RUC-07 — Giáo viên | [PNG](../modeling/report-usecases/VIEW-RUC-07-teacher-authoring.puml) · [PlantUML](../modeling/report-usecases/VIEW-RUC-07-teacher-authoring.puml) |
+| 8:10–9:30 | VIEW-RUC-08A/08B — Quản trị nội dung và tài khoản | [08A PNG](../modeling/report-usecases/VIEW-RUC-08A-admin-content-governance.puml) · [08B PNG](../modeling/report-usecases/VIEW-RUC-08B-admin-account-support.puml) |
 | 9:30–10:00 | Kết luận | Quay lại VIEW-UC-01 nếu thuận tiện |
 
 Mapping giữa tiểu mục báo cáo, view và UC canonical có trong [README của bộ functional views](../modeling/report-usecases/README.md). Có tám nhóm chức năng, trong đó nhóm Admin tách thành hai sơ đồ để dễ đọc.
@@ -88,7 +88,7 @@ Mapping giữa tiểu mục báo cáo, view và UC canonical có trong [README c
 
 **Cách chỉ hình:** chỉ thao tác trả lời của Học viên, rồi chuyển sang phần hệ thống lựa chọn và cập nhật lịch. Không mô tả một màn due-list hay thao tác để Học viên chọn thẻ.
 
-**Nếu cần mở sơ đồ diễn tiến:** [Activity SRS](../modeling/current-target/rendered/ACT-06-srs-review.png) · [Sequence SRS](../modeling/current-target/rendered/SEQ-08-srs-review.png).
+**Nếu cần mở sơ đồ diễn tiến:** [Activity SRS](../modeling/current-target/src/ACT-06-srs-review.puml) · [Sequence SRS](../modeling/current-target/src/SEQ-08-srs-review.puml).
 
 ### 5:30–6:25 — VIEW-RUC-05: Placement và Level-up Assessment
 

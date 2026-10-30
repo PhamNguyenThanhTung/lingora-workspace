@@ -1,6 +1,6 @@
 # Hoàn thiện sơ đồ lớp thiết kế miền Lingora
 
-**Phạm vi:** chỉ hoàn thiện model/diagram, không implementation schema. Yêu cầu mới của PO là authority cho các tên/version/history/display tối thiểu; ADR-030–036/041/042 vẫn giữ nguyên. [Phê duyệt](../../../plans/approved/2026-10-12-class-design-completion-APPROVED.md), [yêu cầu nguyên văn](../../../plans/approved/2026-10-12-class-design-completion-REQUEST.txt).
+**Phạm vi:** chỉ hoàn thiện model/diagram, không implementation schema. Yêu cầu mới của PO là authority cho các tên/version/history/display tối thiểu; ADR-030–036/041/042 vẫn giữ nguyên. Phê duyệt, yêu cầu nguyên văn.
 
 ## Bảng phân loại TRƯỚC khi sửa diagram
 

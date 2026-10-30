@@ -4,24 +4,24 @@
 
 Ba AD chọn trình bày: **ACT-03 Học bài → ACT-06 SRS → ACT-04 Lên cấp**. Đây là các sơ đồ TARGET của thiết kế; không mô tả các chức năng đã chạy trong checkout. Lời thoại dưới đây có thể dùng trực tiếp. Timeline gồm chuyển hình/chỉ hình, chưa được kiểm chứng bằng rehearsal thực tế; phần dự phòng không đọc trong 10 phút.
 
-**Ảnh AD đã giãn bố cục ngày 12/10/2026:** các link AD dưới đây dùng bản xuất native Draw.io mới. Khi chiếu ACT-03, mở lần lượt [vùng 1 — mở bài/queue/retry](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-03-part-1.png), [vùng 2 — lưu và completion](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-03-part-2.png), [vùng 3 — supplementary/kết quả](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-03-part-3.png); dùng SVG để phóng khi cần theo dõi toàn luồng. Đây là các vùng cắt có phần giao nhau từ cùng sơ đồ, không phải ba luồng mới.
+**Ảnh AD đã giãn bố cục ngày 12/10/2026:** các link AD dưới đây dùng bản xuất native Draw.io mới. Khi chiếu ACT-03, mở lần lượt vùng 1 — mở bài/queue/retry, vùng 2 — lưu và completion, vùng 3 — supplementary/kết quả; dùng SVG để phóng khi cần theo dõi toàn luồng. Đây là các vùng cắt có phần giao nhau từ cùng sơ đồ, không phải ba luồng mới.
 
 ## Thứ tự mở hình và thời lượng
 
 | Thời gian | Nội dung | Hình cần mở |
 |---|---|---|
-| 0:00–0:30 | Mở đầu + UC tổng quan | [VIEW-UC-01](../modeling/current-target/rendered/UC-01-target-overall.png) |
-| 0:30–1:05 | Tài khoản và hồ sơ | [VIEW-RUC-01](../modeling/report-usecases/rendered/VIEW-RUC-01-auth-profile.png) |
-| 1:05–1:50 | Ngữ cảnh học tập | [VIEW-RUC-02](../modeling/report-usecases/rendered/VIEW-RUC-02-learning-context.png) |
-| 1:50–2:35 | Bài học và luyện tập | [VIEW-RUC-03](../modeling/report-usecases/rendered/VIEW-RUC-03-lesson-practice.png) |
-| 2:35–3:15 | Ôn tập SRS | [VIEW-RUC-04](../modeling/report-usecases/rendered/VIEW-RUC-04-srs-review.png) |
-| 3:15–3:55 | Placement và Level-up | [VIEW-RUC-05](../modeling/report-usecases/rendered/VIEW-RUC-05-assessment.png) |
-| 3:55–4:20 | Tiến độ và lịch sử | [VIEW-RUC-06](../modeling/report-usecases/rendered/VIEW-RUC-06-progress-history.png) |
-| 4:20–4:45 | Giáo viên biên soạn | [VIEW-RUC-07](../modeling/report-usecases/rendered/VIEW-RUC-07-teacher-authoring.png) |
-| 4:45–5:25 | Admin governance + tài khoản | [VIEW-RUC-08A](../modeling/report-usecases/rendered/VIEW-RUC-08A-admin-content-governance.png), rồi [08B](../modeling/report-usecases/rendered/VIEW-RUC-08B-admin-account-support.png) |
-| 5:25–7:05 | AD Học bài: queue, retry, completion | [ACT-03 PNG](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-03.png) · [SVG để phóng](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-03.svg) |
-| 7:05–8:20 | AD SRS: lịch ôn và củng cố | [ACT-06 PNG](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-06.png) · [SVG](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-06.svg) |
-| 8:20–9:40 | AD Lên cấp: gate và kết quả | [ACT-04 PNG](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-04.png) · [SVG](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-04.svg) |
+| 0:00–0:30 | Mở đầu + UC tổng quan | [VIEW-UC-01](../modeling/current-target/src/UC-01-target-overall.puml) |
+| 0:30–1:05 | Tài khoản và hồ sơ | [VIEW-RUC-01](../modeling/report-usecases/VIEW-RUC-01-auth-profile.puml) |
+| 1:05–1:50 | Ngữ cảnh học tập | [VIEW-RUC-02](../modeling/report-usecases/VIEW-RUC-02-learning-context.puml) |
+| 1:50–2:35 | Bài học và luyện tập | [VIEW-RUC-03](../modeling/report-usecases/VIEW-RUC-03-lesson-practice.puml) |
+| 2:35–3:15 | Ôn tập SRS | [VIEW-RUC-04](../modeling/report-usecases/VIEW-RUC-04-srs-review.puml) |
+| 3:15–3:55 | Placement và Level-up | [VIEW-RUC-05](../modeling/report-usecases/VIEW-RUC-05-assessment.puml) |
+| 3:55–4:20 | Tiến độ và lịch sử | [VIEW-RUC-06](../modeling/report-usecases/VIEW-RUC-06-progress-history.puml) |
+| 4:20–4:45 | Giáo viên biên soạn | [VIEW-RUC-07](../modeling/report-usecases/VIEW-RUC-07-teacher-authoring.puml) |
+| 4:45–5:25 | Admin governance + tài khoản | [VIEW-RUC-08A](../modeling/report-usecases/VIEW-RUC-08A-admin-content-governance.puml), rồi [08B](../modeling/report-usecases/VIEW-RUC-08B-admin-account-support.puml) |
+| 5:25–7:05 | AD Học bài: queue, retry, completion | ACT-03 PNG · SVG để phóng |
+| 7:05–8:20 | AD SRS: lịch ôn và củng cố | ACT-06 PNG · SVG |
+| 8:20–9:40 | AD Lên cấp: gate và kết quả | ACT-04 PNG · SVG |
 | 9:40–10:00 | Kết thúc | Giữ ACT-04 hoặc quay UC tổng quan |
 
 Ngân sách: **5 phút 25 giây UC, 4 phút 15 giây AD, 20 giây kết thúc**. Bỏ ba hình theo actor vì các functional views đã phân tích trách nhiệm theo chức năng. Không mở lại chúng trong phần nói chính.
@@ -112,7 +112,7 @@ Ngân sách: **5 phút 25 giây UC, 4 phút 15 giây AD, 20 giây kết thúc**.
 
 “Nếu chưa đạt, tiến độ và quyền học đang có vẫn giữ, người học được đề xuất ôn tập và thi lại theo cấu hình. Nếu đạt nhưng cấp sau chưa có nội dung khả dụng, hệ thống giữ bằng chứng đã đạt, hiển thị đang phát triển. Khi đủ điều kiện và có nội dung, cấp tiếp theo mới được mở. Như vậy, thi đạt, tiến độ curriculum và nội dung khả dụng được kiểm tra riêng; kết quả lên cấp không tự trở thành chứng chỉ ngôn ngữ.”
 
-**Chỉ hình:** gate đầu → version/submit/save → fail/pass → available/coming soon. AD hiện ghi gate rõ ở đầu; lời thoại nhấn điều kiện kết hợp theo UC-05/SEQ-07, không nói hình đã có node recheck sau save. Xem nhận xét R04 trong [review](puml-review-2026-10-12.md).
+**Chỉ hình:** gate đầu → version/submit/save → fail/pass → available/coming soon. AD hiện ghi gate rõ ở đầu; lời thoại nhấn điều kiện kết hợp theo UC-05/SEQ-07, không nói hình đã có node recheck sau save. Xem nhận xét R04 trong review.
 
 ### 9:40–10:00 — Kết thúc
 
@@ -144,7 +144,7 @@ VIEW-RUC chỉ là mã hình, không đánh lại catalog. Tám nhóm chức nă
 - **Ví dụ performance:** giả sử N = 4; hai câu đúng lần đầu, hai câu sai lần đầu nên K = 2; một retry đúng và một retry sai. Tổng đóng góp = 2 + 0,5 = 2,5; performance = 2,5/6 ≈ 41,67%. Nếu xử lý/lưu hợp lệ vẫn hoàn thành. Đây là ví dụ minh họa công thức ADR-036, không quy định mọi bài có bốn câu.
 - **Streak tính khi nào:** completed lesson, completed redo hợp lệ hoặc recorded SRS review; tối đa một lần mỗi ngày địa phương, toàn tài khoản. Login, mở app, retry riêng lẻ, Placement hoặc Level-up không qualify.
 - **Vì sao không xem due list:** ADR-041 yêu cầu hệ thống chọn nội bộ sau bắt đầu phiên, learner chỉ thấy prompt. Trọng tâm ngữ pháp không suppress từ due; SRS không trộn vào assessment có điểm.
-- **Hai AD dự phòng:** [ACT-01 onboarding](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-01.png), [ACT-02 Placement](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-02.png). Nếu muốn nhấn governance, thay ACT-04 bằng [ACT-08](../modeling/current-target/evidence/2026-10-12-ad-layout/ACT-08.png) và chuẩn bị lời thoại riêng; không mở thêm cả ba khi còn đúng 10 phút.
+- **Hai AD dự phòng:** ACT-01 onboarding, ACT-02 Placement. Nếu muốn nhấn governance, thay ACT-04 bằng ACT-08 và chuẩn bị lời thoại riêng; không mở thêm cả ba khi còn đúng 10 phút.
 - **Mức độ hiện thực:** đang trình bày thiết kế TARGET. CURRENT checkout mới có nền xác thực/khung web và workspace dữ liệu; không khẳng định learner engine hay Admin web đã chạy.
 
 ## Chuẩn bị trước khi nói

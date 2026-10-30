@@ -1,16 +1,16 @@
-> **Current Status & Pragmatic Policy (2026-10-28):** All prior sequential blocking gates (DATABASE READY, Stage A/Stage B, sequential A1/A2/A3 harness gates, and `WP-DB-REMAIN-01`) have been retired under [AGENTS.md](../../../AGENTS.md) and [Pragmatic Reset](../../pragmatic-reset-2026-10-28.md). Application development proceeds directly via vertical slices (Database Query → API Route → UI Component), starting with [Quản lý Ngôn ngữ](../../../plans/2026-10-27-next-app-slice.md).
+> **Hiện trạng (2026-10-30):** Slice 1 (Admin Auth/Languages) và Slice 2 (Frameworks/Levels) đã ACCEPTED. Xem [roadmap](../../../plans/roadmap.md) và [AGENTS.md](../../../AGENTS.md).
 >
-> - **Current Database Foundation:** 34 application tables deployed across four checksum-matching Prisma migrations (`lingora-admin/prisma/product/migrations/20261027000000_product_baseline` through `20261027030000_product_remediation`). Database schema and data are preserved.
-> - **Historical Design & Review Context:** The design specifications below (physical ERD, table inventory, reconciliation, security model) and dated review records ([remediation-review](evidence/2026-10-27-product-database-finalize/remediation-review.md), [G0 harness result](wp00-g0-final-repair-result-2026-10-25.md), [FDR correction](../design-correction-2026-10-20.md)) provide authoritative technical reference and historical context, but do not act as blocking runtime gates.
+> - **Database foundation:** product Prisma có 34 models; chủ dự án chấp nhận DEV đã áp 5 migrations. Git hiện theo dõi 4 migrations; migration `20261028010000_database_closure` còn local untracked, chờ chủ dự án quyết định lưu vào Git. Không sửa schema, migration hay dữ liệu trong tác vụ tài liệu này.
+> - **Historical Design & Review Context:** The design specifications below (physical ERD, table inventory, reconciliation, security model) and dated review records (remediation-review, G0 harness result, FDR correction) provide authoritative technical reference and historical context, but do not act as blocking runtime gates.
 
 # Lingora — Physical Data & Runtime Design
 
 > **PHYSICAL DESIGN REFERENCE (Revised 2026-10-20; 34-table baseline deployed in Prisma migrations)**
 > Historical design proposal established on 2026-10-20. Serves as reference documentation for the 34-table schema implemented in `lingora-admin/prisma/product/migrations/`.
 
-This document follows the accepted [Class review](../../modeling/current-target/class-review-2026-10-16.md), [DOM-01](../../modeling/current-target/src/DOM-01-core-domain-model.puml), [requirements](../../02-requirements.md), [UC specifications](../../use-case-specifications.md) and scoped ADR-030–036/041–043 in the [decision log](../../../logs/decision-log.md). Older DATA/Sequence/state views and dated physical reviews remain downstream/historical references pending reconciliation; they do not approve this proposal. Current PO authorization covers database-design work; physical approval and implementation are separate.
+This document follows the accepted Class review, [DOM-01](../../modeling/current-target/src/DOM-01-core-domain-model.puml), [requirements](../../02-requirements.md), [UC specifications](../../use-case-specifications.md) and scoped ADR-030–036/041–043 in the [decision log](../../../logs/decision-log.md). Older DATA/Sequence/state views and dated physical reviews remain downstream/historical references pending reconciliation; they do not approve this proposal. Current PO authorization covers database-design work; physical approval and implementation are separate.
 
-Companion artifacts: [security and RLS](security-and-rls.md), [legacy inventory, rebuild and future acceptance tests](rebuild-plan.md), [verification and independent review](review-and-verification.md), [correction report](correction-pass.md), [physical ERD source](physical-erd.puml). The ERD is one draft with four views: [identity/curriculum](physical-erd-identity.svg), [content/governance](physical-erd-content.svg), [learner evidence/SRS](physical-erd-learning.svg), [assessment](physical-erd-assessment.svg). Reference boxes repeat existing tables, not new tables.
+Companion artifacts: [security and RLS](security-and-rls.md), legacy inventory, rebuild and future acceptance tests, verification and independent review, correction report, [physical ERD source](physical-erd.puml). The ERD is one draft with four views: [identity/curriculum](physical-erd-identity.svg), [content/governance](physical-erd-content.svg), [learner evidence/SRS](physical-erd-learning.svg), [assessment](physical-erd-assessment.svg). Reference boxes repeat existing tables, not new tables.
 
 ## A. Physical architecture recommendation
 
@@ -113,7 +113,7 @@ Common columns: `created_at timestamptz NOT NULL DEFAULT now()` on every table. 
 
 ### FDR-05–07 correction contracts (2026-10-20, PROPOSED)
 
-The current [correction report](../design-correction-2026-10-20.md) reconciles these catalog details; it does not approve runtime/physical deployment.
+The current correction report reconciles these catalog details; it does not approve runtime/physical deployment.
 
 **Exact FK targets (FDR-05):**
 
@@ -133,7 +133,7 @@ Context purpose retains the proposed nullable text representation. The existing 
 
 ### FTR-01 readiness decision — ADR-044 (2026-10-22)
 
-Every Lesson publishable for Learner completion requires at least one `lesson_exercises.is_core = true` membership on its exact revision. Zero-core drafts are allowed; submit/approve/publish reject zero and runtime start rechecks. Retain `lesson_attempts.n_core > 0` and ADR-036 N+K scoring. No N=0 completion/performance, new table/state or special content-only mechanism in MVP. [Official dispositions](ftr-disposition-2026-10-22.md) and [implementation spec](../../../plans/2026-10-22-database-runtime-implementation-spec.md) control the bounded follow-on contracts; runtime remains NOT EXECUTED.
+Every Lesson publishable for Learner completion requires at least one `lesson_exercises.is_core = true` membership on its exact revision. Zero-core drafts are allowed; submit/approve/publish reject zero and runtime start rechecks. Retain `lesson_attempts.n_core > 0` and ADR-036 N+K scoring. No N=0 completion/performance, new table/state or special content-only mechanism in MVP. Official dispositions and implementation spec control the bounded follow-on contracts; runtime remains NOT EXECUTED.
 
 ## C. Logical → physical mapping
 
@@ -166,7 +166,7 @@ Every Lesson publishable for Learner completion requires at least one `lesson_ex
 
 For controlled staff creation, **skip-then-insert** is the selected proposal: an Admin-authorized private reservation of normalized email makes the auth trigger skip generic account creation for that address. Missing application account fails closed. The isolated Auth adapter creates a new provider identity carrying a server-written private operation-correlation marker, receives its UUID, verifies exact operation correspondence, then inserts fixed-role TEACHER/ADMIN with PENDING status. A public signup collision cannot satisfy that server-controlled marker and is never adopted/elevated or converted from LEARNER. The existing identity is reported for operator resolution. On lost provider response, reconciliation uses the private marker plus returned/provider-admin UUID; email equality alone is insufficient. Client-editable user metadata is never trusted. PENDING is supported by approved STA-01/UC-01; no further account lifecycle is introduced. The provider adapter must verify supported create/invitation correlation semantics in disposable integration tests before implementing this flow.
 
-FTR-02 selects the exact [Auth contract in spec §4](../../../plans/2026-10-22-database-runtime-implementation-spec.md#4-ftr-02--selected-auth-provisioning-contract): reserve email/operation plus a server UUID in `provider_correlation_id` before the provider call; keep `auth_user_id` null until verified. `createUser` supplies that UUID and private app_metadata marker atomically. Reconcile with `getUserById` and exact UUID/email/private marker; never adopt by email alone. Bind fixed-role PENDING + audit in a separate transaction, then invite that existing unconfirmed identity and verify returned UUID. READY means bound/ready for activation, not delivered/ACTIVE. Trusted password-setup success precedes PENDING activation; DISABLED cannot activate. Calls stay outside DB transactions, retries reuse the same identity, and mail is at-least-once. Operator-only ADMIN bootstrap uses the same model. **A1 must prove actual provider/trigger/invite/recovery behavior before runtime acceptance.**
+FTR-02 selects the exact Auth contract in spec §4: reserve email/operation plus a server UUID in `provider_correlation_id` before the provider call; keep `auth_user_id` null until verified. `createUser` supplies that UUID and private app_metadata marker atomically. Reconcile with `getUserById` and exact UUID/email/private marker; never adopt by email alone. Bind fixed-role PENDING + audit in a separate transaction, then invite that existing unconfirmed identity and verify returned UUID. READY means bound/ready for activation, not delivered/ACTIVE. Trusted password-setup success precedes PENDING activation; DISABLED cannot activate. Calls stay outside DB transactions, retries reuse the same identity, and mail is at-least-once. Operator-only ADMIN bootstrap uses the same model. **A1 must prove actual provider/trigger/invite/recovery behavior before runtime acceptance.**
 
 Protected request: validated Auth subject → account exists → ACTIVE and provider prerequisites → expected business role → ownership/current assignment and content/context curriculum scope → operation. Disable/enable increments row_version; next protected request rechecks DB without an authorization cache. Long-lived middleware session/JWT is not sufficient. An already running transaction may finish according to lock ordering; no instant token-revocation promise. Accounts missing during provision fail closed. Sensitive commands lock/recheck relevant account rows before committing.
 
@@ -198,7 +198,7 @@ Streak is distinct local dates UNION of completed lesson attempts (including val
 
 ## H. Assessment design
 
-Admin configures blueprint scope/coverage/config. Teacher submits Lesson-bound contributions; the system assembles complete eligible submitted inputs, then Admin reviews/approves/publishes (ADR-043). Blueprint scope freezes once assembly uses it; different scope requires a new blueprint, with contributions submitted under the existing relevant Lesson assignments. Non-scope config increments generation. The immutable version snapshots all purpose/scope/coverage/catalog/distribution/grading policy and exact source submissions; attempts pin it before grading. No lead Teacher or separate blueprint assignment. See [assembly/correction/security rules and DB43 acceptance](database-reconciliation-2026-10-20.md). Only PLACEMENT/LEVEL_UP active; current curriculum gate remains separate from pinned pass policy.
+Admin configures blueprint scope/coverage/config. Teacher submits Lesson-bound contributions; the system assembles complete eligible submitted inputs, then Admin reviews/approves/publishes (ADR-043). Blueprint scope freezes once assembly uses it; different scope requires a new blueprint, with contributions submitted under the existing relevant Lesson assignments. Non-scope config increments generation. The immutable version snapshots all purpose/scope/coverage/catalog/distribution/grading policy and exact source submissions; attempts pin it before grading. No lead Teacher or separate blueprint assignment. See assembly/correction/security rules and DB43 acceptance. Only PLACEMENT/LEVEL_UP active; current curriculum gate remains separate from pinned pass policy.
 
 Start validates available version, own ACTIVE context and the version's immutable scope. Finalize validates item set/timing/input and topic/skill coverage, grades privately from pinned version data, writes private responses/result and marks attempt complete in one transaction. Any current curriculum gate remains a separate check. Retry with the same submission key/hash returns the same aggregate result; changed payload/key reuse is rejected. New intentional attempt produces new immutable result. Missing/invalid submission leaves no result. Queries allow aggregate own result only; no per-item correctness, keys or answer-revealing explanation during or after assessments. Version coverage/purpose stays reproducible after later blueprint configuration changes.
 
@@ -277,7 +277,7 @@ No GIN index for every JSONB config, materialized progress view, warehouse or sp
 
 ## O. Transactions, concurrency and idempotency
 
-**LOCK-01 in [implementation spec §6.2](../../../plans/2026-10-22-database-runtime-implementation-spec.md#62-lock-01--the-only-ordering-authority) is the single ordering authority**, superseding shorter ordering prose in prior proposals: sorted actor/target accounts → courses → mutated catalog rows → blueprints → assignments → Lessons/revisions → vocabulary/item identities/item revisions/assessment versions → contexts → attempts → cards → assets → fingerprint advisory locks. Unused ranks are skipped; no earlier-rank lock is acquired later. Parent serialization uses FOR NO KEY UPDATE for stable keys, with scoped SELECT/UPDATE USING permissions under FORCE RLS. Provisioning coordination is terminal after account locks and never continues to curriculum. Recheck scope/generations after ordered acquisition; provider calls occur outside transactions. Assembly has no business actor; asset cleanup never later locks parents.
+**LOCK-01 in implementation spec §6.2 is the single ordering authority**, superseding shorter ordering prose in prior proposals: sorted actor/target accounts → courses → mutated catalog rows → blueprints → assignments → Lessons/revisions → vocabulary/item identities/item revisions/assessment versions → contexts → attempts → cards → assets → fingerprint advisory locks. Unused ranks are skipped; no earlier-rank lock is acquired later. Parent serialization uses FOR NO KEY UPDATE for stable keys, with scoped SELECT/UPDATE USING permissions under FORCE RLS. Provisioning coordination is terminal after account locks and never continues to curriculum. Recheck scope/generations after ordered acquisition; provider calls occur outside transactions. Assembly has no business actor; asset cleanup never later locks parents.
 
 | Operation | Retry safe? | Strategy and transaction boundary |
 |---|---|---|
@@ -312,7 +312,7 @@ Existing `DATABASE_URL` historically points at an owner-like `postgres` shared s
 
 ## Q–T. Legacy findings, rebuild, preservation and tests
 
-[Rebuild plan](rebuild-plan.md) retains historical legacy inventory and conditional migration/rebuild options. This reconciliation does not select CLEAN REBUILD or authorize reset/drop/seed. Live inventory, backup/restore rehearsal and owner-confirmed disposition must precede any destructive execution. DB43 cases supplement and supersede incompatible standalone-assessment authoring tests.
+Rebuild plan retains historical legacy inventory and conditional migration/rebuild options. This reconciliation does not select CLEAN REBUILD or authorize reset/drop/seed. Live inventory, backup/restore rehearsal and owner-confirmed disposition must precede any destructive execution. DB43 cases supplement and supersede incompatible standalone-assessment authoring tests.
 
 ## U. Open physical decisions
 
@@ -320,7 +320,7 @@ The correction report maps each physical proposal to its authority and states wh
 
 ## V–W. Verification and final verdict
 
-Current reconciliation evidence is recorded under [2026-10-20 database design](evidence/2026-10-20-database-design/); [DB43 scenarios](database-reconciliation-2026-10-20.md) are future runtime cases, NOT EXECUTED. Older correction/recheck reports and verify.py preserve their historical scope and must not be presented as acceptance of this revision. Physical design stays PROPOSED; independent documentation review is not installed database/security verification or final physical approval.
+Current reconciliation evidence is recorded under 2026-10-20 database design; DB43 scenarios are future runtime cases, NOT EXECUTED. Older correction/recheck reports and verify.py preserve their historical scope and must not be presented as acceptance of this revision. Physical design stays PROPOSED; independent documentation review is not installed database/security verification or final physical approval.
 
 
 ## Study Focus physical addendum — ADR-042

@@ -1,10 +1,10 @@
 # Proposed Auth, Authorization, RLS and Media Boundary
 
 > **PROPOSED PHYSICAL DESIGN — NOT IMPLEMENTED** · 2026-10-11
-> **Reconciled 2026-10-20:** ADR-043 and [database reconciliation](database-reconciliation-2026-10-20.md) replace standalone assessment assignment and Teacher whole-version write paths. Physical mechanisms stay PROPOSED.
+> **Reconciled 2026-10-20:** ADR-043 and database reconciliation replace standalone assessment assignment and Teacher whole-version write paths. Physical mechanisms stay PROPOSED.
 > LIVE DB UNVERIFIED. Policy/grant/function names below describe future implementation responsibilities, not installed SQL.
 
-Controlling behavior: [ADR-034–036](../../../logs/decision-log.md), [active requirements](../../02-requirements.md) and [UC catalog](../../use-case-specifications.md). Table definitions/transactions are in the [physical design](README.md); future security tests are in the [rebuild plan](rebuild-plan.md).
+Controlling behavior: [ADR-034–036](../../../logs/decision-log.md), [active requirements](../../02-requirements.md) and [UC catalog](../../use-case-specifications.md). Table definitions/transactions are in the [physical design](README.md); future security tests are in the rebuild plan.
 
 ## Identity and request authority
 
@@ -33,7 +33,7 @@ Account lookup policy avoids recursive self-query: a narrow security-definer hel
 
 ### FTR-02/03 execution addendum — 2026-10-22
 
-The [official disposition](ftr-disposition-2026-10-22.md) and [implementation spec §4–6](../../../plans/2026-10-22-database-runtime-implementation-spec.md) select Auth API/recovery, lock-only policies and **LOCK-01**, the only lock-order authority. Actor/target account rows lock together in sorted UUID order, not actor→target request order; domain parents follow the total rank in that spec. Lock-only principals require scoped SELECT USING **and** UPDATE USING on frozen as well as editable rows, column UPDATE grant and WITH CHECK(false) for actual writes. Genuine writer policies stay separate. Use FOR NO KEY UPDATE for stable parent serialization to coexist with FK KEY SHARE checks; no late upgrade. Short command traces below are subsequences; none permits inverse ordering or omits policy checks. These are selected contracts, not executed SQL/RLS evidence; A1/A2/A3 remain mandatory disposable gates.
+The official disposition and implementation spec §4–6 select Auth API/recovery, lock-only policies and **LOCK-01**, the only lock-order authority. Actor/target account rows lock together in sorted UUID order, not actor→target request order; domain parents follow the total rank in that spec. Lock-only principals require scoped SELECT USING **and** UPDATE USING on frozen as well as editable rows, column UPDATE grant and WITH CHECK(false) for actual writes. Genuine writer policies stay separate. Use FOR NO KEY UPDATE for stable parent serialization to coexist with FK KEY SHARE checks; no late upgrade. Short command traces below are subsequences; none permits inverse ordering or omits policy checks. These are selected contracts, not executed SQL/RLS evidence; A1/A2/A3 remain mandatory disposable gates.
 
 ### Principals for narrow functions under FORCE RLS
 

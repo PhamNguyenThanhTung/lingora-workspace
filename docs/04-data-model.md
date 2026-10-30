@@ -1,10 +1,10 @@
 # 04 - Lingora Data Model (Historical & Target Physical Reference)
 
-> **Quy trình hiện hành — 2026-10-28:** Chủ dự án đã hủy `WP-DB-REMAIN-01`, preapply/Stage A/Stage B và cổng DATABASE READY để bắt đầu code app. Bốn migration và schema 34 model được giữ nguyên; xem [báo cáo dọn dẹp](repository-cleanup-2026-10-28.md).
+> **Quy trình hiện hành — 2026-10-28:** Chủ dự án đã hủy `WP-DB-REMAIN-01`, preapply/Stage A/Stage B và cổng DATABASE READY để bắt đầu code app. Bốn migration và schema 34 model được giữ nguyên; xem báo cáo dọn dẹp.
 
-> **WP-DB-FINAL-01 latest status (2026-10-27): STOP / NOT DATABASE READY.** Owner-authorized targeted repair was independently re-reviewed: [FAIL](design/physical/evidence/2026-10-27-product-database-finalize/remediation-review.md). FDB-01 routing and FDB-07 scope-source defects are closed; frozen provenance/snapshot correspondence, fixture safety and acceptance evidence remain incomplete. Four successful checksum-matching migrations and 71 enabled triggers are observed on the exact 34-table DEV target (29+5). Clean replay is NOT RUN / UNESTABLISHED. Preserve all four applied migrations/data; do not run the dormant Auth smoke branch against existing accounts. Parked infrastructure remains nonblocking; app implementation stays pending READY.
+> **WP-DB-FINAL-01 latest status (2026-10-27): STOP / NOT DATABASE READY.** Owner-authorized targeted repair was independently re-reviewed: FAIL. FDB-01 routing and FDB-07 scope-source defects are closed; frozen provenance/snapshot correspondence, fixture safety and acceptance evidence remain incomplete. Four successful checksum-matching migrations and 71 enabled triggers are observed on the exact 34-table DEV target (29+5). Clean replay is NOT RUN / UNESTABLISHED. Preserve all four applied migrations/data; do not run the dormant Auth smoke branch against existing accounts. Parked infrastructure remains nonblocking; app implementation stays pending READY.
 
-> **Current database-design entry — 2026-10-20:** [Reconciliation and Class mapping](design/physical/database-reconciliation-2026-10-20.md), [34-table physical catalog](design/physical/README.md), [security](design/physical/security-and-rls.md) and [four-view ERD](design/physical/physical-erd.puml) are the revised PROPOSED physical package. ADR-043 accepts system assembly of Teacher-submitted Lesson question packages; physical realization remains unapproved/unimplemented. Legacy schema below is historical; live DB UNVERIFIED.
+> **Current database-design entry — 2026-10-20:** Reconciliation and Class mapping, [34-table physical catalog](design/physical/README.md), [security](design/physical/security-and-rls.md) and [four-view ERD](design/physical/physical-erd.puml) are the revised PROPOSED physical package. ADR-043 accepts system assembly of Teacher-submitted Lesson question packages; physical realization remains unapproved/unimplemented. Legacy schema below is historical; live DB UNVERIFIED.
 
 > **CLASSIFICATION: HISTORICAL SCHEMA & TARGET PHYSICAL REFERENCE — NOT CURRENT LOGICAL DOMAIN AUTHORITY.**
 > - **Domain authority:** ADR-030–036 and current canonical modeling (`docs/modeling/current-target/`) control logical domain entities, relationships, and invariants. Physical data structures do NOT define domain design.
@@ -13,7 +13,7 @@
 > - **Physical proposals:** Detailed physical schema proposals (e.g. `docs/design/physical/`) remain PROPOSED / UNAPPROVED; physical mapping remains deferred under P0-D07.
 >
 > **Phase 0 Canonical Baseline (aligned 2026-09-14 & ADR-014 — Historical Reference):**
-> Target database schema aligns with [`docs/plantuml/erd-mvp-learning.puml`](plantuml/erd-mvp-learning.puml) and Phase 0 role/content specifications.
+> Target database schema aligns with `docs/plantuml/erd-mvp-learning.puml` and Phase 0 role/content specifications.
 > Historical migrations (`202608140001_init`, `202608140002_auth_rls_storage_record_review`, `202608140003_storage_two_bucket_size_enforcement`) and Git history are strictly preserved for audit.
 
 >

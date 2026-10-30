@@ -145,7 +145,7 @@ Bộ thực thể logic phục vụ mô hình sư phạm chuyên gia (Expert-inf
 - `RemedialModule`: Mô-đun bổ khuyết khái niệm/kỹ năng có đầy đủ trường quản trị nội dung (`creatorId`, `status`, `reviewerId`, `publishedAt`, `version`), không hạ cấp độ tổng thể, không bắt học lại bài cũ (M-03).
 
 ### 4.2. Sơ đồ Domain Model UML
-Sơ đồ PlantUML lưu tại [`docs/plantuml/domain-model-core.puml`](plantuml/domain-model-core.puml).  
+Sơ đồ PlantUML lưu tại `docs/plantuml/domain-model-core.puml`.
 > **Ghi chú Kiểm tra PlantUML (PlantUML Validation):** Static syntax balance checked (`@startuml` / `@enduml`, quan hệ, định danh). Renderer không khả dụng trong môi trường hiện tại (`plantuml.jar` / Java không có sẵn).
 
 ```mermaid
@@ -689,7 +689,7 @@ Bảng tổng hợp kiểm kê toàn diện và phân loại chính xác các th
 *Xác nhận Độ phủ Data Dictionary:* Đúng 18 bảng Core Scope được mô tả độc lập, chi tiết từng trường dữ liệu tại 18 đề mục §8.1 đến §8.18 (độ phủ 100% Core Scope, không có độ lệch giữa số bảng Core và số đề mục).
 
 ### 7.2. Sơ đồ ERD 2 Trục PlantUML
-Sơ đồ nguồn lưu tại [`docs/plantuml/erd-logical-status-mapping.puml`](plantuml/erd-logical-status-mapping.puml).  
+Sơ đồ nguồn lưu tại `docs/plantuml/erd-logical-status-mapping.puml`.
 > **Ghi chú Kiểm tra PlantUML (PlantUML Validation):** Static syntax balance checked (`@startuml` / `@enduml`, liên kết bảng, phân định màu theo 2 trục). Renderer không khả dụng trong môi trường hiện tại.
 
 ---

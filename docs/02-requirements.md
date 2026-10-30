@@ -13,11 +13,11 @@
 
 ## Current completable Lesson readiness — ADR-044 (2026-10-22)
 
-PO resolves FTR-01: every Lesson publishable for Learner completion has **at least one core exercise (`N >= 1`)**. Draft may contain zero while being authored. Submit, approve and publish readiness reject zero; runtime start rechecks the exact published revision. Keep physical `lesson_attempts.n_core > 0`. Completion/performance for `N = 0` is outside MVP; no special content-only table, state or completion mechanism is added. ADR-036 scoring/completion rules otherwise remain unchanged. [FTR disposition](design/physical/ftr-disposition-2026-10-22.md) and [implementation spec](../plans/2026-10-22-database-runtime-implementation-spec.md) specify future acceptance; no runtime was executed.
+PO resolves FTR-01: every Lesson publishable for Learner completion has **at least one core exercise (`N >= 1`)**. Draft may contain zero while being authored. Submit, approve and publish readiness reject zero; runtime start rechecks the exact published revision. Keep physical `lesson_attempts.n_core > 0`. Completion/performance for `N = 0` is outside MVP; no special content-only table, state or completion mechanism is added. ADR-036 scoring/completion rules otherwise remain unchanged. FTR disposition and implementation spec specify future acceptance; no runtime was executed.
 
 ## Current assessment assembly addendum — ADR-043 (2026-10-20)
 
-Teacher submits question contributions within the assigned Lesson/content package. The system assembles eligible submitted packages according to the Admin-configured blueprint; Admin reviews, requests corrections, approves and publishes. No separate Teacher assignment for a whole assessment, lead author, manual Admin composition or new canonical use case is added. Preserve per-contribution authorship/assignment episodes and source submissions. Route feedback to the current responsible Teacher; corrected contributions produce a successor assembled version. Existing secure-item readiness, grading secrecy and immutable learner version pins remain in force. [Proposed physical reconciliation and DB43 acceptance](design/physical/database-reconciliation-2026-10-20.md) do not establish installed tables or successful runtime tests.
+Teacher submits question contributions within the assigned Lesson/content package. The system assembles eligible submitted packages according to the Admin-configured blueprint; Admin reviews, requests corrections, approves and publishes. No separate Teacher assignment for a whole assessment, lead author, manual Admin composition or new canonical use case is added. Preserve per-contribution authorship/assignment episodes and source submissions. Route feedback to the current responsible Teacher; corrected contributions produce a successor assembled version. Existing secure-item readiness, grading secrecy and immutable learner version pins remain in force. Proposed physical reconciliation and DB43 acceptance do not establish installed tables or successful runtime tests.
 
 ## Current MVP Product Baseline Addendum — ADR-036 (2026-10-10)
 
@@ -91,7 +91,7 @@ Admin may search Learner accounts, view necessary identity/status/role fields an
 | 7 | **Class Diagram** | Tầng data/domain của Web Learner (Repository, Model, service/hook) — thể hiện tách lớp presentation / data. |
 | 8 | **Kiến trúc & UI/UX** | Sơ đồ mục 1.1, wireframe Figma (đặc biệt màn "Ôn tập thông minh" và màn chat), bảng màu, design decision. |
 | 9 | **Test case + kết quả** | Bảng ≥ 25 test case, gồm cả trường hợp AI Server timeout / trả `MOCK_MODE`. Kèm ảnh chụp. |
-| 10 | **Chương Scalability** | Dùng nguyên bảng 1.8 trong [01-kien-truc-he-thong.md](01-architecture.md#18-bàn-về-khả-năng-mở-rộng-để-trả-lời-hội-đồng-knpm). |
+| 10 | **Chương Scalability** | Dùng nguyên bảng 1.8 trong [01-kien-truc-he-thong.md](01-architecture.md). |
 
 #### Dàn ý báo cáo KNPM
 ```
@@ -126,7 +126,7 @@ Ch7. Kết luận        — đã làm được / hạn chế / hướng phát t
 |---|---|---|
 | 1 | **[Must]** Sơ đồ kiến trúc DKT-LSTM | Khối: Embedding(skill, correct) → LSTM (n_layers, hidden_size) → Linear → Sigmoid (xác suất đúng cho mỗi skill ở bước tiếp theo). Ghi rõ `input_dim`, `hidden_size`, `num_layers`, `dropout`. |
 | 2 | **[Must]** Công thức Half-Life Regression | `p = 2^(-Δt/h)`, `h = 2^(θ·x)` với `x` là feature vector (số lần đúng, số lần sai, độ khó từ...). Giải thích ý nghĩa "half-life". |
-| 2b | **[Must]** Sơ đồ Scheduler (tách khỏi model) | Khối `recall_probability (từ DKT/HLR) → Scheduler (rule-based) → priority + recommended_interval_days`. Nhấn mạnh đây **không phải** phần học máy — xem [01](04-data-model.md#13b-tách-rõ-dkthlr-khỏi-scheduler). |
+| 2b | **[Must]** Sơ đồ Scheduler (tách khỏi model) | Khối `recall_probability (từ DKT/HLR) → Scheduler (rule-based) → priority + recommended_interval_days`. Nhấn mạnh đây **không phải** phần học máy — xem [01](04-data-model.md). |
 | 3 | **[Must]** Bảng số tham số | `sum(p.numel() for p in model.parameters())` của DKT-LSTM, tách theo từng khối (embedding/LSTM/output). |
 | 4 | **[Must]** Biểu đồ Loss (train + val) theo epoch | TensorBoard/matplotlib cho DKT-LSTM. Dùng để giải thích Early Stopping. |
 | 5 | **[Must]** Biểu đồ AUC-ROC theo epoch | Trên tập validation ASSISTments |
@@ -249,7 +249,7 @@ Ch8. Kết luận
 
 ## Phase 0 Canonical Functional Baseline (MVP-01 to MVP-19)
 
-*Source: [`docs/phase-0-roles-and-mvp-final.md`](archive/phase-0/phase-0-roles-and-mvp-final.md)*
+*Source: `docs/phase-0-roles-and-mvp-final.md`*
 
 | ID | Chức năng MVP | Owner chính | Tiêu chí nghiệm thu tối thiểu (Acceptance Criteria) | Liên kết Use Case |
 |---|---|---|---|---|
