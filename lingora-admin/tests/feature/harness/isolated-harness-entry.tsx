@@ -2,13 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppShell } from '../../../src/components/AppShell';
 import { LanguagesCatalog } from '../../../src/components/LanguagesCatalog';
+import { FrameworksCatalog } from '../../../src/components/FrameworksCatalog';
+import { LevelsCatalog } from '../../../src/components/LevelsCatalog';
 import { TeacherHoldingView } from '../../../src/app/holding/TeacherHoldingView';
 import { AccessDeniedView } from '../../../src/components/AccessDeniedView';
 import { ServiceUnavailableView } from '../../../src/components/ServiceUnavailableView';
 import { DeleteBlockedModal } from '../../../src/components/DeleteBlockedModal';
 import { SessionLostModal } from '../../../src/components/SessionLostModal';
-import { saveDraft, loadDraft, clearAllDrafts } from '../../../src/components/draftStorage';
+import { saveDraft, loadDraft } from '../../../src/components/draftStorage';
 import type { LanguageDto } from '../../../src/server/languages';
+
+if (typeof window !== 'undefined') {
+  (window as any).saveDraft = saveDraft;
+  (window as any).loadDraft = loadDraft;
+}
+import type { FrameworkDto } from '../../../src/server/frameworks';
+import type { LevelDto } from '../../../src/server/levels';
 
 const MOCK_ADMIN = {
   id: '00000000-0000-4000-8000-000000000001',
@@ -66,6 +75,75 @@ const MOCK_LANGUAGES: LanguageDto[] = [
     names: { vi: 'Tiếng Trung (Giản thể)', en: 'Chinese (Simplified)' },
     isLearnable: true,
     isUiLocale: false,
+  },
+];
+
+const MOCK_FRAMEWORKS: FrameworkDto[] = [
+  {
+    id: '11111111-1111-4111-8111-111111111111',
+    code: 'CEFR',
+    version: '2020',
+    names: { vi: 'Khung Tham chiếu Châu Âu', en: 'Common European Framework' },
+    levelCount: 4,
+  },
+  {
+    id: '22222222-2222-4222-8222-222222222222',
+    code: 'ACTFL',
+    version: '2024',
+    names: { vi: 'Khung Năng lực ACTFL', en: 'ACTFL Proficiency Guidelines' },
+    levelCount: 0,
+  },
+  {
+    id: '33333333-3333-4333-8333-333333333333',
+    code: 'HSK',
+    version: '3.0',
+    names: { vi: 'Chuẩn Năng lực Hán ngữ HSK' },
+    levelCount: 0,
+  },
+  {
+    id: '44444444-4444-4444-8444-444444444404',
+    code: 'ILR',
+    version: '2023',
+    names: { vi: 'Thang đo ILR' },
+    levelCount: 0,
+  },
+];
+
+const MOCK_LEVELS: LevelDto[] = [
+  {
+    id: 'aaaa1111-1111-4111-8111-111111111111',
+    frameworkId: '11111111-1111-4111-8111-111111111111',
+    code: 'A1',
+    label: { vi: 'Mới bắt đầu A1', en: 'Breakthrough' },
+    position: 1,
+  },
+  {
+    id: 'aaaa2222-2222-4222-8222-222222222222',
+    frameworkId: '11111111-1111-4111-8111-111111111111',
+    code: 'A2',
+    label: { vi: 'Sơ cấp A2', en: 'Waystage' },
+    position: 2,
+  },
+  {
+    id: 'aaaa3333-3333-4333-8333-333333333333',
+    frameworkId: '11111111-1111-4111-8111-111111111111',
+    code: 'B1',
+    label: { vi: 'Trung cấp B1', en: 'Threshold' },
+    position: 3,
+  },
+  {
+    id: 'aaaa4444-4444-4444-8444-444444444444',
+    frameworkId: '11111111-1111-4111-8111-111111111111',
+    code: 'B2',
+    label: { vi: 'Trung cao cấp B2', en: 'Vantage' },
+    position: 4,
+  },
+  {
+    id: 'aaaa5555-5555-4555-8555-555555555404',
+    frameworkId: '11111111-1111-4111-8111-111111111111',
+    code: 'C2',
+    label: { vi: 'Thành thạo C2', en: 'Mastery' },
+    position: 6,
   },
 ];
 
@@ -182,7 +260,128 @@ function IsolatedHarnessApp() {
     );
   }
 
-  // Default: populated catalogue
+  // --- Slice 2 Frameworks States ---
+  if (state === 'frameworks-populated') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <FrameworksCatalog
+          initialFrameworks={MOCK_FRAMEWORKS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'frameworks-loading') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <FrameworksCatalog
+          isLoading={true}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'frameworks-fetch-error') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <FrameworksCatalog
+          initialError="Không thể kết nối đến máy chủ Lingora (503 Service Unavailable)."
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'frameworks-empty') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <FrameworksCatalog
+          initialFrameworks={[]}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  // --- Slice 2 Levels States ---
+  if (state === 'levels-populated') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <LevelsCatalog
+          framework={MOCK_FRAMEWORKS[0]}
+          initialLevels={MOCK_LEVELS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'levels-loading') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <LevelsCatalog
+          framework={MOCK_FRAMEWORKS[0]}
+          isLoading={true}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'levels-fetch-error') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <LevelsCatalog
+          framework={MOCK_FRAMEWORKS[0]}
+          initialError="Không thể kết nối đến máy chủ Lingora (503 Service Unavailable)."
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'levels-empty') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <LevelsCatalog
+          framework={MOCK_FRAMEWORKS[0]}
+          initialLevels={[]}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-framework-detail-wire') {
+    const pageProps = (typeof window !== 'undefined' ? (window as any).__PAGE_PROPS__ : null) || {};
+    return (
+      <AppShell account={pageProps.account || MOCK_ADMIN}>
+        <LevelsCatalog
+          framework={pageProps.framework || MOCK_FRAMEWORKS[0]}
+          initialLevels={pageProps.initialLevels || []}
+          initialError={pageProps.initialError}
+          account={pageProps.account || MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-frameworks-wire') {
+    const pageProps = (typeof window !== 'undefined' ? (window as any).__PAGE_PROPS__ : null) || {};
+    return (
+      <AppShell account={pageProps.account || MOCK_ADMIN}>
+        <FrameworksCatalog
+          initialFrameworks={pageProps.initialFrameworks || []}
+          initialError={pageProps.initialError}
+          account={pageProps.account || MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  // Default: populated languages catalogue
   return (
     <AppShell account={MOCK_ADMIN}>
       <LanguagesCatalog

@@ -1,5 +1,31 @@
 # Current task
 
+## 2026-10-30 — Slice 2 Canonical UUID Compatibility: PASS / ACCEPTED
+
+**CANONICAL UUID COMPATIBILITY: PASS. LOCAL TEST GATE: PASS. LIVE CEFR NAVIGATION: PASS. LIVE A–E: PASS. FIXTURE CLEANUP: PASS. SLICE 2: PASS. SLICE 2 ACCEPTED.** New independent task, correction **0/1**. Codex directly planned/reviewed; Anti gemini-3.8-flash-high/high implemented/tests. [Spec](2026-10-30-slice-2-canonical-uuid.md), [final independent review](evidence/2026-10-30-slice-2-canonical-uuid/review.md), [actual live flows](evidence/2026-10-30-slice-2-canonical-uuid/live-flows.md).
+
+Canonical @db.Uuid seed IDs have no version/variant restriction; shared app regex now accepts all 128-bit values in standard UUID representation. Actual production catalogue href→canonical detail, exact lookup/parent/child regression passes. Codex independently KILLED UUID, page-wiring,404,Level POST ADMIN and logout-cleanup mutants; all byte-exact restores PASS. Independent features155/155, components31/31, typecheck/build PASS. Existing generated-Prisma tracing warnings remain; earlier refresh-test qualification preserved.
+
+Rebuilt3012 actual CEFR navigation PASS before fixture writes. Owned ZZS2_20261030_CUUID/run-01 + OWN_L1/OWN_L2 create/edit/real duplicate-position conflict+usable retry/delete PASS. Cleanup children then parent; reload shows no owned residue, only canonical CEFR count4. No canonical/Account/en/vi changes, DB/schema/migration/auth redesign or Slice3. Entire uncommitted Slice2 reviewed; explicit allowlist commit/push origin/main authorized for accepted state. Raw logs/screenshots/local artifacts, unrelated DB files and protected provider log excluded. Historical FAIL/STOP and Slice1 ACCEPTED entries remain below.
+
+## 2026-10-29 — Slice 2 Final Acceptance Patch: STOPPED / FAIL after correction1/1
+
+**SLICE 2 FINAL ACCEPTANCE PATCH: FAIL. STOP. SLICE 2 NOT ACCEPTED.** New independent task, own correction1/1 exhausted. Codex direct planner/reviewer; sequential Anti gemini-3.8-flash-high/high, same-conversation operational continuation after initial CLI stall. [Spec](2026-10-29-slice-2-final-acceptance-patch.md), [first review FAIL](evidence/2026-10-29-slice-2-final-acceptance-patch/review.md), [final review FAIL](evidence/2026-10-29-slice-2-final-acceptance-patch/review-correction.md), [local gate history](evidence/2026-10-29-slice-2-final-acceptance-patch/local-gate.md), [actual read-only failure](evidence/2026-10-29-slice-2-final-acceptance-patch/live-readonly-failure.md).
+
+Page-copy test removed; production TSX/parent/callback tests, real Level POST auth/body denials and logout draft cleanup improved. Four mandatory mutations plus parent-id/no-navigation controls KILLED, all sources restored byte-exact. Independent full feature150/150, components31/31, typecheck/build PASS. One earlier component timeout did not reproduce in a fixed5/5 exact-test batch; no fix claimed. Worker refreshed-header proof claim rejected (test exercises default header only), header path source-reviewed.
+
+Actual patched3012 guarded catalogue lists CEFR2020, but its own Xem cấp độ link for id00000000-0000-0000-0000-000000000010 opens404: Slice2 UUID validator rejects the actual stored/listed id shape. Isolated production service diagnostic confirms INVALID_ID400 before DB access. Final acceptance FAIL on this implementation bug; no second correction or Codex takeover.
+
+Owned DEV A–E not run because initial live read-only navigation failed before fixtures. No Framework/Level DEV rows created, no cleanup writes owed or cleanup reload claimed. No canonical writes, Account/Auth provisioning or DB work. No commit/push, staging empty, HEAD b140e08/main. Preserve all historical FAILs, Slice1 ACCEPTED and unrelated DB/forensic/Slice1 artifacts/protected provider log. **No Slice3.**
+
+## 2026-10-29 — Slice 2 Frameworks / Levels: STOPPED / FAIL after correction 1/1
+
+**SLICE 2: FAIL. STOP. SLICE 2 NOT ACCEPTED.** Codex direct planner/reviewer; one sequential Anti gemini-3.8-flash-high/high conversation, with operational continuations after stalled print CLI. [Spec](2026-10-29-slice-2-frameworks-levels.md), [first review FAIL](evidence/2026-10-29-slice-2/review.md), [final correction review FAIL](evidence/2026-10-29-slice-2/review-correction.md). Correction1/1 exhausted; no further worker/correction or Codex implementation takeover.
+
+Framework/Level CRUD source, nested parent routes, UI/navigation and tests remain uncommitted. Main source bugs from review improved, but page tests execute copied logic; actual-page404 regression and Level POST teacher-authorization mutants remain green. Component401/failure/pending/denial proof remains incomplete, and new denial logout handlers omit accepted draft cleanup. Worker "all findings resolved" is unaccepted evidence, not acceptance.
+
+Independent final feature131/131, components24/24, typecheck/build PASS; mutation scoped-update FAILS as expected, other two critical mutants incorrectly PASS; all originals restored byte-exact. Raw logs external `/home/tung/.codex/task-logs/slice-2-frameworks-levels/`. Live DEV A–E not run because local review failed; no Framework/Level DEV fixtures created, no cleanup mutation required or claimed. Initial owner session only read en/vi. No SQL/schema/migration/DB harness/Account mutation. No commit/push, staging empty, HEAD b140e08/main. Preserve all unrelated dirty/untracked DB/forensic/Slice1 artifacts and protected provider log untouched. Slice1 remains ACCEPTED. **No Slice3.**
+
 ## 2026-10-29 — Slice 1 Final Acceptance Patch: PASS / ACCEPTED
 
 **SLICE 1 FINAL ACCEPTANCE PATCH: PASS. SLICE 1 ACCEPTED.** Codex direct planner/reviewer; one sequential Antigravity gemini-3.8-flash-high/high worker, operational same-conversation continuation after interrupted print CLI; no review correction required (0/1). [Spec](2026-10-29-slice-1-final-acceptance-patch.md), [independent final review](evidence/2026-10-29-slice-1-final-acceptance-patch/review.md), [live evidence](evidence/2026-10-29-slice-1-final-acceptance-patch/live-flows.md).

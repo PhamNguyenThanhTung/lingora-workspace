@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { removeDraft, clearAllDrafts } from './draftStorage';
 
 export interface SidebarProps {
@@ -15,6 +15,10 @@ export interface SidebarProps {
 
 export function Sidebar({ account }: SidebarProps) {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isLanguagesActive = pathname === '/languages' || pathname.startsWith('/languages/');
+  const isFrameworksActive = pathname === '/frameworks' || pathname.startsWith('/frameworks/');
 
   const handleLogout = async () => {
     // Clear draft in isolated try/catch so storage errors never abort logout
@@ -55,12 +59,28 @@ export function Sidebar({ account }: SidebarProps) {
       </div>
 
       <nav className="nav-section">
-        <a href="/languages" className="nav-item active" id="navLanguages">
+        <a
+          href="/languages"
+          className={`nav-item ${isLanguagesActive ? 'active' : ''}`}
+          id="navLanguages"
+        >
           <svg className="nav-icon" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
           </svg>
           <span>Quản lý ngôn ngữ</span>
+        </a>
+        <a
+          href="/frameworks"
+          className={`nav-item ${isFrameworksActive ? 'active' : ''}`}
+          id="navFrameworks"
+        >
+          <svg className="nav-icon" viewBox="0 0 24 24">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <span>Khung năng lực</span>
         </a>
       </nav>
 

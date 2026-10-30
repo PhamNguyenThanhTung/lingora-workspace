@@ -18,6 +18,7 @@ const rootDir = fs.existsSync(path.resolve(process.cwd(), 'lingora-admin'))
   : path.resolve(process.cwd(), '..');
 const appDir = path.resolve(rootDir, 'lingora-admin');
 const SCREENSHOT_DIR = path.resolve(rootDir, 'plans/evidence/2026-10-29-slice-1-stabilization/screenshots');
+const SLICE2_SCREENSHOT_DIR = path.resolve(rootDir, 'plans/evidence/2026-10-29-slice-2/screenshots');
 
 async function waitForServer(url, timeoutMs = 25000) {
   const start = Date.now();
@@ -94,12 +95,35 @@ async function run() {
     assert.equal(langApiRes.headers.get('Cache-Control'), 'no-store, private');
     console.log('✔ Unauthenticated GET /api/languages returns 401 UNAUTHENTICATED with private/no-store');
 
+    // Unauthenticated guard: /frameworks redirects to /login
+    const fwPageRes = await fetch(`${NEXT_URL}/frameworks`, { redirect: 'manual' });
+    assert.ok(
+      fwPageRes.status === 307 || fwPageRes.status === 308 || fwPageRes.status === 302,
+      `Unauthenticated /frameworks must redirect to /login, got status ${fwPageRes.status}`
+    );
+    const fwRedirectLocation = fwPageRes.headers.get('location') || '';
+    assert.ok(
+      fwRedirectLocation.includes('/login'),
+      `Redirect location must point to /login, got ${fwRedirectLocation}`
+    );
+    console.log('✔ Unauthenticated /frameworks redirects to /login');
+
+    // Unauthenticated API: GET /api/frameworks returns 401
+    const fwApiRes = await fetch(`${NEXT_URL}/api/frameworks`);
+    assert.equal(fwApiRes.status, 401, 'Unauthenticated GET /api/frameworks must return 401');
+    const fwApiJson = await fwApiRes.json();
+    assert.equal(fwApiJson.error.code, 'UNAUTHENTICATED');
+    assert.equal(fwApiRes.headers.get('Cache-Control'), 'no-store, private');
+    console.log('✔ Unauthenticated GET /api/frameworks returns 401 UNAUTHENTICATED with private/no-store');
+
     for (const size of [
       { name: '1440', width: 1440, height: 960 },
       { name: '1100', width: 1100, height: 800 },
     ]) {
       const outDir = path.join(SCREENSHOT_DIR, size.name);
       fs.mkdirSync(outDir, { recursive: true });
+      const slice2OutDir = path.join(SLICE2_SCREENSHOT_DIR, size.name);
+      fs.mkdirSync(slice2OutDir, { recursive: true });
 
       const context = await browser.newContext({
         viewport: { width: size.width, height: size.height },
@@ -107,10 +131,18 @@ async function run() {
       const page = await context.newPage();
 
       const consoleErrors = [];
+      const jsErrors = [];
       page.on('console', (msg) => {
         if (msg.type() === 'error') {
-          consoleErrors.push(msg.text());
+          const text = msg.text();
+          // Filter out expected HTTP status error logs from intentional 401/404/409/503 test requests
+          if (!text.includes('Failed to load resource: the server responded with a status of')) {
+            consoleErrors.push(text);
+          }
         }
+      });
+      page.on('pageerror', (err) => {
+        jsErrors.push(err.message);
       });
 
       // 1. Real Login Normal (Served by production Next.js)
@@ -366,8 +398,175 @@ async function run() {
       await page.keyboard.press('Escape');
       await page.waitForTimeout(100);
 
+      // --- Slice 2 Frameworks & Levels Components ---
+      // 17. Frameworks Populated
+      console.log(`[${size.name}] Testing: frameworks-populated`);
+      await page.goto(`${HARNESS_URL}?state=frameworks-populated`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#populatedFrameworksTable', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'frameworks-populated.png') });
+
+      // 18. Frameworks Loading
+      console.log(`[${size.name}] Testing: frameworks-loading`);
+      await page.goto(`${HARNESS_URL}?state=frameworks-loading`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#frameworksLoadingSkeleton', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'frameworks-loading.png') });
+
+      // 19. Frameworks Fetch Error
+      console.log(`[${size.name}] Testing: frameworks-fetch-error`);
+      await page.goto(`${HARNESS_URL}?state=frameworks-fetch-error`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#fetchErrorState', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'frameworks-fetch-error.png') });
+
+      // 20. Frameworks Empty
+      console.log(`[${size.name}] Testing: frameworks-empty`);
+      await page.goto(`${HARNESS_URL}?state=frameworks-empty`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#emptyFrameworksState', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'frameworks-empty.png') });
+
+      // 21. Framework Create Modal
+      console.log(`[${size.name}] Testing: framework-create`);
+      await page.goto(`${HARNESS_URL}?state=frameworks-populated`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.click('#btnOpenCreateFramework');
+      await page.waitForSelector('#frameworkFormModal', { state: 'visible' });
+      await page.waitForTimeout(100);
+      const fwCodeFocused = await page.evaluate(() => document.activeElement?.id);
+      assert.equal(fwCodeFocused, 'frameworkCode', 'Code input must be focused on open');
+      await page.screenshot({ path: path.join(slice2OutDir, 'framework-create.png') });
+
+      // 22. Framework Create Duplicate (Real 409)
+      console.log(`[${size.name}] Testing: framework-create-duplicate (Real 409)`);
+      await page.fill('#frameworkCode', 'CEFR');
+      await page.fill('#frameworkVersion', '2020');
+      await page.click('#btnSubmitFramework');
+      await page.waitForSelector('#frameworkCodeError', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'framework-create-duplicate.png') });
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(100);
+
+      // 23. Framework Edit Modal
+      console.log(`[${size.name}] Testing: framework-edit`);
+      await page.click('#btn-edit-framework-11111111-1111-4111-8111-111111111111');
+      await page.waitForSelector('#frameworkFormModal', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'framework-edit.png') });
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(100);
+
+      // 24. Framework Delete Modal
+      console.log(`[${size.name}] Testing: framework-delete`);
+      await page.click('#btn-delete-framework-11111111-1111-4111-8111-111111111111');
+      await page.waitForSelector('#frameworkDeleteModal', { state: 'visible' });
+      await page.waitForTimeout(100);
+      const cancelFwFocused = await page.evaluate(() => {
+        const el = document.activeElement;
+        return el?.classList?.contains('btn-secondary') && el?.textContent?.trim() === 'Hủy';
+      });
+      assert.equal(cancelFwFocused, true, 'Cancel button must be focused on open');
+      await page.screenshot({ path: path.join(slice2OutDir, 'framework-delete.png') });
+
+      // 25. Framework Delete In-Use Error (409)
+      console.log(`[${size.name}] Testing: framework-delete-inuse`);
+      await page.click('#confirmDeleteFrameworkBtn');
+      await page.waitForSelector('#frameworkDeleteError', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'framework-delete-inuse.png') });
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(100);
+
+      // 26. Levels Populated
+      console.log(`[${size.name}] Testing: levels-populated`);
+      await page.goto(`${HARNESS_URL}?state=levels-populated`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#populatedLevelsTable', { state: 'visible' });
+      await page.waitForSelector('#parentIdentityBanner', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'levels-populated.png') });
+
+      // 27. Levels Loading
+      console.log(`[${size.name}] Testing: levels-loading`);
+      await page.goto(`${HARNESS_URL}?state=levels-loading`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#levelsLoadingSkeleton', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'levels-loading.png') });
+
+      // 28. Levels Fetch Error
+      console.log(`[${size.name}] Testing: levels-fetch-error`);
+      await page.goto(`${HARNESS_URL}?state=levels-fetch-error`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#fetchErrorState', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'levels-fetch-error.png') });
+
+      // 29. Levels Empty
+      console.log(`[${size.name}] Testing: levels-empty`);
+      await page.goto(`${HARNESS_URL}?state=levels-empty`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForSelector('#emptyLevelsState', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'levels-empty.png') });
+
+      // 30. Level Create Modal
+      console.log(`[${size.name}] Testing: level-create`);
+      await page.goto(`${HARNESS_URL}?state=levels-populated`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.click('#btnOpenCreateLevel');
+      await page.waitForSelector('#levelFormModal', { state: 'visible' });
+      await page.waitForTimeout(100);
+      const lvlCodeFocused = await page.evaluate(() => document.activeElement?.id);
+      assert.equal(lvlCodeFocused, 'levelCode', 'Code input must be focused on open');
+      await page.screenshot({ path: path.join(slice2OutDir, 'level-create.png') });
+
+      // 31. Level Create Duplicate Code 409
+      console.log(`[${size.name}] Testing: level-create-dupcode (409)`);
+      await page.fill('#levelCode', 'dupcode');
+      await page.fill('#levelPosition', '5');
+      await page.click('#btnSubmitLevel');
+      await page.waitForSelector('#levelCodeError', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'level-create-dupcode.png') });
+
+      // 32. Level Create Duplicate Position 409
+      console.log(`[${size.name}] Testing: level-create-duppos (409)`);
+      await page.fill('#levelCode', 'A10');
+      await page.fill('#levelPosition', '999');
+      await page.click('#btnSubmitLevel');
+      await page.waitForSelector('#levelPositionError', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'level-create-duppos.png') });
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(100);
+
+      // 33. Level Edit Modal
+      console.log(`[${size.name}] Testing: level-edit`);
+      await page.click('#btn-edit-level-aaaa1111-1111-4111-8111-111111111111');
+      await page.waitForSelector('#levelFormModal', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'level-edit.png') });
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(100);
+
+      // 34. Level Delete Modal
+      console.log(`[${size.name}] Testing: level-delete`);
+      await page.click('#btn-delete-level-aaaa1111-1111-4111-8111-111111111111');
+      await page.waitForSelector('#levelDeleteModal', { state: 'visible' });
+      await page.waitForTimeout(100);
+      const cancelLvlFocused = await page.evaluate(() => {
+        const el = document.activeElement;
+        return el?.classList?.contains('btn-secondary') && el?.textContent?.trim() === 'Hủy';
+      });
+      assert.equal(cancelLvlFocused, true, 'Cancel button must be focused on open');
+      await page.screenshot({ path: path.join(slice2OutDir, 'level-delete.png') });
+
+      // 35. Level Delete In-Use Error (409)
+      console.log(`[${size.name}] Testing: level-delete-inuse`);
+      await page.click('#confirmDeleteLevelBtn');
+      await page.waitForSelector('#levelDeleteError', { state: 'visible' });
+      await page.screenshot({ path: path.join(slice2OutDir, 'level-delete-inuse.png') });
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(100);
+
+      assert.equal(jsErrors.length, 0, `Expected 0 unhandled JS page errors in [${size.name}], got: ${jsErrors.join(', ')}`);
+      assert.equal(consoleErrors.length, 0, `Expected 0 console errors in [${size.name}], got: ${consoleErrors.join(', ')}`);
+
       await context.close();
-      console.log(`[${size.name}] All 16 production component states verified and captured.`);
+      console.log(`[${size.name}] All 35 production component states verified and captured.`);
     }
 
     console.log('\nAll E2E browser and isolated component checks PASSED with 0 errors.');
