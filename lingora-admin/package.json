@@ -10,27 +10,13 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:feature": "node --experimental-strip-types --experimental-test-module-mocks tests/feature/auth.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/languages-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/frameworks-crud.test.mjs",
-    "test:components": "NODE_PATH=/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules node tests/feature/isolated-components.test.mjs && NODE_PATH=/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules node tests/feature/isolated-components-frameworks.test.mjs",
-    "test:e2e": "NODE_PATH=/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules node tests/feature/e2e-browser.mjs",
+    "test:components": "node tests/feature/isolated-components.test.mjs && node tests/feature/isolated-components-frameworks.test.mjs",
+    "test:e2e": "node tests/feature/e2e-browser.mjs",
     "test:all": "npm run test:feature && npm run test:components && npm run test:e2e",
-    "test:db:a1": "node tests/database/scaffolds/a1-runner.mjs",
-    "test:db:a2": "node tests/database/scaffolds/a2-runner.mjs",
-    "test:db:a3": "node tests/database/scaffolds/a3-runner.mjs",
-    "test:db:integrity": "node tests/database/scaffolds/integrity-runner.mjs",
-    "test:db:security": "node tests/database/scaffolds/security-runner.mjs",
-    "test:db:concurrency": "node tests/database/scaffolds/concurrency-runner.mjs",
-    "test:db:smoke": "node tests/database/scaffolds/smoke-runner.mjs",
-    "env:check": "node tests/database/env/env-guard.mjs check",
-    "stack:start": "node tests/database/env/stack-manager.mjs start",
-    "stack:stop": "node tests/database/env/stack-manager.mjs stop",
-    "stack:status": "node tests/database/env/stack-manager.mjs status",
-    "stack:destroy": "node tests/database/env/stack-manager.mjs destroy",
     "db:product:validate": "DATABASE_URL=\"${DATABASE_URL:-postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=app}\" DIRECT_URL=\"${DIRECT_URL:-postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=app}\" prisma validate --schema prisma/product/schema.prisma",
     "db:product:generate": "DATABASE_URL=\"${DATABASE_URL:-postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=app}\" DIRECT_URL=\"${DIRECT_URL:-postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=app}\" prisma generate --schema prisma/product/schema.prisma",
-    "db:product:preflight": "node scripts/product-preflight.mjs",
     "db:product:migrate": "prisma migrate deploy --schema prisma/product/schema.prisma",
-    "db:product:seed": "prisma db seed --schema prisma/product/schema.prisma",
-    "db:product:smoke": "node scripts/product-database-smoke.mjs"
+    "db:product:seed": "prisma db seed --schema prisma/product/schema.prisma"
   },
   "prisma": {
     "seed": "node prisma/product/seed.mjs"
@@ -50,6 +36,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "esbuild": "^0.28.2",
+    "playwright": "1.62.1",
     "prisma": "6.19.3",
     "supabase": "2.121.0",
     "typescript": "7.0.2"

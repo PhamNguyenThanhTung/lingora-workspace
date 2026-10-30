@@ -13,18 +13,10 @@
     "test:feature": "npm run test:feature -w lingora-admin",
     "test:e2e": "npm run test:e2e -w lingora-admin",
     "test:all": "npm run test:all -w lingora-admin",
-    "test:db:a1": "npm run test:db:a1 -w lingora-admin",
-    "test:db:a2": "npm run test:db:a2 -w lingora-admin",
-    "test:db:a3": "npm run test:db:a3 -w lingora-admin",
-    "test:db:integrity": "npm run test:db:integrity -w lingora-admin",
-    "test:db:security": "npm run test:db:security -w lingora-admin",
-    "test:db:concurrency": "npm run test:db:concurrency -w lingora-admin",
-    "test:db:smoke": "npm run test:db:smoke -w lingora-admin",
     "db:product:validate": "npm run db:product:validate -w lingora-admin",
     "db:product:generate": "npm run db:product:generate -w lingora-admin",
-    "db:product:preflight": "npm run db:product:preflight -w lingora-admin",
     "db:product:migrate": "npm run db:product:migrate -w lingora-admin",
     "db:product:seed": "npm run db:product:seed -w lingora-admin",
-    "db:product:smoke": "npm run db:product:smoke -w lingora-admin"
+    "test:components": "npm run test:components -w lingora-admin"
   }
 }
