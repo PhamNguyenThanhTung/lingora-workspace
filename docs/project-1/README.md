@@ -14,7 +14,7 @@
 | Thứ tự | Tài liệu | Đường dẫn | Mục đích chính |
 |---|---|---|---|
 | **1** | **Mục lục tài liệu** | [Tài liệu Lingora](../README.md) | Tìm yêu cầu, use case, dữ liệu, báo cáo và UI baseline. |
-| **2** | **Kế hoạch Tổng thể & Lộ trình** | [`docs/00-master-plan.md`](../00-master-plan.md) | Xem mục tiêu, nguyên tắc bóc tách, các giả định G1–G6, và lộ trình 12 tuần. |
+| **2** | **Kế hoạch Tổng thể & Lộ trình** | `docs/00-master-plan.md` | Xem mục tiêu, nguyên tắc bóc tách, các giả định G1–G6, và lộ trình 12 tuần. |
 | **3** | **Đặc tả Phân tích Hệ thống** | [`docs/06-system-analysis.md`](../06-system-analysis.md) | Khảo sát bài toán, danh mục 6 năng lực, phân tích tác nhân, đặc tả chi tiết 8 Use Case và biểu đồ tuần tự. |
 | **4** | **Từ điển Dữ liệu & ERD** | [`docs/07-data-dictionary.md`](../07-data-dictionary.md) | Xem biểu đồ ERD 17 thực thể, chi tiết ràng buộc thuộc tính, private storage buckets và bảng đối chiếu mismatch. |
 | **5** | **Kiến trúc Hệ thống** | [`docs/01-architecture.md`](../01-architecture.md) | Phân tách trách nhiệm Web Learner (`lingora-web`), Web Admin, Supabase BaaS và AI Microservice. |

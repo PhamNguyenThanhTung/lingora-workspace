@@ -16,7 +16,6 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
   before(async () => {
     server = await startIsolatedServer(TEST_PORT);
     browser = await chromium.launch({
-      executablePath: '/opt/coccoc/browser/browser',
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });

@@ -263,7 +263,7 @@ Bảng dưới đây thiết lập chuỗi truy vết khép kín toàn diện 5 
 
 ## 8. M2.2 System Behavior, Use Cases & State Machine Traceability (Logical Design)
 
-> Canonical Detail: [`docs/phase-1-m2-2-behavior-uc-activity-state.md`](phase-1-m2-2-behavior-uc-activity-state.md) (sections 1–16). Preserves the 15-UC canonical catalog (`UC-01`..`UC-15`) and maps exactly 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
+> Canonical Detail: `docs/phase-1-m2-2-behavior-uc-activity-state.md` (sections 1–16). Preserves the 15-UC canonical catalog (`UC-01`..`UC-15`) and maps exactly 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
 
 | Technical Requirement & Policy | MVP Feature | Canonical Use Case | Behavioral Family Mapping | Domain Entities & Logical State Representation | M2.2 Contract Ref | Governance Status |
 |---|---|---|---|---|---|---|
@@ -288,7 +288,7 @@ Bảng dưới đây thiết lập chuỗi truy vết khép kín toàn diện 5 
 
 ## 9. M2.3 Sequence Interactions, API Contracts & Service Boundaries Traceability (Logical Design)
 
-> Canonical Detail: [`docs/phase-1-m2-3-sequence-api-service-boundary.md`](phase-1-m2-3-sequence-api-service-boundary.md) (sections 1–11). Preserves 15-UC canonical catalog (`UC-01`..`UC-15`) and 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
+> Canonical Detail: `docs/phase-1-m2-3-sequence-api-service-boundary.md` (sections 1–11). Preserves 15-UC canonical catalog (`UC-01`..`UC-15`) and 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
 
 | Technical Requirement & Policy | MVP Feature | Canonical UC | Behavioral Family Mapping | Domain / Persistence Boundary | M2.3 Sequence Flow Ref | M2.3 Contract & Service Surface Ref | Governance Status |
 |---|---|---|---|---|---|---|---|
@@ -313,7 +313,7 @@ Bảng dưới đây thiết lập chuỗi truy vết khép kín toàn diện 5 
 
 ## 10. M2.4 Component Architecture & Security Responsibility Matrix Traceability (Logical Design)
 
-> Canonical Detail: [`docs/phase-1-m2-4-architecture-security.md`](phase-1-m2-4-architecture-security.md) (sections 1–15). Preserves 15-UC canonical catalog (`UC-01`..`UC-15`) and 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
+> Canonical Detail: `docs/phase-1-m2-4-architecture-security.md` (sections 1–15). Preserves 15-UC canonical catalog (`UC-01`..`UC-15`) and 15 Behavioral Families (`BF-01`..`BF-15`). Zero runtime code, zero schema migrations, zero ghost use cases (`UC-16/17/18`).
 
 | Technical Requirement & Policy | MVP Feature | Canonical UC | Behavioral Family Mapping | Component Architecture Owner (#13) | Deployment & Security Zone (#14) | Security Matrix Enforcement Boundary (#16) | Governance Status |
 |---|---|---|---|---|---|---|---|

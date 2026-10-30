@@ -54,7 +54,6 @@ async function run() {
     console.log(`Next.js production server ready at ${NEXT_URL}`);
 
     const browser = await chromium.launch({
-      executablePath: '/opt/coccoc/browser/browser',
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });

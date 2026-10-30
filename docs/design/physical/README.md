@@ -1,6 +1,6 @@
 > **Hiện trạng (2026-10-30):** Slice 1 (Admin Auth/Languages) và Slice 2 (Frameworks/Levels) đã ACCEPTED. Xem [roadmap](../../../plans/roadmap.md) và [AGENTS.md](../../../AGENTS.md).
 >
-> - **Database foundation:** product Prisma có 34 models; chủ dự án chấp nhận DEV đã áp 5 migrations. Git hiện theo dõi 4 migrations; migration `20261028010000_database_closure` còn local untracked, chờ chủ dự án quyết định lưu vào Git. Không sửa schema, migration hay dữ liệu trong tác vụ tài liệu này.
+> - **Database foundation:** product Prisma có 34 models và 5 migrations được lưu trong Git. Truy vấn chỉ đọc ngày 2026-10-30 xác nhận `20261028010000_database_closure` đã hoàn tất trong DEV, chưa rollback và checksum khớp file SQL local. Không sửa hoặc chạy lại migration, schema hay dữ liệu trong tác vụ này.
 > - **Historical Design & Review Context:** The design specifications below (physical ERD, table inventory, reconciliation, security model) and dated review records (remediation-review, G0 harness result, FDR correction) provide authoritative technical reference and historical context, but do not act as blocking runtime gates.
 
 # Lingora — Physical Data & Runtime Design

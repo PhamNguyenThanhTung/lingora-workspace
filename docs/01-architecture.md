@@ -1,6 +1,6 @@
 # 01 - Lingora System Architecture
 
-> **Classification:** Phase 0 architecture below is `HISTORICAL` reference. The accepted M2.4 design in [`phase-1-m2-4-architecture-security.md`](phase-1-m2-4-architecture-security.md) is the architecture `TARGET` (ADR-027), subject to subsequent ADRs.
+> **Classification:** Phase 0 architecture below is `HISTORICAL` reference. The accepted M2.4 design in `phase-1-m2-4-architecture-security.md` is the architecture `TARGET` (ADR-027), subject to subsequent ADRs.
 > - **Current business role model:** Exactly 3 business roles (`Admin`, `Teacher`, `Learner`) per ADR-034. The 6-role actor model and associated permission matrices below are `HISTORICAL / SUPERSEDED`.
 > - **Security & boundaries:** ADR-035 controls trusted server-side identity/status, account-disable enforcement, assessment/SRS trust boundaries, content lifecycle, and logical audit policy. Physical role mapping/RLS and database realization remain deferred under P0-D07.
 > - **AI status:** AI / GEC is a supporting capability, currently OUT OF SCOPE for active Phase 2 implementation.
@@ -435,7 +435,7 @@ Legacy `app + ml/srs + ml/chatbot` and `values-ja`-as-Must wording is superseded
 ## 3. Assessment, Remediation & Readiness Architecture
 
 > **Phân định kiến trúc cốt lõi (Core Architecture Addition — M-11):**
-> Phần kiến trúc này chuẩn hóa tầng đánh giá chẩn đoán (Diagnostic Assessment), thích ứng năng lực (Adaptive Proficiency), bổ khuyết khái niệm (Remedial Learning) và đánh giá chuyển cấp (Level Readiness) dựa trên kết quả nghiên cứu chuyên gia ngôn ngữ (`E-EXP-01`..`E-EXP-07`), phục vụ đặc tả kỹ thuật cho `P1-FR-016`, `MVP-03`, `MVP-04`, `MVP-08`, `MVP-11` và `UC-03`, `UC-04`, `UC-07`. Chi tiết thiết kế logic và đặc tả quy tắc xem tại [`docs/phase-1-m2-1-domain-and-logical-data-foundation.md`](phase-1-m2-1-domain-and-logical-data-foundation.md) và [`docs/09-placement-and-jump-specification.md`](09-placement-and-jump-specification.md).
+> Phần kiến trúc này chuẩn hóa tầng đánh giá chẩn đoán (Diagnostic Assessment), thích ứng năng lực (Adaptive Proficiency), bổ khuyết khái niệm (Remedial Learning) và đánh giá chuyển cấp (Level Readiness) dựa trên kết quả nghiên cứu chuyên gia ngôn ngữ (`E-EXP-01`..`E-EXP-07`), phục vụ đặc tả kỹ thuật cho `P1-FR-016`, `MVP-03`, `MVP-04`, `MVP-08`, `MVP-11` và `UC-03`, `UC-04`, `UC-07`. Chi tiết thiết kế logic và đặc tả quy tắc xem tại [`docs/phase-1-m2-1-domain-and-logical-data-foundation.md`](phase-1-m2-1-domain-and-logical-data-foundation.md) và `docs/09-placement-and-jump-specification.md`.
 
 ### 3.1. Stage-Adaptive Diagnostic Assessment Engine (FROZEN Architecture)
 1. **Kiến trúc thích ứng 2 giai đoạn (Two-Stage Adaptive):**
@@ -528,7 +528,7 @@ Hệ thống Lingora tách biệt tuyệt đối 4 khái niệm tiến trình s�
 
 ### 3.6. M2.2 System Behavior, Use Cases & State Machines — Concise Cross-Reference (Logical Design)
 
-> Canonical M2.2 detail: [`docs/phase-1-m2-2-behavior-uc-activity-state.md`](phase-1-m2-2-behavior-uc-activity-state.md) (sections 1–16). This section is an architectural cross-reference only; it introduces zero runtime code, zero schema/migration changes, and zero scoring algorithms.
+> Canonical M2.2 detail: `docs/phase-1-m2-2-behavior-uc-activity-state.md` (sections 1–16). This section is an architectural cross-reference only; it introduces zero runtime code, zero schema/migration changes, and zero scoring algorithms.
 
 - **15 Canonical Use Cases:** `UC-01` through `UC-15` covering Core Learning (`UC-01` Auth/Session, `UC-02` Goals & Time, `UC-03` Placement Test / Diagnostic Assessment, `UC-04` Curriculum Browse & Jump, `UC-05` Lesson Exercise & Retry, `UC-06` SRS Review, `UC-07` Progress & Streak), Content Governance (`UC-08` Draft Authoring, `UC-09` Moderation, `UC-10` Publishing & Archival), Administration (`UC-11` Accounts/Roles, `UC-12` Analytics/Reports, `UC-13` Audit Logs, `UC-14` Support Tickets), and Optional/Future Module (`UC-15` Cohorts & Groups). Zero `UC-16/17/18`.
 - **15 Behavioral Families:** `BF-01` through `BF-15` aligned with `docs/06-system-analysis.md` §5. `BF-08` covers Placement Test; `BF-11` covers Conditional Jump; `BF-14` encapsulates P1-FR-007 scenario writing/GEC. Zero `BF-16`.
@@ -543,7 +543,7 @@ Hệ thống Lingora tách biệt tuyệt đối 4 khái niệm tiến trình s�
 
 ### 3.7. M2.3 Sequence Interactions, API Contracts & Service Boundaries — Concise Cross-Reference (Logical Design)
 
-> Canonical M2.3 detail: [`docs/phase-1-m2-3-sequence-api-service-boundary.md`](phase-1-m2-3-sequence-api-service-boundary.md) (sections 1–11). This section is an architectural cross-reference only; it introduces zero runtime code, zero schema/migration changes, and zero scoring algorithms.
+> Canonical M2.3 detail: `docs/phase-1-m2-3-sequence-api-service-boundary.md` (sections 1–11). This section is an architectural cross-reference only; it introduces zero runtime code, zero schema/migration changes, and zero scoring algorithms.
 
 - **Sequence Interaction Suite (Artifact #11):** 10 canonical sequence specifications (`SEQ-01` to `SEQ-10`) covering Auth & Session (`SEQ-01`), Learner Onboarding & Entry Choice (`SEQ-02`), Diagnostic Placement (`SEQ-03`), Conditional Jump (`SEQ-04`), Lesson Exercise & Controlled Retry (`SEQ-05`), SRS Review (`SEQ-06`), Progress & Daily Streak (`SEQ-07`), Content Lifecycle & SoD (`SEQ-08`), Admin & Security Audit (`SEQ-09`), and Scenario Free-Writing with GEC (`SEQ-10`).
 - **Surface & API Boundary Classification (Artifact #12):** 10 surfaces classified into `CURRENT` (GoTrue Auth, PostgREST reads, RPC `record_review`, Storage, AI Health), `TARGET` (GEC `POST /v1/gec/correct`, Route Handler Proxy, Admin/Prisma, Application Services), `COMPATIBILITY GAP` (AI legacy `/v1/srs/schedule`, `/v1/chat/*`), and `FUTURE` (B2B Cohorts). `docs/03-api-contract.md` preserved 100% byte-identical; gaps recorded in M2.3 API Gap Register.
@@ -555,7 +555,7 @@ Hệ thống Lingora tách biệt tuyệt đối 4 khái niệm tiến trình s�
 
 ### 3.8. M2.4 Component Architecture & Security Responsibility — Concise Cross-Reference (Logical Design)
 
-> Canonical M2.4 detail: [`docs/phase-1-m2-4-architecture-security.md`](phase-1-m2-4-architecture-security.md) (sections 1–15). This section is an architectural cross-reference only; it introduces zero runtime code, zero schema/migration changes, zero RLS SQL, and zero live infrastructure provisioning.
+> Canonical M2.4 detail: `docs/phase-1-m2-4-architecture-security.md` (sections 1–15). This section is an architectural cross-reference only; it introduces zero runtime code, zero schema/migration changes, zero RLS SQL, and zero live infrastructure provisioning.
 
 - **Component Architecture & 5-Layer Hierarchy (Artifact #13):** Strict top-down one-way dependency (`Presentation → Application/BFF → Domain Services → Persistence/Infrastructure → External Providers`) without cycles. Component inventory covers 19 logical components: Learner/Admin Presentation (`COMP-PRES-01/02`), Learner/Admin BFF Orchestrators (`COMP-APP-01/02`), 8 Domain Services (`COMP-DOM-01..08`), 5 Persistence/Infrastructure engines (`COMP-INFRA-01..05`), and 2 External Providers (`COMP-EXT-01/02`).
 - **Deployment & Logical Security Zones (Artifact #14):** 5 logical runtime/security zones modeled without infrastructure lock-in: Zone 1 (Untrusted Public Client Zone), Zone 2 (Trusted Application Server Zone / Vercel), Zone 3 (Managed Database & Storage Zone / Supabase), Zone 4 (Isolated AI Compute Zone / FastAPI on Render/HF Spaces), and Zone 5 (Privileged Infrastructure Operations Zone / CLI tooling). Strict status labeling: `CURRENT_APPLIED` vs `TARGET_DESIGN` vs `FUTURE_EXTENSION`. Explicit invariant: target runtime is NOT claimed ready or deployed.

@@ -16,7 +16,6 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
   before(async () => {
     server = await startIsolatedServer(TEST_PORT);
     browser = await chromium.launch({
-      executablePath: '/opt/coccoc/browser/browser',
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });

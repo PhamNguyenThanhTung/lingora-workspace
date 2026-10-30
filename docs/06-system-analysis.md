@@ -33,7 +33,7 @@ Lingora là nền tảng học ngoại ngữ số tích hợp trí tuệ nhân t
 
 ## 2. Tác nhân & Các bên Liên quan (Stakeholders & System Actors)
 
-*Căn cứ chuẩn:* [`docs/phase-0-roles-and-mvp-final.md`](phase-0-roles-and-mvp-final.md), [`docs/phase-0-synthetic-stakeholder-research.md`](phase-0-synthetic-stakeholder-research.md), và [`docs/plantuml/role-permission-matrix.puml`](plantuml/role-permission-matrix.puml).
+*Căn cứ chuẩn:* `docs/phase-0-roles-and-mvp-final.md`, `docs/phase-0-synthetic-stakeholder-research.md`, và `docs/plantuml/role-permission-matrix.puml`.
 
 Hệ thống xác định **6 vai trò canonical**, phân định minh bạch giữa thiết kế mục tiêu (DESIGN) và trạng thái hiện thực runtime:
 
@@ -149,7 +149,7 @@ flowchart TD
 
 ### 4.1 Danh mục 14 Use Cases Cốt lõi (Core MVP) & 1 Phân hệ Mở rộng Tùy chọn (Optional B2B Module)
 
-*Căn cứ chuẩn:* [`docs/plantuml/use-case-mvp-overview.puml`](plantuml/use-case-mvp-overview.puml)
+*Căn cứ chuẩn:* `docs/plantuml/use-case-mvp-overview.puml`
 
 | Mã Use Case | Tên Use Case | Tác nhân chính | Gói chức năng | Chức năng MVP liên kết | Trạng thái hiện thực |
 |---|---|---|---|---|---|

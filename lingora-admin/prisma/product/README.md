@@ -41,4 +41,4 @@ Ngày 2026-10-28: generate thành công, migrate status báo bốn migration up 
 
 ## Validation
 
-Nghiệp vụ mới nằm ở Backend JS/TS với Zod/Prisma. Giữ FK/UNIQUE/NOT NULL/CHECK cơ bản và kiểm tra quyền truy cập. Các trigger cũ vẫn có hiệu lực; nếu đơn giản hóa, dùng migration mới cho từng nhóm đã chọn. Xem [báo cáo reset](../../../docs/pragmatic-reset-2026-10-28.md); chưa có migration DROP trigger nào được tạo.
+Nghiệp vụ mới nằm ở Backend JS/TS với Zod/Prisma. Giữ FK/UNIQUE/NOT NULL/CHECK cơ bản và kiểm tra quyền truy cập. Các trigger cũ vẫn có hiệu lực; nếu đơn giản hóa, dùng migration mới cho từng nhóm đã chọn. Xem báo cáo reset; chưa có migration DROP trigger nào được tạo.
