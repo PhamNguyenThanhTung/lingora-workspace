@@ -70,3 +70,10 @@ tools/
 **/XÂY DỰNG NỀN TẢNG HỌC NGOẠI NGỮ TRỰC TUYẾN LINGORA/
 **/Lingora-Project-1-Requirements-Presentation/
 
+# Disposable reports and generated diagrams
+docs/scratch/
+**/evidence/
+docs/modeling/**/rendered/
+*.zip
+.agents/skills/
+
