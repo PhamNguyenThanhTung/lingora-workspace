@@ -28,7 +28,12 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Áp dụng cùng auth/error/pending/retry/locale-merge contract của catalogue, count lấy từ dữ liệu thật.
 - Acceptance tích hợp: feature155/155, components31/31, typecheck/build PASS; canonical navigation, live A–E và cleanup PASS.
 
-## Slice 3 ⏳ — Chưa quyết định, chưa bắt đầu
+## Slice 3 ✅ — Courses và Units
 
-Chủ dự án sẽ chọn scope tiếp theo. Chưa triển khai thêm Course/Unit/Lesson, learner flow, assessment hay SRS runtime.
-Database, Admin Auth và UI baseline đã được chủ dự án chấp nhận làm nền tảng phát triển.
+- ACCEPTED ngày2026-10-30 sau [Final Acceptance Patch](slice-3-final-patch-verification.md); task trước đã FAIL/STOP, patch là task độc lập với correction1/1.
+- `/courses` -> `/courses/[courseId]`; Course CRUD và nested Unit CRUD chỉ dành cho ACTIVE ADMIN, tái sử dụng auth/origin/UUID foundation.
+- Course chỉ model target language, Framework và default-start Level thuộc Framework; instruction language chưa có trong schema, không có field giả.
+- Unit thuộc Course/Level; position nguyên dương int32, unique(courseId,levelId,position); parent ownership và Framework scope được enforce ở server.
+- Retry Level giữ input; dependency403 đóng modal/release inert để Logout usable; regression đi qua actual production-page props và callbacks.
+- Feature196/196, components45/45, typecheck/build PASS;13 mutation controls KILLED, source restored byte-exact; canonical read-only/live A–E/fixture cleanup PASS.
+- Không schema migration, không thay canonical data; chưa bắt đầu Slice4.

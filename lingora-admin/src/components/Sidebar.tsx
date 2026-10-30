@@ -19,6 +19,7 @@ export function Sidebar({ account }: SidebarProps) {
 
   const isLanguagesActive = pathname === '/languages' || pathname.startsWith('/languages/');
   const isFrameworksActive = pathname === '/frameworks' || pathname.startsWith('/frameworks/');
+  const isCoursesActive = pathname === '/courses' || pathname.startsWith('/courses/');
 
   const handleLogout = async () => {
     // Clear draft in isolated try/catch so storage errors never abort logout
@@ -81,6 +82,17 @@ export function Sidebar({ account }: SidebarProps) {
             <polyline points="2 12 12 17 22 12"></polyline>
           </svg>
           <span>Khung năng lực</span>
+        </a>
+        <a
+          href="/courses"
+          className={`nav-item ${isCoursesActive ? 'active' : ''}`}
+          id="navCourses"
+        >
+          <svg className="nav-icon" viewBox="0 0 24 24">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>Khóa học</span>
         </a>
       </nav>
 

@@ -97,6 +97,98 @@ export function startIsolatedServer(port = 3007) {
             injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
           }
 
+          if (state === 'page-course-detail-wire') {
+            const courseId = url.searchParams.get('courseId') || '33333333-3333-4333-8333-333333333030';
+            const fwId = '11111111-1111-4111-8111-111111111111';
+            const langId = '22222222-2222-4222-8222-222222222222';
+            const lvlId = 'aaaa1111-1111-4111-8111-111111111111';
+            const failLevels = url.searchParams.get('failLevels') === 'true';
+
+            setProductPrismaForTest({
+              account: { findUnique: async () => MOCK_ADMIN },
+              course: {
+                findUnique: async () => ({
+                  id: courseId,
+                  languageId: langId,
+                  frameworkId: fwId,
+                  defaultStartLevelId: lvlId,
+                  names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' },
+                  isActive: true,
+                  curriculumGeneration: 1n,
+                  rowVersion: 1n,
+                  language: { id: langId, code: 'en', names: { vi: 'Tiếng Anh' } },
+                  framework: { id: fwId, code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } },
+                  defaultStartLevel: { id: lvlId, code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+                  _count: { units: 2 },
+                }),
+              },
+              unit: {
+                findMany: async () => [
+                  { id: '44444444-4444-4444-8444-444444444040', courseId, levelId: lvlId, code: 'UNIT-01', names: { vi: 'Bài 1: Làm quen' }, position: 1, level: { id: lvlId, code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 } },
+                  { id: '44444444-4444-4444-8444-444444444041', courseId, levelId: lvlId, code: 'UNIT-02', names: { vi: 'Bài 2: Giao tiếp' }, position: 2, level: { id: lvlId, code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 } },
+                ],
+              },
+              level: {
+                findMany: async () => {
+                  if (failLevels) {
+                    throw new Error('Database connection failed when fetching levels');
+                  }
+                  return [
+                    { id: lvlId, frameworkId: fwId, code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+                  ];
+                },
+              },
+            });
+            globalThis.fetch = async () => new Response(JSON.stringify({ id: MOCK_ADMIN.id }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://sncfyvpzwedqgwfpffkh.supabase.co';
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+
+            const CourseDetailPage = await compileAndLoadPage('src/app/courses/[courseId]/page.tsx', { useBridge: true });
+            const jsx = await CourseDetailPage({ params: Promise.resolve({ courseId }) });
+            injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
+          }
+
+          if (state === 'page-courses-wire') {
+            const courseId = '33333333-3333-4333-8333-333333333030';
+            const fwId = '11111111-1111-4111-8111-111111111111';
+            const langId = '22222222-2222-4222-8222-222222222222';
+            const lvlId = 'aaaa1111-1111-4111-8111-111111111111';
+            setProductPrismaForTest({
+              account: { findUnique: async () => MOCK_ADMIN },
+              course: {
+                findMany: async () => [
+                  {
+                    id: courseId,
+                    languageId: langId,
+                    frameworkId: fwId,
+                    defaultStartLevelId: lvlId,
+                    names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' },
+                    isActive: true,
+                    curriculumGeneration: 1n,
+                    rowVersion: 1n,
+                    language: { id: langId, code: 'en', names: { vi: 'Tiếng Anh' } },
+                    framework: { id: fwId, code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } },
+                    defaultStartLevel: { id: lvlId, code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+                    _count: { units: 2 },
+                  },
+                ],
+              },
+              language: {
+                findMany: async () => [{ id: langId, code: 'en', names: { vi: 'Tiếng Anh' } }],
+              },
+              framework: {
+                findMany: async () => [{ id: fwId, code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } }],
+              },
+            });
+            globalThis.fetch = async () => new Response(JSON.stringify({ id: MOCK_ADMIN.id }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://sncfyvpzwedqgwfpffkh.supabase.co';
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+
+            const CoursesPage = await compileAndLoadPage('src/app/courses/page.tsx', { useBridge: true });
+            const jsx = await CoursesPage();
+            injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
+          }
+
           res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
           res.end(`<!DOCTYPE html>
 <html lang="vi">
@@ -925,8 +1017,420 @@ export function startIsolatedServer(port = 3007) {
           return;
         }
 
+        // ==========================================
+        // COURSES & UNITS MOCK API ROUTES
+        // ==========================================
+
+        // Course collection
+        if (pathname === '/api/courses' && req.method === 'GET') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            data: [
+              {
+                id: '33333333-3333-4333-8333-333333333030',
+                languageId: '22222222-2222-4222-8222-222222222222',
+                frameworkId: '11111111-1111-4111-8111-111111111111',
+                defaultStartLevelId: 'aaaa1111-1111-4111-8111-111111111111',
+                names: { vi: 'Tiếng Anh Giao Tiếp', en: 'Conversational English' },
+                isActive: true,
+                curriculumGeneration: 1,
+                rowVersion: 1,
+                unitCount: 2,
+                language: { id: '22222222-2222-4222-8222-222222222222', code: 'en', names: { vi: 'Tiếng Anh' } },
+                framework: { id: '11111111-1111-4111-8111-111111111111', code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } },
+                defaultStartLevel: { id: 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+              },
+            ],
+          }));
+          return;
+        }
+
+        if (pathname === '/api/courses' && req.method === 'POST') {
+          let bodyStr = '';
+          req.on('data', (chunk) => { bodyStr += chunk; });
+          req.on('end', () => {
+            let body = {};
+            try { body = JSON.parse(bodyStr); } catch {}
+
+            if (body.names?.vi === 'expire401') {
+              res.writeHead(401, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'UNAUTHENTICATED', message: 'Phiên làm việc đã hết hạn.' } }));
+              return;
+            }
+
+            if (body.names?.vi === 'err403') {
+              res.writeHead(403, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền thực hiện thao tác này.' } }));
+              return;
+            }
+
+            if (body.names?.vi === 'err503') {
+              res.writeHead(503, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: 'Cơ sở dữ liệu tạm thời không phản hồi.' } }));
+              return;
+            }
+
+            if (body.defaultStartLevelId === 'invalid-level-400') {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({
+                error: {
+                  code: 'FRAMEWORK_LEVEL_MISMATCH',
+                  message: 'Cấp độ bắt đầu không thuộc khung năng lực đã chọn.',
+                  fields: { defaultStartLevelId: 'Cấp độ bắt đầu không thuộc khung năng lực đã chọn.' },
+                },
+              }));
+              return;
+            }
+
+            const responseData = {
+              id: '33333333-3333-4333-8333-999999999999',
+              languageId: body.languageId || '22222222-2222-4222-8222-222222222222',
+              frameworkId: body.frameworkId || '11111111-1111-4111-8111-111111111111',
+              defaultStartLevelId: body.defaultStartLevelId || 'aaaa1111-1111-4111-8111-111111111111',
+              names: body.names || { vi: 'Khóa học mới' },
+              isActive: body.isActive !== undefined ? body.isActive : true,
+              curriculumGeneration: 1,
+              rowVersion: 1,
+              unitCount: 0,
+              language: { id: body.languageId || '22222222-2222-4222-8222-222222222222', code: 'en', names: { vi: 'Tiếng Anh' } },
+              framework: { id: body.frameworkId || '11111111-1111-4111-8111-111111111111', code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } },
+              defaultStartLevel: { id: body.defaultStartLevelId || 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+            };
+
+            if (body.names?.vi === 'heldpost') {
+              setTimeout(() => {
+                res.writeHead(201, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ data: responseData }));
+              }, 450);
+              return;
+            }
+
+            res.writeHead(201, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ data: responseData }));
+          });
+          return;
+        }
+
+        // Single course PATCH / DELETE
+        if (pathname.match(/^\/api\/courses\/[^/]+$/) && req.method === 'PATCH') {
+          const courseId = pathname.replace('/api/courses/', '');
+          let bodyStr = '';
+          req.on('data', (chunk) => { bodyStr += chunk; });
+          req.on('end', () => {
+            let body = {};
+            try { body = JSON.parse(bodyStr); } catch {}
+
+            if (courseId.includes('404')) {
+              res.writeHead(404, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Khóa học không tồn tại trong hệ thống.' } }));
+              return;
+            }
+
+            if (body.names?.vi === 'expire401' || courseId.includes('expire401')) {
+              res.writeHead(401, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'UNAUTHENTICATED', message: 'Phiên làm việc đã hết hạn.' } }));
+              return;
+            }
+
+            if (body.names?.vi === 'err403' || courseId.includes('err403')) {
+              res.writeHead(403, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền thực hiện thao tác này.' } }));
+              return;
+            }
+
+            if (body.names?.vi === 'err503' || courseId.includes('err503')) {
+              res.writeHead(503, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: 'Cơ sở dữ liệu tạm thời không phản hồi.' } }));
+              return;
+            }
+
+            if (courseId.includes('scopefrozen') || body.languageId === 'frozen-lang') {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'SCOPE_FROZEN', message: 'Không thể thay đổi ngôn ngữ hoặc khung năng lực khi khóa học đã có bài học.' } }));
+              return;
+            }
+
+            const responseData = {
+              id: courseId,
+              languageId: body.languageId || '22222222-2222-4222-8222-222222222222',
+              frameworkId: body.frameworkId || '11111111-1111-4111-8111-111111111111',
+              defaultStartLevelId: body.defaultStartLevelId || 'aaaa1111-1111-4111-8111-111111111111',
+              names: body.names || { vi: 'Khóa học cập nhật' },
+              isActive: body.isActive !== undefined ? body.isActive : true,
+              curriculumGeneration: 2,
+              rowVersion: 2,
+              unitCount: 2,
+              language: { id: body.languageId || '22222222-2222-4222-8222-222222222222', code: 'en', names: { vi: 'Tiếng Anh' } },
+              framework: { id: body.frameworkId || '11111111-1111-4111-8111-111111111111', code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } },
+              defaultStartLevel: { id: body.defaultStartLevelId || 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+            };
+
+            if (courseId.includes('held') || body.names?.vi === 'heldpatch') {
+              setTimeout(() => {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ data: responseData }));
+              }, 450);
+              return;
+            }
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ data: responseData }));
+          });
+          return;
+        }
+
+        if (pathname.match(/^\/api\/courses\/[^/]+$/) && req.method === 'DELETE') {
+          const courseId = pathname.replace('/api/courses/', '');
+
+          if (courseId.includes('404')) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Khóa học không tồn tại trong hệ thống.' } }));
+            return;
+          }
+
+          if (courseId.includes('expire401')) {
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'UNAUTHENTICATED', message: 'Phiên làm việc đã hết hạn.' } }));
+            return;
+          }
+
+          if (courseId.includes('err403')) {
+            res.writeHead(403, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền thực hiện thao tác này.' } }));
+            return;
+          }
+
+          if (courseId.includes('err503')) {
+            res.writeHead(503, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: 'Cơ sở dữ liệu tạm thời không phản hồi.' } }));
+            return;
+          }
+
+          if (courseId.includes('inuse') || courseId === '33333333-3333-4333-8333-333333333030' || courseId.includes('hasunits')) {
+            res.writeHead(409, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'COURSE_IN_USE', message: 'Khóa học đã có đơn vị bài học, không thể xóa.' } }));
+            return;
+          }
+
+          if (courseId.includes('held')) {
+            setTimeout(() => {
+              res.writeHead(204);
+              res.end();
+            }, 450);
+            return;
+          }
+
+          res.writeHead(204);
+          res.end();
+          return;
+        }
+
+        // Units collection: /api/courses/[courseId]/units
+        if (pathname.match(/^\/api\/courses\/[^/]+\/units$/) && req.method === 'GET') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            data: [
+              {
+                id: '44444444-4444-4444-8444-444444444040',
+                courseId: '33333333-3333-4333-8333-333333333030',
+                levelId: 'aaaa1111-1111-4111-8111-111111111111',
+                code: 'UNIT-01',
+                names: { vi: 'Bài 1: Làm quen', en: 'Getting Started' },
+                position: 1,
+                level: { id: 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+              },
+            ],
+          }));
+          return;
+        }
+
+        if (pathname.match(/^\/api\/courses\/[^/]+\/units$/) && req.method === 'POST') {
+          const courseId = pathname.split('/')[3];
+          let bodyStr = '';
+          req.on('data', (chunk) => { bodyStr += chunk; });
+          req.on('end', () => {
+            let body = {};
+            try { body = JSON.parse(bodyStr); } catch {}
+
+            if (courseId.includes('404')) {
+              res.writeHead(404, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Khóa học không tồn tại.' } }));
+              return;
+            }
+
+            if (body.code === 'expire401' || body.names?.vi === 'expire401') {
+              res.writeHead(401, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'UNAUTHENTICATED', message: 'Phiên làm việc đã hết hạn.' } }));
+              return;
+            }
+
+            if (body.code === 'err403' || body.names?.vi === 'err403') {
+              res.writeHead(403, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền thực hiện thao tác này.' } }));
+              return;
+            }
+
+            if (body.code === 'err503' || body.names?.vi === 'err503') {
+              res.writeHead(503, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: 'Cơ sở dữ liệu tạm thời không phản hồi.' } }));
+              return;
+            }
+
+            if (body.position === 999 || (body.position === 1 && body.levelId === 'aaaa1111-1111-4111-8111-111111111111' && body.names?.vi !== 'heldpost')) {
+              res.writeHead(409, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({
+                error: {
+                  code: 'DUPLICATE_UNIT_POSITION',
+                  message: 'Thứ tự vị trí đơn vị bài học này đã tồn tại trong cấp độ của khóa học.',
+                  fields: { position: 'Thứ tự vị trí đơn vị bài học này đã tồn tại trong cấp độ của khóa học.' },
+                },
+              }));
+              return;
+            }
+
+            const responseData = {
+              id: '44444444-4444-4444-8444-999999999999',
+              courseId,
+              levelId: body.levelId,
+              code: body.code,
+              names: body.names || {},
+              position: body.position,
+              level: { id: body.levelId, code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+            };
+
+            if (body.code === 'held' || body.names?.vi === 'heldpost') {
+              setTimeout(() => {
+                res.writeHead(201, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ data: responseData }));
+              }, 450);
+              return;
+            }
+
+            res.writeHead(201, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ data: responseData }));
+          });
+          return;
+        }
+
+        // Single Unit PATCH / DELETE: /api/courses/[courseId]/units/[unitId]
+        if (pathname.match(/^\/api\/courses\/[^/]+\/units\/[^/]+$/) && req.method === 'PATCH') {
+          const parts = pathname.split('/');
+          const courseId = parts[3];
+          const unitId = parts[5];
+          let bodyStr = '';
+          req.on('data', (chunk) => { bodyStr += chunk; });
+          req.on('end', () => {
+            let body = {};
+            try { body = JSON.parse(bodyStr); } catch {}
+
+            if (unitId.includes('notfound404') || courseId.includes('notfound404')) {
+              res.writeHead(404, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Không tìm thấy đơn vị bài học.' } }));
+              return;
+            }
+
+            if (unitId.includes('expire401') || body.code === 'expire401') {
+              res.writeHead(401, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'UNAUTHENTICATED', message: 'Phiên làm việc đã hết hạn.' } }));
+              return;
+            }
+
+            if (unitId.includes('err403') || body.code === 'err403') {
+              res.writeHead(403, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền thực hiện thao tác này.' } }));
+              return;
+            }
+
+            if (unitId.includes('err503') || body.code === 'err503') {
+              res.writeHead(503, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: 'Cơ sở dữ liệu tạm thời không phản hồi.' } }));
+              return;
+            }
+
+            if (body.position === 999) {
+              res.writeHead(409, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({
+                error: {
+                  code: 'DUPLICATE_UNIT_POSITION',
+                  message: 'Thứ tự vị trí đơn vị bài học này đã tồn tại trong cấp độ của khóa học.',
+                  fields: { position: 'Thứ tự vị trí đơn vị bài học này đã tồn tại trong cấp độ của khóa học.' },
+                },
+              }));
+              return;
+            }
+
+            const responseData = {
+              id: unitId,
+              courseId,
+              levelId: body.levelId || 'aaaa1111-1111-4111-8111-111111111111',
+              code: body.code || 'UNIT-01',
+              names: body.names || {},
+              position: body.position !== undefined ? body.position : 1,
+              level: { id: body.levelId || 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+            };
+
+            if (unitId.includes('held') || body.code === 'held') {
+              setTimeout(() => {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ data: responseData }));
+              }, 450);
+              return;
+            }
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ data: responseData }));
+          });
+          return;
+        }
+
+        if (pathname.match(/^\/api\/courses\/[^/]+\/units\/[^/]+$/) && req.method === 'DELETE') {
+          const parts = pathname.split('/');
+          const unitId = parts[5];
+
+          if (unitId.includes('notfound404')) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Không tìm thấy đơn vị bài học.' } }));
+            return;
+          }
+
+          if (unitId.includes('expire401')) {
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'UNAUTHENTICATED', message: 'Phiên làm việc đã hết hạn.' } }));
+            return;
+          }
+
+          if (unitId.includes('err403')) {
+            res.writeHead(403, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền thực hiện thao tác này.' } }));
+            return;
+          }
+
+          if (unitId.includes('err503')) {
+            res.writeHead(503, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: 'Cơ sở dữ liệu tạm thời không phản hồi.' } }));
+            return;
+          }
+
+          if (unitId.includes('inuse') || unitId.includes('haslessons') || unitId === '44444444-4444-4444-8444-444444444040') {
+            res.writeHead(409, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: { code: 'UNIT_IN_USE', message: 'Đơn vị bài học đang chứa bài học, không thể xóa.' } }));
+            return;
+          }
+
+          if (unitId.includes('held')) {
+            setTimeout(() => {
+              res.writeHead(204);
+              res.end();
+            }, 450);
+            return;
+          }
+
+          res.writeHead(204);
+          res.end();
+          return;
+        }
+
         if (pathname === '/login') {
-          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
           res.end('<!DOCTYPE html><html><body><h1>Đăng nhập Lingora</h1></body></html>');
           return;
         }

@@ -394,6 +394,8 @@ html, body {
   text-decoration: none;
   line-height: 1;
   transition: background-color 0.12s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-text-action:focus-visible {
@@ -508,6 +510,8 @@ html, body {
   display: flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .table-summary-bar {

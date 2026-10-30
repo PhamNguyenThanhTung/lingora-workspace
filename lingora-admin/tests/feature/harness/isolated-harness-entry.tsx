@@ -4,6 +4,8 @@ import { AppShell } from '../../../src/components/AppShell';
 import { LanguagesCatalog } from '../../../src/components/LanguagesCatalog';
 import { FrameworksCatalog } from '../../../src/components/FrameworksCatalog';
 import { LevelsCatalog } from '../../../src/components/LevelsCatalog';
+import { CoursesCatalog } from '../../../src/components/CoursesCatalog';
+import { UnitsCatalog } from '../../../src/components/UnitsCatalog';
 import { TeacherHoldingView } from '../../../src/app/holding/TeacherHoldingView';
 import { AccessDeniedView } from '../../../src/components/AccessDeniedView';
 import { ServiceUnavailableView } from '../../../src/components/ServiceUnavailableView';
@@ -18,6 +20,8 @@ if (typeof window !== 'undefined') {
 }
 import type { FrameworkDto } from '../../../src/server/frameworks';
 import type { LevelDto } from '../../../src/server/levels';
+import type { CourseDto } from '../../../src/server/courses';
+import type { UnitDto } from '../../../src/server/units';
 
 const MOCK_ADMIN = {
   id: '00000000-0000-4000-8000-000000000001',
@@ -144,6 +148,56 @@ const MOCK_LEVELS: LevelDto[] = [
     code: 'C2',
     label: { vi: 'Thành thạo C2', en: 'Mastery' },
     position: 6,
+  },
+];
+
+const MOCK_COURSES: CourseDto[] = [
+  {
+    id: '33333333-3333-4333-8333-333333333030',
+    languageId: '22222222-2222-4222-8222-222222222222',
+    frameworkId: '11111111-1111-4111-8111-111111111111',
+    defaultStartLevelId: 'aaaa1111-1111-4111-8111-111111111111',
+    names: { vi: 'Tiếng Anh Giao Tiếp', en: 'Conversational English' },
+    isActive: true,
+    curriculumGeneration: 1,
+    unitCount: 2,
+    language: { id: '22222222-2222-4222-8222-222222222222', code: 'en', names: { vi: 'Tiếng Anh', en: 'English' } },
+    framework: { id: '11111111-1111-4111-8111-111111111111', code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } },
+    defaultStartLevel: { id: 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+  },
+  {
+    id: '33333333-3333-4333-8333-333333333031',
+    languageId: '66666666-6666-4666-8666-666666666666',
+    frameworkId: '11111111-1111-4111-8111-111111111111',
+    defaultStartLevelId: 'aaaa1111-1111-4111-8111-111111111111',
+    names: { vi: 'Tiếng Việt cho người nước ngoài', en: 'Vietnamese for Expats' },
+    isActive: false,
+    curriculumGeneration: 1,
+    unitCount: 0,
+    language: { id: '66666666-6666-4666-8666-666666666666', code: 'vi', names: { vi: 'Tiếng Việt' } },
+    framework: { id: '11111111-1111-4111-8111-111111111111', code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } },
+    defaultStartLevel: { id: 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+  },
+];
+
+const MOCK_UNITS: UnitDto[] = [
+  {
+    id: '44444444-4444-4444-8444-444444444040',
+    courseId: '33333333-3333-4333-8333-333333333030',
+    levelId: 'aaaa1111-1111-4111-8111-111111111111',
+    code: 'UNIT-01',
+    names: { vi: 'Bài 1: Làm quen', en: 'Unit 1: Introductions' },
+    position: 1,
+    level: { id: 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
+  },
+  {
+    id: '44444444-4444-4444-8444-444444444041',
+    courseId: '33333333-3333-4333-8333-333333333030',
+    levelId: 'aaaa1111-1111-4111-8111-111111111111',
+    code: 'UNIT-02',
+    names: { vi: 'Bài 2: Gia đình và bạn bè', en: 'Unit 2: Family & Friends' },
+    position: 2,
+    level: { id: 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
   },
 ];
 
@@ -374,6 +428,154 @@ function IsolatedHarnessApp() {
       <AppShell account={pageProps.account || MOCK_ADMIN}>
         <FrameworksCatalog
           initialFrameworks={pageProps.initialFrameworks || []}
+          initialError={pageProps.initialError}
+          account={pageProps.account || MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  // --- Slice 3 Courses States ---
+  if (state === 'courses-populated') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CoursesCatalog
+          initialCourses={MOCK_COURSES}
+          languages={MOCK_LANGUAGES}
+          frameworks={MOCK_FRAMEWORKS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'courses-unloaded-options') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CoursesCatalog
+          initialCourses={MOCK_COURSES}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'courses-loading') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CoursesCatalog
+          isLoading={true}
+          languages={MOCK_LANGUAGES}
+          frameworks={MOCK_FRAMEWORKS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'courses-fetch-error') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CoursesCatalog
+          initialError="Không thể kết nối đến máy chủ Lingora (503 Service Unavailable)."
+          languages={MOCK_LANGUAGES}
+          frameworks={MOCK_FRAMEWORKS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'courses-empty') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CoursesCatalog
+          initialCourses={[]}
+          languages={MOCK_LANGUAGES}
+          frameworks={MOCK_FRAMEWORKS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  // --- Slice 3 Units States ---
+  if (state === 'units-populated') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <UnitsCatalog
+          course={MOCK_COURSES[0]}
+          frameworkLevels={MOCK_LEVELS}
+          initialUnits={MOCK_UNITS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'units-loading') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <UnitsCatalog
+          course={MOCK_COURSES[0]}
+          frameworkLevels={MOCK_LEVELS}
+          isLoading={true}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'units-fetch-error') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <UnitsCatalog
+          course={MOCK_COURSES[0]}
+          frameworkLevels={MOCK_LEVELS}
+          initialError="Không thể kết nối đến máy chủ Lingora (503 Service Unavailable)."
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'units-empty') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <UnitsCatalog
+          course={MOCK_COURSES[0]}
+          frameworkLevels={MOCK_LEVELS}
+          initialUnits={[]}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-course-detail-wire') {
+    const pageProps = (typeof window !== 'undefined' ? (window as any).__PAGE_PROPS__ : null) || {};
+    return (
+      <AppShell account={pageProps.account}>
+        <UnitsCatalog
+          course={pageProps.course}
+          frameworkLevels={pageProps.frameworkLevels}
+          initialUnits={pageProps.initialUnits}
+          initialError={pageProps.initialError}
+          initialLevelsError={pageProps.initialLevelsError}
+          account={pageProps.account}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-courses-wire') {
+    const pageProps = (typeof window !== 'undefined' ? (window as any).__PAGE_PROPS__ : null) || {};
+    return (
+      <AppShell account={pageProps.account || MOCK_ADMIN}>
+        <CoursesCatalog
+          initialCourses={pageProps.initialCourses || []}
+          languages={pageProps.languages || MOCK_LANGUAGES}
+          frameworks={pageProps.frameworks || MOCK_FRAMEWORKS}
           initialError={pageProps.initialError}
           account={pageProps.account || MOCK_ADMIN}
         />
