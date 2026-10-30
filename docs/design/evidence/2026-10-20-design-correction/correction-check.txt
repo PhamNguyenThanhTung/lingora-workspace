@@ -1,7 +1,0 @@
-PASS: bounded changed paths; 909 protected artifact/app/schema/history hashes unchanged.
-PASS: six changed pages, 38 exact preserved fragments, current payloads; all 21 DATA endpoint/cardinality tuples; negative payload rejected; 30 other manifest records unchanged.
-PASS: exact target keys + two missing-key negatives; receipt commands/purpose capability; 34 tables/four views/eight renders and source parity.
-PASS: 321 resolving documentation links, no new broken links, log prefixes retained. Inherited unresolved: []
-Static design/artifact checks only; independent semantic/visual evidence required. Runtime NOT EXECUTED; live DB UNVERIFIED.
-warning: in the working copy of 'docs/modeling/current-target/lingora-all-diagrams.drawio', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'logs/test-log.md', LF will be replaced by CRLF the next time Git touches it

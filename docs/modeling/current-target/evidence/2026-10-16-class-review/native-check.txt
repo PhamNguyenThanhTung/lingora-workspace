@@ -1,3 +1,0 @@
-Command: ['C:\\Users\\tungt\\AppData\\Local\\Programs\\Python\\Python311\\python.exe', 'scripts/validate_drawio.py']
-Exit: 0
-PASS: D:\school\btl\docs\modeling\current-target\lingora-all-diagrams.drawio contains 35 ordered active native pages with matching standalone PUML edit payloads

@@ -1,8 +1,0 @@
-COMMAND: python3 (provenance check)
-CWD: /home/tung/workspace/school/project1/lingora-workspace
-HEAD: c39806cb45c908135f240c93d68546b6ac5d7784
-EXIT_CODE: 0
-RESULT: Provenance snapshot collected.
-PUML Source Match: True
-Stale historical outputs: 6 (expected 6 per spec §1)
-CR2-04: CR2-04 negative-fixture/helper coverage remains open; uncarried into execution evidence per spec §1

@@ -287,7 +287,6 @@ Vocabulary "0..*" -- "1" Language : ngôn ngữ từ
 Progress "0..*" -- "1" Level : phạm vi cấp
 LessonAttempt "0..*" -- "1" ContentRevision : bản đã học
 
-' Bounded references and relationship constraints: class-review-2026-10-16.md.
 ' assessmentAttempts pins Context+Version before any Result; no persistence/resume assumed.
 ' Core/optional vocabularyMemberships belong to the completed ContentRevision.
 ' authoring/assignment and submissionReviewHistory retain Teacher attribution and feedback.

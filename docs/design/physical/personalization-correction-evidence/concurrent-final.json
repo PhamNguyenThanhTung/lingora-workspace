@@ -1,9 +1,0 @@
-{
-  "presentation_sha256": "926ddd1adcd6f7d48f0918edbfcf7871675a3841e9fda00c1e8ff2e3cc8c4a7a",
-  "log_prefix_lengths": {
-    "logs/decision-log.md": 186284,
-    "logs/test-log.md": 308385,
-    "logs/development-log.md": 253658
-  },
-  "source_thread_status": "COMPLETED; only externally owned Markdown changed after handover"
-}
