@@ -1,3 +1,4 @@
+import ActivateTeacherPage from '../../../src/app/activate-teacher/page';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppShell } from '../../../src/components/AppShell';
@@ -6,6 +7,7 @@ import { FrameworksCatalog } from '../../../src/components/FrameworksCatalog';
 import { LevelsCatalog } from '../../../src/components/LevelsCatalog';
 import { CoursesCatalog } from '../../../src/components/CoursesCatalog';
 import { UnitsCatalog } from '../../../src/components/UnitsCatalog';
+import { TeachersCatalog } from '../../../src/components/TeachersCatalog';
 import { TeacherHoldingView } from '../../../src/app/holding/TeacherHoldingView';
 import { AccessDeniedView } from '../../../src/components/AccessDeniedView';
 import { ServiceUnavailableView } from '../../../src/components/ServiceUnavailableView';
@@ -22,6 +24,7 @@ import type { FrameworkDto } from '../../../src/server/frameworks';
 import type { LevelDto } from '../../../src/server/levels';
 import type { CourseDto } from '../../../src/server/courses';
 import type { UnitDto } from '../../../src/server/units';
+import type { TeacherDto } from '../../../src/server/teachers';
 
 const MOCK_ADMIN = {
   id: '00000000-0000-4000-8000-000000000001',
@@ -29,6 +32,45 @@ const MOCK_ADMIN = {
   status: 'ACTIVE',
   displayName: 'Nguyễn Quản Trị',
 };
+
+const MOCK_TEACHERS: TeacherDto[] = [
+  {
+    id: '11111111-1111-4111-8111-111111111111',
+    email: 'teacher.lan@lingora.edu.vn',
+    displayName: 'Nguyễn Thị Lan',
+    role: 'TEACHER',
+    status: 'ACTIVE',
+    createdAt: '2026-10-28T08:00:00.000Z',
+    activatedAt: '2026-10-28T09:00:00.000Z',
+  },
+  {
+    id: '22222222-2222-4222-8222-222222222222',
+    email: 'teacher.minh@lingora.edu.vn',
+    displayName: 'Trần Văn Minh',
+    role: 'TEACHER',
+    status: 'DISABLED',
+    createdAt: '2026-10-27T10:00:00.000Z',
+    activatedAt: '2026-10-27T11:00:00.000Z',
+  },
+  {
+    id: '33333333-3333-4333-8333-333333333333',
+    email: 'teacher.hoa@lingora.edu.vn',
+    displayName: 'Lê Thị Hoa',
+    role: 'TEACHER',
+    status: 'PENDING',
+    createdAt: '2026-10-29T14:00:00.000Z',
+    activatedAt: null,
+  },
+  {
+    id: '44444444-4444-4444-8444-444444444444',
+    email: null,
+    displayName: 'Giáo viên Chưa Xác Thực',
+    role: 'TEACHER',
+    status: 'ACTIVE',
+    createdAt: '2026-10-26T14:00:00.000Z',
+    activatedAt: null,
+  },
+];
 
 const MOCK_LANGUAGES: LanguageDto[] = [
   {
@@ -581,6 +623,49 @@ function IsolatedHarnessApp() {
         />
       </AppShell>
     );
+  }
+
+  if (state === 'teacher-activation') return <ActivateTeacherPage />;
+
+  // --- Slice 4 Teachers States ---
+  if (state === 'teachers-populated') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <TeachersCatalog
+          initialTeachers={MOCK_TEACHERS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'teachers-empty') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <TeachersCatalog
+          initialTeachers={[]}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'teachers-fetch-error') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <TeachersCatalog
+          initialTeachers={[]}
+          initialError="Không thể kết nối đến máy chủ Lingora (503 Service Unavailable)."
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-teachers-wire') {
+    const pageProps = (window as any).__PAGE_PROPS__;
+    if (!pageProps?.account || !Array.isArray(pageProps.initialTeachers)) throw new Error('Missing production TeachersPage props');
+    return <AppShell account={pageProps.account}><TeachersCatalog {...pageProps} /></AppShell>;
   }
 
   // Default: populated languages catalogue

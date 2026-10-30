@@ -8,12 +8,17 @@ const esbuild = require('esbuild');
 const appDir = path.resolve(import.meta.dirname, '../../..');
 const dbUrl = 'file://' + path.resolve(appDir, 'src/server/db/index.js');
 
+const emptyModulePath = path.resolve(appDir, 'tests/feature/harness/empty.js');
+
 const externalDbPlugin = {
   name: 'external-db',
   setup(build) {
     build.onResolve({ filter: /db\/index\.js/ }, () => ({
       path: dbUrl,
       external: true,
+    }));
+    build.onResolve({ filter: /^server-only$/ }, () => ({
+      path: emptyModulePath,
     }));
   },
 };

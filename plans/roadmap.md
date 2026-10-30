@@ -36,4 +36,15 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Unit thuộc Course/Level; position nguyên dương int32, unique(courseId,levelId,position); parent ownership và Framework scope được enforce ở server.
 - Retry Level giữ input; dependency403 đóng modal/release inert để Logout usable; regression đi qua actual production-page props và callbacks.
 - Feature196/196, components45/45, typecheck/build PASS;13 mutation controls KILLED, source restored byte-exact; canonical read-only/live A–E/fixture cleanup PASS.
-- Không schema migration, không thay canonical data; chưa bắt đầu Slice4.
+- Không schema migration, không thay canonical data.
+
+## Slice 4 ✅ — Teacher Accounts / Enable-Disable / Permissions
+
+- ACCEPTED ngày2026-10-30; `/teachers`, Teacher-only GET/POST/PATCH APIs và `/activate-teacher` đã hoạt động.
+- ACTIVE ADMIN quản lý Teachers; không mutate Admin/Learner/self, không role override hay PENDING enable shortcut.
+- Provisioning server-only Auth create/invite + matching PENDING Account, durable ownership ledger, guarded compensation/recovery; không Admin password/token exposure.
+- First-use xác minh confirmed Auth identity + READY Teacher ledger, user-scoped password update dưới Account lock rồi activate/audit; validation tối đa72 UTF-8 bytes theo provider.
+- Disable chặn same valid session ở protected request tiếp theo; enable khôi phục quyền và giữ activatedAt. Không Auth ban/revoke.
+- Codex tự review/fix và live acceptance; feature260/260, components60/60, typecheck/build PASS;6 controls A/B/C/C2/D/E KILLED, restore byte-exact.
+- Live create/invite/activation/lifecycle/duplicate PASS; owned Auth/Account/provisioning residue0, giữ4 immutable audit events. Xem [verification](slice-4-verification.md).
+- Không schema change, không canonical-account mutation; không bắt đầu Slice5.

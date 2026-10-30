@@ -31,7 +31,13 @@ export async function buildHarnessBundle() {
     format: 'esm',
     jsx: 'automatic',
     write: false,
+    define: {
+      'process.env.NEXT_PUBLIC_SUPABASE_URL': JSON.stringify('https://supabase.test'),
+      'process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY': JSON.stringify('test-public-key'),
+      'process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY': JSON.stringify('test-public-key'),
+    },
     alias: {
+      '@': path.resolve(appDir, 'src'),
       'next/navigation': path.resolve(harnessDir, 'mock-next-navigation.ts'),
     },
   });
@@ -186,6 +192,31 @@ export function startIsolatedServer(port = 3007) {
 
             const CoursesPage = await compileAndLoadPage('src/app/courses/page.tsx', { useBridge: true });
             const jsx = await CoursesPage();
+            injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
+          }
+
+          if (state === 'page-teachers-wire') {
+            const teacherId = '11111111-1111-4111-8111-111111111111';
+            setProductPrismaForTest({
+              account: { findUnique: async () => MOCK_ADMIN },
+              $queryRaw: async () => [
+                {
+                  id: teacherId,
+                  email: 'teacher.lan@lingora.edu.vn',
+                  displayName: 'Nguyễn Thị Lan',
+                  role: 'TEACHER',
+                  status: 'ACTIVE',
+                  createdAt: new Date('2026-10-28T08:00:00.000Z'),
+                  activatedAt: new Date('2026-10-28T09:00:00.000Z'),
+                },
+              ],
+            });
+            globalThis.fetch = async () => new Response(JSON.stringify({ id: MOCK_ADMIN.id }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://sncfyvpzwedqgwfpffkh.supabase.co';
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+
+            const TeachersPage = await compileAndLoadPage('src/app/teachers/page.tsx', { useBridge: true });
+            const jsx = await TeachersPage();
             injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
           }
 
