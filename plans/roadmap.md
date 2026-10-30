@@ -48,3 +48,13 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Codex tự review/fix và live acceptance; feature260/260, components60/60, typecheck/build PASS;6 controls A/B/C/C2/D/E KILLED, restore byte-exact.
 - Live create/invite/activation/lifecycle/duplicate PASS; owned Auth/Account/provisioning residue0, giữ4 immutable audit events. Xem [verification](slice-4-verification.md).
 - Không schema change, không canonical-account mutation; không bắt đầu Slice5.
+
+## Slice 5 ✅ — Lesson Assignment / Draft / Revision Foundation
+
+- ACCEPTED ngày2026-10-30; nested Unit Lessons page và `/my-lessons` list/detail dùng production wiring thật.
+- Admin quản lý skeleton position/isRequired và assign/reassign ACTIVE Teacher; parent checks, Account/aggregate locking và rowVersion CAS enforce ở server.
+- Teacher exact role/current ownership/ACTIVE only; mỗi Save append DRAFT LessonRevision với current episode, prior link và attribution, không mất bản cũ hoặc đổi publication pointer.
+- Explicit Save, retained input/retry, authoritative DTO reconciliation, real stale-content reload, dependency recovery và401/403 Logout flow.
+- Feature327/327, components87/87, typecheck/build PASS;6 semantic controls A–F KILLED và restore byte-exact. Codex sửa trực tiếp các finding sau Anti handoff; không correction round bắt buộc.
+- Live Admin/Teacher/stale retry/revision/lifecycle PASS. Theo owner exception, giữ một bộ DEV riêng (Course inactive, Teacher DISABLED) với3 revisions; đóng session/browser, giữ immutable guards/canonical rows. Xem [verification](slice-5-verification.md).
+- Không schema/migration, Exercise/Vocabulary/Media/review/publish hoặc Slice6 implementation.

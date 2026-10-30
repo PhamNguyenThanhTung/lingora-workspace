@@ -212,41 +212,54 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
     await page.fill('#inputCourseNameVi', 'heldpatch');
     await page.fill('#inputCourseNameEn', 'Conversational English Only');
 
-    await page.evaluate(() => {
-      window.__patchCount = 0;
-      const origFetch = window.fetch;
-      window.fetch = (url, opts) => {
-        if (opts?.method === 'PATCH') {
-          window.__patchCount++;
-        }
-        return origFetch(url, opts);
-      };
-      document.querySelector('#btnSubmitCourseModal').click();
-      document.querySelector('#btnSubmitCourseModal').click();
+    // Hold until every pending assertion finishes; a fixed450ms server delay can expire between actions.
+    let releasePatch;
+    const heldPatch = new Promise(resolve => { releasePatch = resolve; });
+    await page.route('**/api/courses/*', async route => {
+      if (route.request().method() === 'PATCH') await heldPatch;
+      await route.continue();
     });
+    const requestPromise = page.waitForRequest(r => r.method() === 'PATCH', { timeout: 5000 });
+    try {
+      await page.evaluate(() => {
+        window.__patchCount = 0;
+        const origFetch = window.fetch;
+        window.fetch = (url, opts) => {
+          if (opts?.method === 'PATCH') {
+            window.__patchCount++;
+          }
+          return origFetch(url, opts);
+        };
+        document.querySelector('#btnSubmitCourseModal').click();
+        document.querySelector('#btnSubmitCourseModal').click();
+      });
+      const patchRequest = await requestPromise;
+      assert.equal(patchRequest.postDataJSON().names.vi, 'heldpatch');
+      assert.equal(patchRequest.postDataJSON().names.en, 'Conversational English Only');
 
-    const isPending = await page.evaluate(() => {
-      const btn = document.querySelector('#btnSubmitCourseModal');
-      const input = document.querySelector('#inputCourseNameVi');
-      const cancel = document.querySelector('#btnCancelCourseModal');
-      const close = document.querySelector('#btnCloseCourseModal');
-      return btn?.disabled && input?.disabled && cancel?.disabled && close?.disabled && btn?.textContent?.trim() === 'Đang lưu...';
-    });
-    assert.equal(isPending, true, 'Controls must be locked during pending PATCH');
+      const isPending = await page.evaluate(() => {
+        const btn = document.querySelector('#btnSubmitCourseModal');
+        const input = document.querySelector('#inputCourseNameVi');
+        const cancel = document.querySelector('#btnCancelCourseModal');
+        const close = document.querySelector('#btnCloseCourseModal');
+        return btn?.disabled && input?.disabled && cancel?.disabled && close?.disabled && btn?.textContent?.trim() === 'Đang lưu...';
+      });
+      assert.equal(isPending, true, 'Controls must be locked during pending PATCH');
 
-    const patchCount = await page.evaluate(() => window.__patchCount);
-    assert.equal(patchCount, 1, 'Duplicate PATCH submits ignored');
+      const patchCount = await page.evaluate(() => window.__patchCount);
+      assert.equal(patchCount, 1, 'Duplicate PATCH submits ignored');
 
-    // Escape and backdrop click blocked
-    await page.keyboard.press('Escape');
-    assert.equal(await page.locator('#courseFormModal').isVisible(), true);
-    await page.click('#courseFormModal', { position: { x: 5, y: 5 } });
-    assert.equal(await page.locator('#courseFormModal').isVisible(), true);
+      // Escape and backdrop click blocked
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator('#courseFormModal').isVisible(), true);
+      await page.click('#courseFormModal', { position: { x: 5, y: 5 } });
+      assert.equal(await page.locator('#courseFormModal').isVisible(), true);
 
-    // Wait for held PATCH to finish
-    await page.waitForSelector('#courseFormModal', { state: 'hidden' });
+      // Wait for held PATCH to finish
+      releasePatch();
+      await page.waitForSelector('#courseFormModal', { state: 'hidden' });
 
-    await context.close();
+    } finally { releasePatch(); await context.close(); }
   });
 
   test('CourseDeleteModal held pending locks, in-use error (409) retention vs successful deletion and focus restoration (R5)', async () => {

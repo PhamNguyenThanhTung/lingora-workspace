@@ -14,7 +14,9 @@ const globalsCssPath = path.resolve(appDir, 'src/app/globals.css');
 let cachedBundle = null;
 
 const { setProductPrismaForTest } = await import(path.resolve(appDir, 'src/server/db/index.js'));
+const { lessonsFixture } = await import(path.resolve(appDir, 'tests/feature/harness/lessons-fixture.mjs'));
 const { compileAndLoadPage } = await import(path.resolve(appDir, 'tests/feature/harness/load-production-pages.mjs'));
+const { setCookieStore, createMockSessionCookie } = await import(path.resolve(appDir, 'tests/feature/harness/next-headers-bridge.mjs'));
 
 const MOCK_ADMIN = {
   id: '00000000-0000-4000-8000-000000000001',
@@ -217,6 +219,126 @@ export function startIsolatedServer(port = 3007) {
 
             const TeachersPage = await compileAndLoadPage('src/app/teachers/page.tsx', { useBridge: true });
             const jsx = await TeachersPage();
+            injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
+          }
+
+          if (state === 'page-unit-lessons-wire') {
+            const courseId = url.searchParams.get('courseId') || '33333333-3333-4333-8333-333333333030';
+            const unitId = url.searchParams.get('unitId') || '44444444-4444-4444-8444-444444444040';
+            const teacherId = '11111111-1111-4111-8111-111111111111';
+
+            setCookieStore({
+              getAll: () => [createMockSessionCookie(MOCK_ADMIN.id, 'admin@lingora.test')],
+              get: () => createMockSessionCookie(MOCK_ADMIN.id, 'admin@lingora.test'),
+              set: () => {},
+              delete: () => {},
+            });
+
+            setProductPrismaForTest({
+              account: {
+                findUnique: async () => MOCK_ADMIN,
+                findMany: async () => { if (url.searchParams.has('failOptions')) throw new Error('Options unavailable'); return [
+                  { id: teacherId, displayName: 'Nguyễn Thị Lan', role: 'TEACHER', status: 'ACTIVE' },
+                ]; },
+              },
+              course: {
+                findUnique: async () => ({
+                  id: courseId,
+                  languageId: '11111111-1111-4111-8111-111111111111',
+                  frameworkId: '11111111-1111-4111-8111-111111111111',
+                  defaultStartLevelId: '11111111-1111-4111-8111-111111111111',
+                  names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' },
+                  isActive: true,
+                  curriculumGeneration: 1n,
+                  language: { id: '11111111-1111-4111-8111-111111111111', code: 'en', names: { vi: 'Tiếng Anh' } },
+                  framework: { id: '11111111-1111-4111-8111-111111111111', code: 'CEFR', version: '2020', names: { vi: 'Khung CEFR' } },
+                  defaultStartLevel: { id: '11111111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Cơ bản' }, position: 1 },
+                  _count: { units: 1 },
+                }),
+              },
+              unit: {
+                findUnique: async () => ({
+                  id: unitId,
+                  courseId,
+                  code: 'UNIT-01',
+                  names: { vi: 'Bài 1: Làm quen' },
+                  position: 1,
+                  levelId: '11111111-1111-4111-8111-111111111111',
+                  level: { id: '11111111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Cơ bản' }, position: 1 },
+                  course: { id: courseId, names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' } },
+                }),
+                findFirst: async () => ({
+                  id: unitId,
+                  courseId,
+                  code: 'UNIT-01',
+                  names: { vi: 'Bài 1: Làm quen' },
+                  position: 1,
+                  levelId: '11111111-1111-4111-8111-111111111111',
+                  level: { id: '11111111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Cơ bản' }, position: 1 },
+                  course: { id: courseId, names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' } },
+                }),
+              },
+              lesson: {
+                findMany: async () => [
+                  {
+                    id: '55555555-5555-5555-8555-555555555001',
+                    unitId,
+                    position: 1,
+                    isRequired: true,
+                    availability: 'PLANNED',
+                    rowVersion: 1n,
+                    unit: {
+                      id: unitId,
+                      code: 'UNIT-01',
+                      names: { vi: 'Bài 1: Làm quen' },
+                      course: { id: courseId, names: { vi: 'Tiếng Anh Chuẩn' } },
+                    },
+                    assignment: {
+                      id: '66666666-6666-6666-8666-666666666001',
+                      currentTeacher: { id: teacherId, displayName: 'Nguyễn Thị Lan', status: 'ACTIVE' },
+                      scopeGeneration: 1n,
+                    },
+                    revisions: [],
+                  },
+                ],
+              },
+            });
+            globalThis.fetch = async () => new Response(JSON.stringify({ id: MOCK_ADMIN.id }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://sncfyvpzwedqgwfpffkh.supabase.co';
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+
+            const UnitLessonsPage = await compileAndLoadPage('src/app/courses/[courseId]/units/[unitId]/page.tsx', { useBridge: true });
+            const jsx = await UnitLessonsPage({ params: Promise.resolve({ courseId, unitId }) });
+            injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
+          }
+
+          if (state === 'page-teacher-draft-wire' || state === 'page-teacher-lessons-wire') {
+            const f = lessonsFixture();
+            const teacherId = '11111111-1111-4111-8111-111111111111';
+            const lessonId = '55555555-5555-5555-8555-555555555001';
+            const courseId = '33333333-3333-4333-8333-333333333030';
+            const unitId = '44444444-4444-4444-8444-444444444040';
+            const account = { id: teacherId, role: 'TEACHER', status: 'ACTIVE', displayName: 'Nguyễn Thị Lan', uiLocale: 'vi' };
+            f.state.accounts.set(teacherId, account);
+            f.state.courses.set(courseId, { id: courseId, names: { vi: 'Tiếng Anh Chuẩn' } });
+            f.state.units.set(unitId, { id: unitId, courseId, position: 1, code: 'UNIT-01', names: { vi: 'Bài 1: Làm quen' } });
+            f.state.lessons.set(lessonId, { id: lessonId, unitId, position: 1, isRequired: true, availability: 'PLANNED', rowVersion: 1n });
+            f.state.assignments.set('66666666-6666-6666-8666-666666666001', { id: '66666666-6666-6666-8666-666666666001', lessonId, currentTeacherId: teacherId, scopeGeneration: 1n });
+            f.state.revisions.set('77777777-7777-7777-8777-777777777001', {
+              id: '77777777-7777-7777-8777-777777777001', lessonId, revisionNo: 1,
+              title: { vi: 'Bài học #1', en: 'Lesson 1' },
+              contentBlocks: url.searchParams.has('unsupported') ? [{ type: 'media', assetId: 'existing' }] : [{ type: 'paragraph', text: 'Nội dung khởi tạo' }],
+              changeSummary: 'Khởi tạo', status: 'DRAFT', createdBy: teacherId, lastEditedBy: teacherId,
+              createdAt: new Date('2026-10-30T09:00:00Z'), _count: {},
+            });
+            if (url.searchParams.has('failList')) f.db.lesson.findMany = async () => { throw new Error('Unavailable'); };
+            setCookieStore({ getAll: () => [createMockSessionCookie(teacherId, 'teacher@lingora.test')], set: () => {} });
+            setProductPrismaForTest(f.db);
+            globalThis.fetch = async () => Response.json({ id: teacherId });
+            process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://sncfyvpzwedqgwfpffkh.supabase.co';
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+            const Page = await compileAndLoadPage(state === 'page-teacher-draft-wire' ? 'src/app/my-lessons/[lessonId]/page.tsx' : 'src/app/my-lessons/page.tsx', { useBridge: true });
+            const jsx = await Page({ params: Promise.resolve({ lessonId }) });
             injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
           }
 

@@ -48,15 +48,25 @@ export function TeacherHoldingView({ displayName, accountId }: TeacherHoldingVie
           Xin chào Giáo viên {displayName || ''}.
         </h1>
         <p className="holding-desc">
-          Phân hệ giảng dạy đang được phát triển. Vui lòng quay lại sau.
+          Chào mừng bạn đến với phân hệ giảng dạy. Bạn có thể xem danh sách các bài học đã được phân công và soạn thảo bản nháp.
         </p>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="btn btn-secondary"
-        >
-          Đăng xuất
-        </button>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '16px' }}>
+          <a
+            href="/my-lessons"
+            className="btn btn-primary"
+            id="btnGoToMyLessons"
+          >
+            Bài học được phân công
+          </a>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="btn btn-secondary"
+            id="btnLogoutHolding"
+          >
+            Đăng xuất
+          </button>
+        </div>
       </div>
     </main>
   );

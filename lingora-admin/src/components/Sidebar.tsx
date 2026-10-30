@@ -21,6 +21,8 @@ export function Sidebar({ account }: SidebarProps) {
   const isFrameworksActive = pathname === '/frameworks' || pathname.startsWith('/frameworks/');
   const isCoursesActive = pathname === '/courses' || pathname.startsWith('/courses/');
   const isTeachersActive = pathname === '/teachers' || pathname.startsWith('/teachers/');
+  const isMyLessonsActive = pathname === '/my-lessons' || pathname.startsWith('/my-lessons/');
+  const isTeacher = account.role === 'TEACHER';
 
   const handleLogout = async () => {
     // Clear draft in isolated try/catch so storage errors never abort logout
@@ -61,53 +63,69 @@ export function Sidebar({ account }: SidebarProps) {
       </div>
 
       <nav className="nav-section">
-        <a
-          href="/languages"
-          className={`nav-item ${isLanguagesActive ? 'active' : ''}`}
-          id="navLanguages"
-        >
-          <svg className="nav-icon" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-          </svg>
-          <span>Quản lý ngôn ngữ</span>
-        </a>
-        <a
-          href="/frameworks"
-          className={`nav-item ${isFrameworksActive ? 'active' : ''}`}
-          id="navFrameworks"
-        >
-          <svg className="nav-icon" viewBox="0 0 24 24">
-            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-            <polyline points="2 17 12 22 22 17"></polyline>
-            <polyline points="2 12 12 17 22 12"></polyline>
-          </svg>
-          <span>Khung năng lực</span>
-        </a>
-        <a
-          href="/courses"
-          className={`nav-item ${isCoursesActive ? 'active' : ''}`}
-          id="navCourses"
-        >
-          <svg className="nav-icon" viewBox="0 0 24 24">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-          </svg>
-          <span>Khóa học</span>
-        </a>
-        <a
-          href="/teachers"
-          className={`nav-item ${isTeachersActive ? 'active' : ''}`}
-          id="navTeachers"
-        >
-          <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-          <span>Giáo viên</span>
-        </a>
+        {isTeacher ? (
+          <a
+            href="/my-lessons"
+            className={`nav-item ${isMyLessonsActive ? 'active' : ''}`}
+            id="navTeacherLessons"
+          >
+            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>Bài học được phân công</span>
+          </a>
+        ) : (
+          <>
+            <a
+              href="/languages"
+              className={`nav-item ${isLanguagesActive ? 'active' : ''}`}
+              id="navLanguages"
+            >
+              <svg className="nav-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span>Quản lý ngôn ngữ</span>
+            </a>
+            <a
+              href="/frameworks"
+              className={`nav-item ${isFrameworksActive ? 'active' : ''}`}
+              id="navFrameworks"
+            >
+              <svg className="nav-icon" viewBox="0 0 24 24">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+              <span>Khung năng lực</span>
+            </a>
+            <a
+              href="/courses"
+              className={`nav-item ${isCoursesActive ? 'active' : ''}`}
+              id="navCourses"
+            >
+              <svg className="nav-icon" viewBox="0 0 24 24">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>Khóa học</span>
+            </a>
+            <a
+              href="/teachers"
+              className={`nav-item ${isTeachersActive ? 'active' : ''}`}
+              id="navTeachers"
+            >
+              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Giáo viên</span>
+            </a>
+          </>
+        )}
       </nav>
 
       <div className="account-section">
@@ -116,7 +134,7 @@ export function Sidebar({ account }: SidebarProps) {
             {getInitials(account.displayName)}
           </div>
           <div className="account-name" title={account.displayName || 'Cán bộ quản trị'}>
-            {account.displayName || 'Quản trị viên'}
+            {account.displayName || (isTeacher ? 'Giáo viên' : 'Quản trị viên')}
           </div>
         </div>
         <button

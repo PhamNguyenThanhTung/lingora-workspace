@@ -27,3 +27,10 @@ Codex review/fix trực tiếp, không gọi lại Anti khi live acceptance. Fea
 Live3012: create/invite/activation, disable + same-session ACCOUNT_INACTIVE, enable + restored holding, duplicate no-false-success PASS.
 Owned Account/Auth/provisioning cleanup residue0; giữ4 immutable audit events. Không schema change/canonical-account mutation; không bắt đầu Slice5.
 Xem [final verification](slice-4-verification.md). SLICE4 ACCEPTED; commit/push sau allowlist/secret review.
+
+## Slice 5 — PASS / ACCEPTED
+Lesson Assignment / Draft / Revision Foundation hoàn tất ngày2026-10-30 theo [spec](2026-10-30-slice-5-lesson-assignment-draft.md).
+Anti implementation pass → independent Sol High review → Codex direct fixes/final acceptance. Feature327/327, components87/87, typecheck/build PASS; A–F KILLED, byte-exact restore.
+Live3012: owned Lesson create/assign, Teacher saves/reloads3 linked DRAFT revisions, prior row unchanged; Teacher/Admin stale retry and same-session disable403/enable200 PASS. TeacherB negative uses actual production-handler integration, as allowed when no second safe live identity exists.
+Owner approved one labeled reusable DEV set instead residue0:1 Course/Unit/Lesson/assignment/history/Teacher Account/Auth identity/provisioning request and3 revisions retained. Course inactive, Teacher DISABLED, session/browser closed; immutable guards intact, canonical data untouched.
+See [final verification](slice-5-verification.md). SLICE5 ACCEPTED; commit/push metadata is reported in the final Codex delivery. No schema change or Slice6 work.

@@ -441,6 +441,13 @@ export function UnitsCatalog({
                         </td>
                         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <div className="col-actions" style={{ justifyContent: 'flex-end', whiteSpace: 'nowrap' }}>
+                            <a
+                              href={`/courses/${course.id}/units/${u.id}`}
+                              className="btn-text-action btn-text-view"
+                              id={`btn-lessons-unit-${u.id}`}
+                            >
+                              Bài học
+                            </a>
                             <button
                               type="button"
                               className="btn-text-action btn-text-edit"

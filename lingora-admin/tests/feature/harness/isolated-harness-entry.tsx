@@ -8,6 +8,9 @@ import { LevelsCatalog } from '../../../src/components/LevelsCatalog';
 import { CoursesCatalog } from '../../../src/components/CoursesCatalog';
 import { UnitsCatalog } from '../../../src/components/UnitsCatalog';
 import { TeachersCatalog } from '../../../src/components/TeachersCatalog';
+import { LessonsCatalog } from '../../../src/components/LessonsCatalog';
+import { TeacherLessonsCatalog } from '../../../src/components/TeacherLessonsCatalog';
+import { LessonDraftEditor } from '../../../src/components/LessonDraftEditor';
 import { TeacherHoldingView } from '../../../src/app/holding/TeacherHoldingView';
 import { AccessDeniedView } from '../../../src/components/AccessDeniedView';
 import { ServiceUnavailableView } from '../../../src/components/ServiceUnavailableView';
@@ -25,6 +28,7 @@ import type { LevelDto } from '../../../src/server/levels';
 import type { CourseDto } from '../../../src/server/courses';
 import type { UnitDto } from '../../../src/server/units';
 import type { TeacherDto } from '../../../src/server/teachers';
+import type { LessonSummaryDto, LessonDetailDto, TeacherOptionDto } from '../../../src/server/lessons';
 
 const MOCK_ADMIN = {
   id: '00000000-0000-4000-8000-000000000001',
@@ -242,6 +246,113 @@ const MOCK_UNITS: UnitDto[] = [
     level: { id: 'aaaa1111-1111-4111-8111-111111111111', code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 },
   },
 ];
+
+const MOCK_TEACHER_ACCOUNT = {
+  id: '11111111-1111-4111-8111-111111111111',
+  role: 'TEACHER',
+  status: 'ACTIVE',
+  displayName: 'Nguyễn Thị Lan',
+};
+
+const MOCK_TEACHER_OPTIONS: TeacherOptionDto[] = [
+  { id: '11111111-1111-4111-8111-111111111111', displayName: 'Nguyễn Thị Lan' },
+  { id: '22222222-2222-4222-8222-222222222222', displayName: 'Trần Văn Minh' },
+];
+
+const MOCK_LESSONS: LessonSummaryDto[] = [
+  {
+    id: '55555555-5555-5555-8555-555555555001',
+    unitId: '44444444-4444-4444-8444-444444444040',
+    position: 1,
+    isRequired: true,
+    availability: 'PLANNED',
+    rowVersion: '1',
+    courseContext: {
+      id: '33333333-3333-4333-8333-333333333030',
+      names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' },
+    },
+    unitContext: {
+      id: '44444444-4444-4444-8444-444444444040',
+      code: 'UNIT-01',
+      names: { vi: 'Bài 1: Làm quen' },
+    },
+    assignment: {
+      id: '66666666-6666-6666-8666-666666666001',
+      currentTeacher: {
+        id: '11111111-1111-4111-8111-111111111111',
+        displayName: 'Nguyễn Thị Lan',
+        status: 'ACTIVE',
+      },
+      generation: '1',
+    },
+    highestRevision: null,
+    isEditable: true,
+    editabilityReason: null,
+  },
+  {
+    id: '55555555-5555-5555-8555-555555555002',
+    unitId: '44444444-4444-4444-8444-444444444040',
+    position: 2,
+    isRequired: false,
+    availability: 'PLANNED',
+    rowVersion: '2',
+    courseContext: {
+      id: '33333333-3333-4333-8333-333333333030',
+      names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' },
+    },
+    unitContext: {
+      id: '44444444-4444-4444-8444-444444444040',
+      code: 'UNIT-01',
+      names: { vi: 'Bài 1: Làm quen' },
+    },
+    assignment: {
+      id: '66666666-6666-6666-8666-666666666002',
+      currentTeacher: {
+        id: '22222222-2222-4222-8222-222222222222',
+        displayName: 'Trần Văn Minh',
+        status: 'DISABLED',
+      },
+      generation: '2',
+    },
+    highestRevision: {
+      id: '77777777-7777-7777-8777-777777777001',
+      revisionNo: 1,
+      author: {
+        id: '22222222-2222-4222-8222-222222222222',
+        displayName: 'Trần Văn Minh',
+      },
+      createdAt: '2026-10-30T10:00:00.000Z',
+      changeSummary: 'Khởi tạo bài 2',
+      status: 'DRAFT',
+    },
+    isEditable: false,
+    editabilityReason: 'Tài khoản giáo viên đã bị vô hiệu hóa.',
+  },
+];
+
+const MOCK_LESSON_DETAIL: LessonDetailDto = {
+  ...MOCK_LESSONS[0],
+  currentDraft: {
+    title: { vi: 'Chào hỏi cơ bản', en: 'Basic Greetings' },
+    contentBlocks: [
+      { type: 'paragraph', text: 'Chào buổi sáng, các em!' },
+      { type: 'paragraph', text: 'Hôm nay chúng ta sẽ học cách chào hỏi.' },
+    ],
+  },
+  revisions: [
+    {
+      id: '77777777-7777-7777-8777-777777777001',
+      revisionNo: 1,
+      author: {
+        id: '11111111-1111-4111-8111-111111111111',
+        displayName: 'Nguyễn Thị Lan',
+      },
+      createdAt: '2026-10-30T09:00:00.000Z',
+      changeSummary: 'Bản thảo ban đầu',
+      status: 'DRAFT',
+    },
+  ],
+};
 
 function IsolatedHarnessApp() {
   const params = new URLSearchParams(window.location.search);
@@ -666,6 +777,91 @@ function IsolatedHarnessApp() {
     const pageProps = (window as any).__PAGE_PROPS__;
     if (!pageProps?.account || !Array.isArray(pageProps.initialTeachers)) throw new Error('Missing production TeachersPage props');
     return <AppShell account={pageProps.account}><TeachersCatalog {...pageProps} /></AppShell>;
+  }
+
+  // --- Slice 5 Lessons States ---
+  if (state === 'lessons-populated') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <LessonsCatalog
+          course={MOCK_COURSES[0]}
+          unit={MOCK_UNITS[0]}
+          initialLessons={MOCK_LESSONS}
+          teacherOptions={MOCK_TEACHER_OPTIONS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'lessons-empty') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <LessonsCatalog
+          course={MOCK_COURSES[0]}
+          unit={MOCK_UNITS[0]}
+          initialLessons={[]}
+          teacherOptions={MOCK_TEACHER_OPTIONS}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-unit-lessons-wire') {
+    const pageProps = (window as any).__PAGE_PROPS__;
+    if (!pageProps?.account || !pageProps.course || !pageProps.unit) {
+      throw new Error('Missing production UnitLessonsPage props');
+    }
+    return (
+      <AppShell account={pageProps.account}>
+        <LessonsCatalog {...pageProps} />
+      </AppShell>
+    );
+  }
+
+  if (state === 'teacher-lessons-populated') {
+    return (
+      <AppShell account={MOCK_TEACHER_ACCOUNT}>
+        <TeacherLessonsCatalog
+          initialLessons={MOCK_LESSONS}
+          account={MOCK_TEACHER_ACCOUNT}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-teacher-lessons-wire') {
+    const pageProps = (window as any).__PAGE_PROPS__;
+    if (!pageProps?.account) throw new Error('Missing production TeacherLessonsPage props');
+    return (
+      <AppShell account={pageProps.account}>
+        <TeacherLessonsCatalog {...pageProps} />
+      </AppShell>
+    );
+  }
+
+  if (state === 'teacher-draft-editor') {
+    return (
+      <AppShell account={MOCK_TEACHER_ACCOUNT}>
+        <LessonDraftEditor
+          initialLesson={MOCK_LESSON_DETAIL}
+          account={MOCK_TEACHER_ACCOUNT}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-teacher-draft-wire') {
+    const pageProps = (window as any).__PAGE_PROPS__;
+    if (!pageProps?.account || !pageProps.initialLesson) {
+      throw new Error('Missing production TeacherLessonDetailPage props');
+    }
+    return (
+      <AppShell account={pageProps.account}>
+        <LessonDraftEditor {...pageProps} />
+      </AppShell>
+    );
   }
 
   // Default: populated languages catalogue
