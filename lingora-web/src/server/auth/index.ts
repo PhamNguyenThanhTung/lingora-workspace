@@ -262,7 +262,13 @@ export async function verifyLearnerIdentity(
           uiLocale: true,
         },
       });
-    } catch {
+    } catch (error) {
+      // Prisma messages can contain connection details; log only a fixed category/code.
+      const details = error as { code?: unknown; errorCode?: unknown; message?: unknown } | null;
+      const candidate = details?.code || details?.errorCode;
+      const code = typeof candidate === 'string' && /^P\d{4}$/.test(candidate) ? candidate : null;
+      const engineMissing = typeof details?.message === 'string' && details.message.includes('could not locate the Query Engine');
+      console.error('learner.account_lookup_failed', { category: engineMissing ? 'ENGINE_NOT_FOUND' : code || 'UNAVAILABLE' });
       return {
         ok: false,
         status: 503,

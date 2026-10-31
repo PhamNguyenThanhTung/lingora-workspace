@@ -62,3 +62,20 @@ test('actual staff catalogue, teachers, courses, review, assessment and Teacher 
     assert.equal(denied.status,403);assert.equal((await denied.json()).error.code,'FORBIDDEN');
   }finally{setProductPrismaForTest(null);}
 });
+test('DB lookup failures log only a safe category and keep the public503 response',async()=>{
+  const cases=[
+    [Object.assign(new Error('private connection detail'),{code:'P1001'}),'P1001'],
+    [new Error('Prisma Client could not locate the Query Engine; private deployment path'),'ENGINE_NOT_FOUND'],
+    [new Error('private connection detail'),'UNAVAILABLE'],
+  ];
+  const logged=mock.method(console,'error',()=>{});
+  try{
+    for(const [error,category] of cases){
+      const db=fixtureDb(state);db.account.findUnique=async()=>{throw error;};
+      const result=await verifyLearnerIdentity({authClient:{auth:{getUser:async()=>({data:{user:confirmedUser()},error:null})}},prisma:db});
+      assert.equal(result.status,503);assert.equal(result.error.code,'SERVICE_UNAVAILABLE');
+      assert.deepEqual(logged.mock.calls.at(-1)?.arguments,['learner.account_lookup_failed',{category}]);
+      assert.ok(!JSON.stringify(logged.mock.calls.at(-1)?.arguments).includes('private'));
+    }
+  }finally{logged.mock.restore();}
+});
