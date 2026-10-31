@@ -58,3 +58,11 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Feature327/327, components87/87, typecheck/build PASS;6 semantic controls A–F KILLED và restore byte-exact. Codex sửa trực tiếp các finding sau Anti handoff; không correction round bắt buộc.
 - Live Admin/Teacher/stale retry/revision/lifecycle PASS. Theo owner exception, giữ một bộ DEV riêng (Course inactive, Teacher DISABLED) với3 revisions; đóng session/browser, giữ immutable guards/canonical rows. Xem [verification](slice-5-verification.md).
 - Không schema/migration, Exercise/Vocabulary/Media/review/publish hoặc Slice6 implementation.
+
+## Slice 6 ✅ — Exercises / Vocabulary / Media Foundation
+
+- ACCEPTED ngày2026-10-31; assigned Teacher draft page supports MCQ/FILL_BLANK/REORDER/LISTENING/GRAMMAR and global Vocabulary create/reuse/attach/detach.
+- Strict per-type payloads, exact ACTIVE/ownership/parent/language checks, CAS and atomic successor revision snapshots; old content remains unchanged. Private grading data stays on authorized Teacher responses.
+- LISTENING stores validated HTTPS references; uploads/managed media deferred for missing storage foundation. No schema/migration or review/publish/learner scope.
+- Feature386/386, components106/106, typecheck/build PASS; A–G KILLED, byte-exact restore. Live exercise/vocabulary/retry/revision/lifecycle proof PASS; retained allowlisted DEV set, unexpected residue0, Teacher DISABLED/Course inactive. See [verification](slice-6-verification.md).
+- No Slice7 implementation.

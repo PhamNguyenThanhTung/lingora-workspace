@@ -208,6 +208,9 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
     assert.equal(prefilled.en, 'Conversational English');
     assert.equal(prefilled.isActive, true);
 
+    // Wait for the modal's delayed initial focus before typing into either locale.
+    await page.waitForFunction(() => document.activeElement?.id === 'inputCourseNameVi');
+
     // Set heldpatch name
     await page.fill('#inputCourseNameVi', 'heldpatch');
     await page.fill('#inputCourseNameEn', 'Conversational English Only');

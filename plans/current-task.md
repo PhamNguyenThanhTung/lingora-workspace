@@ -34,3 +34,10 @@ Anti implementation pass → independent Sol High review → Codex direct fixes/
 Live3012: owned Lesson create/assign, Teacher saves/reloads3 linked DRAFT revisions, prior row unchanged; Teacher/Admin stale retry and same-session disable403/enable200 PASS. TeacherB negative uses actual production-handler integration, as allowed when no second safe live identity exists.
 Owner approved one labeled reusable DEV set instead residue0:1 Course/Unit/Lesson/assignment/history/Teacher Account/Auth identity/provisioning request and3 revisions retained. Course inactive, Teacher DISABLED, session/browser closed; immutable guards intact, canonical data untouched.
 See [final verification](slice-5-verification.md). SLICE5 ACCEPTED; commit/push metadata is reported in the final Codex delivery. No schema change or Slice6 work.
+
+## Slice 6 — PASS / ACCEPTED
+Exercises / Vocabulary / Media Foundation accepted ngày2026-10-31 theo [spec](2026-10-30-slice-6-exercises-vocabulary-media.md).
+Anti initial implementation → independent review/repros → Codex direct fixes/acceptance. Feature386/386, components106/106, typecheck/build PASS; A–G semantic mutations KILLED, byte-exact restore.
+All5 real exercise types; global Vocabulary reuse + revision snapshots; explicit atomic Save inserts successor children, old rows unchanged. LISTENING public HTTPS references only; upload/storage foundation deferred.
+Live create/edit/reload, conflict/retry, stale recovery, deep SQL revision isolation, Vocabulary detach/reattach and same-session disabled403 PASS. TeacherB uses actual production-handler integration substitute.
+Existing DEV set retained per owner:7 Lesson revisions,2 item identities,8 item revisions/secrets/exercises,1 global concept,3 links; unexpected residue0. Teacher DISABLED/Course inactive; sessions/browser closed; no canonical writes or schema/migration. See [verification](slice-6-verification.md). SLICE6 ACCEPTED; no Slice7.

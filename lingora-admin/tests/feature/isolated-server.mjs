@@ -320,7 +320,7 @@ export function startIsolatedServer(port = 3007) {
             const unitId = '44444444-4444-4444-8444-444444444040';
             const account = { id: teacherId, role: 'TEACHER', status: 'ACTIVE', displayName: 'Nguyễn Thị Lan', uiLocale: 'vi' };
             f.state.accounts.set(teacherId, account);
-            f.state.courses.set(courseId, { id: courseId, names: { vi: 'Tiếng Anh Chuẩn' } });
+            f.state.courses.set(courseId, { id: courseId, names: { vi: 'Tiếng Anh Chuẩn' }, languageId: '22222222-2222-4222-8222-222222222222' });
             f.state.units.set(unitId, { id: unitId, courseId, position: 1, code: 'UNIT-01', names: { vi: 'Bài 1: Làm quen' } });
             f.state.lessons.set(lessonId, { id: lessonId, unitId, position: 1, isRequired: true, availability: 'PLANNED', rowVersion: 1n });
             f.state.assignments.set('66666666-6666-6666-8666-666666666001', { id: '66666666-6666-6666-8666-666666666001', lessonId, currentTeacherId: teacherId, scopeGeneration: 1n });

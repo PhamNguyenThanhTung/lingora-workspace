@@ -1,12 +1,69 @@
+import { revisionChildRelations, unsupportedChildren, sameVocabularyMetadata, vocabularySnapshotSchema } from './snapshot.ts';
 import { z } from 'zod';
 import { getProductPrisma } from '../db/index.js';
 import { isValidUuid, type ApiErrorEnvelope } from '../frameworks/index.ts';
+import {
+  saveTeacherDraftExtendedSchema,
+  computeExerciseFingerprint,
+  normalizeVocabularyTerm,
+  type ExerciseInput,
+  type VocabularyInput,
+  type ExerciseType,
+} from './content.ts';
 
 export { isValidUuid };
+export {
+  saveTeacherDraftExtendedSchema,
+  computeExerciseFingerprint,
+  normalizeVocabularyTerm,
+  type ExerciseInput,
+  type VocabularyInput,
+  type ExerciseType,
+};
 
 // =============================================================================
 // Interfaces & DTOs
 // =============================================================================
+
+export interface TeacherExerciseDto {
+  id: string;
+  itemId: string;
+  itemRevisionId: string;
+  position: number;
+  isCore: boolean;
+  type: ExerciseType;
+  promptData: any;
+  gradingData: any;
+  feedbackData: any;
+}
+
+export interface TeacherVocabularyDto {
+  id: string;
+  vocabularyId: string;
+  position: number;
+  isCore: boolean;
+  displaySnapshot: {
+    schemaVersion: number;
+    languageId: string;
+    canonicalForm: string;
+    senseKey?: string | null;
+    meaningLabels: Record<string, string>;
+    phonetic: string | null;
+    partOfSpeech: string | null;
+    example: string | null;
+  };
+}
+
+export interface VocabularyOptionDto {
+  id: string;
+  languageId: string;
+  canonicalForm: string;
+  senseKey: string;
+  meaningLabels: Record<string, string>;
+  phonetic: string | null;
+  partOfSpeech: string | null;
+  example: string | null;
+}
 
 export interface LessonAssignmentDto {
   id: string;
@@ -60,9 +117,28 @@ export interface LessonDetailDto extends LessonSummaryDto {
   revisions: LessonRevisionSummaryDto[];
 }
 
+export interface TeacherLessonDetailDto extends LessonDetailDto {
+  courseContext: LessonDetailDto['courseContext'] & {
+    languageId: string;
+  };
+  exercises: TeacherExerciseDto[];
+  vocabulary: TeacherVocabularyDto[];
+}
+
 export interface TeacherOptionDto {
   id: string;
   displayName: string | null;
+}
+
+export class ControlledDraftError extends Error {
+  status: number;
+  error: ApiErrorEnvelope['error'];
+  constructor(status: number, error: ApiErrorEnvelope['error']) {
+    super(error?.message || 'ControlledDraftError');
+    this.status = status;
+    this.error = error;
+    this.name = 'ControlledDraftError';
+  }
 }
 
 // =============================================================================
@@ -181,19 +257,14 @@ export function isSupportedContentBlocks(rawBlocks: unknown): boolean {
 }
 
 export function hasRevisionAssociations(rev: any): boolean {
-  if (!rev) return false;
-  const c = rev._count || {};
-  return (
-    (c.exercises ?? 0) > 0 ||
-    (c.vocabularyLinks ?? 0) > 0 ||
-    (c.mediaBindings ?? 0) > 0 ||
-    (c.authoredItemRevisions ?? 0) > 0 ||
-    (c.attempts ?? 0) > 0 ||
-    (c.assessmentVersionItems ?? 0) > 0
-  );
+  return hasUnsupportedRevisionAssociations(rev);
 }
 
-export function evaluateEditability(highestRev: any): { isEditable: boolean; editabilityReason: string | null } {
+export function hasUnsupportedRevisionAssociations(rev: any, languageId?: string): boolean {
+  return unsupportedChildren(rev, languageId);
+}
+
+export function evaluateEditability(highestRev: any, languageId?: string): { isEditable: boolean; editabilityReason: string | null } {
   if (!highestRev) {
     return { isEditable: true, editabilityReason: null };
   }
@@ -222,10 +293,10 @@ export function evaluateEditability(highestRev: any): { isEditable: boolean; edi
       editabilityReason: 'Cấu trúc tiêu đề hoặc nội dung bản nháp chứa định dạng không được hỗ trợ để sửa đổi.',
     };
   }
-  if (hasRevisionAssociations(highestRev)) {
+  if (hasUnsupportedRevisionAssociations(highestRev, languageId)) {
     return {
       isEditable: false,
-      editabilityReason: 'Bản nháp gắn liền với các liên kết bài tập hoặc từ vựng, không thể sửa đổi trong phân hệ này.',
+      editabilityReason: 'Bản nháp gắn liền với các liên kết bài tập hoặc từ vựng không được hỗ trợ trong phân hệ này.',
     };
   }
   return { isEditable: true, editabilityReason: null };
@@ -271,7 +342,7 @@ export function toLessonSummaryDto(lesson: any): LessonSummaryDto {
     };
   }
 
-  const { isEditable, editabilityReason } = evaluateEditability(highestRev);
+  const { isEditable, editabilityReason } = evaluateEditability(highestRev, course.languageId);
 
   return {
     id: lesson.id,
@@ -338,6 +409,67 @@ export function toLessonDetailDto(lesson: any): LessonDetailDto {
   };
 }
 
+export function toTeacherLessonDetailDto(lesson: any, languageId?: string): TeacherLessonDetailDto {
+  const baseDetail = toLessonDetailDto(lesson);
+  const revisions = Array.isArray(lesson.revisions) ? lesson.revisions : [];
+  const sortedRevisions = [...revisions].sort((a, b) => b.revisionNo - a.revisionNo);
+  const highestRev = sortedRevisions[0] || null;
+
+  const exercises: TeacherExerciseDto[] = [];
+  if (highestRev && Array.isArray(highestRev.exercises)) {
+    for (const ex of highestRev.exercises) {
+      const itemRev = ex.itemRevision || {};
+      const secret = itemRev.gradingSecret || {};
+      exercises.push({
+        id: ex.id,
+        itemId: ex.itemId,
+        itemRevisionId: ex.itemRevisionId,
+        position: ex.position,
+        isCore: ex.isCore,
+        type: itemRev.type || '',
+        promptData: typeof itemRev.promptData?.prompt === 'string' ? itemRev.promptData : {prompt: 'Định dạng bài tập không được hỗ trợ'},
+        gradingData: secret.gradingData || {},
+        feedbackData: secret.feedbackData || null,
+      });
+    }
+  }
+
+  const vocabulary: TeacherVocabularyDto[] = [];
+  if (highestRev && Array.isArray(highestRev.vocabularyLinks)) {
+    for (const link of highestRev.vocabularyLinks) {
+      const snap = link.displaySnapshot || {};
+      vocabulary.push({
+        id: link.id,
+        vocabularyId: link.vocabularyId,
+        position: link.position,
+        isCore: link.isCore,
+        displaySnapshot: {
+          schemaVersion: snap.schemaVersion || 1,
+          languageId: snap.languageId || '',
+          canonicalForm: typeof snap.canonicalForm === 'string' ? snap.canonicalForm : 'Định dạng từ vựng không được hỗ trợ',
+          senseKey: typeof snap.senseKey === 'string' ? snap.senseKey : null,
+          meaningLabels: parseJsonRecord(snap.meaningLabels),
+          phonetic: typeof snap.phonetic === 'string' ? snap.phonetic : null,
+          partOfSpeech: typeof snap.partOfSpeech === 'string' ? snap.partOfSpeech : null,
+          example: typeof snap.example === 'string' ? snap.example : null,
+        },
+      });
+    }
+  }
+
+  const courseLangId = languageId || lesson.unit?.course?.languageId || '';
+
+  return {
+    ...baseDetail,
+    courseContext: {
+      ...baseDetail.courseContext,
+      languageId: courseLangId,
+    },
+    exercises,
+    vocabulary,
+  };
+}
+
 export function handleLessonPrismaError(err: unknown, op: string): { status: number; body: ApiErrorEnvelope } {
   if (err && typeof err === 'object' && 'code' in err) {
     const prismaErr = err as { code: string; meta?: any };
@@ -347,7 +479,7 @@ export function handleLessonPrismaError(err: unknown, op: string): { status: num
         body: {
           error: {
             code: op === 'saveTeacherLessonDraft' ? 'REVISION_CONFLICT' : op === 'assignLesson' ? 'ASSIGNMENT_CONFLICT' : 'DUPLICATE_LESSON_POSITION',
-            message: 'Vị trí bài học đã tồn tại trong đơn vị bài học này. Vui lòng chọn vị trí khác.',
+            message: op === 'saveTeacherLessonDraft' ? 'Nội dung bị xung đột khi lưu. Hãy tải dữ liệu mới nhất và thử lại.' : 'Vị trí bài học đã tồn tại trong đơn vị bài học này. Vui lòng chọn vị trí khác.',
           },
         },
       };
@@ -413,12 +545,13 @@ async function lockAssignment(tx: any, lessonId: string) {
 // =============================================================================
 
 const revisionRelations = {
+  ...revisionChildRelations,
   creator: { select: { id: true, displayName: true } },
   lastEditor: { select: { id: true, displayName: true } },
   _count: { select: { exercises: true, vocabularyLinks: true, mediaBindings: true, authoredItemRevisions: true, attempts: true, assessmentVersionItems: true } },
 };
 const lessonRelations = {
-  unit: { select: { id: true, courseId: true, position: true, code: true, names: true, course: { select: { id: true, names: true } } } },
+  unit: { select: { id: true, courseId: true, position: true, code: true, names: true, course: { select: { id: true, names: true, languageId: true } } } },
   assignment: { include: { currentTeacher: { select: { id: true, displayName: true, status: true } } } },
   revisions: { orderBy: { revisionNo: 'desc' }, include: revisionRelations },
 };
@@ -1148,7 +1281,7 @@ export async function getTeacherLessonDetail(
   teacherAccountId: string,
   lessonId: string,
   prismaClient?: any
-): Promise<{ status: number; data?: { data: LessonDetailDto }; error?: ApiErrorEnvelope['error'] }> {
+): Promise<{ status: number; data?: { data: TeacherLessonDetailDto }; error?: ApiErrorEnvelope['error'] }> {
   if (!isValidUuid(lessonId)) {
     return {
       status: 400,
@@ -1169,7 +1302,49 @@ export async function getTeacherLessonDetail(
           currentTeacherId: teacherAccountId.toLowerCase(),
         },
       },
-      include: lessonRelations,
+      include: {
+        unit: {
+          select: {
+            id: true,
+            courseId: true,
+            position: true,
+            code: true,
+            names: true,
+            course: {
+              select: {
+                id: true,
+                names: true,
+                languageId: true,
+              },
+            },
+          },
+        },
+        assignment: {
+          include: {
+            currentTeacher: {
+              select: { id: true, displayName: true, status: true },
+            },
+          },
+        },
+        revisions: {
+          orderBy: { revisionNo: 'desc' },
+          include: {
+            creator: { select: { id: true, displayName: true } },
+            lastEditor: { select: { id: true, displayName: true } },
+            ...revisionChildRelations,
+            _count: {
+              select: {
+                exercises: true,
+                vocabularyLinks: true,
+                mediaBindings: true,
+                authoredItemRevisions: true,
+                attempts: true,
+                assessmentVersionItems: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!lesson) {
@@ -1182,9 +1357,136 @@ export async function getTeacherLessonDetail(
       };
     }
 
+    const courseLanguageId = lesson.unit?.course?.languageId || '';
+
     return {
       status: 200,
-      data: { data: toLessonDetailDto(lesson) },
+      data: { data: toTeacherLessonDetailDto(lesson, courseLanguageId) },
+    };
+  } catch {
+    return {
+      status: 503,
+      error: {
+        code: 'SERVICE_UNAVAILABLE',
+        message: 'Cơ sở dữ liệu tạm thời không phản hồi. Vui lòng thử lại sau.',
+      },
+    };
+  }
+}
+
+export async function getTeacherVocabularyOptions(
+  teacherAccountId: string,
+  lessonId: string,
+  rawQuery: string,
+  prismaClient?: any
+): Promise<{ status: number; data?: { data: VocabularyOptionDto[] }; error?: ApiErrorEnvelope['error'] }> {
+  if (!isValidUuid(lessonId)) {
+    return {
+      status: 400,
+      error: {
+        code: 'INVALID_ID',
+        message: 'Mã định danh bài học không đúng định dạng UUID.',
+      },
+    };
+  }
+
+  const prisma = prismaClient || getProductPrisma();
+
+  try {
+    const teacher = await prisma.account.findUnique({
+      where: { id: teacherAccountId.toLowerCase() },
+    });
+    if (!teacher || teacher.role !== 'TEACHER') {
+      return {
+        status: 403,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Chỉ giáo viên mới có quyền tra cứu từ vựng bài học.',
+        },
+      };
+    }
+    if (teacher.status !== 'ACTIVE') {
+      return {
+        status: 403,
+        error: {
+          code: 'ACCOUNT_INACTIVE',
+          message: 'Tài khoản giáo viên đang chờ duyệt hoặc đã bị vô hiệu hóa.',
+        },
+      };
+    }
+
+    const lesson = await prisma.lesson.findFirst({
+      where: {
+        id: lessonId.toLowerCase(),
+        assignment: {
+          currentTeacherId: teacherAccountId.toLowerCase(),
+        },
+      },
+      include: {
+        unit: {
+          include: {
+            course: true,
+          },
+        },
+      },
+    });
+
+    if (!lesson) {
+      return {
+        status: 404,
+        error: {
+          code: 'LESSON_NOT_FOUND',
+          message: 'Bài học không tồn tại hoặc không được phân công cho bạn.',
+        },
+      };
+    }
+
+    const courseLanguageId = lesson.unit?.course?.languageId;
+    if (!courseLanguageId) {
+      return {
+        status: 503,
+        error: {
+          code: 'SERVICE_UNAVAILABLE',
+          message: 'Không tìm thấy ngôn ngữ mục tiêu của khóa học.',
+        },
+      };
+    }
+
+    const trimmedQ = (rawQuery || '').trim();
+    if (trimmedQ.length > 300) return { status: 400, error: { code: 'VALIDATION_ERROR', message: 'Từ tìm kiếm tối đa 300 ký tự.' } };
+    if (!trimmedQ) {
+      return {
+        status: 200,
+        data: { data: [] },
+      };
+    }
+
+    const normalizedTerm = normalizeVocabularyTerm(trimmedQ);
+    const concepts = await prisma.vocabularyConcept.findMany({
+      where: {
+        languageId: courseLanguageId.toLowerCase(),
+        normalizedForm: normalizedTerm,
+      },
+      orderBy: {
+        senseKey: 'asc',
+      },
+      take: 20,
+    });
+
+    const dtos: VocabularyOptionDto[] = concepts.map((c: any) => ({
+      id: c.id,
+      languageId: c.languageId,
+      canonicalForm: c.canonicalForm,
+      senseKey: c.senseKey,
+      meaningLabels: parseJsonRecord(c.meaningLabels),
+      phonetic: c.phonetic || null,
+      partOfSpeech: c.partOfSpeech || null,
+      example: c.example || null,
+    }));
+
+    return {
+      status: 200,
+      data: { data: dtos },
     };
   } catch {
     return {
@@ -1202,7 +1504,7 @@ export async function saveTeacherLessonDraft(
   lessonId: string,
   rawBody: unknown,
   prismaClient?: any
-): Promise<{ status: number; data?: { data: LessonDetailDto }; error?: ApiErrorEnvelope['error'] }> {
+): Promise<{ status: number; data?: { data: TeacherLessonDetailDto }; error?: ApiErrorEnvelope['error'] }> {
   if (!isValidUuid(lessonId)) {
     return {
       status: 400,
@@ -1229,7 +1531,7 @@ export async function saveTeacherLessonDraft(
     // ignore serialize error here, parse will handle
   }
 
-  const parseResult = saveTeacherDraftSchema.safeParse(rawBody);
+  const parseResult = saveTeacherDraftExtendedSchema.safeParse(rawBody);
   if (!parseResult.success) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of parseResult.error.issues) {
@@ -1246,78 +1548,151 @@ export async function saveTeacherLessonDraft(
     };
   }
 
-  const { title: inputTitle, contentBlocks, changeSummary, expectedRowVersion } = parseResult.data;
+  const {
+    title: inputTitle,
+    contentBlocks,
+    changeSummary,
+    expectedRowVersion,
+    expectedRevisionId,
+    exercises: inputExercises,
+    vocabulary: inputVocabulary,
+  } = parseResult.data;
+
+  // Check duplicate positions in exercises
+  if (inputExercises) {
+    const posSet = new Set<number>();
+    for (const ex of inputExercises) {
+      if (posSet.has(ex.position)) {
+        return {
+          status: 409,
+          error: {
+            code: 'DUPLICATE_EXERCISE_POSITION',
+            message: `Trùng lặp thứ tự vị trí bài tập: ${ex.position}. Mỗi bài tập trong bài học phải có thứ tự vị trí duy nhất.`,
+          },
+        };
+      }
+      posSet.add(ex.position);
+    }
+    const sourceExSet = new Set<string>();
+    for (const ex of inputExercises) {
+      if (ex.sourceExerciseId) {
+        const sId = ex.sourceExerciseId.toLowerCase();
+        if (sourceExSet.has(sId)) {
+          return {
+            status: 409,
+            error: {
+              code: 'REVISION_CONFLICT',
+              message: 'Không được tham chiếu trùng lặp một bài tập nguồn trong cùng một lần lưu.',
+            },
+          };
+        }
+        sourceExSet.add(sId);
+      }
+    }
+  }
+
+  // Check duplicate positions in vocabulary
+  if (inputVocabulary) {
+    const posSet = new Set<number>();
+    for (const voc of inputVocabulary) {
+      if (posSet.has(voc.position)) {
+        return {
+          status: 409,
+          error: {
+            code: 'DUPLICATE_VOCABULARY_POSITION',
+            message: `Trùng lặp thứ tự vị trí từ vựng: ${voc.position}. Mỗi từ vựng trong bài học phải có thứ tự vị trí duy nhất.`,
+          },
+        };
+      }
+      posSet.add(voc.position);
+    }
+    const sourceLinkSet = new Set<string>();
+    for (const voc of inputVocabulary) {
+      if (voc.sourceLinkId) {
+        const sId = voc.sourceLinkId.toLowerCase();
+        if (sourceLinkSet.has(sId)) {
+          return {
+            status: 409,
+            error: {
+              code: 'DUPLICATE_VOCABULARY_LINK',
+              message: 'Không được tham chiếu trùng lặp một liên kết từ vựng nguồn trong cùng một lần lưu.',
+            },
+          };
+        }
+        sourceLinkSet.add(sId);
+      }
+    }
+    const vocabIdSet = new Set<string>();
+    for (const voc of inputVocabulary) {
+      if (voc.vocabularyId) {
+        const vId = voc.vocabularyId.toLowerCase();
+        if (vocabIdSet.has(vId)) {
+          return {
+            status: 409,
+            error: {
+              code: 'DUPLICATE_VOCABULARY_LINK',
+              message: 'Không được thêm trùng một khái niệm từ vựng trong cùng một bài học.',
+            },
+          };
+        }
+        vocabIdSet.add(vId);
+      }
+    }
+  }
+
   const prisma = prismaClient || getProductPrisma();
 
   try {
     return await prisma.$transaction(async (tx: any) => {
-      // 1. Lock saving Teacher account
+      // 1. Lock saving Teacher account FOR NO KEY UPDATE
       const accounts = await lockAccounts(tx, [teacherAccountId]);
       const teacherAcc = accounts.get(teacherAccountId.toLowerCase());
       if (!teacherAcc || teacherAcc.role !== 'TEACHER') {
-        return {
-          status: 403,
-          error: {
-            code: 'FORBIDDEN',
-            message: 'Tài khoản không thuộc phân hệ giáo viên.',
-          },
-        };
+        throw new ControlledDraftError(403, {
+          code: 'FORBIDDEN',
+          message: 'Tài khoản không thuộc phân hệ giáo viên.',
+        });
       }
       if (teacherAcc.status !== 'ACTIVE') {
-        return {
-          status: 403,
-          error: {
-            code: 'ACCOUNT_INACTIVE',
-            message: 'Tài khoản giáo viên đang chờ duyệt hoặc đã bị vô hiệu hóa.',
-          },
-        };
+        throw new ControlledDraftError(403, {
+          code: 'ACCOUNT_INACTIVE',
+          message: 'Tài khoản giáo viên đang chờ duyệt hoặc đã bị vô hiệu hóa.',
+        });
       }
 
-      // 2. Lock Lesson
+      // 2. Lock Lesson FOR UPDATE
       const currentLesson = await lockLesson(tx, lessonId);
       if (!currentLesson) {
-        return {
-          status: 404,
-          error: {
-            code: 'LESSON_NOT_FOUND',
-            message: 'Bài học không tồn tại hoặc không được phân công cho bạn.',
-          },
-        };
+        throw new ControlledDraftError(404, {
+          code: 'LESSON_NOT_FOUND',
+          message: 'Bài học không tồn tại hoặc không được phân công cho bạn.',
+        });
       }
 
-      // 4. Lock Assignment & verify ownership
+      // 3. Lock Assignment FOR UPDATE & verify ownership
       const assignment = await lockAssignment(tx, lessonId);
       if (!assignment) {
-        return {
-          status: 404,
-          error: {
-            code: 'LESSON_NOT_FOUND',
-            message: 'Bài học không tồn tại hoặc không được phân công cho bạn.',
-          },
-        };
+        throw new ControlledDraftError(404, {
+          code: 'LESSON_NOT_FOUND',
+          message: 'Bài học không tồn tại hoặc không được phân công cho bạn.',
+        });
       }
 
       const assignedTeacherId = String(assignment.currentTeacherId || assignment.current_teacher_id || '').toLowerCase();
       if (assignedTeacherId !== teacherAccountId.toLowerCase()) {
-        return {
-          status: 404,
-          error: {
-            code: 'LESSON_NOT_FOUND',
-            message: 'Bài học không tồn tại hoặc không được phân công cho bạn.',
-          },
-        };
+        throw new ControlledDraftError(404, {
+          code: 'LESSON_NOT_FOUND',
+          message: 'Bài học không tồn tại hoặc không được phân công cho bạn.',
+        });
       }
 
-      // 3. CAS token verification
+      // 4. CAS token verification
       const actualVersion = (currentLesson.rowVersion ?? currentLesson.row_version ?? 1n).toString();
       if (actualVersion !== expectedRowVersion) {
-        return {
-          status: 409,
-          error: {
-            code: 'STALE_LESSON',
-            message: 'Dữ liệu bài học đã bị thay đổi bởi tác vụ khác. Vui lòng tải lại dữ liệu mới nhất.',
-          },
-        };
+        throw new ControlledDraftError(409, {
+          code: 'STALE_LESSON',
+          message: 'Dữ liệu bài học đã bị thay đổi bởi tác vụ khác. Vui lòng tải lại dữ liệu mới nhất.',
+        });
       }
 
       // 5. Fetch latest AssignmentHistory episode and verify consistency
@@ -1327,13 +1702,10 @@ export async function saveTeacherLessonDraft(
       });
 
       if (!latestEpisode) {
-        return {
-          status: 409,
-          error: {
-            code: 'INCONSISTENT_ASSIGNMENT_HISTORY',
-            message: 'Lịch sử phân công không tồn tại hoặc không đồng nhất.',
-          },
-        };
+        throw new ControlledDraftError(409, {
+          code: 'INCONSISTENT_ASSIGNMENT_HISTORY',
+          message: 'Lịch sử phân công không tồn tại hoặc không đồng nhất.',
+        });
       }
 
       const nextTeacherId = String(latestEpisode.nextTeacherId || latestEpisode.next_teacher_id || '').toLowerCase();
@@ -1341,13 +1713,10 @@ export async function saveTeacherLessonDraft(
       const assignmentScopeGen = (assignment.scopeGeneration ?? assignment.scope_generation ?? 1n).toString();
 
       if (nextTeacherId !== teacherAccountId.toLowerCase() || episodeScopeGen !== assignmentScopeGen) {
-        return {
-          status: 409,
-          error: {
-            code: 'INCONSISTENT_ASSIGNMENT_HISTORY',
-            message: 'Lịch sử phân công không đồng nhất với giáo viên hoặc thế hệ phạm vi hiện tại.',
-          },
-        };
+        throw new ControlledDraftError(409, {
+          code: 'INCONSISTENT_ASSIGNMENT_HISTORY',
+          message: 'Lịch sử phân công không đồng nhất với giáo viên hoặc thế hệ phạm vi hiện tại.',
+        });
       }
 
       // 6. Fetch highest revision across ALL statuses
@@ -1355,6 +1724,7 @@ export async function saveTeacherLessonDraft(
         where: { lessonId: lessonId.toLowerCase() },
         orderBy: { revisionNo: 'desc' },
         include: {
+          ...revisionChildRelations,
           _count: {
             select: {
               exercises: true,
@@ -1368,16 +1738,29 @@ export async function saveTeacherLessonDraft(
         },
       });
 
+      // 7. Verify expectedRevisionId if supplied
+      if (expectedRevisionId !== undefined) {
+        if (expectedRevisionId === null && highestRev !== null) {
+          throw new ControlledDraftError(409, {
+            code: 'REVISION_CONFLICT',
+            message: 'expectedRevisionId null chỉ được phép trước khi có bản sửa đổi đầu tiên.',
+          });
+        }
+        if (expectedRevisionId !== null && (!highestRev || highestRev.id.toLowerCase() !== expectedRevisionId.toLowerCase())) {
+          throw new ControlledDraftError(409, {
+            code: 'REVISION_CONFLICT',
+            message: 'Bản sửa đổi dự kiến (expectedRevisionId) không khớp với bản sửa đổi cao nhất hiện tại.',
+          });
+        }
+      }
+
+      // 8. Validate highest revision editability
       if (highestRev) {
-        // Must be DRAFT and never submitted
         if (highestRev.status !== 'DRAFT') {
-          return {
-            status: 409,
-            error: {
-              code: 'DRAFT_NOT_EDITABLE',
-              message: `Bản sửa đổi hiện tại có trạng thái ${highestRev.status}, không thể lưu bản nháp mới.`,
-            },
-          };
+          throw new ControlledDraftError(409, {
+            code: 'DRAFT_NOT_EDITABLE',
+            message: `Bản sửa đổi hiện tại có trạng thái ${highestRev.status}, không thể lưu bản nháp mới.`,
+          });
         }
 
         if (
@@ -1385,42 +1768,204 @@ export async function saveTeacherLessonDraft(
           highestRev.submittedBy != null ||
           highestRev.submittedAssignmentGeneration != null ||
           highestRev.assignmentScopeSnapshot != null ||
-    highestRev.approvedBy != null || highestRev.approvedAt != null ||
-    highestRev.publishedBy != null || highestRev.publishedAt != null || highestRev.endedAt != null
+          highestRev.approvedBy != null ||
+          highestRev.approvedAt != null ||
+          highestRev.publishedBy != null ||
+          highestRev.publishedAt != null ||
+          highestRev.endedAt != null
         ) {
-          return {
-            status: 409,
-            error: {
-              code: 'DRAFT_NOT_EDITABLE',
-              message: 'Bản nháp đã từng được nộp duyệt và đã bị khóa quy trình.',
-            },
-          };
+          throw new ControlledDraftError(409, {
+            code: 'DRAFT_NOT_EDITABLE',
+            message: 'Bản nháp đã từng được nộp duyệt và đã bị khóa quy trình.',
+          });
         }
 
-        // Structure check: title & blocks
         if (!isSupportedTitle(highestRev.title) || !isSupportedContentBlocks(highestRev.contentBlocks)) {
-          return {
-            status: 409,
-            error: {
-              code: 'UNSUPPORTED_DRAFT_CONTENT',
-              message: 'Bản nháp hiện tại chứa cấu trúc dữ liệu không được hỗ trợ để chỉnh sửa.',
-            },
-          };
+          throw new ControlledDraftError(409, {
+            code: 'UNSUPPORTED_DRAFT_CONTENT',
+            message: 'Bản nháp hiện tại chứa cấu trúc dữ liệu không được hỗ trợ để chỉnh sửa.',
+          });
         }
 
-        // Association check
-        if (hasRevisionAssociations(highestRev)) {
-          return {
-            status: 409,
-            error: {
-              code: 'UNSUPPORTED_DRAFT_CONTENT',
-              message: 'Bản nháp hiện tại có bài tập, từ vựng hoặc phương tiện liên kết, không thể lưu kế thừa.',
-            },
-          };
+      }
+
+      // 9. Fetch course target language
+      const unit = await tx.unit.findUnique({
+        where: { id: currentLesson.unitId.toLowerCase() },
+        select: {
+          id: true,
+          course: {
+            select: { id: true, languageId: true },
+          },
+        },
+      });
+
+      const courseLanguageId = unit?.course?.languageId;
+      if (!courseLanguageId) {
+        throw new ControlledDraftError(503, {
+          code: 'SERVICE_UNAVAILABLE',
+          message: 'Không tìm thấy ngôn ngữ mục tiêu của khóa học.',
+        });
+      }
+
+      if (hasUnsupportedRevisionAssociations(highestRev, courseLanguageId)) {
+        throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Bản nháp có nội dung hoặc liên kết không được hỗ trợ; không thể lưu kế thừa.'});
+      }
+
+      // 10. Map predecessor elements
+      const predExercisesMap = new Map<string, any>();
+      if (highestRev?.exercises) {
+        for (const ex of highestRev.exercises) {
+          predExercisesMap.set(ex.id.toLowerCase(), ex);
+        }
+      }
+      const predVocabMap = new Map<string, any>();
+      if (highestRev?.vocabularyLinks) {
+        for (const vl of highestRev.vocabularyLinks) {
+          predVocabMap.set(vl.id.toLowerCase(), vl);
         }
       }
 
-      // 7. Prepare merged title and successor content
+      // Check sourceExerciseId validity
+      if (inputExercises !== undefined) {
+        for (const ex of inputExercises) {
+          if (ex.sourceExerciseId) {
+            const pred = predExercisesMap.get(ex.sourceExerciseId.toLowerCase());
+            if (!pred) {
+              throw new ControlledDraftError(404, {
+                code: 'RELATION_NOT_FOUND',
+                message: 'Bài tập nguồn không tồn tại trong bản sửa đổi trước đó.',
+              });
+            }
+          }
+        }
+      }
+
+      // Check sourceLinkId and vocabularyId validity & language matching
+      if (inputVocabulary !== undefined) {
+        for (const voc of inputVocabulary) {
+          if (voc.sourceLinkId) {
+            const pred = predVocabMap.get(voc.sourceLinkId.toLowerCase());
+            if (!pred) {
+              throw new ControlledDraftError(404, {
+                code: 'RELATION_NOT_FOUND',
+                message: 'Liên kết từ vựng nguồn không tồn tại trong bản sửa đổi trước đó.',
+              });
+            }
+          }
+          if (voc.vocabularyId) {
+            const concept = await tx.vocabularyConcept.findUnique({
+              where: { id: voc.vocabularyId.toLowerCase() },
+            });
+            if (!concept) {
+              throw new ControlledDraftError(404, {
+                code: 'RELATION_NOT_FOUND',
+                message: 'Không tìm thấy khái niệm từ vựng.',
+              });
+            }
+            if (concept.languageId.toLowerCase() !== courseLanguageId.toLowerCase()) {
+              throw new ControlledDraftError(409, {
+                code: 'VOCABULARY_LANGUAGE_MISMATCH',
+                message: 'Ngôn ngữ của từ vựng không khớp với ngôn ngữ mục tiêu của khóa học.',
+              });
+            }
+          }
+        }
+      }
+
+      // Resolve vocabulary concept targets & check duplicate links / identity conflicts
+      const resolvedConceptIdPerIndex: string[] = [];
+      if (inputVocabulary !== undefined) {
+        for (let i = 0; i < inputVocabulary.length; i++) {
+          const voc = inputVocabulary[i];
+          if (voc.sourceLinkId) {
+            const pred = predVocabMap.get(voc.sourceLinkId.toLowerCase())!;
+            resolvedConceptIdPerIndex[i] = pred.vocabularyId.toLowerCase();
+          } else if (voc.vocabularyId) {
+            resolvedConceptIdPerIndex[i] = voc.vocabularyId.toLowerCase();
+          } else if (voc.create) {
+            const norm = normalizeVocabularyTerm(voc.create.canonicalForm);
+            const sense = voc.create.senseKey.trim();
+            const existing = await tx.vocabularyConcept.findUnique({
+              where: {
+                languageId_normalizedForm_senseKey: {
+                  languageId: courseLanguageId.toLowerCase(),
+                  normalizedForm: norm,
+                  senseKey: sense,
+                },
+              },
+            });
+            if (existing) {
+              const existingVi = (existing.meaningLabels?.vi || '').trim();
+              const existingEn = (existing.meaningLabels?.en || '').trim();
+              const inputVi = (voc.create.meaningLabels.vi || '').trim();
+              const inputEn = (voc.create.meaningLabels.en || '').trim();
+              const existingPhonetic = existing.phonetic?.trim() || null;
+              const inputPhonetic = voc.create.phonetic?.trim() || null;
+              const existingPos = existing.partOfSpeech?.trim() || null;
+              const inputPos = voc.create.partOfSpeech?.trim() || null;
+              const existingEx = existing.example?.trim() || null;
+              const inputEx = voc.create.example?.trim() || null;
+              const existingCanonical = existing.canonicalForm.normalize('NFC').trim();
+              const inputCanonical = voc.create.canonicalForm.normalize('NFC').trim();
+
+              const isMatch =
+                existingCanonical === inputCanonical &&
+                existingVi === inputVi &&
+                existingEn === inputEn &&
+                existingPhonetic === inputPhonetic &&
+                existingPos === inputPos &&
+                existingEx === inputEx;
+
+              if (!isMatch) {
+                throw new ControlledDraftError(409, {
+                  code: 'VOCABULARY_IDENTITY_CONFLICT',
+                  message: `Từ vựng "${existingCanonical}" với nghĩa "${sense}" đã tồn tại nhưng có thông tin khác. Vui lòng chọn từ vựng có sẵn hoặc chọn nghĩa (senseKey) khác.`,
+                });
+              }
+              resolvedConceptIdPerIndex[i] = existing.id.toLowerCase();
+            } else {
+              resolvedConceptIdPerIndex[i] = `new:${JSON.stringify([norm, sense])}`;
+            }
+          }
+        }
+
+        const seenConcepts = new Set<string>();
+        for (const cId of resolvedConceptIdPerIndex) {
+          if (seenConcepts.has(cId)) {
+            throw new ControlledDraftError(409, {
+              code: 'DUPLICATE_VOCABULARY_LINK',
+              message: 'Không được thêm trùng một khái niệm từ vựng trong cùng một bài học.',
+            });
+          }
+          seenConcepts.add(cId);
+        }
+      }
+
+      // 11. Lock retained ItemIdentity rows in sorted UUID order
+      const retainedItemIdsToLock: string[] = [];
+      if (inputExercises === undefined) {
+        if (highestRev?.exercises) {
+          for (const ex of highestRev.exercises) {
+            retainedItemIdsToLock.push(ex.itemId.toLowerCase());
+          }
+        }
+      } else {
+        for (const ex of inputExercises) {
+          if (ex.sourceExerciseId) {
+            const pred = predExercisesMap.get(ex.sourceExerciseId.toLowerCase())!;
+            retainedItemIdsToLock.push(pred.itemId.toLowerCase());
+          }
+        }
+      }
+      const sortedItemIds = [...new Set(retainedItemIdsToLock)].sort();
+      for (const itId of sortedItemIds) {
+        await tx.$queryRaw`
+          SELECT id::text FROM app.item_identities WHERE id = ${itId}::uuid FOR UPDATE
+        `;
+      }
+
+      // 12. Prepare merged title and successor content
       const mergedTitle: Record<string, string> = highestRev ? parseJsonRecord(highestRev.title) : {};
       if (inputTitle.vi !== undefined) {
         const trimmed = inputTitle.vi.trim();
@@ -1436,15 +1981,15 @@ export async function saveTeacherLessonDraft(
       const nextRevisionNo = highestRev ? highestRev.revisionNo + 1 : 1;
       const priorRevId = highestRev ? highestRev.id : null;
 
-      // Preserve server-read metadata from predecessor without exposing for edit
+      // Preserve server-read metadata
       const topicIds = highestRev?.topicIds ?? [];
       const skillIds = highestRev?.skillIds ?? [];
       const purposeTags = highestRev?.purposeTags ?? [];
       const coverageCatalogGeneration = highestRev?.coverageCatalogGeneration ?? null;
       const coverageSnapshot = highestRev?.coverageSnapshot ?? null;
 
-      // 8. Insert new LessonRevision
-      await tx.lessonRevision.create({
+      // 13. Insert new LessonRevision
+      const newRev = await tx.lessonRevision.create({
         data: {
           lessonId: lessonId.toLowerCase(),
           revisionNo: nextRevisionNo,
@@ -1466,7 +2011,245 @@ export async function saveTeacherLessonDraft(
         },
       });
 
-      // 9. Increment Lesson.rowVersion once; leave activeRevisionId unchanged
+      // 14. Persist Exercises
+      if (inputExercises === undefined) {
+        // Clone predecessor exercises
+        if (highestRev?.exercises) {
+          for (const pred of highestRev.exercises) {
+            const maxRevRow = await tx.itemRevision.findFirst({
+              where: { itemId: pred.itemId.toLowerCase() },
+              orderBy: { revisionNo: 'desc' },
+            });
+            const nextRevNo = (maxRevRow?.revisionNo ?? 0) + 1;
+            const newItemRev = await tx.itemRevision.create({
+              data: {
+                itemId: pred.itemId.toLowerCase(),
+                revisionNo: nextRevNo,
+                type: pred.itemRevision.type,
+                promptData: pred.itemRevision.promptData,
+                practiceSkillIds: pred.itemRevision.practiceSkillIds || [],
+                practiceCoverageSnapshot: pred.itemRevision.practiceCoverageSnapshot || undefined,
+                schemaVersion: 1,
+                exactFingerprint: pred.itemRevision.exactFingerprint,
+                createdBy: teacherAccountId.toLowerCase(),
+                creationAssignmentEpisodeId: latestEpisode.id,
+                authoringLessonRevisionId: newRev.id,
+                rowVersion: 1n,
+              },
+            });
+            await tx.itemGradingSecret.create({
+              data: {
+                itemRevisionId: newItemRev.id,
+                gradingData: pred.itemRevision.gradingSecret.gradingData,
+                feedbackData: pred.itemRevision.gradingSecret.feedbackData || undefined,
+                schemaVersion: 1,
+              },
+            });
+            await tx.lessonExercise.create({
+              data: {
+                lessonRevisionId: newRev.id,
+                itemRevisionId: newItemRev.id,
+                itemId: pred.itemId.toLowerCase(),
+                position: pred.position,
+                isCore: pred.isCore,
+              },
+            });
+          }
+        }
+      } else {
+        // Insert supplied exercises
+        for (const exInput of inputExercises) {
+          const feedbackData = exInput.feedbackData?.explanation?.trim() ? { explanation: exInput.feedbackData.explanation.trim() } : undefined;
+          const fp = computeExerciseFingerprint({
+            type: exInput.type,
+            schemaVersion: 1,
+            promptData: exInput.promptData,
+            gradingData: exInput.gradingData,
+            feedbackData,
+          });
+
+          let targetItemId: string;
+          let nextRevNo: number;
+          let sourceSkillIds: string[] = [];
+          let sourceCoverageSnapshot: any = undefined;
+
+          if (exInput.sourceExerciseId) {
+            const pred = predExercisesMap.get(exInput.sourceExerciseId.toLowerCase())!;
+            targetItemId = pred.itemId.toLowerCase();
+            sourceSkillIds = pred.itemRevision?.practiceSkillIds || [];
+            sourceCoverageSnapshot = pred.itemRevision?.practiceCoverageSnapshot || undefined;
+            const maxRevRow = await tx.itemRevision.findFirst({
+              where: { itemId: targetItemId },
+              orderBy: { revisionNo: 'desc' },
+            });
+            nextRevNo = (maxRevRow?.revisionNo ?? 0) + 1;
+          } else {
+            const newIdentity = await tx.itemIdentity.create({
+              data: {
+                origin: 'PRACTICE',
+                createdBy: teacherAccountId.toLowerCase(),
+                exactFingerprint: fp,
+              },
+            });
+            targetItemId = newIdentity.id;
+            nextRevNo = 1;
+          }
+
+          const newItemRev = await tx.itemRevision.create({
+            data: {
+              itemId: targetItemId,
+              revisionNo: nextRevNo,
+              type: exInput.type,
+              promptData: exInput.promptData,
+              practiceSkillIds: sourceSkillIds,
+              practiceCoverageSnapshot: sourceCoverageSnapshot,
+              schemaVersion: 1,
+              exactFingerprint: fp,
+              createdBy: teacherAccountId.toLowerCase(),
+              creationAssignmentEpisodeId: latestEpisode.id,
+              authoringLessonRevisionId: newRev.id,
+              rowVersion: 1n,
+            },
+          });
+
+          await tx.itemGradingSecret.create({
+            data: {
+              itemRevisionId: newItemRev.id,
+              gradingData: exInput.gradingData,
+              feedbackData,
+              schemaVersion: 1,
+            },
+          });
+
+          await tx.lessonExercise.create({
+            data: {
+              lessonRevisionId: newRev.id,
+              itemRevisionId: newItemRev.id,
+              itemId: targetItemId,
+              position: exInput.position,
+              isCore: exInput.isCore ?? true,
+            },
+          });
+        }
+      }
+
+      // 15. Persist Vocabulary
+      if (inputVocabulary === undefined) {
+        // Clone predecessor vocabulary links preserving stored displaySnapshot byte-for-JSON-value
+        if (highestRev?.vocabularyLinks) {
+          for (const pred of highestRev.vocabularyLinks) {
+            await tx.lessonVocabularyLink.create({
+              data: {
+                lessonRevisionId: newRev.id,
+                vocabularyId: pred.vocabularyId.toLowerCase(),
+                position: pred.position,
+                isCore: pred.isCore,
+                displaySnapshot: pred.displaySnapshot,
+              },
+            });
+          }
+        }
+      } else {
+        for (const vocInput of inputVocabulary) {
+          if (vocInput.sourceLinkId) {
+            const pred = predVocabMap.get(vocInput.sourceLinkId.toLowerCase())!;
+            await tx.lessonVocabularyLink.create({
+              data: {
+                lessonRevisionId: newRev.id,
+                vocabularyId: pred.vocabularyId.toLowerCase(),
+                position: vocInput.position,
+                isCore: vocInput.isCore ?? true,
+                displaySnapshot: pred.displaySnapshot, // preserved byte-for-JSON-value!
+              },
+            });
+          } else if (vocInput.vocabularyId) {
+            const concept = await tx.vocabularyConcept.findUnique({
+              where: { id: vocInput.vocabularyId.toLowerCase() },
+            });
+            const snapshot = {
+              schemaVersion: 1,
+              languageId: concept.languageId,
+              canonicalForm: concept.canonicalForm,
+              senseKey: concept.senseKey,
+              meaningLabels: concept.meaningLabels,
+              phonetic: concept.phonetic || null,
+              partOfSpeech: concept.partOfSpeech || null,
+              example: concept.example || null,
+            };
+            if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
+              throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
+            }
+            await tx.lessonVocabularyLink.create({
+              data: {
+                lessonRevisionId: newRev.id,
+                vocabularyId: concept.id.toLowerCase(),
+                position: vocInput.position,
+                isCore: vocInput.isCore ?? true,
+                displaySnapshot: snapshot,
+              },
+            });
+          } else if (vocInput.create) {
+            const c = vocInput.create;
+            const norm = normalizeVocabularyTerm(c.canonicalForm);
+            const sense = c.senseKey.trim();
+            let concept = await tx.vocabularyConcept.findUnique({
+              where: {
+                languageId_normalizedForm_senseKey: {
+                  languageId: courseLanguageId.toLowerCase(),
+                  normalizedForm: norm,
+                  senseKey: sense,
+                },
+              },
+            });
+            if (concept && (concept.languageId.toLowerCase() !== courseLanguageId.toLowerCase() || !sameVocabularyMetadata(concept, c))) {
+              throw new ControlledDraftError(409, {code: 'VOCABULARY_IDENTITY_CONFLICT', message: 'Khái niệm đã tồn tại với thông tin khác. Hãy chọn từ có sẵn hoặc dùng nét nghĩa khác.'});
+            }
+            if (!concept) {
+              concept = await tx.vocabularyConcept.create({
+                data: {
+                  languageId: courseLanguageId.toLowerCase(),
+                  canonicalForm: c.canonicalForm.normalize('NFC').trim(),
+                  normalizedForm: norm,
+                  senseKey: sense,
+                  meaningLabels: {
+                    ...(c.meaningLabels.vi?.trim() ? { vi: c.meaningLabels.vi.trim() } : {}),
+                    ...(c.meaningLabels.en?.trim() ? { en: c.meaningLabels.en.trim() } : {}),
+                  },
+                  phonetic: c.phonetic?.trim() || null,
+                  partOfSpeech: c.partOfSpeech?.trim() || null,
+                  example: c.example?.trim() || null,
+                  createdBy: teacherAccountId.toLowerCase(),
+                  rowVersion: 1n,
+                },
+              });
+            }
+            const snapshot = {
+              schemaVersion: 1,
+              languageId: concept.languageId,
+              canonicalForm: concept.canonicalForm,
+              senseKey: concept.senseKey,
+              meaningLabels: concept.meaningLabels,
+              phonetic: concept.phonetic || null,
+              partOfSpeech: concept.partOfSpeech || null,
+              example: concept.example || null,
+            };
+            if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
+              throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
+            }
+            await tx.lessonVocabularyLink.create({
+              data: {
+                lessonRevisionId: newRev.id,
+                vocabularyId: concept.id.toLowerCase(),
+                position: vocInput.position,
+                isCore: vocInput.isCore ?? true,
+                displaySnapshot: snapshot,
+              },
+            });
+          }
+        }
+      }
+
+      // 16. Increment Lesson.rowVersion once; leave activeRevisionId unchanged
       await tx.lesson.update({
         where: { id: lessonId.toLowerCase() },
         data: {
@@ -1474,18 +2257,66 @@ export async function saveTeacherLessonDraft(
         },
       });
 
-      // 10. Return authoritative LessonDetailDto
+      // 17. Return authoritative TeacherLessonDetailDto
       const fullLesson = await tx.lesson.findUnique({
         where: { id: lessonId.toLowerCase() },
-        include: lessonRelations,
+        include: {
+          unit: {
+            select: {
+              id: true,
+              courseId: true,
+              position: true,
+              code: true,
+              names: true,
+              course: {
+                select: {
+                  id: true,
+                  names: true,
+                  languageId: true,
+                },
+              },
+            },
+          },
+          assignment: {
+            include: {
+              currentTeacher: {
+                select: { id: true, displayName: true, status: true },
+              },
+            },
+          },
+          revisions: {
+            orderBy: { revisionNo: 'desc' },
+            include: {
+              creator: { select: { id: true, displayName: true } },
+              lastEditor: { select: { id: true, displayName: true } },
+              ...revisionChildRelations,
+              _count: {
+                select: {
+                  exercises: true,
+                  vocabularyLinks: true,
+                  mediaBindings: true,
+                  authoredItemRevisions: true,
+                  attempts: true,
+                  assessmentVersionItems: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       return {
         status: 200,
-        data: { data: toLessonDetailDto(fullLesson) },
+        data: { data: toTeacherLessonDetailDto(fullLesson, courseLanguageId) },
       };
-    });
+    }, { timeout: 30000 });
   } catch (err) {
+    if (err instanceof ControlledDraftError) {
+      return {
+        status: err.status,
+        error: err.error,
+      };
+    }
     const errorRes = handleLessonPrismaError(err, 'saveTeacherLessonDraft');
     return {
       status: errorRes.status,

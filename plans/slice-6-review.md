@@ -1,0 +1,17 @@
+# Slice 6 independent review and disposition
+
+Initial review: REQUEST CHANGES. Senior `gpt-6.1-sol` high inspected source and reproduced six persistence guard gaps plus a vocabulary race, then hit provider usage limit before writing its final artifact. No substitute specialist or repeated review was invoked. Codex independently reproduced and fixed the findings; final acceptance remains with Codex.
+
+- **Required — predecessor validation:** shallow association/type checks accepted malformed payloads, item-owned media/assessment references, orphan authored items, foreign authoring parents, malformed display snapshots and foreign vocabulary languages. Omitted saves copied them; empty collections silently removed unsupported state. Fixed with one shared complete child predicate used for editability and pre-write validation, with full association counts and relation identity/language checks. Independent red: 19/21 backend checks failed; green after fix.
+- **Required — fixture fidelity:** newly created revision `_count=0` overrode persisted child membership counts, masking validation failures. Fixed loaders to reflect actual child tables, item associations and composite identity constraints. Assertions and old regression coverage retained.
+- **Required — vocabulary create/reuse race:** an identity appearing between validation and persistence could silently supply different metadata. Revalidate the actual row used, and roll back conflicts; no shared concept UPDATE or DELETE.
+- **Required — editor answer loss:** REORDER edit reconstructed the answer from token display order; comma join/split altered valid answers. Added an explicit permutation control and one-answer-per-line inputs; embedded-newline answers are explicitly unsupported rather than silently split. Independent browser red reproduced both losses; green proves exact payload preservation.
+- **Required — vocabulary membership editing:** position/core were display-only despite writable membership contract. Added bounded controls that submit only the retained source link and membership fields. Global concepts remain immutable from this editor.
+- **Required — UUID regression:** new selectors repeated a version-restricted UUID expression incompatible with the accepted canonical UUID helper. Reuse the existing helper and cover canonical IDs.
+- **Required — recovery/evidence:** added actual production-page 400/409/503 retry and 401/403 terminal-view checks, exact returned DTO reconciliation, revision-conflict reload behavior, modal focus handling, safe read-only display, normalized audio references and bounded vocabulary lookup. Corrected Anti totals and distinguished named killer tests from actual mutation experiments.
+
+A full component run also exposed an inherited Course test racing the modal's delayed initial focus: the second locale fill could type into the first field. Preserved failure log, isolated diagnosis, and wait for the actual initial-focus event before typing. No Course runtime changes or assertion removals.
+
+Final semantic mutations, full gates and live proof are recorded separately in `plans/slice-6-verification.md`. No schema/migration, upload subsystem, review/publish or Slice7 work.
+
+Final disposition: all required findings resolved. Distinct vocabulary identity tuples use an unambiguous temporary key, with an old-code-fails/restored-passes regression. Full gates, final A–G rerun, live SQL/UI proof and cleanup passed; final Codex review PASS.
