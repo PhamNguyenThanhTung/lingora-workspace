@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { SessionLostModal } from './SessionLostModal';
 import { AccessDeniedView } from './AccessDeniedView';
+import { getWorkflowStatusLabel } from '@/server/lessons/workflow-status';
 import type { LessonSummaryDto } from '@/server/lessons';
 
 export interface TeacherLessonsCatalogProps {
@@ -132,7 +133,7 @@ export function TeacherLessonsCatalog({
                     <td>
                       {highest ? (
                         <span id={`teacher-lesson-rev-${l.id}`}>
-                          Bản #{highest.revisionNo} ({highest.status})
+                          Bản #{highest.revisionNo} ({getWorkflowStatusLabel(highest.status)})
                         </span>
                       ) : (
                         <span style={{ color: '#94a3b8', fontStyle: 'italic' }} id={`teacher-lesson-no-draft-${l.id}`}>

@@ -14,8 +14,9 @@ export function createMockSessionCookie(userId = '00000000-0000-4000-8000-000000
     user: { id: userId, email },
   };
   const cookieValue = 'base64-' + Buffer.from(JSON.stringify(sessionData)).toString('base64');
+  const projectRef = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://test-project-ref.supabase.co').hostname.split('.')[0];
   return {
-    name: 'sb-sncfyvpzwedqgwfpffkh-auth-token',
+    name: `sb-${projectRef}-auth-token`,
     value: cookieValue,
   };
 }

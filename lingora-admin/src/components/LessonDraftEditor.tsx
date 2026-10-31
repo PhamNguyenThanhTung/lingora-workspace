@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SessionLostModal } from './SessionLostModal';
 import { AccessDeniedView } from './AccessDeniedView';
+import { getWorkflowStatusLabel } from '@/server/lessons/workflow-status';
 import type {
   LessonDetailDto,
   TeacherLessonDetailDto,
@@ -128,6 +129,7 @@ export function LessonDraftEditor({
     initVocabulary.map((v) => ({
       localId: v.id || Math.random().toString(),
       sourceLinkId: v.id,
+      vocabularyId: v.vocabularyId,
       position: v.position,
       isCore: v.isCore,
       displayInfo: {
@@ -153,6 +155,94 @@ export function LessonDraftEditor({
 
   const [sessionLost, setSessionLost] = useState(false);
   const [forbidden, setForbidden] = useState(false);
+  const [isSuccessorEditing, setIsSuccessorEditing] = useState(false);
+
+  // Derived revision & workflow state
+  const revisions = Array.isArray(lesson.revisions) ? lesson.revisions : [];
+  const sortedRevisions = [...revisions].sort((a, b) => b.revisionNo - a.revisionNo);
+  const highestRev = sortedRevisions[0] || lesson.highestRevision || null;
+  const currentStatus = highestRev ? highestRev.status : 'DRAFT';
+
+  const editorActuallyEditable = (lesson.isEditable || isSuccessorEditing) && !isPending && !isReloading && !sessionLost;
+
+  // Baseline state for dirty checking
+  const [persistedBaseline, setPersistedBaseline] = useState(() => ({
+    titleVi: initialTitle.vi || '',
+    titleEn: initialTitle.en || '',
+    paragraphs: initialBlocks.map((b) => b.text),
+    exerciseFingerprints: initExercises.map((ex) =>
+      JSON.stringify({
+        pos: ex.position,
+        core: ex.isCore,
+        type: ex.type,
+        prompt: ex.promptData,
+        grading: ex.gradingData,
+        feedback: ex.feedbackData?.explanation ? { explanation: ex.feedbackData.explanation } : undefined,
+      })
+    ),
+    vocabFingerprints: initVocabulary.map((v) =>
+      JSON.stringify({
+        pos: v.position,
+        core: v.isCore,
+        id: v.vocabularyId,
+        display: {
+          schemaVersion: v.displaySnapshot?.schemaVersion || 1,
+          languageId: v.displaySnapshot?.languageId || (initialLesson as TeacherLessonDetailDto).courseContext.languageId,
+          canonicalForm: v.displaySnapshot?.canonicalForm || '',
+          senseKey: v.displaySnapshot?.senseKey || 'default',
+          meaningLabels: {
+            ...(v.displaySnapshot?.meaningLabels?.vi ? { vi: v.displaySnapshot.meaningLabels.vi } : {}),
+            ...(v.displaySnapshot?.meaningLabels?.en ? { en: v.displaySnapshot.meaningLabels.en } : {}),
+          },
+          phonetic: v.displaySnapshot?.phonetic || null,
+          partOfSpeech: v.displaySnapshot?.partOfSpeech || null,
+          example: v.displaySnapshot?.example || null,
+        },
+      })
+    ),
+  }));
+
+  const isDirty = (
+    titleVi !== persistedBaseline.titleVi ||
+    titleEn !== persistedBaseline.titleEn ||
+    changeSummary.trim().length > 0 ||
+    paragraphs.length !== persistedBaseline.paragraphs.length ||
+    paragraphs.some((p, i) => p.text !== persistedBaseline.paragraphs[i]) ||
+    exercises.length !== persistedBaseline.exerciseFingerprints.length ||
+    exercises.some((ex, i) => {
+      const currentFp = JSON.stringify({
+        pos: ex.position,
+        core: ex.isCore,
+        type: ex.type,
+        prompt: ex.promptData,
+        grading: ex.gradingData,
+        feedback: ex.feedbackData?.explanation ? { explanation: ex.feedbackData.explanation } : undefined,
+      });
+      return currentFp !== persistedBaseline.exerciseFingerprints[i];
+    }) ||
+    vocabulary.length !== persistedBaseline.vocabFingerprints.length ||
+    vocabulary.some((v, i) => {
+      const currentFp = JSON.stringify({
+        pos: v.position,
+        core: v.isCore,
+        id: v.vocabularyId,
+        display: {
+          schemaVersion: 1,
+          languageId: (initialLesson as any).courseContext?.languageId || '',
+          canonicalForm: v.displayInfo.canonicalForm,
+          senseKey: v.displayInfo.senseKey || 'default',
+          meaningLabels: {
+            ...(v.displayInfo.meaningVi ? { vi: v.displayInfo.meaningVi } : {}),
+            ...(v.displayInfo.meaningEn ? { en: v.displayInfo.meaningEn } : {}),
+          },
+          phonetic: v.displayInfo.phonetic || null,
+          partOfSpeech: v.displayInfo.partOfSpeech || null,
+          example: v.displayInfo.example || null,
+        },
+      });
+      return currentFp !== persistedBaseline.vocabFingerprints[i];
+    })
+  );
 
   // Exercise Modal State
   const [exerciseModalOpen, setExerciseModalOpen] = useState(false);
@@ -299,6 +389,7 @@ export function LessonDraftEditor({
         next.vocabulary.map((v) => ({
           localId: v.id,
           sourceLinkId: v.id,
+          vocabularyId: v.vocabularyId,
           position: v.position,
           isCore: v.isCore,
           displayInfo: {
@@ -312,6 +403,107 @@ export function LessonDraftEditor({
           },
         }))
       );
+    }
+
+    setPersistedBaseline({
+      titleVi: next.currentDraft?.title.vi || '',
+      titleEn: next.currentDraft?.title.en || '',
+      paragraphs: (next.currentDraft?.contentBlocks || []).map((b) => b.text),
+      exerciseFingerprints: (next.exercises || []).map((ex) =>
+        JSON.stringify({
+          pos: ex.position,
+          core: ex.isCore,
+          type: ex.type,
+          prompt: ex.promptData,
+          grading: ex.gradingData,
+          feedback: ex.feedbackData?.explanation ? { explanation: ex.feedbackData.explanation } : undefined,
+        })
+      ),
+      vocabFingerprints: (next.vocabulary || []).map((v) =>
+        JSON.stringify({
+          pos: v.position,
+          core: v.isCore,
+          id: v.vocabularyId,
+          display: {
+            schemaVersion: v.displaySnapshot?.schemaVersion || 1,
+            languageId: v.displaySnapshot?.languageId || next.courseContext.languageId,
+            canonicalForm: v.displaySnapshot?.canonicalForm || '',
+            senseKey: v.displaySnapshot?.senseKey || 'default',
+            meaningLabels: {
+              ...(v.displaySnapshot?.meaningLabels?.vi ? { vi: v.displaySnapshot.meaningLabels.vi } : {}),
+              ...(v.displaySnapshot?.meaningLabels?.en ? { en: v.displaySnapshot.meaningLabels.en } : {}),
+            },
+            phonetic: v.displaySnapshot?.phonetic || null,
+            partOfSpeech: v.displaySnapshot?.partOfSpeech || null,
+            example: v.displaySnapshot?.example || null,
+          },
+        })
+      ),
+    });
+    setIsSuccessorEditing(false);
+  };
+
+  const handleSubmitForReview = async () => {
+    if (isPendingRef.current) return;
+    if (isDirty) {
+      setGeneralError('Vui lòng lưu bản nháp trước khi nộp duyệt.');
+      return;
+    }
+    if (!highestRev) {
+      setGeneralError('Chưa có bản sửa đổi nào để nộp duyệt.');
+      return;
+    }
+
+    isPendingRef.current = true;
+    setIsPending(true);
+    setGeneralError(null);
+    setSuccessMessage(null);
+    setIsStaleConflict(false);
+
+    try {
+      const revVersion = (highestRev as any).rowVersion || '1';
+      const res = await fetch(`/api/teacher/lessons/${lesson.id}/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: window.location.origin,
+        },
+        body: JSON.stringify({
+          revisionId: highestRev.id,
+          expectedLessonRowVersion: lesson.rowVersion,
+          expectedRevisionRowVersion: String(revVersion),
+        }),
+      });
+
+      if (authFailed(res)) {
+        setIsPending(false);
+        isPendingRef.current = false;
+        return;
+      }
+
+      const resData = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setIsPending(false);
+        isPendingRef.current = false;
+        if (res.status === 409) {
+          setIsStaleConflict(true);
+          setGeneralError(resData?.error?.message || 'Dữ liệu bài học đã bị thay đổi bởi tác vụ khác. Vui lòng tải lại dữ liệu mới nhất.');
+          return;
+        }
+        setGeneralError(resData?.error?.message || 'Không thể nộp bài học để kiểm duyệt.');
+        return;
+      }
+
+      setIsPending(false);
+      isPendingRef.current = false;
+      if (resData.data) {
+        reconcile(resData.data);
+      }
+      setSuccessMessage('Đã nộp bài học để kiểm duyệt thành công.');
+    } catch {
+      setIsPending(false);
+      isPendingRef.current = false;
+      setGeneralError('Lỗi kết nối máy chủ khi nộp kiểm duyệt. Vui lòng thử lại.');
     }
   };
 
@@ -353,7 +545,7 @@ export function LessonDraftEditor({
 
   // --- Exercise Handlers ---
   const handleOpenAddExercise = () => {
-    if (isPendingRef.current || !lesson.isEditable) return;
+    if (isPendingRef.current || !editorActuallyEditable) return;
     setEditingExerciseIndex(null);
     setExType('MCQ');
     setRoCorrectOrder('');
@@ -371,7 +563,7 @@ export function LessonDraftEditor({
   };
 
   const handleOpenEditExercise = (index: number) => {
-    if (isPendingRef.current || !lesson.isEditable) return;
+    if (isPendingRef.current || !editorActuallyEditable) return;
     const ex = exercises[index];
     setEditingExerciseIndex(index);
     setExType(ex.type);
@@ -444,7 +636,7 @@ export function LessonDraftEditor({
   };
 
   const handleRemoveExercise = (index: number) => {
-    if (isPendingRef.current || !lesson.isEditable) return;
+    if (isPendingRef.current || !editorActuallyEditable) return;
     setExercises((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -614,7 +806,7 @@ export function LessonDraftEditor({
 
   // --- Vocabulary Handlers ---
   const handleOpenAddVocabulary = () => {
-    if (isPendingRef.current || !lesson.isEditable) return;
+    if (isPendingRef.current || !editorActuallyEditable) return;
     vocabSearchGeneration.current++;
     setVocabTab('search');
     setVocabPosition(vocabulary.length + 1);
@@ -663,7 +855,7 @@ export function LessonDraftEditor({
   };
 
   const handleRemoveVocabulary = (index: number) => {
-    if (isPendingRef.current || !lesson.isEditable) return;
+    if (isPendingRef.current || !editorActuallyEditable) return;
     setVocabulary((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -743,7 +935,7 @@ export function LessonDraftEditor({
   // --- Submit All Draft Content ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isPendingRef.current || isStaleConflict || sessionLost || forbidden || !lesson.isEditable) return;
+    if (isPendingRef.current || isStaleConflict || sessionLost || forbidden || !editorActuallyEditable) return;
 
     setGeneralError(null);
     setTitleError(null);
@@ -880,7 +1072,7 @@ export function LessonDraftEditor({
           marginBottom: '20px',
         }}
       >
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
           <span className="badge" style={{ background: '#e0e7ff', color: '#3730a3', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }}>
             Khóa học: {courseName}
           </span>
@@ -889,6 +1081,14 @@ export function LessonDraftEditor({
           </span>
           <span className="badge" style={{ background: '#fef3c7', color: '#92400e', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }} id="badgeLessonToken">
             Phiên bản: #{lesson.rowVersion}
+          </span>
+          {highestRev && (
+            <span className="badge" style={{ background: '#f3e8ff', color: '#6b21a8', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }} id="badgeRevisionNo">
+              Bản sửa đổi: #{highestRev.revisionNo}
+            </span>
+          )}
+          <span className="badge" style={{ background: '#e2e8f0', color: '#1e293b', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }} id="badgeRevisionStatus">
+            Trạng thái: {getWorkflowStatusLabel(currentStatus)}
           </span>
         </div>
 
@@ -900,8 +1100,123 @@ export function LessonDraftEditor({
         </p>
       </div>
 
-      {/* Read-only Alert when !isEditable */}
-      {!lesson.isEditable && (
+      {/* Changes Requested Banner */}
+      {currentStatus === 'CHANGES_REQUESTED' && (
+        <div
+          className="form-error-banner"
+          role="alert"
+          id="changeRequestFeedbackBanner"
+          style={{
+            background: '#fffbeb',
+            border: '1px solid #f59e0b',
+            color: '#b45309',
+            padding: '16px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+          }}
+        >
+          <div style={{ fontWeight: 600, marginBottom: '4px' }}>
+            Yêu cầu chỉnh sửa từ Quản trị viên
+          </div>
+          {lesson.latestFeedback?.comment && (
+            <div id="feedbackCommentText" style={{ marginTop: '4px', fontStyle: 'italic' }}>
+              Ý kiến phản hồi: {lesson.latestFeedback.comment}
+            </div>
+          )}
+          {!isSuccessorEditing && (
+            <div style={{ marginTop: '12px' }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                id="btnRequestChangesEdit"
+                onClick={() => setIsSuccessorEditing(true)}
+                disabled={isPending || isReloading}
+              >
+                Chỉnh sửa lại
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Published Notice Banner */}
+      {currentStatus === 'PUBLISHED' && (
+        <div
+          role="status"
+          id="publishedNoticeBanner"
+          style={{
+            background: '#f0fdf4',
+            border: '1px solid #86efac',
+            color: '#15803d',
+            padding: '16px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+          }}
+        >
+          <div style={{ fontWeight: 600, marginBottom: '4px' }}>
+            Bài học đã xuất bản
+          </div>
+          <div>Bản sửa đổi này đã được xuất bản và đang hoạt động.</div>
+          {!isSuccessorEditing && (
+            <div style={{ marginTop: '12px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                id="btnCreateSuccessor"
+                onClick={() => setIsSuccessorEditing(true)}
+                disabled={isPending || isReloading}
+              >
+                Tạo bản nháp mới
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* In Review Notice */}
+      {currentStatus === 'IN_REVIEW' && (
+        <div
+          role="status"
+          id="inReviewNotice"
+          style={{
+            background: '#eff6ff',
+            border: '1px solid #93c5fd',
+            color: '#1e40af',
+            padding: '16px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+          }}
+        >
+          <div style={{ fontWeight: 600 }}>Bài học đang chờ duyệt</div>
+          <div style={{ fontSize: '14px', marginTop: '4px' }}>
+            Nội dung đã được nộp và đang chờ Quản trị viên xem xét.
+          </div>
+        </div>
+      )}
+
+      {/* Approved Notice */}
+      {currentStatus === 'APPROVED' && (
+        <div
+          role="status"
+          id="approvedNotice"
+          style={{
+            background: '#f0fdf4',
+            border: '1px solid #86efac',
+            color: '#166534',
+            padding: '16px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+          }}
+        >
+          <div style={{ fontWeight: 600 }}>Bài học đã được duyệt</div>
+          <div style={{ fontSize: '14px', marginTop: '4px' }}>
+            Bản sửa đổi đã được duyệt và đang chờ xuất bản.
+          </div>
+        </div>
+      )}
+
+      {/* Read-only Alert when not editable and not handled by above banners */}
+      {!editorActuallyEditable && !isSuccessorEditing && currentStatus !== 'CHANGES_REQUESTED' && currentStatus !== 'PUBLISHED' && currentStatus !== 'IN_REVIEW' && currentStatus !== 'APPROVED' && (
         <div
           className="form-error-banner"
           role="alert"
@@ -1005,7 +1320,7 @@ export function LessonDraftEditor({
                 }}
                 maxLength={300}
                 placeholder="Nhập tiêu đề tiếng Việt..."
-                disabled={isPending || isReloading || sessionLost || !lesson.isEditable}
+                disabled={!editorActuallyEditable}
               />
             </div>
 
@@ -1024,7 +1339,7 @@ export function LessonDraftEditor({
                 }}
                 maxLength={300}
                 placeholder="Nhập tiêu đề tiếng Anh..."
-                disabled={isPending || isReloading || sessionLost || !lesson.isEditable}
+                disabled={!editorActuallyEditable}
               />
             </div>
           </div>
@@ -1066,7 +1381,7 @@ export function LessonDraftEditor({
               className="btn btn-secondary"
               id="btnAddParagraph"
               onClick={handleAddParagraph}
-              disabled={isPending || isReloading || sessionLost || !lesson.isEditable || paragraphs.length >= 50}
+              disabled={!editorActuallyEditable || paragraphs.length >= 50}
               style={{ fontSize: '13px', padding: '6px 12px' }}
             >
               + Thêm đoạn văn
@@ -1120,7 +1435,7 @@ export function LessonDraftEditor({
                       className="btn-text-action btn-text-delete"
                       id={`btnRemoveParagraph-${idx}`}
                       onClick={() => handleRemoveParagraph(idx)}
-                      disabled={isPending || isReloading || sessionLost || !lesson.isEditable}
+                      disabled={!editorActuallyEditable}
                       style={{ fontSize: '12px' }}
                     >
                       Xóa đoạn
@@ -1134,7 +1449,7 @@ export function LessonDraftEditor({
                     onChange={(e) => handleParagraphChange(idx, e.target.value)}
                     maxLength={20000}
                     placeholder="Nhập nội dung đoạn văn..."
-                    disabled={isPending || isReloading || sessionLost || !lesson.isEditable}
+                    disabled={!editorActuallyEditable}
                     style={{ resize: 'vertical' }}
                   />
                   <div style={{ textAlign: 'right', fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
@@ -1172,7 +1487,7 @@ export function LessonDraftEditor({
               className="btn btn-secondary"
               id="btnAddExercise"
               onClick={handleOpenAddExercise}
-              disabled={isPending || isReloading || sessionLost || !lesson.isEditable || exercises.length >= 100}
+              disabled={!editorActuallyEditable || exercises.length >= 100}
               style={{ fontSize: '13px', padding: '6px 12px' }}
             >
               + Thêm bài tập
@@ -1243,7 +1558,7 @@ export function LessonDraftEditor({
                           className="btn-text-action"
                           id={`btnEditExercise-${idx}`}
                           onClick={() => handleOpenEditExercise(idx)}
-                          disabled={isPending || isReloading || !lesson.isEditable}
+                          disabled={!editorActuallyEditable}
                           style={{ marginRight: '8px' }}
                         >
                           Sửa
@@ -1253,7 +1568,7 @@ export function LessonDraftEditor({
                           className="btn-text-action btn-text-delete"
                           id={`btnRemoveExercise-${idx}`}
                           onClick={() => handleRemoveExercise(idx)}
-                          disabled={isPending || isReloading || !lesson.isEditable}
+                          disabled={!editorActuallyEditable}
                         >
                           Gỡ khỏi bản nháp
                         </button>
@@ -1292,7 +1607,7 @@ export function LessonDraftEditor({
               className="btn btn-secondary"
               id="btnAddVocabulary"
               onClick={handleOpenAddVocabulary}
-              disabled={isPending || isReloading || sessionLost || !lesson.isEditable || vocabulary.length >= 100}
+              disabled={!editorActuallyEditable || vocabulary.length >= 100}
               style={{ fontSize: '13px', padding: '6px 12px' }}
             >
               + Thêm từ vựng
@@ -1374,7 +1689,7 @@ export function LessonDraftEditor({
                           className="btn-text-action btn-text-delete"
                           id={`btnRemoveVocab-${idx}`}
                           onClick={() => handleRemoveVocabulary(idx)}
-                          disabled={isPending || isReloading || !lesson.isEditable}
+                          disabled={!editorActuallyEditable}
                         >
                           Gỡ khỏi bản nháp
                         </button>
@@ -1409,12 +1724,12 @@ export function LessonDraftEditor({
             onChange={(e) => setChangeSummary(e.target.value)}
             maxLength={500}
             placeholder="Ghi chú ngắn về các thay đổi trong lần lưu này (tối đa 500 ký tự)..."
-            disabled={isPending || isReloading || sessionLost || !lesson.isEditable}
+            disabled={!editorActuallyEditable}
           />
         </div>
 
         {/* Submit action */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap' }}>
           <a
             href="/my-lessons"
             className="btn btn-secondary"
@@ -1426,15 +1741,38 @@ export function LessonDraftEditor({
           >
             Hủy / Quay lại
           </a>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            id="btnSaveDraft"
-            disabled={isPending || isReloading || isStaleConflict || sessionLost || !lesson.isEditable}
-            style={{ minWidth: '140px' }}
-          >
-            {isPending ? 'Đang lưu...' : 'Lưu bản nháp'}
-          </button>
+
+          {(lesson.isEditable || isSuccessorEditing) && (
+            <button
+              type="submit"
+              className="btn btn-secondary"
+              id="btnSaveDraft"
+              disabled={isPending || isReloading || isStaleConflict || sessionLost}
+              style={{ minWidth: '140px' }}
+            >
+              {isPending ? 'Đang lưu...' : 'Lưu bản nháp'}
+            </button>
+          )}
+
+          {currentStatus === 'DRAFT' && !isSuccessorEditing && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                id="btnSubmitForReview"
+                onClick={handleSubmitForReview}
+                disabled={isPending || isReloading || isStaleConflict || sessionLost || !editorActuallyEditable || isDirty}
+                style={{ minWidth: '160px' }}
+              >
+                {isPending ? 'Đang xử lý...' : 'Nộp kiểm duyệt'}
+              </button>
+              {isDirty && (
+                <span id="dirtySubmitHint" style={{ fontSize: '12px', color: '#b45309' }}>
+                  Vui lòng lưu bản nháp trước khi nộp duyệt.
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </form>
 
@@ -1494,7 +1832,7 @@ export function LessonDraftEditor({
                           color: rev.status === 'DRAFT' ? '#1d4ed8' : '#475569',
                         }}
                       >
-                        {rev.status}
+                        {getWorkflowStatusLabel(rev.status)}
                       </span>
                     </td>
                   </tr>

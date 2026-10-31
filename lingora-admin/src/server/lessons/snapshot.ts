@@ -23,7 +23,7 @@ export const vocabularySnapshotSchema = z.object({
   example: z.string().max(4000).nullable().optional(),
 }).strict();
 
-export function unsupportedChildren(rev: any, languageId?: string): boolean {
+export function unsupportedChildren(rev: any, languageId?: string, allowFrozenPredecessor = false): boolean {
   if (!rev) return false;
   const c = rev._count || {};
   if (c.mediaBindings > 0 || c.attempts > 0 || c.assessmentVersionItems > 0) return true;
@@ -37,7 +37,7 @@ export function unsupportedChildren(rev: any, languageId?: string): boolean {
         ex.item?.id !== ex.itemId || ex.item.origin !== 'PRACTICE' || ir.authoringLessonRevisionId !== rev.id ||
         ir.createdBy !== rev.createdBy || ir.creationAssignmentEpisodeId !== rev.creationAssignmentEpisodeId ||
         ir.schemaVersion !== 1 || !secret || secret.schemaVersion !== 1 ||
-        ir.isDraftOmitted || ir.frozenAt != null || ir.assessmentBlueprintId != null || ir.blueprintGeneration != null ||
+        ir.isDraftOmitted || (!allowFrozenPredecessor && ir.frozenAt != null) || ir.assessmentBlueprintId != null || ir.blueprintGeneration != null ||
         ir._count?.mediaBindings > 0 || ir._count?.assessmentVersionItems > 0 || ir._count?.provenanceVersionItems > 0) return true;
     if (!exerciseInputSchema.safeParse({position: ex.position, isCore: ex.isCore, type: ir.type,
       promptData: ir.promptData, gradingData: secret.gradingData, feedbackData: secret.feedbackData}).success) return true;

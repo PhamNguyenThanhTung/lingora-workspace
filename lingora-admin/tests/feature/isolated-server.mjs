@@ -326,11 +326,50 @@ export function startIsolatedServer(port = 3007) {
             f.state.assignments.set('66666666-6666-6666-8666-666666666001', { id: '66666666-6666-6666-8666-666666666001', lessonId, currentTeacherId: teacherId, scopeGeneration: 1n });
             f.state.revisions.set('77777777-7777-7777-8777-777777777001', {
               id: '77777777-7777-7777-8777-777777777001', lessonId, revisionNo: 1,
+              assignmentId: '66666666-6666-6666-8666-666666666001',
+              creationAssignmentEpisodeId: '99999999-9999-4999-8999-999999999001',
               title: { vi: 'Bài học #1', en: 'Lesson 1' },
               contentBlocks: url.searchParams.has('unsupported') ? [{ type: 'media', assetId: 'existing' }] : [{ type: 'paragraph', text: 'Nội dung khởi tạo' }],
               changeSummary: 'Khởi tạo', status: 'DRAFT', createdBy: teacherId, lastEditedBy: teacherId,
               createdAt: new Date('2026-10-30T09:00:00Z'), _count: {},
             });
+            if (url.searchParams.has('slice7')) {
+            const languageId = '22222222-2222-4222-8222-222222222222';
+            const itemId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+            const itemRevisionId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1';
+            const exerciseId = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
+            const vocabularyId = 'dddddddd-dddd-4ddd-8ddd-ddddddddddd1';
+            const vocabularyLinkId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1';
+            f.state.itemIdentities.set(itemId, { id: itemId, origin: 'PRACTICE', createdBy: teacherId });
+            f.state.itemRevisions.set(itemRevisionId, {
+              id: itemRevisionId, itemId, revisionNo: 1, type: 'GRAMMAR',
+              promptData: { prompt: 'Sửa câu sau.', sourceSentence: 'She go to school.', targetPattern: 'She goes to school.' },
+              schemaVersion: 1, authoringLessonRevisionId: '77777777-7777-7777-8777-777777777001',
+              createdBy: teacherId, creationAssignmentEpisodeId: '99999999-9999-4999-8999-999999999001', frozenAt: null,
+            });
+            f.state.itemGradingSecrets.set(itemRevisionId, {
+              id: itemRevisionId, itemRevisionId, schemaVersion: 1,
+              gradingData: { acceptedAnswers: ['She goes to school.'], caseSensitive: false }, feedbackData: null,
+            });
+            f.state.lessonExercises.set(exerciseId, {
+              id: exerciseId, lessonRevisionId: '77777777-7777-7777-8777-777777777001',
+              itemId, itemRevisionId, position: 1, isCore: true,
+            });
+            f.state.vocabularyConcepts.set(vocabularyId, {
+              id: vocabularyId, languageId, canonicalForm: 'hello', senseKey: 'default',
+              meaningLabels: { vi: 'xin chào', en: 'greeting' }, phonetic: null,
+              partOfSpeech: 'interjection', example: 'Hello there.',
+            });
+            f.state.lessonVocabularyLinks.set(vocabularyLinkId, {
+              id: vocabularyLinkId, lessonRevisionId: '77777777-7777-7777-8777-777777777001',
+              vocabularyId, position: 1, isCore: false,
+              displaySnapshot: {
+                schemaVersion: 1, languageId, canonicalForm: 'hello', senseKey: 'default',
+                meaningLabels: { vi: 'xin chào', en: 'greeting' }, phonetic: null,
+                partOfSpeech: 'interjection', example: 'Hello there.',
+              },
+            });
+            }
             if (url.searchParams.has('failList')) f.db.lesson.findMany = async () => { throw new Error('Unavailable'); };
             setCookieStore({ getAll: () => [createMockSessionCookie(teacherId, 'teacher@lingora.test')], set: () => {} });
             setProductPrismaForTest(f.db);
@@ -339,6 +378,154 @@ export function startIsolatedServer(port = 3007) {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
             const Page = await compileAndLoadPage(state === 'page-teacher-draft-wire' ? 'src/app/my-lessons/[lessonId]/page.tsx' : 'src/app/my-lessons/page.tsx', { useBridge: true });
             const jsx = await Page({ params: Promise.resolve({ lessonId }) });
+            injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
+          }
+
+          if (state === 'page-review-queue-wire') {
+            const f = lessonsFixture();
+            const adminId = '00000000-0000-4000-8000-000000000001';
+            const teacherId = '11111111-1111-4111-8111-111111111111';
+            const courseId = '33333333-3333-4333-8333-333333333030';
+            const unitId = '44444444-4444-4444-8444-444444444040';
+            const lessonId = '55555555-5555-4555-8555-555555555001';
+            const revisionId = '77777777-7777-4777-8777-777777777001';
+            const submissionId = '88888888-8888-4888-8888-888888888001';
+            const assignmentId = '66666666-6666-4666-8666-666666666001';
+            const episodeId = '99999999-9999-4999-8999-999999999001';
+            const occurredAt = new Date('2026-10-30T09:00:00.000Z');
+            const admin = { id: adminId, role: 'ADMIN', status: 'ACTIVE', displayName: 'Nguyễn Quản Trị', uiLocale: 'vi' };
+            const teacher = { id: teacherId, role: 'TEACHER', status: 'ACTIVE', displayName: 'Nguyễn Thị Lan' };
+            f.state.accounts.set(adminId, admin);
+            f.state.accounts.set(teacherId, teacher);
+            f.state.courses.set(courseId, { id: courseId, languageId: '22222222-2222-4222-8222-222222222222', names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' }, isActive: false });
+            f.state.units.set(unitId, { id: unitId, courseId, position: 1, code: 'UNIT-01', names: { vi: 'Bài 1: Làm quen', en: 'Warm Up' } });
+            f.state.lessons.set(lessonId, { id: lessonId, unitId, position: 1, isRequired: true, availability: 'PLANNED', activeRevisionId: null, rowVersion: 2n });
+            f.state.assignments.set(assignmentId, { id: assignmentId, lessonId, currentTeacherId: teacherId, createdBy: adminId, scopeGeneration: 1n, rowVersion: 1n, scope: {}, requirement: {} });
+            f.state.histories.set(episodeId, { id: episodeId, assignmentId, sequenceNo: 1, eventType: 'ASSIGNED', previousTeacherId: null, nextTeacherId: teacherId, scopeGeneration: 1n, changedBy: adminId, scopeSnapshot: { unit: 'UNIT-01' }, changedAt: occurredAt, createdAt: occurredAt });
+            f.state.revisions.set(revisionId, {
+              id: revisionId, lessonId, revisionNo: 1, status: 'IN_REVIEW', title: { vi: 'Bài học đang chờ duyệt', en: 'Pending lesson' },
+              contentBlocks: [{ type: 'paragraph', text: 'Queue snapshot' }], createdBy: teacherId, lastEditedBy: teacherId,
+              submittedBy: teacherId, submittedAt: occurredAt, submittedAssignmentGeneration: 1n,
+              assignmentScopeSnapshot: { unit: 'UNIT-01' }, rowVersion: 2n, createdAt: occurredAt,
+            });
+            f.state.revisionReviews.set(submissionId, {
+              id: submissionId, lessonRevisionId: revisionId, action: 'SUBMIT', actorId: teacherId,
+              assignmentEpisodeId: episodeId, assignmentGeneration: 1n, assignmentScopeSnapshot: { unit: 'UNIT-01' },
+              occurredAt, revisionRowVersion: 2n, comment: null,
+            });
+            setCookieStore({ getAll: () => [createMockSessionCookie(adminId, 'admin@lingora.test')], get: () => createMockSessionCookie(adminId, 'admin@lingora.test'), set: () => {}, delete: () => {} });
+            setProductPrismaForTest(f.db);
+            globalThis.fetch = async () => new Response(JSON.stringify({ id: adminId }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test-project-ref.supabase.co';
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+            const ReviewQueuePage = await compileAndLoadPage('src/app/review/page.tsx', { useBridge: true });
+            const jsx = await ReviewQueuePage();
+            injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
+          }
+
+          if (state === 'page-review-detail-wire' || state === 'page-review-approved-detail-wire') {
+            const f = lessonsFixture();
+            const adminId = '00000000-0000-4000-8000-000000000001';
+            const teacherId = '11111111-1111-4111-8111-111111111111';
+            const courseId = '33333333-3333-4333-8333-333333333030';
+            const unitId = '44444444-4444-4444-8444-444444444040';
+            const lessonId = '55555555-5555-4555-8555-555555555001';
+            const revisionId = '77777777-7777-4777-8777-777777777001';
+            const submissionId = '88888888-8888-4888-8888-888888888001';
+            const assignmentId = '66666666-6666-4666-8666-666666666001';
+            const episodeId = '99999999-9999-4999-8999-999999999001';
+            const admin = { id: adminId, role: 'ADMIN', status: 'ACTIVE', displayName: 'Nguyễn Quản Trị', uiLocale: 'vi' };
+            const teacher = { id: teacherId, role: 'TEACHER', status: 'ACTIVE', displayName: 'Nguyễn Thị Lan' };
+            const occurredAt = new Date('2026-10-30T09:00:00.000Z');
+            f.state.accounts.set(adminId, admin);
+            f.state.accounts.set(teacherId, teacher);
+            f.state.courses.set(courseId, { id: courseId, languageId: '22222222-2222-4222-8222-222222222222', names: { vi: 'Tiếng Anh Chuẩn', en: 'Core English' }, isActive: false });
+            f.state.units.set(unitId, { id: unitId, courseId, position: 1, code: 'UNIT-01', names: { vi: 'Bài 1: Làm quen', en: 'Warm Up' } });
+            f.state.lessons.set(lessonId, { id: lessonId, unitId, position: 1, isRequired: true, availability: 'PLANNED', activeRevisionId: null, rowVersion: 3n });
+            f.state.assignments.set(assignmentId, { id: assignmentId, lessonId, currentTeacherId: teacherId, createdBy: adminId, scopeGeneration: 1n, rowVersion: 1n, scope: {}, requirement: {} });
+            f.state.histories.set(episodeId, { id: episodeId, assignmentId, sequenceNo: 1, eventType: 'ASSIGNED', previousTeacherId: null, nextTeacherId: teacherId, scopeGeneration: 1n, changedBy: adminId, scopeSnapshot: { unit: 'UNIT-01' }, changedAt: occurredAt, createdAt: occurredAt });
+            f.state.revisions.set(revisionId, {
+              id: revisionId, lessonId, revisionNo: 1, priorRevisionId: null, changeSummary: 'First draft',
+              assignmentId, creationAssignmentEpisodeId: episodeId,
+              status: state === 'page-review-approved-detail-wire' ? 'APPROVED' : 'IN_REVIEW',
+              title: { vi: 'Bài học kiểm duyệt', en: 'Review lesson' },
+              contentBlocks: [{ type: 'paragraph', text: 'Persisted review snapshot' }],
+              createdBy: teacherId, lastEditedBy: teacherId, submittedBy: teacherId, submittedAt: occurredAt,
+              approvedBy: state === 'page-review-approved-detail-wire' ? adminId : null,
+              approvedAt: state === 'page-review-approved-detail-wire' ? occurredAt : null,
+              submittedAssignmentGeneration: 1n, assignmentScopeSnapshot: { unit: 'UNIT-01' }, rowVersion: 2n, createdAt: occurredAt,
+            });
+            const reviewExerciseSnapshots = [
+              {
+                suffix: '001', type: 'FILL_BLANK',
+                promptData: { prompt: 'Điền từ còn thiếu.', sentence: 'I ____ coffee every morning.' },
+                gradingData: { acceptedAnswers: ['drink'], caseSensitive: false },
+              },
+              {
+                suffix: '002', type: 'REORDER',
+                promptData: { prompt: 'Sắp xếp thành câu.', tokens: [{ id: 'a', text: 'She' }, { id: 'b', text: 'is reading' }, { id: 'c', text: 'a book' }] },
+                gradingData: { correctOrder: ['a', 'b', 'c'] },
+              },
+              {
+                suffix: '003', type: 'GRAMMAR',
+                promptData: { prompt: 'Sửa câu sau.', sourceSentence: 'She go to school.', targetPattern: 'She goes to school.' },
+                gradingData: { acceptedAnswers: ['She goes to school.'], caseSensitive: false },
+              },
+              {
+                suffix: '004', type: 'MCQ',
+                promptData: { prompt: 'What is the opposite of hot?', options: [{ id: 'a', text: 'cold' }, { id: 'b', text: 'warm' }] },
+                gradingData: { correctOptionId: 'a' },
+              },
+              {
+                suffix: '005', type: 'LISTENING',
+                promptData: { prompt: 'Listen and choose the greeting.', audioUrl: 'https://media.example.test/hello.mp3', options: [{ id: 'a', text: 'Hello' }, { id: 'b', text: 'Goodbye' }] },
+                gradingData: { correctOptionId: 'a' },
+              },
+            ];
+            for (let index = 0; index < reviewExerciseSnapshots.length; index++) {
+              const exercise = reviewExerciseSnapshots[index];
+              const itemId = `aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa${exercise.suffix[2]}`;
+              const itemRevisionId = `bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb${exercise.suffix[2]}`;
+              const exerciseId = `cccccccc-cccc-4ccc-8ccc-ccccccccccc${exercise.suffix[2]}`;
+            f.state.itemIdentities.set(itemId, { id: itemId, origin: 'PRACTICE', createdBy: teacherId });
+              f.state.itemRevisions.set(itemRevisionId, {
+                id: itemRevisionId, itemId, revisionNo: 1, type: exercise.type,
+                promptData: exercise.promptData, schemaVersion: 1,
+                authoringLessonRevisionId: revisionId, createdBy: teacherId,
+                creationAssignmentEpisodeId: episodeId, frozenAt: occurredAt,
+              });
+              f.state.itemGradingSecrets.set(itemRevisionId, {
+                id: itemRevisionId, itemRevisionId, schemaVersion: 1,
+                gradingData: exercise.gradingData, feedbackData: null,
+              });
+              f.state.lessonExercises.set(exerciseId, {
+                id: exerciseId, lessonRevisionId: revisionId, itemId, itemRevisionId,
+                position: index + 1, isCore: true,
+              });
+            }
+            const vocabularyId = 'dddddddd-dddd-4ddd-8ddd-ddddddddddd1';
+            const vocabularyLinkId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1';
+            f.state.lessonVocabularyLinks.set(vocabularyLinkId, {
+              id: vocabularyLinkId, lessonRevisionId: revisionId, vocabularyId,
+              position: 1, isCore: false,
+              displaySnapshot: {
+                schemaVersion: 1, languageId: '22222222-2222-4222-8222-222222222222',
+                canonicalForm: 'hello', senseKey: 'default', meaningLabels: { vi: 'xin chào', en: 'greeting' },
+                phonetic: '/həˈləʊ/', partOfSpeech: 'interjection', example: 'Hello there.',
+              },
+            });
+            f.state.revisionReviews.set(submissionId, {
+              id: submissionId, lessonRevisionId: revisionId, assessmentVersionId: null, action: 'SUBMIT',
+              actorId: teacherId, assignmentEpisodeId: episodeId, assignmentGeneration: 1n,
+              assignmentScopeSnapshot: { unit: 'UNIT-01' }, occurredAt, revisionRowVersion: 2n, comment: null,
+            });
+            setCookieStore({ getAll: () => [createMockSessionCookie(adminId, 'admin@lingora.test')], get: () => createMockSessionCookie(adminId, 'admin@lingora.test'), set: () => {}, delete: () => {} });
+            setProductPrismaForTest(f.db);
+            globalThis.fetch = async () => new Response(JSON.stringify({ id: adminId }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test-project-ref.supabase.co';
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+            const ReviewDetailPage = await compileAndLoadPage('src/app/review/[submissionId]/page.tsx', { useBridge: true });
+            const jsx = await ReviewDetailPage({ params: Promise.resolve({ submissionId }) });
             injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
           }
 

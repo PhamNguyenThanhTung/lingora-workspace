@@ -269,13 +269,16 @@ describe('S5-06: Independent acceptance boundaries', () => {
     const res = await saveTeacherLessonDraft(teacher, lesson, draft(), f.db);
     assert.equal(res.status, 409); assert.equal(res.error.code, 'INCONSISTENT_ASSIGNMENT_HISTORY'); assert.deepEqual(f.state, before);
   });
-  test('highest noneditable revision prevents fallback to an older editable DRAFT', async () => {
+  test('published revision remains intact as the source of a new successor draft', async () => {
     await saveTeacherLessonDraft(teacher, lesson, draft(), f.db);
     const prior = [...f.state.revisions.values()][0], id = '99999999-9999-4999-8999-999999999999';
     f.state.revisions.set(id, { ...structuredClone(prior), id, revisionNo: 2, priorRevisionId: prior.id, status: 'PUBLISHED', submittedBy: teacher, submittedAt: new Date(), publishedBy: admin, publishedAt: new Date(), submittedAssignmentGeneration: 1n, assignmentScopeSnapshot: {} });
-    const before = snapshot();
     const res = await saveTeacherLessonDraft(teacher, lesson, draft('3'), f.db);
-    assert.equal(res.status, 409); assert.equal(res.error.code, 'DRAFT_NOT_EDITABLE'); assert.deepEqual(f.state, before);
+    assert.equal(res.status, 200);
+    assert.equal(res.data.data.highestRevision.revisionNo, 3);
+    assert.equal(f.state.revisions.get(id).status, 'PUBLISHED');
+    assert.equal(f.state.revisions.get(id).title.vi, prior.title.vi);
+    assert.equal(f.state.revisions.get(res.data.data.highestRevision.id).priorRevisionId, id);
   });
 });
 
@@ -1088,11 +1091,11 @@ describe('S5-04: Teacher Workstream (List, Detail & Successor Draft Saves)', () 
     assert.equal(res.error?.code, 'UNSUPPORTED_DRAFT_CONTENT');
   });
 
-  test('non-DRAFT highest revision (e.g. PUBLISHED) rejects save with 409 DRAFT_NOT_EDITABLE', async () => {
+  test('PUBLISHED highest revision permits a new draft successor without mutating the published revision', async () => {
     const assignment = [...fixture.state.assignments.values()].find((a) => a.lessonId === lessonLanId);
     const episode = [...fixture.state.histories.values()].find((h) => h.assignmentId === assignment.id);
 
-    await fixture.db.lessonRevision.create({
+    const publishedRevision = await fixture.db.lessonRevision.create({
       data: {
         lessonId: lessonLanId,
         revisionNo: 1,
@@ -1117,8 +1120,10 @@ describe('S5-04: Teacher Workstream (List, Detail & Successor Draft Saves)', () 
       fixture.db
     );
 
-    assert.equal(res.status, 409);
-    assert.equal(res.error?.code, 'DRAFT_NOT_EDITABLE');
+    assert.equal(res.status, 200);
+    assert.equal(res.data?.data.highestRevision.revisionNo, 2);
+    assert.equal(fixture.state.revisions.get(publishedRevision.id).status, 'PUBLISHED');
+    assert.equal(fixture.state.revisions.get(publishedRevision.id).title.vi, 'Đã xuất bản');
   });
 
   test('highest DRAFT with submission provenance rejects save with 409 DRAFT_NOT_EDITABLE', async () => {

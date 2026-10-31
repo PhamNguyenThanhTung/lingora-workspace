@@ -23,10 +23,11 @@ export function lessonsFixture() {
     lessonVocabularyLinks: new Map(),
     mediaBindings: new Map(),
     mediaAssets: new Map(),
+    revisionReviews: new Map(),
   };
 
   const fail = {};
-  const calls = { queryRaw: 0, transactions: 0 };
+  const calls = { queryRaw: 0, transactions: 0, lockOrder: [] };
 
   const matches = (row, where) => {
     if (!where) return true;
@@ -131,9 +132,93 @@ export function lessonsFixture() {
         });
       }
 
+      const revReviews = [...state.revisionReviews.values()]
+        .filter(rr => rr.lessonRevisionId === rev.id)
+        .sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
+      rev.reviews = revReviews.map(rr => {
+        const actor = state.accounts.get(rr.actorId);
+        return {
+          ...structuredClone(rr),
+          actor: actor ? structuredClone(actor) : null,
+        };
+      });
+
       return rev;
     });
     return l;
+  };
+
+  const populateReviewRelations = (review, include = {}) => {
+    const r = structuredClone(review);
+    if (include.actor) {
+      const actor = state.accounts.get(r.actorId);
+      r.actor = actor ? structuredClone(actor) : null;
+    }
+    if (include.lessonRevision) {
+      const rev = state.revisions.get(r.lessonRevisionId);
+      if (rev) {
+        const revCopy = structuredClone(rev);
+        const revInclude = include.lessonRevision.include || {};
+        if (revInclude.submitter) {
+          revCopy.submitter = structuredClone(state.accounts.get(rev.submittedBy) || null);
+        }
+        if (revInclude.approver) {
+          revCopy.approver = structuredClone(state.accounts.get(rev.approvedBy) || null);
+        }
+        if (revInclude.publisher) {
+          revCopy.publisher = structuredClone(state.accounts.get(rev.publishedBy) || null);
+        }
+        if (revInclude.exercises) {
+          revCopy.exercises = [...state.lessonExercises.values()]
+            .filter(e => e.lessonRevisionId === rev.id)
+            .sort((a, b) => a.position - b.position)
+            .map(e => {
+              const exercise = structuredClone(e);
+              const itemRevision = state.itemRevisions.get(e.itemRevisionId);
+              exercise.itemRevision = itemRevision
+                ? {
+                    ...structuredClone(itemRevision),
+                    gradingSecret: structuredClone([...state.itemGradingSecrets.values()].find(s => s.itemRevisionId === itemRevision.id) || null),
+                  }
+                : null;
+              return exercise;
+            });
+        }
+        if (revInclude.vocabularyLinks) {
+          revCopy.vocabularyLinks = [...state.lessonVocabularyLinks.values()]
+            .filter(v => v.lessonRevisionId === rev.id)
+            .sort((a, b) => a.position - b.position)
+            .map(v => structuredClone(v));
+        }
+        if (revInclude.lesson) {
+          const l = state.lessons.get(rev.lessonId);
+          if (l) {
+            const lCopy = structuredClone(l);
+            if (revInclude.lesson.include?.unit) {
+              const u = state.units.get(l.unitId);
+              if (u) {
+                const uCopy = structuredClone(u);
+                if (revInclude.lesson.include.unit.include?.course) {
+                  const c = state.courses.get(u.courseId);
+                  uCopy.course = c ? structuredClone(c) : null;
+                }
+                lCopy.unit = uCopy;
+              }
+            }
+            revCopy.lesson = lCopy;
+          }
+        }
+        r.lessonRevision = revCopy;
+      }
+    }
+    if (include.assignmentEpisode) {
+      const ep = state.histories.get(r.assignmentEpisodeId);
+      r.assignmentEpisode = ep ? structuredClone(ep) : null;
+      if (r.assignmentEpisode && include.assignmentEpisode.include?.nextTeacher) {
+        r.assignmentEpisode.nextTeacher = structuredClone(state.accounts.get(ep.nextTeacherId) || null);
+      }
+    }
+    return r;
   };
 
   const db = {
@@ -440,6 +525,100 @@ export function lessonsFixture() {
         state.revisions.set(row.id, row);
         return structuredClone(row);
       },
+      update: async ({ where, data }) => {
+        const rev = state.revisions.get(where.id?.toLowerCase());
+        if (!rev) throw new Error('LessonRevision not found');
+        changed(rev, data);
+        return structuredClone(rev);
+      },
+      findUnique: async ({ where, include }) => {
+        const rev = state.revisions.get(where.id?.toLowerCase());
+        if (!rev) return null;
+        const res = structuredClone(rev);
+        const exList = [...state.lessonExercises.values()]
+          .filter(e => e.lessonRevisionId === res.id)
+          .sort((a, b) => a.position - b.position);
+        const vlList = [...state.lessonVocabularyLinks.values()]
+          .filter(v => v.lessonRevisionId === res.id)
+          .sort((a, b) => a.position - b.position);
+
+        if (include?.exercises) {
+          res.exercises = exList.map(e => {
+            const ex = structuredClone(e);
+            const item = state.itemIdentities.get(ex.itemId);
+            const itemRev = state.itemRevisions.get(ex.itemRevisionId);
+            ex.item = item ? structuredClone(item) : null;
+            if (itemRev) {
+              const ir = structuredClone(itemRev);
+              const secret = [...state.itemGradingSecrets.values()].find(s => s.itemRevisionId === ir.id);
+              ir.gradingSecret = secret ? structuredClone(secret) : null;
+              ex.itemRevision = ir;
+            } else {
+              ex.itemRevision = null;
+            }
+            return ex;
+          });
+        }
+        if (include?.vocabularyLinks) {
+          res.vocabularyLinks = vlList.map(v => {
+            const vl = structuredClone(v);
+            const concept = state.vocabularyConcepts.get(vl.vocabularyId);
+            vl.vocabulary = concept ? structuredClone(concept) : null;
+            return vl;
+          });
+        }
+        if (include?.creator) {
+          const u = state.accounts.get(res.createdBy);
+          res.creator = u ? structuredClone(u) : null;
+        }
+        if (include?.lastEditor) {
+          const u = state.accounts.get(res.lastEditedBy);
+          res.lastEditor = u ? structuredClone(u) : null;
+        }
+        if (include?.submitter) {
+          const u = state.accounts.get(res.submittedBy);
+          res.submitter = u ? structuredClone(u) : null;
+        }
+        if (include?.approver) {
+          const u = state.accounts.get(res.approvedBy);
+          res.approver = u ? structuredClone(u) : null;
+        }
+        if (include?.publisher) {
+          const u = state.accounts.get(res.publishedBy);
+          res.publisher = u ? structuredClone(u) : null;
+        }
+        if (include?.lesson) {
+          const l = state.lessons.get(res.lessonId);
+          if (l) {
+            const lCopy = structuredClone(l);
+            if (include.lesson.include?.unit) {
+              const u = state.units.get(l.unitId);
+              if (u) {
+                const uCopy = structuredClone(u);
+                if (include.lesson.include.unit.include?.course) {
+                  const c = state.courses.get(u.courseId);
+                  uCopy.course = c ? structuredClone(c) : null;
+                }
+                lCopy.unit = uCopy;
+              }
+            }
+            res.lesson = lCopy;
+          }
+        }
+        if (include?.reviews) {
+          const revReviews = [...state.revisionReviews.values()]
+            .filter(rr => rr.lessonRevisionId === res.id)
+            .sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime());
+          res.reviews = revReviews.map(rr => {
+            const actor = state.accounts.get(rr.actorId);
+            return {
+              ...structuredClone(rr),
+              actor: actor ? structuredClone(actor) : null,
+            };
+          });
+        }
+        return res;
+      },
     },
     itemIdentity: {
       findUnique: async ({ where }) => structuredClone(state.itemIdentities.get(where.id?.toLowerCase()) || null),
@@ -523,6 +702,12 @@ export function lessonsFixture() {
         };
         state.itemRevisions.set(row.id, row);
         return structuredClone(row);
+      },
+      update: async ({ where, data }) => {
+        const ir = state.itemRevisions.get(where.id?.toLowerCase());
+        if (!ir) throw new Error('ItemRevision not found');
+        changed(ir, data);
+        return structuredClone(ir);
       },
     },
     itemGradingSecret: {
@@ -711,9 +896,64 @@ export function lessonsFixture() {
         return structuredClone(row);
       },
     },
+    revisionReview: {
+      findUnique: async ({ where, include }) => {
+        const r = state.revisionReviews.get(where.id?.toLowerCase());
+        if (!r) return null;
+        return populateReviewRelations(r, include);
+      },
+      findFirst: async ({ where, include, orderBy }) => {
+        let list = [...state.revisionReviews.values()].filter((r) => matches(r, where));
+        if (orderBy?.occurredAt === 'desc') {
+          list.sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
+        } else if (orderBy?.occurredAt === 'asc') {
+          list.sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime());
+        }
+        if (list.length === 0) return null;
+        return populateReviewRelations(list[0], include);
+      },
+      findMany: async ({ where, include, orderBy }) => {
+        const scalarWhere = where ? Object.fromEntries(Object.entries(where).filter(([key]) => key !== 'lessonRevision')) : undefined;
+        let list = [...state.revisionReviews.values()].filter((r) => matches(r, scalarWhere));
+        const relationStatus = where?.lessonRevision?.is?.status;
+        if (relationStatus) {
+          list = list.filter(r => state.revisions.get(r.lessonRevisionId)?.status === relationStatus);
+        }
+        if (orderBy?.occurredAt === 'desc') {
+          list.sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
+        } else if (orderBy?.occurredAt === 'asc') {
+          list.sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime());
+        }
+        return list.map((r) => populateReviewRelations(r, include));
+      },
+      create: async ({ data }) => {
+        const row = {
+          id: data.id || randomUUID(),
+          lessonRevisionId: data.lessonRevisionId || null,
+          assessmentVersionId: data.assessmentVersionId || null,
+          action: data.action,
+          actorId: data.actorId.toLowerCase(),
+          assignmentEpisodeId: data.assignmentEpisodeId || null,
+          assignmentGeneration: data.assignmentGeneration ? BigInt(data.assignmentGeneration) : null,
+          assignmentScopeSnapshot: data.assignmentScopeSnapshot || null,
+          blueprintGeneration: data.blueprintGeneration ? BigInt(data.blueprintGeneration) : null,
+          feedbackItemIds: data.feedbackItemIds || [],
+          occurredAt: data.occurredAt || new Date(),
+          revisionRowVersion: BigInt(data.revisionRowVersion || 1),
+          comment: data.comment || null,
+          createdAt: new Date(),
+        };
+        state.revisionReviews.set(row.id, row);
+        return structuredClone(row);
+      },
+    },
     $queryRaw: async (strings, ...args) => {
       calls.queryRaw++;
       const q = strings.join('?');
+
+      if (q.includes('FROM app.lessons') && q.includes('FOR UPDATE')) calls.lockOrder.push('lesson');
+      if (q.includes('FROM app.revision_reviews') && q.includes('FOR UPDATE')) calls.lockOrder.push('review');
+      if (q.includes('FROM app.lesson_revisions') && q.includes('FOR UPDATE')) calls.lockOrder.push('revision');
 
       if (q.includes('FROM app.accounts') && q.includes('FOR NO KEY UPDATE')) {
         const id = args[0]?.toLowerCase();
@@ -789,6 +1029,39 @@ export function lessonsFixture() {
         return [{ id: item.id }];
       }
 
+      if (q.includes('FROM app.lesson_revisions') && q.includes('FOR UPDATE')) {
+        const id = args[0]?.toLowerCase();
+        const r = state.revisions.get(id);
+        if (!r) return [];
+        return [
+          {
+            id: r.id,
+            lessonId: r.lessonId,
+            revisionNo: r.revisionNo,
+            status: r.status,
+            rowVersion: r.rowVersion,
+          },
+        ];
+      }
+
+      if (q.includes('FROM app.revision_reviews') && q.includes('FOR UPDATE')) {
+        const id = args[0]?.toLowerCase();
+        const r = state.revisionReviews.get(id);
+        if (!r) return [];
+        return [
+          {
+            id: r.id,
+            lessonRevisionId: r.lessonRevisionId,
+            action: r.action,
+            actorId: r.actorId,
+            assignmentEpisodeId: r.assignmentEpisodeId,
+            assignmentGeneration: r.assignmentGeneration,
+            assignmentScopeSnapshot: r.assignmentScopeSnapshot,
+            revisionRowVersion: r.revisionRowVersion,
+          },
+        ];
+      }
+
       throw new Error('Unexpected raw query in lessons double: ' + q);
     },
   };
@@ -820,6 +1093,7 @@ export function lessonsFixture() {
       lessonVocabularyLinks: new Map([...state.lessonVocabularyLinks].map(([k, v]) => [k, structuredClone(v)])),
       mediaBindings: new Map([...state.mediaBindings].map(([k, v]) => [k, structuredClone(v)])),
       mediaAssets: new Map([...state.mediaAssets].map(([k, v]) => [k, structuredClone(v)])),
+      revisionReviews: new Map([...state.revisionReviews].map(([k, v]) => [k, structuredClone(v)])),
     };
 
     try {
@@ -841,6 +1115,7 @@ export function lessonsFixture() {
       state.lessonVocabularyLinks = saved.lessonVocabularyLinks;
       state.mediaBindings = saved.mediaBindings;
       state.mediaAssets = saved.mediaAssets;
+      state.revisionReviews = saved.revisionReviews;
       throw error;
     } finally {
       release();

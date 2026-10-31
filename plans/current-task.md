@@ -41,3 +41,10 @@ Anti initial implementation → independent review/repros → Codex direct fixes
 All5 real exercise types; global Vocabulary reuse + revision snapshots; explicit atomic Save inserts successor children, old rows unchanged. LISTENING public HTTPS references only; upload/storage foundation deferred.
 Live create/edit/reload, conflict/retry, stale recovery, deep SQL revision isolation, Vocabulary detach/reattach and same-session disabled403 PASS. TeacherB uses actual production-handler integration substitute.
 Existing DEV set retained per owner:7 Lesson revisions,2 item identities,8 item revisions/secrets/exercises,1 global concept,3 links; unexpected residue0. Teacher DISABLED/Course inactive; sessions/browser closed; no canonical writes or schema/migration. See [verification](slice-6-verification.md). SLICE6 ACCEPTED; no Slice7.
+
+## Slice 7 — LOCAL PASS / PUBLIC DEV PENDING
+Submit / Review / Publish workflow implemented against the existing `LessonRevision`, `RevisionReview`, and `Lesson.activeRevisionId` model; no schema change or migration.
+ACTIVE ADMIN reviews and publishes. Submission pins its exact revision and assignment episode; request-changes preserves history, approval/publish use versioned transitions, and successor drafts leave published content/pointer intact.
+Codex review/fixes: persisted-child dirty checking, complete exercise detail display, publish lock ordering, and pending Save control visibility. Mutations A–H KILLED with byte-exact restoration.
+`npm run test:feature` (391 tests), `npm run test:components` (113 tests), `npm run typecheck`, and `npm run build` PASS. See [Slice 7 verification](slice-7-verification.md).
+Public DEV submit/review/request-changes/approve/publish, SQL readback, and fixture restoration are pending the deployment for this commit. No Slice 8 work.

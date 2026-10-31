@@ -20,6 +20,24 @@ export {
   type VocabularyInput,
   type ExerciseType,
 };
+export {
+  WORKFLOW_STATUS_LABELS,
+  getWorkflowStatusLabel,
+  submitLessonSchema,
+  reviewMutationSchema,
+  publishLessonSchema,
+  submitTeacherLesson,
+  getReviewQueue,
+  getReviewDetail,
+  requestChangesReview,
+  approveReview,
+  publishReview,
+  type ReviewQueueItemDto,
+  type ReviewDetailDto,
+  type ReviewExerciseDto,
+  type ReviewVocabularyDto,
+  type ReviewHistoryEventDto,
+} from './workflow.ts';
 
 // =============================================================================
 // Interfaces & DTOs
@@ -85,6 +103,7 @@ export interface LessonRevisionSummaryDto {
   createdAt: string;
   changeSummary: string | null;
   status: string;
+  rowVersion?: string;
 }
 
 export interface LessonSummaryDto {
@@ -123,6 +142,10 @@ export interface TeacherLessonDetailDto extends LessonDetailDto {
   };
   exercises: TeacherExerciseDto[];
   vocabulary: TeacherVocabularyDto[];
+  latestFeedback?: {
+    comment: string | null;
+    occurredAt: string;
+  } | null;
 }
 
 export interface TeacherOptionDto {
@@ -260,13 +283,37 @@ export function hasRevisionAssociations(rev: any): boolean {
   return hasUnsupportedRevisionAssociations(rev);
 }
 
-export function hasUnsupportedRevisionAssociations(rev: any, languageId?: string): boolean {
-  return unsupportedChildren(rev, languageId);
+export function hasUnsupportedRevisionAssociations(rev: any, languageId?: string, allowFrozenPredecessor = false): boolean {
+  return unsupportedChildren(rev, languageId, allowFrozenPredecessor);
 }
 
 export function evaluateEditability(highestRev: any, languageId?: string): { isEditable: boolean; editabilityReason: string | null } {
   if (!highestRev) {
     return { isEditable: true, editabilityReason: null };
+  }
+  if (highestRev.status === 'IN_REVIEW') {
+    return {
+      isEditable: false,
+      editabilityReason: 'Bài học đang trong quá trình xét duyệt của Quản trị viên. Bạn không thể chỉnh sửa trong thời gian này.',
+    };
+  }
+  if (highestRev.status === 'APPROVED') {
+    return {
+      isEditable: false,
+      editabilityReason: 'Bài học đã được duyệt và đang chờ xuất bản.',
+    };
+  }
+  if (highestRev.status === 'CHANGES_REQUESTED') {
+    return {
+      isEditable: false,
+      editabilityReason: 'Bài học đã có yêu cầu chỉnh sửa từ Quản trị viên. Bạn có thể chọn "Chỉnh sửa lại" để tạo bản nháp mới.',
+    };
+  }
+  if (highestRev.status === 'PUBLISHED') {
+    return {
+      isEditable: false,
+      editabilityReason: 'Bản sửa đổi này đã được xuất bản. Bạn có thể chọn "Tạo bản nháp mới" để tiếp tục cập nhật.',
+    };
   }
   if (highestRev.status !== 'DRAFT') {
     return {
@@ -339,6 +386,7 @@ export function toLessonSummaryDto(lesson: any): LessonSummaryDto {
       createdAt: highestRev.createdAt instanceof Date ? highestRev.createdAt.toISOString() : new Date(highestRev.createdAt).toISOString(),
       changeSummary: highestRev.changeSummary || null,
       status: highestRev.status,
+      rowVersion: (highestRev.rowVersion ?? 1n).toString(),
     };
   }
 
@@ -399,6 +447,7 @@ export function toLessonDetailDto(lesson: any): LessonDetailDto {
       createdAt: rev.createdAt instanceof Date ? rev.createdAt.toISOString() : new Date(rev.createdAt).toISOString(),
       changeSummary: rev.changeSummary || null,
       status: rev.status,
+      rowVersion: (rev.rowVersion ?? 1n).toString(),
     };
   });
 
@@ -459,6 +508,18 @@ export function toTeacherLessonDetailDto(lesson: any, languageId?: string): Teac
 
   const courseLangId = languageId || lesson.unit?.course?.languageId || '';
 
+  let latestFeedback: TeacherLessonDetailDto['latestFeedback'] = null;
+  if (highestRev && highestRev.status === 'CHANGES_REQUESTED') {
+    const revReviews = Array.isArray(highestRev.reviews) ? highestRev.reviews : [];
+    const changeReqReview = revReviews.find((r: any) => r.action === 'REQUEST_CHANGES');
+    if (changeReqReview) {
+      latestFeedback = {
+        comment: changeReqReview.comment || null,
+        occurredAt: (changeReqReview.occurredAt instanceof Date ? changeReqReview.occurredAt : new Date(changeReqReview.occurredAt)).toISOString(),
+      };
+    }
+  }
+
   return {
     ...baseDetail,
     courseContext: {
@@ -467,6 +528,7 @@ export function toTeacherLessonDetailDto(lesson: any, languageId?: string): Teac
     },
     exercises,
     vocabulary,
+    latestFeedback,
   };
 }
 
@@ -508,7 +570,7 @@ export function handleLessonPrismaError(err: unknown, op: string): { status: num
 }
 
 // Serialize status changes while allowing FK key-share checks from reassignment/lifecycle audits.
-async function lockAccounts(tx: any, accountIds: string[]) {
+export async function lockAccounts(tx: any, accountIds: string[]) {
   const accounts = new Map<string, any>();
   for (const id of [...new Set(accountIds.map(id => id.toLowerCase()))].sort()) {
     const rows = await tx.$queryRaw`
@@ -520,7 +582,7 @@ async function lockAccounts(tx: any, accountIds: string[]) {
   return accounts;
 }
 
-async function lockLesson(tx: any, lessonId: string) {
+export async function lockLesson(tx: any, lessonId: string) {
   const rows = await tx.$queryRaw`
     SELECT id::text, unit_id::text AS "unitId", position,
       is_required AS "isRequired", availability,
@@ -530,7 +592,7 @@ async function lockLesson(tx: any, lessonId: string) {
   return rows[0] || null;
 }
 
-async function lockAssignment(tx: any, lessonId: string) {
+export async function lockAssignment(tx: any, lessonId: string) {
   const rows = await tx.$queryRaw`
     SELECT id::text, lesson_id::text AS "lessonId", created_by::text AS "createdBy",
       current_teacher_id::text AS "currentTeacherId", scope_generation AS "scopeGeneration",
@@ -1332,6 +1394,10 @@ export async function getTeacherLessonDetail(
             creator: { select: { id: true, displayName: true } },
             lastEditor: { select: { id: true, displayName: true } },
             ...revisionChildRelations,
+            reviews: {
+              orderBy: { occurredAt: 'desc' },
+              select: { action: true, occurredAt: true, comment: true },
+            },
             _count: {
               select: {
                 exercises: true,
@@ -1756,28 +1822,37 @@ export async function saveTeacherLessonDraft(
 
       // 8. Validate highest revision editability
       if (highestRev) {
-        if (highestRev.status !== 'DRAFT') {
+        if (highestRev.status === 'IN_REVIEW' || highestRev.status === 'APPROVED') {
           throw new ControlledDraftError(409, {
             code: 'DRAFT_NOT_EDITABLE',
-            message: `Bản sửa đổi hiện tại có trạng thái ${highestRev.status}, không thể lưu bản nháp mới.`,
+            message: `Bản sửa đổi hiện tại có trạng thái ${highestRev.status}, quy trình đang khóa và không thể chỉnh sửa.`,
           });
         }
 
-        if (
-          highestRev.submittedAt != null ||
-          highestRev.submittedBy != null ||
-          highestRev.submittedAssignmentGeneration != null ||
-          highestRev.assignmentScopeSnapshot != null ||
-          highestRev.approvedBy != null ||
-          highestRev.approvedAt != null ||
-          highestRev.publishedBy != null ||
-          highestRev.publishedAt != null ||
-          highestRev.endedAt != null
-        ) {
+        if (highestRev.status === 'ARCHIVED' || highestRev.status === 'WITHDRAWN') {
           throw new ControlledDraftError(409, {
             code: 'DRAFT_NOT_EDITABLE',
-            message: 'Bản nháp đã từng được nộp duyệt và đã bị khóa quy trình.',
+            message: `Bản sửa đổi hiện tại có trạng thái ${highestRev.status}, không thể chỉnh sửa.`,
           });
+        }
+
+        if (highestRev.status === 'DRAFT') {
+          if (
+            highestRev.submittedAt != null ||
+            highestRev.submittedBy != null ||
+            highestRev.submittedAssignmentGeneration != null ||
+            highestRev.assignmentScopeSnapshot != null ||
+            highestRev.approvedBy != null ||
+            highestRev.approvedAt != null ||
+            highestRev.publishedBy != null ||
+            highestRev.publishedAt != null ||
+            highestRev.endedAt != null
+          ) {
+            throw new ControlledDraftError(409, {
+              code: 'DRAFT_NOT_EDITABLE',
+              message: 'Bản nháp đã từng được nộp duyệt và đã bị khóa quy trình.',
+            });
+          }
         }
 
         if (!isSupportedTitle(highestRev.title) || !isSupportedContentBlocks(highestRev.contentBlocks)) {
@@ -1808,7 +1883,8 @@ export async function saveTeacherLessonDraft(
         });
       }
 
-      if (hasUnsupportedRevisionAssociations(highestRev, courseLanguageId)) {
+      const mayCopyFrozenPredecessor = highestRev?.status === 'CHANGES_REQUESTED' || highestRev?.status === 'PUBLISHED';
+      if (hasUnsupportedRevisionAssociations(highestRev, courseLanguageId, mayCopyFrozenPredecessor)) {
         throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Bản nháp có nội dung hoặc liên kết không được hỗ trợ; không thể lưu kế thừa.'});
       }
 
@@ -2290,6 +2366,10 @@ export async function saveTeacherLessonDraft(
               creator: { select: { id: true, displayName: true } },
               lastEditor: { select: { id: true, displayName: true } },
               ...revisionChildRelations,
+              reviews: {
+                orderBy: { occurredAt: 'desc' },
+                select: { action: true, occurredAt: true, comment: true },
+              },
               _count: {
                 select: {
                   exercises: true,

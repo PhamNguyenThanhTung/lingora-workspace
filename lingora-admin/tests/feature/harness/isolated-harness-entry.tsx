@@ -11,6 +11,8 @@ import { TeachersCatalog } from '../../../src/components/TeachersCatalog';
 import { LessonsCatalog } from '../../../src/components/LessonsCatalog';
 import { TeacherLessonsCatalog } from '../../../src/components/TeacherLessonsCatalog';
 import { LessonDraftEditor } from '../../../src/components/LessonDraftEditor';
+import { ReviewDetailView } from '../../../src/components/ReviewDetailView';
+import { ReviewQueueCatalog } from '../../../src/components/ReviewQueueCatalog';
 import { TeacherHoldingView } from '../../../src/app/holding/TeacherHoldingView';
 import { AccessDeniedView } from '../../../src/components/AccessDeniedView';
 import { ServiceUnavailableView } from '../../../src/components/ServiceUnavailableView';
@@ -860,6 +862,30 @@ function IsolatedHarnessApp() {
     return (
       <AppShell account={pageProps.account}>
         <LessonDraftEditor {...pageProps} />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-review-detail-wire' || state === 'page-review-approved-detail-wire') {
+    const pageProps = (window as any).__PAGE_PROPS__;
+    if (!pageProps?.account || !pageProps.initialDetail) {
+      throw new Error('Missing production ReviewDetailPage props');
+    }
+    return (
+      <AppShell account={pageProps.account}>
+        <ReviewDetailView {...pageProps} />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-review-queue-wire') {
+    const pageProps = (window as any).__PAGE_PROPS__;
+    if (!pageProps?.account || !Array.isArray(pageProps.initialQueue)) {
+      throw new Error('Missing production ReviewQueuePage props');
+    }
+    return (
+      <AppShell account={pageProps.account}>
+        <ReviewQueueCatalog {...pageProps} />
       </AppShell>
     );
   }

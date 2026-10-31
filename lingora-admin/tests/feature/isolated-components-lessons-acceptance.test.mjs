@@ -129,13 +129,13 @@ for (const status of [401, 403]) for (const operation of ['save', 'recovery', 'l
 
 test('Production Teacher list uses real assigned props and unsupported draft stays read-only', async () => {
   await withPage('page-teacher-lessons-wire', async page => { assert.equal(await page.locator('[id^="row-teacher-lesson-"]').count(), 1); assert.equal(await page.locator('#navCourses').count(), 0); });
-  await withPage('page-teacher-draft-wire&unsupported=1', async page => { await page.locator('#readOnlyReasonBanner').waitFor(); assert.equal(await page.locator('#btnSaveDraft').isDisabled(), true); });
+  await withPage('page-teacher-draft-wire&unsupported=1', async page => { await page.locator('#readOnlyReasonBanner').waitFor(); assert.equal(await page.locator('#btnSaveDraft').count(), 0); });
 });
 
 for (const code of ['DRAFT_NOT_EDITABLE', 'UNSUPPORTED_DRAFT_CONTENT']) test(`Teacher save ${code} switches to read-only without false success`, async () => withPage('page-teacher-draft-wire', async page => {
   await page.route('**/api/**', route => fulfill(route, 409, { error: { code, message: 'Nội dung đã bị khóa.' } }));
   await page.locator('#btnSaveDraft').click(); await page.locator('#readOnlyReasonBanner').waitFor();
-  assert.equal(await page.locator('#btnSaveDraft').isDisabled(), true); assert.equal(await page.locator('#draftSaveSuccess').count(), 0);
+  assert.equal(await page.locator('#btnSaveDraft').count(), 0); assert.equal(await page.locator('#draftSaveSuccess').count(), 0);
 }));
 
 test('Production options503 is visible and retry restores assignment choices', async () => withPage('page-unit-lessons-wire&failOptions=1', async page => {
