@@ -18,3 +18,7 @@ Root cause category: build/generated artifact. The custom Prisma client is corre
 6. Verify activation public redirect contract (full activation if safely feasible), Supabase runtime connectivity, and no private values in Git/client HTML/JS/source maps/evidence.
 
 Codex directly implements and reviews this bounded infrastructure fix. Evidence: `/home/tung/.codex/task-logs/public-dev-deployment/`; no credentials or session material in evidence. Final acceptance requires the entire public runtime checklist, not build alone.
+
+## Public runtime compatibility finding
+
+Initial public Admin and owned Teacher smoke reached all required routes, but both browser consoles recorded React hydration error 418. Teacher creation/revision timestamps used the host timezone during SSR and the browser timezone during hydration (Vercel UTC versus the local browser UTC+7). Fix both existing Vietnamese date displays to an explicit `Asia/Ho_Chi_Minh` timezone and label UTC+7; no Auth or lesson behavior changes. Verify a hard page load in browsers with different timezones after redeployment, with no hydration errors. Restore the owned Teacher fixture to DISABLED after checks; do not save any lesson revision.

@@ -120,6 +120,7 @@ export function TeachersCatalog({
     try {
       const d = new Date(dateStr);
       return d.toLocaleDateString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -251,7 +252,7 @@ export function TeachersCatalog({
                 <th style={{ padding: '12px 16px', fontWeight: 600 }}>Email</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600 }}>Vai trò</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600 }}>Trạng thái</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600 }}>Ngày tạo</th>
+                <th style={{ padding: '12px 16px', fontWeight: 600 }}>Ngày tạo (UTC+7)</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, textAlign: 'right' }}>Thao tác</th>
               </tr>
             </thead>

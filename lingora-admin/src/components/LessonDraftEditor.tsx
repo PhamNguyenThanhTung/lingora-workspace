@@ -1472,7 +1472,7 @@ export function LessonDraftEditor({
                 <tr>
                   <th scope="col" style={{ width: '90px' }}>Bản số</th>
                   <th scope="col" style={{ width: '160px' }}>Tác giả</th>
-                  <th scope="col" style={{ width: '180px' }}>Thời gian</th>
+                  <th scope="col" style={{ width: '180px' }}>Thời gian (UTC+7)</th>
                   <th scope="col">Tóm tắt thay đổi</th>
                   <th scope="col" style={{ width: '120px' }}>Trạng thái</th>
                 </tr>
@@ -1483,7 +1483,7 @@ export function LessonDraftEditor({
                     <td style={{ fontWeight: 600 }}>#{rev.revisionNo}</td>
                     <td>{rev.author.displayName || 'Giáo viên'}</td>
                     <td style={{ color: '#64748b', fontSize: '13px' }}>
-                      {new Date(rev.createdAt).toLocaleString('vi-VN')}
+                      {new Date(rev.createdAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
                     </td>
                     <td>{rev.changeSummary || <span style={{ color: '#94a3b8' }}>—</span>}</td>
                     <td>
