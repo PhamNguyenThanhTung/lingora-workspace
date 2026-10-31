@@ -117,3 +117,12 @@ Tests use production route/service/page callbacks rather than copied page logic.
 | Live DEV writes / DB reads | Not started; wait for exact pushed commit deployment to be Ready |
 
 Preserve dirty `AGENTS.md`, product README, and existing unrelated database plans; commit only Slice 8 source/evidence once public acceptance and fixture restoration are complete. Do not start Slice 9.
+
+## Public DEV acceptance progress — 2026-10-31
+
+- Initial exact deployment `dpl_FJ6UjBEBuQ3C3G2nXbrsTc7UFk6V` is READY at source commit `aa031136df708064090685317a9354acba26e73f` (rechecked before continuing live writes).
+- Admin created and edited Blueprint `75bf3fab-5f33-44f2-9e28-62abfdcfe990` on the owned S5 DEV Course: LEVEL_UP, A1 → A2, generation/rowVersion 2, count 2, minimum MCQ 1 + FILL_BLANK 1, both shuffle flags false.
+- User authorized temporarily enabling Teacher fixture `7d14d388-bb1e-4c57-877a-4f07ec2468d0`, authenticating, then restoring DISABLED. No recovery UI exists. User personally entered and submitted a temporary password through a one-use loopback-only helper using server-side Supabase Admin capability; helper exited afterward. No password/token/storageState was logged or saved. Credential rotation and persistent Supabase Auth audit entry are allowlisted; original unknown credential cannot be restored. User manually signed in through public login.
+- Teacher authored three ASSESSMENT revisions on existing owned DRAFT source `fb9acf29-fdf2-488d-a7c1-71689eaadbe2` (r10), then publicly submitted that exact revision. DB read-only confirms SUBMIT `9a1c3e85-b815-4e0d-a418-1e3f3f5b1973`, actor = assigned Teacher, episode `32008c0d-b858-4752-82f1-0611f7f02e76`, generation 1.
+- Genuine two-MCQ assembly failure showed minimum FILL_BLANK error and retained both selections. Correcting selection to MCQ X `52b7b90a-271d-4c15-a08a-d3b0d8ff668b` + FILL_BLANK `cdd24402-c63f-40c1-937a-eaf911a18ba3` exposed a public-only P2028 timeout: default interactive transaction 5000 ms expired at 5143–5144 ms during final version hydration. Vercel runtime logs identify both requests; DB read-only confirms zero versions after rollback.
+- Narrow Codex fix: give assembly the same bounded 30000 ms transaction budget as lesson draft saves. Regression advances virtual database round-trip time beyond 5000 ms: RED (503) before patch, GREEN (201) after patch. Slice 8 feature 17/17, routes 4/4, components 8/8 PASS. No schema or product contract change. Public retry and remaining isolation/restore proofs pending patched deployment.

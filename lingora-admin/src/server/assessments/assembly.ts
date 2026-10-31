@@ -678,7 +678,7 @@ export async function assembleAssessmentVersion(
         status: 201,
         data: { data: toVersionDto(withExactSnapshotBigInts([fullVersion], exactRows)[0]) },
       };
-    });
+    }, { timeout: 30000 });
   } catch (err) {
     if (err instanceof AssemblyError) {
       return { status: err.status, error: err.error };

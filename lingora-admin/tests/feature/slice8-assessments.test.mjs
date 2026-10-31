@@ -388,6 +388,29 @@ test('Assembly freezes and retrieves the exact selected ItemRevision through its
   assert.equal(retrieved.data.data.items[0].itemRevision.promptData.prompt, 'Pinned version X.');
 });
 
+test('Assembly allows serial database round trips beyond the default transaction timeout', async () => {
+  const db = assemblyFixture();
+  let elapsed = 0;
+  db.$transaction = async (callback, options = {}) => {
+    const timeout = options.timeout ?? 5000;
+    const roundTrip = (operation) => async (...args) => {
+      elapsed += 500;
+      if (elapsed > timeout) throw Object.assign(new Error('Transaction expired'), { code: 'P2028' });
+      return operation(...args);
+    };
+    const tx = Object.fromEntries(Object.entries(db.tx).map(([key, value]) => [key,
+      typeof value === 'function' ? roundTrip(value)
+        : Object.fromEntries(Object.entries(value).map(([method, operation]) => [method, roundTrip(operation)])),
+    ]));
+    return callback(tx);
+  };
+  const result = await assembleAssessmentVersion(ids.admin, ids.blueprint, {
+    expectedBlueprintGeneration: '1', itemRevisionIds: [ids.itemRevision],
+  }, db);
+  assert.equal(result.status, 201);
+  assert.ok(elapsed > 5000, 'The regression must exceed Prisma\'s default transaction budget');
+});
+
 test('Assembly rejects PRACTICE origin and leaves the version table untouched', async () => {
   const db = assemblyFixture();
   db.tx.itemRevision.findUnique = async () => ({ ...db.itemRevision, item: { ...db.itemRevision.item, origin: 'PRACTICE' } });
