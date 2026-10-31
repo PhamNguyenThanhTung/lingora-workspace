@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run db:product:generate && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:feature": "node --experimental-strip-types --experimental-test-module-mocks tests/feature/auth.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/languages-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/frameworks-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/courses-units-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/teachers-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/lessons-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/slice6-content.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/slice6-acceptance.test.mjs",
