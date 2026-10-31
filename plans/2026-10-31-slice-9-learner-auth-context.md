@@ -105,3 +105,7 @@ Final acceptance requires all local/public gates above, independent review resol
 SSR transport reference: the installed `@supabase/ssr` 0.12.7 source and [createServerClient API](https://supabase.github.io/ssr/functions/createServerClient.html) require correct `getAll/setAll` handling. The [advanced SSR guide](https://supabase.com/docs/guides/auth/server-side/advanced-guide) describes refresh response headers; this app uses server-only auth and an explicit HttpOnly policy.
 
 No blocking schema gap for preprovisioned learner auth + read-only context foundation. General self-registration would be a separate missing capability and is intentionally outside this slice. Dedicated Vercel project access and the eventual assigned stable URL are public-stage operational dependencies; inability to configure/verify them blocks public acceptance, not implementation. Missing DEV operator credentials or inability to create/clean an owned Learner blocks live acceptance; do not touch canonical staff identities as fallback.
+
+## Final acceptance record — 2026-11-01
+
+SLICE 9 ACCEPTED. Public runtime required a build-only asset copy from the existing generated client to the learner fallback directory plus explicit tracing; no schema/dependency migration or second schema owner. Root feature471/components138/typecheck/build, clean builds and public21 checks PASS. See [final verification](slice-9-verification.md) for exact source/deployments, recovery history and fixture/session cleanup. Slice 10 has not started.

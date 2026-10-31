@@ -1,13 +1,13 @@
 {
-  "status": "LOCAL_PASS_PUBLIC_BLOCKED_DATABASE_URL",
+  "status": "PASS",
   "baseline": "7daeae9058c9d79eb81743c06a7d830064b3e844",
   "gates": {
     "feature": {
       "command": "npm run test:feature",
       "exitCode": 0,
-      "total": 466,
+      "total": 471,
       "staff": 412,
-      "learner": 54,
+      "learner": 59,
       "failed": 0,
       "skipped": 0
     },
@@ -52,11 +52,24 @@
       "localFiles": 38,
       "matches": 0
     },
-    "unrelatedPreserved": true
+    "unrelatedPreserved": true,
+    "runtimePackagingRegression": {
+      "tests": 4,
+      "pass": true,
+      "cleanBuildEvidence": "runtime-clean-build.json"
+    },
+    "safeDbDiagnostics": {
+      "tests": 1,
+      "redGreen": true
+    }
   },
-  "liveWrites": false,
-  "overallAccepted": false,
+  "liveWrites": true,
+  "overallAccepted": true,
   "sourceCommit": "6bd70a2ec7e80458cb8f4f2cedb1a8be818c9b53",
   "publicReadOnlyPass": true,
-  "publicAccepted": false
+  "publicAccepted": true,
+  "publicLoginStatus": 200,
+  "publicCleanupResidue": 0,
+  "publicAcceptanceCommit": "83aacbfc473199cc23fe158d77e484eb2af12bdc",
+  "publicChecks": 21
 }

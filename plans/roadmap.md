@@ -85,8 +85,10 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Public Blueprint/author/submit/assemble/failure-retry/isolation and read-only DB checks PASS. Teacher DISABLED/Auth sessions0, Course inactive, safe DRAFT r12 and published pointer r9 retained, explicit DEV_S8 history allowlisted, unexpected residue0; test sessions/tabs closed. See [verification](slice-8-verification.md).
 - SLICE 8 ACCEPTED. Learner attempts, scoring/placement/level-up runtime and Slice 9 have not started.
 
-## Slice 9 — Learner Auth / Learner Context Foundation (LOCAL PASS / PUBLIC BLOCKED)
+## Slice 9 — Learner Auth / Learner Context Foundation (PASS / ACCEPTED)
 
-- Separate `lingora-web` app; confirmed preprovisioned ACTIVE Learner login/home/logout, fresh role/status checks and session-scoped context list with valid empty state.
-- Independent review fixes include local logout scope, strict confirmation, joined-parent identity validation and actual production-page/session tests. Feature466/components138, typecheck/build, clean install/build and A–F mutations PASS.
-- Dedicated learner DEV https://lingora-learner-dev.vercel.app/ READY; staff unchanged/READY. Public read-only checks/scan PASS; live acceptance/cleanup blocked until learner Production DATABASE_URL Secret is configured. No live fixture writes. No schema migration, signup or lesson/progress/assessment runtime. See [verification](slice-9-verification.md). No Slice 10.
+- Accepted 2026-11-01: separate `lingora-web`, confirmed preprovisioned ACTIVE Learner login/home/logout, fresh role/status checks and owned context list; missing context is valid empty200.
+- Anti implementation and independent review followed by Codex fixes for session isolation, confirmation, joined-parent validation, production-page/session fidelity and safe failure/retry. Public Prisma engine lookup bug fixed in the build/runtime assets, one existing schema owner.
+- Root feature471/components138, typecheck/build, initial clean root build + clean learner runtime build and A–F mutations PASS. Public client/authenticated HTML/JS scans: no secret matches.
+- [Learner DEV](https://lingora-learner-dev.vercel.app/) and staff READY on accepted fix `83aacbf`. Actual public login/home/context, staff denial403, disable→restore same-session retry, logout401 and read-only DB proofs PASS. All6 owned fixtures removed, other Accounts unchanged, residue0; sessions/browser and temporary CLI credential closed/removed. See [verification](slice-9-verification.md).
+- SLICE 9 ACCEPTED. No schema migration, signup or Lesson/progress/assessment runtime. Slice 10 has not started.

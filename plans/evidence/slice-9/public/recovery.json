@@ -1,0 +1,161 @@
+{
+  "attemptsBeforeRuntimeFix": [
+    {
+      "deployment": {
+        "base": "https://lingora-learner-dev.vercel.app",
+        "ready": true,
+        "commit": "793ad910cd9d77996d73425cd25860322422cf4d",
+        "deploymentId": "dpl_Ekpr82wgycdCEaS5fxbkyGUCnXpx"
+      },
+      "fixture": {
+        "id": "fec385dd-aa67-400c-8bdb-71b911c48ce0",
+        "label": "DEV_S9_1793465713185",
+        "owned": true
+      },
+      "status": "FAIL",
+      "cleanup": {
+        "browserClosed": true,
+        "unexpectedResidue": 0
+      },
+      "checks": {
+        "anonymous_context_401": true,
+        "real_learner_staff_login_role_403": true,
+        "invalid_credentials_401": true,
+        "cleanup_owned_auth_account_context_zero": true,
+        "other_accounts_unchanged_after_cleanup": true
+      }
+    },
+    {
+      "deployment": {
+        "base": "https://lingora-learner-dev.vercel.app",
+        "ready": true,
+        "commit": "793ad910cd9d77996d73425cd25860322422cf4d",
+        "deploymentId": "dpl_Ekpr82wgycdCEaS5fxbkyGUCnXpx"
+      },
+      "fixture": {
+        "id": "33256cfa-e314-499d-813f-cc0f63b81724",
+        "label": "DEV_S9_1793465772325",
+        "owned": true
+      },
+      "status": "FAIL",
+      "cleanup": {
+        "browserClosed": true,
+        "unexpectedResidue": 0
+      },
+      "checks": {
+        "anonymous_context_401": true,
+        "real_learner_staff_login_role_403": true,
+        "invalid_credentials_401": true,
+        "cleanup_owned_auth_account_context_zero": true,
+        "other_accounts_unchanged_after_cleanup": true
+      },
+      "loginResponse": {
+        "status": 503,
+        "code": "SERVICE_UNAVAILABLE"
+      }
+    },
+    {
+      "deployment": {
+        "base": "https://lingora-learner-dev.vercel.app",
+        "ready": true,
+        "commit": "793ad910cd9d77996d73425cd25860322422cf4d",
+        "deploymentId": "dpl_HL63yxUwtT8C6LFTwHs1vce9EcSg"
+      },
+      "fixture": {
+        "id": "5dcc283b-1959-4622-b0fc-87de975a4588",
+        "label": "DEV_S9_1793466825663",
+        "owned": true
+      },
+      "status": "FAIL",
+      "cleanup": {
+        "browserClosed": true,
+        "unexpectedResidue": 0
+      },
+      "checks": {
+        "anonymous_context_401": true,
+        "real_learner_staff_login_role_403": true,
+        "invalid_credentials_401": true,
+        "cleanup_owned_auth_account_context_zero": true,
+        "other_accounts_unchanged_after_cleanup": true
+      },
+      "loginResponse": {
+        "status": 503,
+        "code": "SERVICE_UNAVAILABLE"
+      }
+    },
+    {
+      "deployment": {
+        "base": "https://lingora-learner-dev.vercel.app",
+        "ready": true,
+        "commit": "793ad910cd9d77996d73425cd25860322422cf4d",
+        "deploymentId": "dpl_HL63yxUwtT8C6LFTwHs1vce9EcSg"
+      },
+      "fixture": {
+        "id": "4506544d-5386-4079-a948-5d6b6fa19f6f",
+        "label": "DEV_S9_1793466890103",
+        "owned": true
+      },
+      "status": "FAIL",
+      "cleanup": {
+        "browserClosed": true,
+        "unexpectedResidue": 0
+      },
+      "checks": {
+        "anonymous_context_401": true,
+        "real_learner_staff_login_role_403": true,
+        "invalid_credentials_401": true,
+        "cleanup_owned_auth_account_context_zero": true,
+        "other_accounts_unchanged_after_cleanup": true
+      },
+      "loginResponse": {
+        "status": 503,
+        "code": "SERVICE_UNAVAILABLE",
+        "reason": "DATABASE_UNAVAILABLE"
+      }
+    },
+    {
+      "deployment": {
+        "base": "https://lingora-learner-dev.vercel.app",
+        "ready": true,
+        "commit": "9096c04e136a990fcd25bcddf527566de587cf23",
+        "deploymentId": "dpl_EFwc46dpordEDr9pxnYxdHBQvY6Y"
+      },
+      "fixture": {
+        "id": "f4d7d706-57e9-4554-a867-897055746837",
+        "label": "DEV_S9_1793467178919",
+        "owned": true
+      },
+      "status": "FAIL",
+      "cleanup": {
+        "browserClosed": true,
+        "unexpectedResidue": 0
+      },
+      "checks": {
+        "anonymous_context_401": true,
+        "real_learner_staff_login_role_403": true,
+        "invalid_credentials_401": true,
+        "cleanup_owned_auth_account_context_zero": true,
+        "other_accounts_unchanged_after_cleanup": true
+      },
+      "loginResponse": {
+        "status": 503,
+        "code": "SERVICE_UNAVAILABLE",
+        "reason": "DATABASE_UNAVAILABLE"
+      }
+    }
+  ],
+  "productionDatabaseSecretConfigured": true,
+  "cliLogoutExitCode": 0,
+  "temporaryCliCredentialDirectoryRemoved": true,
+  "runtimeDiagnosis": {
+    "deploymentId": "dpl_EFwc46dpordEDr9pxnYxdHBQvY6Y",
+    "event": "learner.account_lookup_failed",
+    "category": "ENGINE_NOT_FOUND"
+  },
+  "resolution": "Copy only generated schema/native engines to the learner app runtime fallback directory and explicitly trace them; one schema owner, no migration.",
+  "finalAcceptance": "PASS",
+  "acceptedSourceCommit": "83aacbfc473199cc23fe158d77e484eb2af12bdc",
+  "allDisposableFixturesCleaned": 6,
+  "unexpectedResidue": 0,
+  "temporaryCliPackageRemoved": true
+}

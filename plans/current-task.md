@@ -61,7 +61,12 @@ Public Blueprint create/edit, Teacher source submissions r10/r11, real compositi
 
 `SLICE 8: PASS — SLICE 8 ACCEPTED`
 
-## Slice 9 — LOCAL PASS / PUBLIC BLOCKED
+## Slice 9 — PASS / ACCEPTED
 
-Dedicated `lingora-web` learner auth/context foundation; preprovisioned confirmed ACTIVE LEARNER only, verified-subject context list and valid empty state. No signup, schema migration or learner runtime.
-Anti implementation → independent senior review → Codex direct fixes. Root feature466/components138, typecheck/build, clean install/build and semantic A–F mutations PASS; source restored byte-exact. Learner/staff same-source deployments READY; public read-only login/redirect401 and client scans PASS. Required learner Production DATABASE_URL is absent; real login/disable-retry/DB/cleanup remain blocked. No live fixture writes. See [verification](slice-9-verification.md). No Slice 10; no overall ACCEPTED claim yet.
+Accepted 2026-11-01 (Asia/Saigon). Dedicated `lingora-web`; preprovisioned confirmed ACTIVE LEARNER only, exact session-scoped LearningContext list and valid empty state. No signup, schema migration or learner runtime expansion.
+
+Anti initial app/auth/context/UI/tests → independent senior review → Codex direct fixes for local sign-out scope, confirmation, parent IDs, actual-page/session test fidelity, safe retries and server-only boundary. Public acceptance then exposed missing Production DB config and Prisma engine lookup failure; Codex configured the Secret through CLI stdin and fixed build-time runtime-asset packaging, retaining one schema owner.
+
+Final root feature471/components138, typecheck/build, clean install/build, client scan PASS; A–F mutations KILLED/restored. Fix `83aacbfc473199cc23fe158d77e484eb2af12bdc` deployed READY on learner/staff before live success. Public login→home/context200/empty, real staff role403, same-session disable403→restore/retry200, logout→401 and read-only DB identity/isolation all PASS. All6 disposable attempts cleaned, other Accounts unchanged, residue0, test sessions/browser closed; temporary CLI credential removed. See [verification](slice-9-verification.md). No Slice 10.
+
+`SLICE 9: PASS — SLICE 9 ACCEPTED`

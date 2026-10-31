@@ -23,4 +23,10 @@ Reviewed 2026-10-31 against baseline `7daeae9`, the Slice 9 spec, original task,
 
 All four findings were fixed directly and covered by passing regressions. Local scope/exact cookies, strict email confirmation/provider403, scalar-parent ID validation, actual production page/route browser flows and real SDK refresh/chunk/header transport now have executable proof. Logout transport failure also has a RED→GREEN retained-home/retry regression. No independent re-review is claimed.
 
-Restored root feature466/components138, typecheck/build, clean install/build and A–F semantic mutations PASS. Codex final local review: PASS; public acceptance remains pending. See `plans/slice-9-verification.md` and `local-gates.json` for exact gate metadata.
+Restored root feature466/components138, typecheck/build, clean install/build and A–F semantic mutations PASS. Codex local review at that point: PASS; public acceptance was still pending. See `plans/slice-9-verification.md` and `local-gates.json` for exact gate metadata.
+
+## Codex final public review — 2026-11-01
+
+Public acceptance found an additional runtime defect that local NFT presence did not exclude: Turbopack's bundled shared Prisma client falls back to the learner app's generated directory, which lacked native engine/schema assets. Category-only diagnostics on READY `9096c04` confirmed ENGINE_NOT_FOUND without logging connection details. Fix `83aacbf` copies only existing generated schema/native engines at build time and declares learner runtime tracing; the existing product schema remains the single owner. No dependency/schema migration, copied env/client secrets or staff implementation change.
+
+Scoped code/diff review, root feature471/components138/typecheck/build, clean learner install/build and actual login/home/context NFT assets PASS. Actual public21 checks PASS on READY `83aacbf`, including real provider/UI login, own empty context200, staff role403, same-session disable403→restore/retry200, logout→401 and read-only DB identity/account isolation. All6 attempted disposable fixtures cleaned, other Accounts unchanged, residue0, sessions/browser closed; CLI logout/RAM credential removal and client scans PASS. Codex final acceptance: PASS. No additional independent senior re-review is claimed. See final verification/public evidence.

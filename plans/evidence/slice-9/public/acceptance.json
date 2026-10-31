@@ -1,0 +1,69 @@
+{
+  "deployment": {
+    "base": "https://lingora-learner-dev.vercel.app",
+    "ready": true,
+    "commit": "83aacbfc473199cc23fe158d77e484eb2af12bdc",
+    "deploymentId": "dpl_BTWu9THdeoWDQ3ewmHWoj3BTn2Hw"
+  },
+  "checks": {
+    "anonymous_context_401": true,
+    "real_learner_staff_login_role_403": true,
+    "invalid_credentials_401": true,
+    "public_login_200": true,
+    "login_destination_learner_home": true,
+    "home_identity_and_empty_state": true,
+    "authenticated_home_html_no_secret": true,
+    "context_session_identity_and_empty_200": true,
+    "context_safe_fields": true,
+    "context_selector_rejected_400": true,
+    "same_session_disabled_next_request_403": true,
+    "disabled_home_logout_usable": true,
+    "real_disabled_failure_restore_retry_200": true,
+    "home_recovered_after_real_failure": true,
+    "db_auth_uuid_matches_account_confirmed": true,
+    "db_learner_active_no_context": true,
+    "other_accounts_unchanged_before_cleanup": true,
+    "logout_200": true,
+    "logout_next_request_401": true,
+    "cleanup_owned_auth_account_context_zero": true,
+    "other_accounts_unchanged_after_cleanup": true
+  },
+  "fixture": {
+    "id": "2cc9dd6d-5fa0-47ef-8d7c-b59ee583efde",
+    "label": "DEV_S9_1793467583806",
+    "owned": true
+  },
+  "cleanup": {
+    "browserClosed": true,
+    "unexpectedResidue": 0
+  },
+  "status": "PASS",
+  "loginResponse": {
+    "status": 200,
+    "code": null,
+    "reason": "SUCCESS"
+  },
+  "authenticatedClientScan": {
+    "files": 9,
+    "secretMatches": 0
+  },
+  "db": {
+    "account": {
+      "id": "2cc9dd6d-5fa0-47ef-8d7c-b59ee583efde",
+      "role": "LEARNER",
+      "status": "ACTIVE",
+      "displayName": "DEV_S9_1793467583806",
+      "uiLocale": "en",
+      "activatedAt": "2026-10-31T17:26:28.527Z",
+      "rowVersion": "3",
+      "updatedAt": "2026-10-31T17:26:44.592Z"
+    },
+    "auth": [
+      {
+        "id": "2cc9dd6d-5fa0-47ef-8d7c-b59ee583efde",
+        "confirmed": true
+      }
+    ],
+    "contexts": []
+  }
+}

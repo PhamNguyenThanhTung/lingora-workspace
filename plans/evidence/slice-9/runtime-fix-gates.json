@@ -23,5 +23,8 @@
   ],
   "schemaOwners": 1,
   "schemaMigration": false,
-  "status": "LOCAL_PASS_PUBLIC_PENDING"
+  "status": "PASS",
+  "publicCommit": "83aacbfc473199cc23fe158d77e484eb2af12bdc",
+  "publicChecks": 21,
+  "unexpectedResidue": 0
 }
