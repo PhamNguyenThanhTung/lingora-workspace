@@ -1,0 +1,15 @@
+(node:269929) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real SDK login produces chunked HttpOnly Secure host-only cookies and preserved SDK headers (13.049872ms)
+✔ real expired-session refresh propagates new chunk cookies downstream and across alternate redirect response (14.866109ms)
+✔ actual context response200 preserves refreshed SDK cookies/headers (3.811597ms)
+✔ actual context response403 preserves refreshed SDK cookies/headers (3.053462ms)
+✔ actual context response503 preserves refreshed SDK cookies/headers (2.855011ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 51.39218

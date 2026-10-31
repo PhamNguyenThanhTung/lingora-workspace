@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-31T15:17:31.696Z",
+  "accounts": [
+    {
+      "_count": 1,
+      "role": "TEACHER",
+      "status": "DISABLED"
+    },
+    {
+      "_count": 1,
+      "role": "ADMIN",
+      "status": "ACTIVE"
+    }
+  ],
+  "contexts": 0,
+  "accountIdentityFk": [
+    {
+      "conname": "accounts_id_auth_users_fkey",
+      "definition": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE RESTRICT"
+    },
+    {
+      "conname": "accounts_role_check",
+      "definition": "CHECK ((role = ANY (ARRAY['ADMIN'::text, 'TEACHER'::text, 'LEARNER'::text])))"
+    },
+    {
+      "conname": "accounts_status_check",
+      "definition": "CHECK ((status = ANY (ARRAY['PENDING'::text, 'ACTIVE'::text, 'DISABLED'::text])))"
+    }
+  ]
+}

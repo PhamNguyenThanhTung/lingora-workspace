@@ -1,0 +1,37 @@
+{
+  "name": "lingora-web",
+  "version": "1.0.0",
+  "description": "Learner boundary and web application for Lingora.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "npm --prefix .. run db:product:generate -w lingora-admin && next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test:feature": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth.test.mjs tests/feature/context.test.mjs tests/feature/login-flow.test.mjs tests/feature/review-regressions.test.mjs tests/feature/session-transport.test.mjs",
+    "test:components": "node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/isolated-components.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/production-pages.test.mjs",
+    "test:all": "npm run test:feature && npm run test:components"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.118.0",
+    "next": "16.4.3",
+    "pg": "8.13.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "^0.0.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "esbuild": "^0.28.2",
+    "playwright": "1.62.1",
+    "prisma": "6.19.3",
+    "supabase": "2.121.0",
+    "typescript": "7.0.2"
+  }
+}

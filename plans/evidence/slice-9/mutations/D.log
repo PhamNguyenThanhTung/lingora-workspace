@@ -1,0 +1,26 @@
+(node:271174) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ actual LoginPage/Form → real login route/session → actual HomePage/loader → UI; logout leaves no authenticated request (6331.735339ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6711.973929
+
+✖ failing tests:
+
+test at lingora-web/tests/feature/production-pages.test.mjs:21:1
+✖ actual LoginPage/Form → real login route/session → actual HomePage/loader → UI; logout leaves no authenticated request (6331.735339ms)
+  page.waitForURL: Timeout 6000ms exceeded.
+  =========================== logs ===========================
+  waiting for navigation to "http://127.0.0.1:3028/home" until "load"
+    navigated to "http://127.0.0.1:3028/wrong-login-destination"
+  ============================================================
+      at withLearner (/home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/production-pages.test.mjs:16:68)
+      at async TestContext.<anonymous> (/home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/production-pages.test.mjs:22:3) {
+    name: 'TimeoutError',
+    log: []
+  }

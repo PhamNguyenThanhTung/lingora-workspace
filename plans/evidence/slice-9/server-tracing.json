@@ -1,0 +1,14 @@
+[
+  {
+    "file": "lingora-web/.next/server/app/home/page.js.nft.json",
+    "engineIncluded": true,
+    "schemaIncluded": true,
+    "prismaConfigIncluded": false
+  },
+  {
+    "file": "lingora-web/.next/server/app/api/learner/context/route.js.nft.json",
+    "engineIncluded": true,
+    "schemaIncluded": true,
+    "prismaConfigIncluded": false
+  }
+]

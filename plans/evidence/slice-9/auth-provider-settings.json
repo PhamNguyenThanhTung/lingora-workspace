@@ -1,0 +1,9 @@
+{
+  "status": 200,
+  "emailProviderEnabled": true,
+  "signupDisabled": false,
+  "emailAutoConfirm": false,
+  "phoneProviderEnabled": false,
+  "providerCallbacksUsedBySlice9": false,
+  "providerAllowlistChanged": false
+}

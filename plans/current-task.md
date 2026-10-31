@@ -60,3 +60,8 @@ Initial full local suites, typecheck/build, independent review and A–G mutatio
 Public Blueprint create/edit, Teacher source submissions r10/r11, real composition failure with retained selection, successful V1 assembly, and X→Y exact prompt/grading-reference isolation PASS. Read-only DB checks PASS; safe DRAFT r12 restored, published r9 pointer unchanged, Teacher DISABLED/Auth session count0, Course inactive, unexpected residue0. Explicit DEV_S8 history and authorized credential rotation retained; both test sessions logged out and tabs closed. See [Slice 8 verification](slice-8-verification.md) and [DB evidence](2026-10-31-slice-8-public-dev-evidence.json). No Slice 9 work.
 
 `SLICE 8: PASS — SLICE 8 ACCEPTED`
+
+## Slice 9 — LOCAL PASS / PUBLIC PENDING
+
+Dedicated `lingora-web` learner auth/context foundation; preprovisioned confirmed ACTIVE LEARNER only, verified-subject context list and valid empty state. No signup, schema migration or learner runtime.
+Anti implementation → independent senior review → Codex direct fixes. Root feature466/components138, typecheck/build, clean install/build and semantic A–F mutations PASS; source restored byte-exact. Public project/deployment, login/disable-retry/DB/cleanup/secret evidence remain pending. See [verification](slice-9-verification.md). No Slice 10; no overall ACCEPTED claim yet.

@@ -1,0 +1,134 @@
+
+> lingora-web@1.0.0 test:feature
+> node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth.test.mjs tests/feature/context.test.mjs tests/feature/login-flow.test.mjs tests/feature/review-regressions.test.mjs tests/feature/session-transport.test.mjs
+
+(node:271443) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 9: Learner Authentication Matrix & Guard Verification
+  ✔ missing identity: no cookies or session returns 401 UNAUTHENTICATED (1.387518ms)
+  ✔ invalid auth token returns 401 UNAUTHENTICATED (0.490281ms)
+  ✔ expired auth token returns 401 UNAUTHENTICATED (0.427362ms)
+  ✔ verified identity with missing Account in DB returns 403 FORBIDDEN (0.475199ms)
+  ✔ Account status PENDING returns 403 ACCOUNT_INACTIVE (0.387069ms)
+  ✔ Mutation B Control: Account status DISABLED returns 403 ACCOUNT_INACTIVE (0.313119ms)
+  ✔ Mutation A Control: Admin account is strictly forbidden on learner route (0.298868ms)
+  ✔ Mutation A Control: Teacher account is strictly forbidden on learner route (0.261663ms)
+  ✔ Unconfirmed email identity returns 403 FORBIDDEN with safe confirmation message (0.396335ms)
+  ✔ ACTIVE confirmed Learner succeeds with user and account DTO (0.386046ms)
+  ✔ provider network failure or 503 returns 503 SERVICE_UNAVAILABLE (0.227776ms)
+  ✔ database connection failure returns 503 SERVICE_UNAVAILABLE (0.271771ms)
+  ✖ Mutation F Control: Learner is strictly rejected by actual staff guard verifyStaffIdentity (1.199263ms)
+✖ Slice 9: Learner Authentication Matrix & Guard Verification (8.294529ms)
+▶ Slice 9: SDK Cookie Adapter & Proxy Refresh
+  ✔ Dedicated cookie namespace uses learner-specific cookie name (0.279002ms)
+✔ Slice 9: SDK Cookie Adapter & Proxy Refresh (0.414447ms)
+▶ Slice 9: Actual Route Handlers (/api/auth/login and logout)
+  ✔ POST /api/auth/login rejects foreign Origin with 403 FORBIDDEN_ORIGIN (4.382648ms)
+  ✔ POST /api/auth/login rejects non-json Content-Type with 415 (0.702805ms)
+  ✔ POST /api/auth/login rejects malformed JSON with 400 MALFORMED_JSON (0.682697ms)
+  ✔ POST /api/auth/login rejects invalid email/password format with 400 VALIDATION_ERROR (2.740548ms)
+  ✔ POST /api/auth/login invalid credentials returns 401 with no-store headers (6.354313ms)
+  ✔ POST /api/auth/login account denial (Admin, Teacher, Disabled, Unconfirmed) signs out session (4.361859ms)
+  ✔ POST /api/auth/login valid credentials returns 200 with learner DTO (1.741683ms)
+  ✔ POST /api/auth/logout rejects foreign Origin with 403 (0.508092ms)
+  ✔ POST /api/auth/logout with active session deletes learner cookies and returns 200 (1.548213ms)
+✔ Slice 9: Actual Route Handlers (/api/auth/login and logout) (25.188734ms)
+▶ Slice 9: Same-Origin Enforcement
+  ✔ accepts matching scheme, hostname, and port (0.425377ms)
+  ✔ accepts matching HTTPS production domain (0.21468ms)
+  ✔ rejects mismatched port (0.194623ms)
+  ✔ rejects null origin (0.170053ms)
+  ✔ rejects missing origin on mutation endpoint (0.175378ms)
+✔ Slice 9: Same-Origin Enforcement (1.381029ms)
+(node:271444) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 9: Learner Context Cases & Data Consistency
+  ✔ A/B fixtures: returns valid shaped summary with correct relations (2.340713ms)
+  ✔ Mutation C Control: Strict ownership check - cannot return contexts of another learner (0.648742ms)
+  ✔ Mutation E Control: Zero contexts is successful 200 with contexts: [] (1.255694ms)
+  ✔ Context with null levels returns valid summary with selectedStartLevel: null and workingLevel: null (0.676159ms)
+  ✔ Multiple languages returned without asserting a single current choice (0.648129ms)
+  ✔ Inconsistent join: course.languageId !== context.languageId fails closed as 409 CONTEXT_INCONSISTENT (0.478217ms)
+  ✔ Inconsistent join: level frameworkId !== course.frameworkId fails closed as 409 CONTEXT_INCONSISTENT (0.457318ms)
+  ✔ No private fields leaked in context DTO (0.559097ms)
+  ✔ Context failure then successful retry (0.536282ms)
+✔ Slice 9: Learner Context Cases & Data Consistency (9.345251ms)
+▶ Slice 9: GET /api/learner/context Route Handler
+  ✔ rejects unsupported query selector parameters with 400 (25.225338ms)
+  ✔ rejects other query parameters with 400 (0.70127ms)
+  ✔ GET /api/learner/context returns 200 with Cache-Control no-store private (7.21985ms)
+✔ Slice 9: GET /api/learner/context Route Handler (33.461131ms)
+(node:271445) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 9: Production Login → Session → Context Flow
+  ✔ Complete flow: Production login establishes SSR cookies → context route returns identity & owned context → logout invalidates session (40.146213ms)
+✔ Slice 9: Production Login → Session → Context Flow (41.161414ms)
+(node:271456) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ review: wrong-role login revokes only its new local session (35.441512ms)
+✔ review: logout uses provider local scope and clears only exact learner namespace (7.98469ms)
+✔ review: provider email_not_confirmed maps to safe confirmation403 (2.083072ms)
+✔ review: generic or phone confirmation cannot substitute for email confirmation (0.3874ms)
+✔ review: mismatched joined language ID fails409 (0.629096ms)
+✔ review: mismatched joined course ID fails409 (0.275782ms)
+✔ review: mismatched joined framework ID fails409 (0.215833ms)
+✖ actual staff catalogue, teachers, courses, review, assessment and Teacher lesson handlers reject verified Learner (145.0799ms)
+(node:271462) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real SDK login produces chunked HttpOnly Secure host-only cookies and preserved SDK headers (13.07976ms)
+✔ real expired-session refresh propagates new chunk cookies downstream and across alternate redirect response (13.684195ms)
+✔ actual context response200 preserves refreshed SDK cookies/headers (3.892978ms)
+✔ actual context response403 preserves refreshed SDK cookies/headers (2.949712ms)
+✔ actual context response503 preserves refreshed SDK cookies/headers (3.311959ms)
+ℹ tests 54
+ℹ suites 7
+ℹ pass 52
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 520.594532
+
+✖ failing tests:
+
+test at tests/feature/auth.test.mjs:462:3
+✖ Mutation F Control: Learner is strictly rejected by actual staff guard verifyStaffIdentity (1.199263ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/auth.test.mjs:495:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/feature/review-regressions.test.mjs:45:1
+✖ actual staff catalogue, teachers, courses, review, assessment and Teacher lesson handlers reject verified Learner (145.0799ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  200 !== 403
+
+      at TestContext.<anonymous> (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/review-regressions.test.mjs:62:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 403,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+npm error Lifecycle script `test:feature` failed with error:
+npm error code 1
+npm error path /home/tung/workspace/school/project1/lingora-workspace/lingora-web
+npm error workspace lingora-web@1.0.0
+npm error location /home/tung/workspace/school/project1/lingora-workspace/lingora-web
+npm error command failed
+npm error command sh -c node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth.test.mjs tests/feature/context.test.mjs tests/feature/login-flow.test.mjs tests/feature/review-regressions.test.mjs tests/feature/session-transport.test.mjs

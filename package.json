@@ -3,20 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "lingora-admin"
+    "lingora-admin",
+    "lingora-web"
   ],
   "scripts": {
     "dev": "npm run dev -w lingora-admin",
-    "build": "npm run build -w lingora-admin",
+    "build": "npm run build -w lingora-admin && npm run build -w lingora-web",
     "start": "npm run start -w lingora-admin",
-    "typecheck": "npm run typecheck -w lingora-admin",
-    "test:feature": "npm run test:feature -w lingora-admin",
+    "typecheck": "npm run typecheck -w lingora-admin && npm run typecheck -w lingora-web",
+    "test:feature": "npm run test:feature -w lingora-admin && npm run test:feature -w lingora-web",
     "test:e2e": "npm run test:e2e -w lingora-admin",
-    "test:all": "npm run test:all -w lingora-admin",
+    "test:all": "npm run test:all -w lingora-admin && npm run test:all -w lingora-web",
     "db:product:validate": "npm run db:product:validate -w lingora-admin",
     "db:product:generate": "npm run db:product:generate -w lingora-admin",
     "db:product:migrate": "npm run db:product:migrate -w lingora-admin",
     "db:product:seed": "npm run db:product:seed -w lingora-admin",
-    "test:components": "npm run test:components -w lingora-admin"
+    "test:components": "npm run test:components -w lingora-admin && npm run test:components -w lingora-web"
   }
 }

@@ -1,0 +1,34 @@
+(node:269995) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ review: wrong-role login revokes only its new local session (42.22785ms)
+✔ review: logout uses provider local scope and clears only exact learner namespace (4.780965ms)
+✔ review: provider email_not_confirmed maps to safe confirmation403 (2.223157ms)
+✔ review: generic or phone confirmation cannot substitute for email confirmation (0.47383ms)
+✔ review: mismatched joined language ID fails409 (0.636663ms)
+✔ review: mismatched joined course ID fails409 (0.308155ms)
+✔ review: mismatched joined framework ID fails409 (0.232958ms)
+✖ actual staff catalogue, teachers, courses, review, assessment and Teacher lesson handlers reject verified Learner (31.390773ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 92.797359
+
+✖ failing tests:
+
+test at lingora-web/tests/feature/review-regressions.test.mjs:45:1
+✖ actual staff catalogue, teachers, courses, review, assessment and Teacher lesson handlers reject verified Learner (31.390773ms)
+  Error: This module cannot be imported from a Client Component module. It should only be used from a Server Component.
+      at Object.<anonymous> (/home/tung/workspace/school/project1/lingora-workspace/node_modules/server-only/index.js:1:7)
+      at Module._compile (node:internal/modules/cjs/loader:1929:14)
+      at Object..js (node:internal/modules/cjs/loader:2060:10)
+      at Module.load (node:internal/modules/cjs/loader:1651:32)
+      at node:internal/modules/cjs/loader:1443:12
+      at Object.cjsMockModuleLoad (node:internal/test_runner/mock/mock:983:12)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:372:15)
+      at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:244:9)
+      at ModuleJob.run (node:internal/modules/esm/module_job:561:25)

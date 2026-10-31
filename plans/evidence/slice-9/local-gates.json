@@ -1,0 +1,59 @@
+{
+  "status": "LOCAL_PASS_PUBLIC_PENDING",
+  "baseline": "7daeae9058c9d79eb81743c06a7d830064b3e844",
+  "gates": {
+    "feature": {
+      "command": "npm run test:feature",
+      "exitCode": 0,
+      "total": 466,
+      "staff": 412,
+      "learner": 54,
+      "failed": 0,
+      "skipped": 0
+    },
+    "components": {
+      "command": "npm run test:components",
+      "exitCode": 0,
+      "total": 138,
+      "staff": 121,
+      "learner": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    "cleanInstall": {
+      "command": "npm ci --ignore-scripts --no-audit --no-fund in owned copy without env/generated/node_modules",
+      "exitCode": 0
+    },
+    "cleanBuild": {
+      "command": "npm run build in clean owned copy with dummy public configuration",
+      "exitCode": 0
+    },
+    "mutations": {
+      "killed": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "byteExactRestoration": true,
+      "restoredRootGatesPass": true
+    },
+    "clientScan": {
+      "localFiles": 38,
+      "matches": 0
+    },
+    "unrelatedPreserved": true
+  },
+  "liveWrites": false,
+  "overallAccepted": false
+}

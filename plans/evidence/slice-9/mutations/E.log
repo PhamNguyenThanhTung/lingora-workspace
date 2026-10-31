@@ -1,0 +1,26 @@
+(node:271296) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ actual HomePage preserves empty success and reacts to current role/status on same session (6522.568751ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7454.843241
+
+✖ failing tests:
+
+test at lingora-web/tests/feature/production-pages.test.mjs:33:1
+✖ actual HomePage preserves empty success and reacts to current role/status on same session (6522.568751ms)
+  locator.waitFor: Timeout 6000ms exceeded.
+  Call log:
+  [2m  - waiting for getByText('Bạn chưa có lộ trình học.', { exact: true }) to be visible[22m
+
+      at /home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/production-pages.test.mjs:35:115
+      at async withLearner (/home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/production-pages.test.mjs:18:5)
+      at async TestContext.<anonymous> (/home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/production-pages.test.mjs:34:3) {
+    name: 'TimeoutError',
+    log: [ "  - waiting for getByText('Bạn chưa có lộ trình học.', { exact: true }) to be visible" ]
+  }

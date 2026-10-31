@@ -1,0 +1,68 @@
+[
+  {
+    "id": "A",
+    "file": "lingora-web/src/server/auth/index.ts",
+    "mutation": "if (false)",
+    "reason": "Wrong-role login/guard must reject staff",
+    "command": "npm run test:feature -w lingora-web",
+    "exitCode": 1,
+    "semanticFailure": true,
+    "restored": true,
+    "killed": true
+  },
+  {
+    "id": "B",
+    "file": "lingora-web/src/server/auth/index.ts",
+    "mutation": "if (false)",
+    "reason": "Current DISABLED Account must deny next protected request",
+    "command": "npm run test:feature -w lingora-web",
+    "exitCode": 1,
+    "semanticFailure": true,
+    "restored": true,
+    "killed": true
+  },
+  {
+    "id": "C",
+    "file": "lingora-web/src/server/context/loader.ts",
+    "mutation": "if (false)",
+    "reason": "Foreign-owner row must not be serialized for current learner",
+    "command": "npm run test:feature -w lingora-web",
+    "exitCode": 1,
+    "semanticFailure": true,
+    "restored": true,
+    "killed": true
+  },
+  {
+    "id": "D",
+    "file": "lingora-web/src/app/login/LoginForm.tsx",
+    "mutation": "router.push('/wrong-login-destination');",
+    "reason": "Actual login callback must reach production home",
+    "command": "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs --test --test-name-pattern actual LoginPage/Form lingora-web/tests/feature/production-pages.test.mjs",
+    "exitCode": 1,
+    "semanticFailure": true,
+    "restored": true,
+    "killed": true
+  },
+  {
+    "id": "E",
+    "file": "lingora-web/src/server/context/loader.ts",
+    "mutation": "  if (rawContexts.length === 0) return { ok: false, status: 403, error: { code: 'FORBIDDEN', message: 'Empty context mutation' } };\n\n  const contextsDto:",
+    "reason": "Real empty loader/page must remain successful product state",
+    "command": "/home/tung/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs --test --test-name-pattern actual HomePage preserves empty lingora-web/tests/feature/production-pages.test.mjs",
+    "exitCode": 1,
+    "semanticFailure": true,
+    "restored": true,
+    "killed": true
+  },
+  {
+    "id": "F",
+    "file": "lingora-admin/src/server/auth/index.ts",
+    "mutation": "if (account.role !== 'ADMIN' && account.role !== 'TEACHER' && account.role !== 'LEARNER')",
+    "reason": "Actual staff login ANY-role guard must reject Learner",
+    "command": "npm run test:feature -w lingora-web",
+    "exitCode": 1,
+    "semanticFailure": true,
+    "restored": true,
+    "killed": true
+  }
+]

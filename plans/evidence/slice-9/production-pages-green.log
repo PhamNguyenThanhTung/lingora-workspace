@@ -1,0 +1,13 @@
+✔ actual LoginPage/Form → real login route/session → actual HomePage/loader → UI; logout leaves no authenticated request (651.084447ms)
+✔ actual HomePage preserves empty success and reacts to current role/status on same session (480.467656ms)
+✔ actual HomePage context503 → actual retry callback → loader and visible successful context (357.48587ms)
+✔ actual HomePage inconsistent409 → actual retry returns owned data; invalid session redirects401 (468.618657ms)
+✔ actual logout transport failure retains home, shows failure, and real retry logs out (423.136056ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2419.131097

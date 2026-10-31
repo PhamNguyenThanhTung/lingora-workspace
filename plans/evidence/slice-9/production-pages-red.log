@@ -1,0 +1,28 @@
+✔ actual LoginPage/Form → real login route/session → actual HomePage/loader → UI; logout leaves no authenticated request (650.713063ms)
+✔ actual HomePage preserves empty success and reacts to current role/status on same session (513.348904ms)
+✔ actual HomePage context503 → actual retry callback → loader and visible successful context (396.994953ms)
+✔ actual HomePage inconsistent409 → actual retry returns owned data; invalid session redirects401 (431.832141ms)
+✖ actual logout transport failure retains home, shows failure, and real retry logs out (6296.961253ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8637.18799
+
+✖ failing tests:
+
+test at lingora-web/tests/feature/production-pages.test.mjs:61:1
+✖ actual logout transport failure retains home, shows failure, and real retry logs out (6296.961253ms)
+  locator.waitFor: Timeout 6000ms exceeded.
+  Call log:
+  [2m  - waiting for locator('#logoutAlert') to be visible[22m
+
+      at /home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/production-pages.test.mjs:64:81
+      at async withLearner (/home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/production-pages.test.mjs:18:5)
+      at async TestContext.<anonymous> (/home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/production-pages.test.mjs:62:3) {
+    log: [ "  - waiting for locator('#logoutAlert') to be visible" ],
+    name: 'TimeoutError'
+  }
