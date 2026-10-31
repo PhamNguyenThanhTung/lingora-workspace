@@ -1,0 +1,12 @@
+✔ build copies only schema and native runtime assets: libquery_engine-rhel-openssl-3.0.x.so.node (2.568418ms)
+✔ build copies only schema and native runtime assets: libquery_engine-darwin-arm64.dylib.node (0.788891ms)
+✔ build fails before copying an incomplete generated runtime (0.533434ms)
+✔ Next traces learner runtime assets and the shared generated client outside the app (0.142827ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 51.838057

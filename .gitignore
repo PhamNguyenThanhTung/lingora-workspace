@@ -77,3 +77,6 @@ docs/modeling/**/rendered/
 *.zip
 .agents/skills/
 
+
+# Learner runtime assets copied from the shared generated Prisma client
+lingora-web/generated/

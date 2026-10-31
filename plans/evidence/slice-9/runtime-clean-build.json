@@ -1,0 +1,21 @@
+{
+  "cleanSourceNoEnvOrGenerated": true,
+  "installExitCode": 0,
+  "buildExitCode": 0,
+  "tracedRuntimeAssets": {
+    "home/page.js.nft.json": [
+      "lingora-web/generated/product-client/libquery_engine-debian-openssl-3.0.x.so.node",
+      "lingora-web/generated/product-client/schema.prisma"
+    ],
+    "api/auth/login/route.js.nft.json": [
+      "lingora-web/generated/product-client/libquery_engine-debian-openssl-3.0.x.so.node",
+      "lingora-web/generated/product-client/schema.prisma"
+    ],
+    "api/learner/context/route.js.nft.json": [
+      "lingora-web/generated/product-client/libquery_engine-debian-openssl-3.0.x.so.node",
+      "lingora-web/generated/product-client/schema.prisma"
+    ]
+  },
+  "status": "PASS",
+  "ownedCleanWorkspaceRemoved": true
+}

@@ -1,0 +1,27 @@
+{
+  "sourceBase": "9096c04e136a990fcd25bcddf527566de587cf23",
+  "reason": "Public learner account query failed with ENGINE_NOT_FOUND",
+  "feature": {
+    "total": 471,
+    "staff": 412,
+    "learner": 59,
+    "failed": 0,
+    "skipped": 0
+  },
+  "components": {
+    "total": 138,
+    "failed": 0,
+    "skipped": 0
+  },
+  "typecheck": "PASS_BOTH_APPS",
+  "build": "PASS_BOTH_APPS",
+  "cleanLearnerInstallBuild": "PASS",
+  "runtimeAssetsTraced": [
+    "home",
+    "api/auth/login",
+    "api/learner/context"
+  ],
+  "schemaOwners": 1,
+  "schemaMigration": false,
+  "status": "LOCAL_PASS_PUBLIC_PENDING"
+}

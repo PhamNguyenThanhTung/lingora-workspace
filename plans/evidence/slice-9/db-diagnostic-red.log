@@ -16,7 +16,7 @@ test at tests/feature/review-regressions.test.mjs:65:1
 ✖ DB lookup failures log only a safe category and keep the public503 response (3.89106ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
   + actual - expected
-  
+
   + undefined
   - [
   -   'learner.account_lookup_failed',
@@ -24,7 +24,7 @@ test at tests/feature/review-regressions.test.mjs:65:1
   -     category: 'P1001'
   -   }
   - ]
-  
+
       at TestContext.<anonymous> (file:///home/tung/workspace/school/project1/lingora-workspace/lingora-web/tests/feature/review-regressions.test.mjs:77:14)
       at async Test.run (node:internal/test_runner/test:1409:7)
       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
