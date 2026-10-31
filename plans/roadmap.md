@@ -85,8 +85,8 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Public Blueprint/author/submit/assemble/failure-retry/isolation and read-only DB checks PASS. Teacher DISABLED/Auth sessions0, Course inactive, safe DRAFT r12 and published pointer r9 retained, explicit DEV_S8 history allowlisted, unexpected residue0; test sessions/tabs closed. See [verification](slice-8-verification.md).
 - SLICE 8 ACCEPTED. Learner attempts, scoring/placement/level-up runtime and Slice 9 have not started.
 
-## Slice 9 — Learner Auth / Learner Context Foundation (LOCAL PASS / PUBLIC PENDING)
+## Slice 9 — Learner Auth / Learner Context Foundation (LOCAL PASS / PUBLIC BLOCKED)
 
 - Separate `lingora-web` app; confirmed preprovisioned ACTIVE Learner login/home/logout, fresh role/status checks and session-scoped context list with valid empty state.
 - Independent review fixes include local logout scope, strict confirmation, joined-parent identity validation and actual production-page/session tests. Feature466/components138, typecheck/build, clean install/build and A–F mutations PASS.
-- Dedicated public learner deployment/live acceptance/cleanup pending. No schema migration, signup or lesson/progress/assessment runtime. See [verification](slice-9-verification.md). No Slice 10.
+- Dedicated learner DEV https://lingora-learner-dev.vercel.app/ READY; staff unchanged/READY. Public read-only checks/scan PASS; live acceptance/cleanup blocked until learner Production DATABASE_URL Secret is configured. No live fixture writes. No schema migration, signup or lesson/progress/assessment runtime. See [verification](slice-9-verification.md). No Slice 10.

@@ -1,6 +1,6 @@
 # Slice 9 verification — Learner Auth / Learner Context Foundation
 
-Status: **LOCAL ACCEPTANCE PASS; PUBLIC ACCEPTANCE PENDING**.
+Status: **LOCAL ACCEPTANCE PASS; PUBLIC ACCEPTANCE BLOCKED ON REQUIRED DEV DATABASE_URL**. Overall Slice 9 is not accepted.
 Spec: [learner auth/context](2026-10-31-slice-9-learner-auth-context.md). Baseline `7daeae9`; Slice 0–8 remain accepted. No Slice 10.
 
 ## Contracts and implementation
@@ -51,4 +51,16 @@ Build retains the existing generated-Prisma dynamic tracing warnings; builds com
 
 ## Public stage
 
-Pending dedicated learner project/env, exact committed deployment READY, real public login/context/staff boundary/disable→restore retry/logout, read-only DB evidence, fixture cleanup, browser closure and public HTML/JS/maps secret scan. No live fixture/Auth writes have occurred. No overall Slice 9 PASS/ACCEPTED claim yet.
+Implementation/source commit `6bd70a2ec7e80458cb8f4f2cedb1a8be818c9b53` pushed to origin/main after local gates.
+
+- Learner project `prj_qRvrlMQCydoDKw7FQHPmUV8sa1iz`, root `lingora-web`, Node24, include outside-root source, region hnd1. Separate project in existing team; no staff configuration changes. Learner deployment protection opened for the requested public DEV login; application role/status guards remain enforced.
+- Exact learner deployment `dpl_ACmThC2oCmSpK3tufeFz8gppQBqZ` READY, stable [learner DEV](https://lingora-learner-dev.vercel.app/). Staff exact same-commit deployment `dpl_Cmo6o67JBZMb3e8NVgFYV7i1KdLH` READY; staff login200 at unchanged stable URL.
+- Public read-only learner login200, actual anonymous home→login redirect, context401/private-no-store PASS. Browser context closed. See [read-only proof](evidence/slice-9/public-read-only.json) and screenshot.
+- Client scan PASS:38 local files +19 publicly fetched HTML/JS files across both stable origins, secret/private-import matches0. No public maps were linked by these HTML pages; local emitted JS/maps were scanned.
+- Learner runtime has only SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY configured. No service/Admin key copied. Required Production DATABASE_URL is absent, confirmed by env metadata only; existing staff Secret cannot be read/copied by connector. Secure dashboard input requested, never credential in chat.
+
+**Remaining blocker:** configure the same Supabase DEV DATABASE_URL as a Production Secret in learner project, then redeploy the same source and verify READY before owned fixture writes. Real public login/context, staff role denial, disable→restore retry, read-only fixture DB proof and cleanup are still pending; do not mistake the read-only UI proof for full acceptance. No live Auth user/Account fixture writes or retained test sessions exist.
+
+Resume from public deployment/config verification; do not rerun implementation or local gates without source change. Disposable runner is locally prepared at `tmp/slice9/public-acceptance.mjs` and enforces explicit local/READY prerequisites; credentials are generated only in RAM, finally logs out/closes sessions and cleans owned UUIDs. No Slice 10.
+
+`SLICE 9: FAIL` — public acceptance blocked on missing DEV environment configuration; not an implementation-test failure.

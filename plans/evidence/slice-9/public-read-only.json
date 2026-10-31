@@ -1,0 +1,14 @@
+{
+  "commit": "6bd70a2ec7e80458cb8f4f2cedb1a8be818c9b53",
+  "deploymentId": "dpl_ACmThC2oCmSpK3tufeFz8gppQBqZ",
+  "deploymentReady": true,
+  "base": "https://lingora-learner-dev.vercel.app",
+  "loginStatus": 200,
+  "learnerLoginUiPresent": true,
+  "anonymousHomeRedirectsToLogin": true,
+  "anonymousContextStatus": 401,
+  "privateNoStore": true,
+  "browserClosed": true,
+  "databaseUrlPending": true,
+  "fixtureWrites": false
+}

@@ -61,7 +61,7 @@ Public Blueprint create/edit, Teacher source submissions r10/r11, real compositi
 
 `SLICE 8: PASS — SLICE 8 ACCEPTED`
 
-## Slice 9 — LOCAL PASS / PUBLIC PENDING
+## Slice 9 — LOCAL PASS / PUBLIC BLOCKED
 
 Dedicated `lingora-web` learner auth/context foundation; preprovisioned confirmed ACTIVE LEARNER only, verified-subject context list and valid empty state. No signup, schema migration or learner runtime.
-Anti implementation → independent senior review → Codex direct fixes. Root feature466/components138, typecheck/build, clean install/build and semantic A–F mutations PASS; source restored byte-exact. Public project/deployment, login/disable-retry/DB/cleanup/secret evidence remain pending. See [verification](slice-9-verification.md). No Slice 10; no overall ACCEPTED claim yet.
+Anti implementation → independent senior review → Codex direct fixes. Root feature466/components138, typecheck/build, clean install/build and semantic A–F mutations PASS; source restored byte-exact. Learner/staff same-source deployments READY; public read-only login/redirect401 and client scans PASS. Required learner Production DATABASE_URL is absent; real login/disable-retry/DB/cleanup remain blocked. No live fixture writes. See [verification](slice-9-verification.md). No Slice 10; no overall ACCEPTED claim yet.

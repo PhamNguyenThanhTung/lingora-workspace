@@ -1,5 +1,5 @@
 {
-  "status": "LOCAL_PASS_PUBLIC_PENDING",
+  "status": "LOCAL_PASS_PUBLIC_BLOCKED_DATABASE_URL",
   "baseline": "7daeae9058c9d79eb81743c06a7d830064b3e844",
   "gates": {
     "feature": {
@@ -55,5 +55,8 @@
     "unrelatedPreserved": true
   },
   "liveWrites": false,
-  "overallAccepted": false
+  "overallAccepted": false,
+  "sourceCommit": "6bd70a2ec7e80458cb8f4f2cedb1a8be818c9b53",
+  "publicReadOnlyPass": true,
+  "publicAccepted": false
 }
