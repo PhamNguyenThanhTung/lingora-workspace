@@ -75,4 +75,12 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Production UI callbacks are exercised for Teacher submit and Admin request-changes/approve/publish, including pending, retry, stale, 401 and 403 behavior.
 - Local feature391/391, components113/113, typecheck/build PASS; mutation controls A–H KILLED with byte-exact source restore. No schema/migration or Slice8 work.
 - Public DEV flow and read-only SQL evidence PASS on production deployment for commit `04c14951523137eb1b931817d335545219d8991a`; Teacher DISABLED/Course inactive, allowlisted workflow history retained, unexpected residue 0. See [Slice 7 verification](slice-7-verification.md).
-- SLICE 7 ACCEPTED. Slice 8 has not started.
+- SLICE 7 ACCEPTED.
+
+## Slice 8 — Assessment Authoring Foundation (PASS / ACCEPTED)
+
+- Typed flat Blueprint coverage/minimum/config contract, Admin CRUD/explicit concrete version assembly, and assigned Teacher ASSESSMENT revision authoring through actual LessonRevision provenance. No schema/migration or section abstraction.
+- Real Teacher SUBMIT source identity and exact immutable AssessmentVersionItem pins; snapshot/hash and prompt/grading-reference isolation remain unchanged after newer submitted Y.
+- Full initial feature/component gates, independent review and A–G mutations PASS. Public timeout fix uses the existing 30-second lesson transaction convention; affected feature17/routes4/components8, typecheck/build and live retry PASS on READY commit `0f73586ffd2278d39378418ba5f3c004b556e3aa`.
+- Public Blueprint/author/submit/assemble/failure-retry/isolation and read-only DB checks PASS. Teacher DISABLED/Auth sessions0, Course inactive, safe DRAFT r12 and published pointer r9 retained, explicit DEV_S8 history allowlisted, unexpected residue0; test sessions/tabs closed. See [verification](slice-8-verification.md).
+- SLICE 8 ACCEPTED. Learner attempts, scoring/placement/level-up runtime and Slice 9 have not started.

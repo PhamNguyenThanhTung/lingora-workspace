@@ -1,0 +1,1179 @@
+{
+  "scope": "Slice 8 Assessment Authoring Foundation",
+  "capturedAt": "2026-10-31T14:55:03.240Z",
+  "databaseAccess": "READ ONLY, REPEATABLE READ",
+  "checks": {
+    "blueprintComposition": true,
+    "blueprintGeneration": true,
+    "oneCommittedVersion": true,
+    "versionState": true,
+    "exactPins": true,
+    "exactSubmittedSource": true,
+    "successorSameIdentity": true,
+    "successorSubmitted": true,
+    "changedPromptAndGrading": true,
+    "validFingerprints": true,
+    "gradingReferenceIsolation": true,
+    "versionUnchangedAfterY": true,
+    "sourceReviewerActors": true,
+    "teacherDisabled": true,
+    "teacherSessionClosed": true,
+    "courseInactive": true,
+    "publishedPointerUnchanged": true,
+    "lessonAvailabilityRestored": true,
+    "safeDraftRestored": true,
+    "assignmentUnchanged": true,
+    "assessmentOriginAndOwnedFixture": true,
+    "reviewResidueAllowlisted": true,
+    "receiptResidueAllowlisted": true,
+    "auditResidueAllowlisted": true,
+    "noUnexpectedDomainResidue": true,
+    "priorAcceptedHistoryUnchanged": true
+  },
+  "deployments": {
+    "initial": {
+      "commit": "aa031136df708064090685317a9354acba26e73f",
+      "id": "dpl_FJ6UjBEBuQ3C3G2nXbrsTc7UFk6V",
+      "ready": true,
+      "coverage": "Teacher authoring/submission source unchanged by patch; original authenticated session retained"
+    },
+    "patched": {
+      "commit": "0f73586ffd2278d39378418ba5f3c004b556e3aa",
+      "id": "dpl_ELB9ERMpRB3mGbwmdngC31T55yso",
+      "ready": true,
+      "coverage": "Admin assembly, retry, version retrieval and review/cleanup"
+    }
+  },
+  "blueprint": {
+    "id": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+    "createdBy": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+    "languageId": "00000000-0000-0000-0000-000000000001",
+    "frameworkId": "00000000-0000-0000-0000-000000000010",
+    "courseId": "4a7024f1-d24a-42d8-9d3a-3591b67229ca",
+    "purpose": "LEVEL_UP",
+    "targetLevelId": "00000000-0000-0000-0000-000000000021",
+    "nextLevelId": "00000000-0000-0000-0000-000000000022",
+    "coverage": {
+      "itemCount": 2,
+      "exerciseTypes": [
+        "MCQ",
+        "FILL_BLANK"
+      ]
+    },
+    "requirements": {
+      "minimumItemsByType": {
+        "MCQ": 1,
+        "FILL_BLANK": 1
+      }
+    },
+    "config": {
+      "shuffleItems": false,
+      "shuffleOptions": false
+    },
+    "coverageCatalogGeneration": "1",
+    "generation": "2",
+    "createdAt": "2026-10-31T13:53:46.445Z",
+    "updatedAt": "2026-10-31T13:54:01.612Z",
+    "rowVersion": "2"
+  },
+  "version": {
+    "id": "7b9b26ec-246f-4159-ae42-4ec1c76ab75a",
+    "blueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+    "versionNo": 1,
+    "blueprintGeneration": "2",
+    "blueprintSnapshot": {
+      "config": {
+        "shuffleItems": false,
+        "shuffleOptions": false
+      },
+      "purpose": "LEVEL_UP",
+      "coverage": {
+        "itemCount": 2,
+        "exerciseTypes": [
+          "MCQ",
+          "FILL_BLANK"
+        ]
+      },
+      "course_id": "4a7024f1-d24a-42d8-9d3a-3591b67229ca",
+      "language_id": "00000000-0000-0000-0000-000000000001",
+      "blueprint_id": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "framework_id": "00000000-0000-0000-0000-000000000010",
+      "requirements": {
+        "minimumItemsByType": {
+          "MCQ": 1,
+          "FILL_BLANK": 1
+        }
+      },
+      "next_level_id": "00000000-0000-0000-0000-000000000022",
+      "schema_version": 1,
+      "target_level_id": "00000000-0000-0000-0000-000000000021",
+      "blueprint_generation": 2,
+      "coverage_catalog_generation": 1
+    },
+    "assembledAt": "2026-10-31T14:42:29.749Z",
+    "assemblyInputHash": "ec989434e51f37f7048e5e2d312c0856a75e5bd44561ddb85e8c6e93a4bd6072",
+    "status": "IN_REVIEW",
+    "isActive": false,
+    "approvedBy": null,
+    "approvedAt": null,
+    "publishedBy": null,
+    "publishedAt": null,
+    "endedAt": null,
+    "createdAt": "2026-10-31T14:42:24.186Z",
+    "updatedAt": "2026-10-31T14:42:24.186Z",
+    "rowVersion": "1",
+    "items": [
+      {
+        "id": "2c5982d1-9d01-4882-a2fe-102ffe29b4ff",
+        "assessmentVersionId": "7b9b26ec-246f-4159-ae42-4ec1c76ab75a",
+        "itemRevisionId": "52b7b90a-271d-4c15-a08a-d3b0d8ff668b",
+        "itemId": "f5e69deb-aa38-481d-af9e-e7c927050480",
+        "sourceLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+        "sourceSubmissionId": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+        "contributionAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+        "position": 1,
+        "weight": "1",
+        "coverageTags": {},
+        "createdAt": "2026-10-31T14:42:30.830Z",
+        "sourceSubmission": {
+          "id": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+          "lessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+          "assessmentVersionId": null,
+          "action": "SUBMIT",
+          "actorId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+          "assignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-10-31T14:36:24.178Z",
+          "revisionRowVersion": "2",
+          "comment": null,
+          "createdAt": "2026-10-31T14:36:25.282Z"
+        },
+        "exactRevision": {
+          "id": "52b7b90a-271d-4c15-a08a-d3b0d8ff668b",
+          "promptData": {
+            "prompt": "DEV_S8_20261031 X — Choose the greeting.",
+            "options": [
+              {
+                "id": "opt_1",
+                "text": "Hello"
+              },
+              {
+                "id": "opt_2",
+                "text": "Goodbye"
+              }
+            ]
+          },
+          "exactFingerprint": "9e4f5266d16c3bc64e8c90f2d0533e6a90d97f5a59e9ea6ecda5218f47d5c135",
+          "frozenAt": "2026-10-31T14:42:29.749Z",
+          "gradingReferenceItemRevisionId": "52b7b90a-271d-4c15-a08a-d3b0d8ff668b"
+        }
+      },
+      {
+        "id": "f7424b20-a0b9-413b-8c32-b4b6603642c6",
+        "assessmentVersionId": "7b9b26ec-246f-4159-ae42-4ec1c76ab75a",
+        "itemRevisionId": "cdd24402-c63f-40c1-937a-eaf911a18ba3",
+        "itemId": "c0f04ba0-7854-44d5-aa87-2b446e24b888",
+        "sourceLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+        "sourceSubmissionId": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+        "contributionAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+        "position": 2,
+        "weight": "1",
+        "coverageTags": {},
+        "createdAt": "2026-10-31T14:42:31.138Z",
+        "sourceSubmission": {
+          "id": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+          "lessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+          "assessmentVersionId": null,
+          "action": "SUBMIT",
+          "actorId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+          "assignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-10-31T14:36:24.178Z",
+          "revisionRowVersion": "2",
+          "comment": null,
+          "createdAt": "2026-10-31T14:36:25.282Z"
+        },
+        "exactRevision": {
+          "id": "cdd24402-c63f-40c1-937a-eaf911a18ba3",
+          "promptData": {
+            "prompt": "DEV_S8_20261031 FILL — Complete the sentence.",
+            "sentence": "I ____ a student."
+          },
+          "exactFingerprint": "750eeac58b81ab20700b4778462c4dde81327d2fc30710efa7db901fcc3d183f",
+          "frozenAt": "2026-10-31T14:42:29.749Z",
+          "gradingReferenceItemRevisionId": "cdd24402-c63f-40c1-937a-eaf911a18ba3"
+        }
+      }
+    ]
+  },
+  "assessmentItems": [
+    {
+      "id": "10563ff0-931e-4b87-b6cf-df7fe841ddbd",
+      "itemId": "249ef56e-40d3-4412-ab2f-f13c5e86d13a",
+      "revisionNo": 1,
+      "type": "MCQ",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 RETRY — Choose the color.",
+        "options": [
+          {
+            "id": "opt_1",
+            "text": "Red"
+          },
+          {
+            "id": "opt_2",
+            "text": "Run"
+          }
+        ]
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "826a15539defc0888ea13d03ffed80acf362f471dc9c5059ea29a7f2ef8c6057",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:35:20.115Z",
+      "updatedAt": "2026-10-31T14:35:20.115Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "10563ff0-931e-4b87-b6cf-df7fe841ddbd",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "dc52b785-eaa4-4bbe-a0ba-9ff587468615",
+      "itemId": "249ef56e-40d3-4412-ab2f-f13c5e86d13a",
+      "revisionNo": 2,
+      "type": "MCQ",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 RETRY — Choose the color.",
+        "options": [
+          {
+            "id": "opt_1",
+            "text": "Red"
+          },
+          {
+            "id": "opt_2",
+            "text": "Run"
+          }
+        ]
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "826a15539defc0888ea13d03ffed80acf362f471dc9c5059ea29a7f2ef8c6057",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:45:14.787Z",
+      "updatedAt": "2026-10-31T14:45:14.787Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "dc52b785-eaa4-4bbe-a0ba-9ff587468615",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "4b429376-f017-464a-8627-dacee2c2cc09",
+      "itemId": "249ef56e-40d3-4412-ab2f-f13c5e86d13a",
+      "revisionNo": 3,
+      "type": "MCQ",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 RETRY — Choose the color.",
+        "options": [
+          {
+            "id": "opt_1",
+            "text": "Red"
+          },
+          {
+            "id": "opt_2",
+            "text": "Run"
+          }
+        ]
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "826a15539defc0888ea13d03ffed80acf362f471dc9c5059ea29a7f2ef8c6057",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "7426de56-5dc9-448a-9b5f-0a107d7709d4",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:48:34.208Z",
+      "updatedAt": "2026-10-31T14:48:34.208Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "4b429376-f017-464a-8627-dacee2c2cc09",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "cdd24402-c63f-40c1-937a-eaf911a18ba3",
+      "itemId": "c0f04ba0-7854-44d5-aa87-2b446e24b888",
+      "revisionNo": 1,
+      "type": "FILL_BLANK",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 FILL — Complete the sentence.",
+        "sentence": "I ____ a student."
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "750eeac58b81ab20700b4778462c4dde81327d2fc30710efa7db901fcc3d183f",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": "2026-10-31T14:42:29.749Z",
+      "createdAt": "2026-10-31T14:35:35.347Z",
+      "updatedAt": "2026-10-31T14:42:30.064Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "cdd24402-c63f-40c1-937a-eaf911a18ba3",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "e3f2b933-5a07-4dff-b3b3-eb728cdd90ff",
+      "itemId": "c0f04ba0-7854-44d5-aa87-2b446e24b888",
+      "revisionNo": 2,
+      "type": "FILL_BLANK",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 FILL — Complete the sentence.",
+        "sentence": "I ____ a student."
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "750eeac58b81ab20700b4778462c4dde81327d2fc30710efa7db901fcc3d183f",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:45:15.371Z",
+      "updatedAt": "2026-10-31T14:45:15.371Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "e3f2b933-5a07-4dff-b3b3-eb728cdd90ff",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "ce030d35-5cfc-4e49-9da9-328dc3fe0d34",
+      "itemId": "c0f04ba0-7854-44d5-aa87-2b446e24b888",
+      "revisionNo": 3,
+      "type": "FILL_BLANK",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 FILL — Complete the sentence.",
+        "sentence": "I ____ a student."
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "750eeac58b81ab20700b4778462c4dde81327d2fc30710efa7db901fcc3d183f",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "7426de56-5dc9-448a-9b5f-0a107d7709d4",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:48:34.647Z",
+      "updatedAt": "2026-10-31T14:48:34.647Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "ce030d35-5cfc-4e49-9da9-328dc3fe0d34",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "52b7b90a-271d-4c15-a08a-d3b0d8ff668b",
+      "itemId": "f5e69deb-aa38-481d-af9e-e7c927050480",
+      "revisionNo": 1,
+      "type": "MCQ",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 X — Choose the greeting.",
+        "options": [
+          {
+            "id": "opt_1",
+            "text": "Hello"
+          },
+          {
+            "id": "opt_2",
+            "text": "Goodbye"
+          }
+        ]
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "9e4f5266d16c3bc64e8c90f2d0533e6a90d97f5a59e9ea6ecda5218f47d5c135",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": "2026-10-31T14:42:29.749Z",
+      "createdAt": "2026-10-31T14:35:08.728Z",
+      "updatedAt": "2026-10-31T14:42:29.750Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "52b7b90a-271d-4c15-a08a-d3b0d8ff668b",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "d78de903-912c-42a6-87a9-9837e9df9075",
+      "itemId": "f5e69deb-aa38-481d-af9e-e7c927050480",
+      "revisionNo": 2,
+      "type": "MCQ",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 X — Choose the greeting.",
+        "options": [
+          {
+            "id": "opt_1",
+            "text": "Hello"
+          },
+          {
+            "id": "opt_2",
+            "text": "Goodbye"
+          }
+        ]
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "9e4f5266d16c3bc64e8c90f2d0533e6a90d97f5a59e9ea6ecda5218f47d5c135",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:45:15.811Z",
+      "updatedAt": "2026-10-31T14:45:15.811Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "d78de903-912c-42a6-87a9-9837e9df9075",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "0b779e34-26dc-4ed1-9a7c-b0b42aa5c17f",
+      "itemId": "f5e69deb-aa38-481d-af9e-e7c927050480",
+      "revisionNo": 3,
+      "type": "MCQ",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 Y — Choose the farewell.",
+        "options": [
+          {
+            "id": "opt_1",
+            "text": "Hello"
+          },
+          {
+            "id": "opt_2",
+            "text": "Goodbye"
+          }
+        ]
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "5cb45b697df9da16cb4f201934d9121831bfcdd9bd6fa8384540f839f7af8111",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:45:52.588Z",
+      "updatedAt": "2026-10-31T14:45:52.588Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "0b779e34-26dc-4ed1-9a7c-b0b42aa5c17f",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "ec0f32f4-aa95-4ffc-89d2-19ce90ba939e",
+      "itemId": "f5e69deb-aa38-481d-af9e-e7c927050480",
+      "revisionNo": 4,
+      "type": "MCQ",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 X — Choose the greeting.",
+        "options": [
+          {
+            "id": "opt_1",
+            "text": "Hello"
+          },
+          {
+            "id": "opt_2",
+            "text": "Goodbye"
+          }
+        ]
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "9e4f5266d16c3bc64e8c90f2d0533e6a90d97f5a59e9ea6ecda5218f47d5c135",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "7426de56-5dc9-448a-9b5f-0a107d7709d4",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:48:35.086Z",
+      "updatedAt": "2026-10-31T14:48:35.086Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "ec0f32f4-aa95-4ffc-89d2-19ce90ba939e",
+        "schemaVersion": 1
+      }
+    },
+    {
+      "id": "647bb8b5-ad2b-4df9-9c7d-bd579dfc1143",
+      "itemId": "f5e69deb-aa38-481d-af9e-e7c927050480",
+      "revisionNo": 5,
+      "type": "MCQ",
+      "promptData": {
+        "prompt": "DEV_S8_20261031 Y — Choose the farewell.",
+        "options": [
+          {
+            "id": "opt_1",
+            "text": "Hello"
+          },
+          {
+            "id": "opt_2",
+            "text": "Goodbye"
+          }
+        ]
+      },
+      "practiceSkillIds": [],
+      "practiceCoverageSnapshot": null,
+      "schemaVersion": 1,
+      "exactFingerprint": "5cb45b697df9da16cb4f201934d9121831bfcdd9bd6fa8384540f839f7af8111",
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "authoringLessonRevisionId": "7426de56-5dc9-448a-9b5f-0a107d7709d4",
+      "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "blueprintGeneration": "2",
+      "isDraftOmitted": false,
+      "frozenAt": null,
+      "createdAt": "2026-10-31T14:48:35.525Z",
+      "updatedAt": "2026-10-31T14:48:35.525Z",
+      "rowVersion": "1",
+      "origin": "ASSESSMENT",
+      "gradingReference": {
+        "itemRevisionId": "647bb8b5-ad2b-4df9-9c7d-bd579dfc1143",
+        "schemaVersion": 1
+      }
+    }
+  ],
+  "sourceRevisions": [
+    {
+      "id": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+      "lessonId": "96635a98-975a-487e-b8de-b80c8fd794d3",
+      "revisionNo": 10,
+      "priorRevisionId": "a0dac479-6eae-44e0-ad3e-80c3ac8833e7",
+      "changeSummary": null,
+      "assignmentId": "40cca48d-3f5a-43c7-b3df-fa8fd6b7535b",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "status": "CHANGES_REQUESTED",
+      "title": {
+        "en": "S7 S7-20261031-428834f5 — isolation proof",
+        "vi": "S7 S7-20261031-428834f5 — isolated successor draft"
+      },
+      "contentBlocks": [
+        {
+          "text": "Owned DEV retry paragraph",
+          "type": "paragraph"
+        }
+      ],
+      "topicIds": [],
+      "skillIds": [],
+      "purposeTags": [],
+      "coverageCatalogGeneration": null,
+      "coverageSnapshot": null,
+      "submittedAssignmentGeneration": "1",
+      "assignmentScopeSnapshot": {
+        "scope": {},
+        "requirement": {},
+        "schema_version": 1
+      },
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "lastEditedBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "submittedBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "submittedAt": "2026-10-31T14:36:24.178Z",
+      "approvedBy": null,
+      "approvedAt": null,
+      "publishedBy": null,
+      "publishedAt": null,
+      "endedAt": null,
+      "createdAt": "2026-10-31T10:05:09.251Z",
+      "updatedAt": "2026-10-31T14:44:12.223Z",
+      "rowVersion": "3",
+      "reviews": [
+        {
+          "id": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+          "lessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+          "assessmentVersionId": null,
+          "action": "SUBMIT",
+          "actorId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+          "assignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-10-31T14:36:24.178Z",
+          "revisionRowVersion": "2",
+          "comment": null,
+          "createdAt": "2026-10-31T14:36:25.282Z"
+        },
+        {
+          "id": "a18f6981-fd66-4baf-9e92-399bf12dd786",
+          "lessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+          "assessmentVersionId": null,
+          "action": "REQUEST_CHANGES",
+          "actorId": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+          "assignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-10-31T14:44:12.564Z",
+          "revisionRowVersion": "3",
+          "comment": "DEV_S8_20261031 — Create a successor assessment revision Y for exact-version isolation proof.",
+          "createdAt": "2026-10-31T14:44:12.565Z"
+        }
+      ],
+      "practiceSnapshot": [
+        {
+          "itemId": "d7b0f7bc-3110-4e2b-8c17-44dc99bab78d",
+          "position": 2,
+          "isCore": true,
+          "type": "LISTENING",
+          "promptData": {
+            "prompt": "S6-DEV LISTENING reference",
+            "options": [
+              {
+                "id": "opt_1",
+                "text": "Reference A"
+              },
+              {
+                "id": "opt_2",
+                "text": "Reference B"
+              }
+            ],
+            "audioUrl": "https://developer.mozilla.org/shared-assets/audio/t-rex-roar.mp3"
+          },
+          "exactFingerprint": "177bbfc931054b589ffc653a323481921922b41d76f75be43d6d6b998655d520"
+        },
+        {
+          "itemId": "fa631927-a841-42af-87a6-852a5ec81ca0",
+          "position": 3,
+          "isCore": true,
+          "type": "MCQ",
+          "promptData": {
+            "prompt": "S6-DEV MCQ edited after reload",
+            "options": [
+              {
+                "id": "opt_1",
+                "text": "Hello"
+              },
+              {
+                "id": "opt_2",
+                "text": "Goodbye"
+              }
+            ]
+          },
+          "exactFingerprint": "9c3678d6d22739aa57f2ad5ece881af609ed26eb813195a83215aa9aea0faba6"
+        }
+      ],
+      "vocabularySnapshot": [
+        {
+          "vocabularyId": "cd46c8e0-6cfc-4816-a120-356d20ce89ed",
+          "position": 4,
+          "isCore": false,
+          "displaySnapshot": {
+            "example": "S6-DEV Hello, world.",
+            "phonetic": null,
+            "senseKey": "s6-dev-greeting",
+            "languageId": "00000000-0000-0000-0000-000000000001",
+            "partOfSpeech": null,
+            "canonicalForm": "S6-DEV-20261031 hello",
+            "meaningLabels": {
+              "vi": "S6-DEV lời chào"
+            },
+            "schemaVersion": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+      "lessonId": "96635a98-975a-487e-b8de-b80c8fd794d3",
+      "revisionNo": 11,
+      "priorRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+      "changeSummary": "DEV_S8_20261031 successor source for revision Y isolation proof",
+      "assignmentId": "40cca48d-3f5a-43c7-b3df-fa8fd6b7535b",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "status": "CHANGES_REQUESTED",
+      "title": {
+        "en": "S7 S7-20261031-428834f5 — isolation proof",
+        "vi": "S7 S7-20261031-428834f5 — isolated successor draft"
+      },
+      "contentBlocks": [
+        {
+          "text": "Owned DEV retry paragraph",
+          "type": "paragraph"
+        }
+      ],
+      "topicIds": [],
+      "skillIds": [],
+      "purposeTags": [],
+      "coverageCatalogGeneration": null,
+      "coverageSnapshot": null,
+      "submittedAssignmentGeneration": "1",
+      "assignmentScopeSnapshot": {
+        "scope": {},
+        "requirement": {},
+        "schema_version": 1
+      },
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "lastEditedBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "submittedBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "submittedAt": "2026-10-31T14:46:03.077Z",
+      "approvedBy": null,
+      "approvedAt": null,
+      "publishedBy": null,
+      "publishedAt": null,
+      "endedAt": null,
+      "createdAt": "2026-10-31T14:45:12.286Z",
+      "updatedAt": "2026-10-31T14:47:29.864Z",
+      "rowVersion": "3",
+      "reviews": [
+        {
+          "id": "9cb5867f-dda3-446e-83ef-f9b7b57f9be2",
+          "lessonRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+          "assessmentVersionId": null,
+          "action": "SUBMIT",
+          "actorId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+          "assignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-10-31T14:46:03.077Z",
+          "revisionRowVersion": "2",
+          "comment": null,
+          "createdAt": "2026-10-31T14:46:04.124Z"
+        },
+        {
+          "id": "a591065d-7628-46d5-9e85-2d94737f022c",
+          "lessonRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+          "assessmentVersionId": null,
+          "action": "REQUEST_CHANGES",
+          "actorId": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+          "assignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-10-31T14:47:30.022Z",
+          "revisionRowVersion": "3",
+          "comment": "DEV_S8_20261031 — Acceptance fixture cleanup: return to a safe successor DRAFT while retaining immutable assessment evidence.",
+          "createdAt": "2026-10-31T14:47:30.023Z"
+        }
+      ],
+      "practiceSnapshot": [
+        {
+          "itemId": "d7b0f7bc-3110-4e2b-8c17-44dc99bab78d",
+          "position": 2,
+          "isCore": true,
+          "type": "LISTENING",
+          "promptData": {
+            "prompt": "S6-DEV LISTENING reference",
+            "options": [
+              {
+                "id": "opt_1",
+                "text": "Reference A"
+              },
+              {
+                "id": "opt_2",
+                "text": "Reference B"
+              }
+            ],
+            "audioUrl": "https://developer.mozilla.org/shared-assets/audio/t-rex-roar.mp3"
+          },
+          "exactFingerprint": "177bbfc931054b589ffc653a323481921922b41d76f75be43d6d6b998655d520"
+        },
+        {
+          "itemId": "fa631927-a841-42af-87a6-852a5ec81ca0",
+          "position": 3,
+          "isCore": true,
+          "type": "MCQ",
+          "promptData": {
+            "prompt": "S6-DEV MCQ edited after reload",
+            "options": [
+              {
+                "id": "opt_1",
+                "text": "Hello"
+              },
+              {
+                "id": "opt_2",
+                "text": "Goodbye"
+              }
+            ]
+          },
+          "exactFingerprint": "9c3678d6d22739aa57f2ad5ece881af609ed26eb813195a83215aa9aea0faba6"
+        }
+      ],
+      "vocabularySnapshot": [
+        {
+          "vocabularyId": "cd46c8e0-6cfc-4816-a120-356d20ce89ed",
+          "position": 4,
+          "isCore": false,
+          "displaySnapshot": {
+            "example": "S6-DEV Hello, world.",
+            "phonetic": null,
+            "senseKey": "s6-dev-greeting",
+            "languageId": "00000000-0000-0000-0000-000000000001",
+            "partOfSpeech": null,
+            "canonicalForm": "S6-DEV-20261031 hello",
+            "meaningLabels": {
+              "vi": "S6-DEV lời chào"
+            },
+            "schemaVersion": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "7426de56-5dc9-448a-9b5f-0a107d7709d4",
+      "lessonId": "96635a98-975a-487e-b8de-b80c8fd794d3",
+      "revisionNo": 12,
+      "priorRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+      "changeSummary": "DEV_S8_20261031 fixture runtime baseline restored; persistent assessment lineage allowlisted",
+      "assignmentId": "40cca48d-3f5a-43c7-b3df-fa8fd6b7535b",
+      "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+      "status": "DRAFT",
+      "title": {
+        "en": "S7 S7-20261031-428834f5 — isolation proof",
+        "vi": "S7 S7-20261031-428834f5 — isolated successor draft"
+      },
+      "contentBlocks": [
+        {
+          "text": "Owned DEV retry paragraph",
+          "type": "paragraph"
+        }
+      ],
+      "topicIds": [],
+      "skillIds": [],
+      "purposeTags": [],
+      "coverageCatalogGeneration": null,
+      "coverageSnapshot": null,
+      "submittedAssignmentGeneration": null,
+      "assignmentScopeSnapshot": null,
+      "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "lastEditedBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "submittedBy": null,
+      "submittedAt": null,
+      "approvedBy": null,
+      "approvedAt": null,
+      "publishedBy": null,
+      "publishedAt": null,
+      "endedAt": null,
+      "createdAt": "2026-10-31T14:48:32.741Z",
+      "updatedAt": "2026-10-31T14:48:32.741Z",
+      "rowVersion": "1",
+      "reviews": [],
+      "practiceSnapshot": [
+        {
+          "itemId": "d7b0f7bc-3110-4e2b-8c17-44dc99bab78d",
+          "position": 2,
+          "isCore": true,
+          "type": "LISTENING",
+          "promptData": {
+            "prompt": "S6-DEV LISTENING reference",
+            "options": [
+              {
+                "id": "opt_1",
+                "text": "Reference A"
+              },
+              {
+                "id": "opt_2",
+                "text": "Reference B"
+              }
+            ],
+            "audioUrl": "https://developer.mozilla.org/shared-assets/audio/t-rex-roar.mp3"
+          },
+          "exactFingerprint": "177bbfc931054b589ffc653a323481921922b41d76f75be43d6d6b998655d520"
+        },
+        {
+          "itemId": "fa631927-a841-42af-87a6-852a5ec81ca0",
+          "position": 3,
+          "isCore": true,
+          "type": "MCQ",
+          "promptData": {
+            "prompt": "S6-DEV MCQ edited after reload",
+            "options": [
+              {
+                "id": "opt_1",
+                "text": "Hello"
+              },
+              {
+                "id": "opt_2",
+                "text": "Goodbye"
+              }
+            ]
+          },
+          "exactFingerprint": "9c3678d6d22739aa57f2ad5ece881af609ed26eb813195a83215aa9aea0faba6"
+        }
+      ],
+      "vocabularySnapshot": [
+        {
+          "vocabularyId": "cd46c8e0-6cfc-4816-a120-356d20ce89ed",
+          "position": 4,
+          "isCore": false,
+          "displaySnapshot": {
+            "example": "S6-DEV Hello, world.",
+            "phonetic": null,
+            "senseKey": "s6-dev-greeting",
+            "languageId": "00000000-0000-0000-0000-000000000001",
+            "partOfSpeech": null,
+            "canonicalForm": "S6-DEV-20261031 hello",
+            "meaningLabels": {
+              "vi": "S6-DEV lời chào"
+            },
+            "schemaVersion": 1
+          }
+        }
+      ]
+    }
+  ],
+  "runtimeRestoration": {
+    "teacher": {
+      "id": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "role": "TEACHER",
+      "status": "DISABLED",
+      "displayName": "S5-DEV-20261030143359",
+      "rowVersion": "21"
+    },
+    "course": {
+      "id": "4a7024f1-d24a-42d8-9d3a-3591b67229ca",
+      "isActive": false,
+      "rowVersion": "2"
+    },
+    "lesson": {
+      "id": "96635a98-975a-487e-b8de-b80c8fd794d3",
+      "unitId": "4b7b89f5-37a3-4720-b7f2-77f0744d8210",
+      "position": 1,
+      "isRequired": false,
+      "availability": "PLANNED",
+      "activeRevisionId": "a0dac479-6eae-44e0-ad3e-80c3ac8833e7",
+      "createdAt": "2026-10-30T14:36:38.688Z",
+      "updatedAt": "2026-10-31T14:48:35.964Z",
+      "rowVersion": "20"
+    },
+    "published": {
+      "id": "a0dac479-6eae-44e0-ad3e-80c3ac8833e7",
+      "revisionNo": 9,
+      "status": "PUBLISHED",
+      "publishedBy": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+      "publishedAt": "2026-10-31T10:04:48.912Z",
+      "rowVersion": "4"
+    },
+    "assignment": {
+      "id": "40cca48d-3f5a-43c7-b3df-fa8fd6b7535b",
+      "createdBy": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+      "currentTeacherId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+      "lessonId": "96635a98-975a-487e-b8de-b80c8fd794d3",
+      "requirement": {},
+      "scope": {},
+      "scopeGeneration": "1",
+      "createdAt": "2026-10-30T14:37:11.175Z",
+      "updatedAt": "2026-10-30T14:37:11.175Z",
+      "rowVersion": "1"
+    },
+    "teacherAuthSessionCount": 0
+  },
+  "allowlistedPersistent": {
+    "blueprintIds": [
+      "75bf3fab-5f33-44f2-9e28-62abfdcfe990"
+    ],
+    "versionIds": [
+      "7b9b26ec-246f-4159-ae42-4ec1c76ab75a"
+    ],
+    "assessmentIdentityIds": [
+      "f5e69deb-aa38-481d-af9e-e7c927050480",
+      "249ef56e-40d3-4412-ab2f-f13c5e86d13a",
+      "c0f04ba0-7854-44d5-aa87-2b446e24b888"
+    ],
+    "assessmentRevisionIds": [
+      "10563ff0-931e-4b87-b6cf-df7fe841ddbd",
+      "dc52b785-eaa4-4bbe-a0ba-9ff587468615",
+      "4b429376-f017-464a-8627-dacee2c2cc09",
+      "cdd24402-c63f-40c1-937a-eaf911a18ba3",
+      "e3f2b933-5a07-4dff-b3b3-eb728cdd90ff",
+      "ce030d35-5cfc-4e49-9da9-328dc3fe0d34",
+      "52b7b90a-271d-4c15-a08a-d3b0d8ff668b",
+      "d78de903-912c-42a6-87a9-9837e9df9075",
+      "0b779e34-26dc-4ed1-9a7c-b0b42aa5c17f",
+      "ec0f32f4-aa95-4ffc-89d2-19ce90ba939e",
+      "647bb8b5-ad2b-4df9-9c7d-bd579dfc1143"
+    ],
+    "sourceRevisionIds": [
+      "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+      "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+      "7426de56-5dc9-448a-9b5f-0a107d7709d4"
+    ],
+    "newPracticeRevisionIds": [
+      "5a7ee0b1-caf2-4ee0-9f09-e08c3c1643ca",
+      "1d091e6a-f70c-4c2f-9241-672b7f13d1a7",
+      "2a498b34-bdb7-4ed9-b26d-fd61162fe098",
+      "3bb0394d-880c-42c5-afe9-4f5e21ac99d4"
+    ],
+    "reviews": [
+      {
+        "id": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+        "lessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+        "assessmentVersionId": null,
+        "actorId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+        "action": "SUBMIT"
+      },
+      {
+        "id": "a18f6981-fd66-4baf-9e92-399bf12dd786",
+        "lessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+        "assessmentVersionId": null,
+        "actorId": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+        "action": "REQUEST_CHANGES"
+      },
+      {
+        "id": "9cb5867f-dda3-446e-83ef-f9b7b57f9be2",
+        "lessonRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+        "assessmentVersionId": null,
+        "actorId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+        "action": "SUBMIT"
+      },
+      {
+        "id": "a591065d-7628-46d5-9e85-2d94737f022c",
+        "lessonRevisionId": "b0ba3173-3ff5-410c-b10e-dd839602ada3",
+        "assessmentVersionId": null,
+        "actorId": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+        "action": "REQUEST_CHANGES"
+      }
+    ],
+    "receipts": [],
+    "audits": [
+      {
+        "id": "e9b2ea63-af1d-46c0-8a79-1925fd4c7ef9",
+        "actorId": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+        "action": "TEACHER_ENABLED",
+        "targetType": "ACCOUNT",
+        "targetId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+        "targetVersionId": null,
+        "outcome": "SUCCESS",
+        "reason": "Slice 8 public DEV acceptance; restore to DISABLED after the test.",
+        "occurredAt": "2026-10-31T13:57:52.281Z"
+      },
+      {
+        "id": "113aa882-ceb6-440c-baca-ff4226188138",
+        "actorId": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+        "action": "TEACHER_DISABLED",
+        "targetType": "ACCOUNT",
+        "targetId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+        "targetVersionId": null,
+        "outcome": "SUCCESS",
+        "reason": "DEV_S8_20261031 public acceptance complete; restore fixture baseline DISABLED.",
+        "occurredAt": "2026-10-31T14:49:49.129Z"
+      }
+    ],
+    "auth": "User-directed credential rotation and provider Auth audit history retained; unknown original credential cannot be restored. No credential/token/storageState saved by agent."
+  },
+  "unexpectedResidue": {
+    "language": 0,
+    "framework": 0,
+    "level": 0,
+    "vocabularyConcept": 0,
+    "mediaAsset": 0,
+    "account": 0,
+    "course": 0,
+    "unit": 0,
+    "lesson": 0,
+    "otherBlueprints": 0,
+    "otherAssessmentVersions": 0,
+    "otherItemIdentities": 0,
+    "otherLessonRevisions": 0,
+    "otherItemRevisions": 0,
+    "priorLessonRevisionMutations": 0,
+    "priorItemRevisionMutations": 0
+  },
+  "unexpectedResidueCount": 0,
+  "browserCleanup": {
+    "teacherLogoutVerified": true,
+    "adminLogoutVerified": true,
+    "agentCreatedTestTabsRemaining": 0,
+    "preExistingVercelTabUntouched": true,
+    "credentialsOrStorageStateSaved": false
+  }
+}

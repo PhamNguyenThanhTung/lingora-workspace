@@ -50,3 +50,13 @@ Codex review/fixes: persisted-child dirty checking, complete exercise detail dis
 Public DEV submit/review/request-changes/approve/publish, stale conflict/reload retry, exact revision isolation, and read-only SQL all PASS on the `READY` deployment for commit `04c14951523137eb1b931817d335545219d8991a`. Teacher is DISABLED and Course inactive; only allowlisted workflow history and the published pointer remain; unexpected residue 0. See [Slice 7 verification](slice-7-verification.md). No Slice 8 work.
 
 `SLICE 7: PASS — SLICE 7 ACCEPTED`
+
+## Slice 8 — PASS / ACCEPTED
+
+Assessment Authoring Foundation completed against the existing schema: typed flat Blueprint composition, ACTIVE Admin management/assembly, assigned Teacher ASSESSMENT revision authoring, real source SUBMIT provenance and immutable concrete version pins. Product decision preserves truthful Teacher `createdBy`; no migration or sections/runtime scoring scope.
+
+Initial full local suites, typecheck/build, independent review and A–G mutation controls PASS. Public acceptance found a Prisma default transaction timeout; Codex fixed only the assembly timeout and added a RED→GREEN round-trip regression. Affected domain17/17, routes4/4, components8/8, typecheck/build and diff check PASS. Fix commit `0f73586ffd2278d39378418ba5f3c004b556e3aa` deployed READY before the successful public retry.
+
+Public Blueprint create/edit, Teacher source submissions r10/r11, real composition failure with retained selection, successful V1 assembly, and X→Y exact prompt/grading-reference isolation PASS. Read-only DB checks PASS; safe DRAFT r12 restored, published r9 pointer unchanged, Teacher DISABLED/Auth session count0, Course inactive, unexpected residue0. Explicit DEV_S8 history and authorized credential rotation retained; both test sessions logged out and tabs closed. See [Slice 8 verification](slice-8-verification.md) and [DB evidence](2026-10-31-slice-8-public-dev-evidence.json). No Slice 9 work.
+
+`SLICE 8: PASS — SLICE 8 ACCEPTED`

@@ -1,0 +1,214 @@
+{
+  "capturedAt": "2026-10-31T14:44:04.587Z",
+  "blueprint": {
+    "id": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+    "createdBy": "5650336e-550c-413d-b2a8-4afa2e4d9160",
+    "languageId": "00000000-0000-0000-0000-000000000001",
+    "frameworkId": "00000000-0000-0000-0000-000000000010",
+    "courseId": "4a7024f1-d24a-42d8-9d3a-3591b67229ca",
+    "purpose": "LEVEL_UP",
+    "targetLevelId": "00000000-0000-0000-0000-000000000021",
+    "nextLevelId": "00000000-0000-0000-0000-000000000022",
+    "coverage": {
+      "itemCount": 2,
+      "exerciseTypes": [
+        "MCQ",
+        "FILL_BLANK"
+      ]
+    },
+    "requirements": {
+      "minimumItemsByType": {
+        "MCQ": 1,
+        "FILL_BLANK": 1
+      }
+    },
+    "config": {
+      "shuffleItems": false,
+      "shuffleOptions": false
+    },
+    "coverageCatalogGeneration": "1",
+    "generation": "2",
+    "createdAt": "2026-10-31T13:53:46.445Z",
+    "updatedAt": "2026-10-31T13:54:01.612Z",
+    "rowVersion": "2"
+  },
+  "versions": [
+    {
+      "id": "7b9b26ec-246f-4159-ae42-4ec1c76ab75a",
+      "blueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+      "versionNo": 1,
+      "blueprintGeneration": "2",
+      "blueprintSnapshot": {
+        "config": {
+          "shuffleItems": false,
+          "shuffleOptions": false
+        },
+        "purpose": "LEVEL_UP",
+        "coverage": {
+          "itemCount": 2,
+          "exerciseTypes": [
+            "MCQ",
+            "FILL_BLANK"
+          ]
+        },
+        "course_id": "4a7024f1-d24a-42d8-9d3a-3591b67229ca",
+        "language_id": "00000000-0000-0000-0000-000000000001",
+        "blueprint_id": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+        "framework_id": "00000000-0000-0000-0000-000000000010",
+        "requirements": {
+          "minimumItemsByType": {
+            "MCQ": 1,
+            "FILL_BLANK": 1
+          }
+        },
+        "next_level_id": "00000000-0000-0000-0000-000000000022",
+        "schema_version": 1,
+        "target_level_id": "00000000-0000-0000-0000-000000000021",
+        "blueprint_generation": 2,
+        "coverage_catalog_generation": 1
+      },
+      "assembledAt": "2026-10-31T14:42:29.749Z",
+      "assemblyInputHash": "ec989434e51f37f7048e5e2d312c0856a75e5bd44561ddb85e8c6e93a4bd6072",
+      "status": "IN_REVIEW",
+      "isActive": false,
+      "approvedBy": null,
+      "approvedAt": null,
+      "publishedBy": null,
+      "publishedAt": null,
+      "endedAt": null,
+      "createdAt": "2026-10-31T14:42:24.186Z",
+      "updatedAt": "2026-10-31T14:42:24.186Z",
+      "rowVersion": "1",
+      "items": [
+        {
+          "id": "2c5982d1-9d01-4882-a2fe-102ffe29b4ff",
+          "assessmentVersionId": "7b9b26ec-246f-4159-ae42-4ec1c76ab75a",
+          "itemRevisionId": "52b7b90a-271d-4c15-a08a-d3b0d8ff668b",
+          "itemId": "f5e69deb-aa38-481d-af9e-e7c927050480",
+          "sourceLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+          "sourceSubmissionId": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+          "contributionAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+          "position": 1,
+          "weight": "1",
+          "coverageTags": {},
+          "createdAt": "2026-10-31T14:42:30.830Z",
+          "itemRevision": {
+            "id": "52b7b90a-271d-4c15-a08a-d3b0d8ff668b",
+            "itemId": "f5e69deb-aa38-481d-af9e-e7c927050480",
+            "revisionNo": 1,
+            "type": "MCQ",
+            "promptData": {
+              "prompt": "DEV_S8_20261031 X — Choose the greeting.",
+              "options": [
+                {
+                  "id": "opt_1",
+                  "text": "Hello"
+                },
+                {
+                  "id": "opt_2",
+                  "text": "Goodbye"
+                }
+              ]
+            },
+            "exactFingerprint": "9e4f5266d16c3bc64e8c90f2d0533e6a90d97f5a59e9ea6ecda5218f47d5c135",
+            "frozenAt": "2026-10-31T14:42:29.749Z",
+            "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+            "blueprintGeneration": "2",
+            "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+            "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+            "authoringLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+            "gradingSecret": {
+              "itemRevisionId": "52b7b90a-271d-4c15-a08a-d3b0d8ff668b",
+              "schemaVersion": 1
+            }
+          },
+          "sourceSubmission": {
+            "id": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+            "lessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+            "assessmentVersionId": null,
+            "action": "SUBMIT",
+            "actorId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+            "assignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+            "assignmentGeneration": "1",
+            "assignmentScopeSnapshot": {
+              "scope": {},
+              "requirement": {},
+              "schema_version": 1
+            },
+            "blueprintGeneration": null,
+            "feedbackItemIds": [],
+            "occurredAt": "2026-10-31T14:36:24.178Z",
+            "revisionRowVersion": "2",
+            "comment": null,
+            "createdAt": "2026-10-31T14:36:25.282Z"
+          }
+        },
+        {
+          "id": "f7424b20-a0b9-413b-8c32-b4b6603642c6",
+          "assessmentVersionId": "7b9b26ec-246f-4159-ae42-4ec1c76ab75a",
+          "itemRevisionId": "cdd24402-c63f-40c1-937a-eaf911a18ba3",
+          "itemId": "c0f04ba0-7854-44d5-aa87-2b446e24b888",
+          "sourceLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+          "sourceSubmissionId": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+          "contributionAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+          "position": 2,
+          "weight": "1",
+          "coverageTags": {},
+          "createdAt": "2026-10-31T14:42:31.138Z",
+          "itemRevision": {
+            "id": "cdd24402-c63f-40c1-937a-eaf911a18ba3",
+            "itemId": "c0f04ba0-7854-44d5-aa87-2b446e24b888",
+            "revisionNo": 1,
+            "type": "FILL_BLANK",
+            "promptData": {
+              "prompt": "DEV_S8_20261031 FILL — Complete the sentence.",
+              "sentence": "I ____ a student."
+            },
+            "exactFingerprint": "750eeac58b81ab20700b4778462c4dde81327d2fc30710efa7db901fcc3d183f",
+            "frozenAt": "2026-10-31T14:42:29.749Z",
+            "assessmentBlueprintId": "75bf3fab-5f33-44f2-9e28-62abfdcfe990",
+            "blueprintGeneration": "2",
+            "createdBy": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+            "creationAssignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+            "authoringLessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+            "gradingSecret": {
+              "itemRevisionId": "cdd24402-c63f-40c1-937a-eaf911a18ba3",
+              "schemaVersion": 1
+            }
+          },
+          "sourceSubmission": {
+            "id": "9a1c3e85-b815-4e0d-a418-1e3f3f5b1973",
+            "lessonRevisionId": "fb9acf29-fdf2-488d-a7c1-71689eaadbe2",
+            "assessmentVersionId": null,
+            "action": "SUBMIT",
+            "actorId": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+            "assignmentEpisodeId": "32008c0d-b858-4752-82f1-0611f7f02e76",
+            "assignmentGeneration": "1",
+            "assignmentScopeSnapshot": {
+              "scope": {},
+              "requirement": {},
+              "schema_version": 1
+            },
+            "blueprintGeneration": null,
+            "feedbackItemIds": [],
+            "occurredAt": "2026-10-31T14:36:24.178Z",
+            "revisionRowVersion": "2",
+            "comment": null,
+            "createdAt": "2026-10-31T14:36:25.282Z"
+          }
+        }
+      ]
+    }
+  ],
+  "lesson": {
+    "id": "96635a98-975a-487e-b8de-b80c8fd794d3",
+    "unitId": "4b7b89f5-37a3-4720-b7f2-77f0744d8210",
+    "position": 1,
+    "isRequired": false,
+    "availability": "PLANNED",
+    "activeRevisionId": "a0dac479-6eae-44e0-ad3e-80c3ac8833e7",
+    "createdAt": "2026-10-30T14:36:38.688Z",
+    "updatedAt": "2026-10-31T14:36:24.973Z",
+    "rowVersion": "17"
+  }
+}

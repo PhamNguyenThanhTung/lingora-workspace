@@ -1,0 +1,225 @@
+Browser tab: 6, Title: "Lingora Admin", URL: "https://lingora-workspace.vercel.app/assessments".
+1 AXWebArea Lingora Admin, URL: lingora-workspace.vercel.app/assessments
+	2 container appContainer
+		3 container Điều hướng chính
+			4 text Lingora
+			5 text Quản trị & Giảng dạy
+			6 container
+				7 link Description: Quản lý ngôn ngữ, Value: lingora-workspace.vercel.app/languages, ID: navLanguages
+				8 link Description: Khung năng lực, Value: lingora-workspace.vercel.app/frameworks, ID: navFrameworks
+				9 link Description: Khóa học, Value: lingora-workspace.vercel.app/courses, ID: navCourses
+				10 link Description: Giáo viên, Value: lingora-workspace.vercel.app/teachers, ID: navTeachers
+				11 link Description: Đánh giá, Value: lingora-workspace.vercel.app/assessments, ID: navAssessments
+				12 link Description: Kiểm duyệt, Value: lingora-workspace.vercel.app/review, ID: navReview
+			13 text Quản trị viên
+			14 button Description: Đăng xuất, ID: btnLogout
+				15 image
+		16 container assessmentCatalog
+			17 container
+				18 heading Đánh giá, Value: 1
+					19 text Đánh giá
+				20 text Quản lý Blueprint, kiểm tra bài tập đã nộp và ghép phiên bản cố định.
+			21 container Assessment Blueprint
+				22 heading Assessment Blueprint, Value: 2, ID: blueprintHeading
+					23 text Assessment Blueprint
+				24 text Blueprint không có tiêu đề riêng; nhận diện theo mục đích, khóa học và mã ngắn.
+				25 container
+					26 text Blueprint hiện có
+					27 pop up button (collapsed, settable) Blueprint hiện có, Value: LEVEL_UP · S5-DEV-20261030143359 · 75bf3fab, Secondary Actions: Expand
+						28 menu
+							29 Tạo Blueprint mới
+							30 (selected) LEVEL_UP · S5-DEV-20261030143359 · 75bf3fab
+				31 container
+					32 text Khóa học *
+					33 pop up button (disabled, collapsed, settable) Khóa học *, Value: S5-DEV-20261030143359 · en, Secondary Actions: Expand
+						34 menu
+							35 (disabled) Chọn khóa học
+							36 (disabled) S5-DEV-20261030143359 · en
+							37 (disabled) [DEV] Chương trình tiếng Anh chuẩn · en
+					38 text Mục đích *
+					39 pop up button (disabled, collapsed, settable) Mục đích *, Value: LEVEL_UP, Secondary Actions: Expand
+						40 menu
+							41 (disabled) PLACEMENT
+							42 (disabled) LEVEL_UP
+					43 text Target level
+					44 pop up button (disabled, collapsed, settable) Target level, Value: A1 · Mới bắt đầu, Secondary Actions: Expand
+						45 menu
+							46 (disabled) Không đặt
+							47 (disabled) A1 · Mới bắt đầu
+							48 (disabled) A2 · Sơ cấp
+							49 (disabled) B1 · Trung cấp
+							50 (disabled) B2 · Trung cao cấp
+					51 text Next level
+					52 pop up button (disabled, collapsed, settable) Next level, Value: A2 · Sơ cấp, Secondary Actions: Expand
+						53 menu
+							54 (disabled) Không đặt
+							55 (disabled) A1 · Mới bắt đầu
+							56 (disabled) A2 · Sơ cấp
+							57 (disabled) B1 · Trung cấp
+							58 (disabled) B2 · Trung cao cấp
+					59 text Số câu *
+					60 stepper (settable, integer) Số câu *, Value: 2
+					61 text Mục đích và level đã khóa vì Blueprint có phiên bản. Có thể cập nhật composition và config để sinh generation mới.
+					62 container Kiểu bài tập được phép *
+						63 text Kiểu bài tập được phép *
+						64 container
+							65 checkbox (settable, integer) Description: MCQ, Value: 1, ID: includeType-MCQ
+							66 text MCQ
+						67 container
+							68 checkbox (settable, integer) Description: FILL_BLANK, Value: 1, ID: includeType-FILL_BLANK
+							69 text FILL_BLANK
+						70 container
+							71 checkbox (settable, integer) Description: REORDER, Value: 0, ID: includeType-REORDER
+							72 text REORDER
+						73 container
+							74 checkbox (settable, integer) Description: LISTENING, Value: 0, ID: includeType-LISTENING
+							75 text LISTENING
+						76 container
+							77 checkbox (settable, integer) Description: GRAMMAR, Value: 0, ID: includeType-GRAMMAR
+							78 text GRAMMAR
+					79 container Số lượng tối thiểu theo kiểu (tùy chọn)
+						80 text Số lượng tối thiểu theo kiểu (tùy chọn)
+						81 container
+							82 text MCQ
+							83 stepper (settable, integer) MCQ, Value: 1, ID: minimum-MCQ
+						84 container
+							85 text FILL_BLANK
+							86 stepper (settable, integer) FILL_BLANK, Value: 1, ID: minimum-FILL_BLANK
+					87 container Cấu hình trộn
+						88 text Cấu hình trộn
+						89 checkbox (settable, integer) Description: Trộn câu hỏi, Value: 0
+						90 checkbox (settable, integer) Description: Trộn lựa chọn, Value: 0
+					91 button Lưu Blueprint
+					92 button Mẫu mới
+					93 button (disabled) Xóa chưa sử dụng
+					94 text Generation  2  · Row version  2  · Versions  1
+			95 container Bài tập đã nộp và lắp ghép phiên bản
+				96 heading Bài tập đã nộp và lắp ghép phiên bản, Value: 2, ID: assemblyHeading
+					97 text Bài tập đã nộp và lắp ghép phiên bản
+				98 container
+					99 text Chọn đúng  2  định danh bài tập; thứ tự chọn được dùng làm vị trí và có thể sắp xếp lại.
+				100 table Bài tập đánh giá đã nộp
+					101 row
+						102 cell
+							103 text Chọn
+						104 cell
+							105 text Kiểu
+						106 cell
+							107 text Câu hỏi
+						108 cell
+							109 text Bản học
+						110 cell
+							111 text Revision ID
+					112 row
+						113 cell
+							114 checkbox (settable, integer) Description: Chọn 0b779e34-26dc-4ed1-9a7c-b0b42aa5c17f, Value: 0
+						115 cell
+							116 text MCQ
+						117 cell
+							118 text DEV_S8_20261031 Y — Choose the farewell.
+						119 cell
+							120 text S5DEV  · # 1  · r 11
+						121 cell
+							122 text 0b779e34-26dc-4ed1-9a7c-b0b42aa5c17f
+					123 row
+						124 cell
+							125 checkbox (settable, integer) Description: Chọn d78de903-912c-42a6-87a9-9837e9df9075, Value: 0
+						126 cell
+							127 text MCQ
+						128 cell
+							129 text DEV_S8_20261031 X — Choose the greeting.
+						130 cell
+							131 text S5DEV  · # 1  · r 11
+						132 cell
+							133 text d78de903-912c-42a6-87a9-9837e9df9075
+					134 row
+						135 cell
+							136 checkbox (settable, integer) Description: Chọn e3f2b933-5a07-4dff-b3b3-eb728cdd90ff, Value: 0
+						137 cell
+							138 text FILL_BLANK
+						139 cell
+							140 text DEV_S8_20261031 FILL — Complete the sentence.
+						141 cell
+							142 text S5DEV  · # 1  · r 11
+						143 cell
+							144 text e3f2b933-5a07-4dff-b3b3-eb728cdd90ff
+					145 row
+						146 cell
+							147 checkbox (settable, integer) Description: Chọn dc52b785-eaa4-4bbe-a0ba-9ff587468615, Value: 0
+						148 cell
+							149 text MCQ
+						150 cell
+							151 text DEV_S8_20261031 RETRY — Choose the color.
+						152 cell
+							153 text S5DEV  · # 1  · r 11
+						154 cell
+							155 text dc52b785-eaa4-4bbe-a0ba-9ff587468615
+					156 row
+						157 cell
+							158 checkbox (settable, integer) Description: Chọn cdd24402-c63f-40c1-937a-eaf911a18ba3, Value: 0
+						159 cell
+							160 text FILL_BLANK
+						161 cell
+							162 text DEV_S8_20261031 FILL — Complete the sentence.
+						163 cell
+							164 text S5DEV  · # 1  · r 10
+						165 cell
+							166 text cdd24402-c63f-40c1-937a-eaf911a18ba3
+					167 row
+						168 cell
+							169 checkbox (settable, integer) Description: Chọn 10563ff0-931e-4b87-b6cf-df7fe841ddbd, Value: 0
+						170 cell
+							171 text MCQ
+						172 cell
+							173 text DEV_S8_20261031 RETRY — Choose the color.
+						174 cell
+							175 text S5DEV  · # 1  · r 10
+						176 cell
+							177 text 10563ff0-931e-4b87-b6cf-df7fe841ddbd
+					178 row
+						179 cell
+							180 checkbox (settable, integer) Description: Chọn 52b7b90a-271d-4c15-a08a-d3b0d8ff668b, Value: 0
+						181 cell
+							182 text MCQ
+						183 cell
+							184 text DEV_S8_20261031 X — Choose the greeting.
+						185 cell
+							186 text S5DEV  · # 1  · r 10
+						187 cell
+							188 text 52b7b90a-271d-4c15-a08a-d3b0d8ff668b
+				189 heading Lựa chọn và vị trí, Value: 3
+					190 text Lựa chọn và vị trí
+				191 text Chưa chọn bài tập.
+				192 container
+					193 text Đang chọn  0 / 2 .  MCQ: 0/1 tối thiểu · FILL_BLANK: 0/1 tối thiểu
+				194 button (disabled) Lắp ghép phiên bản IN_REVIEW
+				195 heading Phiên bản đã tạo, Value: 3
+					196 text Phiên bản đã tạo
+				197 content list
+					198 container
+						199 AXListMarker •
+						200 button #1 · IN_REVIEW · 2 câu · 7b9b26ec
+							201 text #
+							202 text 1
+							203 text  ·
+							204 text IN_REVIEW
+							205 text  ·
+							206 text 2
+							207 text  câu ·
+							208 text 7b9b26ec
+				209 container selectedAssessmentVersion
+					210 heading Phiên bản #1 · IN_REVIEW, Value: 4
+						211 text Phiên bản # 1  ·  IN_REVIEW
+					212 container
+						213 text Hash:  ec989434e51f37f7048e5e2d312c0856a75e5bd44561ddb85e8c6e93a4bd6072
+					214 container
+						215 text Blueprint generation:  2 ; snapshot generation:  2 ; catalog generation:  1
+					216 content list
+						217 container
+							218 AXListMarker 1.
+							219 text Vị trí  1 : item  f5e69deb-aa38-481d-af9e-e7c927050480 , revision  52b7b90a-271d-4c15-a08a-d3b0d8ff668b , source r 10  —  DEV_S8_20261031 X — Choose the greeting.
+						220 container
+							221 AXListMarker 2.
+							222 text Vị trí  2 : item  c0f04ba0-7854-44d5-aa87-2b446e24b888 , revision  cdd24402-c63f-40c1-937a-eaf911a18ba3 , source r 10  —  DEV_S8_20261031 FILL — Complete the sentence.
+
+The focused UI element is 200 button #1 · IN_REVIEW · 2 câu · 7b9b26ec
