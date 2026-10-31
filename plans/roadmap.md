@@ -67,11 +67,12 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Feature386/386, components106/106, typecheck/build PASS; A–G KILLED, byte-exact restore. Live exercise/vocabulary/retry/revision/lifecycle proof PASS; retained allowlisted DEV set, unexpected residue0, Teacher DISABLED/Course inactive. See [verification](slice-6-verification.md).
 - No schema/migration; Slice7 is the current workflow task.
 
-## Slice 7 — Submit / Review / Publish (local PASS, public pending)
+## Slice 7 — Submit / Review / Publish (PASS / ACCEPTED)
 
 - Uses exact `LessonRevision` identity and append-only `RevisionReview` events; only ACTIVE ADMIN reviews and publishes. `Lesson.activeRevisionId` remains separate from availability.
 - Teacher submit pins the current persisted revision and assignment episode. Admin queue/detail render that snapshot. Request-changes creates an authoring successor; approve and publish enforce exact state/version guards.
 - Publishing updates the pointer transactionally. New drafts preserve the current published revision and its content; republishing archives the previous publication with an event.
 - Production UI callbacks are exercised for Teacher submit and Admin request-changes/approve/publish, including pending, retry, stale, 401 and 403 behavior.
 - Local feature391/391, components113/113, typecheck/build PASS; mutation controls A–H KILLED with byte-exact source restore. No schema/migration or Slice8 work.
-- Public DEV deployment/readiness, live workflow, SQL evidence, and fixture restoration remain pending. See [Slice 7 verification](slice-7-verification.md).
+- Public DEV flow and read-only SQL evidence PASS on production deployment for commit `04c14951523137eb1b931817d335545219d8991a`; Teacher DISABLED/Course inactive, allowlisted workflow history retained, unexpected residue 0. See [Slice 7 verification](slice-7-verification.md).
+- SLICE 7 ACCEPTED. Slice 8 has not started.
