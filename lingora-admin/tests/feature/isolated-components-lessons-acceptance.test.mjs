@@ -68,7 +68,7 @@ test('Production Teacher callback sends exact whitelist and renders authoritativ
   await page.locator('#inputDraftTitleVi').fill('CLIENT TITLE'); await page.locator('#inputDraftTitleEn').fill('');
   await page.locator('#inputParagraph-0').fill('CLIENT BODY'); await page.locator('#inputDraftChangeSummary').fill('CLIENT SUMMARY');
   await page.locator('#btnSaveDraft').click(); await page.locator('#draftSaveSuccess').waitFor();
-  assert.deepEqual(calls, [{ path: `/api/teacher/lessons/${base.id}/draft`, method: 'PATCH', body: { title: { vi: 'CLIENT TITLE', en: '' }, contentBlocks: [{ type: 'paragraph', text: 'CLIENT BODY' }], changeSummary: 'CLIENT SUMMARY', expectedRowVersion: '1', expectedRevisionId: '77777777-7777-7777-8777-777777777001', exercises: [], vocabulary: [] } }]);
+  assert.deepEqual(calls.filter(call => call.path === `/api/teacher/lessons/${base.id}/draft`), [{ path: `/api/teacher/lessons/${base.id}/draft`, method: 'PATCH', body: { title: { vi: 'CLIENT TITLE', en: '' }, contentBlocks: [{ type: 'paragraph', text: 'CLIENT BODY' }], changeSummary: 'CLIENT SUMMARY', expectedRowVersion: '1', expectedRevisionId: '77777777-7777-7777-8777-777777777001', exercises: [], vocabulary: [] } }]);
   assert.equal(await page.locator('#inputDraftTitleVi').inputValue(), 'SERVER TITLE');
   assert.equal(await page.locator('#inputDraftTitleEn').inputValue(), '');
   assert.equal(await page.locator('#inputParagraph-0').inputValue(), 'SERVER BODY');
@@ -82,10 +82,17 @@ test('Production Teacher callback sends exact whitelist and renders authoritativ
 test('Teacher pending save blocks duplicates/navigation; 503 preserves input and retry reconciles', { timeout: 15000 }, async () => withPage('page-teacher-draft-wire', async page => {
   const { initialLesson: base } = await page.evaluate(() => window.__PAGE_PROPS__);
   let release, count = 0; const held = new Promise(r => { release = r; });
-  await page.route('**/api/**', async route => { count++; if (count === 1) { await held; return fulfill(route, 503, { error: { message: 'Temporarily unavailable' } }); } return fulfill(route, 200, { data: returnedDraft(base) }); });
+  await page.route('**/api/**', async route => {
+    const req = route.request();
+    if (new URL(req.url()).pathname !== `/api/teacher/lessons/${base.id}/draft` || req.method() !== 'PATCH') return fulfill(route, 200, { data: [] });
+    count++;
+    if (count === 1) { await held; return fulfill(route, 503, { error: { message: 'Temporarily unavailable' } }); }
+    return fulfill(route, 200, { data: returnedDraft(base) });
+  });
   try {
     await page.locator('#inputDraftTitleVi').fill('RETAIN ME'); await page.locator('#btnSaveDraft').click();
     await page.waitForFunction(() => document.querySelector('#btnSaveDraft')?.disabled);
+    assert.equal(await page.locator('#readOnlyReasonBanner').count(), 0, 'a pending save is not a read-only state');
     await page.evaluate(() => { document.querySelector('#lessonDraftForm').requestSubmit(); document.querySelector('#lessonDraftForm').requestSubmit(); document.querySelector('#btnCancelDraft').click(); });
     assert.equal(count, 1); assert.match(page.url(), /page-teacher-draft-wire/);
     assert.equal(await page.locator('#inputDraftTitleVi').isDisabled(), true);
@@ -135,6 +142,7 @@ test('Production Teacher list uses real assigned props and unsupported draft sta
 for (const code of ['DRAFT_NOT_EDITABLE', 'UNSUPPORTED_DRAFT_CONTENT']) test(`Teacher save ${code} switches to read-only without false success`, async () => withPage('page-teacher-draft-wire', async page => {
   await page.route('**/api/**', route => fulfill(route, 409, { error: { code, message: 'Nội dung đã bị khóa.' } }));
   await page.locator('#btnSaveDraft').click(); await page.locator('#readOnlyReasonBanner').waitFor();
+  await page.locator('#btnSaveDraft').waitFor({ state: 'detached' });
   assert.equal(await page.locator('#btnSaveDraft').count(), 0); assert.equal(await page.locator('#draftSaveSuccess').count(), 0);
 }));
 

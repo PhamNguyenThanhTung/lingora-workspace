@@ -21,6 +21,7 @@ export function Sidebar({ account }: SidebarProps) {
   const isFrameworksActive = pathname === '/frameworks' || pathname.startsWith('/frameworks/');
   const isCoursesActive = pathname === '/courses' || pathname.startsWith('/courses/');
   const isTeachersActive = pathname === '/teachers' || pathname.startsWith('/teachers/');
+  const isAssessmentsActive = pathname === '/assessments' || pathname.startsWith('/assessments/');
   const isReviewActive = pathname === '/review' || pathname.startsWith('/review/');
   const isMyLessonsActive = pathname === '/my-lessons' || pathname.startsWith('/my-lessons/');
   const isTeacher = account.role === 'TEACHER';
@@ -124,6 +125,17 @@ export function Sidebar({ account }: SidebarProps) {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
               </svg>
               <span>Giáo viên</span>
+            </a>
+            <a
+              href="/assessments"
+              className={`nav-item ${isAssessmentsActive ? 'active' : ''}`}
+              id="navAssessments"
+            >
+              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 5h16M4 12h10M4 19h16"></path>
+                <circle cx="18" cy="12" r="2"></circle>
+              </svg>
+              <span>Đánh giá</span>
             </a>
             <a
               href="/review"

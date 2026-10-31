@@ -415,6 +415,10 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
       document.querySelector('#btnSubmitLevel').click();
     });
 
+    await page.waitForFunction(() => {
+      const btn = document.querySelector('#btnSubmitLevel');
+      return btn?.disabled && btn?.textContent?.trim() === 'Đang lưu...';
+    });
     const isPending = await page.evaluate(() => {
       const btn = document.querySelector('#btnSubmitLevel');
       return btn?.disabled && btn?.textContent?.trim() === 'Đang lưu...';

@@ -171,6 +171,26 @@ describe('S7-WORKFLOW: exact revision submit, review and publication', () => {
     const firstSubmissionId = firstSubmit.data.submissionId;
     let revision = fixture.state.revisions.get(firstDraft.highestRevision.id);
 
+    const assessmentBlueprintId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa01';
+    const assessmentItemId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa02';
+    const assessmentItemRevisionId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa03';
+    const assessmentSecretId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa04';
+    fixture.state.itemIdentities.set(assessmentItemId, {
+      id: assessmentItemId, origin: 'ASSESSMENT', createdBy: teacherId, exactFingerprint: 'assessment-identity-fingerprint',
+    });
+    fixture.state.itemRevisions.set(assessmentItemRevisionId, {
+      id: assessmentItemRevisionId, itemId: assessmentItemId, revisionNo: 1, type: 'MCQ',
+      promptData: { prompt: 'Select the greeting.', options: [{ id: 'hello', text: 'Hello' }, { id: 'bye', text: 'Goodbye' }] },
+      schemaVersion: 1, exactFingerprint: 'assessment-revision-fingerprint', createdBy: teacherId,
+      creationAssignmentEpisodeId: episodeId, authoringLessonRevisionId: revision.id,
+      assessmentBlueprintId, blueprintGeneration: 3n, isDraftOmitted: false,
+      frozenAt: new Date('2026-10-31T00:00:00.000Z'), rowVersion: 1n, assessmentVersionItemsCount: 1,
+    });
+    fixture.state.itemGradingSecrets.set(assessmentSecretId, {
+      id: assessmentSecretId, itemRevisionId: assessmentItemRevisionId,
+      gradingData: { correctOptionId: 'hello' }, feedbackData: null, schemaVersion: 1,
+    });
+
     const lockedAuthoring = await saveTeacherLessonDraft(teacherId, lessonId, {
       title: { vi: 'Không được sửa khi đang duyệt' }, contentBlocks: [],
       expectedRowVersion: fixture.state.lessons.get(lessonId).rowVersion.toString(),
@@ -216,8 +236,20 @@ describe('S7-WORKFLOW: exact revision submit, review and publication', () => {
     assert.notEqual(secondDraft.highestRevision.id, revision.id);
     assert.equal(fixture.state.itemRevisions.get([...fixture.state.lessonExercises.values()][0].itemRevisionId).frozenAt instanceof Date, true);
     const secondItemRevisions = [...fixture.state.itemRevisions.values()].filter(ir => ir.authoringLessonRevisionId === secondDraft.highestRevision.id);
-    assert.equal(secondItemRevisions.length, 1);
-    assert.equal(secondItemRevisions[0].frozenAt, null);
+    assert.equal(secondItemRevisions.length, 2);
+    const copiedAssessmentRevision = secondItemRevisions.find(ir => ir.itemId === assessmentItemId);
+    assert.ok(copiedAssessmentRevision);
+    assert.notEqual(copiedAssessmentRevision.id, assessmentItemRevisionId);
+    assert.equal(copiedAssessmentRevision.revisionNo, 2);
+    assert.equal(copiedAssessmentRevision.createdBy, teacherId);
+    assert.equal(copiedAssessmentRevision.creationAssignmentEpisodeId, episodeId);
+    assert.equal(copiedAssessmentRevision.assessmentBlueprintId, assessmentBlueprintId);
+    assert.equal(copiedAssessmentRevision.blueprintGeneration, 3n);
+    assert.equal(copiedAssessmentRevision.frozenAt, null);
+    assert.deepEqual(fixture.state.itemGradingSecrets.get(assessmentSecretId).gradingData, { correctOptionId: 'hello' });
+    assert.ok([...fixture.state.itemGradingSecrets.values()].some(secret =>
+      secret.itemRevisionId === copiedAssessmentRevision.id && secret.gradingData.correctOptionId === 'hello'));
+    assert.equal(fixture.state.itemRevisions.get(assessmentItemRevisionId).frozenAt instanceof Date, true);
 
     // The submission ID still resolves the original revision even though a newer revision now exists.
     const pinned = await getReviewDetail(adminId, firstSubmissionId, fixture.db);

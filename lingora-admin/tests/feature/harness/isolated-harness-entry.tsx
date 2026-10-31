@@ -13,6 +13,7 @@ import { TeacherLessonsCatalog } from '../../../src/components/TeacherLessonsCat
 import { LessonDraftEditor } from '../../../src/components/LessonDraftEditor';
 import { ReviewDetailView } from '../../../src/components/ReviewDetailView';
 import { ReviewQueueCatalog } from '../../../src/components/ReviewQueueCatalog';
+import { AssessmentCatalog } from '../../../src/components/AssessmentCatalog';
 import { TeacherHoldingView } from '../../../src/app/holding/TeacherHoldingView';
 import { AccessDeniedView } from '../../../src/components/AccessDeniedView';
 import { ServiceUnavailableView } from '../../../src/components/ServiceUnavailableView';
@@ -888,6 +889,10 @@ function IsolatedHarnessApp() {
         <ReviewQueueCatalog {...pageProps} />
       </AppShell>
     );
+  }
+
+  if (state === 'assessment-catalog-test') {
+    return <AppShell account={MOCK_ADMIN}><AssessmentCatalog /></AppShell>;
   }
 
   // Default: populated languages catalogue

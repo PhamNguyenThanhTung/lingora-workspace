@@ -2209,7 +2209,46 @@ export async function saveTeacherLessonDraft(
         }
       }
 
-      // 15. Persist Vocabulary
+      // 15. Preserve assessment item lineage on the successor DRAFT. Item revisions
+      // are append-only, so clone each exact payload/secret into a new revision owned
+      // by this source revision and the current assignment episode.
+      if (highestRev?.authoredItemRevisions) {
+        for (const pred of highestRev.authoredItemRevisions) {
+          const maxRevRow = await tx.itemRevision.findFirst({
+            where: { itemId: pred.itemId.toLowerCase() },
+            orderBy: { revisionNo: 'desc' },
+            select: { revisionNo: true },
+          });
+          const copiedItemRevision = await tx.itemRevision.create({
+            data: {
+              itemId: pred.itemId.toLowerCase(),
+              revisionNo: (maxRevRow?.revisionNo ?? 0) + 1,
+              type: pred.type,
+              promptData: pred.promptData,
+              schemaVersion: pred.schemaVersion,
+              exactFingerprint: pred.exactFingerprint,
+              createdBy: teacherAccountId.toLowerCase(),
+              creationAssignmentEpisodeId: latestEpisode.id,
+              authoringLessonRevisionId: newRev.id,
+              assessmentBlueprintId: pred.assessmentBlueprintId,
+              blueprintGeneration: pred.blueprintGeneration,
+              isDraftOmitted: pred.isDraftOmitted,
+              frozenAt: null,
+              rowVersion: 1n,
+            },
+          });
+          await tx.itemGradingSecret.create({
+            data: {
+              itemRevisionId: copiedItemRevision.id,
+              gradingData: pred.gradingSecret.gradingData,
+              feedbackData: pred.gradingSecret.feedbackData ?? undefined,
+              schemaVersion: pred.gradingSecret.schemaVersion,
+            },
+          });
+        }
+      }
+
+      // 16. Persist Vocabulary
       if (inputVocabulary === undefined) {
         // Clone predecessor vocabulary links preserving stored displaySnapshot byte-for-JSON-value
         if (highestRev?.vocabularyLinks) {

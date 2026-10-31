@@ -131,6 +131,9 @@ export function lessonsFixture() {
           return vl;
         });
       }
+      if (include.revisions?.include?.authoredItemRevisions) {
+        rev.authoredItemRevisions = assessmentItemsForRevision(rev);
+      }
 
       const revReviews = [...state.revisionReviews.values()]
         .filter(rr => rr.lessonRevisionId === rev.id)
@@ -147,6 +150,21 @@ export function lessonsFixture() {
     });
     return l;
   };
+
+  const assessmentItemsForRevision = (revision) => [...state.itemRevisions.values()]
+    .filter(ir => ir.authoringLessonRevisionId === revision.id && state.itemIdentities.get(ir.itemId)?.origin === 'ASSESSMENT')
+    .sort((a, b) => a.itemId.localeCompare(b.itemId) || a.revisionNo - b.revisionNo)
+    .map(ir => ({
+      ...structuredClone(ir),
+      item: structuredClone(state.itemIdentities.get(ir.itemId)),
+      gradingSecret: structuredClone([...state.itemGradingSecrets.values()].find(secret => secret.itemRevisionId === ir.id) || null),
+      assessmentBlueprint: ir.assessmentBlueprintId ? { id: ir.assessmentBlueprintId } : null,
+      _count: {
+        mediaBindings: [...state.mediaBindings.values()].filter(binding => binding.itemRevisionId === ir.id).length,
+        assessmentVersionItems: ir.assessmentVersionItemsCount || 0,
+        provenanceVersionItems: ir.provenanceVersionItemsCount || 0,
+      },
+    }));
 
   const populateReviewRelations = (review, include = {}) => {
     const r = structuredClone(review);
@@ -466,6 +484,9 @@ export function lessonsFixture() {
             return vl;
           });
         }
+        if (include?.authoredItemRevisions) {
+          rev.authoredItemRevisions = assessmentItemsForRevision(rev);
+        }
         return rev;
       },
       create: async ({ data }) => {
@@ -566,6 +587,9 @@ export function lessonsFixture() {
             vl.vocabulary = concept ? structuredClone(concept) : null;
             return vl;
           });
+        }
+        if (include?.authoredItemRevisions) {
+          res.authoredItemRevisions = assessmentItemsForRevision(res);
         }
         if (include?.creator) {
           const u = state.accounts.get(res.createdBy);
@@ -692,9 +716,9 @@ export function lessonsFixture() {
           createdBy: data.createdBy.toLowerCase(),
           creationAssignmentEpisodeId: data.creationAssignmentEpisodeId,
           authoringLessonRevisionId: data.authoringLessonRevisionId,
-          assessmentBlueprintId: null,
-          blueprintGeneration: null,
-          isDraftOmitted: false,
+          assessmentBlueprintId: data.assessmentBlueprintId || null,
+          blueprintGeneration: data.blueprintGeneration ?? null,
+          isDraftOmitted: data.isDraftOmitted ?? false,
           frozenAt: null,
           createdAt: new Date(),
           updatedAt: new Date(),

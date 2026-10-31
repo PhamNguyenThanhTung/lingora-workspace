@@ -3,6 +3,16 @@ import { exerciseInputSchema } from './content.ts';
 import { isValidUuid } from '../frameworks/index.ts';
 
 export const revisionChildRelations = {
+  authoredItemRevisions: {
+    where: { item: { is: { origin: 'ASSESSMENT' } } },
+    orderBy: [{ itemId: 'asc' }, { revisionNo: 'asc' }],
+    include: {
+      item: true,
+      gradingSecret: true,
+      assessmentBlueprint: { select: { id: true } },
+      _count: { select: { mediaBindings: true, assessmentVersionItems: true, provenanceVersionItems: true } },
+    },
+  },
   exercises: { orderBy: { position: 'asc' }, include: {
     item: true,
     itemRevision: { include: { gradingSecret: true, _count: { select: {
@@ -26,11 +36,14 @@ export const vocabularySnapshotSchema = z.object({
 export function unsupportedChildren(rev: any, languageId?: string, allowFrozenPredecessor = false): boolean {
   if (!rev) return false;
   const c = rev._count || {};
-  if (c.mediaBindings > 0 || c.attempts > 0 || c.assessmentVersionItems > 0) return true;
+  // Assessment version pins are immutable references. They do not prevent a new
+  // lesson/item revision from being authored; the older pinned revision remains exact.
+  if (c.mediaBindings > 0 || c.attempts > 0) return true;
   const exercises = rev.exercises || [], vocabulary = rev.vocabularyLinks || [];
-  if (!Array.isArray(exercises) || !Array.isArray(vocabulary)) return true;
+  const assessmentItems = (rev.authoredItemRevisions || []).filter((ir: any) => ir?.item?.origin === 'ASSESSMENT');
+  if (!Array.isArray(exercises) || !Array.isArray(vocabulary) || !Array.isArray(assessmentItems)) return true;
   if ((c.exercises ?? 0) !== exercises.length || (c.vocabularyLinks ?? 0) !== vocabulary.length ||
-      (c.authoredItemRevisions ?? 0) !== new Set(exercises.map((e: any) => e.itemRevisionId)).size) return true;
+      (c.authoredItemRevisions ?? 0) !== new Set(exercises.map((e: any) => e.itemRevisionId)).size + assessmentItems.length) return true;
   for (const ex of exercises) {
     const ir = ex.itemRevision, secret = ir?.gradingSecret;
     if (ex.lessonRevisionId !== rev.id || !ir || ir.id !== ex.itemRevisionId || ir.itemId !== ex.itemId ||
@@ -40,6 +53,19 @@ export function unsupportedChildren(rev: any, languageId?: string, allowFrozenPr
         ir.isDraftOmitted || (!allowFrozenPredecessor && ir.frozenAt != null) || ir.assessmentBlueprintId != null || ir.blueprintGeneration != null ||
         ir._count?.mediaBindings > 0 || ir._count?.assessmentVersionItems > 0 || ir._count?.provenanceVersionItems > 0) return true;
     if (!exerciseInputSchema.safeParse({position: ex.position, isCore: ex.isCore, type: ir.type,
+      promptData: ir.promptData, gradingData: secret.gradingData, feedbackData: secret.feedbackData}).success) return true;
+  }
+  for (const ir of assessmentItems) {
+    const secret = ir?.gradingSecret;
+    if (!ir || !ir.item || ir.item.origin !== 'ASSESSMENT' || ir.item.id !== ir.itemId ||
+        ir.authoringLessonRevisionId !== rev.id || ir.createdBy !== rev.createdBy ||
+        ir.creationAssignmentEpisodeId !== rev.creationAssignmentEpisodeId || ir.schemaVersion !== 1 ||
+        !ir.assessmentBlueprintId || ir.assessmentBlueprint?.id !== ir.assessmentBlueprintId ||
+        ir.blueprintGeneration == null || BigInt(ir.blueprintGeneration) < 1n ||
+        !secret || secret.schemaVersion !== 1 || ir.isDraftOmitted ||
+        (!allowFrozenPredecessor && ir.frozenAt != null) ||
+        ir._count?.mediaBindings > 0) return true;
+    if (!exerciseInputSchema.safeParse({position: 1, isCore: true, type: ir.type,
       promptData: ir.promptData, gradingData: secret.gradingData, feedbackData: secret.feedbackData}).success) return true;
   }
   for (const link of vocabulary) {

@@ -12,6 +12,7 @@ import type {
   VocabularyOptionDto,
 } from '@/server/lessons';
 import type { ExerciseType } from '@/server/lessons/content';
+import type { AssessmentBlueprintDto, TeacherAssessmentItemDto } from '@/server/assessments/types';
 
 function isValidAudioReferenceUrl(rawUrl: string): boolean {
   if (typeof rawUrl !== 'string') return false;
@@ -246,6 +247,14 @@ export function LessonDraftEditor({
 
   // Exercise Modal State
   const [exerciseModalOpen, setExerciseModalOpen] = useState(false);
+  const [assessmentMode, setAssessmentMode] = useState(false);
+  const [assessmentBlueprints, setAssessmentBlueprints] = useState<AssessmentBlueprintDto[]>([]);
+  const [assessmentItems, setAssessmentItems] = useState<TeacherAssessmentItemDto[]>([]);
+  const [assessmentBlueprintId, setAssessmentBlueprintId] = useState('');
+  const [assessmentSourceItemId, setAssessmentSourceItemId] = useState<string | null>(null);
+  const [assessmentLoadError, setAssessmentLoadError] = useState<string | null>(null);
+  const [assessmentSavePending, setAssessmentSavePending] = useState(false);
+  const [assessmentSavedMessage, setAssessmentSavedMessage] = useState<string | null>(null);
   const [editingExerciseIndex, setEditingExerciseIndex] = useState<number | null>(null);
   const [exType, setExType] = useState<ExerciseType>('MCQ');
   const [exPosition, setExPosition] = useState(1);
@@ -320,7 +329,7 @@ export function LessonDraftEditor({
     const selector = 'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled)';
     (dialog?.querySelector(selector) as HTMLElement | null)?.focus();
     const keydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !isPendingRef.current) { event.preventDefault(); setExerciseModalOpen(false); setVocabModalOpen(false); }
+      if (event.key === 'Escape' && !isPendingRef.current && !assessmentSavePending) { event.preventDefault(); setExerciseModalOpen(false); setVocabModalOpen(false); }
       if (event.key !== 'Tab') return;
       const elements = Array.from(dialog?.querySelectorAll<HTMLElement>(selector) || []);
       const first = elements[0], last = elements.at(-1);
@@ -329,7 +338,7 @@ export function LessonDraftEditor({
     };
     document.addEventListener('keydown', keydown);
     return () => { document.removeEventListener('keydown', keydown); previous?.focus(); };
-  }, [exerciseModalOpen, vocabModalOpen, sessionLost, forbidden]);
+  }, [exerciseModalOpen, vocabModalOpen, sessionLost, forbidden, assessmentSavePending]);
 
   const isPendingRef = useRef(false);
   useEffect(() => {
@@ -361,6 +370,38 @@ export function LessonDraftEditor({
     if (res.status === 403) { setForbidden(true); return true; }
     return false;
   };
+
+  useEffect(() => {
+    let active = true;
+    const loadAssessmentAuthoring = async () => {
+      setAssessmentLoadError(null);
+      try {
+        const [blueprintResponse, itemsResponse] = await Promise.all([
+          fetch(`/api/teacher/lessons/${lesson.id}/assessment-blueprints`, { cache: 'no-store' }),
+          fetch(`/api/teacher/lessons/${lesson.id}/assessment-items`, { cache: 'no-store' }),
+        ]);
+        if (!active) return;
+        if (authFailed(blueprintResponse) || authFailed(itemsResponse)) return;
+        const [blueprintBody, itemsBody] = await Promise.all([
+          blueprintResponse.json().catch(() => ({})),
+          itemsResponse.json().catch(() => ({})),
+        ]);
+        if (!blueprintResponse.ok || !itemsResponse.ok) {
+          setAssessmentLoadError(blueprintBody?.error?.message || itemsBody?.error?.message || 'Không thể tải bài tập đánh giá.');
+          return;
+        }
+        if (!active) return;
+        const blueprints = Array.isArray(blueprintBody?.data) ? blueprintBody.data : [];
+        setAssessmentBlueprints(blueprints);
+        setAssessmentItems(Array.isArray(itemsBody?.data) ? itemsBody.data : []);
+        setAssessmentBlueprintId((current) => current || blueprints[0]?.id || '');
+      } catch {
+        if (active) setAssessmentLoadError('Lỗi kết nối khi tải bài tập đánh giá.');
+      }
+    };
+    void loadAssessmentAuthoring();
+    return () => { active = false; };
+  }, [lesson.id, lesson.highestRevision?.id]);
 
   const reconcile = (next: TeacherLessonDetailDto) => {
     if (!next || next.id !== lesson.id || !Array.isArray(next.revisions)) throw new Error('Invalid lesson response');
@@ -546,6 +587,8 @@ export function LessonDraftEditor({
   // --- Exercise Handlers ---
   const handleOpenAddExercise = () => {
     if (isPendingRef.current || !editorActuallyEditable) return;
+    setAssessmentMode(false);
+    setAssessmentSourceItemId(null);
     setEditingExerciseIndex(null);
     setExType('MCQ');
     setRoCorrectOrder('');
@@ -564,6 +607,8 @@ export function LessonDraftEditor({
 
   const handleOpenEditExercise = (index: number) => {
     if (isPendingRef.current || !editorActuallyEditable) return;
+    setAssessmentMode(false);
+    setAssessmentSourceItemId(null);
     const ex = exercises[index];
     setEditingExerciseIndex(index);
     setExType(ex.type);
@@ -596,6 +641,64 @@ export function LessonDraftEditor({
       setGrCaseSensitive(!!ex.gradingData?.caseSensitive);
     }
 
+    setExerciseModalOpen(true);
+  };
+
+  const handleOpenAddAssessmentItem = () => {
+    if (isPendingRef.current || !editorActuallyEditable || assessmentBlueprints.length === 0) return;
+    setAssessmentSavedMessage(null);
+    setAssessmentMode(true);
+    setAssessmentSourceItemId(null);
+    setEditingExerciseIndex(null);
+    setExType('MCQ');
+    setRoCorrectOrder('');
+    setExPosition(1);
+    setExIsCore(true);
+    setExPrompt('');
+    setExExplanation('');
+    setMcqOptions([{ id: 'opt_1', text: '' }, { id: 'opt_2', text: '' }]);
+    setMcqCorrectId('opt_1');
+    setExerciseModalError(null);
+    setExerciseModalOpen(true);
+  };
+
+  const handleOpenReviseAssessmentItem = (item: TeacherAssessmentItemDto) => {
+    if (isPendingRef.current || !editorActuallyEditable) return;
+    const promptData = item.promptData as any;
+    const gradingData = item.gradingData as any;
+    const feedbackData = item.feedbackData as any;
+    setAssessmentSavedMessage(null);
+    setAssessmentMode(true);
+    setAssessmentSourceItemId(item.itemId);
+    setAssessmentBlueprintId(item.blueprintId);
+    setEditingExerciseIndex(null);
+    setExType(item.type);
+    setExPosition(1);
+    setExIsCore(true);
+    setExPrompt(promptData?.prompt || '');
+    setExExplanation(feedbackData?.explanation || '');
+    if (item.type === 'MCQ') {
+      setMcqOptions(promptData?.options || [{ id: 'opt_1', text: '' }, { id: 'opt_2', text: '' }]);
+      setMcqCorrectId(gradingData?.correctOptionId || 'opt_1');
+    } else if (item.type === 'FILL_BLANK') {
+      setFbSentence(promptData?.sentence || '');
+      setFbAnswers(Array.isArray(gradingData?.acceptedAnswers) ? gradingData.acceptedAnswers.join('\n') : '');
+      setFbCaseSensitive(!!gradingData?.caseSensitive);
+    } else if (item.type === 'REORDER') {
+      setRoTokens(promptData?.tokens || [{ id: 'tok_1', text: '' }, { id: 'tok_2', text: '' }]);
+      setRoCorrectOrder((gradingData?.correctOrder || []).join('\n'));
+    } else if (item.type === 'LISTENING') {
+      setLisAudioUrl(promptData?.audioUrl || '');
+      setLisOptions(promptData?.options || [{ id: 'opt_1', text: '' }, { id: 'opt_2', text: '' }]);
+      setLisCorrectId(gradingData?.correctOptionId || 'opt_1');
+      setLisTranscript(gradingData?.transcript || '');
+    } else if (item.type === 'GRAMMAR') {
+      setGrSource(promptData?.sourceSentence || '');
+      setGrTarget(promptData?.targetPattern || '');
+      setGrAnswers(Array.isArray(gradingData?.acceptedAnswers) ? gradingData.acceptedAnswers.join('\n') : '');
+      setGrCaseSensitive(!!gradingData?.caseSensitive);
+    }
+    setExerciseModalError(null);
     setExerciseModalOpen(true);
   };
 
@@ -640,7 +743,7 @@ export function LessonDraftEditor({
     setExercises((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSaveExerciseModal = (e: React.FormEvent) => {
+  const handleSaveExerciseModal = async (e: React.FormEvent) => {
     e.preventDefault();
     setExerciseModalError(null);
 
@@ -772,6 +875,50 @@ export function LessonDraftEditor({
         acceptedAnswers: answers,
         caseSensitive: grCaseSensitive,
       };
+    }
+
+    if (assessmentMode) {
+      const expectedRevisionId = lesson.highestRevision?.id;
+      if (!assessmentBlueprintId || !expectedRevisionId) {
+        setExerciseModalError('Chọn khung đánh giá và bảo đảm bản nháp đã có mã định danh trước khi lưu.');
+        return;
+      }
+      if (!editorActuallyEditable) {
+        setExerciseModalError('Chỉ có thể biên soạn bài tập đánh giá trong bản nháp đang mở.');
+        return;
+      }
+      setAssessmentSavePending(true);
+      try {
+        const response = await fetch(`/api/teacher/lessons/${lesson.id}/assessment-items`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Origin: window.location.origin },
+          body: JSON.stringify({
+            blueprintId: assessmentBlueprintId,
+            sourceItemId: assessmentSourceItemId,
+            type: exType,
+            promptData,
+            gradingData,
+            feedbackData: exExplanation.trim() ? { explanation: exExplanation.trim() } : null,
+            expectedRevisionId,
+          }),
+        });
+        const body = await response.json().catch(() => ({}));
+        if (authFailed(response)) return;
+        if (!response.ok || !body?.data) {
+          setExerciseModalError(body?.error?.message || 'Không thể lưu bài tập đánh giá.');
+          return;
+        }
+        const saved = body.data as TeacherAssessmentItemDto;
+        setAssessmentItems((previous) => [...previous, saved]);
+        setAssessmentLoadError(null);
+        setAssessmentSavedMessage(`Đã lưu bản sửa đổi bài tập #${saved.revisionNo}.`);
+        setExerciseModalOpen(false);
+      } catch {
+        setExerciseModalError('Lỗi kết nối khi lưu bài tập đánh giá. Hãy thử lại.');
+      } finally {
+        setAssessmentSavePending(false);
+      }
+      return;
     }
 
     const stagedItem: StagedExercise = {
@@ -1216,7 +1363,7 @@ export function LessonDraftEditor({
       )}
 
       {/* Read-only Alert when not editable and not handled by above banners */}
-      {!editorActuallyEditable && !isSuccessorEditing && currentStatus !== 'CHANGES_REQUESTED' && currentStatus !== 'PUBLISHED' && currentStatus !== 'IN_REVIEW' && currentStatus !== 'APPROVED' && (
+      {!lesson.isEditable && !isSuccessorEditing && currentStatus !== 'CHANGES_REQUESTED' && currentStatus !== 'PUBLISHED' && currentStatus !== 'IN_REVIEW' && currentStatus !== 'APPROVED' && (
         <div
           className="form-error-banner"
           role="alert"
@@ -1492,6 +1639,16 @@ export function LessonDraftEditor({
             >
               + Thêm bài tập
             </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              id="btnAddAssessmentItem"
+              onClick={handleOpenAddAssessmentItem}
+              disabled={!editorActuallyEditable || assessmentBlueprints.length === 0}
+              style={{ fontSize: '13px', padding: '6px 12px', marginLeft: '8px' }}
+            >
+              + Bài tập đánh giá
+            </button>
           </div>
 
           {exercises.length === 0 ? (
@@ -1575,6 +1732,41 @@ export function LessonDraftEditor({
                       </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="form-section" id="assessmentItemsSection" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '20px', marginBottom: '20px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#0f172a' }}>Bài tập đánh giá</h2>
+            <span style={{ fontSize: '13px', color: '#64748b' }}>Được lưu thành bản sửa đổi riêng và chỉ đưa vào phiên bản sau khi bản bài học nguồn được nộp.</span>
+          </div>
+          {assessmentLoadError && <div role="alert" className="form-error-banner">{assessmentLoadError}</div>}
+          {assessmentSavedMessage && <div role="status" style={{ background: '#ecfdf5', border: '1px solid #86efac', color: '#166534', padding: '10px 12px', borderRadius: '6px', marginBottom: '14px' }}>{assessmentSavedMessage}</div>}
+          {assessmentBlueprints.length === 0 ? (
+            <p id="assessmentBlueprintUnavailable" style={{ color: '#64748b' }}>Khóa học này chưa có khung đánh giá. Quản trị viên cần tạo Blueprint trước.</p>
+          ) : assessmentItems.length === 0 ? (
+            <p id="emptyAssessmentItems" style={{ color: '#64748b' }}>Chưa có bài tập đánh giá trong bản nháp hiện tại.</p>
+          ) : (
+            <div className="table-wrap">
+              <table className="data-table" id="assessmentItemsTable" aria-label="Bài tập đánh giá trong bản nháp">
+                <thead><tr><th scope="col">Kiểu</th><th scope="col">Câu hỏi</th><th scope="col">Blueprint</th><th scope="col">Trạng thái</th><th scope="col">Bản sửa đổi</th><th scope="col">Thao tác</th></tr></thead>
+                <tbody>
+                  {assessmentItems.map((item) => {
+                    const blueprint = assessmentBlueprints.find((candidate) => candidate.id === item.blueprintId);
+                    return (
+                      <tr key={item.id} data-assessment-item-id={item.id}>
+                        <td>{item.type}</td>
+                        <td>{(item.promptData as any)?.prompt || '—'}</td>
+                        <td>{blueprint?.purpose || item.blueprintId.slice(0, 8)}</td>
+                        <td>{item.isStaleBlueprintGeneration ? <span role="status" style={{ color: '#b91c1c' }}>Blueprint đã đổi; cần bản sửa đổi mới</span> : item.frozenAt ? 'Đã ghim vào phiên bản' : 'Sẵn sàng nộp'}</td>
+                        <td>#{item.revisionNo}</td>
+                        <td><button type="button" className="btn-text-action" onClick={() => handleOpenReviseAssessmentItem(item)} disabled={!editorActuallyEditable}>Tạo bản sửa đổi</button></td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -1858,7 +2050,7 @@ export function LessonDraftEditor({
             padding: '16px',
           }}
           onClick={(e) => {
-            if (e.target === e.currentTarget && !isPendingRef.current) setExerciseModalOpen(false);
+            if (e.target === e.currentTarget && !isPendingRef.current && !assessmentSavePending) setExerciseModalOpen(false);
           }}
         >
           <div
@@ -1878,7 +2070,9 @@ export function LessonDraftEditor({
             }}
           >
             <h2 id="exerciseModalTitle" style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px', color: '#0f172a' }}>
-              {editingExerciseIndex !== null ? 'Chỉnh sửa bài tập' : 'Thêm bài tập mới vào bản nháp'}
+              {assessmentMode
+                ? assessmentSourceItemId ? 'Tạo bản sửa đổi bài tập đánh giá' : 'Thêm bài tập đánh giá vào bản nháp'
+                : editingExerciseIndex !== null ? 'Chỉnh sửa bài tập' : 'Thêm bài tập mới vào bản nháp'}
             </h2>
 
             {exerciseModalError && (
@@ -1900,8 +2094,26 @@ export function LessonDraftEditor({
               </div>
             )}
 
-            <form onSubmit={handleSaveExerciseModal} id="exerciseForm">
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+            <form onSubmit={handleSaveExerciseModal} id="exerciseForm" aria-busy={assessmentSavePending}>
+              <fieldset disabled={assessmentSavePending} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
+              {assessmentMode && (
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label htmlFor="selectAssessmentBlueprint" className="form-label">Khung đánh giá *</label>
+                  <select
+                    id="selectAssessmentBlueprint"
+                    className="form-input"
+                    value={assessmentBlueprintId}
+                    onChange={(event) => setAssessmentBlueprintId(event.target.value)}
+                    disabled={assessmentSavePending}
+                    required
+                  >
+                    {assessmentBlueprints.map((blueprint) => (
+                      <option key={blueprint.id} value={blueprint.id}>{blueprint.purpose} · {blueprint.id.slice(0, 8)} · v{blueprint.generation}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div style={{ display: 'grid', gridTemplateColumns: assessmentMode ? '1fr' : '2fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                 <div className="form-group">
                   <label htmlFor="selectExerciseType" className="form-label">
                     Loại bài tập
@@ -1920,7 +2132,7 @@ export function LessonDraftEditor({
                   </select>
                 </div>
 
-                <div className="form-group">
+                {!assessmentMode && <div className="form-group">
                   <label htmlFor="inputExercisePosition" className="form-label">
                     Vị trí
                   </label>
@@ -1932,9 +2144,9 @@ export function LessonDraftEditor({
                     min={1}
                     onChange={(e) => setExPosition(parseInt(e.target.value, 10) || 1)}
                   />
-                </div>
+                </div>}
 
-                <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                {!assessmentMode && <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <label className="form-label" style={{ marginBottom: '8px' }}>
                     Phân loại
                   </label>
@@ -1947,7 +2159,7 @@ export function LessonDraftEditor({
                     />
                     Cốt lõi
                   </label>
-                </div>
+                </div>}
               </div>
 
               <div className="form-group" style={{ marginBottom: '16px' }}>
@@ -2306,6 +2518,7 @@ export function LessonDraftEditor({
                   className="btn btn-secondary"
                   id="btnCancelExerciseModal"
                   onClick={() => setExerciseModalOpen(false)}
+                  disabled={assessmentSavePending}
                 >
                   Đóng
                 </button>
@@ -2313,10 +2526,12 @@ export function LessonDraftEditor({
                   type="submit"
                   className="btn btn-primary"
                   id="btnSaveExerciseModal"
+                  disabled={assessmentSavePending}
                 >
-                  Xác nhận bài tập
+                  {assessmentSavePending ? 'Đang lưu…' : assessmentMode ? 'Lưu bản sửa đổi' : 'Xác nhận bài tập'}
                 </button>
               </div>
+              </fieldset>
             </form>
           </div>
         </div>
