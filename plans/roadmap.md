@@ -93,8 +93,12 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - [Learner DEV](https://lingora-learner-dev.vercel.app/) and staff READY on accepted fix `83aacbf`. Actual public login/home/context, staff denial403, disable→restore same-session retry, logout401 and read-only DB proofs PASS. All6 owned fixtures removed, other Accounts unchanged, residue0; sessions/browser and temporary CLI credential closed/removed. See [verification](slice-9-verification.md).
 - SLICE 9 ACCEPTED. No schema migration, signup or Lesson/progress/assessment runtime. Slice 10 has not started.
 
-## Slice 10 — Learner Lesson / Progress Foundation (LOCAL ACCEPTANCE PASS; PUBLIC PENDING)
+## Slice 10 — Learner Lesson / Progress Foundation (PASS / ACCEPTED)
 
-Owner approved separate LessonConsumption, exact context/revision reading history, canonical graded gates and shared parent locks. Reading acknowledgement never creates graded evidence/unlocks/Level/SRS. Codex final FK/cardinality/rollback/Prisma checks PASS on disposable PostgreSQL17.11; additive migration `20261101000000_lesson_consumption` applied DEV and catalog verified. Existing five migrations and graded constraints/triggers unchanged; zero backfill.
+Accepted2026-11-01. Separate LessonConsumption records Chưa đọc → Đang đọc → Đã đọc per owned context/exact published revision. Reading never becomes graded completion or unlocks later curriculum/Level/SRS. User-approved additive migration `20261101000000_lesson_consumption` applied/verified DEV; FK/cardinality/guard/Prisma and guarded rollback PASS, existing grading unchanged.
 
-[Final spec](2026-11-01-slice-10-learner-lesson-progress.md), [approved design](2026-11-01-slice-10-consumption-design.md), [verification](slice-10-verification.md). Anti delivered; independent Sol High review and Codex direct fixes complete. Local feature509/component145/integration7/typecheck/build/client scan PASS;12 mutation variants KILLED/restored. Exact Ready public acceptance and cleanup pending. Slice10 not accepted. No Slice11.
+Anti initial implementation → independent Sol High review → Codex direct fixes for shared access/gating, fresh post-lock checks, DB timestamps, safe projections and Next refresh state. Feature509/component145/integration7/typecheck/build/client scan PASS;12 semantic mutation variants KILLED and byte-exact restored.
+
+Source `2fb844735beca8d024c310778a7c23d923eca054` pushed and READY on learner/staff before public writes. Public27-flow +7 exact child DTO/DB checks PASS, including X/draft isolation, Y separate progress, real stale409/reload/retry, and no graded unlock/evidence side effects. Five disposable learners removed; allowlisted content/history retained with Course inactive/Lessons PLANNED/staff DISABLED, original Teacher unchanged DISABLED, sessions0 and unexpected residue0. See [verification](slice-10-verification.md) and [public evidence](evidence/slice-10/public-acceptance.md). Final commit records evidence only; no local/public rerun for documentation. No Slice11.
+
+`SLICE 10: PASS — SLICE 10 ACCEPTED`

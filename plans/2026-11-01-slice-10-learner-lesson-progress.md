@@ -1,6 +1,6 @@
 # Slice 10 — Learner Lesson / Progress Foundation
 
-Status: **APPROVED CONTRACT — official migration applied/verified DEV; implementation/review/fixes/local acceptance complete; exact Ready public acceptance pending.**
+Status: **APPROVED CONTRACT — official migration applied/verified DEV; implementation/review/fixes/local and public acceptance PASS; SLICE 10 ACCEPTED.**
 
 Planning baseline: `f71fdf70f06a9c9e00f5ea81dfa6b675b85dbda2` (also inspected HEAD). This is source inspection and an implementation decision record, not live DB verification or acceptance evidence. No implementation, tests, migrations, deployment or fixture writes were performed by this planning run.
 
@@ -126,4 +126,6 @@ One implementation stream is sufficient because safe DTOs, access decisions, mut
 
 The revised spec must retain the task's real acceptance gates: exact pointer and child snapshot isolation under newer drafts; context/role/ACTIVE checks; unavailable direct access rejection; hierarchy ordering; empty context; reload persistence; idempotency and cross-owner rejection; republish/stale behavior; actual production callback/endpoint/UI reconciliation; meaningful failure/recovery. Run mandatory mutations A–G and restore changed source byte-exact, then relevant tests/typecheck/build and secret scan. Public verification must use the exact Ready commit, owned fixtures, read-only DB evidence and documented residue handling. Do not run acceptance or claim PASS while mandatory completion remains excluded or fabricated.
 
-Planning verdict: source supports an immutable published-content resolver and potentially truthful open attempts. **Full requested Slice 10 is blocked by the absent ungraded completion capability and incompatible current scope.** No Slice 11 work is authorized.
+Historical initial planning verdict (before approved LessonConsumption): source supports an immutable published-content resolver and potentially truthful open attempts. **Full requested Slice 10 is blocked by the absent ungraded completion capability and incompatible current scope.** No Slice 11 work is authorized.
+
+Final disposition: **SLICE 10 ACCEPTED**. [Verification](slice-10-verification.md) and [public evidence](evidence/slice-10/public-acceptance.md). No Slice11.

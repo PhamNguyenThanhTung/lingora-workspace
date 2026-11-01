@@ -1,10 +1,10 @@
 # Slice 10 verification — Learner Lesson / Progress Foundation
 
-Status: **APPROVED DESIGN; MIGRATION APPLIED AND VERIFIED DEV; LOCAL ACCEPTANCE PASS; PUBLIC ACCEPTANCE PENDING.** Slice10 acceptance remains pending.
+Status: **PASS — SLICE 10 ACCEPTED**. Migration, local gates, exact-commit public flows, read-only DB proof and cleanup complete.
 
 Baseline: `f71fdf70f06a9c9e00f5ea81dfa6b675b85dbda2` (Slice 0–9 accepted). [Planning/decision spec](2026-11-01-slice-10-learner-lesson-progress.md). Date: 2026-11-01 (Asia/Saigon).
 
-## Verified blocker
+## Historical schema finding (resolved by approved separate model)
 
 The schema has revision-pinned `LessonAttempt`, graded `LessonResponse`, and first `LessonCompletion` per context/lesson. It has no separate ungraded consumption-completion model. The requested explicit completion action cannot truthfully finalize these rows while answer submission/grading is excluded.
 
@@ -45,13 +45,15 @@ Owner explicitly approved LessonConsumption and canonical graded gates on 2026-1
 | Anti initial implementation/tests | Delivered; [handoff](evidence/slice-10/anti-handoff.md) |
 | Independent implementation review / Codex fixes | Sol High REQUEST_CHANGES; all six findings fixed directly, ten RED→GREEN regressions; [resolution](evidence/slice-10/codex-review-fixes.md) |
 | Local acceptance / mutations | PASS: feature509, component/page145, real-service PostgreSQL integration7, root typecheck/build/client scan;12 semantic variants KILLED and restored byte-exact; [mutations](evidence/slice-10/mutations.json) |
-| Source commit/deploy exact READY / public acceptance / cleanup | Pending |
+| Source commit/deploy exact READY / public acceptance / cleanup | PASS on `2fb844735beca8d024c310778a7c23d923eca054`; learner/staff READY + exact aliases;27 public flow checks +7 exact child DTO/DB checks; sessions0/residue0 |
 | Unrelated workspace files | Preserved |
 
-No Slice11. No feature PASS/ACCEPTED or source commit/push yet.
+No Slice11. Source commit `2fb8447` pushed; final evidence update follows.
 
 ## Local gates
 
 Root `npm run test:feature`:509/509, no failures/skips. `npm run test:components`:145/145 on the completed sequential run. The first component invocation overlapped the build and failed two existing staff draft assertions; the unchanged staff source/tests passed in the sequential rerun. No old Slice was reopened or assertions weakened. Root `npm run typecheck` and `npm run build`:exit0. Client scan:40 local files,0 secret/private import matches. PostgreSQL production-service integration:7/7 with owned cluster removed. Post-mutation affected route/regression suite:38/38 PASS. No full gate rerun solely for documentation.
 
-Public writes remain gated on the exact pushed commit READY on learner and staff. No public feature fixture has been created yet. Approved schema migration is the only DEV write so far.
+Public fixture writes ran only after both exact source deployments were READY and aliases independently matched. [Public acceptance report](evidence/slice-10/public-acceptance.md) records real start/reading-complete/reload, newer draft isolation, republish X→Y, actual stale409/reload/retry, exact child DTO vs DB, graded evidence unchanged and cleanup. One operator-only schema-name error was corrected without app changes or local rerun. Five disposable learners removed; retained owned staff DISABLED, Course inactive, Lessons PLANNED; original Teacher DISABLED, sessions0 and unexpected residue0. No credentials/storageState saved.
+
+`SLICE 10: PASS — SLICE 10 ACCEPTED`

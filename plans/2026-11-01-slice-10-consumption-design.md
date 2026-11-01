@@ -1,6 +1,6 @@
 # Slice 10 — Separate lesson consumption design
 
-**APPROVED by owner 2026-11-01. Official migration promoted/applied and catalog verified DEV. Slice 10 acceptance remains pending.**
+**APPROVED by owner 2026-11-01. Official migration promoted/applied and catalog verified DEV. Slice10 local/public acceptance PASS; accepted.**
 
 The owner explicitly accepted the canonical graded gate consequence and authorized DEV apply and the implementation workflow. Historical proposal/approval-boundary wording below records the design review stage; the final executable contract in `2026-11-01-slice-10-learner-lesson-progress.md` governs execution.
 
@@ -118,6 +118,6 @@ Dispatch dependency: **approved model/access/migration → verified DEV schema �
 
 ## Static review disposition
 
-Independent GPT-6.1 Sol High CLI review returned one P2 finding: exclusive parent locks would serialize unrelated learners within a Course. Codex changed the proposal to shared Course/Context/Lesson parent locks, retained per-actor and consumption-row serialization, and added the required later concurrency proof. [Original review and resolution](evidence/slice-10/consumption-design-review.md). No second independent review or executed SQL/Prisma validation is claimed.
+Independent GPT-6.1 Sol High CLI review returned one P2 finding: exclusive parent locks would serialize unrelated learners within a Course. Codex changed the proposal to shared Course/Context/Lesson parent locks, retained per-actor and consumption-row serialization, and added the required later concurrency proof. [Original review and resolution](evidence/slice-10/consumption-design-review.md). No second independent design review was run. Subsequent approved SQL/Prisma validation and apply are recorded above.
 
-Codex design verdict: **APPROVED; MIGRATION APPLIED/VERIFIED DEV**. Application implementation and Slice10 acceptance remain pending.
+Codex design verdict: **APPROVED; MIGRATION APPLIED/VERIFIED DEV**. Application implementation, local gates and exact Ready public acceptance PASS; see `slice-10-verification.md`.

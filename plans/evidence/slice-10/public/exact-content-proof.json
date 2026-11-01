@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "deployment": {
+    "ready": true,
+    "commit": "2fb844735beca8d024c310778a7c23d923eca054",
+    "learner": {
+      "base": "https://lingora-learner-dev.vercel.app",
+      "deploymentId": "dpl_9whRMVDDX4MjQgT5ZhusAyPk4phT",
+      "state": "READY",
+      "target": "production",
+      "aliasVerified": true
+    },
+    "staff": {
+      "base": "https://lingora-workspace.vercel.app",
+      "deploymentId": "dpl_C9D2Da9ViaNPUMofB9AvRBxXrgqg",
+      "state": "READY",
+      "target": "production",
+      "aliasVerified": true
+    }
+  },
+  "checks": {
+    "actualPublicLogin": true,
+    "exactPublishedYDtoMatchesReadonlyDB": true,
+    "exactExerciseIdsItemRevisionIdsAndPromptData": true,
+    "exactVocabularyLinkIdsAndDisplaySnapshots": true,
+    "archivedXChildPinsRetainedAndDistinctFromY": true,
+    "reviewActorsAndPublishedPointer": true,
+    "detailGETDoesNotStartConsumption": true
+  },
+  "revisions": [
+    {
+      "id": "92051c75-79cc-4e4a-bf46-7252a1ef3c54",
+      "status": "PUBLISHED",
+      "exercisePins": [
+        {
+          "id": "a5c85736-4a5f-46e3-a68c-c1b8227677e0",
+          "itemId": "30082115-0a28-4143-9cf7-b76f39c300d2",
+          "itemRevisionId": "91eb76e3-bed2-45ac-a5c2-93624953fba1"
+        }
+      ],
+      "vocabularyLinkIds": [
+        "fa0abf9a-d8b3-4e08-9178-ee4c39fa4b70"
+      ]
+    },
+    {
+      "id": "add1b8d7-d4ec-45c5-bf7d-e3b9e258fd8d",
+      "status": "ARCHIVED",
+      "exercisePins": [
+        {
+          "id": "63cf5cd3-4f0b-4693-94b4-3d0a4d5370d2",
+          "itemId": "30082115-0a28-4143-9cf7-b76f39c300d2",
+          "itemRevisionId": "830f9773-ee28-4bb8-ace4-6de4952b0e93"
+        }
+      ],
+      "vocabularyLinkIds": [
+        "09f4e96c-498e-4a52-aff8-4ee5365e8a50"
+      ]
+    }
+  ],
+  "cleanup": {
+    "sessions": "0",
+    "accounts": 0,
+    "contexts": 0,
+    "consumptions": 0,
+    "course": {
+      "isActive": false
+    },
+    "lesson": {
+      "availability": "PLANNED",
+      "activeRevisionId": "92051c75-79cc-4e4a-bf46-7252a1ef3c54"
+    },
+    "sessionsClosed": true,
+    "unexpectedResidue": 0
+  }
+}
