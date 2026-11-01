@@ -2,7 +2,7 @@
 
 Nền tảng học ngoại ngữ với ba vai trò: **Learner** học và ôn tập,
 **Teacher** biên soạn nội dung được phân công, **Admin** quản trị và duyệt nội dung.
-Ứng dụng hiện có trong workspace `lingora-admin/`.
+Mã nguồn gồm hai workspace: `lingora-admin/` (quản trị, biên soạn) và `lingora-web/` (học viên).
 
 ## Stack
 
@@ -25,7 +25,12 @@ npm run dev
 Auth cần `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (hoặc `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
 Không commit `.env`, database credentials, service-role key hay thông tin đăng nhập.
 
+## Kiểm thử
+
+- Chạy test tính năng và UI: `npm run test:feature`, `npm run test:components`, `npm run test:all`.
+- Chạy PostgreSQL integration suites: `npm run test:integration:lessons` (Slice 10 consumption concurrency) và `npm run test:integration:practice` (Slice 11 practice concurrency). Các lệnh này dùng runner cục bộ (`scripts/local-test-db.mjs`) khởi tạo PostgreSQL loopback tạm thời qua `embedded-postgres`, không yêu cầu database ngoài.
+
 ## Tiến độ và tài liệu
 
-Slice 1 (Admin Auth + Languages) và Slice 2 (Frameworks/Levels) đã ACCEPTED; Slice 3 chưa bắt đầu.
+Các Slice 1 đến Slice 11 đã ACCEPTED (Admin catalogue, Teacher authoring/submission, Admin review/publish, Assessment authoring, Learner auth/context, Lesson reading/consumption, Practice attempt/grading).
 Xem [roadmap](plans/roadmap.md), [tài liệu](docs/README.md) và [quy tắc làm việc](AGENTS.md).

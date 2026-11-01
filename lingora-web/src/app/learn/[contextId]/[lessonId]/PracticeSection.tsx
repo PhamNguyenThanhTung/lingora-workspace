@@ -183,7 +183,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
               id="reloadPracticeBtn"
               className="btn btn-primary"
               style={{ marginTop: '8px' }}
-              onClick={() => router.refresh()}
+              onClick={() => (accessError != null ? window.location.reload() : router.refresh())}
             >
               Tải lại trang
             </button>

@@ -264,11 +264,20 @@ test('attempt-only loading failure renders retryable error instead of a false un
 
 test('real session loss and disabled errors stop mutations and offer recovery',async()=>{
  await withLearner(async page=>{
-  await page.goto(`${origin}/learn/${contextId}/${lesson1Id}`);await page.locator('#startPracticeBtn').click();await page.locator('#activeExerciseCard').waitFor();
+  const savedAttemptId='33333333-3333-4333-8333-333333333333';
+  server.fixture.attempts.push({
+   id:savedAttemptId,contextId,lessonId:lesson1Id,lessonRevisionId:revision1Id,
+   nCore:5,startedAt:new Date(),completedAt:null,createdAt:new Date(),updatedAt:new Date(),rowVersion:1n
+  });
+  await page.goto(`${origin}/learn/${contextId}/${lesson1Id}`);await page.locator('#activeExerciseCard').waitFor();
   await page.locator('#activeExerciseCard input[value="opt-1"]').check();server.fixture.account.status='DISABLED';await page.locator('#submitResponseBtn').click();await page.locator('#practiceActionAlert').waitFor();
   assert.equal(server.fixture.responses.length,0);assert.equal(await page.locator('#submitResponseBtn').isDisabled(),true);
-  server.fixture.account.status='ACTIVE';await page.reload();await page.locator('#activeExerciseCard').waitFor();await page.locator('#activeExerciseCard input[value="opt-1"]').check();
-  server.fixture.expired=true;await page.locator('#submitResponseBtn').click();await page.getByRole('link',{name:'Đăng nhập lại'}).waitFor();assert.equal(server.fixture.responses.length,0);assert.equal(await page.locator('#submitResponseBtn').isDisabled(),true);
+  server.fixture.account.status='ACTIVE';await page.locator('#reloadPracticeBtn').click();await page.locator('#activeExerciseCard').waitFor();
+  await page.locator(`#practice-${savedAttemptId}-${server.fixture.exercises[0].id}-opt-1`).waitFor();
+  await page.locator('#activeExerciseCard input[value="opt-1"]').check();await page.locator('#submitResponseBtn').click();
+  await page.locator('#formativeFeedback').waitFor();assert.equal(server.fixture.responses.length,1);assert.equal(server.fixture.responses[0].attemptId,savedAttemptId);
+  await page.locator('#fillBlankInput').waitFor();await page.locator('#fillBlankInput').fill('meet');
+  server.fixture.expired=true;await page.locator('#submitResponseBtn').click();await page.getByRole('link',{name:'Đăng nhập lại'}).waitFor();assert.equal(server.fixture.responses.length,1);assert.equal(await page.locator('#submitResponseBtn').isDisabled(),true);
  });
 });
 

@@ -3,8 +3,9 @@ import {PrismaClient}from'../../../lingora-admin/generated/product-client/index.
 import {setLearnerPrismaForTest}from'../../src/server/db/index.ts';
 import {mutateLessonConsumption,getLessonReading}from'../../src/server/lessons/service.ts';
 import {createFixture,deferred,bounded}from'./harness/consumption-db-fixture.mjs';
-// Explicit opt-in integration gate. Parent provisions a disposable Prisma-shaped
-// database plus the exact approved consumption migration and identity trigger.
+import {saveTeacherLessonDraft,submitTeacherLesson,approveReview,publishReview}from'../../../lingora-admin/src/server/lessons/index.ts';
+// Explicit opt-in integration gate. The tracked runner applies every migration
+// without removing guards; fixtures publish content through the staff services.
 const url=process.env.SLICE10_TEST_DATABASE_URL;assert.ok(url,'Explicit owned loopback DB required');const parsed=new URL(url);assert.ok(['127.0.0.1','localhost'].includes(parsed.hostname));assert.match(parsed.pathname,/^\/slice10_test/);assert.equal(process.env.SLICE10_TEST_DATABASE_OWNED,'1');
 const db=new PrismaClient({datasourceUrl:url,log:[]}),other=new PrismaClient({datasourceUrl:url,log:[]});let f;
 before(async()=>{await db.$connect();await other.$connect();});after(async()=>{setLearnerPrismaForTest(null);await Promise.all([db.$disconnect(),other.$disconnect()]);});beforeEach(async()=>{f=await createFixture(db);setLearnerPrismaForTest(db);});
@@ -19,4 +20,28 @@ test('production service: completion transaction begun before later start uses p
 test('production service: completion samples clock only after competing consumption lock releases',async()=>{await command('start');const holding=deferred(),release=deferred(),attempted=deferred();const holder=other.$transaction(async tx=>{await tx.$queryRaw`SELECT id FROM app.lesson_consumptions WHERE context_id=${f.ctxA}::uuid FOR UPDATE`;holding.resolve();await release.promise;});await holding.promise;let clocks=0;setLearnerPrismaForTest(instrument({before:async({sql})=>{if(sql.includes('clock_timestamp'))clocks++;if(sql.includes('app.lesson_consumptions')&&sql.includes('FOR UPDATE'))attempted.resolve();}}));const completion=command('complete');try{await bounded(attempted.promise,'specific row lock attempted');assert.equal(clocks,0);}finally{release.resolve();}await holder;await completion;assert.equal(clocks,1);});
 test('production service: first-start locks context; consumption-only history forbids reassignment',async()=>{const held=deferred(),release=deferred();setLearnerPrismaForTest(instrument({after:async({sql})=>{if(sql.includes('app.lessons')&&sql.includes('FOR SHARE')){held.resolve();await release.promise;}}}));const start=command('start');try{await bounded(held.promise,'first-start parent locks');await assert.rejects(rewriteContext(),lockError);}finally{release.resolve();}await start;await assert.rejects(rewriteContext(),e=>e.code==='P2010'&&e.meta?.code==='23514');assert.equal((await db.learningContext.findUnique({where:{id:f.ctxA}})).learnerId,f.a);});
 test('production service: context reassignment winning before locks rejects stale candidate without writes',async()=>{const held=deferred(),release=deferred();setLearnerPrismaForTest(instrument({before:async({sql})=>{if(sql.includes('app.courses')&&sql.includes('FOR SHARE')){held.resolve();await release.promise;}}}));const start=command('start');await bounded(held.promise,'candidate resolved');try{await rewriteContext();}finally{release.resolve();}await assert.rejects(start,e=>e.status===404);assert.equal(await db.lessonConsumption.count({where:{contextId:f.ctxA}}),0);});
-test('production service: publication X→Y leaves completed X intact and stale committed retry conflicts',async()=>{await command('start');await command('complete');const X=await db.lessonConsumption.findFirst({where:{contextId:f.ctxA}});const old=await db.lessonRevision.findUnique({where:{id:f.revision}});const Y=await db.lessonRevision.create({data:{lessonId:f.lesson,revisionNo:2,assignmentId:old.assignmentId,creationAssignmentEpisodeId:old.creationAssignmentEpisodeId,status:'PUBLISHED',title:{en:'Y'},contentBlocks:[],createdBy:f.teacher,lastEditedBy:f.teacher}});await db.lesson.update({where:{id:f.lesson},data:{activeRevisionId:Y.id}});await assert.rejects(command('complete'),e=>e.status===409&&e.error.code==='PUBLICATION_CHANGED');assert.equal((await getLessonReading(f.ctxA,f.lesson,f.a)).state,'NOT_STARTED');await command('start',f.a,f.ctxA,Y.id);assert.deepEqual(await db.lessonConsumption.findUnique({where:{id:X.id}}),X);assert.equal(await db.lessonConsumption.count({where:{contextId:f.ctxA}}),2);});
+test('production service: publication X→Y leaves completed X intact and stale committed retry conflicts',async()=>{
+ await command('start');await command('complete');
+ const X=await db.lessonConsumption.findFirst({where:{contextId:f.ctxA}});
+ const lesson=await db.lesson.findUnique({where:{id:f.lesson}});
+ const saved=await saveTeacherLessonDraft(f.teacher,f.lesson,{
+  title:{en:'Y'},contentBlocks:[],expectedRevisionId:f.revision,expectedRowVersion:lesson.rowVersion.toString(),
+  exercises:[{sourceExerciseId:f.exerciseId,position:1,isCore:true,type:'MCQ',promptData:{prompt:'Published Y prompt',options:[{id:'a',text:'One'},{id:'b',text:'Two'}]},gradingData:{correctOptionId:'a'}}],vocabulary:[],
+ },db);
+ assert.equal(saved.status,200,JSON.stringify(saved));
+ const draft=saved.data.data;
+ const submitted=await submitTeacherLesson(f.teacher,f.lesson,{revisionId:draft.highestRevision.id,expectedLessonRowVersion:draft.rowVersion,expectedRevisionRowVersion:draft.highestRevision.rowVersion},db);
+ assert.equal(submitted.status,200,JSON.stringify(submitted));
+ let Y=await db.lessonRevision.findUnique({where:{id:draft.highestRevision.id}});
+ const approved=await approveReview(f.admin,submitted.data.submissionId,{expectedRevisionRowVersion:Y.rowVersion.toString()},db);
+ assert.equal(approved.status,200,JSON.stringify(approved));
+ Y=await db.lessonRevision.findUnique({where:{id:Y.id}});
+ const current=await db.lesson.findUnique({where:{id:f.lesson}});
+ const published=await publishReview(f.admin,submitted.data.submissionId,{expectedRevisionRowVersion:Y.rowVersion.toString(),expectedLessonRowVersion:current.rowVersion.toString()},db);
+ assert.equal(published.status,200,JSON.stringify(published));
+ await assert.rejects(command('complete'),e=>e.status===409&&e.error.code==='PUBLICATION_CHANGED');
+ assert.equal((await getLessonReading(f.ctxA,f.lesson,f.a)).state,'NOT_STARTED');
+ await command('start',f.a,f.ctxA,Y.id);
+ assert.deepEqual(await db.lessonConsumption.findUnique({where:{id:X.id}}),X);
+ assert.equal(await db.lessonConsumption.count({where:{contextId:f.ctxA}}),2);
+});
