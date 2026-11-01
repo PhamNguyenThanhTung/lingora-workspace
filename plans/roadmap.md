@@ -92,3 +92,9 @@ Giữ [Admin UI baseline](2026-10-28-admin-ui-baseline.md); không đưa test by
 - Root feature471/components138, typecheck/build, initial clean root build + clean learner runtime build and A–F mutations PASS. Public client/authenticated HTML/JS scans: no secret matches.
 - [Learner DEV](https://lingora-learner-dev.vercel.app/) and staff READY on accepted fix `83aacbf`. Actual public login/home/context, staff denial403, disable→restore same-session retry, logout401 and read-only DB proofs PASS. All6 owned fixtures removed, other Accounts unchanged, residue0; sessions/browser and temporary CLI credential closed/removed. See [verification](slice-9-verification.md).
 - SLICE 9 ACCEPTED. No schema migration, signup or Lesson/progress/assessment runtime. Slice 10 has not started.
+
+## Slice 10 — Learner Lesson / Progress Foundation (LOCAL ACCEPTANCE PASS; PUBLIC PENDING)
+
+Owner approved separate LessonConsumption, exact context/revision reading history, canonical graded gates and shared parent locks. Reading acknowledgement never creates graded evidence/unlocks/Level/SRS. Codex final FK/cardinality/rollback/Prisma checks PASS on disposable PostgreSQL17.11; additive migration `20261101000000_lesson_consumption` applied DEV and catalog verified. Existing five migrations and graded constraints/triggers unchanged; zero backfill.
+
+[Final spec](2026-11-01-slice-10-learner-lesson-progress.md), [approved design](2026-11-01-slice-10-consumption-design.md), [verification](slice-10-verification.md). Anti delivered; independent Sol High review and Codex direct fixes complete. Local feature509/component145/integration7/typecheck/build/client scan PASS;12 mutation variants KILLED/restored. Exact Ready public acceptance and cleanup pending. Slice10 not accepted. No Slice11.

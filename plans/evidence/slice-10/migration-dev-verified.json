@@ -1,0 +1,189 @@
+{
+  "status": "PASS",
+  "readOnly": true,
+  "devVerified": true,
+  "ledger": [
+    {
+      "migration_name": "20261027000000_product_baseline",
+      "finished_at": "2026-10-27T07:49:47.248Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261027010000_product_finalize",
+      "finished_at": "2026-10-27T08:42:58.459Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261027020000_product_correction",
+      "finished_at": "2026-10-27T13:44:58.544Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261027030000_product_remediation",
+      "finished_at": "2026-10-27T16:04:32.477Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261028010000_database_closure",
+      "finished_at": "2026-10-28T15:51:07.218Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261101000000_lesson_consumption",
+      "finished_at": "2026-11-01T06:01:42.373Z",
+      "rolled_back_at": null
+    }
+  ],
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "column_name": "context_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "lesson_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "lesson_revision_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "started_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "column_name": "completed_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "column_name": "row_version",
+      "data_type": "bigint",
+      "is_nullable": "NO",
+      "column_default": "1"
+    }
+  ],
+  "constraints": [
+    {
+      "conname": "lesson_consumptions_context_fkey",
+      "contype": "f",
+      "definition": "FOREIGN KEY (context_id) REFERENCES learning_contexts(id) ON DELETE RESTRICT"
+    },
+    {
+      "conname": "lesson_consumptions_context_revision_key",
+      "contype": "u",
+      "definition": "UNIQUE (context_id, lesson_revision_id)"
+    },
+    {
+      "conname": "lesson_consumptions_lesson_fkey",
+      "contype": "f",
+      "definition": "FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE RESTRICT"
+    },
+    {
+      "conname": "lesson_consumptions_pkey",
+      "contype": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "conname": "lesson_consumptions_revision_lesson_fkey",
+      "contype": "f",
+      "definition": "FOREIGN KEY (lesson_revision_id, lesson_id) REFERENCES lesson_revisions(id, lesson_id) ON DELETE RESTRICT"
+    },
+    {
+      "conname": "lesson_consumptions_row_version_check",
+      "contype": "c",
+      "definition": "CHECK ((row_version > 0))"
+    },
+    {
+      "conname": "lesson_consumptions_timestamps_check",
+      "contype": "c",
+      "definition": "CHECK ((isfinite(started_at) AND isfinite(created_at) AND isfinite(updated_at) AND (updated_at >= started_at) AND (updated_at >= created_at) AND ((completed_at IS NULL) OR (isfinite(completed_at) AND (completed_at >= started_at) AND (completed_at <= updated_at)))))"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "lesson_consumptions_context_revision_key",
+      "indexdef": "CREATE UNIQUE INDEX lesson_consumptions_context_revision_key ON app.lesson_consumptions USING btree (context_id, lesson_revision_id)"
+    },
+    {
+      "indexname": "lesson_consumptions_lesson_idx",
+      "indexdef": "CREATE INDEX lesson_consumptions_lesson_idx ON app.lesson_consumptions USING btree (lesson_id)"
+    },
+    {
+      "indexname": "lesson_consumptions_pkey",
+      "indexdef": "CREATE UNIQUE INDEX lesson_consumptions_pkey ON app.lesson_consumptions USING btree (id)"
+    },
+    {
+      "indexname": "lesson_consumptions_revision_lesson_idx",
+      "indexdef": "CREATE INDEX lesson_consumptions_revision_lesson_idx ON app.lesson_consumptions USING btree (lesson_revision_id, lesson_id)"
+    }
+  ],
+  "security": [
+    {
+      "enabled": true,
+      "forced": true
+    }
+  ],
+  "grants": [
+    {
+      "grantee": "postgres",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "UPDATE"
+    }
+  ],
+  "policies": [],
+  "guard": "CREATE OR REPLACE FUNCTION app.guard_learning_context_immutable_identity()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF OLD.learner_id IS DISTINCT FROM NEW.learner_id OR\n     OLD.course_id IS DISTINCT FROM NEW.course_id OR\n     OLD.language_id IS DISTINCT FROM NEW.language_id THEN\n    IF EXISTS (SELECT 1 FROM app.lesson_attempts WHERE context_id = OLD.id) OR\n       EXISTS (SELECT 1 FROM app.assessment_attempts WHERE context_id = OLD.id) OR\n       EXISTS (SELECT 1 FROM app.lesson_consumptions WHERE context_id = OLD.id) THEN\n      RAISE EXCEPTION 'Learning context learner, course, and language are immutable once learning evidence exists'\n        USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
+  "gradedConstraintsUnchanged": true,
+  "gradedTriggersUnchanged": true,
+  "count": "0"
+}

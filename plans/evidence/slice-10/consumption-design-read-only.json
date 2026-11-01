@@ -1,0 +1,58 @@
+{
+  "readOnly": true,
+  "role": [
+    {
+      "name": "postgres",
+      "superuser": false,
+      "bypass_rls": true
+    }
+  ],
+  "contextIdentity": [
+    {
+      "definition": "CREATE OR REPLACE FUNCTION app.guard_learning_context_immutable_identity()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF OLD.learner_id IS DISTINCT FROM NEW.learner_id OR\n     OLD.course_id IS DISTINCT FROM NEW.course_id OR\n     OLD.language_id IS DISTINCT FROM NEW.language_id THEN\n    IF EXISTS (SELECT 1 FROM app.lesson_attempts WHERE context_id = OLD.id) OR\n       EXISTS (SELECT 1 FROM app.assessment_attempts WHERE context_id = OLD.id) THEN\n      RAISE EXCEPTION 'Learning context learner, course, and language are immutable once attempts exist'\n        USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    }
+  ],
+  "contextRls": [
+    {
+      "enabled": false,
+      "forced": false
+    }
+  ],
+  "publicationParentTriggers": [
+    {
+      "table_name": "courses",
+      "name": "trg_course_deactivate_guard",
+      "function_name": "guard_course_available_lessons",
+      "trigger_definition": "CREATE TRIGGER trg_course_deactivate_guard BEFORE UPDATE OF is_active ON app.courses FOR EACH ROW EXECUTE FUNCTION guard_course_available_lessons()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_course_available_lessons()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\n    BEGIN\n      IF OLD.is_active = true AND NEW.is_active = false THEN\n        IF EXISTS (\n          SELECT 1 FROM app.lessons l\n          JOIN app.units u ON u.id = l.unit_id\n          WHERE u.course_id = NEW.id AND l.availability = 'AVAILABLE'\n        ) THEN\n          RAISE EXCEPTION 'Cannot deactivate course with AVAILABLE lessons' USING ERRCODE = 'check_violation';\n        END IF;\n      END IF;\n      RETURN NEW;\n    END;\n    $function$\n"
+    },
+    {
+      "table_name": "courses",
+      "name": "trg_course_default_level_scope",
+      "function_name": "check_course_default_level_scope",
+      "trigger_definition": "CREATE TRIGGER trg_course_default_level_scope BEFORE INSERT OR UPDATE OF default_start_level_id, framework_id ON app.courses FOR EACH ROW EXECUTE FUNCTION check_course_default_level_scope()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.check_course_default_level_scope()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE v_level_fid UUID;\nBEGIN\n  IF NEW.default_start_level_id IS NOT NULL THEN\n    SELECT framework_id INTO v_level_fid FROM app.levels WHERE id = NEW.default_start_level_id;\n    IF v_level_fid IS DISTINCT FROM NEW.framework_id THEN\n      RAISE EXCEPTION 'Course default start level framework mismatch: course %, level %', NEW.framework_id, v_level_fid\n        USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "courses",
+      "name": "trg_course_scope",
+      "function_name": "guard_course_scope",
+      "trigger_definition": "CREATE TRIGGER trg_course_scope BEFORE UPDATE OF language_id, framework_id ON app.courses FOR EACH ROW EXECUTE FUNCTION guard_course_scope()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_course_scope()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF OLD.language_id != NEW.language_id OR OLD.framework_id != NEW.framework_id THEN\n    IF EXISTS (SELECT 1 FROM app.units WHERE course_id = OLD.id) OR\n       EXISTS (SELECT 1 FROM app.learning_contexts WHERE course_id = OLD.id) OR\n       EXISTS (SELECT 1 FROM app.assessment_blueprints WHERE course_id = OLD.id) THEN\n      RAISE EXCEPTION 'Cannot change language_id or framework_id of course referenced by units, contexts or blueprints'\n        USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lessons",
+      "name": "trg_lesson_available_revision",
+      "function_name": "check_lesson_available_revision",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_available_revision BEFORE INSERT OR UPDATE OF availability, active_revision_id, unit_id ON app.lessons FOR EACH ROW EXECUTE FUNCTION check_lesson_available_revision()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.check_lesson_available_revision()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n  v_status TEXT;\n  v_course_active BOOLEAN;\nBEGIN\n  IF NEW.availability = 'AVAILABLE' THEN\n    IF NEW.active_revision_id IS NULL THEN\n      RAISE EXCEPTION 'AVAILABLE lesson % requires a non-null active_revision_id', NEW.id\n        USING ERRCODE = 'check_violation';\n    END IF;\n\n    SELECT status INTO v_status\n      FROM app.lesson_revisions\n     WHERE id = NEW.active_revision_id AND lesson_id = NEW.id;\n\n    IF v_status IS NULL OR v_status != 'PUBLISHED' THEN\n      RAISE EXCEPTION 'AVAILABLE lesson % active revision must be PUBLISHED (got %)', NEW.id, COALESCE(v_status, 'NOT FOUND')\n        USING ERRCODE = 'check_violation';\n    END IF;\n\n    SELECT c.is_active INTO v_course_active\n      FROM app.units u\n      JOIN app.courses c ON c.id = u.course_id\n     WHERE u.id = NEW.unit_id;\n\n    IF v_course_active IS NOT TRUE THEN\n      RAISE EXCEPTION 'Cannot set lesson % availability to AVAILABLE in an inactive course', NEW.id\n        USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lessons",
+      "name": "trg_lesson_scope",
+      "function_name": "guard_lesson_scope",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_scope BEFORE UPDATE OF unit_id ON app.lessons FOR EACH ROW EXECUTE FUNCTION guard_lesson_scope()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_lesson_scope()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF OLD.unit_id != NEW.unit_id THEN\n    IF EXISTS (SELECT 1 FROM app.lesson_attempts WHERE lesson_id = OLD.id) OR\n       EXISTS (SELECT 1 FROM app.lesson_completions WHERE lesson_id = OLD.id) OR\n       EXISTS (SELECT 1 FROM app.lesson_revisions WHERE lesson_id = OLD.id) THEN\n      RAISE EXCEPTION 'Cannot change unit_id of lesson with revisions, attempts or completions'\n        USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    }
+  ]
+}

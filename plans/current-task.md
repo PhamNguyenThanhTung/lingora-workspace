@@ -70,3 +70,9 @@ Anti initial app/auth/context/UI/tests → independent senior review → Codex d
 Final root feature471/components138, typecheck/build, clean install/build, client scan PASS; A–F mutations KILLED/restored. Fix `83aacbfc473199cc23fe158d77e484eb2af12bdc` deployed READY on learner/staff before live success. Public login→home/context200/empty, real staff role403, same-session disable403→restore/retry200, logout→401 and read-only DB identity/isolation all PASS. All6 disposable attempts cleaned, other Accounts unchanged, residue0, test sessions/browser closed; temporary CLI credential removed. See [verification](slice-9-verification.md). No Slice 10.
 
 `SLICE 9: PASS — SLICE 9 ACCEPTED`
+
+## Slice 10 — Learner Lesson / Progress Foundation (LOCAL ACCEPTANCE PASS; PUBLIC PENDING)
+
+Owner approved separate LessonConsumption, exact context/revision reading history, canonical graded gates and shared parent locks. Reading acknowledgement never creates graded evidence/unlocks/Level/SRS. Codex final FK/cardinality/rollback/Prisma checks PASS on disposable PostgreSQL17.11; additive migration `20261101000000_lesson_consumption` applied DEV and catalog verified. Existing five migrations and graded constraints/triggers unchanged; zero backfill.
+
+[Final spec](2026-11-01-slice-10-learner-lesson-progress.md), [approved design](2026-11-01-slice-10-consumption-design.md), [verification](slice-10-verification.md). Anti delivered; independent Sol High review and Codex direct fixes complete. Local feature509/component145/integration7/typecheck/build/client scan PASS;12 mutation variants KILLED/restored. Exact Ready public acceptance and cleanup pending. Slice10 not accepted. No Slice11.

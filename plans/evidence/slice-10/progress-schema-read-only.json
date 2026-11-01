@@ -1,0 +1,144 @@
+{
+  "readOnly": true,
+  "scope": "Existing lesson attempt/response/completion contract only",
+  "checks": [
+    {
+      "table_name": "lesson_attempts",
+      "name": "lesson_attempts_completion_bounds_check",
+      "definition": "CHECK (((completed_at IS NULL) OR ((k_first_wrong IS NOT NULL) AND (k_first_wrong >= 0) AND (k_first_wrong <= n_core) AND (response_count IS NOT NULL) AND (response_count = ((n_core)::bigint + (k_first_wrong)::bigint)) AND (contribution_units IS NOT NULL) AND (contribution_units >= (2 * ((n_core)::bigint - (k_first_wrong)::bigint))) AND (contribution_units <= ((2 * (n_core)::bigint) - (k_first_wrong)::bigint)) AND (length(TRIM(BOTH FROM timezone_at_completion)) > 0))))"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "name": "lesson_attempts_completion_shape_check",
+      "definition": "CHECK ((((completed_at IS NULL) AND (k_first_wrong IS NULL) AND (contribution_units IS NULL) AND (response_count IS NULL) AND (completion_operation_key IS NULL) AND (qualifying_local_date IS NULL) AND (timezone_at_completion IS NULL)) OR ((completed_at IS NOT NULL) AND (k_first_wrong IS NOT NULL) AND (contribution_units IS NOT NULL) AND (response_count IS NOT NULL) AND (completion_operation_key IS NOT NULL) AND (qualifying_local_date IS NOT NULL) AND (timezone_at_completion IS NOT NULL))))"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "name": "lesson_attempts_n_core_check",
+      "definition": "CHECK ((n_core > 0))"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "name": "lesson_attempts_row_version_check",
+      "definition": "CHECK ((row_version > 0))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "name": "lesson_responses_contribution_rule_check",
+      "definition": "CHECK ((((response_ordinal = 1) AND (is_correct = true) AND (contribution_units = 2)) OR ((response_ordinal = 1) AND (is_correct = false) AND (contribution_units = 0)) OR ((response_ordinal = 2) AND (is_correct = true) AND (contribution_units = 1)) OR ((response_ordinal = 2) AND (is_correct = false) AND (contribution_units = 0))))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "name": "lesson_responses_contribution_units_check",
+      "definition": "CHECK ((contribution_units = ANY (ARRAY[0, 1, 2])))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "name": "lesson_responses_input_hash_nonblank_check",
+      "definition": "CHECK ((length(TRIM(BOTH FROM input_hash)) > 0))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "name": "lesson_responses_input_object_check",
+      "definition": "CHECK ((jsonb_typeof(input) = 'object'::text))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "name": "lesson_responses_queue_position_check",
+      "definition": "CHECK ((queue_position > 0))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "name": "lesson_responses_response_ordinal_check",
+      "definition": "CHECK ((response_ordinal = ANY (ARRAY[1, 2])))"
+    }
+  ],
+  "triggers": [
+    {
+      "table_name": "lesson_attempts",
+      "name": "trg_lesson_attempt_completed",
+      "function_name": "guard_lesson_attempt_completed",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_attempt_completed BEFORE UPDATE ON app.lesson_attempts FOR EACH ROW EXECUTE FUNCTION guard_lesson_attempt_completed()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_lesson_attempt_completed()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF TG_OP = 'DELETE' THEN\n    IF OLD.completed_at IS NOT NULL THEN\n      RAISE EXCEPTION 'Completed lesson attempt cannot be deleted' USING ERRCODE = 'check_violation';\n    END IF;\n    RETURN OLD;\n  END IF;\n\n  IF OLD.created_at IS DISTINCT FROM NEW.created_at THEN\n    RAISE EXCEPTION 'Lesson attempt created_at is immutable' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF OLD.completed_at IS NOT NULL THEN\n    IF NEW.completed_at IS NULL OR NEW.completed_at IS DISTINCT FROM OLD.completed_at OR\n       OLD.context_id IS DISTINCT FROM NEW.context_id OR\n       OLD.lesson_id IS DISTINCT FROM NEW.lesson_id OR\n       OLD.lesson_revision_id IS DISTINCT FROM NEW.lesson_revision_id OR\n       OLD.started_at IS DISTINCT FROM NEW.started_at OR\n       OLD.n_core IS DISTINCT FROM NEW.n_core OR\n       OLD.k_first_wrong IS DISTINCT FROM NEW.k_first_wrong OR\n       OLD.contribution_units IS DISTINCT FROM NEW.contribution_units OR\n       OLD.response_count IS DISTINCT FROM NEW.response_count OR\n       OLD.completion_operation_key IS DISTINCT FROM NEW.completion_operation_key OR\n       OLD.qualifying_local_date IS DISTINCT FROM NEW.qualifying_local_date OR\n       OLD.timezone_at_completion IS DISTINCT FROM NEW.timezone_at_completion THEN\n      RAISE EXCEPTION 'Completed lesson attempt facts are immutable' USING ERRCODE = 'check_violation';\n    END IF;\n  ELSE\n    IF OLD.context_id IS DISTINCT FROM NEW.context_id OR\n       OLD.lesson_id IS DISTINCT FROM NEW.lesson_id OR\n       OLD.lesson_revision_id IS DISTINCT FROM NEW.lesson_revision_id OR\n       OLD.started_at IS DISTINCT FROM NEW.started_at THEN\n      RAISE EXCEPTION 'Lesson attempt context and lesson references are immutable' USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "name": "trg_lesson_attempt_no_delete",
+      "function_name": "guard_lesson_attempt_completed",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_attempt_no_delete BEFORE DELETE ON app.lesson_attempts FOR EACH ROW EXECUTE FUNCTION guard_lesson_attempt_completed()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_lesson_attempt_completed()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF TG_OP = 'DELETE' THEN\n    IF OLD.completed_at IS NOT NULL THEN\n      RAISE EXCEPTION 'Completed lesson attempt cannot be deleted' USING ERRCODE = 'check_violation';\n    END IF;\n    RETURN OLD;\n  END IF;\n\n  IF OLD.created_at IS DISTINCT FROM NEW.created_at THEN\n    RAISE EXCEPTION 'Lesson attempt created_at is immutable' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF OLD.completed_at IS NOT NULL THEN\n    IF NEW.completed_at IS NULL OR NEW.completed_at IS DISTINCT FROM OLD.completed_at OR\n       OLD.context_id IS DISTINCT FROM NEW.context_id OR\n       OLD.lesson_id IS DISTINCT FROM NEW.lesson_id OR\n       OLD.lesson_revision_id IS DISTINCT FROM NEW.lesson_revision_id OR\n       OLD.started_at IS DISTINCT FROM NEW.started_at OR\n       OLD.n_core IS DISTINCT FROM NEW.n_core OR\n       OLD.k_first_wrong IS DISTINCT FROM NEW.k_first_wrong OR\n       OLD.contribution_units IS DISTINCT FROM NEW.contribution_units OR\n       OLD.response_count IS DISTINCT FROM NEW.response_count OR\n       OLD.completion_operation_key IS DISTINCT FROM NEW.completion_operation_key OR\n       OLD.qualifying_local_date IS DISTINCT FROM NEW.qualifying_local_date OR\n       OLD.timezone_at_completion IS DISTINCT FROM NEW.timezone_at_completion THEN\n      RAISE EXCEPTION 'Completed lesson attempt facts are immutable' USING ERRCODE = 'check_violation';\n    END IF;\n  ELSE\n    IF OLD.context_id IS DISTINCT FROM NEW.context_id OR\n       OLD.lesson_id IS DISTINCT FROM NEW.lesson_id OR\n       OLD.lesson_revision_id IS DISTINCT FROM NEW.lesson_revision_id OR\n       OLD.started_at IS DISTINCT FROM NEW.started_at THEN\n      RAISE EXCEPTION 'Lesson attempt context and lesson references are immutable' USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "name": "trg_lesson_attempt_scope",
+      "function_name": "check_lesson_attempt_scope",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_attempt_scope BEFORE INSERT ON app.lesson_attempts FOR EACH ROW EXECUTE FUNCTION check_lesson_attempt_scope()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.check_lesson_attempt_scope()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n  v_ctx_course UUID;\n  v_lesson_course UUID;\n  v_lesson_status TEXT;\n  v_active_rev_id UUID;\n  v_course_active BOOLEAN;\n  v_rev_status TEXT;\nBEGIN\n  SELECT availability, active_revision_id INTO v_lesson_status, v_active_rev_id\n    FROM app.lessons WHERE id = NEW.lesson_id;\n\n  IF v_lesson_status IS DISTINCT FROM 'AVAILABLE' THEN\n    RAISE EXCEPTION 'Cannot start lesson attempt on lesson that is not AVAILABLE' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF NEW.lesson_revision_id IS DISTINCT FROM v_active_rev_id THEN\n    RAISE EXCEPTION 'Lesson attempt revision % must match lesson active revision %',\n      NEW.lesson_revision_id, v_active_rev_id USING ERRCODE = 'check_violation';\n  END IF;\n\n  SELECT course_id INTO v_ctx_course\n    FROM app.learning_contexts WHERE id = NEW.context_id;\n\n  SELECT u.course_id, c.is_active, lr.status\n    INTO v_lesson_course, v_course_active, v_rev_status\n    FROM app.lessons l\n    JOIN app.units u ON u.id = l.unit_id\n    JOIN app.courses c ON c.id = u.course_id\n    JOIN app.lesson_revisions lr ON lr.id = NEW.lesson_revision_id\n   WHERE l.id = NEW.lesson_id;\n\n  IF v_ctx_course IS DISTINCT FROM v_lesson_course THEN\n    RAISE EXCEPTION 'Lesson attempt context course does not match lesson course' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF v_course_active IS NOT TRUE THEN\n    RAISE EXCEPTION 'Cannot attempt lesson in inactive course' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF v_rev_status IS DISTINCT FROM 'PUBLISHED' THEN\n    RAISE EXCEPTION 'Cannot attempt lesson revision that is not PUBLISHED' USING ERRCODE = 'check_violation';\n  END IF;\n\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_completions",
+      "name": "trg_lesson_completion_immutable",
+      "function_name": "guard_no_update",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_completion_immutable BEFORE UPDATE ON app.lesson_completions FOR EACH ROW EXECUTE FUNCTION guard_no_update()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_update()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is immutable and cannot be updated' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_completions",
+      "name": "trg_lesson_completion_no_delete",
+      "function_name": "guard_no_delete",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_completion_no_delete BEFORE DELETE ON app.lesson_completions FOR EACH ROW EXECUTE FUNCTION guard_no_delete()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_delete()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is append-only and cannot be deleted' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_completions",
+      "name": "trg_lesson_completion_parent_attempt",
+      "function_name": "check_lesson_completion_parent_attempt",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_completion_parent_attempt BEFORE INSERT OR UPDATE OF first_attempt_id ON app.lesson_completions FOR EACH ROW EXECUTE FUNCTION check_lesson_completion_parent_attempt()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.check_lesson_completion_parent_attempt()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE v_completed TIMESTAMPTZ;\nBEGIN\n  SELECT completed_at INTO v_completed FROM app.lesson_attempts WHERE id = NEW.first_attempt_id;\n  IF v_completed IS NULL THEN\n    RAISE EXCEPTION 'Lesson completion first attempt % must be completed', NEW.first_attempt_id USING ERRCODE = 'check_violation';\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_completions",
+      "name": "trg_lesson_completion_timestamp",
+      "function_name": "check_lesson_completion_timestamp",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_completion_timestamp BEFORE INSERT ON app.lesson_completions FOR EACH ROW EXECUTE FUNCTION check_lesson_completion_timestamp()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.check_lesson_completion_timestamp()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n  v_att_completed TIMESTAMPTZ;\nBEGIN\n  SELECT completed_at INTO v_att_completed\n    FROM app.lesson_attempts WHERE id = NEW.first_attempt_id;\n\n  IF NEW.completed_at IS DISTINCT FROM v_att_completed THEN\n    RAISE EXCEPTION 'Lesson completion completed_at must match first attempt completed_at'\n      USING ERRCODE = 'check_violation';\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_responses",
+      "name": "trg_lesson_response_no_delete",
+      "function_name": "guard_no_delete",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_response_no_delete BEFORE DELETE ON app.lesson_responses FOR EACH ROW EXECUTE FUNCTION guard_no_delete()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_delete()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is append-only and cannot be deleted' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_responses",
+      "name": "trg_lesson_response_no_update",
+      "function_name": "guard_no_update",
+      "trigger_definition": "CREATE TRIGGER trg_lesson_response_no_update BEFORE UPDATE ON app.lesson_responses FOR EACH ROW EXECUTE FUNCTION guard_no_update()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_update()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is immutable and cannot be updated' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    }
+  ],
+  "relations": [
+    {
+      "table_name": "lesson_attempts"
+    },
+    {
+      "table_name": "lesson_completions"
+    },
+    {
+      "table_name": "lesson_exercises"
+    },
+    {
+      "table_name": "lesson_responses"
+    },
+    {
+      "table_name": "lesson_revisions"
+    },
+    {
+      "table_name": "lesson_vocabulary_links"
+    },
+    {
+      "table_name": "lessons"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "state": "Task changes on baseline f71fdf70; runtime source restored byte-exact after all mutations, prior to source commit.",
+  "commands": [
+    {
+      "command": "npm run test:feature",
+      "cwd": "workspace root",
+      "exit": 0,
+      "passed": 509
+    },
+    {
+      "command": "npm run test:components",
+      "cwd": "workspace root",
+      "exit": 0,
+      "passed": 145,
+      "note": "Completed sequential run. Initial invocation had two existing staff draft assertions fail; unchanged staff source/tests then passed."
+    },
+    {
+      "command": "npm run typecheck",
+      "exit": 0
+    },
+    {
+      "command": "npm run build",
+      "exit": 0
+    },
+    {
+      "command": "node tmp/slice10/local-db-runner.mjs npm run test:integration:lessons -w lingora-web",
+      "exit": 0,
+      "passed": 7,
+      "scope": "Owned ephemeral PostgreSQL17.11; production mutation service; no live connection."
+    },
+    {
+      "command": "node tmp/slice10/mutations.mjs; node tmp/slice10/mutations.mjs E",
+      "exit": 0,
+      "killed": 12,
+      "initialIncompleteMutatorExit": 1,
+      "note": "Second command resumed after E mutator initially retained a guard; final semantic variant killed. All source restored byte-exact."
+    },
+    {
+      "command": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/lessons.test.mjs tests/feature/lesson-review-regressions.test.mjs",
+      "cwd": "lingora-web",
+      "exit": 0,
+      "passed": 38,
+      "scope": "Post-restoration affected suite"
+    },
+    {
+      "command": "node tmp/slice10/scan-client.mjs",
+      "exit": 0,
+      "files": 40,
+      "privateMatches": 0
+    }
+  ]
+}

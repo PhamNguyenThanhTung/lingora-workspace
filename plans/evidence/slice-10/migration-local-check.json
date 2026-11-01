@@ -1,0 +1,226 @@
+{
+  "status": "PASS",
+  "postgresVersion": "17.11",
+  "checks": {
+    "up": true,
+    "unique_context_revision": true,
+    "distinct_contexts_and_revisions": true,
+    "revision_lesson_fk": true,
+    "missing_context_fk": true,
+    "context_delete_restrict": true,
+    "lesson_delete_restrict": true,
+    "revision_delete_restrict": true,
+    "positive_version": true,
+    "finite_timestamp": true,
+    "chronological_completion": true,
+    "consumption_freezes_context": true,
+    "inherited_default_client_grants_revoked": true,
+    "anon_denied": true,
+    "authenticated_denied": true,
+    "nonempty_rollback_refused": true,
+    "empty_rollback_restores_guard": true,
+    "prisma_sql_parity": true
+  },
+  "sqlCatalog": {
+    "columns": [
+      {
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "column_name": "context_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "lesson_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "lesson_revision_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "started_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "column_name": "completed_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "column_name": "row_version",
+        "data_type": "bigint",
+        "is_nullable": "NO",
+        "column_default": "1"
+      }
+    ],
+    "keys": [
+      {
+        "conname": "lesson_consumptions_context_fkey",
+        "contype": "f",
+        "definition": "FOREIGN KEY (context_id) REFERENCES app.learning_contexts(id) ON DELETE RESTRICT"
+      },
+      {
+        "conname": "lesson_consumptions_context_revision_key",
+        "contype": "u",
+        "definition": "UNIQUE (context_id, lesson_revision_id)"
+      },
+      {
+        "conname": "lesson_consumptions_lesson_fkey",
+        "contype": "f",
+        "definition": "FOREIGN KEY (lesson_id) REFERENCES app.lessons(id) ON DELETE RESTRICT"
+      },
+      {
+        "conname": "lesson_consumptions_pkey",
+        "contype": "p",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "conname": "lesson_consumptions_revision_lesson_fkey",
+        "contype": "f",
+        "definition": "FOREIGN KEY (lesson_revision_id, lesson_id) REFERENCES app.lesson_revisions(id, lesson_id) ON DELETE RESTRICT"
+      }
+    ],
+    "indexes": [
+      {
+        "indexname": "lesson_consumptions_context_revision_key",
+        "indexdef": "CREATE UNIQUE INDEX lesson_consumptions_context_revision_key ON app.lesson_consumptions USING btree (context_id, lesson_revision_id)"
+      },
+      {
+        "indexname": "lesson_consumptions_lesson_idx",
+        "indexdef": "CREATE INDEX lesson_consumptions_lesson_idx ON app.lesson_consumptions USING btree (lesson_id)"
+      },
+      {
+        "indexname": "lesson_consumptions_pkey",
+        "indexdef": "CREATE UNIQUE INDEX lesson_consumptions_pkey ON app.lesson_consumptions USING btree (id)"
+      },
+      {
+        "indexname": "lesson_consumptions_revision_lesson_idx",
+        "indexdef": "CREATE INDEX lesson_consumptions_revision_lesson_idx ON app.lesson_consumptions USING btree (lesson_revision_id, lesson_id)"
+      }
+    ]
+  },
+  "prismaCatalog": {
+    "columns": [
+      {
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "column_name": "context_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "lesson_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "lesson_revision_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "started_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "column_default": "CURRENT_TIMESTAMP"
+      },
+      {
+        "column_name": "completed_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "column_default": "CURRENT_TIMESTAMP"
+      },
+      {
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "column_default": "CURRENT_TIMESTAMP"
+      },
+      {
+        "column_name": "row_version",
+        "data_type": "bigint",
+        "is_nullable": "NO",
+        "column_default": "1"
+      }
+    ],
+    "keys": [
+      {
+        "conname": "lesson_consumptions_context_fkey",
+        "contype": "f",
+        "definition": "FOREIGN KEY (context_id) REFERENCES app.learning_contexts(id) ON DELETE RESTRICT"
+      },
+      {
+        "conname": "lesson_consumptions_lesson_fkey",
+        "contype": "f",
+        "definition": "FOREIGN KEY (lesson_id) REFERENCES app.lessons(id) ON DELETE RESTRICT"
+      },
+      {
+        "conname": "lesson_consumptions_pkey",
+        "contype": "p",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "conname": "lesson_consumptions_revision_lesson_fkey",
+        "contype": "f",
+        "definition": "FOREIGN KEY (lesson_revision_id, lesson_id) REFERENCES app.lesson_revisions(id, lesson_id) ON DELETE RESTRICT"
+      }
+    ],
+    "indexes": [
+      {
+        "indexname": "lesson_consumptions_context_revision_key",
+        "indexdef": "CREATE UNIQUE INDEX lesson_consumptions_context_revision_key ON app.lesson_consumptions USING btree (context_id, lesson_revision_id)"
+      },
+      {
+        "indexname": "lesson_consumptions_lesson_idx",
+        "indexdef": "CREATE INDEX lesson_consumptions_lesson_idx ON app.lesson_consumptions USING btree (lesson_id)"
+      },
+      {
+        "indexname": "lesson_consumptions_pkey",
+        "indexdef": "CREATE UNIQUE INDEX lesson_consumptions_pkey ON app.lesson_consumptions USING btree (id)"
+      },
+      {
+        "indexname": "lesson_consumptions_revision_lesson_idx",
+        "indexdef": "CREATE INDEX lesson_consumptions_revision_lesson_idx ON app.lesson_consumptions USING btree (lesson_revision_id, lesson_id)"
+      }
+    ]
+  },
+  "cleanup": "owned ephemeral cluster removed on stop"
+}

@@ -198,6 +198,19 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                       <span className="context-detail-value">{workingLvl}</span>
                     </div>
                   </div>
+
+                  {ctx.status === 'ACTIVE' && ctx.course.isActive && (
+                    <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                      <a
+                        href={`/learn/${ctx.id}`}
+                        id={`enterContextBtn-${ctx.id}`}
+                        className="btn btn-primary"
+                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        Vào học
+                      </a>
+                    </div>
+                  )}
                 </article>
               );
             })}

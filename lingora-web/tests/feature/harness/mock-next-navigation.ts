@@ -50,7 +50,13 @@ export function useRouter() {
     refresh: () => {
       if (typeof window !== 'undefined') {
         (window as any).__refreshCalled = true;
-        if (document.getElementById('production-page') && !(window as any).__navigating) window.location.reload();
+        if (document.getElementById('production-page') && !(window as any).__navigating) {
+          fetch(window.location.href, { cache: 'no-store' }).then(response => response.text()).then(html => {
+            const payload = new DOMParser().parseFromString(html, 'text/html').getElementById('production-page');
+            if (!payload) throw new Error('Missing production refresh payload');
+            (window as any).__refreshProductionPage(JSON.parse(payload.textContent || '{}'));
+          }).catch(() => { (window as any).__refreshFailed = true; });
+        }
       }
     },
     back: () => {},

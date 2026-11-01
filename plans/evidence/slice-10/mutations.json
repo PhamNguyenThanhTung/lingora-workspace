@@ -1,0 +1,213 @@
+{
+  "results": [
+    {
+      "id": "A",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "newer draft",
+        "tests/feature/lesson-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "B",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "Mutation B",
+        "tests/feature/lessons.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "C",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "Mutation C",
+        "tests/feature/lessons.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "D",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "account disabled after outer",
+        "tests/feature/lesson-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "E",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "Mutation E",
+        "tests/feature/lessons.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "F",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "Mutation F",
+        "tests/feature/lesson-pages.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "G-exercise",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "newer draft",
+        "tests/feature/lesson-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "G-vocabulary",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "newer draft",
+        "tests/feature/lesson-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "H-reading-as-grade",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "tests/feature/lessons.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "I-context-history",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "tmp/slice10/local-db-runner.mjs",
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./lingora-web/tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "first-start locks context",
+        "lingora-web/tests/feature/lesson-concurrency.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace"
+    },
+    {
+      "id": "J-parent-exclusivity",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "tmp/slice10/local-db-runner.mjs",
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./lingora-web/tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "independent learners",
+        "lingora-web/tests/feature/lesson-concurrency.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace"
+    },
+    {
+      "id": "K-transaction-clock",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "tmp/slice10/local-db-runner.mjs",
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./lingora-web/tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "completion transaction begun before",
+        "lingora-web/tests/feature/lesson-concurrency.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace"
+    }
+  ],
+  "byteExactRestored": true
+}

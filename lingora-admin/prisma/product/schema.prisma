@@ -189,6 +189,7 @@ model Lesson {
   activeRevision   LessonRevision?    @relation("ActiveLessonRevision", fields: [activeRevisionId, id], references: [id, lessonId], onUpdate: NoAction, onDelete: Restrict, map: "lessons_active_revision_fkey")
   assignment       ContentAssignment?
   attempts         LessonAttempt[]
+  consumptions     LessonConsumption[]
   completions      LessonCompletion[]
 
   @@unique([unitId, position], map: "lessons_unit_id_position_key")
@@ -301,6 +302,7 @@ model LessonRevision {
   exercises                     LessonExercise[]
   mediaBindings                 MediaBinding[]
   attempts                      LessonAttempt[]    @relation("LessonAttemptRevision")
+  consumptions                  LessonConsumption[] @relation("LessonConsumptionRevision")
   assessmentVersionItems        AssessmentVersionItem[] @relation("VersionItemSourceLessonRevision")
 
   @@unique([lessonId, revisionNo], map: "lesson_revisions_lesson_id_revision_no_key")
@@ -524,12 +526,35 @@ model LearningContext {
   workingLevel         Level?            @relation("ContextWorkingLevel", fields: [workingLevelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
   startResult          AssessmentResult? @relation("ContextStartResult", fields: [startResultId], references: [id], onUpdate: NoAction, onDelete: Restrict)
 
+  lessonConsumptions   LessonConsumption[]
   lessonAttempts       LessonAttempt[]
   lessonCompletions    LessonCompletion[]
   assessmentAttempts   AssessmentAttempt[]
 
   @@unique([learnerId, languageId], map: "learning_contexts_learner_id_language_id_key")
   @@map("learning_contexts")
+  @@schema("app")
+}
+
+model LessonConsumption {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contextId        String          @map("context_id") @db.Uuid
+  lessonId         String          @map("lesson_id") @db.Uuid
+  lessonRevisionId String          @map("lesson_revision_id") @db.Uuid
+  startedAt        DateTime        @default(now()) @map("started_at") @db.Timestamptz(6)
+  completedAt      DateTime?       @map("completed_at") @db.Timestamptz(6)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion       BigInt          @default(1) @map("row_version")
+
+  context          LearningContext @relation(fields: [contextId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "lesson_consumptions_context_fkey")
+  lesson           Lesson          @relation(fields: [lessonId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "lesson_consumptions_lesson_fkey")
+  lessonRevision   LessonRevision  @relation("LessonConsumptionRevision", fields: [lessonRevisionId, lessonId], references: [id, lessonId], onUpdate: NoAction, onDelete: Restrict, map: "lesson_consumptions_revision_lesson_fkey")
+
+  @@unique([contextId, lessonRevisionId], map: "lesson_consumptions_context_revision_key")
+  @@index([lessonRevisionId, lessonId], map: "lesson_consumptions_revision_lesson_idx")
+  @@index([lessonId], map: "lesson_consumptions_lesson_idx")
+  @@map("lesson_consumptions")
   @@schema("app")
 }
 

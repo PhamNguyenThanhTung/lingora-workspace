@@ -2,6 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { LoginForm } from '../../../src/app/login/LoginForm';
 import { HomeView } from '../../../src/app/home/HomeView';
+import { CatalogueView } from '../../../src/app/learn/[contextId]/CatalogueView';
+import { LessonPlayerView } from '../../../src/app/learn/[contextId]/[lessonId]/LessonPlayerView';
 import type { LearnerContextEnvelope } from '../../../src/server/context/dto.ts';
 
 const MOCK_VALID_DATA: LearnerContextEnvelope['data'] = {
@@ -63,7 +65,10 @@ function HarnessRoot() {
   const bootstrap = document.getElementById('production-page');
   if (bootstrap) {
     const page = JSON.parse(bootstrap.textContent || '{}');
-    return page.kind === 'login' ? <LoginForm {...page.props} /> : <HomeView {...page.props} />;
+    if (page.kind === 'login') return <LoginForm {...page.props} />;
+    if (page.kind === 'home') return <HomeView {...page.props} />;
+    if (page.kind === 'catalogue') return <CatalogueView {...page.props} />;
+    if (page.kind === 'lessonPlayer') return <LessonPlayerView {...page.props} />;
   }
   const params = new URLSearchParams(window.location.search);
   const state = params.get('state') || 'login';
@@ -122,5 +127,10 @@ function HarnessRoot() {
 const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
+  (window as any).__refreshProductionPage = (payload: unknown) => {
+    const bootstrap = document.getElementById('production-page');
+    if (bootstrap) bootstrap.textContent = JSON.stringify(payload);
+    root.render(<HarnessRoot />);
+  };
   root.render(<HarnessRoot />);
 }
