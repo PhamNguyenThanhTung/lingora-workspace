@@ -9,10 +9,11 @@
     "build": "npm --prefix .. run db:product:generate -w lingora-admin && node scripts/prepare-prisma-runtime.mjs && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test:feature": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth.test.mjs tests/feature/context.test.mjs tests/feature/login-flow.test.mjs tests/feature/review-regressions.test.mjs tests/feature/session-transport.test.mjs tests/feature/prisma-runtime.test.mjs tests/feature/lessons.test.mjs tests/feature/lesson-review-regressions.test.mjs",
-    "test:components": "node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/isolated-components.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/production-pages.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/lesson-pages.test.mjs",
+    "test:feature": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth.test.mjs tests/feature/context.test.mjs tests/feature/login-flow.test.mjs tests/feature/review-regressions.test.mjs tests/feature/session-transport.test.mjs tests/feature/prisma-runtime.test.mjs tests/feature/lessons.test.mjs tests/feature/lesson-review-regressions.test.mjs tests/feature/practice.test.mjs tests/feature/practice-review-regressions.test.mjs",
+    "test:components": "node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/isolated-components.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/production-pages.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/lesson-pages.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/practice-components.test.mjs",
     "test:all": "npm run test:feature && npm run test:components",
-    "test:integration:lessons": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/lesson-concurrency.test.mjs"
+    "test:integration:lessons": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/lesson-concurrency.test.mjs",
+    "test:integration:practice": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/practice-concurrency.test.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",

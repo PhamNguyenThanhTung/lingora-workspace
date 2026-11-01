@@ -2,6 +2,7 @@
 
 import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { PracticeSection } from './PracticeSection';
 import type {
   LearnerLessonDetailDto,
   LearnerExerciseDto,
@@ -654,6 +655,18 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
               </section>
             )}
           </div>
+        )}
+
+        {/* Interactive Practice Section */}
+        {exercises.length > 0 && (
+          <PracticeSection
+            key={`${revision.id}:${data.latestAttempt?.id ?? "none"}:${data.latestAttempt?.responses.length ?? 0}:${data.latestAttempt?.completedAt ?? "open"}`}
+            contextId={data.contextId}
+            lessonId={data.lessonId}
+            revisionId={revision.id}
+            exercises={exercises}
+            initialAttempt={data.latestAttempt}
+          />
         )}
       </main>
     </div>

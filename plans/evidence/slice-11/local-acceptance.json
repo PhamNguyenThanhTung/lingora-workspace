@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "baseCommit": "b86ddc652310c37373c4ce921e38e39cba4c3562",
+  "suites": {
+    "feature": {
+      "tests": 542,
+      "failed": 0
+    },
+    "components": {
+      "tests": 152,
+      "failed": 0
+    },
+    "practice-db": {
+      "tests": 13,
+      "failed": 0
+    },
+    "consumption-db": {
+      "tests": 7,
+      "failed": 0
+    }
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exit": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "exit": 0
+  },
+  "mutations": 20,
+  "byteExactRestored": true,
+  "clientScan": {
+    "answerScope": "learner client; staff authoring payload names are expected",
+    "localFiles": 40,
+    "publicFiles": 0,
+    "secretMatches": [],
+    "privateImportMatches": [],
+    "answerContractMatches": [],
+    "origins": [],
+    "pass": true
+  },
+  "schemaChanged": false,
+  "migrationApplied": false,
+  "publicAcceptance": "PENDING"
+}

@@ -1,0 +1,351 @@
+{
+  "readOnly": true,
+  "devVerified": true,
+  "ledger": [
+    {
+      "migration_name": "20261027000000_product_baseline",
+      "finished_at": "2026-10-27T07:49:47.248Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261027010000_product_finalize",
+      "finished_at": "2026-10-27T08:42:58.459Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261027020000_product_correction",
+      "finished_at": "2026-10-27T13:44:58.544Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261027030000_product_remediation",
+      "finished_at": "2026-10-27T16:04:32.477Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261028010000_database_closure",
+      "finished_at": "2026-10-28T15:51:07.218Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20261101000000_lesson_consumption",
+      "finished_at": "2026-11-01T06:01:42.373Z",
+      "rolled_back_at": null
+    }
+  ],
+  "constraints": [
+    {
+      "table_name": "app_private.command_receipts",
+      "conname": "command_receipts_actor_id_fkey",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES accounts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "app_private.command_receipts",
+      "conname": "command_receipts_command_check",
+      "definition": "CHECK ((command = ANY (ARRAY['PUBLISH_LESSON'::text, 'PUBLISH_ASSESSMENT'::text, 'DISABLE_ACCOUNT'::text, 'ENABLE_ACCOUNT'::text, 'COMPLETE_LESSON'::text, 'SELECT_START'::text, 'ASSIGN_TEACHER'::text, 'SUBMIT_CONTENT'::text, 'REMOVE_DRAFT_MEMBER'::text, 'REQUEST_CHANGES'::text, 'APPROVE'::text, 'ARCHIVE'::text, 'WITHDRAW'::text])))"
+    },
+    {
+      "table_name": "app_private.command_receipts",
+      "conname": "command_receipts_input_hash_nonblank_check",
+      "definition": "CHECK ((length(TRIM(BOTH FROM input_hash)) > 0))"
+    },
+    {
+      "table_name": "app_private.command_receipts",
+      "conname": "command_receipts_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "app_private.command_receipts",
+      "conname": "command_receipts_safe_result_object_check",
+      "definition": "CHECK ((jsonb_typeof(safe_result) = 'object'::text))"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "conname": "lesson_attempts_completion_bounds_check",
+      "definition": "CHECK (((completed_at IS NULL) OR ((k_first_wrong IS NOT NULL) AND (k_first_wrong >= 0) AND (k_first_wrong <= n_core) AND (response_count IS NOT NULL) AND (response_count = ((n_core)::bigint + (k_first_wrong)::bigint)) AND (contribution_units IS NOT NULL) AND (contribution_units >= (2 * ((n_core)::bigint - (k_first_wrong)::bigint))) AND (contribution_units <= ((2 * (n_core)::bigint) - (k_first_wrong)::bigint)) AND (length(TRIM(BOTH FROM timezone_at_completion)) > 0))))"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "conname": "lesson_attempts_completion_shape_check",
+      "definition": "CHECK ((((completed_at IS NULL) AND (k_first_wrong IS NULL) AND (contribution_units IS NULL) AND (response_count IS NULL) AND (completion_operation_key IS NULL) AND (qualifying_local_date IS NULL) AND (timezone_at_completion IS NULL)) OR ((completed_at IS NOT NULL) AND (k_first_wrong IS NOT NULL) AND (contribution_units IS NOT NULL) AND (response_count IS NOT NULL) AND (completion_operation_key IS NOT NULL) AND (qualifying_local_date IS NOT NULL) AND (timezone_at_completion IS NOT NULL))))"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "conname": "lesson_attempts_context_id_fkey",
+      "definition": "FOREIGN KEY (context_id) REFERENCES learning_contexts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "conname": "lesson_attempts_lesson_id_fkey",
+      "definition": "FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "conname": "lesson_attempts_lesson_revision_lesson_fkey",
+      "definition": "FOREIGN KEY (lesson_revision_id, lesson_id) REFERENCES lesson_revisions(id, lesson_id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "conname": "lesson_attempts_n_core_check",
+      "definition": "CHECK ((n_core > 0))"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "conname": "lesson_attempts_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "conname": "lesson_attempts_row_version_check",
+      "definition": "CHECK ((row_version > 0))"
+    },
+    {
+      "table_name": "lesson_completions",
+      "conname": "lesson_completions_attempt_context_lesson_fkey",
+      "definition": "FOREIGN KEY (first_attempt_id, context_id, lesson_id) REFERENCES lesson_attempts(id, context_id, lesson_id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "lesson_completions",
+      "conname": "lesson_completions_context_id_fkey",
+      "definition": "FOREIGN KEY (context_id) REFERENCES learning_contexts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "lesson_completions",
+      "conname": "lesson_completions_lesson_id_fkey",
+      "definition": "FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "lesson_completions",
+      "conname": "lesson_completions_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_attempt_revision_fkey",
+      "definition": "FOREIGN KEY (attempt_id, lesson_revision_id) REFERENCES lesson_attempts(id, lesson_revision_id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_contribution_rule_check",
+      "definition": "CHECK ((((response_ordinal = 1) AND (is_correct = true) AND (contribution_units = 2)) OR ((response_ordinal = 1) AND (is_correct = false) AND (contribution_units = 0)) OR ((response_ordinal = 2) AND (is_correct = true) AND (contribution_units = 1)) OR ((response_ordinal = 2) AND (is_correct = false) AND (contribution_units = 0))))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_contribution_units_check",
+      "definition": "CHECK ((contribution_units = ANY (ARRAY[0, 1, 2])))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_exercise_revision_fkey",
+      "definition": "FOREIGN KEY (lesson_exercise_id, lesson_revision_id) REFERENCES lesson_exercises(id, lesson_revision_id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_input_hash_nonblank_check",
+      "definition": "CHECK ((length(TRIM(BOTH FROM input_hash)) > 0))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_input_object_check",
+      "definition": "CHECK ((jsonb_typeof(input) = 'object'::text))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_queue_position_check",
+      "definition": "CHECK ((queue_position > 0))"
+    },
+    {
+      "table_name": "lesson_responses",
+      "conname": "lesson_responses_response_ordinal_check",
+      "definition": "CHECK ((response_ordinal = ANY (ARRAY[1, 2])))"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_enrollment_source_check",
+      "definition": "CHECK ((enrollment_source = ANY (ARRAY['CORE_COMPLETION'::text, 'OPTIONAL_CHOICE'::text])))"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_learner_id_fkey",
+      "definition": "FOREIGN KEY (learner_id) REFERENCES accounts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_row_version_check",
+      "definition": "CHECK ((row_version > 0))"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_source_attempt_id_fkey",
+      "definition": "FOREIGN KEY (source_attempt_id) REFERENCES lesson_attempts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_source_lesson_vocabulary_id_fkey",
+      "definition": "FOREIGN KEY (source_lesson_vocabulary_id) REFERENCES lesson_vocabulary_links(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_source_shape_check",
+      "definition": "CHECK ((((enrollment_source = 'CORE_COMPLETION'::text) AND (source_attempt_id IS NOT NULL) AND (source_lesson_vocabulary_id IS NOT NULL)) OR ((enrollment_source = 'OPTIONAL_CHOICE'::text) AND (source_lesson_vocabulary_id IS NOT NULL))))"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_stage_check",
+      "definition": "CHECK (((stage >= 1) AND (stage <= 5)))"
+    },
+    {
+      "table_name": "srs_cards",
+      "conname": "srs_cards_vocabulary_id_fkey",
+      "definition": "FOREIGN KEY (vocabulary_id) REFERENCES vocabulary_concepts(id) ON DELETE RESTRICT"
+    }
+  ],
+  "indexes": [
+    {
+      "table_name": "app_private.command_receipts",
+      "definition": "CREATE UNIQUE INDEX command_receipts_actor_id_command_operation_key_key ON app_private.command_receipts USING btree (actor_id, command, operation_key)"
+    },
+    {
+      "table_name": "app_private.command_receipts",
+      "definition": "CREATE UNIQUE INDEX command_receipts_pkey ON app_private.command_receipts USING btree (id)"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "definition": "CREATE INDEX lesson_attempts_latest_completed_idx ON app.lesson_attempts USING btree (context_id, lesson_id, completed_at DESC, id DESC) WHERE (completed_at IS NOT NULL)"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "definition": "CREATE INDEX lesson_attempts_streak_idx ON app.lesson_attempts USING btree (context_id, qualifying_local_date) WHERE (completed_at IS NOT NULL)"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "definition": "CREATE UNIQUE INDEX lesson_attempts_id_context_id_lesson_id_key ON app.lesson_attempts USING btree (id, context_id, lesson_id)"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "definition": "CREATE UNIQUE INDEX lesson_attempts_id_lesson_revision_id_key ON app.lesson_attempts USING btree (id, lesson_revision_id)"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "definition": "CREATE UNIQUE INDEX lesson_attempts_pkey ON app.lesson_attempts USING btree (id)"
+    },
+    {
+      "table_name": "lesson_completions",
+      "definition": "CREATE UNIQUE INDEX lesson_completions_context_id_lesson_id_key ON app.lesson_completions USING btree (context_id, lesson_id)"
+    },
+    {
+      "table_name": "lesson_completions",
+      "definition": "CREATE UNIQUE INDEX lesson_completions_pkey ON app.lesson_completions USING btree (id)"
+    },
+    {
+      "table_name": "lesson_responses",
+      "definition": "CREATE UNIQUE INDEX lesson_responses_attempt_exercise_ordinal_key ON app.lesson_responses USING btree (attempt_id, lesson_exercise_id, response_ordinal)"
+    },
+    {
+      "table_name": "lesson_responses",
+      "definition": "CREATE UNIQUE INDEX lesson_responses_attempt_operation_key_key ON app.lesson_responses USING btree (attempt_id, operation_key)"
+    },
+    {
+      "table_name": "lesson_responses",
+      "definition": "CREATE UNIQUE INDEX lesson_responses_attempt_queue_position_key ON app.lesson_responses USING btree (attempt_id, queue_position)"
+    },
+    {
+      "table_name": "lesson_responses",
+      "definition": "CREATE UNIQUE INDEX lesson_responses_pkey ON app.lesson_responses USING btree (id)"
+    },
+    {
+      "table_name": "srs_cards",
+      "definition": "CREATE INDEX srs_cards_learner_due_idx ON app.srs_cards USING btree (learner_id, due_at, id)"
+    },
+    {
+      "table_name": "srs_cards",
+      "definition": "CREATE UNIQUE INDEX srs_cards_id_learner_id_key ON app.srs_cards USING btree (id, learner_id)"
+    },
+    {
+      "table_name": "srs_cards",
+      "definition": "CREATE UNIQUE INDEX srs_cards_learner_id_vocabulary_id_key ON app.srs_cards USING btree (learner_id, vocabulary_id)"
+    },
+    {
+      "table_name": "srs_cards",
+      "definition": "CREATE UNIQUE INDEX srs_cards_pkey ON app.srs_cards USING btree (id)"
+    }
+  ],
+  "triggers": [
+    {
+      "table_name": "app_private.command_receipts",
+      "tgname": "trg_command_receipt_no_delete",
+      "definition": "CREATE TRIGGER trg_command_receipt_no_delete BEFORE DELETE ON app_private.command_receipts FOR EACH ROW EXECUTE FUNCTION guard_no_delete()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_delete()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is append-only and cannot be deleted' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "app_private.command_receipts",
+      "tgname": "trg_command_receipt_no_update",
+      "definition": "CREATE TRIGGER trg_command_receipt_no_update BEFORE UPDATE ON app_private.command_receipts FOR EACH ROW EXECUTE FUNCTION guard_no_update()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_update()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is immutable and cannot be updated' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "tgname": "trg_lesson_attempt_completed",
+      "definition": "CREATE TRIGGER trg_lesson_attempt_completed BEFORE UPDATE ON app.lesson_attempts FOR EACH ROW EXECUTE FUNCTION guard_lesson_attempt_completed()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_lesson_attempt_completed()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF TG_OP = 'DELETE' THEN\n    IF OLD.completed_at IS NOT NULL THEN\n      RAISE EXCEPTION 'Completed lesson attempt cannot be deleted' USING ERRCODE = 'check_violation';\n    END IF;\n    RETURN OLD;\n  END IF;\n\n  IF OLD.created_at IS DISTINCT FROM NEW.created_at THEN\n    RAISE EXCEPTION 'Lesson attempt created_at is immutable' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF OLD.completed_at IS NOT NULL THEN\n    IF NEW.completed_at IS NULL OR NEW.completed_at IS DISTINCT FROM OLD.completed_at OR\n       OLD.context_id IS DISTINCT FROM NEW.context_id OR\n       OLD.lesson_id IS DISTINCT FROM NEW.lesson_id OR\n       OLD.lesson_revision_id IS DISTINCT FROM NEW.lesson_revision_id OR\n       OLD.started_at IS DISTINCT FROM NEW.started_at OR\n       OLD.n_core IS DISTINCT FROM NEW.n_core OR\n       OLD.k_first_wrong IS DISTINCT FROM NEW.k_first_wrong OR\n       OLD.contribution_units IS DISTINCT FROM NEW.contribution_units OR\n       OLD.response_count IS DISTINCT FROM NEW.response_count OR\n       OLD.completion_operation_key IS DISTINCT FROM NEW.completion_operation_key OR\n       OLD.qualifying_local_date IS DISTINCT FROM NEW.qualifying_local_date OR\n       OLD.timezone_at_completion IS DISTINCT FROM NEW.timezone_at_completion THEN\n      RAISE EXCEPTION 'Completed lesson attempt facts are immutable' USING ERRCODE = 'check_violation';\n    END IF;\n  ELSE\n    IF OLD.context_id IS DISTINCT FROM NEW.context_id OR\n       OLD.lesson_id IS DISTINCT FROM NEW.lesson_id OR\n       OLD.lesson_revision_id IS DISTINCT FROM NEW.lesson_revision_id OR\n       OLD.started_at IS DISTINCT FROM NEW.started_at THEN\n      RAISE EXCEPTION 'Lesson attempt context and lesson references are immutable' USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "tgname": "trg_lesson_attempt_no_delete",
+      "definition": "CREATE TRIGGER trg_lesson_attempt_no_delete BEFORE DELETE ON app.lesson_attempts FOR EACH ROW EXECUTE FUNCTION guard_lesson_attempt_completed()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_lesson_attempt_completed()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF TG_OP = 'DELETE' THEN\n    IF OLD.completed_at IS NOT NULL THEN\n      RAISE EXCEPTION 'Completed lesson attempt cannot be deleted' USING ERRCODE = 'check_violation';\n    END IF;\n    RETURN OLD;\n  END IF;\n\n  IF OLD.created_at IS DISTINCT FROM NEW.created_at THEN\n    RAISE EXCEPTION 'Lesson attempt created_at is immutable' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF OLD.completed_at IS NOT NULL THEN\n    IF NEW.completed_at IS NULL OR NEW.completed_at IS DISTINCT FROM OLD.completed_at OR\n       OLD.context_id IS DISTINCT FROM NEW.context_id OR\n       OLD.lesson_id IS DISTINCT FROM NEW.lesson_id OR\n       OLD.lesson_revision_id IS DISTINCT FROM NEW.lesson_revision_id OR\n       OLD.started_at IS DISTINCT FROM NEW.started_at OR\n       OLD.n_core IS DISTINCT FROM NEW.n_core OR\n       OLD.k_first_wrong IS DISTINCT FROM NEW.k_first_wrong OR\n       OLD.contribution_units IS DISTINCT FROM NEW.contribution_units OR\n       OLD.response_count IS DISTINCT FROM NEW.response_count OR\n       OLD.completion_operation_key IS DISTINCT FROM NEW.completion_operation_key OR\n       OLD.qualifying_local_date IS DISTINCT FROM NEW.qualifying_local_date OR\n       OLD.timezone_at_completion IS DISTINCT FROM NEW.timezone_at_completion THEN\n      RAISE EXCEPTION 'Completed lesson attempt facts are immutable' USING ERRCODE = 'check_violation';\n    END IF;\n  ELSE\n    IF OLD.context_id IS DISTINCT FROM NEW.context_id OR\n       OLD.lesson_id IS DISTINCT FROM NEW.lesson_id OR\n       OLD.lesson_revision_id IS DISTINCT FROM NEW.lesson_revision_id OR\n       OLD.started_at IS DISTINCT FROM NEW.started_at THEN\n      RAISE EXCEPTION 'Lesson attempt context and lesson references are immutable' USING ERRCODE = 'check_violation';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_attempts",
+      "tgname": "trg_lesson_attempt_scope",
+      "definition": "CREATE TRIGGER trg_lesson_attempt_scope BEFORE INSERT ON app.lesson_attempts FOR EACH ROW EXECUTE FUNCTION check_lesson_attempt_scope()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.check_lesson_attempt_scope()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n  v_ctx_course UUID;\n  v_lesson_course UUID;\n  v_lesson_status TEXT;\n  v_active_rev_id UUID;\n  v_course_active BOOLEAN;\n  v_rev_status TEXT;\nBEGIN\n  SELECT availability, active_revision_id INTO v_lesson_status, v_active_rev_id\n    FROM app.lessons WHERE id = NEW.lesson_id;\n\n  IF v_lesson_status IS DISTINCT FROM 'AVAILABLE' THEN\n    RAISE EXCEPTION 'Cannot start lesson attempt on lesson that is not AVAILABLE' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF NEW.lesson_revision_id IS DISTINCT FROM v_active_rev_id THEN\n    RAISE EXCEPTION 'Lesson attempt revision % must match lesson active revision %',\n      NEW.lesson_revision_id, v_active_rev_id USING ERRCODE = 'check_violation';\n  END IF;\n\n  SELECT course_id INTO v_ctx_course\n    FROM app.learning_contexts WHERE id = NEW.context_id;\n\n  SELECT u.course_id, c.is_active, lr.status\n    INTO v_lesson_course, v_course_active, v_rev_status\n    FROM app.lessons l\n    JOIN app.units u ON u.id = l.unit_id\n    JOIN app.courses c ON c.id = u.course_id\n    JOIN app.lesson_revisions lr ON lr.id = NEW.lesson_revision_id\n   WHERE l.id = NEW.lesson_id;\n\n  IF v_ctx_course IS DISTINCT FROM v_lesson_course THEN\n    RAISE EXCEPTION 'Lesson attempt context course does not match lesson course' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF v_course_active IS NOT TRUE THEN\n    RAISE EXCEPTION 'Cannot attempt lesson in inactive course' USING ERRCODE = 'check_violation';\n  END IF;\n\n  IF v_rev_status IS DISTINCT FROM 'PUBLISHED' THEN\n    RAISE EXCEPTION 'Cannot attempt lesson revision that is not PUBLISHED' USING ERRCODE = 'check_violation';\n  END IF;\n\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_completions",
+      "tgname": "trg_lesson_completion_immutable",
+      "definition": "CREATE TRIGGER trg_lesson_completion_immutable BEFORE UPDATE ON app.lesson_completions FOR EACH ROW EXECUTE FUNCTION guard_no_update()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_update()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is immutable and cannot be updated' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_completions",
+      "tgname": "trg_lesson_completion_no_delete",
+      "definition": "CREATE TRIGGER trg_lesson_completion_no_delete BEFORE DELETE ON app.lesson_completions FOR EACH ROW EXECUTE FUNCTION guard_no_delete()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_delete()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is append-only and cannot be deleted' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_completions",
+      "tgname": "trg_lesson_completion_parent_attempt",
+      "definition": "CREATE TRIGGER trg_lesson_completion_parent_attempt BEFORE INSERT OR UPDATE OF first_attempt_id ON app.lesson_completions FOR EACH ROW EXECUTE FUNCTION check_lesson_completion_parent_attempt()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.check_lesson_completion_parent_attempt()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE v_completed TIMESTAMPTZ;\nBEGIN\n  SELECT completed_at INTO v_completed FROM app.lesson_attempts WHERE id = NEW.first_attempt_id;\n  IF v_completed IS NULL THEN\n    RAISE EXCEPTION 'Lesson completion first attempt % must be completed', NEW.first_attempt_id USING ERRCODE = 'check_violation';\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_completions",
+      "tgname": "trg_lesson_completion_timestamp",
+      "definition": "CREATE TRIGGER trg_lesson_completion_timestamp BEFORE INSERT ON app.lesson_completions FOR EACH ROW EXECUTE FUNCTION check_lesson_completion_timestamp()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.check_lesson_completion_timestamp()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n  v_att_completed TIMESTAMPTZ;\nBEGIN\n  SELECT completed_at INTO v_att_completed\n    FROM app.lesson_attempts WHERE id = NEW.first_attempt_id;\n\n  IF NEW.completed_at IS DISTINCT FROM v_att_completed THEN\n    RAISE EXCEPTION 'Lesson completion completed_at must match first attempt completed_at'\n      USING ERRCODE = 'check_violation';\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_responses",
+      "tgname": "trg_lesson_response_no_delete",
+      "definition": "CREATE TRIGGER trg_lesson_response_no_delete BEFORE DELETE ON app.lesson_responses FOR EACH ROW EXECUTE FUNCTION guard_no_delete()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_delete()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is append-only and cannot be deleted' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    },
+    {
+      "table_name": "lesson_responses",
+      "tgname": "trg_lesson_response_no_update",
+      "definition": "CREATE TRIGGER trg_lesson_response_no_update BEFORE UPDATE ON app.lesson_responses FOR EACH ROW EXECUTE FUNCTION guard_no_update()",
+      "function_definition": "CREATE OR REPLACE FUNCTION app.guard_no_update()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Record is immutable and cannot be updated' USING ERRCODE = 'check_violation';\nEND;\n$function$\n"
+    }
+  ]
+}

@@ -122,6 +122,112 @@ export interface LearnerLessonDetailDto {
   exercises: LearnerExerciseDto[];
   vocabulary: LearnerVocabularyDto[];
   consumption: LessonReadingDto;
+  latestAttempt?: PracticeAttemptDto | null;
+}
+
+export const attemptPostSchema = z
+  .object({
+    attemptId: z
+      .string({ message: 'attemptId phải là chuỗi ký tự' })
+      .refine(isValidUuid, 'attemptId phải là UUID hợp lệ')
+      .transform((val) => val.toLowerCase()),
+    expectedPublishedRevisionId: z
+      .string({ message: 'expectedPublishedRevisionId phải là chuỗi ký tự' })
+      .refine(isValidUuid, 'expectedPublishedRevisionId phải là UUID hợp lệ')
+      .transform((val) => val.toLowerCase()),
+  })
+  .strict();
+
+export type AttemptPostInput = z.infer<typeof attemptPostSchema>;
+
+export const responsePostSchema = z
+  .object({
+    operationKey: z
+      .string({ message: 'operationKey phải là chuỗi ký tự' })
+      .refine(isValidUuid, 'operationKey phải là UUID hợp lệ')
+      .transform((val) => val.toLowerCase()),
+    lessonExerciseId: z
+      .string({ message: 'lessonExerciseId phải là chuỗi ký tự' })
+      .trim()
+      .min(1, 'lessonExerciseId không được để trống')
+      .max(100)
+      .transform((val) => val.toLowerCase()),
+    input: z.record(z.string(), z.unknown()),
+  })
+  .strict();
+
+export type ResponsePostInput = z.infer<typeof responsePostSchema>;
+
+export const finalizePostSchema = z
+  .object({
+    operationKey: z
+      .string({ message: 'operationKey phải là chuỗi ký tự' })
+      .refine(isValidUuid, 'operationKey phải là UUID hợp lệ')
+      .transform((val) => val.toLowerCase()),
+  })
+  .strict();
+
+export type FinalizePostInput = z.infer<typeof finalizePostSchema>;
+
+export interface PracticeScoreDto {
+  contributionUnits: number;
+  maxUnits: number;
+  percentage: number;
+}
+
+export interface PracticeResponseDto {
+  id: string;
+  lessonExerciseId: string;
+  responseOrdinal: number;
+  queuePosition: number;
+  isCorrect: boolean;
+  contributionUnits: number;
+  respondedAt: string;
+  input: unknown;
+  formativeFeedback: string;
+}
+
+export interface PracticeAttemptDto {
+  id: string;
+  contextId: string;
+  lessonId: string;
+  lessonRevisionId: string;
+  startedAt: string;
+  completedAt: string | null;
+  nCore: number;
+  kFirstWrong: number | null;
+  contributionUnits: number | null;
+  responseCount: number | null;
+  score: PracticeScoreDto | null;
+  isCompleted: boolean;
+  isStale: boolean;
+  nextExercise: LearnerExerciseDto | null;
+  nextOrdinal: number | null;
+  queuePosition: number | null;
+  exercises: LearnerExerciseDto[];
+  responses: PracticeResponseDto[];
+}
+
+export interface PracticeAttemptEnvelope {
+  data: PracticeAttemptDto;
+}
+
+export interface PracticeResponseResultDto {
+  response: PracticeResponseDto;
+  attempt: PracticeAttemptDto;
+}
+
+export interface PracticeResponseEnvelope {
+  data: PracticeResponseResultDto;
+}
+
+export interface PracticeFinalizeResultDto {
+  attempt: PracticeAttemptDto;
+  isFirstCompletion: boolean;
+}
+
+export interface PracticeFinalizeEnvelope {
+  data: PracticeFinalizeResultDto;
 }
 
 export interface LearnerCatalogueEnvelope {

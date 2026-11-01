@@ -20,6 +20,10 @@ export async function compileProductionModules() {
     lessonsApi: 'src/app/api/learner/contexts/[contextId]/lessons/route.ts',
     lessonDetailApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/route.ts',
     consumptionApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/consumption/route.ts',
+    attemptsApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/route.ts',
+    attemptDetailApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/route.ts',
+    responsesApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/responses/route.ts',
+    finalizeApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/finalize/route.ts',
   };
   const result = {};
   try {

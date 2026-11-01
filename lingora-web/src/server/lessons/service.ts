@@ -4,29 +4,29 @@ import { getLearnerPrisma } from '../db/index.ts';
 import { consumptionPostSchema, isValidUuid, LessonServiceError, type ConsumptionPostInput, type LearnerCatalogueDto, type LearnerLessonDetailDto, type LessonReadingDto } from './dto.ts';
 import { publicExercise, publicVocabulary } from './content.ts';
 
-type Db = PrismaClient | Prisma.TransactionClient;
-const levelSelect = { id: true, frameworkId: true, code: true, label: true, position: true } as const;
-const contextSelect = {
+export type Db = PrismaClient | Prisma.TransactionClient;
+export const levelSelect = { id: true, frameworkId: true, code: true, label: true, position: true } as const;
+export const contextSelect = {
   id: true, learnerId: true, languageId: true, courseId: true, status: true,
   language: { select: { id: true, code: true, names: true } },
   course: { select: { id: true, languageId: true, frameworkId: true, names: true, isActive: true, framework: { select: { id: true, code: true, version: true } } } },
   workingLevelId: true, workingLevel: { select: levelSelect },
   selectedStartLevelId: true, selectedStartLevel: { select: levelSelect },
 } as const;
-const unitSelect = { id: true, courseId: true, levelId: true, position: true, names: true, level: { select: levelSelect } } as const;
-const revisionSummary = { id: true, lessonId: true, status: true, title: true } as const;
-const lessonSummary = { id: true, unitId: true, position: true, isRequired: true, availability: true, activeRevisionId: true, activeRevision: { select: revisionSummary } } as const;
+export const unitSelect = { id: true, courseId: true, levelId: true, position: true, names: true, level: { select: levelSelect } } as const;
+export const revisionSummary = { id: true, lessonId: true, status: true, title: true } as const;
+export const lessonSummary = { id: true, unitId: true, position: true, isRequired: true, availability: true, activeRevisionId: true, activeRevision: { select: revisionSummary } } as const;
 const readingSelect = { id: true, contextId: true, lessonId: true, lessonRevisionId: true, startedAt: true, completedAt: true, updatedAt: true, rowVersion: true } as const;
-type Context = Prisma.LearningContextGetPayload<{ select: typeof contextSelect }>;
-type Summary = Prisma.LessonGetPayload<{ select: typeof lessonSummary }>;
+export type Context = Prisma.LearningContextGetPayload<{ select: typeof contextSelect }>;
+export type Summary = Prisma.LessonGetPayload<{ select: typeof lessonSummary }>;
 type Reading = Prisma.LessonConsumptionGetPayload<{ select: typeof readingSelect }>;
-const labels = (value: unknown): Record<string, string> => Object.fromEntries(Object.entries(value && typeof value === 'object' && !Array.isArray(value) ? value : {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string'));
-const fail = (status: number, code: string, message: string): never => { throw new LessonServiceError(status, code, message); };
-function validId(id: string) { if (!isValidUuid(id)) fail(400, 'VALIDATION_ERROR', 'Mã định danh không hợp lệ.'); return id.toLowerCase(); }
-function published(lesson: Summary) {
+export const labels = (value: unknown): Record<string, string> => Object.fromEntries(Object.entries(value && typeof value === 'object' && !Array.isArray(value) ? value : {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string'));
+export const fail = (status: number, code: string, message: string): never => { throw new LessonServiceError(status, code, message); };
+export function validId(id: string) { if (!isValidUuid(id)) fail(400, 'VALIDATION_ERROR', 'Mã định danh không hợp lệ.'); return id.toLowerCase(); }
+export function published(lesson: Summary) {
   return lesson.availability === 'AVAILABLE' && !!lesson.activeRevisionId && lesson.activeRevision?.id === lesson.activeRevisionId && lesson.activeRevision.lessonId === lesson.id && lesson.activeRevision.status === 'PUBLISHED';
 }
-async function ownedContext(db: Db, id: string, actorId: string): Promise<Context> {
+export async function ownedContext(db: Db, id: string, actorId: string): Promise<Context> {
   const c = await db.learningContext.findFirst({ where: { id, learnerId: actorId }, select: contextSelect });
   if (!c || c.learnerId !== actorId) return fail(404, 'NOT_FOUND', 'Lộ trình học không tồn tại.');
   if (c.status !== 'ACTIVE') return fail(403, 'CONTEXT_INACTIVE', 'Lộ trình học đang tạm dừng.');
@@ -61,7 +61,7 @@ async function hierarchy(db: Db, context: Context) {
     return { ...unit, lessons };
   }).filter(unit => unit.lessons.length > 0);
 }
-async function authorizedLesson(db: Db, context: Context, lessonId: string) {
+export async function authorizedLesson(db: Db, context: Context, lessonId: string) {
   if (!context.workingLevelId || !context.workingLevel) return fail(409, 'CONTEXT_NO_WORKING_LEVEL', 'Chưa có trình độ học hiện tại.');
   const lesson = await db.lesson.findFirst({
     where: { id: lessonId, availability: 'AVAILABLE' },
@@ -113,7 +113,7 @@ export async function getLessonReading(contextId: string, lessonId: string, veri
   const db = getLearnerPrisma(), c = await ownedContext(db, contextId, verifiedUserId), l = await authorizedLesson(db, c, lessonId);
   return readingDto(c.id, l.id, l.activeRevisionId!, await readingRow(db, c.id, l.activeRevisionId!));
 }
-async function clock(db: Db) {
+export async function clock(db: Db) {
   const rows = await db.$queryRaw<Array<{ ts: Date }>>`SELECT clock_timestamp() AS ts`;
   if (!(rows[0]?.ts instanceof Date) || !Number.isFinite(rows[0].ts.valueOf())) throw new Error('Database clock unavailable');
   return rows[0].ts;

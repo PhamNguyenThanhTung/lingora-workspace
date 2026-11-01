@@ -38,7 +38,7 @@ export function unsupportedChildren(rev: any, languageId?: string, allowFrozenPr
   const c = rev._count || {};
   // Assessment version pins are immutable references. They do not prevent a new
   // lesson/item revision from being authored; the older pinned revision remains exact.
-  if (c.mediaBindings > 0 || c.attempts > 0) return true;
+  if (c.mediaBindings > 0 || (!allowFrozenPredecessor && c.attempts > 0)) return true;
   const exercises = rev.exercises || [], vocabulary = rev.vocabularyLinks || [];
   const assessmentItems = (rev.authoredItemRevisions || []).filter((ir: any) => ir?.item?.origin === 'ASSESSMENT');
   if (!Array.isArray(exercises) || !Array.isArray(vocabulary) || !Array.isArray(assessmentItems)) return true;

@@ -19,7 +19,7 @@ export const revision2Id = 'aaaaaaaa-1111-4111-8111-111111111111';
 export const contextId = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
 
 export const confirmedUser = () => ({ id: learnerId, email: fixtureEmail, email_confirmed_at: '2026-10-31T00:00:00Z' });
-export const account = () => ({ id: learnerId, role: 'LEARNER', status: 'ACTIVE', displayName: 'Learner A', uiLocale: 'vi' });
+export const account = () => ({ id: learnerId, role: 'LEARNER', status: 'ACTIVE', displayName: 'Learner A', uiLocale: 'vi', timezone: 'Asia/Ho_Chi_Minh' });
 
 export const level1Row = () => ({
   id: level1Id,
@@ -136,6 +136,11 @@ export const exercisesRows = () => [
         ],
       },
       assessmentBlueprintId: null,
+      gradingSecret: {
+        schemaVersion: 1,
+        gradingData: { correctOptionId: 'opt-1' },
+        feedbackData: { explanation: 'Hello là lời chào thông dụng.' },
+      },
     },
   },
   {
@@ -156,6 +161,11 @@ export const exercisesRows = () => [
         sentence: 'Nice to ____ you.',
       },
       assessmentBlueprintId: null,
+      gradingSecret: {
+        schemaVersion: 1,
+        gradingData: { acceptedAnswers: ['meet', 'see'], caseSensitive: false },
+        feedbackData: null,
+      },
     },
   },
   {
@@ -180,6 +190,11 @@ export const exercisesRows = () => [
         ],
       },
       assessmentBlueprintId: null,
+      gradingSecret: {
+        schemaVersion: 1,
+        gradingData: { correctOrder: ['t-1', 't-2', 't-3'] },
+        feedbackData: null,
+      },
     },
   },
   {
@@ -204,6 +219,11 @@ export const exercisesRows = () => [
         ],
       },
       assessmentBlueprintId: null,
+      gradingSecret: {
+        schemaVersion: 1,
+        gradingData: { correctOptionId: 'opt-l1', transcript: 'Good morning everyone.' },
+        feedbackData: null,
+      },
     },
   },
   {
@@ -225,6 +245,11 @@ export const exercisesRows = () => [
         targetPattern: 'Subject + To Be + Noun',
       },
       assessmentBlueprintId: null,
+      gradingSecret: {
+        schemaVersion: 1,
+        gradingData: { acceptedAnswers: ['Subject + To Be + Noun'], caseSensitive: false },
+        feedbackData: null,
+      },
     },
   },
 ];
@@ -284,7 +309,12 @@ function ordered(rows, orderBy = []) {
   return [...rows].sort((a,b) => {
     for (const entry of Array.isArray(orderBy) ? orderBy : [orderBy]) {
       let [key,direction] = Object.entries(entry)[0];let av=a[key],bv=b[key];
-      if (typeof direction === 'object') {const [nested,dir]=Object.entries(direction)[0];av=av?.[nested];bv=bv?.[nested];direction=dir;}
+      let nulls;
+      if (typeof direction === 'object' && 'sort' in direction) {nulls=direction.nulls;direction=direction.sort;}
+      else if (typeof direction === 'object') {const [nested,dir]=Object.entries(direction)[0];av=av?.[nested];bv=bv?.[nested];direction=dir;}
+      if(av instanceof Date)av=av.valueOf();if(bv instanceof Date)bv=bv.valueOf();
+      if(av==null&&bv==null)continue;
+      if(av==null||bv==null){const first=(nulls|| (direction==='desc'?'first':'last'))==='first';return av==null?(first?-1:1):(first?1:-1);}
       if(av!==bv)return (av>bv?1:-1)*(direction==='desc'?-1:1);
     }
     return 0;
@@ -305,26 +335,308 @@ function projected(row, args = {}) {
   return result;
 }
 export function fixtureDb(state) {
-  state.contexts ||= [contextRow()];state.units ||= [unitRow()];state.lessons ||= [lessonRow(),lesson2Row()];state.exercises ||= exercisesRows();state.vocabulary ||= vocabularyRows();state.completions ||= [];state.consumptions ||= [];
-  const many=(rows,args)=>ordered(rows.filter(r=>matches(r,args.where)),args.orderBy).map(r=>projected(r,args));
-  const first=(rows,args)=>many(rows,args)[0]||null;
-  const db={
-    account:{findUnique:async args=>{if(state.dbFailure)throw new Error('Simulated database outage');return first([state.account].filter(Boolean),args);}},
-    learningContext:{findFirst:async args=>{if(state.contextFailure)throw new Error('Simulated context outage');return first(state.contexts,args);},findMany:async args=>{if(state.contextFailure)throw new Error('Simulated context outage');return many(state.contexts,args);}},
-    unit:{findMany:async args=>many(state.units.map(u=>({...u,lessons:state.lessons.filter(l=>l.unitId===u.id)})),args)},
-    lesson:{findFirst:async args=>first(state.lessons,args),findMany:async args=>many(state.lessons,args)},
-    lessonExercise:{findMany:async args=>many(state.exercises,args)},
-    lessonVocabularyLink:{findMany:async args=>many(state.vocabulary,args)},
-    lessonCompletion:{findFirst:async args=>first(state.completions,args),findMany:async args=>many(state.completions,args)},
-    lessonConsumption:{
-      findUnique:async args=>{const where=args.where.contextId_lessonRevisionId||args.where;return first(state.consumptions,{...args,where});},
-      findMany:async args=>many(state.consumptions,args),
-      create:async({data})=>{if(state.consumptions.some(r=>r.contextId===data.contextId&&r.lessonRevisionId===data.lessonRevisionId))throw Object.assign(new Error('Unique conflict'),{code:'P2002'});const row={id:randomUUID(),completedAt:null,createdAt:data.createdAt||data.startedAt,rowVersion:1n,...data};state.consumptions.push(row);return row;},
-      update:async args=>{const i=state.consumptions.findIndex(r=>r.id===args.where.id);if(i<0)throw new Error('Record not found');const data={...args.data};if(typeof data.rowVersion==='object')data.rowVersion=state.consumptions[i].rowVersion+BigInt(data.rowVersion.increment);state.consumptions[i]={...state.consumptions[i],...data};return projected(state.consumptions[i],args);},
+  state.contexts ||= [contextRow()];
+  state.units ||= [unitRow()];
+  state.lessons ||= [lessonRow(), lesson2Row()];
+  state.exercises ||= exercisesRows();
+  state.vocabulary ||= vocabularyRows();
+  state.completions ||= [];
+  state.consumptions ||= [];
+  state.attempts ||= [];
+  state.responses ||= [];
+  state.srsCards ||= [];
+  state.commandReceipts ||= [];
+
+  const many = (rows, args) => ordered(rows.filter(r => matches(r, args?.where)), args?.orderBy).map(r => projected(r, args));
+  const first = (rows, args) => many(rows, args)[0] || null;
+
+  const db = {
+    account: {
+      findUnique: async args => {
+        if (state.dbFailure) throw new Error('Simulated database outage');
+        return first([state.account].filter(Boolean), args);
+      },
     },
-    $transaction:async fn=>{const before=structuredClone(state.consumptions);try{return await fn(db);}catch(e){state.consumptions=before;throw e;}},
-    $queryRaw:async(strings,...values)=>{const sql=strings.join('');if(sql.includes('clock_timestamp'))return [{ts:new Date()}];if(sql.includes('app.lesson_consumptions'))return state.consumptions.filter(r=>r.contextId===values[0]&&r.lessonRevisionId===values[1]).map(r=>({id:r.id}));return [];},
-    $executeRaw:async(strings,...v)=>{if(strings.join('').includes('INSERT INTO app.lesson_consumptions')){if(state.consumptions.some(r=>r.contextId===v[0]&&r.lessonRevisionId===v[2]))return 0;await db.lessonConsumption.create({data:{contextId:v[0],lessonId:v[1],lessonRevisionId:v[2],startedAt:v[3],createdAt:v[4],updatedAt:v[5],rowVersion:1n}});}return 1;},
+    learningContext: {
+      findFirst: async args => {
+        if (state.contextFailure) throw new Error('Simulated context outage');
+        return first(state.contexts, args);
+      },
+      findMany: async args => {
+        if (state.contextFailure) throw new Error('Simulated context outage');
+        return many(state.contexts, args);
+      },
+    },
+    unit: {
+      findMany: async args => many(state.units.map(u => ({ ...u, lessons: state.lessons.filter(l => l.unitId === u.id) })), args),
+    },
+    lesson: {
+      findFirst: async args => first(state.lessons, args),
+      findMany: async args => many(state.lessons, args),
+    },
+    lessonExercise: {
+      findMany: async args => many(state.exercises, args),
+    },
+    lessonVocabularyLink: {
+      findMany: async args => many(state.vocabulary, args),
+    },
+    lessonCompletion: {
+      findUnique: async args => {
+        const where = args.where.contextId_lessonId || args.where;
+        return first(state.completions, { ...args, where });
+      },
+      findFirst: async args => first(state.completions, args),
+      findMany: async args => many(state.completions, args),
+      create: async ({ data }) => {
+        const row = { id: randomUUID(), ...data };
+        state.completions.push(row);
+        return row;
+      },
+    },
+    lessonConsumption: {
+      findUnique: async args => {
+        const where = args.where.contextId_lessonRevisionId || args.where;
+        return first(state.consumptions, { ...args, where });
+      },
+      findMany: async args => many(state.consumptions, args),
+      create: async ({ data }) => {
+        if (state.consumptions.some(r => r.contextId === data.contextId && r.lessonRevisionId === data.lessonRevisionId)) {
+          throw Object.assign(new Error('Unique conflict'), { code: 'P2002' });
+        }
+        const row = { id: randomUUID(), completedAt: null, createdAt: data.createdAt || data.startedAt, rowVersion: 1n, ...data };
+        state.consumptions.push(row);
+        return row;
+      },
+      update: async args => {
+        const i = state.consumptions.findIndex(r => r.id === args.where.id);
+        if (i < 0) throw new Error('Record not found');
+        const data = { ...args.data };
+        if (typeof data.rowVersion === 'object') data.rowVersion = state.consumptions[i].rowVersion + BigInt(data.rowVersion.increment);
+        state.consumptions[i] = { ...state.consumptions[i], ...data };
+        return projected(state.consumptions[i], args);
+      },
+    },
+    lessonAttempt: {
+      findUnique: async args => {
+        if(state.attemptFailure)throw new Error('Simulated attempt-only outage');
+        const attempt = first(state.attempts, args);
+        if (!attempt) return null;
+        if (args.include?.responses) {
+          const resps = many(state.responses.filter(r => r.attemptId === attempt.id), args.include.responses);
+          return { ...attempt, responses: resps };
+        }
+        return attempt;
+      },
+      findFirst: async args => {
+        if(state.attemptFailure)throw new Error('Simulated attempt-only outage');
+        const attempt = first(state.attempts, args);
+        if (!attempt) return null;
+        if (args.include?.responses) {
+          const resps = many(state.responses.filter(r => r.attemptId === attempt.id), args.include.responses);
+          return { ...attempt, responses: resps };
+        }
+        return attempt;
+      },
+      findMany: async args => many(state.attempts, args),
+      count: async args => state.attempts.filter(r => matches(r, args?.where)).length,
+      create: async ({ data }) => {
+        if (state.attempts.some(a => a.id === data.id)) {
+          throw Object.assign(new Error('Attempt unique conflict'), { code: 'P2002' });
+        }
+        const row = {
+          id: data.id || randomUUID(),
+          contextId: data.contextId,
+          lessonId: data.lessonId,
+          lessonRevisionId: data.lessonRevisionId,
+          nCore: data.nCore,
+          kFirstWrong: data.kFirstWrong ?? null,
+          contributionUnits: data.contributionUnits ?? null,
+          responseCount: data.responseCount ?? null,
+          completionOperationKey: data.completionOperationKey ?? null,
+          qualifyingLocalDate: data.qualifyingLocalDate ?? null,
+          timezoneAtCompletion: data.timezoneAtCompletion ?? null,
+          startedAt: data.startedAt || new Date(),
+          completedAt: data.completedAt ?? null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          rowVersion: 1n,
+        };
+        state.attempts.push(row);
+        return { ...row, responses: [] };
+      },
+      update: async args => {
+        const i = state.attempts.findIndex(r => r.id === args.where.id);
+        if (i < 0) throw new Error('Record not found');
+        const data = { ...args.data };
+        if (typeof data.rowVersion === 'object') data.rowVersion = state.attempts[i].rowVersion + BigInt(data.rowVersion.increment);
+        state.attempts[i] = { ...state.attempts[i], ...data, updatedAt: new Date() };
+        const updated = state.attempts[i];
+        if (args.include?.responses) {
+          const resps = many(state.responses.filter(r => r.attemptId === updated.id), args.include.responses);
+          return { ...updated, responses: resps };
+        }
+        return projected(updated, args);
+      },
+    },
+    lessonResponse: {
+      findUnique: async args => {
+        const where = args.where.attemptId_operationKey ||
+                      args.where.attemptId_lessonExerciseId_responseOrdinal ||
+                      args.where.attemptId_queuePosition ||
+                      args.where;
+        return first(state.responses, { ...args, where });
+      },
+      findFirst: async args => first(state.responses, args),
+      findMany: async args => many(state.responses, args),
+      create: async ({ data }) => {
+        if (state.responses.some(r => r.attemptId === data.attemptId && r.operationKey === data.operationKey)) {
+          throw Object.assign(new Error('Response operation_key unique conflict'), { code: 'P2002' });
+        }
+        if (state.responses.some(r => r.attemptId === data.attemptId && r.queuePosition === data.queuePosition)) {
+          throw Object.assign(new Error('Response queue_position unique conflict'), { code: 'P2002' });
+        }
+        const row = {
+          id: randomUUID(),
+          attemptId: data.attemptId,
+          lessonExerciseId: data.lessonExerciseId,
+          lessonRevisionId: data.lessonRevisionId,
+          responseOrdinal: data.responseOrdinal,
+          queuePosition: data.queuePosition,
+          operationKey: data.operationKey,
+          input: data.input,
+          inputHash: data.inputHash,
+          isCorrect: data.isCorrect,
+          contributionUnits: data.contributionUnits,
+          respondedAt: data.respondedAt || new Date(),
+          createdAt: new Date(),
+        };
+        state.responses.push(row);
+        return row;
+      },
+    },
+    srsCard: {
+      findUnique: async args => {
+        const where = args.where.learnerId_vocabularyId || args.where.id_learnerId || args.where;
+        return first(state.srsCards, { ...args, where });
+      },
+      findMany: async args => many(state.srsCards, args),
+      create: async ({ data }) => {
+        const row = {
+          id: randomUUID(),
+          learnerId: data.learnerId,
+          vocabularyId: data.vocabularyId,
+          stage: data.stage ?? 1,
+          dueAt: data.dueAt,
+          lastReviewedAt: null,
+          enrollmentSource: data.enrollmentSource,
+          sourceAttemptId: data.sourceAttemptId ?? null,
+          sourceLessonVocabularyId: data.sourceLessonVocabularyId ?? null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          rowVersion: 1n,
+        };
+        state.srsCards.push(row);
+        return row;
+      },
+    },
+    commandReceipt: {
+      findUnique: async args => {
+        const where = args.where.actorId_command_operationKey || args.where;
+        return first(state.commandReceipts, { ...args, where });
+      },
+      create: async ({ data }) => {
+        if (state.commandReceipts.some(r => r.actorId === data.actorId && r.command === data.command && r.operationKey === data.operationKey)) {
+          throw Object.assign(new Error('Command receipt unique conflict'), { code: 'P2002' });
+        }
+        const row = {
+          id: randomUUID(),
+          actorId: data.actorId,
+          command: data.command,
+          operationKey: data.operationKey,
+          inputHash: data.inputHash,
+          targetId: data.targetId,
+          safeResult: data.safeResult || {},
+          committedAt: data.committedAt || new Date(),
+          createdAt: new Date(),
+        };
+        state.commandReceipts.push(row);
+        return row;
+      },
+    },
+    $transaction: async fn => {
+      const snap = {
+        consumptions: structuredClone(state.consumptions),
+        attempts: structuredClone(state.attempts),
+        responses: structuredClone(state.responses),
+        completions: structuredClone(state.completions),
+        srsCards: structuredClone(state.srsCards),
+        commandReceipts: structuredClone(state.commandReceipts),
+      };
+      try {
+        return await fn(db);
+      } catch (e) {
+        state.consumptions = snap.consumptions;
+        state.attempts = snap.attempts;
+        state.responses = snap.responses;
+        state.completions = snap.completions;
+        state.srsCards = snap.srsCards;
+        state.commandReceipts = snap.commandReceipts;
+        throw e;
+      }
+    },
+    $queryRaw: async (strings, ...values) => {
+      const sql = strings.join('');
+      if (sql.includes('clock_timestamp')) {
+        const now = new Date();
+        return [{ ts: now, completed_at: now, qualifying_date: now }];
+      }
+      if (sql.includes('app.lesson_consumptions')) {
+        return state.consumptions.filter(r => r.contextId === values[0] && r.lessonRevisionId === values[1]).map(r => ({ id: r.id }));
+      }
+      if (sql.includes('app.lesson_attempts')) {
+        return state.attempts.filter(r => r.id === values[0]).map(r => ({ id: r.id }));
+      }
+      return [];
+    },
+    $executeRaw: async (strings, ...v) => {
+      const sql = strings.join('');
+      if (sql.includes('INSERT INTO app.lesson_consumptions')) {
+        if (state.consumptions.some(r => r.contextId === v[0] && r.lessonRevisionId === v[2])) return 0;
+        await db.lessonConsumption.create({
+          data: { contextId: v[0], lessonId: v[1], lessonRevisionId: v[2], startedAt: v[3], createdAt: v[4], updatedAt: v[5], rowVersion: 1n },
+        });
+      }
+      if (sql.includes('INSERT INTO app.lesson_completions')) {
+        // v: contextId, lessonId, attemptId, completedAt, completedAt
+        if (state.completions.some(r => r.contextId === v[0] && r.lessonId === v[1])) return 0;
+        state.completions.push({
+          id: randomUUID(),
+          contextId: v[0],
+          lessonId: v[1],
+          firstAttemptId: v[2],
+          completedAt: v[3],
+          createdAt: v[4],
+        });
+      }
+      if (sql.includes('INSERT INTO app.srs_cards')) {
+        // interpolated values: [account.id, link.vocabularyId, dueAt, attemptId, link.id, completedAt, completedAt]
+        if (state.srsCards.some(r => r.learnerId === v[0] && r.vocabularyId === v[1])) return 0;
+        state.srsCards.push({
+          id: randomUUID(),
+          learnerId: v[0],
+          vocabularyId: v[1],
+          stage: 1,
+          dueAt: v[2],
+          enrollmentSource: 'CORE_COMPLETION',
+          sourceAttemptId: v[3],
+          sourceLessonVocabularyId: v[4],
+          createdAt: v[5],
+          updatedAt: v[6],
+          rowVersion: 1n,
+        });
+      }
+      return 1;
+    },
   };
   return db;
 }

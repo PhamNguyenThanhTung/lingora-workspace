@@ -1,0 +1,132 @@
+import { cookies } from 'next/headers.js';
+import {
+  verifyLearnerIdentity,
+  validateSameOrigin,
+  buildAuthResponseHeaders,
+} from '../../../../../../../../../../server/auth/index.ts';
+import { finalizePracticeAttempt } from '../../../../../../../../../../server/lessons/practice-service.ts';
+import {
+  finalizePostSchema,
+  LessonServiceError,
+} from '../../../../../../../../../../server/lessons/dto.ts';
+
+export const dynamic = 'force-dynamic';
+
+export async function POST(
+  request: Request,
+  context: { params: Promise<{ contextId: string; lessonId: string; attemptId: string }> | { contextId: string; lessonId: string; attemptId: string } }
+) {
+  const defaultHeaders = { 'Cache-Control': 'no-store, private' };
+
+  // Reject unsupported query/selector parameters with 400
+  const url = new URL(request.url);
+  if (url.search && url.search !== '?') {
+    return Response.json(
+      {
+        error: {
+          code: 'INVALID_QUERY_PARAMETERS',
+          message: 'Yêu cầu không hỗ trợ tham số truy vấn hoặc bộ lọc.',
+        },
+      },
+      { status: 400, headers: defaultHeaders }
+    );
+  }
+
+  // Same-origin check
+  if (!validateSameOrigin(request)) {
+    return Response.json(
+      {
+        error: {
+          code: 'FORBIDDEN_ORIGIN',
+          message: 'Yêu cầu bị từ chối do không cùng nguồn gốc.',
+        },
+      },
+      { status: 403, headers: defaultHeaders }
+    );
+  }
+
+  // Content-Type check
+  const contentType = request.headers.get('content-type') || '';
+  if (!contentType.toLowerCase().startsWith('application/json')) {
+    return Response.json(
+      {
+        error: {
+          code: 'UNSUPPORTED_MEDIA_TYPE',
+          message: 'Yêu cầu yêu cầu Content-Type application/json.',
+        },
+      },
+      { status: 415, headers: defaultHeaders }
+    );
+  }
+
+  const { contextId, lessonId, attemptId } = await context.params;
+
+  const cookieStore = await cookies();
+  const refreshedHeaders = new Headers();
+
+  const verified = await verifyLearnerIdentity({
+    cookieStore,
+    responseHeaders: refreshedHeaders,
+  });
+
+  const responseHeaders = buildAuthResponseHeaders(defaultHeaders);
+  refreshedHeaders.forEach((val, key) => {
+    responseHeaders.set(key, val);
+  });
+
+  if (!verified.ok) {
+    return Response.json(
+      { error: verified.error },
+      { status: verified.status, headers: responseHeaders }
+    );
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json(
+      {
+        error: {
+          code: 'MALFORMED_JSON',
+          message: 'Nội dung JSON không hợp lệ.',
+        },
+      },
+      { status: 400, headers: responseHeaders }
+    );
+  }
+
+  const parsed = finalizePostSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      {
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Dữ liệu hoàn tất bài học không hợp lệ.',
+        },
+      },
+      { status: 400, headers: responseHeaders }
+    );
+  }
+
+  try {
+    const data = await finalizePracticeAttempt(contextId, lessonId, attemptId, parsed.data, verified.user.id);
+    return Response.json({ data }, { status: 200, headers: responseHeaders });
+  } catch (err: unknown) {
+    if (err instanceof LessonServiceError) {
+      return Response.json(
+        { error: err.error },
+        { status: err.status, headers: responseHeaders }
+      );
+    }
+    return Response.json(
+      {
+        error: {
+          code: 'SERVICE_UNAVAILABLE',
+          message: 'Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau.',
+        },
+      },
+      { status: 503, headers: responseHeaders }
+    );
+  }
+}

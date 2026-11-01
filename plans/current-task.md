@@ -80,3 +80,11 @@ Anti initial implementation → independent Sol High review → Codex direct fix
 Source `2fb844735beca8d024c310778a7c23d923eca054` pushed and READY on learner/staff before public writes. Public27-flow +7 exact child DTO/DB checks PASS, including X/draft isolation, Y separate progress, real stale409/reload/retry, and no graded unlock/evidence side effects. Five disposable learners removed; allowlisted content/history retained with Course inactive/Lessons PLANNED/staff DISABLED, original Teacher unchanged DISABLED, sessions0 and unexpected residue0. See [verification](slice-10-verification.md) and [public evidence](evidence/slice-10/public-acceptance.md). Final commit records evidence only; no local/public rerun for documentation. No Slice11.
 
 `SLICE 10: PASS — SLICE 10 ACCEPTED`
+
+## Slice 11 — Practice Attempt / Grading / Lesson Completion (local PASS, public pending)
+
+D1–D3 approved2026-11-01: NFC/trim/case-sensitive exact text grading; atomic core enrollment with new stage1/due+1 day and existing cards unchanged; all new stale response/finalize writes409 including redo, authorized committed replay retained. Historical decision checkpoint FAIL resolved. Existing model supports the feature; no schema gap established.
+
+Final [spec](2026-11-01-slice-11-practice-attempt-grading.md) is executable. Proceed Anti implementation/tests → independent Sol6.1High review → Codex direct fixes/local gates → exact-commit public DEV acceptance/cleanup. No acceptance claim yet; [verification](slice-11-verification.md). No Slice12.
+
+Slice11 local gates PASS: feature542/components152, Practice DB13 + Slice10 DB7, typecheck/build,20 mutations KILLED/restored,40 client files clean. Codex fixed independent review findings directly. No DEV writes yet; push/deployment verification and public acceptance remain.

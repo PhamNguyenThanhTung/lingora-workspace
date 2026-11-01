@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { verifyLearnerIdentity } from '../../../../server/auth/index.ts';
 import { loadLearnerLessonDetail } from '../../../../server/lessons/service.ts';
+import { loadLatestPracticeAttempt } from '../../../../server/lessons/practice-service.ts';
 import { LessonServiceError } from '../../../../server/lessons/dto.ts';
 import { LessonPlayerView } from './LessonPlayerView';
 
@@ -23,7 +24,8 @@ export default async function LessonPlayerPage(props: {
 
   try {
     const data = await loadLearnerLessonDetail(contextId, lessonId, verified.user.id);
-    return <LessonPlayerView data={data} />;
+    const latestAttempt = await loadLatestPracticeAttempt(contextId, lessonId, verified.user.id);
+    return <LessonPlayerView data={{ ...data, latestAttempt }} />;
   } catch (err: unknown) {
     if (err instanceof LessonServiceError) {
       return <LessonPlayerView errorState={{ status: err.status, error: err.error }} />;

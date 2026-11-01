@@ -199,6 +199,95 @@ export async function startIsolatedServer(port = 3019) {
           return;
         }
 
+        const attemptsMatch = url.pathname.match(
+          /^\/api\/learner\/contexts\/([a-zA-Z0-9_-]+)\/lessons\/([a-zA-Z0-9_-]+)\/attempts$/
+        );
+        if (attemptsMatch && req.method === 'POST') {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = Buffer.concat(chunks);
+          const response = await modules.attemptsApi.POST(
+            new Request(url, {
+              method: req.method,
+              headers: req.headers,
+              ...(body.length ? { body } : {}),
+            }),
+            { params: Promise.resolve({ contextId: attemptsMatch[1], lessonId: attemptsMatch[2] }) }
+          );
+          response.headers.forEach((value, key) => {
+            if (key !== 'set-cookie') res.setHeader(key, value);
+          });
+          writeCookies();
+          res.statusCode = response.status;
+          res.end(await response.text());
+          return;
+        }
+
+        const responsesMatch = url.pathname.match(
+          /^\/api\/learner\/contexts\/([a-zA-Z0-9_-]+)\/lessons\/([a-zA-Z0-9_-]+)\/attempts\/([a-zA-Z0-9_-]+)\/responses$/
+        );
+        if (responsesMatch && req.method === 'POST') {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = Buffer.concat(chunks);
+          const response = await modules.responsesApi.POST(
+            new Request(url, {
+              method: req.method,
+              headers: req.headers,
+              ...(body.length ? { body } : {}),
+            }),
+            { params: Promise.resolve({ contextId: responsesMatch[1], lessonId: responsesMatch[2], attemptId: responsesMatch[3] }) }
+          );
+          response.headers.forEach((value, key) => {
+            if (key !== 'set-cookie') res.setHeader(key, value);
+          });
+          writeCookies();
+          res.statusCode = response.status;
+          res.end(await response.text());
+          return;
+        }
+
+        const finalizeMatch = url.pathname.match(
+          /^\/api\/learner\/contexts\/([a-zA-Z0-9_-]+)\/lessons\/([a-zA-Z0-9_-]+)\/attempts\/([a-zA-Z0-9_-]+)\/finalize$/
+        );
+        if (finalizeMatch && req.method === 'POST') {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = Buffer.concat(chunks);
+          const response = await modules.finalizeApi.POST(
+            new Request(url, {
+              method: req.method,
+              headers: req.headers,
+              ...(body.length ? { body } : {}),
+            }),
+            { params: Promise.resolve({ contextId: finalizeMatch[1], lessonId: finalizeMatch[2], attemptId: finalizeMatch[3] }) }
+          );
+          response.headers.forEach((value, key) => {
+            if (key !== 'set-cookie') res.setHeader(key, value);
+          });
+          writeCookies();
+          res.statusCode = response.status;
+          res.end(await response.text());
+          return;
+        }
+
+        const attemptDetailMatch = url.pathname.match(
+          /^\/api\/learner\/contexts\/([a-zA-Z0-9_-]+)\/lessons\/([a-zA-Z0-9_-]+)\/attempts\/([a-zA-Z0-9_-]+)$/
+        );
+        if (attemptDetailMatch && req.method === 'GET') {
+          const response = await modules.attemptDetailApi.GET(
+            new Request(url, { method: req.method, headers: req.headers }),
+            { params: Promise.resolve({ contextId: attemptDetailMatch[1], lessonId: attemptDetailMatch[2], attemptId: attemptDetailMatch[3] }) }
+          );
+          response.headers.forEach((value, key) => {
+            if (key !== 'set-cookie') res.setHeader(key, value);
+          });
+          writeCookies();
+          res.statusCode = response.status;
+          res.end(await response.text());
+          return;
+        }
+
         const handler = {
           '/api/auth/login': modules.login.POST,
           '/api/auth/logout': modules.logout.POST,

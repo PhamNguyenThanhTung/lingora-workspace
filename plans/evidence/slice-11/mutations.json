@@ -1,0 +1,365 @@
+{
+  "results": [
+    {
+      "id": "A",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^A serialized",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "B",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^B grader",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "C-read",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^C read cannot authorize through",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "C-submit",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^C submit cannot authorize through",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "C-finalize",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^C finalize cannot authorize through",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "D",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^D ASSESSMENT",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "E",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^E client",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "F",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^F finalized",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "G-submit",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^Practice UI: Start attempt",
+        "tests/feature/practice-components.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "G-finalize",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^Practice UI: Start attempt",
+        "tests/feature/practice-components.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "H",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^H reading",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "I-response",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^I stale",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "I-finalize",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^I stale",
+        "tests/feature/practice-review-regressions.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "J-command-identity",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^production callbacks retry",
+        "tests/feature/practice-components.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "K-parent-exclusivity",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "tmp/slice11/local-db-runner.mjs",
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./lingora-web/tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^real PostgreSQL: independent learners",
+        "lingora-web/tests/feature/practice-concurrency.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "ownedLocalDbMutation": {}
+    },
+    {
+      "id": "L-midnight-clock",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "tmp/slice11/local-db-runner.mjs",
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./lingora-web/tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^real PostgreSQL: completion and qualifying",
+        "lingora-web/tests/feature/practice-concurrency.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "ownedLocalDbMutation": {}
+    },
+    {
+      "id": "M-completed-tie",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "tmp/slice11/local-db-runner.mjs",
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./lingora-web/tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^real PostgreSQL: current unfinished redo",
+        "lingora-web/tests/feature/practice-concurrency.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "ownedLocalDbMutation": {}
+    },
+    {
+      "id": "N-hidden-load-failure",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^attempt-only loading failure",
+        "tests/feature/practice-components.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace/lingora-web"
+    },
+    {
+      "id": "F-attempt-db-guard",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "tmp/slice11/local-db-runner.mjs",
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./lingora-web/tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^Real PostgreSQL: Immutability triggers",
+        "lingora-web/tests/feature/practice-concurrency.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "ownedLocalDbMutation": {
+        "SLICE11_GUARD_MUTATION": "attempt"
+      }
+    },
+    {
+      "id": "F-response-db-guard",
+      "status": "KILLED",
+      "exit": 1,
+      "command": [
+        "node",
+        "tmp/slice11/local-db-runner.mjs",
+        "node",
+        "--experimental-strip-types",
+        "--experimental-test-module-mocks",
+        "--import",
+        "./lingora-web/tests/feature/harness/server-only.mjs",
+        "--test",
+        "--test-name-pattern",
+        "^Real PostgreSQL: Immutability triggers",
+        "lingora-web/tests/feature/practice-concurrency.test.mjs"
+      ],
+      "cwd": "/home/tung/workspace/school/project1/lingora-workspace",
+      "ownedLocalDbMutation": {
+        "SLICE11_GUARD_MUTATION": "response"
+      }
+    }
+  ],
+  "byteExactRestored": true,
+  "localDbMutantsDiscarded": true
+}
