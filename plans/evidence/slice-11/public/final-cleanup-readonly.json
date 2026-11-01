@@ -1,0 +1,774 @@
+{
+  "status": "PASS",
+  "sourceEvidence": "plans/evidence/slice-11/public/DEV_S11_1793532144359_retry_1793532900496.json",
+  "readOnly": true,
+  "label": "DEV_S11_1793532144359",
+  "course": {
+    "id": "62f30613-6bf7-48cb-bc94-448a9736a178",
+    "isActive": false
+  },
+  "unitId": "db7aca71-01b5-4e3e-a663-19753629b5b7",
+  "lessons": [
+    {
+      "id": "75d84614-050c-400a-8d06-de92a1418d67",
+      "availability": "PLANNED",
+      "activeRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd"
+    },
+    {
+      "id": "4ad4b82e-5398-4505-b335-5aef7185cd03",
+      "availability": "PLANNED",
+      "activeRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "lessonId": "4ad4b82e-5398-4505-b335-5aef7185cd03",
+      "revisionNo": 1,
+      "status": "PUBLISHED",
+      "createdBy": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "submittedBy": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "approvedBy": "9cae8c3f-dd50-47e5-8eed-635e28512a66",
+      "publishedBy": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "lessonId": "75d84614-050c-400a-8d06-de92a1418d67",
+      "revisionNo": 1,
+      "status": "ARCHIVED",
+      "createdBy": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "submittedBy": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "approvedBy": "9cae8c3f-dd50-47e5-8eed-635e28512a66",
+      "publishedBy": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "lessonId": "75d84614-050c-400a-8d06-de92a1418d67",
+      "revisionNo": 2,
+      "status": "PUBLISHED",
+      "createdBy": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "submittedBy": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "approvedBy": "9cae8c3f-dd50-47e5-8eed-635e28512a66",
+      "publishedBy": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "86636733-aa3d-498d-b130-17c3043cae85",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "itemId": "ea8ad70d-b721-474f-b544-686984c416a5",
+      "itemRevisionId": "23a25c82-dde9-4924-9dca-895cb75d4886",
+      "isCore": true,
+      "position": 1
+    },
+    {
+      "id": "6a8763b3-d2aa-4d03-b82b-2f7166e00957",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "itemId": "d6747ade-6b97-4893-9a88-7436c5cbe43c",
+      "itemRevisionId": "650931f4-0e53-4249-82e1-940a1823a3c7",
+      "isCore": true,
+      "position": 2
+    },
+    {
+      "id": "fe0f0934-a47a-4098-8225-3e7f8ca000f1",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "itemId": "a1fc104c-0595-4a51-a300-229d12e31414",
+      "itemRevisionId": "48f28a49-369e-4c78-aa7c-6bee0749a4c9",
+      "isCore": true,
+      "position": 3
+    },
+    {
+      "id": "8e716df3-5a17-4200-88fb-d2c13de9d0e9",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "itemId": "da031218-27d0-4304-a65c-4d1b6128da93",
+      "itemRevisionId": "54431006-d463-45eb-9821-a257f0778b44",
+      "isCore": true,
+      "position": 4
+    },
+    {
+      "id": "d9002457-978a-4ea9-9bf5-ba61484a21a8",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "itemId": "7725f069-d37d-4190-82b8-3323ab97f89e",
+      "itemRevisionId": "30dfc23c-f7d8-41a7-aa70-79689478151f",
+      "isCore": true,
+      "position": 5
+    },
+    {
+      "id": "c888372a-e832-4622-bca6-32845c124081",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "itemId": "ea8ad70d-b721-474f-b544-686984c416a5",
+      "itemRevisionId": "dc9c8162-67f6-4884-9206-6e0788166bbd",
+      "isCore": true,
+      "position": 1
+    },
+    {
+      "id": "7ffa320c-b2f6-4594-9998-db0ab7c2782b",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "itemId": "d6747ade-6b97-4893-9a88-7436c5cbe43c",
+      "itemRevisionId": "0f63971f-4449-42e5-b754-4ad2e6788533",
+      "isCore": true,
+      "position": 2
+    },
+    {
+      "id": "7e8e74b4-f152-4e03-9055-aaf2aea5d586",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "itemId": "a1fc104c-0595-4a51-a300-229d12e31414",
+      "itemRevisionId": "55993242-11eb-4f0b-b217-2cda06dbd2a3",
+      "isCore": true,
+      "position": 3
+    },
+    {
+      "id": "dacdf5a8-079f-4dbb-b866-a72fbcafeecb",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "itemId": "da031218-27d0-4304-a65c-4d1b6128da93",
+      "itemRevisionId": "426d367f-265e-4db8-b26f-3194e68555f0",
+      "isCore": true,
+      "position": 4
+    },
+    {
+      "id": "0b88fe76-37f9-4e5d-918a-ca86b3c4c8c6",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "itemId": "7725f069-d37d-4190-82b8-3323ab97f89e",
+      "itemRevisionId": "5e9fa8b3-0b3f-448c-805b-479be74dcfdc",
+      "isCore": true,
+      "position": 5
+    },
+    {
+      "id": "a68ef2f8-fe9e-402d-8c8f-5342bf7257ff",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "itemId": "45f69966-c1fa-41f9-8ab0-9094a53256b4",
+      "itemRevisionId": "a6bb744b-60cd-4cc3-9aa7-7cffe035d55f",
+      "isCore": true,
+      "position": 1
+    },
+    {
+      "id": "9aa7dcd9-0d58-4d9b-b2ee-be10c3e53eea",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "itemId": "8efc1a78-ebcf-4d78-b909-332a0cd9f148",
+      "itemRevisionId": "54b068be-910f-4ba0-a878-4c992fcdcf3e",
+      "isCore": true,
+      "position": 2
+    },
+    {
+      "id": "0d6df787-b763-4f39-9188-db5e2a3d5523",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "itemId": "acb8d381-5635-4efb-a9b0-4030858a1e57",
+      "itemRevisionId": "c4b59f88-e293-4806-8c4b-0bac665ca34c",
+      "isCore": true,
+      "position": 3
+    },
+    {
+      "id": "58516877-28b9-4c9c-8250-583816e1967c",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "itemId": "65ce981a-6448-487d-8adf-750ac9910fc1",
+      "itemRevisionId": "c903037f-75ce-485b-be9f-f2e3bb6d9237",
+      "isCore": true,
+      "position": 4
+    },
+    {
+      "id": "e7e05a2f-e3f6-4aa8-b13b-71a2c91ec6d4",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "itemId": "ea9cf02b-ad56-4aa3-843b-f4b1390de343",
+      "itemRevisionId": "28a7942d-75b9-4c82-9439-4445ef1be06e",
+      "isCore": true,
+      "position": 5
+    }
+  ],
+  "itemRevisions": [
+    {
+      "id": "0f63971f-4449-42e5-b754-4ad2e6788533",
+      "itemId": "d6747ade-6b97-4893-9a88-7436c5cbe43c",
+      "authoringLessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "type": "FILL_BLANK",
+      "schemaVersion": 1
+    },
+    {
+      "id": "23a25c82-dde9-4924-9dca-895cb75d4886",
+      "itemId": "ea8ad70d-b721-474f-b544-686984c416a5",
+      "authoringLessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "type": "MCQ",
+      "schemaVersion": 1
+    },
+    {
+      "id": "28a7942d-75b9-4c82-9439-4445ef1be06e",
+      "itemId": "ea9cf02b-ad56-4aa3-843b-f4b1390de343",
+      "authoringLessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "type": "GRAMMAR",
+      "schemaVersion": 1
+    },
+    {
+      "id": "30dfc23c-f7d8-41a7-aa70-79689478151f",
+      "itemId": "7725f069-d37d-4190-82b8-3323ab97f89e",
+      "authoringLessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "type": "GRAMMAR",
+      "schemaVersion": 1
+    },
+    {
+      "id": "426d367f-265e-4db8-b26f-3194e68555f0",
+      "itemId": "da031218-27d0-4304-a65c-4d1b6128da93",
+      "authoringLessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "type": "LISTENING",
+      "schemaVersion": 1
+    },
+    {
+      "id": "48f28a49-369e-4c78-aa7c-6bee0749a4c9",
+      "itemId": "a1fc104c-0595-4a51-a300-229d12e31414",
+      "authoringLessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "type": "REORDER",
+      "schemaVersion": 1
+    },
+    {
+      "id": "54431006-d463-45eb-9821-a257f0778b44",
+      "itemId": "da031218-27d0-4304-a65c-4d1b6128da93",
+      "authoringLessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "type": "LISTENING",
+      "schemaVersion": 1
+    },
+    {
+      "id": "54b068be-910f-4ba0-a878-4c992fcdcf3e",
+      "itemId": "8efc1a78-ebcf-4d78-b909-332a0cd9f148",
+      "authoringLessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "type": "FILL_BLANK",
+      "schemaVersion": 1
+    },
+    {
+      "id": "55993242-11eb-4f0b-b217-2cda06dbd2a3",
+      "itemId": "a1fc104c-0595-4a51-a300-229d12e31414",
+      "authoringLessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "type": "REORDER",
+      "schemaVersion": 1
+    },
+    {
+      "id": "5e9fa8b3-0b3f-448c-805b-479be74dcfdc",
+      "itemId": "7725f069-d37d-4190-82b8-3323ab97f89e",
+      "authoringLessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "type": "GRAMMAR",
+      "schemaVersion": 1
+    },
+    {
+      "id": "650931f4-0e53-4249-82e1-940a1823a3c7",
+      "itemId": "d6747ade-6b97-4893-9a88-7436c5cbe43c",
+      "authoringLessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "type": "FILL_BLANK",
+      "schemaVersion": 1
+    },
+    {
+      "id": "a6bb744b-60cd-4cc3-9aa7-7cffe035d55f",
+      "itemId": "45f69966-c1fa-41f9-8ab0-9094a53256b4",
+      "authoringLessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "type": "MCQ",
+      "schemaVersion": 1
+    },
+    {
+      "id": "c4b59f88-e293-4806-8c4b-0bac665ca34c",
+      "itemId": "acb8d381-5635-4efb-a9b0-4030858a1e57",
+      "authoringLessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "type": "REORDER",
+      "schemaVersion": 1
+    },
+    {
+      "id": "c903037f-75ce-485b-be9f-f2e3bb6d9237",
+      "itemId": "65ce981a-6448-487d-8adf-750ac9910fc1",
+      "authoringLessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "type": "LISTENING",
+      "schemaVersion": 1
+    },
+    {
+      "id": "dc9c8162-67f6-4884-9206-6e0788166bbd",
+      "itemId": "ea8ad70d-b721-474f-b544-686984c416a5",
+      "authoringLessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "type": "MCQ",
+      "schemaVersion": 1
+    }
+  ],
+  "gradingSecretIdentities": [
+    {
+      "id": "0a0a01c4-c8e0-4be0-a962-2f2c8e085cb9",
+      "itemRevisionId": "dc9c8162-67f6-4884-9206-6e0788166bbd",
+      "schemaVersion": 1
+    },
+    {
+      "id": "0d2db08e-83af-4504-863a-8c6ad660a86f",
+      "itemRevisionId": "23a25c82-dde9-4924-9dca-895cb75d4886",
+      "schemaVersion": 1
+    },
+    {
+      "id": "3d9e9a99-6b2d-44cc-92cd-b90c0df3146f",
+      "itemRevisionId": "5e9fa8b3-0b3f-448c-805b-479be74dcfdc",
+      "schemaVersion": 1
+    },
+    {
+      "id": "436f5ba1-0407-4005-ae48-32cd2222a99a",
+      "itemRevisionId": "a6bb744b-60cd-4cc3-9aa7-7cffe035d55f",
+      "schemaVersion": 1
+    },
+    {
+      "id": "4cd43787-2525-471b-9278-039b9fab9be1",
+      "itemRevisionId": "426d367f-265e-4db8-b26f-3194e68555f0",
+      "schemaVersion": 1
+    },
+    {
+      "id": "58d367ca-08c4-4189-a135-5f811647de25",
+      "itemRevisionId": "c4b59f88-e293-4806-8c4b-0bac665ca34c",
+      "schemaVersion": 1
+    },
+    {
+      "id": "6585ad9b-7691-4937-b9d8-27d05aa390cc",
+      "itemRevisionId": "48f28a49-369e-4c78-aa7c-6bee0749a4c9",
+      "schemaVersion": 1
+    },
+    {
+      "id": "83c0d419-db82-4d45-8818-2ffd5888618e",
+      "itemRevisionId": "55993242-11eb-4f0b-b217-2cda06dbd2a3",
+      "schemaVersion": 1
+    },
+    {
+      "id": "937003b7-3523-40a1-b744-0cff874b85c0",
+      "itemRevisionId": "30dfc23c-f7d8-41a7-aa70-79689478151f",
+      "schemaVersion": 1
+    },
+    {
+      "id": "9411d416-a529-4081-b7c8-43c292c12c17",
+      "itemRevisionId": "0f63971f-4449-42e5-b754-4ad2e6788533",
+      "schemaVersion": 1
+    },
+    {
+      "id": "a1513b26-a914-4047-b981-01d008298d3f",
+      "itemRevisionId": "c903037f-75ce-485b-be9f-f2e3bb6d9237",
+      "schemaVersion": 1
+    },
+    {
+      "id": "a8e79ecc-a794-4e49-b963-e9605ffe3c2d",
+      "itemRevisionId": "54431006-d463-45eb-9821-a257f0778b44",
+      "schemaVersion": 1
+    },
+    {
+      "id": "be318a22-a71d-4bed-8b76-1c7aa5fd7d5c",
+      "itemRevisionId": "28a7942d-75b9-4c82-9439-4445ef1be06e",
+      "schemaVersion": 1
+    },
+    {
+      "id": "d924b5f5-d906-4e4f-bb0d-c5ff3c6aff51",
+      "itemRevisionId": "54b068be-910f-4ba0-a878-4c992fcdcf3e",
+      "schemaVersion": 1
+    },
+    {
+      "id": "e606b09b-a67a-4b7a-ba80-db824cf9a3bb",
+      "itemRevisionId": "650931f4-0e53-4249-82e1-940a1823a3c7",
+      "schemaVersion": 1
+    }
+  ],
+  "vocabularyLinks": [
+    {
+      "id": "5636dc6b-d3dc-4854-b793-4af80f1e2d37",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "vocabularyId": "13ae87e7-2a85-4009-b074-57b1a36add0b",
+      "isCore": true
+    },
+    {
+      "id": "7b397a5e-8ed0-4a7a-b2cc-9af1656b65f9",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "vocabularyId": "13ae87e7-2a85-4009-b074-57b1a36add0b",
+      "isCore": true
+    },
+    {
+      "id": "bcf43722-611c-4608-ba1b-5a86d4e58d88",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "vocabularyId": "e0365700-c27e-4a61-9a92-954901830235",
+      "isCore": true
+    }
+  ],
+  "assignments": [
+    {
+      "id": "2dad4a44-8d28-416e-8ccf-6d3fbe7f758c",
+      "lessonId": "75d84614-050c-400a-8d06-de92a1418d67",
+      "currentTeacherId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    },
+    {
+      "id": "bf83e2d3-525f-44ba-8e32-05ec170b3184",
+      "lessonId": "4ad4b82e-5398-4505-b335-5aef7185cd03",
+      "currentTeacherId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    }
+  ],
+  "episodes": [
+    {
+      "id": "c3ded60e-f755-4872-a29e-3cf9fe2f0ba8",
+      "assignmentId": "bf83e2d3-525f-44ba-8e32-05ec170b3184",
+      "nextTeacherId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "changedBy": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "d320e90a-25f0-4419-a470-c50ddaf3501e",
+      "assignmentId": "2dad4a44-8d28-416e-8ccf-6d3fbe7f758c",
+      "nextTeacherId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "changedBy": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "c4207f8f-c8b3-4ebc-89f9-ef2fd139302d",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "action": "SUBMIT",
+      "actorId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    },
+    {
+      "id": "ae1c5ccc-8913-43ba-9a02-12a449dd9575",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "action": "APPROVE",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "501aab6d-ebea-48e7-8ccf-9773c3bd63a6",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "action": "PUBLISH",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "3b216083-91f8-446d-95ed-467ad23ac3d3",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "action": "SUBMIT",
+      "actorId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    },
+    {
+      "id": "785503a8-13eb-441c-8084-c82b4d4a731e",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "action": "APPROVE",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "840ad02e-7cba-418b-be24-7e9b29aed427",
+      "lessonRevisionId": "7e8bee86-d9b7-49e0-9109-dbf3c1f3e3e1",
+      "action": "PUBLISH",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "e1111501-b1e6-47f7-ae66-b26eb91d3cc9",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "action": "SUBMIT",
+      "actorId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    },
+    {
+      "id": "44ef580b-d6bb-485d-8050-5c37d6002bdf",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "action": "APPROVE",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "b5194ca3-fc30-4e7b-b7ad-d864f20dafa8",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "action": "PUBLISH",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    },
+    {
+      "id": "8cc1a857-bb35-4a15-8eb1-b9fdeb7a8c48",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "action": "ARCHIVE",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66"
+    }
+  ],
+  "accounts": [
+    {
+      "id": "8ac4b174-77c5-4727-9ba5-c9ad956855af",
+      "role": "LEARNER",
+      "status": "DISABLED"
+    },
+    {
+      "id": "9cae8c3f-dd50-47e5-8eed-635e28512a66",
+      "role": "ADMIN",
+      "status": "DISABLED"
+    },
+    {
+      "id": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6",
+      "role": "TEACHER",
+      "status": "DISABLED"
+    },
+    {
+      "id": "fd570e8a-ad50-446c-a87b-65a5eca8a9a7",
+      "role": "LEARNER",
+      "status": "DISABLED"
+    }
+  ],
+  "contexts": [
+    {
+      "id": "1950b9d9-73d6-4ce6-9aa0-5b23b02691f0",
+      "learnerId": "8ac4b174-77c5-4727-9ba5-c9ad956855af",
+      "status": "PAUSED",
+      "courseId": "62f30613-6bf7-48cb-bc94-448a9736a178"
+    },
+    {
+      "id": "82646489-11e5-4c40-9a26-79161a33080d",
+      "learnerId": "fd570e8a-ad50-446c-a87b-65a5eca8a9a7",
+      "status": "PAUSED",
+      "courseId": "62f30613-6bf7-48cb-bc94-448a9736a178"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "contextId": "82646489-11e5-4c40-9a26-79161a33080d",
+      "lessonId": "75d84614-050c-400a-8d06-de92a1418d67",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "completedAt": "2026-11-01T11:35:59.370Z",
+      "nCore": 5,
+      "kFirstWrong": 3,
+      "contributionUnits": 6,
+      "responseCount": 8
+    },
+    {
+      "id": "2f6fb6b9-ddca-4cf7-99e8-538af228f234",
+      "contextId": "82646489-11e5-4c40-9a26-79161a33080d",
+      "lessonId": "75d84614-050c-400a-8d06-de92a1418d67",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "completedAt": "2026-11-01T11:37:26.564Z",
+      "nCore": 5,
+      "kFirstWrong": 0,
+      "contributionUnits": 10,
+      "responseCount": 5
+    },
+    {
+      "id": "65700652-e381-4cca-9210-17515995f2c0",
+      "contextId": "1950b9d9-73d6-4ce6-9aa0-5b23b02691f0",
+      "lessonId": "75d84614-050c-400a-8d06-de92a1418d67",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "completedAt": null,
+      "nCore": 5,
+      "kFirstWrong": null,
+      "contributionUnits": null,
+      "responseCount": null
+    },
+    {
+      "id": "8381419a-92d5-4687-809e-040c13d36f3e",
+      "contextId": "82646489-11e5-4c40-9a26-79161a33080d",
+      "lessonId": "75d84614-050c-400a-8d06-de92a1418d67",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "completedAt": null,
+      "nCore": 5,
+      "kFirstWrong": null,
+      "contributionUnits": null,
+      "responseCount": null
+    }
+  ],
+  "responses": [
+    {
+      "id": "6b14688b-8524-4943-b036-637e9566162e",
+      "attemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "lessonExerciseId": "86636733-aa3d-498d-b130-17c3043cae85",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 1,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "a542cdaa-55b9-478e-951b-774434985a09",
+      "attemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "lessonExerciseId": "6a8763b3-d2aa-4d03-b82b-2f7166e00957",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 2,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "33ac6070-9dc6-48a2-906d-26c7dad8798d",
+      "attemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "lessonExerciseId": "fe0f0934-a47a-4098-8225-3e7f8ca000f1",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 3,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "096eed11-4152-45f7-92fe-9b7d40fa8b60",
+      "attemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "lessonExerciseId": "8e716df3-5a17-4200-88fb-d2c13de9d0e9",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 4,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "10877c65-1274-43c8-a5e6-d79c94325563",
+      "attemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "lessonExerciseId": "d9002457-978a-4ea9-9bf5-ba61484a21a8",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 5,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "c539627a-f5c5-45c1-99d1-95c610abc140",
+      "attemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "lessonExerciseId": "6a8763b3-d2aa-4d03-b82b-2f7166e00957",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 6,
+      "responseOrdinal": 2
+    },
+    {
+      "id": "7383b141-ab1e-47aa-b622-4c1dc0d3db9b",
+      "attemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "lessonExerciseId": "fe0f0934-a47a-4098-8225-3e7f8ca000f1",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 7,
+      "responseOrdinal": 2
+    },
+    {
+      "id": "f87dd9f0-0761-4f2f-9e58-ceab5175baeb",
+      "attemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "lessonExerciseId": "d9002457-978a-4ea9-9bf5-ba61484a21a8",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 8,
+      "responseOrdinal": 2
+    },
+    {
+      "id": "5b69f379-8b33-4bd0-9879-70d56ecf99d3",
+      "attemptId": "2f6fb6b9-ddca-4cf7-99e8-538af228f234",
+      "lessonExerciseId": "c888372a-e832-4622-bca6-32845c124081",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "queuePosition": 1,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "28788a2f-71b1-4a25-bc5d-a6281ad1865e",
+      "attemptId": "2f6fb6b9-ddca-4cf7-99e8-538af228f234",
+      "lessonExerciseId": "7ffa320c-b2f6-4594-9998-db0ab7c2782b",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "queuePosition": 2,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "d34db9f2-2448-44d3-a067-a9c1c631ee20",
+      "attemptId": "2f6fb6b9-ddca-4cf7-99e8-538af228f234",
+      "lessonExerciseId": "7e8e74b4-f152-4e03-9055-aaf2aea5d586",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "queuePosition": 3,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "78160217-3da8-4c31-b9f3-ffae79c8f002",
+      "attemptId": "2f6fb6b9-ddca-4cf7-99e8-538af228f234",
+      "lessonExerciseId": "dacdf5a8-079f-4dbb-b866-a72fbcafeecb",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "queuePosition": 4,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "96f95faf-d23b-44c5-b5f7-9be059c97ac3",
+      "attemptId": "2f6fb6b9-ddca-4cf7-99e8-538af228f234",
+      "lessonExerciseId": "0b88fe76-37f9-4e5d-918a-ca86b3c4c8c6",
+      "lessonRevisionId": "72f05567-87cc-4c4e-b335-e1a363975fdd",
+      "queuePosition": 5,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "b3647579-a681-4c82-bf75-c116c67a870c",
+      "attemptId": "65700652-e381-4cca-9210-17515995f2c0",
+      "lessonExerciseId": "86636733-aa3d-498d-b130-17c3043cae85",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 1,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "1fea49dd-e9e8-4b58-a001-632b08e74969",
+      "attemptId": "8381419a-92d5-4687-809e-040c13d36f3e",
+      "lessonExerciseId": "86636733-aa3d-498d-b130-17c3043cae85",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 1,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "dcf91f75-7347-4880-b2fe-21fde29bda46",
+      "attemptId": "8381419a-92d5-4687-809e-040c13d36f3e",
+      "lessonExerciseId": "6a8763b3-d2aa-4d03-b82b-2f7166e00957",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 2,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "0797fa0f-27d3-4d76-a52d-674bebca8844",
+      "attemptId": "8381419a-92d5-4687-809e-040c13d36f3e",
+      "lessonExerciseId": "fe0f0934-a47a-4098-8225-3e7f8ca000f1",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 3,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "59051843-85ca-4de2-889f-c2193aeba4a9",
+      "attemptId": "8381419a-92d5-4687-809e-040c13d36f3e",
+      "lessonExerciseId": "8e716df3-5a17-4200-88fb-d2c13de9d0e9",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 4,
+      "responseOrdinal": 1
+    },
+    {
+      "id": "df29295c-5275-4f83-9903-4c43faf24b6b",
+      "attemptId": "8381419a-92d5-4687-809e-040c13d36f3e",
+      "lessonExerciseId": "d9002457-978a-4ea9-9bf5-ba61484a21a8",
+      "lessonRevisionId": "68b61be9-ba8a-49cb-b639-f11143dc579e",
+      "queuePosition": 5,
+      "responseOrdinal": 1
+    }
+  ],
+  "completions": [
+    {
+      "id": "90818f8f-f4be-417b-a15e-58ae123c7c60",
+      "contextId": "82646489-11e5-4c40-9a26-79161a33080d",
+      "lessonId": "75d84614-050c-400a-8d06-de92a1418d67",
+      "firstAttemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e"
+    }
+  ],
+  "cards": [
+    {
+      "id": "5e99efeb-4ff7-4bc6-8809-deb2858c4904",
+      "learnerId": "fd570e8a-ad50-446c-a87b-65a5eca8a9a7",
+      "vocabularyId": "13ae87e7-2a85-4009-b074-57b1a36add0b",
+      "sourceAttemptId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e",
+      "sourceLessonVocabularyId": "7b397a5e-8ed0-4a7a-b2cc-9af1656b65f9",
+      "stage": 1,
+      "dueAt": "2026-11-02T11:35:59.370Z"
+    }
+  ],
+  "receipts": [
+    {
+      "id": "ac9c2892-62ea-4206-95f5-90f70496d073",
+      "actorId": "fd570e8a-ad50-446c-a87b-65a5eca8a9a7",
+      "command": "COMPLETE_LESSON",
+      "operationKey": "d432ab69-50e5-48cb-baa0-e01a88df877c",
+      "targetId": "2cfc2245-1f1c-4379-8c2c-4c63641e641e"
+    },
+    {
+      "id": "ef3bac0c-856a-4379-80de-278aac0b05c0",
+      "actorId": "fd570e8a-ad50-446c-a87b-65a5eca8a9a7",
+      "command": "COMPLETE_LESSON",
+      "operationKey": "21f72971-5f34-4022-a476-f83258800678",
+      "targetId": "2f6fb6b9-ddca-4cf7-99e8-538af228f234"
+    }
+  ],
+  "teacherAudits": [
+    {
+      "id": "7f793066-e6e5-46d7-91f3-a5314b5611c7",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66",
+      "action": "TEACHER_ENABLED",
+      "targetId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    },
+    {
+      "id": "c96db648-c99a-49d1-9133-5388578f1ebc",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66",
+      "action": "TEACHER_DISABLED",
+      "targetId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    },
+    {
+      "id": "e03f2136-70d2-4224-94c2-7e006f4d2ee2",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66",
+      "action": "TEACHER_ENABLED",
+      "targetId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    },
+    {
+      "id": "dee55a51-088e-48c3-8f62-d2f3bd81173b",
+      "actorId": "9cae8c3f-dd50-47e5-8eed-635e28512a66",
+      "action": "TEACHER_DISABLED",
+      "targetId": "e7c9ef8e-4e70-4c7c-b986-aa0678a76ba6"
+    }
+  ],
+  "readingRows": 0,
+  "authSessions": 0,
+  "originalTeacher": {
+    "id": "7d14d388-bb1e-4c57-877a-4f07ec2468d0",
+    "status": "DISABLED"
+  },
+  "unexpectedResidue": 0,
+  "retention": "Exact immutable owned fixture history and FK ancestors. No secret payloads included; source evidence contains only owned learner responses/results needed for reconciliation."
+}

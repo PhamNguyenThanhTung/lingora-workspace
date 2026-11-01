@@ -1,0 +1,21 @@
+{
+  "ready": true,
+  "commit": "4ddc09c96b7f0455692eb5b76e515d1b8b9a5ab4",
+  "teamId": "team_RGHMLfK6NcKRvtZrWy3JCuRr",
+  "learner": {
+    "base": "https://lingora-learner-dev.vercel.app",
+    "deploymentId": "dpl_HpZNkZgehSYkPGjASsvjGVhfemwT",
+    "projectId": "prj_qRvrlMQCydoDKw7FQHPmUV8sa1iz",
+    "commit": "4ddc09c96b7f0455692eb5b76e515d1b8b9a5ab4",
+    "state": "READY",
+    "stableAliasVerified": true
+  },
+  "staff": {
+    "base": "https://lingora-workspace.vercel.app",
+    "deploymentId": "dpl_3Q3gtCxkwGfvsbVt2mNmwu8M7mM7",
+    "projectId": "prj_ux5gS0uA0PbKJgqYmaONnAjNc9pX",
+    "commit": "4ddc09c96b7f0455692eb5b76e515d1b8b9a5ab4",
+    "state": "READY",
+    "stableAliasVerified": true
+  }
+}

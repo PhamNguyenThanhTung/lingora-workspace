@@ -81,10 +81,14 @@ Source `2fb844735beca8d024c310778a7c23d923eca054` pushed and READY on learner/st
 
 `SLICE 10: PASS — SLICE 10 ACCEPTED`
 
-## Slice 11 — Practice Attempt / Grading / Lesson Completion (local PASS, public pending)
+## Slice 11 — Practice Attempt / Grading / Lesson Completion (PASS / ACCEPTED)
 
 D1–D3 approved2026-11-01: NFC/trim/case-sensitive exact text grading; atomic core enrollment with new stage1/due+1 day and existing cards unchanged; all new stale response/finalize writes409 including redo, authorized committed replay retained. Historical decision checkpoint FAIL resolved. Existing model supports the feature; no schema gap established.
 
-Final [spec](2026-11-01-slice-11-practice-attempt-grading.md) is executable. Proceed Anti implementation/tests → independent Sol6.1High review → Codex direct fixes/local gates → exact-commit public DEV acceptance/cleanup. No acceptance claim yet; [verification](slice-11-verification.md). No Slice12.
+Final [spec](2026-11-01-slice-11-practice-attempt-grading.md) delivered through Anti implementation/tests → independent Sol6.1High review → Codex direct fixes/local gates → exact-commit public DEV acceptance and read-only reconciliation. No schema change or migration. [Verification](slice-11-verification.md) and [public evidence](evidence/slice-11/public-acceptance.md).
 
-Slice11 local gates PASS: feature542/components152, Practice DB13 + Slice10 DB7, typecheck/build,20 mutations KILLED/restored,40 client files clean. Codex fixed independent review findings directly. No DEV writes yet; push/deployment verification and public acceptance remain.
+Local gates PASS: feature542/components152, Practice DB13 + Slice10 DB7, typecheck/build,20 mutations KILLED/restored,40 local client files clean. Public flow24 checks PASS, including five-type grading, N5/K3 scoring, X→Y stale conflict/replay, second-revision grading, progression isolation, and failure/retry. Read-only DB reconciliation:4 attempts/19 responses,1 first completion,2 receipts,1 card; all runtime fixtures restored, immutable history allowlisted, sessions0, unexpected residue0. Learner/staff client scan40 local +19 public files PASS.
+
+`SLICE 11: PASS — SLICE 11 ACCEPTED`
+
+No Slice 12.

@@ -102,3 +102,15 @@ Anti initial implementation → independent Sol High review → Codex direct fix
 Source `2fb844735beca8d024c310778a7c23d923eca054` pushed and READY on learner/staff before public writes. Public27-flow +7 exact child DTO/DB checks PASS, including X/draft isolation, Y separate progress, real stale409/reload/retry, and no graded unlock/evidence side effects. Five disposable learners removed; allowlisted content/history retained with Course inactive/Lessons PLANNED/staff DISABLED, original Teacher unchanged DISABLED, sessions0 and unexpected residue0. See [verification](slice-10-verification.md) and [public evidence](evidence/slice-10/public-acceptance.md). Final commit records evidence only; no local/public rerun for documentation. No Slice11.
 
 `SLICE 10: PASS — SLICE 10 ACCEPTED`
+
+## Slice 11 — Practice Attempt / Grading / Lesson Completion (PASS / ACCEPTED)
+
+- Accepted 2026-11-01. Uses the existing attempt/response/completion domain with exact published LessonRevision and exact ItemRevision pins; no schema migration.
+- Server grades all five Practice types. Text grading uses NFC, trim, and optional case folding with exact accepted-answer matching. Retry queue and half-unit scoring are deterministic; a completed graded attempt creates the first logical Lesson completion and atomically enrolls eligible core vocabulary.
+- Learner-safe DTOs exclude answer keys/private grading data. Consumption stays independent; only graded completion unlocks the next eligible Lesson. Assessment, Level-up, SRS review, and streak behavior remain out of scope.
+- Anti implementation → independent review → Codex direct fixes. Feature542/components152, Practice PostgreSQL13/13, Slice10 PostgreSQL7/7, typecheck/build PASS;20 semantic mutations KILLED and restored.
+- Public24-check acceptance PASS on exact source commit `4ddc09c96b7f0455692eb5b76e515d1b8b9a5ab4`: true client retries, five-type scoring, X→Y stale409/committed replay, exact revision pins, and progression isolation. Read-only reconciliation confirms4 attempts/19 responses/1 first completion/2 receipts/1 core card. Runtime fixtures restored; immutable history allowlisted; sessions0 and unexpected residue0. Local/public client scan40/19 files PASS. See [verification](slice-11-verification.md) and [public evidence](evidence/slice-11/public-acceptance.md).
+
+`SLICE 11: PASS — SLICE 11 ACCEPTED`
+
+No Slice 12 has started.
