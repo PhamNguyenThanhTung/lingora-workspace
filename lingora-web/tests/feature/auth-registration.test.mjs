@@ -17,9 +17,22 @@ const __dirname = path.dirname(__filename);
 const webRoot = path.resolve(__dirname, '../..');
 
 const cookieMap = new Map();
+let cookieStoreRetrievalCount = 0;
+let cookieAccessCount = 0;
+
 let currentCookieStore = {
-  getAll: () => [...cookieMap.entries()].map(([name, value]) => ({ name, value })),
-  get: (name) => cookieMap.get(name) ? { name, value: cookieMap.get(name) } : undefined,
+  getAll: () => {
+    cookieAccessCount++;
+    return [...cookieMap.entries()].map(([name, value]) => ({ name, value }));
+  },
+  get: (name) => {
+    cookieAccessCount++;
+    return cookieMap.get(name) ? { name, value: cookieMap.get(name) } : undefined;
+  },
+  has: (name) => {
+    cookieAccessCount++;
+    return cookieMap.has(name);
+  },
   set: (name, val, opts) => {
     if (opts?.maxAge === 0) cookieMap.delete(name);
     else cookieMap.set(name, val);
@@ -35,7 +48,10 @@ let currentCookieStore = {
 
 mock.module('next/headers.js', {
   exports: {
-    cookies: async () => currentCookieStore,
+    cookies: async () => {
+      cookieStoreRetrievalCount++;
+      return currentCookieStore;
+    },
   },
 });
 
@@ -52,6 +68,8 @@ beforeEach(() => {
   process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://sncfyvpzwedqgwfpffkh.supabase.co';
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key-placeholder';
   cookieMap.clear();
+  cookieStoreRetrievalCount = 0;
+  cookieAccessCount = 0;
 });
 
 afterEach(() => {
@@ -467,6 +485,8 @@ describe('Package A: Confirmation (GET /auth/confirm)', () => {
     assert.equal(locUrl.pathname, '/login');
     assert.equal(locUrl.searchParams.get('confirmed'), '1');
     assert.equal(codeExchanged, true);
+    assert.ok(cookieStoreRetrievalCount > 0, 'Cookie store must be retrieved for normal code exchange');
+    assert.ok(cookieAccessCount > 0, 'Cookies must be read for normal code exchange');
   });
 
   test('expired / invalid PKCE code redirects to /login?error=confirmation_failed', async () => {
@@ -561,6 +581,170 @@ describe('Package A: Confirmation (GET /auth/confirm)', () => {
     assert.equal(locUrl.origin, 'https://lingora.edu.vn');
     assert.equal(locUrl.pathname, '/login');
     assert.equal(locUrl.searchParams.get('next'), null);
+  });
+
+  test('provider error without credentials redirects to /login?error=confirmation_failed with no-store headers and zero provider calls', async () => {
+    let providerCalls = 0;
+    globalThis.fetch = async () => {
+      providerCalls++;
+      throw new Error('Provider must not be called');
+    };
+
+    const req = new Request('https://lingora.edu.vn/auth/confirm?error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired', {
+      method: 'GET',
+    });
+
+    const res = await confirmRoute(req);
+    assert.equal(res.status, 303);
+    const locUrl = new URL(res.headers.get('location'));
+    assert.equal(locUrl.origin, 'https://lingora.edu.vn');
+    assert.equal(locUrl.pathname, '/login');
+    assert.equal(locUrl.search, '?error=confirmation_failed');
+    const cc = res.headers.get('cache-control') || '';
+    assert.ok(cc.includes('no-store') && cc.includes('private'), 'Cache-Control must contain no-store and private');
+    assert.equal(providerCalls, 0, 'Zero provider calls must be made on rejection');
+    assert.equal(cookieStoreRetrievalCount, 0, 'Mocked cookie-store must not be retrieved on provider error');
+    assert.equal(cookieAccessCount, 0, 'No cookies must be read on provider error');
+  });
+
+  test('conflicting error plus PKCE code rejects before code consumption with zero provider calls', async () => {
+    const cookieName = getLearnerCookieName('https://sncfyvpzwedqgwfpffkh.supabase.co');
+    const verifier = 'test-code-verifier-string-1234567890';
+    const encodedVerifier = 'base64-' + Buffer.from(JSON.stringify(verifier)).toString('base64');
+    cookieMap.set(`${cookieName}-code-verifier`, encodedVerifier);
+
+    let providerCalls = 0;
+    globalThis.fetch = async () => {
+      providerCalls++;
+      throw new Error('Provider must not be called');
+    };
+
+    const req = new Request('https://lingora.edu.vn/auth/confirm?error=access_denied&code=conflicting-pkce-code', {
+      method: 'GET',
+    });
+
+    const res = await confirmRoute(req);
+    assert.equal(res.status, 303);
+    const locUrl = new URL(res.headers.get('location'));
+    assert.equal(locUrl.pathname, '/login');
+    assert.equal(locUrl.search, '?error=confirmation_failed');
+    assert.equal(providerCalls, 0, 'Zero provider calls must be made when error is present');
+    assert.equal(cookieStoreRetrievalCount, 0, 'Mocked cookie-store must not be retrieved when error is present');
+    assert.equal(cookieAccessCount, 0, 'No cookies must be read when error is present');
+    assert.equal(
+      cookieMap.get(`${cookieName}-code-verifier`),
+      encodedVerifier,
+      'PKCE verifier cookie must be preserved exactly without SDK consumption or cleanup'
+    );
+  });
+
+  test('conflicting error_code plus token hash rejects before token consumption with zero provider calls', async () => {
+    let providerCalls = 0;
+    globalThis.fetch = async () => {
+      providerCalls++;
+      throw new Error('Provider must not be called');
+    };
+
+    const req = new Request('https://lingora.edu.vn/auth/confirm?error_code=otp_expired&token_hash=somehash&type=signup', {
+      method: 'GET',
+    });
+
+    const res = await confirmRoute(req);
+    assert.equal(res.status, 303);
+    const locUrl = new URL(res.headers.get('location'));
+    assert.equal(locUrl.pathname, '/login');
+    assert.equal(locUrl.search, '?error=confirmation_failed');
+    assert.equal(providerCalls, 0, 'Zero provider calls must be made when error_code is present');
+    assert.equal(cookieStoreRetrievalCount, 0, 'Mocked cookie-store must not be retrieved when error_code is present');
+    assert.equal(cookieAccessCount, 0, 'No cookies must be read when error_code is present');
+  });
+
+  test('unknown error and error_code values redirect to fixed /login?error=confirmation_failed without leaking codes', async () => {
+    let providerCalls = 0;
+    globalThis.fetch = async () => {
+      providerCalls++;
+      throw new Error('Provider must not be called');
+    };
+
+    for (const qs of [
+      '?error=unrecognized_provider_failure',
+      '?error_code=custom_err_42',
+      '?error=some_error&error_code=some_code',
+    ]) {
+      const req = new Request(`https://lingora.edu.vn/auth/confirm${qs}`, {
+        method: 'GET',
+      });
+
+      const res = await confirmRoute(req);
+      assert.equal(res.status, 303);
+      const locUrl = new URL(res.headers.get('location'));
+      assert.equal(locUrl.pathname, '/login');
+      assert.equal(locUrl.search, '?error=confirmation_failed');
+      assert.equal(locUrl.searchParams.get('error'), 'confirmation_failed');
+      assert.equal(locUrl.searchParams.get('error_code'), null);
+      assert.equal(cookieStoreRetrievalCount, 0, 'Mocked cookie-store must not be retrieved for unknown error values');
+      assert.equal(cookieAccessCount, 0, 'No cookies must be read for unknown error values');
+    }
+    assert.equal(providerCalls, 0);
+  });
+
+  test('empty error and error_code values redirect to fixed /login?error=confirmation_failed', async () => {
+    let providerCalls = 0;
+    globalThis.fetch = async () => {
+      providerCalls++;
+      throw new Error('Provider must not be called');
+    };
+
+    for (const qs of ['?error=', '?error_code=', '?error=&error_code=', '?error']) {
+      const req = new Request(`https://lingora.edu.vn/auth/confirm${qs}`, {
+        method: 'GET',
+      });
+
+      const res = await confirmRoute(req);
+      assert.equal(res.status, 303);
+      const locUrl = new URL(res.headers.get('location'));
+      assert.equal(locUrl.pathname, '/login');
+      assert.equal(locUrl.search, '?error=confirmation_failed');
+      assert.equal(cookieStoreRetrievalCount, 0, 'Mocked cookie-store must not be retrieved for empty error values');
+      assert.equal(cookieAccessCount, 0, 'No cookies must be read for empty error values');
+    }
+    assert.equal(providerCalls, 0);
+  });
+
+  test('safe fixed destination and no-store headers despite hostile description and open-redirect next', async () => {
+    let providerCalls = 0;
+    globalThis.fetch = async () => {
+      providerCalls++;
+      throw new Error('Provider must not be called');
+    };
+
+    const hostileUrl = 'https://lingora.edu.vn/auth/confirm?error=access_denied' +
+      '&error_description=%3Cscript%3Ealert(%22xss%22)%3C%2Fscript%3E' +
+      '&next=https%3A%2F%2Fmalicious.attacker.com%2Fphish' +
+      '&error_code=hostile_code';
+
+    const req = new Request(hostileUrl, {
+      method: 'GET',
+    });
+
+    const res = await confirmRoute(req);
+    assert.equal(res.status, 303);
+    const location = res.headers.get('location');
+    assert.equal(location, 'https://lingora.edu.vn/login?error=confirmation_failed');
+
+    const locUrl = new URL(location);
+    assert.equal(locUrl.origin, 'https://lingora.edu.vn');
+    assert.equal(locUrl.pathname, '/login');
+    assert.equal(locUrl.search, '?error=confirmation_failed');
+    assert.equal(locUrl.searchParams.get('error_description'), null);
+    assert.equal(locUrl.searchParams.get('next'), null);
+    assert.equal(locUrl.searchParams.get('error_code'), null);
+
+    const cc = res.headers.get('cache-control') || '';
+    assert.ok(cc.includes('no-store') && cc.includes('private'), 'Cache-Control must contain no-store and private');
+    assert.equal(providerCalls, 0);
+    assert.equal(cookieStoreRetrievalCount, 0, 'Mocked cookie-store must not be retrieved on hostile error payload');
+    assert.equal(cookieAccessCount, 0, 'No cookies must be read on hostile error payload');
   });
 });
 

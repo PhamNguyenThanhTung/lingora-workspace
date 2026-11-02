@@ -9,12 +9,23 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
-  const tokenHash = requestUrl.searchParams.get('token_hash');
-  const type = requestUrl.searchParams.get('type');
 
   // Strictly fixed destination: /login only. Never accept next/open redirects.
   const loginUrl = new URL('/login', requestUrl.origin);
+
+  // Explicit provider error or error_code check before cookie/client construction
+  // or any code/token consumption. Fixed same-origin destination with no-store/private headers.
+  if (requestUrl.searchParams.has('error') || requestUrl.searchParams.has('error_code')) {
+    loginUrl.searchParams.set('error', 'confirmation_failed');
+    return NextResponse.redirect(loginUrl.toString(), {
+      status: 303,
+      headers: buildAuthResponseHeaders(),
+    });
+  }
+
+  const code = requestUrl.searchParams.get('code');
+  const tokenHash = requestUrl.searchParams.get('token_hash');
+  const type = requestUrl.searchParams.get('type');
 
   const cookieStore = await cookies();
   const refreshedHeaders = new Headers();

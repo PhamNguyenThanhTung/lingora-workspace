@@ -1,0 +1,33 @@
+# Slice 12 — auth callback investigation and bounded repair
+
+Baseline: HEAD `5b1214f`, application source `bd88903`, prior bounded public attempt at `2280fa5`. Slice 12 repair PASS; public acceptance NOT ACCEPTED. Maintenance `bc4ecf1` stays separate. Preserve unrelated dirty files. No Slice 13, dependency advisory, schema changes or race rework.
+
+## Investigation conclusion and evidence boundary
+
+The recorded failed request is provider `/auth/v1/verify` 303 → Learner callback carrying `access_denied` / `otp_expired`, **without code** → login `missing_confirmation_token`. It fails before application code exchange. Read-only snapshots bound confirmation between 2026-11-02 13:35:44Z (unconfirmed) and 13:47:13Z (confirmed before recorded navigation); they do not identify the confirming request. Earlier independent attempt recorded confirmation about 21 seconds before browser navigation. No successful application callback or session is proved.
+
+Read-only provider health reports GoTrue `v2.197.0`; settings show email enabled, signup allowed, auto-confirm false. The matching official Supabase [verify implementation](https://github.com/supabase/auth/blob/v2.197.0/internal/api/verify.go) uses `otp_expired` for both token lookup failure and configured expiration. Effective OTP TTL remains inaccessible in public settings. Confirmed identity alone cannot distinguish prior consume, scanner/preview, another confirmation mechanism, or expiry plus a separate confirmation. Auth audit table currently contains zero rows; app runtime-log queries do not supply missing provider access logs. Owner has been asked for metadata-only Auth Logs and effective OTP TTL. Historical cleanup removed token rows; do not recreate an activation to investigate history.
+
+Source inspection found no automatic URL verification in proxy or registration/login client. GET callback immediately consumes a token hash or exchanges a code; it ignores provider error parameters. Therefore explicit provider rejection is misreported as missing credentials. The current email's direct provider GET can be consumed before app callback by a client without the PKCE verifier. [Supabase prefetch guidance](https://supabase.com/docs/guides/auth/auth-email-templates#email-prefetching) recommends OTP entry or an intermediate explicit confirmation action. A callback-only change cannot protect a direct-provider email URL. Do not implement a template-dependent redesign before effective configuration/ownership is established.
+
+## One implementation package: callback error handling
+
+Owner: Antigravity. Files: `lingora-web/src/app/auth/confirm/route.ts`, relevant cases in `lingora-web/tests/feature/auth-registration.test.mjs`. Worker evidence: `plans/evidence/slice-12-auth-investigation/anti-callback.md`. No other production files. No credentials/env access, network/provider/DB writes, deploy/push, commits, recursive agents or scope expansion.
+
+Contract: when callback query contains `error` or `error_code` (including unknown/empty values), return fixed same-origin `/login?error=confirmation_failed`, HTTP303 with existing private/no-store auth headers. Check before cookie/client construction or any code/token consumption, including conflicting error plus credentials. Never echo descriptions, URLs or arbitrary codes. Existing valid code/token, allowed types, missing-token handling and fixed destination stay intact. No success fallback based on identity, service-role confirmation, retry loop or weakened one-use/TTL behavior.
+
+Tests must invoke actual route with synthetic provider: provider error/no credentials, error plus code, error_code plus token hash, unknown/empty error values, zero provider calls on rejection, no-store/private headers and safe fixed destination despite hostile description/next. Existing success, invalid code, missing token and unsupported type tests must remain green. Run targeted registration feature suite, full Learner feature suite and Learner typecheck. Self-fix mechanical failures. Deliver changed paths, exact commands/exits and bounded evidence; DELIVERED is not independent PASS.
+
+Dependency graph: investigation → this package → Codex actual diff/tests/security review → (at most one task-wide Anti correction round if final review fails) → relevant local gates → exact READY deployment → public acceptance. No parallel mutating packages.
+
+### Authorized correction round 1 (only)
+
+Independent senior review found the conflicting PKCE regression vacuous: no verifier was seeded, so SDK can fail before fetch even if the guard is bypassed. Codex proved the mutant that suppresses the guard only when a code is present survives all35 tests; exact source bytes restored, baseline/restored exit0. No production defect found in actual guard.
+
+Anti owns **tests only**, same registration test file, plus correction evidence `plans/evidence/slice-12-auth-investigation/anti-correction.md`. Seed a real synthetic PKCE verifier as the existing success case does; assert conflicting error+code makes zero provider calls and preserves verifier exactly. Instrument mocked cookie-store retrieval and assert upstream-error branches do not retrieve cookies (both error/error_code, including credentials), proving the required pre-client boundary. Run full targeted and Learner feature tests/typecheck, self-fix local mechanics. Do not modify production guard, other fixtures/package scripts, live/config/env, commits/deploy or scope. Root will independently rerun mutant and review. If still failing after this round, stop/report; no further correction or Codex implementation takeover.
+
+## Remaining acceptance gate
+
+Before spending a fresh activation: resolve historical evidence/config limits, choose safe token handoff without hyperlinks, preserve original signup session and email's nonsecret parameters, verify configured callback/TTL and exact READY source. One fresh product registration only, no resend or hypothesis-driven live writes. A private plaintext token file can avoid chat hyperlink handling; it does not protect against email-provider scanning.
+
+On a valid callback, complete real normal login → context → Lesson → Practice and existing negative/retry/Pause/Resume checks. Otherwise stop and report the exact blocker. Scope fixture changes to previously owned acceptance content, never fabricate learner Auth/Account/progress via SQL. Cleanup every owned identity/session/PKCE/runtime/storage/credential artifact and verify read-only exact baselines, including both earlier flows and allowlisted immutable history. Require unexpected residue zero. Public journey remains NOT ACCEPTED until all required checkpoints and independent Codex evidence review pass.
