@@ -91,10 +91,12 @@ Local gates PASS: feature542/components152, Practice DB13 + Slice10 DB7, typeche
 
 `SLICE 11: PASS — SLICE 11 ACCEPTED`
 
-## Slice 12 — Blocker Repair / Re-acceptance (LOCAL PASS; RELEASE PENDING)
+## Slice 12 — REPAIR PASS / EMAIL ACCEPTANCE BLOCKED; NOT ACCEPTED
 
-Owner opened a separate repair task after previous FAIL/STOP. [Repair spec](2026-11-01-slice-12-blocker-repair.md) targets exactly DEFAULT Level/Lesson races,3 cwd-dependent guard tests, true concurrent Pause and exact SRS preservation proof. Historical [failed verification](slice-12-verification.md) stays intact. Premaintenance `bc4ecf1` remains separate; reviewed feature + repair is ready for the authorized exact-source release.
+The separately authorized [repair task](2026-11-01-slice-12-blocker-repair.md) resolves the five historical blockers without schema/migration/trigger changes. Anti initial repair → Codex source review/direct test-fidelity fixes → independent Sol6.1High final review PASS. [Final verification](slice-12-repair-verification.md); [historical FAIL/STOP](slice-12-verification.md) is preserved.
 
-Codex inspection + Sol High plan → one Anti repair package → Codex actual source/tests review/direct fixes → full gates/mutation controls/final independent review → exact source push/READY → public/email acceptance. No email before repair gates + final review + READY. Preserve unrelated changes, no new feature/Schema/trigger/Slice13/advisory scope. Current task has no DEV data writes.
+Final local gates:603/603 feature,168/168 components,54/54 PostgreSQL; both typechecks/builds;42 clean local +23 public client files; three guard cases in three cwd; A–F KILLED with exact byte restoration. Real writer/reader schedules and five-operation Pause matrix prove lock ordering; full nonempty SRS/history snapshots preserve microsecond values.
 
-Fresh final local gates PASS on2026-11-02:603 feature,168 components,54 PostgreSQL; typecheck/build;42 clean client files;3 guard cases in3 cwd; A–F KILLED with byte-exact restore. Independent Sol6.1High review PASS, no material findings. See [repair verification](slice-12-repair-verification.md). Public/email acceptance and final DEV reconciliation remain pending; Slice12 is NOT ACCEPTED.
+Source `bd88903` pushed to main, both Learner and Staff READY for that SHA. Maintenance `bc4ecf1` stays separate. Public non-email checks PASS. Two real email links were consumed before the test browser could exchange a code; a fresh registration diagnostic returned429 RATE_LIMITED. Successful callback/login/context/Lesson/Practice public journey is still unaccepted. Stop email sends until quota permits; next controlled run needs only the email token value to avoid hyperlink preview.
+
+All owned Auth fixtures removed; no application Account/context/history/curriculum write reached. Final read-only reconciliation: other Accounts/curriculum unchanged, sessions0, unexpected residue0; passwords/storage state/link files removed. `SLICE 12 REPAIR: PASS`; `SLICE 12: NOT ACCEPTED`. No Slice13 or dependency advisory scope. Preserve unrelated changes.

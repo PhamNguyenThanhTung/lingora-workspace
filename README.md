@@ -33,4 +33,5 @@ Không commit `.env`, database credentials, service-role key hay thông tin đă
 ## Tiến độ và tài liệu
 
 Các Slice 1 đến Slice 11 đã ACCEPTED (Admin catalogue, Teacher authoring/submission, Admin review/publish, Assessment authoring, Learner auth/context, Lesson reading/consumption, Practice attempt/grading).
+Slice 12 repair đã PASS và deploy DEV; nghiệm thu activation/onboarding thật còn chờ giới hạn gửi email. Slice 12 chưa ACCEPTED.
 Xem [roadmap](plans/roadmap.md), [tài liệu](docs/README.md) và [quy tắc làm việc](AGENTS.md).
