@@ -18,6 +18,8 @@ const MOCK_VALID_DATA: LearnerContextEnvelope['data'] = {
     {
       id: 'ctx-1',
       status: 'ACTIVE',
+      rowVersion: '1',
+      startSource: 'DEFAULT',
       targetLanguage: {
         id: 'lang-1',
         code: 'en',

@@ -978,6 +978,14 @@ export function lessonsFixture() {
       if (q.includes('FROM app.lessons') && q.includes('FOR UPDATE')) calls.lockOrder.push('lesson');
       if (q.includes('FROM app.revision_reviews') && q.includes('FOR UPDATE')) calls.lockOrder.push('review');
       if (q.includes('FROM app.lesson_revisions') && q.includes('FOR UPDATE')) calls.lockOrder.push('revision');
+      if (q.includes('FROM app.courses') && q.includes('FOR NO KEY UPDATE')) calls.lockOrder.push('course');
+
+      if (q.includes('FROM app.courses') && q.includes('FOR NO KEY UPDATE')) {
+        const id = args[0]?.toLowerCase();
+        const course = state.courses.get(id);
+        if (!course) return [];
+        return [{ id: course.id }];
+      }
 
       if (q.includes('FROM app.accounts') && q.includes('FOR NO KEY UPDATE')) {
         const id = args[0]?.toLowerCase();

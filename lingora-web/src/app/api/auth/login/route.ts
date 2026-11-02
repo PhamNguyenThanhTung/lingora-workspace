@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   createSupabaseServerClient,
   verifyLearnerIdentity,
+  bootstrapLearnerAccount,
   validateSameOrigin,
   buildAuthResponseHeaders,
   getLearnerCookieName,
@@ -127,7 +128,7 @@ export async function POST(request: Request) {
       responseHeaders.set(key, val);
     });
 
-    if (err.code === 'email_not_confirmed') {
+    if (err.code === 'email_not_confirmed' || err.message?.toLowerCase().includes('email not confirmed')) {
       return Response.json(
         { error: { code: 'FORBIDDEN', message: 'Tài khoản chưa xác thực email. Vui lòng xác thực email trước khi đăng nhập.' } },
         { status: 403, headers: responseHeaders }
@@ -154,6 +155,50 @@ export async function POST(request: Request) {
         },
       },
       { status: 401, headers: responseHeaders }
+    );
+  }
+
+  // Narrow confirmed bootstrap: creates fixed LEARNER/ACTIVE account for confirmed identity if missing
+  const bootstrapResult = await bootstrapLearnerAccount({
+    authClient: supabase,
+  });
+
+  if (!bootstrapResult.ok) {
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // Safe isolation
+    }
+
+    try {
+      const learnerCookieName = getLearnerCookieName();
+      const allCookies = await cookieStore.getAll();
+      for (const cookie of allCookies) {
+        if (
+          cookie.name === learnerCookieName ||
+          cookie.name.startsWith(learnerCookieName + '.')
+        ) {
+          if (typeof cookieStore.delete === 'function') {
+            cookieStore.delete(cookie.name);
+          } else if (typeof cookieStore.set === 'function') {
+            cookieStore.set(cookie.name, '', { maxAge: 0, path: '/' });
+          }
+        }
+      }
+    } catch {
+      // Safe fallback
+    }
+
+    const responseHeaders = buildAuthResponseHeaders(defaultHeaders);
+    refreshedHeaders.forEach((val, key) => {
+      responseHeaders.set(key, val);
+    });
+
+    return Response.json(
+      {
+        error: bootstrapResult.error,
+      },
+      { status: bootstrapResult.status, headers: responseHeaders }
     );
   }
 

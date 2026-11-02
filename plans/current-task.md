@@ -91,4 +91,10 @@ Local gates PASS: feature542/components152, Practice DB13 + Slice10 DB7, typeche
 
 `SLICE 11: PASS — SLICE 11 ACCEPTED`
 
-No Slice 12.
+## Slice 12 — Blocker Repair / Re-acceptance (LOCAL PASS; RELEASE PENDING)
+
+Owner opened a separate repair task after previous FAIL/STOP. [Repair spec](2026-11-01-slice-12-blocker-repair.md) targets exactly DEFAULT Level/Lesson races,3 cwd-dependent guard tests, true concurrent Pause and exact SRS preservation proof. Historical [failed verification](slice-12-verification.md) stays intact. Premaintenance `bc4ecf1` remains separate; reviewed feature + repair is ready for the authorized exact-source release.
+
+Codex inspection + Sol High plan → one Anti repair package → Codex actual source/tests review/direct fixes → full gates/mutation controls/final independent review → exact source push/READY → public/email acceptance. No email before repair gates + final review + READY. Preserve unrelated changes, no new feature/Schema/trigger/Slice13/advisory scope. Current task has no DEV data writes.
+
+Fresh final local gates PASS on2026-11-02:603 feature,168 components,54 PostgreSQL; typecheck/build;42 clean client files;3 guard cases in3 cwd; A–F KILLED with byte-exact restore. Independent Sol6.1High review PASS, no material findings. See [repair verification](slice-12-repair-verification.md). Public/email acceptance and final DEV reconciliation remain pending; Slice12 is NOT ACCEPTED.

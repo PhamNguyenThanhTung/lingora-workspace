@@ -645,6 +645,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     // Reopen edit modal for 'vi': MUST display authoritative server data per S-R9b
     await page.click('#btn-edit-vi');
     await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForFunction(() => document.querySelector('#langViInput')?.value === 'Tiếng Việt');
     const authoritativeVi = await page.evaluate(() => document.querySelector('#langViInput')?.value);
     assert.equal(authoritativeVi, 'Tiếng Việt', 'Reopened edit modal after discard must display authoritative server data');
 

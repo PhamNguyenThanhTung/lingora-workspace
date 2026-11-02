@@ -509,6 +509,7 @@ describe('S5-02: Admin Lesson CRUD & Hierarchy Enforcement', () => {
     assert.equal(res1.data.data.rowVersion, '1');
     assert.equal(res1.data.data.assignment, null);
     assert.equal(res1.data.data.highestRevision, null);
+    assert.ok(fixture.calls.lockOrder.includes('course'), 'createLesson must acquire Course parent lock');
 
     // Duplicate position returns 409 DUPLICATE_LESSON_POSITION
     const duplicate = await createLesson(adminId, courseId, unitId, { position: 1 }, fixture.db);

@@ -28,7 +28,7 @@ Không commit `.env`, database credentials, service-role key hay thông tin đă
 ## Kiểm thử
 
 - Chạy test tính năng và UI: `npm run test:feature`, `npm run test:components`, `npm run test:all`.
-- Chạy PostgreSQL integration suites: `npm run test:integration:lessons` (Slice 10 consumption concurrency) và `npm run test:integration:practice` (Slice 11 practice concurrency). Các lệnh này dùng runner cục bộ (`scripts/local-test-db.mjs`) khởi tạo PostgreSQL loopback tạm thời qua `embedded-postgres`, không yêu cầu database ngoài.
+- Chạy PostgreSQL integration suites: `npm run test:integration:lessons` (Slice 10 consumption concurrency), `npm run test:integration:practice` (Slice 11 practice concurrency) và `npm run test:integration:onboarding` (Slice 12 bootstrap/context lifecycle). Các lệnh này dùng runner cục bộ (`scripts/local-test-db.mjs`) khởi tạo PostgreSQL loopback tạm thời qua `embedded-postgres`, không yêu cầu database ngoài.
 
 ## Tiến độ và tài liệu
 

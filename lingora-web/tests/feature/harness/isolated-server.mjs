@@ -29,10 +29,11 @@ export async function buildHarnessBundle() {
     format: 'esm',
     jsx: 'automatic',
     write: false,
-    define: { 'process.env.NODE_ENV': JSON.stringify('test') },
+    define: { 'process.env.NODE_ENV': JSON.stringify('test'), 'process.env': '{}' },
     alias: {
       '@': path.join(appDir, 'src'),
       'next/navigation': path.join(import.meta.dirname, 'mock-next-navigation.ts'),
+      'next/link': path.join(import.meta.dirname, 'mock-next-link.tsx'),
     },
   });
   cachedBundle = result.outputFiles[0].text;
@@ -278,6 +279,63 @@ export async function startIsolatedServer(port = 3019) {
           const response = await modules.attemptDetailApi.GET(
             new Request(url, { method: req.method, headers: req.headers }),
             { params: Promise.resolve({ contextId: attemptDetailMatch[1], lessonId: attemptDetailMatch[2], attemptId: attemptDetailMatch[3] }) }
+          );
+          response.headers.forEach((value, key) => {
+            if (key !== 'set-cookie') res.setHeader(key, value);
+          });
+          writeCookies();
+          res.statusCode = response.status;
+          res.end(await response.text());
+          return;
+        }
+
+        const contextPatchMatch = url.pathname.match(
+          /^\/api\/learner\/contexts\/([a-zA-Z0-9_-]+)$/
+        );
+        if (contextPatchMatch && req.method === 'PATCH') {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = Buffer.concat(chunks);
+          const response = await modules.contextPatch.PATCH(
+            new Request(url, {
+              method: req.method,
+              headers: req.headers,
+              ...(body.length ? { body } : {}),
+            }),
+            { params: Promise.resolve({ contextId: contextPatchMatch[1] }) }
+          );
+          response.headers.forEach((value, key) => {
+            if (key !== 'set-cookie') res.setHeader(key, value);
+          });
+          writeCookies();
+          res.statusCode = response.status;
+          res.end(await response.text());
+          return;
+        }
+
+        if (url.pathname === '/api/learner/context/options' && req.method === 'GET') {
+          const response = await modules.contextOptions.GET(
+            new Request(url, { method: req.method, headers: req.headers })
+          );
+          response.headers.forEach((value, key) => {
+            if (key !== 'set-cookie') res.setHeader(key, value);
+          });
+          writeCookies();
+          res.statusCode = response.status;
+          res.end(await response.text());
+          return;
+        }
+
+        if (url.pathname === '/api/learner/context' && req.method === 'POST') {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = Buffer.concat(chunks);
+          const response = await modules.context.POST(
+            new Request(url, {
+              method: req.method,
+              headers: req.headers,
+              ...(body.length ? { body } : {}),
+            })
           );
           response.headers.forEach((value, key) => {
             if (key !== 'set-cookie') res.setHeader(key, value);

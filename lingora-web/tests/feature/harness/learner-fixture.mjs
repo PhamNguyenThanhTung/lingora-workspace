@@ -21,6 +21,17 @@ export const contextId = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
 export const confirmedUser = () => ({ id: learnerId, email: fixtureEmail, email_confirmed_at: '2026-10-31T00:00:00Z' });
 export const account = () => ({ id: learnerId, role: 'LEARNER', status: 'ACTIVE', displayName: 'Learner A', uiLocale: 'vi', timezone: 'Asia/Ho_Chi_Minh' });
 
+export const languageRow = () => ({ id: languageId, code: 'en', names: { vi: 'Tiếng Anh', en: 'English' }, isLearnable: true, isUiLocale: true });
+export const courseRow = () => ({
+  id: courseId,
+  languageId,
+  frameworkId,
+  names: { vi: 'Khóa học A', en: 'Course A' },
+  isActive: true,
+  defaultStartLevelId: level1Id,
+  framework: { id: frameworkId, code: 'CEFR', version: '2020', names: { vi: 'CEFR' } },
+});
+
 export const level1Row = () => ({
   id: level1Id,
   frameworkId,
@@ -43,6 +54,8 @@ export const contextRow = () => ({
   languageId,
   courseId,
   status: 'ACTIVE',
+  rowVersion: 1n,
+  startSource: 'DEFAULT',
   language: { id: languageId, code: 'en', names: { vi: 'Tiếng Anh', en: 'English' } },
   course: {
     id: courseId,
@@ -335,6 +348,9 @@ function projected(row, args = {}) {
   return result;
 }
 export function fixtureDb(state) {
+  state.languages ||= [languageRow()];
+  state.courses ||= [courseRow()];
+  state.levels ||= [level1Row(), level2Row()];
   state.contexts ||= [contextRow()];
   state.units ||= [unitRow()];
   state.lessons ||= [lessonRow(), lesson2Row()];
@@ -357,22 +373,133 @@ export function fixtureDb(state) {
         return first([state.account].filter(Boolean), args);
       },
     },
+    language: {
+      findUnique: async args => first(state.languages, args),
+      findMany: async args => many(state.languages, args),
+    },
+    course: {
+      findUnique: async args => first(state.courses.map(c => ({
+        ...c,
+        language: state.languages.find(l => l.id === c.languageId),
+        framework: c.framework || { id: frameworkId, code: 'CEFR', version: '2020', names: { vi: 'CEFR' } },
+      })), args),
+      findMany: async args => many(state.courses.map(c => ({
+        ...c,
+        language: state.languages.find(l => l.id === c.languageId),
+        framework: c.framework || { id: frameworkId, code: 'CEFR', version: '2020', names: { vi: 'CEFR' } },
+      })), args),
+    },
+    level: {
+      findUnique: async args => first(state.levels, args),
+      findMany: async args => many(state.levels, args),
+    },
     learningContext: {
       findFirst: async args => {
         if (state.contextFailure) throw new Error('Simulated context outage');
-        return first(state.contexts, args);
+        return first(state.contexts.map(c => ({
+          ...c,
+          language: c.language || state.languages?.find(l => l.id === c.languageId),
+          course: c.course || state.courses?.find(co => co.id === c.courseId),
+          selectedStartLevel: c.selectedStartLevel !== undefined ? c.selectedStartLevel : state.levels?.find(l => l.id === c.selectedStartLevelId) || null,
+          workingLevel: c.workingLevel !== undefined ? c.workingLevel : state.levels?.find(l => l.id === c.workingLevelId) || null,
+        })), args);
+      },
+      findUnique: async args => {
+        if (state.contextFailure) throw new Error('Simulated context outage');
+        const where = args.where.learnerId_languageId || args.where;
+        return first(state.contexts.map(c => ({
+          ...c,
+          language: c.language || state.languages?.find(l => l.id === c.languageId),
+          course: c.course || state.courses?.find(co => co.id === c.courseId),
+          selectedStartLevel: c.selectedStartLevel !== undefined ? c.selectedStartLevel : state.levels?.find(l => l.id === c.selectedStartLevelId) || null,
+          workingLevel: c.workingLevel !== undefined ? c.workingLevel : state.levels?.find(l => l.id === c.workingLevelId) || null,
+        })), { ...args, where });
       },
       findMany: async args => {
         if (state.contextFailure) throw new Error('Simulated context outage');
-        return many(state.contexts, args);
+        return many(state.contexts.map(c => ({
+          ...c,
+          language: c.language || state.languages?.find(l => l.id === c.languageId),
+          course: c.course || state.courses?.find(co => co.id === c.courseId),
+          selectedStartLevel: c.selectedStartLevel !== undefined ? c.selectedStartLevel : state.levels?.find(l => l.id === c.selectedStartLevelId) || null,
+          workingLevel: c.workingLevel !== undefined ? c.workingLevel : state.levels?.find(l => l.id === c.workingLevelId) || null,
+        })), args);
+      },
+      count: async args => state.contexts.filter(r => matches(r, args?.where)).length,
+      create: async ({ data }) => {
+        const lang = state.languages?.find(l => l.id === data.languageId);
+        const course = state.courses?.find(c => c.id === data.courseId);
+        const startLvl = state.levels?.find(l => l.id === data.selectedStartLevelId) || null;
+        const workLvl = state.levels?.find(l => l.id === data.workingLevelId) || null;
+        const row = {
+          id: data.id || randomUUID(),
+          learnerId: data.learnerId,
+          languageId: data.languageId,
+          courseId: data.courseId,
+          status: data.status || 'ACTIVE',
+          rowVersion: data.rowVersion || 1n,
+          startSource: data.startSource || null,
+          selfReport: data.selfReport || null,
+          selectedStartLevelId: data.selectedStartLevelId || null,
+          workingLevelId: data.workingLevelId || null,
+          language: lang,
+          course: course,
+          selectedStartLevel: startLvl,
+          workingLevel: workLvl,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        state.contexts.push(row);
+        return row;
+      },
+      update: async args => {
+        const i = state.contexts.findIndex(r => r.id === args.where.id);
+        if (i < 0) throw new Error('Record not found');
+        const data = { ...args.data };
+        if (typeof data.rowVersion === 'object') data.rowVersion = (state.contexts[i].rowVersion || 1n) + BigInt(data.rowVersion.increment);
+        state.contexts[i] = { ...state.contexts[i], ...data, updatedAt: new Date() };
+        return projected(state.contexts[i], args);
       },
     },
     unit: {
-      findMany: async args => many(state.units.map(u => ({ ...u, lessons: state.lessons.filter(l => l.unitId === u.id) })), args),
+      findMany: async args => {
+        const getUnitLessons = (u) => (u.lessons && u.lessons.length > 0) ? u.lessons : (state.lessons || []).filter(l => l.unitId === u.id);
+        const unitsWithRelations = (state.units || []).map(u => ({
+          ...u,
+          level: u.level || (state.levels || []).find(lvl => lvl.id === u.levelId),
+          lessons: getUnitLessons(u),
+        }));
+        return many(unitsWithRelations, args);
+      },
+      count: async args => {
+        const getUnitLessons = (u) => (u.lessons && u.lessons.length > 0) ? u.lessons : (state.lessons || []).filter(l => l.unitId === u.id);
+        const unitsWithRelations = (state.units || []).map(u => ({
+          ...u,
+          level: u.level || (state.levels || []).find(lvl => lvl.id === u.levelId),
+          lessons: getUnitLessons(u),
+        }));
+        return many(unitsWithRelations, args).length;
+      },
     },
     lesson: {
-      findFirst: async args => first(state.lessons, args),
-      findMany: async args => many(state.lessons, args),
+      findFirst: async args => {
+        const getUnitLessons = (u) => (u.lessons && u.lessons.length > 0) ? u.lessons : (state.lessons || []).filter(l => l.unitId === u.id);
+        const allLessons = (state.units || []).flatMap(u => getUnitLessons(u).map(l => ({ ...l, unitId: u.id }))).concat(state.lessons || []);
+        const uniqueLessons = Array.from(new Map(allLessons.map(l => [l.id, l])).values());
+        return first(uniqueLessons, args);
+      },
+      findMany: async args => {
+        const getUnitLessons = (u) => (u.lessons && u.lessons.length > 0) ? u.lessons : (state.lessons || []).filter(l => l.unitId === u.id);
+        const allLessons = (state.units || []).flatMap(u => getUnitLessons(u).map(l => ({ ...l, unitId: u.id }))).concat(state.lessons || []);
+        const uniqueLessons = Array.from(new Map(allLessons.map(l => [l.id, l])).values());
+        return many(uniqueLessons, args);
+      },
+      count: async args => {
+        const getUnitLessons = (u) => (u.lessons && u.lessons.length > 0) ? u.lessons : (state.lessons || []).filter(l => l.unitId === u.id);
+        const allLessons = (state.units || []).flatMap(u => getUnitLessons(u).map(l => ({ ...l, unitId: u.id, unit: u }))).concat((state.lessons || []).map(l => ({ ...l, unit: (state.units || []).find(u => u.id === l.unitId) })));
+        const uniqueLessons = Array.from(new Map(allLessons.map(l => [l.id, l])).values());
+        return many(uniqueLessons, args).length;
+      },
     },
     lessonExercise: {
       findMany: async args => many(state.exercises, args),
@@ -565,6 +692,7 @@ export function fixtureDb(state) {
     },
     $transaction: async fn => {
       const snap = {
+        contexts: structuredClone(state.contexts),
         consumptions: structuredClone(state.consumptions),
         attempts: structuredClone(state.attempts),
         responses: structuredClone(state.responses),
@@ -575,6 +703,7 @@ export function fixtureDb(state) {
       try {
         return await fn(db);
       } catch (e) {
+        state.contexts = snap.contexts;
         state.consumptions = snap.consumptions;
         state.attempts = snap.attempts;
         state.responses = snap.responses;
@@ -596,10 +725,44 @@ export function fixtureDb(state) {
       if (sql.includes('app.lesson_attempts')) {
         return state.attempts.filter(r => r.id === values[0]).map(r => ({ id: r.id }));
       }
+      const getUnitLessons = (u) => (u.lessons && u.lessons.length > 0) ? u.lessons : (state.lessons || []).filter(l => l.unitId === u.id);
+      if (sql.includes('app.levels') && sql.includes('FOR SHARE')) {
+        const targetCourseId = values[0]?.toLowerCase?.() || values[0];
+        const units = targetCourseId ? (state.units || []).filter(u => u.courseId?.toLowerCase() === targetCourseId) : (state.units || []);
+        const levelIds = new Set(units.map(u => u.levelId));
+        return (state.levels || []).filter(l => levelIds.has(l.id)).map(l => ({ id: l.id, position: l.position, frameworkId: l.frameworkId }));
+      }
+      if (sql.includes('app.lesson_revisions') && sql.includes('FOR SHARE')) {
+        const targetCourseId = values[0]?.toLowerCase?.() || values[0];
+        const units = targetCourseId ? (state.units || []).filter(u => u.courseId?.toLowerCase() === targetCourseId) : (state.units || []);
+        const lessons = units.flatMap(u => getUnitLessons(u));
+        return lessons.map(l => l.activeRevision).filter(Boolean).map(r => ({ id: r.id, lessonId: r.lessonId, status: r.status }));
+      }
+      if (sql.includes('app.lessons') && (sql.includes('FOR SHARE') || sql.includes('availability = \'AVAILABLE\''))) {
+        const targetCourseId = values[0]?.toLowerCase?.() || values[0];
+        const units = targetCourseId ? (state.units || []).filter(u => u.courseId?.toLowerCase() === targetCourseId) : (state.units || []);
+        const lessons = units.flatMap(u => getUnitLessons(u).map(l => ({ ...l, unitId: u.id })));
+        return lessons.map(l => ({ id: l.id, unitId: l.unitId, position: l.position, availability: l.availability, activeRevisionId: l.activeRevisionId || l.activeRevision?.id || null }));
+      }
+      if (sql.includes('app.units') && sql.includes('FOR SHARE')) {
+        const targetCourseId = values[0]?.toLowerCase?.() || values[0];
+        const units = targetCourseId ? (state.units || []).filter(u => u.courseId?.toLowerCase() === targetCourseId) : (state.units || []);
+        return units.map(u => ({ id: u.id, levelId: u.levelId, position: u.position }));
+      }
       return [];
     },
     $executeRaw: async (strings, ...v) => {
       const sql = strings.join('');
+      if (sql.includes('UPDATE app.learning_contexts')) {
+        const ctxId = v[v.length - 1];
+        const ctx = state.contexts.find(c => c.id === ctxId);
+        if (ctx) {
+          ctx.status = v[0];
+          ctx.rowVersion = (ctx.rowVersion || 1n) + 1n;
+          ctx.updatedAt = v[1] || new Date();
+        }
+        return 1;
+      }
       if (sql.includes('INSERT INTO app.lesson_consumptions')) {
         if (state.consumptions.some(r => r.contextId === v[0] && r.lessonRevisionId === v[2])) return 0;
         await db.lessonConsumption.create({

@@ -65,6 +65,8 @@ export async function loadLearnerContext(
         languageId: true,
         courseId: true,
         status: true,
+        rowVersion: true,
+        startSource: true,
         language: {
           select: {
             id: true,
@@ -180,6 +182,8 @@ export async function loadLearnerContext(
   const contextsDto: LearningContextSummaryDto[] = rawContexts.map((c) => ({
     id: c.id,
     status: c.status,
+    rowVersion: (c.rowVersion ?? 1n).toString(),
+    startSource: c.startSource ?? null,
     targetLanguage: {
       id: c.language.id,
       code: c.language.code,

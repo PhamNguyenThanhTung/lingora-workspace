@@ -113,4 +113,10 @@ Source `2fb844735beca8d024c310778a7c23d923eca054` pushed and READY on learner/st
 
 `SLICE 11: PASS — SLICE 11 ACCEPTED`
 
-No Slice 12 has started.
+## Slice 12 — Learner Onboarding / Context Lifecycle (LOCAL REPAIR PASS; RELEASE PENDING)
+
+Historical prior-task result (superseded only by the new repair task below): owner authorized 2026-11-01. [Executable spec](2026-11-01-slice-12-onboarding-context.md) follows repository/schema/ADR inspection and senior planning. Registration/confirmation and confirmed-login Account bootstrap; owned context creation with Level DEFAULT/SELF_REPORT entry; ACTIVE/PAUSED lifecycle with preserved evidence. Separate [premaintenance](2026-11-01-pre-slice12-maintenance.md) covers Practice recovery, tracked local DB runner and stale status text. Final review still reproduces two DEFAULT starting-state races;3 new guard tests fail under npm workspace cwd and concurrent Pause/history evidence remains incomplete. Feature600/603FAIL; components168, onboardingDB29 + acceptedDB20, typecheck/build and client scan PASS. Stopped after the sole correction round; feature uncommitted/unpushed/undeployed, real email acceptance not performed, no DEV data writes. See [verification](slice-12-verification.md). No schema migration or Slice13 scope.
+
+Owner opened a separate [Blocker Repair / Re-acceptance task](2026-11-01-slice-12-blocker-repair.md) after the historical FAIL/STOP above; repairs are limited to the five recorded blockers. No real email/deployment until repair gates and final independent review pass.
+
+Repair local gates and independent Sol6.1High review PASS on2026-11-02:603 feature,168 components,54 PostgreSQL; all six negative controls KILLED/restored. Exact-source release, public/email acceptance and final read-only reconciliation remain pending. See [repair verification](slice-12-repair-verification.md). Slice12 is not ACCEPTED; Slice13 has not started.

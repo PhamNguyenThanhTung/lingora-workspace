@@ -1,8 +1,23 @@
 import { createServerClient } from '@supabase/ssr';
 import { getLearnerPrisma } from '../db/index.ts';
 import { getSupabaseEnv, getLearnerCookieName } from './env.ts';
+import {
+  registerSchema,
+  hasStaffAppMetadata,
+  bootstrapLearnerAccount,
+  type RegisterInput,
+  type BootstrapLearnerResult,
+} from './registration.ts';
 
-export { getSupabaseEnv, getLearnerCookieName };
+export {
+  getSupabaseEnv,
+  getLearnerCookieName,
+  registerSchema,
+  hasStaffAppMetadata,
+  bootstrapLearnerAccount,
+  type RegisterInput,
+  type BootstrapLearnerResult,
+};
 
 export interface LearnerAccount {
   id: string;

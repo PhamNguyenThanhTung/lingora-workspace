@@ -17,6 +17,8 @@ export async function compileProductionModules() {
     login: 'src/app/api/auth/login/route.ts',
     logout: 'src/app/api/auth/logout/route.ts',
     context: 'src/app/api/learner/context/route.ts',
+    contextOptions: 'src/app/api/learner/context/options/route.ts',
+    contextPatch: 'src/app/api/learner/contexts/[contextId]/route.ts',
     lessonsApi: 'src/app/api/learner/contexts/[contextId]/lessons/route.ts',
     lessonDetailApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/route.ts',
     consumptionApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/consumption/route.ts',
@@ -43,6 +45,10 @@ export async function compileProductionModules() {
             setup(b) {
               b.onResolve({ filter: /^next\/(headers|navigation)(\.js)?$/ }, () => ({
                 path: bridge,
+                external: true,
+              }));
+              b.onResolve({ filter: /^next\/link$/ }, () => ({
+                path: 'next/link.js',
                 external: true,
               }));
               b.onResolve({ filter: /server\/db\/index\.ts$|\.\.\/db\/index\.ts$/ }, () => ({

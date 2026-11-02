@@ -782,6 +782,9 @@ export async function createLesson(
         };
       }
 
+      // Lock selected Course FOR NO KEY UPDATE
+      await tx.$queryRaw`SELECT id::text FROM app.courses WHERE id = ${courseId.toLowerCase()}::uuid FOR NO KEY UPDATE`;
+
       // Validate Unit / Course inside transaction
       const unit = await tx.unit.findUnique({
         where: { id: unitId.toLowerCase() },
