@@ -1,6 +1,6 @@
 # Slice 12 — one fresh public acceptance attempt
 
-Status: **PREPARED / BLOCKED ON PREFLIGHT; NOT EXECUTED.** Derived after the [2026-11-04 read-only audit](2026-11-04-takeover-audit.md) and one Sol 6.1 High planning pass. Existing [feature contract](2026-11-01-slice-12-onboarding-context.md) and [repair verification](slice-12-repair-verification.md) remain authoritative. No new product decision or production auth redesign is proposed.
+Status: **EXECUTED — FAIL / STOP; Slice12 NOT ACCEPTED.** One fresh registration and one original-email activation were performed at tested helper/deployment commit `137f246`. Provider verification succeeded and the callback received code, but the required confirmed login outcome failed. Cleanup and independent read-only reconciliation PASS, residue0. See [final public outcome](slice-12-public-acceptance-20261104.md). The attempt budget is spent; no resend or second activation. The preflight/execution rules below document the authorized procedure.
 
 ## Scope, ownership and order
 
