@@ -134,7 +134,7 @@ const evidence = {
   fixtures:      {courseId, lessonId},
 };
 const checkpoint = () =>
-  fs.writeFileSync(EVIDENCE_FILE, JSON.stringify(evidence, null, 2) + '\n');
+  fs.writeFileSync(evidenceFile, JSON.stringify(evidence, null, 2) + '\n');
 const check = key => { evidence.checks[key] = true; checkpoint(); console.log('PASS ' + key); };
 
 // ── RO transaction wrapper ───────────────────────────────────────────────────

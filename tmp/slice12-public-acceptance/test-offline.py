@@ -1978,6 +1978,49 @@ console.log(JSON.stringify({{captured}}));
 
 
 
+def test_journey_checkpoint():
+    with tempfile.TemporaryDirectory() as td:
+        tmp_path, slice_dir, ev_dir = setup_temp_workspace(td)
+        base = json.loads((ev_dir / "before-registration.json").read_text())
+        base["course"]["is_active"] = False
+        for lesson in base["lessons"]:
+            lesson["availability"] = "PLANNED"
+        (ev_dir / "before-registration.json").write_text(json.dumps(base))
+        (slice_dir / "auth-private.json").write_text(json.dumps({"registered": True, "confirmed": True}))
+        code = f"""
+import {{mock}} from 'node:test';
+import fs from 'node:fs';
+let ended = false, launched = false;
+mock.module('dotenv', {{namedExports: {{config: () => {{
+  process.env.SUPABASE_DEV_PROJECT_REF = 'synthetic-ref';
+  process.env.DATABASE_URL = 'postgresql://synthetic.invalid/synthetic-ref';
+  process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://synthetic-ref.supabase.co';
+}}}}}});
+mock.module('pg', {{defaultExport: {{Client: class {{
+  async connect() {{}}
+  async end() {{ended = true;}}
+  async query(sql) {{
+    if (sql.includes('FROM auth.users')) return {{rows:[{{id:'synthetic-subject',email_confirmed_at:new Date(),owned_label:'{SAMPLE_LABEL}',account_id:null}}]}};
+    if (sql.includes('UPDATE app.courses')) throw new Error('synthetic stop before mutation');
+    return {{rows:[]}};
+  }}
+}}}}}});
+mock.module('playwright', {{namedExports: {{chromium: {{launch: async () => {{launched=true;throw new Error('browser prohibited');}}}}}}}});
+const {{runJourney}} = await import('./tmp/slice12-public-acceptance/public-journey.mjs');
+try {{ await runJourney({{rootDir:'{tmp_path}'}}); }} catch {{}}
+const p = '{ev_dir / "public-journey.json"}';
+const ev = fs.existsSync(p) ? JSON.parse(fs.readFileSync(p)) : {{}};
+console.log(JSON.stringify({{checkpointWritten:fs.existsSync(p),identityCheck:ev.checks?.confirmed_provider_identity_without_operator_account,
+  failureStep:ev.failure?.step,ended,launched}}));
+"""
+        r = subprocess.run(["node", "--experimental-test-module-mocks", "--input-type=module", "-e", code], capture_output=True, text=True)
+        lines = [json.loads(line) for line in r.stdout.splitlines() if line.startswith("{")]
+        out = lines[-1] if lines else {}
+        ok("G4: actual journey writes configured checkpoint and closes DB on controlled pre-browser failure",
+           out.get("checkpointWritten") is True and out.get("identityCheck") is True and
+           out.get("failureStep") == "owned curriculum setup" and out.get("ended") is True and out.get("launched") is False)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Entry point
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1989,6 +2032,7 @@ if __name__ == "__main__":
     test_group_e()
     test_group_f()
     test_preflight_privacy()
+    test_journey_checkpoint()
 
     print(f"\n{'='*60}")
     print(f"Results: {_pass} passed, {_fail} failed")
