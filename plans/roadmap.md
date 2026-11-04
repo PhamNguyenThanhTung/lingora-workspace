@@ -115,6 +115,8 @@ Source `2fb844735beca8d024c310778a7c23d923eca054` pushed and READY on learner/st
 
 ## Slice 12 — Learner Onboarding / Context Lifecycle (IMPLEMENTED; NOT ACCEPTED)
 
+Latest: [instrumented activation FAIL](slice-12-instrumented-acceptance-20261104.md), `flow_state_expired`/422 with verifier cookie present; independent cleanup PASS, residue0. Both authorized attempts spent; current human action NONE.
+
 The [feature contract](2026-11-01-slice-12-onboarding-context.md), historical repair/callback verification and [takeover audit](2026-11-04-takeover-audit.md) remain separate from public acceptance. Owner-authorized direct helper fixes PASS145/145 with mutation controls; fresh registration/login regressions36/36. Tested helper/source commit `137f246`, both canonical deployments READY; production callback source remains `9b354c8`.
 
 The [fresh public attempt on2026-11-04](slice-12-public-acceptance-20261104.md) passed preflight and registration200; provider verify303 and callback303 with code were observed, but login lacked confirmed=1. Saved PKCE verifier matched the provider challenge; exact runtime/code-exchange cause remains unknown. No downstream public journey PASS is claimed. Scoped cleanup and independent reconciliation PASS, residue0, complete retained S11/curriculum/other Accounts/provider-flow baseline unchanged, private scratch removed.
@@ -125,3 +127,9 @@ A post-STOP mechanical journey checkpoint fix is separate helper commit `a795a4e
 
 
 Callback diagnostic follow-up `c7b8e40`: [deployed safe diagnostics and no-store fix](2026-11-04-slice-12-callback-diagnostics.md), feature202/202 + typecheck + real Next/Chromium local protocol PASS. Runtime probe verifies missing-verifier diagnostic with synthetic code only. Prior real failure remains unresolved and its attempt budget spent; no new real signup/activation was made. Slice12 remains NOT ACCEPTED.
+
+### Latest instrumented public result — FAIL / STOP
+
+Owner separately authorized one instrumented attempt at c279720, Learner/Staff READY. [Result and cleanup](slice-12-instrumented-acceptance-20261104.md): registration200; original URL opened once after25minutes; callback diagnostic `pkce_exchange` / `flow_state_expired` / HTTP422 / verifierCookiePresent=true. Provider confirmed email; no application Account/context/session. Downstream public journey NOT RUN. Earlier one-hour guidance and OTP-only helper freshness guard omitted PKCE lifetime; they are insufficient for future preflight. Upstream default300seconds is not a verified effective project override. Earlier uninstrumented cause remains unknown.
+
+Scoped cleanup and independent read-only reconciliation PASS: all six owned Auth groups0, owned app/audit rows0, full curriculum/other Accounts/provider-flow/seven-group S11 baseline unchanged, private scratch absent, residue0. Two separately authorized real registrations/navigations total; zero resends. Both budgets spent. **STOP; current human action NONE; Slice12 NOT ACCEPTED; Slice13 NOT STARTED.** No third attempt, SMTP/provider/env mutation or speculative auth redesign is authorized.
