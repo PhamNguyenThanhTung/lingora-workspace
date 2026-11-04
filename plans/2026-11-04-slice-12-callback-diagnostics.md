@@ -1,6 +1,6 @@
 # Slice 12 callback diagnostics
 
-Status: **LOCAL CHECKS PASS; historical public failure unresolved. Slice12 NOT ACCEPTED.** Owner authorized Codex to inspect/test callback, cookie transport and runtime configuration, add safe diagnostics and fix a demonstrated defect. Direct Codex work; no Anti, no new public registration, no SMTP/provider change, no original confirmation URL reuse, no Slice13.
+Status: **DIAGNOSTICS DEPLOYED AND VERIFIED; historical real-activation failure unresolved. Slice12 NOT ACCEPTED.** Owner authorized Codex to inspect/test callback, cookie transport and runtime configuration, add safe diagnostics and fix a demonstrated defect. Direct Codex work; no Anti, no new public registration, no SMTP/provider change, no original confirmation URL reuse, no Slice13.
 
 ## Findings and bounded change
 
@@ -26,3 +26,11 @@ Browser test scope: actual Next proxy/signup/callback, real installed SDK, Secur
 The complete auth/cookie/provider-error diff and actual callers/tests were reviewed. No source cause for the historical live failure has been reproduced. This patch supplies missing diagnostics and fixes the proven cache-header defect; it is not an accepted public activation repair. A credential-free synthetic missing-verifier probe may verify the deployed diagnostic, without any fresh registration or usable code/link. Another real attempt remains a separate bounded acceptance step.
 
 Official references checked alongside pinned local SDK source: [Supabase SSR client/proxy](https://supabase.com/docs/guides/auth/server-side/creating-a-client?framework=nextjs&package-manager=npm), [PKCE flow](https://supabase.com/docs/guides/auth/sessions/pkce-flow). Installed source remains authoritative for the tested version.
+
+## Deployment and credential-free verification
+
+Source commit `c7b8e40f6004775a33bcf6c5e8df8bc688648c42` pushed; canonical Learner alias READY on deployment `dpl_6Tb8eqQcSjdqpgZ9nGfgVtmp8aXB`. Two credential-free synthetic callback requests used a deliberately invalid synthetic code and no cookie. Both HTTP/status/cache assertions passed. The first local result serializer incorrectly called fetch's numeric status as a function, so metadata saving failed; a second request with corrected serialization saved `/tmp/lingora-s12-callback-public-synthetic-probe.json`. Neither request used a real confirmation URL, registration, email, identity or session. This does not spend a real activation attempt.
+
+Recorded successful probe at2026-11-04T14:01:55.301Z:303 to fixed same-origin `/login?error=confirmation_failed`, Cache-Control no-store/private, request ID `hkg1::hnd1::tdmvp-1793800915442-d200277bb34c`. Vercel runtime lookup scoped to that deployment/window and `learner_confirmation_failed` found the expected diagnostic: phase pkce_exchange, code pkce_code_verifier_not_found, verifierCookiePresent=false. Source behavior and local counter controls show this missing-verifier failure occurs before token POST. No complete runtime log/payload/credential was persisted in Git.
+
+The synthetic diagnostic is proven live; it does not show that the earlier real failure was caused by a missing cookie. The previous identity/session/link were correctly removed and its one-attempt budget remains spent. Exact real callback cause cannot be recovered from the old generic outcome. A new instrumented real activation would require its own explicit bounded authorization and fresh original-email artifact; none has been created by this package. No SMTP/environment/provider mutation or Slice13 work. Current deliverable is the tested diagnostic and demonstrated no-store fix, not accepted public onboarding.

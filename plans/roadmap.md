@@ -122,3 +122,6 @@ The [fresh public attempt on2026-11-04](slice-12-public-acceptance-20261104.md) 
 A post-STOP mechanical journey checkpoint fix is separate helper commit `a795a4e`; final offline suite146/146 PASS including actual runner checkpoint/finalization regression. The public attempt remains tested at137f246 and was not repeated.
 
 **Next: STOP — one-attempt budget spent.** Current human action NONE. Preserve current failure evidence; no resend/second activation or speculative production-auth fix under this package. Slice12 is **NOT ACCEPTED**; Slice13 is not started and has no canonical numbered spec. No unrelated debt or dependency-advisory work.
+
+
+Callback diagnostic follow-up `c7b8e40`: [deployed safe diagnostics and no-store fix](2026-11-04-slice-12-callback-diagnostics.md), feature202/202 + typecheck + real Next/Chromium local protocol PASS. Runtime probe verifies missing-verifier diagnostic with synthetic code only. Prior real failure remains unresolved and its attempt budget spent; no new real signup/activation was made. Slice12 remains NOT ACCEPTED.
