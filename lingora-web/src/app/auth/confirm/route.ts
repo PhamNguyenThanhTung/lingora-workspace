@@ -3,9 +3,37 @@ import { NextResponse } from 'next/server.js';
 import {
   createSupabaseServerClient,
   buildAuthResponseHeaders,
+  getLearnerCookieName,
 } from '../../../server/auth/index.ts';
 
 export const dynamic = 'force-dynamic';
+
+const SAFE_CONFIRMATION_ERROR_CODES = new Set([
+  'pkce_code_verifier_not_found',
+  'bad_code_verifier',
+  'flow_state_not_found',
+  'flow_state_expired',
+  'invalid_credentials',
+  'over_request_rate_limit',
+  'unexpected_failure',
+]);
+
+function logConfirmationFailure(
+  phase: 'client_init' | 'pkce_exchange' | 'otp_verify',
+  error: unknown,
+  verifierCookiePresent: boolean | null
+) {
+  const detail = error && typeof error === 'object'
+    ? error as { code?: unknown; status?: unknown } : {};
+  console.warn('learner_confirmation_failed', {
+    phase,
+    code: typeof detail.code === 'string' && SAFE_CONFIRMATION_ERROR_CODES.has(detail.code)
+      ? detail.code : 'unknown',
+    status: typeof detail.status === 'number' && Number.isInteger(detail.status) &&
+      detail.status >= 400 && detail.status <= 599 ? detail.status : null,
+    verifierCookiePresent,
+  });
+}
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -33,15 +61,27 @@ export async function GET(request: Request) {
   let supabase;
   try {
     supabase = createSupabaseServerClient(cookieStore, refreshedHeaders);
-  } catch {
+  } catch (error) {
+    logConfirmationFailure('client_init', error, null);
     loginUrl.searchParams.set('error', 'service_unavailable');
-    return NextResponse.redirect(loginUrl.toString(), { status: 303 });
+    return NextResponse.redirect(loginUrl.toString(), {
+      status: 303, headers: buildAuthResponseHeaders(),
+    });
   }
 
-  let errorResult: any = null;
+  let errorResult: unknown = null;
+  let verifierCookiePresent: boolean | null = null;
 
   if (code) {
-    // SSR PKCE code exchange
+    // Presence only: never log cookie values, auth code, URL or SDK error messages.
+    try {
+      const name = `${getLearnerCookieName()}-code-verifier`;
+      verifierCookiePresent = cookieStore.getAll().some(cookie =>
+        cookie.value.length > 0 && (cookie.name === name ||
+          (cookie.name.startsWith(`${name}.`) && /^\d+$/.test(cookie.name.slice(name.length + 1)))));
+    } catch {
+      // SDK exchange remains authoritative if cookie inspection is unavailable.
+    }
     try {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
       if (error) {
@@ -88,6 +128,7 @@ export async function GET(request: Request) {
   }
 
   if (errorResult) {
+    logConfirmationFailure(code ? 'pkce_exchange' : 'otp_verify', errorResult, verifierCookiePresent);
     loginUrl.searchParams.set('error', 'confirmation_failed');
   } else {
     loginUrl.searchParams.set('confirmed', '1');
