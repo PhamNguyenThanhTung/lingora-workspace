@@ -23,6 +23,11 @@ export const CANONICAL_REDIRECT_PATH  = '/auth/confirm';
 export const EXPECTED_EML_TYPE        = 'signup';
 export const CLOCK_SKEW_SECONDS       = 3600;
 
+// PKCE handoff window: deliberately conservative local operational window (180s),
+// based strictly on durable registrationAttemptedAt timestamp.
+// NOT the project's verified provider TTL and NOT proof a provider flow is valid.
+export const PKCE_HANDOFF_WINDOW_MS   = 180_000;
+
 export const REQUIRED_S11_TABLES = [
   'consumptions',
   'attempts',
@@ -424,6 +429,67 @@ export function checkRegistrationPostDb(identityRows, expectedLabel, registratio
   return {allowed: true};
 }
 
+// ── Guard: PKCE Handoff Policy Check ────────────────────────────────────────
+/**
+ * checkPkceHandoffPolicy — Fail-closed conservative PKCE handoff policy.
+ *
+ * Enforces an exclusive deadline of at most 180 seconds from durable
+ * registrationAttemptedAt (elapsed >= 180000 denies).
+ *
+ * Deliberately conservative local operational window, NOT verified provider TTL.
+ * Missing/malformed registrationAttemptedAt, nonfinite now, or future registration denies.
+ * Never uses later success/message time or clock-skew allowance to extend window.
+ */
+export function checkPkceHandoffPolicy(authPrivate, options = {}) {
+  if (!authPrivate || typeof authPrivate !== 'object') {
+    return {allowed: false, reason: 'missing authPrivate'};
+  }
+  const rawTimestamp = authPrivate.registrationAttemptedAt;
+  if (typeof rawTimestamp !== 'string' || rawTimestamp === '') {
+    return {allowed: false, reason: 'missing or invalid registrationAttemptedAt timestamp'};
+  }
+  const regAttemptedMs = new Date(rawTimestamp).getTime();
+  if (!Number.isFinite(regAttemptedMs) || new Date(regAttemptedMs).toISOString() !== rawTimestamp) {
+    return {allowed: false, reason: 'unparseable registrationAttemptedAt timestamp'};
+  }
+
+  const rawNow = typeof options?.now === 'function'
+    ? options.now()
+    : (options?.now !== undefined ? options.now : Date.now());
+
+  let currentClockMs;
+  if (typeof rawNow === 'number') {
+    currentClockMs = rawNow;
+  } else if (rawNow instanceof Date) {
+    currentClockMs = rawNow.getTime();
+  } else if (typeof rawNow === 'string' && rawNow.trim() !== '') {
+    currentClockMs = new Date(rawNow).getTime();
+  } else {
+    currentClockMs = NaN;
+  }
+
+  if (typeof currentClockMs !== 'number' || !Number.isFinite(currentClockMs)) {
+    return {allowed: false, reason: 'nonfinite current clock'};
+  }
+
+  // Future registration start denies (no clock-skew allowance)
+  if (regAttemptedMs > currentClockMs) {
+    return {allowed: false, reason: 'registrationAttemptedAt is in the future'};
+  }
+
+  const elapsedMs = currentClockMs - regAttemptedMs;
+  // Exclusive deadline (elapsed >= 180000 denies)
+  if (elapsedMs >= PKCE_HANDOFF_WINDOW_MS) {
+    return {
+      allowed: false,
+      reason: `PKCE handoff window expired (${elapsedMs}ms >= ${PKCE_HANDOFF_WINDOW_MS}ms)`,
+      elapsedMs,
+    };
+  }
+
+  return {allowed: true, elapsedMs};
+}
+
 // ── Guard: Confirm pre-flight and pre-navigation checks ──────────────────────
 export function checkConfirmGuard(authPrivate, emlMeta, rawUrl, privateIn, options = {}) {
   if (!authPrivate) return {allowed: false, reason: 'missing authPrivate'};
@@ -496,6 +562,13 @@ export function checkConfirmGuard(authPrivate, emlMeta, rawUrl, privateIn, optio
   const expectedHash = crypto.createHash('sha256').update(privateIn.email.toLowerCase().trim()).digest('hex');
   if (emlMeta.recipient_hash !== expectedHash) {
     return {allowed: false, reason: 'recipient hash mismatch'};
+  }
+
+  // ── Conservative exclusive 180-second PKCE handoff policy check ────────────
+  // Based strictly on durable registrationAttemptedAt (never verified provider TTL)
+  const pkceHandoffCheck = checkPkceHandoffPolicy(authPrivate, options);
+  if (!pkceHandoffCheck.allowed) {
+    return pkceHandoffCheck;
   }
 
   // Date freshness & current TTL check:
@@ -889,6 +962,9 @@ if (process.argv[1] && process.argv[1].endsWith('helpers-testable.mjs')) {
           break;
         case 'cookiePathMatches':
           result = {matched: cookiePathMatches(arg.cookiePath, arg.requestPath)};
+          break;
+        case 'checkPkceHandoffPolicy':
+          result = checkPkceHandoffPolicy(arg.authPrivate, arg.options || (arg.now !== undefined ? {now: arg.now} : {}));
           break;
         default:
           throw new Error(`Unknown test command: ${testName}`);

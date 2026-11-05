@@ -37,6 +37,7 @@ import {
   CANONICAL_REDIRECT_PATH,
   EXPECTED_EML_TYPE,
   EXACT_LEARNER_PKCE_COOKIE_NAME,
+  checkPkceHandoffPolicy,
   isValidLearnerPkceCookie,
   checkRegisterGuard,
   checkRegisterBinding,
@@ -73,6 +74,12 @@ function writePrivate(p, data) {
   const str = JSON.stringify(data, null, 2) + '\n';
   fs.writeFileSync(p, str, {mode: 0o600});
   fs.chmodSync(p, 0o600);
+}
+
+function resolveClock(options) {
+  if (typeof options?.now === 'function') return options.now();
+  if (options?.now !== undefined) return options.now;
+  return Date.now();
 }
 
 // ── Lazy live DB setup (offline imports never connect to DB) ─────────────────
@@ -297,8 +304,8 @@ export async function runAuth(mode, options = {}) {
       const rawUrl = fs.readFileSync(emlUrlFile, 'utf8').trim();
       assert.ok(rawUrl.length > 0, 'eml-url-private.txt is empty');
 
-      // Run comprehensive confirm pre-flight guard checks
-      const confirmGuard = checkConfirmGuard(authPrivate, emlMeta, rawUrl, privateIn, {now: Date.now()});
+      // Run comprehensive confirm pre-flight guard checks (including 180s PKCE handoff policy)
+      const confirmGuard = checkConfirmGuard(authPrivate, emlMeta, rawUrl, privateIn, {now: resolveClock(options)});
       assert.ok(confirmGuard.allowed, confirmGuard.reason || 'confirm guard check failed');
 
       // NO blank-context fallback: storageState must exist and be used
@@ -319,15 +326,28 @@ export async function runAuth(mode, options = {}) {
       assert.ok(preNavCheck.allowed, preNavCheck.reason || 'pre-navigation DB check failed');
 
       // Persist navigation-attempt marker BEFORE navigation
-      authPrivate.confirmationAttemptedAt = new Date().toISOString();
+      const attemptedNow = resolveClock(options);
+      authPrivate.confirmationAttemptedAt = new Date(
+        typeof attemptedNow === 'number' && Number.isFinite(attemptedNow) ? attemptedNow : Date.now()
+      ).toISOString();
       writePrivate(authPrivateFile, authPrivate);
 
+      // Recheck PKCE handoff policy with the current clock immediately before test navigation hook
+      step = 'pre-navigation pkce handoff check';
+      const lastMomentCheckHook = checkPkceHandoffPolicy(authPrivate, {now: resolveClock(options)});
+      assert.ok(
+        lastMomentCheckHook.allowed,
+        lastMomentCheckHook.reason || 'PKCE handoff window expired before navigation hook'
+      );
+
       if (options.onConfirmNavigate) {
+        step = 'test navigation hook';
         await options.onConfirmNavigate();
         return {status: 'PASS', mode, attemptedAt: authPrivate.confirmationAttemptedAt};
       }
 
-      browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
+      step = 'browser launch';
+      browser = options.browser || await chromium.launch({headless: true, args: ['--no-sandbox']});
       const ctx = await browser.newContext({storageState: authPrivate.storageState});
       page = await ctx.newPage();
       page.setDefaultTimeout(30_000);
@@ -347,6 +367,14 @@ export async function runAuth(mode, options = {}) {
           ts:        new Date().toISOString(),
         });
       });
+
+      // Recheck PKCE handoff policy with the current clock immediately before real original-URL page.goto
+      step = 'pre-goto pkce handoff check';
+      const lastMomentCheckGoto = checkPkceHandoffPolicy(authPrivate, {now: resolveClock(options)});
+      assert.ok(
+        lastMomentCheckGoto.allowed,
+        lastMomentCheckGoto.reason || 'PKCE handoff window expired before page.goto'
+      );
 
       step = 'email link navigation';
       // Navigate using the actual original URL (not rebuilt)

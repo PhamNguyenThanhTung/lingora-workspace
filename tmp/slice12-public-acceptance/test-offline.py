@@ -412,8 +412,8 @@ def test_group_c():
     }
     valid_auth = {
         "label": SAMPLE_LABEL,
-        "registrationAttemptedAt": "2026-11-02T13:30:00.000Z",
-        "registered": "2026-11-02T13:30:05.000Z",
+        "registrationAttemptedAt": "2026-11-02T13:33:00.000Z",
+        "registered": "2026-11-02T13:33:05.000Z",
         "storageState": valid_storage_state,
     }
     valid_eml = {
@@ -1860,7 +1860,7 @@ authPriv.storageState = {{
     path: '/auth/confirm',
   }}]
 }};
-delete authPriv.registrationAttemptedAt;
+authPriv.registrationAttemptedAt = new Date().toISOString();
 fs.writeFileSync('{slice_dir / "auth-private.json"}', JSON.stringify(authPriv, null, 2));
 
 const emlMeta = {{
@@ -2021,6 +2021,772 @@ console.log(JSON.stringify({{checkpointWritten:fs.existsSync(p),identityCheck:ev
            out.get("failureStep") == "owned curriculum setup" and out.get("ended") is True and out.get("launched") is False)
 
 
+def test_group_h_pkce_handoff():
+    print(f"\n── Group H: PKCE handoff policy and runner timing controls ───────")
+    base_t0 = 1793626500000  # 2026-11-02T13:35:00.000Z
+    base_iso = "2026-11-02T13:35:00.000Z"
+
+    # H1: checkPkceHandoffPolicy allowed when fresh (0ms, 120s)
+    _, res_h1a, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": base_iso},
+        "now": base_t0,
+    })
+    _, res_h1b, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": "2026-11-02T13:33:00.000Z"},
+        "now": base_t0,
+    })
+    ok("H1: checkPkceHandoffPolicy passes when fresh (< 180s)",
+       res_h1a.get("allowed") is True and res_h1a.get("elapsedMs") == 0 and
+       res_h1b.get("allowed") is True and res_h1b.get("elapsedMs") == 120000)
+
+    # H2: checkPkceHandoffPolicy allowed at just-before deadline (179,999ms)
+    _, res_h2, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": "2026-11-02T13:32:00.001Z"},
+        "now": base_t0,
+    })
+    ok("H2: checkPkceHandoffPolicy passes at just-before deadline (179,999ms)",
+       res_h2.get("allowed") is True and res_h2.get("elapsedMs") == 179999)
+
+    # H3: checkPkceHandoffPolicy denied at exact deadline (180,000ms: elapsed >= 180000 denies)
+    _, res_h3, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": "2026-11-02T13:32:00.000Z"},
+        "now": base_t0,
+    })
+    ok("H3: checkPkceHandoffPolicy denies at exact deadline (180,000ms)",
+       res_h3.get("allowed") is False and "expired" in res_h3.get("reason", ""))
+
+    # H4: checkPkceHandoffPolicy denied at just-after deadline (180,001ms)
+    _, res_h4, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": "2026-11-02T13:31:59.999Z"},
+        "now": base_t0,
+    })
+    ok("H4: checkPkceHandoffPolicy denies at just-after deadline (180,001ms)",
+       res_h4.get("allowed") is False and "expired" in res_h4.get("reason", ""))
+
+    # H5: checkPkceHandoffPolicy denied at canonical 25 minutes (1512.871s failure from Slice 12)
+    reg_25m = "2026-11-04T14:14:06.924Z"
+    now_25m = 1793803159795  # 2026-11-04T14:39:19.795Z
+    _, res_h5, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": reg_25m},
+        "now": now_25m,
+    })
+    ok("H5: checkPkceHandoffPolicy denies 25-minute delay (~1512s)",
+       res_h5.get("allowed") is False and res_h5.get("elapsedMs") == 1512871)
+
+    # H6: checkConfirmGuard denies 25-minute delay even though email OTP TTL (3600s) is valid
+    eml_25m = {
+        "parsed": True,
+        "provider_host": CANONICAL_HOST,
+        "type": EXPECTED_TYPE,
+        "redirect_to_origin": CANONICAL_LEARNER_ORIGIN,
+        "redirect_to_path": "/auth/confirm",
+        "recipient_matched": True,
+        "recipient_hash": hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest(),
+        "run_label": SAMPLE_LABEL,
+        "message_date": "2026-11-04T14:14:11.000Z",  # email delivered 5s after reg
+    }
+    auth_25m = {
+        "label": SAMPLE_LABEL,
+        "registrationAttemptedAt": reg_25m,
+        "registered": "2026-11-04T14:14:10.000Z",
+        "storageState": {
+            "cookies": [{
+                "name": "sb-sncfyvpzwedqgwfpffkh-learner-token-code-verifier",
+                "value": "verifier-cookie-val",
+                "domain": "lingora-learner-dev.vercel.app",
+                "path": "/auth/confirm",
+            }],
+        },
+    }
+    _, res_h6, _ = run_js("checkConfirmGuard", {
+        "authPrivate": auth_25m,
+        "emlMeta": eml_25m,
+        "rawUrl": build_verify_url(),
+        "privateIn": {"email": SAMPLE_RECIPIENT, "label": SAMPLE_LABEL},
+        "now": now_25m,
+    })
+    ok("H6: checkConfirmGuard denies 25-minute delay while email OTP TTL 3600s is still valid",
+       res_h6.get("allowed") is False and "PKCE handoff window expired" in res_h6.get("reason", ""))
+
+    # H7: checkPkceHandoffPolicy denies missing registrationAttemptedAt (even if registered present)
+    _, res_h7a, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registered": base_iso},
+        "now": base_t0,
+    })
+    _, res_h7b, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {},
+        "now": base_t0,
+    })
+    ok("H7: checkPkceHandoffPolicy denies missing registrationAttemptedAt",
+       res_h7a.get("allowed") is False and res_h7b.get("allowed") is False and
+       "missing or invalid" in res_h7a.get("reason", ""))
+
+    # H8: checkPkceHandoffPolicy denies invalid/malformed registrationAttemptedAt
+    _, res_h8a, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": "not-a-valid-timestamp"},
+        "now": base_t0,
+    })
+    _, res_h8b, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": ""},
+        "now": base_t0,
+    })
+    _, res_h8c, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": True},
+        "now": base_t0,
+    })
+    ok("H8: checkPkceHandoffPolicy denies malformed registrationAttemptedAt",
+       res_h8a.get("allowed") is False and res_h8b.get("allowed") is False and res_h8c.get("allowed") is False)
+
+    # JS Date normalizes nonexistent calendar days; private state must retain the runner's exact ISO form.
+    malformed_results = []
+    for timestamp, current in [
+        ("2026-02-30T00:00:00.000Z", int(datetime(2026, 3, 2, tzinfo=timezone.utc).timestamp() * 1000) + 1),
+        ("2026-02-29T00:00:00.000Z", int(datetime(2026, 3, 1, tzinfo=timezone.utc).timestamp() * 1000) + 1),
+        ("2026-11-02", int(datetime(2026, 11, 2, tzinfo=timezone.utc).timestamp() * 1000) + 1),
+        (base_t0, base_t0),
+    ]:
+        _, result, _ = run_js("checkPkceHandoffPolicy", {
+            "authPrivate": {"registrationAttemptedAt": timestamp}, "now": current,
+        })
+        malformed_results.append(result.get("allowed") is False)
+    ok("H20: PKCE policy rejects normalized invalid calendars and noncanonical registration timestamps",
+       all(malformed_results))
+
+    # H9: checkPkceHandoffPolicy denies future registration start (fail closed, no clock skew)
+    _, res_h9, _ = run_js("checkPkceHandoffPolicy", {
+        "authPrivate": {"registrationAttemptedAt": "2026-11-02T13:35:00.001Z"},
+        "now": base_t0,
+    })
+    ok("H9: checkPkceHandoffPolicy denies future registration start (no clock skew)",
+       res_h9.get("allowed") is False and "in the future" in res_h9.get("reason", ""))
+
+    # H10: checkPkceHandoffPolicy denies nonfinite clock (NaN, Infinity, string)
+    node_nan = """
+import { checkPkceHandoffPolicy } from './tmp/slice12-public-acceptance/helpers-testable.mjs';
+const r1 = checkPkceHandoffPolicy({ registrationAttemptedAt: '2026-11-02T13:35:00.000Z' }, { now: NaN });
+const r2 = checkPkceHandoffPolicy({ registrationAttemptedAt: '2026-11-02T13:35:00.000Z' }, { now: Infinity });
+const r3 = checkPkceHandoffPolicy({ registrationAttemptedAt: '2026-11-02T13:35:00.000Z' }, { now: -Infinity });
+const r4 = checkPkceHandoffPolicy({ registrationAttemptedAt: '2026-11-02T13:35:00.000Z' }, { now: 'not-a-number' });
+console.log(JSON.stringify({
+  r1: r1.allowed === false && r1.reason.includes('nonfinite'),
+  r2: r2.allowed === false && r2.reason.includes('nonfinite'),
+  r3: r3.allowed === false && r3.reason.includes('nonfinite'),
+  r4: r4.allowed === false && r4.reason.includes('nonfinite'),
+}));
+"""
+    res_nan = subprocess.run(["node", "-e", node_nan], capture_output=True, text=True)
+    out_nan = json.loads(res_nan.stdout.strip()) if res_nan.stdout.strip() else {}
+    ok("H10: checkPkceHandoffPolicy denies nonfinite clock (NaN, Infinity, -Infinity, string)",
+       out_nan.get("r1") is True and out_nan.get("r2") is True and
+       out_nan.get("r3") is True and out_nan.get("r4") is True)
+
+    # H11: Recent email/success timestamp cannot renew old registrationAttemptedAt start
+    _, res_h11, _ = run_js("checkConfirmGuard", {
+        "authPrivate": {
+            "label": SAMPLE_LABEL,
+            "registrationAttemptedAt": "2026-11-02T13:30:00.000Z",  # 300s old (expired)
+            "registered": "2026-11-02T13:34:55.000Z",               # 5s ago (fresh)
+            "storageState": {
+                "cookies": [{
+                    "name": "sb-sncfyvpzwedqgwfpffkh-learner-token-code-verifier",
+                    "value": "verifier-cookie-val",
+                    "domain": "lingora-learner-dev.vercel.app",
+                    "path": "/auth/confirm",
+                }],
+            },
+        },
+        "emlMeta": {
+            "parsed": True,
+            "provider_host": CANONICAL_HOST,
+            "type": EXPECTED_TYPE,
+            "redirect_to_origin": CANONICAL_LEARNER_ORIGIN,
+            "redirect_to_path": "/auth/confirm",
+            "recipient_matched": True,
+            "recipient_hash": hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest(),
+            "run_label": SAMPLE_LABEL,
+            "message_date": "2026-11-02T13:34:58.000Z",  # 2s ago (fresh)
+        },
+        "rawUrl": build_verify_url(),
+        "privateIn": {"email": SAMPLE_RECIPIENT, "label": SAMPLE_LABEL},
+        "now": base_t0,
+    })
+    ok("H11: Recent email or registered timestamp cannot renew expired registration start",
+       res_h11.get("allowed") is False and "PKCE handoff window expired" in res_h11.get("reason", ""))
+
+    # H12: Missing registrationAttemptedAt denies confirm even if registered is fresh
+    _, res_h12, _ = run_js("checkConfirmGuard", {
+        "authPrivate": {
+            "label": SAMPLE_LABEL,
+            "registered": "2026-11-02T13:34:55.000Z",  # fresh, but missing registrationAttemptedAt
+            "storageState": {
+                "cookies": [{
+                    "name": "sb-sncfyvpzwedqgwfpffkh-learner-token-code-verifier",
+                    "value": "verifier-cookie-val",
+                    "domain": "lingora-learner-dev.vercel.app",
+                    "path": "/auth/confirm",
+                }],
+            },
+        },
+        "emlMeta": {
+            "parsed": True,
+            "provider_host": CANONICAL_HOST,
+            "type": EXPECTED_TYPE,
+            "redirect_to_origin": CANONICAL_LEARNER_ORIGIN,
+            "redirect_to_path": "/auth/confirm",
+            "recipient_matched": True,
+            "recipient_hash": hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest(),
+            "run_label": SAMPLE_LABEL,
+            "message_date": "2026-11-02T13:34:58.000Z",
+        },
+        "rawUrl": build_verify_url(),
+        "privateIn": {"email": SAMPLE_RECIPIENT, "label": SAMPLE_LABEL},
+        "now": base_t0,
+    })
+    ok("H12: Missing registrationAttemptedAt denies checkConfirmGuard (no registered fallback)",
+       res_h12.get("allowed") is False and "missing or invalid registrationAttemptedAt" in res_h12.get("reason", ""))
+
+    # ── Actual Runner Integration Tests (runAuth confirm mode) ─────────────────
+
+    # H13: Actual runner passes when fresh (120s old)
+    with tempfile.TemporaryDirectory() as _tmp:
+        tmp_path, slice_dir, ev_dir = setup_temp_workspace(_tmp)
+        node_h13 = f"""
+import {{ runAuth }} from './tmp/slice12-public-acceptance/public-auth.mjs';
+import {{ EXACT_LEARNER_PKCE_COOKIE_NAME }} from './tmp/slice12-public-acceptance/helpers-testable.mjs';
+import fs from 'node:fs';
+
+const nowMs = {base_t0};
+const regIso = '2026-11-02T13:33:00.000Z'; // 120s old (< 180s)
+
+fs.writeFileSync('{slice_dir / "auth-private.json"}', JSON.stringify({{
+  label: '{SAMPLE_LABEL}',
+  registrationAttemptedAt: regIso,
+  registered: '2026-11-02T13:33:05.000Z',
+  subjectId: 'sub-test-h13',
+  storageState: {{
+    cookies: [{{
+      name: EXACT_LEARNER_PKCE_COOKIE_NAME,
+      value: 'pkce_secret_token_verifier',
+      domain: 'lingora-learner-dev.vercel.app',
+      path: '/auth/confirm',
+    }}]
+  }}
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-meta.json"}', JSON.stringify({{
+  parsed: true,
+  provider_host: 'sncfyvpzwedqgwfpffkh.supabase.co',
+  type: 'signup',
+  redirect_to_origin: 'https://lingora-learner-dev.vercel.app',
+  redirect_to_path: '/auth/confirm',
+  recipient_matched: true,
+  recipient_hash: '{hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest()}',
+  run_label: '{SAMPLE_LABEL}',
+  message_date: '2026-11-02T13:34:00.000Z',
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-url-private.txt"}', 'https://sncfyvpzwedqgwfpffkh.supabase.co/auth/v1/verify?token=pkce_secret_token_12345&type=signup&redirect_to=https%3A%2F%2Flingora-learner-dev.vercel.app%2Fauth%2Fconfirm');
+
+let navCount = 0;
+const mockDb = {{
+  query: async () => ({{
+    rows: [{{ id: 'sub-test-h13', email: '{SAMPLE_RECIPIENT}', label: '{SAMPLE_LABEL}', email_confirmed_at: null }}]
+  }}),
+}};
+
+const res = await runAuth('confirm', {{
+  rootDir: '{tmp_path}',
+  dbClient: mockDb,
+  now: nowMs,
+  onConfirmNavigate: async () => {{ navCount++; }},
+}});
+
+console.log(JSON.stringify({{ status: res.status, navCount }}));
+"""
+        res_h13 = subprocess.run(["node", "-e", node_h13], capture_output=True, text=True)
+        out_h13 = [ln for ln in res_h13.stdout.strip().split("\n") if ln.startswith("{")]
+        parsed_h13 = json.loads(out_h13[-1]) if out_h13 else {}
+        ok("H13: actual runner succeeds on fresh PKCE start (< 180s)",
+           parsed_h13.get("status") == "PASS" and parsed_h13.get("navCount") == 1)
+
+    # H14: Actual runner initial guard denial on expired start (zero navigation, throws)
+    with tempfile.TemporaryDirectory() as _tmp:
+        tmp_path, slice_dir, ev_dir = setup_temp_workspace(_tmp)
+        node_h14 = f"""
+import {{ runAuth }} from './tmp/slice12-public-acceptance/public-auth.mjs';
+import {{ EXACT_LEARNER_PKCE_COOKIE_NAME }} from './tmp/slice12-public-acceptance/helpers-testable.mjs';
+import fs from 'node:fs';
+
+const nowMs = {base_t0};
+const regIso = '2026-11-02T13:30:00.000Z'; // 300s old (expired > 180s)
+
+fs.writeFileSync('{slice_dir / "auth-private.json"}', JSON.stringify({{
+  label: '{SAMPLE_LABEL}',
+  registrationAttemptedAt: regIso,
+  registered: '2026-11-02T13:30:05.000Z',
+  subjectId: 'sub-test-h14',
+  storageState: {{
+    cookies: [{{
+      name: EXACT_LEARNER_PKCE_COOKIE_NAME,
+      value: 'pkce_secret_token_verifier',
+      domain: 'lingora-learner-dev.vercel.app',
+      path: '/auth/confirm',
+    }}]
+  }}
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-meta.json"}', JSON.stringify({{
+  parsed: true,
+  provider_host: 'sncfyvpzwedqgwfpffkh.supabase.co',
+  type: 'signup',
+  redirect_to_origin: 'https://lingora-learner-dev.vercel.app',
+  redirect_to_path: '/auth/confirm',
+  recipient_matched: true,
+  recipient_hash: '{hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest()}',
+  run_label: '{SAMPLE_LABEL}',
+  message_date: '2026-11-02T13:34:00.000Z',
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-url-private.txt"}', 'https://sncfyvpzwedqgwfpffkh.supabase.co/auth/v1/verify?token=pkce_secret_token_12345&type=signup&redirect_to=https%3A%2F%2Flingora-learner-dev.vercel.app%2Fauth%2Fconfirm');
+
+let navCount = 0;
+let dbCalled = false;
+const mockDb = {{
+  query: async () => {{
+    dbCalled = true;
+    return {{ rows: [{{ id: 'sub-test-h14', email: '{SAMPLE_RECIPIENT}', label: '{SAMPLE_LABEL}', email_confirmed_at: null }}] }};
+  }},
+}};
+
+let rejected = false;
+try {{
+  await runAuth('confirm', {{
+    rootDir: '{tmp_path}',
+    dbClient: mockDb,
+    now: nowMs,
+    onConfirmNavigate: async () => {{ navCount++; }},
+  }});
+}} catch (e) {{
+  rejected = true;
+}}
+
+const authAfter = JSON.parse(fs.readFileSync('{slice_dir / "auth-private.json"}', 'utf8'));
+
+console.log(JSON.stringify({{
+  rejected,
+  navCount,
+  dbCalled,
+  confirmationAttemptedAtSet: authAfter.confirmationAttemptedAt !== undefined
+}}));
+"""
+        res_h14 = subprocess.run(["node", "-e", node_h14], capture_output=True, text=True)
+        out_h14 = [ln for ln in res_h14.stdout.strip().split("\n") if ln.startswith("{")]
+        parsed_h14 = json.loads(out_h14[-1]) if out_h14 else {}
+        ok("H14: actual runner denies expired start before DB/navigation (zero navigation)",
+           parsed_h14.get("rejected") is True and parsed_h14.get("navCount") == 0 and
+           parsed_h14.get("dbCalled") is False and parsed_h14.get("confirmationAttemptedAtSet") is False)
+
+    # H15: Expiry during asynchronous DB setup (last-moment check before navigation hook denies)
+    with tempfile.TemporaryDirectory() as _tmp:
+        tmp_path, slice_dir, ev_dir = setup_temp_workspace(_tmp)
+        node_h15 = f"""
+import {{ runAuth }} from './tmp/slice12-public-acceptance/public-auth.mjs';
+import {{ EXACT_LEARNER_PKCE_COOKIE_NAME }} from './tmp/slice12-public-acceptance/helpers-testable.mjs';
+import fs from 'node:fs';
+
+// Registration start at t=0
+const t0 = 1793626500000;
+const regIso = new Date(t0).toISOString();
+
+fs.writeFileSync('{slice_dir / "auth-private.json"}', JSON.stringify({{
+  label: '{SAMPLE_LABEL}',
+  registrationAttemptedAt: regIso,
+  registered: new Date(t0 + 5000).toISOString(),
+  subjectId: 'sub-test-h15',
+  storageState: {{
+    cookies: [{{
+      name: EXACT_LEARNER_PKCE_COOKIE_NAME,
+      value: 'pkce_secret_token_verifier',
+      domain: 'lingora-learner-dev.vercel.app',
+      path: '/auth/confirm',
+    }}]
+  }}
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-meta.json"}', JSON.stringify({{
+  parsed: true,
+  provider_host: 'sncfyvpzwedqgwfpffkh.supabase.co',
+  type: 'signup',
+  redirect_to_origin: 'https://lingora-learner-dev.vercel.app',
+  redirect_to_path: '/auth/confirm',
+  recipient_matched: true,
+  recipient_hash: '{hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest()}',
+  run_label: '{SAMPLE_LABEL}',
+  message_date: new Date(t0 + 10000).toISOString(),
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-url-private.txt"}', 'https://sncfyvpzwedqgwfpffkh.supabase.co/auth/v1/verify?token=pkce_secret_token_12345&type=signup&redirect_to=https%3A%2F%2Flingora-learner-dev.vercel.app%2Fauth%2Fconfirm');
+
+// Dynamic clock: starts at t0 + 100s (allowed, elapsed 100s < 180s)
+// During DB query, clock advances by 90s to t0 + 190s (expired, elapsed 190s >= 180s)
+let currentClock = t0 + 100_000;
+
+let navCount = 0;
+const mockDb = {{
+  query: async () => {{
+    // Simulate slow DB setup that crosses the 180s boundary
+    currentClock = t0 + 190_000;
+    return {{ rows: [{{ id: 'sub-test-h15', email: '{SAMPLE_RECIPIENT}', label: '{SAMPLE_LABEL}', email_confirmed_at: null }}] }};
+  }},
+}};
+
+let rejected = false;
+let errName = '';
+try {{
+  await runAuth('confirm', {{
+    rootDir: '{tmp_path}',
+    dbClient: mockDb,
+    now: () => currentClock,
+    onConfirmNavigate: async () => {{ navCount++; }},
+  }});
+}} catch (e) {{
+  rejected = true;
+  errName = e.name;
+}}
+
+const authAfter = JSON.parse(fs.readFileSync('{slice_dir / "auth-private.json"}', 'utf8'));
+
+console.log(JSON.stringify({{
+  rejected,
+  errName,
+  navCount,
+  confirmationAttemptedAtPreserved: authAfter.confirmationAttemptedAt !== undefined,
+}}));
+"""
+        res_h15 = subprocess.run(["node", "-e", node_h15], capture_output=True, text=True)
+        out_h15 = [ln for ln in res_h15.stdout.strip().split("\n") if ln.startswith("{")]
+        parsed_h15 = json.loads(out_h15[-1]) if out_h15 else {}
+        ok("H15: expiry during DB setup denies before navigation hook (zero navigation, spent marker preserved)",
+           parsed_h15.get("rejected") is True and parsed_h15.get("errName") == "AssertionError" and
+           parsed_h15.get("navCount") == 0 and parsed_h15.get("confirmationAttemptedAtPreserved") is True)
+
+    # H16: Expiry during asynchronous browser setup (last-moment check before real page.goto denies)
+    with tempfile.TemporaryDirectory() as _tmp:
+        tmp_path, slice_dir, ev_dir = setup_temp_workspace(_tmp)
+        node_h16 = f"""
+import {{ runAuth }} from './tmp/slice12-public-acceptance/public-auth.mjs';
+import {{ EXACT_LEARNER_PKCE_COOKIE_NAME }} from './tmp/slice12-public-acceptance/helpers-testable.mjs';
+import fs from 'node:fs';
+
+const t0 = 1793626500000;
+const regIso = new Date(t0).toISOString();
+
+fs.writeFileSync('{slice_dir / "auth-private.json"}', JSON.stringify({{
+  label: '{SAMPLE_LABEL}',
+  registrationAttemptedAt: regIso,
+  registered: new Date(t0 + 5000).toISOString(),
+  subjectId: 'sub-test-h16',
+  storageState: {{
+    cookies: [{{
+      name: EXACT_LEARNER_PKCE_COOKIE_NAME,
+      value: 'pkce_secret_token_verifier',
+      domain: 'lingora-learner-dev.vercel.app',
+      path: '/auth/confirm',
+    }}]
+  }}
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-meta.json"}', JSON.stringify({{
+  parsed: true,
+  provider_host: 'sncfyvpzwedqgwfpffkh.supabase.co',
+  type: 'signup',
+  redirect_to_origin: 'https://lingora-learner-dev.vercel.app',
+  redirect_to_path: '/auth/confirm',
+  recipient_matched: true,
+  recipient_hash: '{hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest()}',
+  run_label: '{SAMPLE_LABEL}',
+  message_date: new Date(t0 + 10000).toISOString(),
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-url-private.txt"}', 'https://sncfyvpzwedqgwfpffkh.supabase.co/auth/v1/verify?token=pkce_secret_token_12345&type=signup&redirect_to=https%3A%2F%2Flingora-learner-dev.vercel.app%2Fauth%2Fconfirm');
+
+// Clock starts at t0 + 100s (allowed)
+let currentClock = t0 + 100_000;
+
+const mockDb = {{
+  query: async () => {{
+    // DB finishes at t0 + 120s (still allowed, elapsed 120s < 180s)
+    currentClock = t0 + 120_000;
+    return {{ rows: [{{ id: 'sub-test-h16', email: '{SAMPLE_RECIPIENT}', label: '{SAMPLE_LABEL}', email_confirmed_at: null }}] }};
+  }},
+}};
+
+let gotoCount = 0;
+const mockPage = {{
+  setDefaultTimeout: () => {{}},
+  on: () => {{}},
+  goto: async () => {{ gotoCount++; }},
+  waitForURL: async () => {{}},
+  url: () => 'https://lingora-learner-dev.vercel.app/login?confirmed=1',
+}};
+
+const mockBrowser = {{
+  newContext: async () => ({{
+    newPage: async () => {{
+      // Browser setup takes time and window expires (now t0 + 185s >= 180s)
+      currentClock = t0 + 185_000;
+      return mockPage;
+    }}
+  }}),
+  close: async () => {{}},
+}};
+
+let rejected = false;
+let errName = '';
+try {{
+  await runAuth('confirm', {{
+    rootDir: '{tmp_path}',
+    dbClient: mockDb,
+    browser: mockBrowser,
+    now: () => currentClock,
+    // onConfirmNavigate is omitted so runner proceeds through browser setup to page.goto!
+  }});
+}} catch (e) {{
+  rejected = true;
+  errName = e.name;
+}}
+
+const authAfter = JSON.parse(fs.readFileSync('{slice_dir / "auth-private.json"}', 'utf8'));
+
+console.log(JSON.stringify({{
+  rejected,
+  errName,
+  gotoCount,
+  confirmationAttemptedAtPreserved: authAfter.confirmationAttemptedAt !== undefined,
+}}));
+"""
+        res_h16 = subprocess.run(["node", "-e", node_h16], capture_output=True, text=True)
+        out_h16 = [ln for ln in res_h16.stdout.strip().split("\n") if ln.startswith("{")]
+        parsed_h16 = json.loads(out_h16[-1]) if out_h16 else {}
+        ok("H16: expiry during browser setup denies before real page.goto (zero navigation, spent marker preserved)",
+           parsed_h16.get("rejected") is True and parsed_h16.get("errName") == "AssertionError" and
+           parsed_h16.get("gotoCount") == 0 and parsed_h16.get("confirmationAttemptedAtPreserved") is True)
+
+    # H17: Restart after denial preserves spent marker and refuses second confirm attempt
+    with tempfile.TemporaryDirectory() as _tmp:
+        tmp_path, slice_dir, ev_dir = setup_temp_workspace(_tmp)
+        node_h17 = f"""
+import {{ runAuth }} from './tmp/slice12-public-acceptance/public-auth.mjs';
+import {{ EXACT_LEARNER_PKCE_COOKIE_NAME }} from './tmp/slice12-public-acceptance/helpers-testable.mjs';
+import fs from 'node:fs';
+
+const t0 = 1793626500000;
+const regIso = new Date(t0).toISOString();
+
+fs.writeFileSync('{slice_dir / "auth-private.json"}', JSON.stringify({{
+  label: '{SAMPLE_LABEL}',
+  registrationAttemptedAt: regIso,
+  registered: new Date(t0 + 5000).toISOString(),
+  subjectId: 'sub-test-h17',
+  storageState: {{
+    cookies: [{{
+      name: EXACT_LEARNER_PKCE_COOKIE_NAME,
+      value: 'pkce_secret_token_verifier',
+      domain: 'lingora-learner-dev.vercel.app',
+      path: '/auth/confirm',
+    }}]
+  }}
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-meta.json"}', JSON.stringify({{
+  parsed: true,
+  provider_host: 'sncfyvpzwedqgwfpffkh.supabase.co',
+  type: 'signup',
+  redirect_to_origin: 'https://lingora-learner-dev.vercel.app',
+  redirect_to_path: '/auth/confirm',
+  recipient_matched: true,
+  recipient_hash: '{hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest()}',
+  run_label: '{SAMPLE_LABEL}',
+  message_date: new Date(t0 + 10000).toISOString(),
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-url-private.txt"}', 'https://sncfyvpzwedqgwfpffkh.supabase.co/auth/v1/verify?token=pkce_secret_token_12345&type=signup&redirect_to=https%3A%2F%2Flingora-learner-dev.vercel.app%2Fauth%2Fconfirm');
+
+let currentClock = t0 + 100_000;
+let navCount = 0;
+const mockDb = {{
+  query: async () => {{
+    // Expiry during DB setup
+    currentClock = t0 + 190_000;
+    return {{ rows: [{{ id: 'sub-test-h17', email: '{SAMPLE_RECIPIENT}', label: '{SAMPLE_LABEL}', email_confirmed_at: null }}] }};
+  }},
+}};
+
+// First attempt: denies during DB setup
+try {{
+  await runAuth('confirm', {{
+    rootDir: '{tmp_path}',
+    dbClient: mockDb,
+    now: () => currentClock,
+    onConfirmNavigate: async () => {{ navCount++; }},
+  }});
+}} catch (e) {{}}
+
+// Second attempt: must be blocked immediately by isSpent due to confirmationAttemptedAt marker!
+let secondAttemptBlocked = false;
+let secondAttemptMsg = '';
+try {{
+  await runAuth('confirm', {{
+    rootDir: '{tmp_path}',
+    dbClient: mockDb,
+    now: () => currentClock,
+    onConfirmNavigate: async () => {{ navCount++; }},
+  }});
+}} catch (e) {{
+  secondAttemptBlocked = true;
+  secondAttemptMsg = e.message;
+}}
+
+console.log(JSON.stringify({{
+  secondAttemptBlocked,
+  secondAttemptMsg,
+  navCount,
+}}));
+"""
+        res_h17 = subprocess.run(["node", "-e", node_h17], capture_output=True, text=True)
+        out_h17 = [ln for ln in res_h17.stdout.strip().split("\n") if ln.startswith("{")]
+        parsed_h17 = json.loads(out_h17[-1]) if out_h17 else {}
+        ok("H17: restart after denial refuses second navigation via spent marker (never reset/retry)",
+           parsed_h17.get("secondAttemptBlocked") is True and
+           "Refuse second confirm" in parsed_h17.get("secondAttemptMsg", "") and
+           parsed_h17.get("navCount") == 0)
+
+    # H18: Runner refuses confirm when registrationAttemptedAt missing even if registered present
+    with tempfile.TemporaryDirectory() as _tmp:
+        tmp_path, slice_dir, ev_dir = setup_temp_workspace(_tmp)
+        node_h18 = f"""
+import {{ runAuth }} from './tmp/slice12-public-acceptance/public-auth.mjs';
+import {{ EXACT_LEARNER_PKCE_COOKIE_NAME }} from './tmp/slice12-public-acceptance/helpers-testable.mjs';
+import fs from 'node:fs';
+
+const nowMs = {base_t0};
+
+fs.writeFileSync('{slice_dir / "auth-private.json"}', JSON.stringify({{
+  label: '{SAMPLE_LABEL}',
+  registered: '2026-11-02T13:34:55.000Z',  // missing registrationAttemptedAt
+  subjectId: 'sub-test-h18',
+  storageState: {{
+    cookies: [{{
+      name: EXACT_LEARNER_PKCE_COOKIE_NAME,
+      value: 'pkce_secret_token_verifier',
+      domain: 'lingora-learner-dev.vercel.app',
+      path: '/auth/confirm',
+    }}]
+  }}
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-meta.json"}', JSON.stringify({{
+  parsed: true,
+  provider_host: 'sncfyvpzwedqgwfpffkh.supabase.co',
+  type: 'signup',
+  redirect_to_origin: 'https://lingora-learner-dev.vercel.app',
+  redirect_to_path: '/auth/confirm',
+  recipient_matched: true,
+  recipient_hash: '{hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest()}',
+  run_label: '{SAMPLE_LABEL}',
+  message_date: '2026-11-02T13:34:58.000Z',
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-url-private.txt"}', 'https://sncfyvpzwedqgwfpffkh.supabase.co/auth/v1/verify?token=pkce_secret_token_12345&type=signup&redirect_to=https%3A%2F%2Flingora-learner-dev.vercel.app%2Fauth%2Fconfirm');
+
+let navCount = 0;
+const mockDb = {{
+  query: async () => ({{ rows: [{{ id: 'sub-test-h18', email: '{SAMPLE_RECIPIENT}', label: '{SAMPLE_LABEL}', email_confirmed_at: null }}] }}),
+}};
+
+let rejected = false;
+try {{
+  await runAuth('confirm', {{
+    rootDir: '{tmp_path}',
+    dbClient: mockDb,
+    now: nowMs,
+    onConfirmNavigate: async () => {{ navCount++; }},
+  }});
+}} catch (e) {{
+  rejected = true;
+}}
+
+console.log(JSON.stringify({{ rejected, navCount }}));
+"""
+        res_h18 = subprocess.run(["node", "-e", node_h18], capture_output=True, text=True)
+        out_h18 = [ln for ln in res_h18.stdout.strip().split("\n") if ln.startswith("{")]
+        parsed_h18 = json.loads(out_h18[-1]) if out_h18 else {}
+        ok("H18: actual runner refuses confirm when registrationAttemptedAt is missing",
+           parsed_h18.get("rejected") is True and parsed_h18.get("navCount") == 0)
+
+    # H19: Runner refuses confirm when clock is nonfinite
+    with tempfile.TemporaryDirectory() as _tmp:
+        tmp_path, slice_dir, ev_dir = setup_temp_workspace(_tmp)
+        node_h19 = f"""
+import {{ runAuth }} from './tmp/slice12-public-acceptance/public-auth.mjs';
+import {{ EXACT_LEARNER_PKCE_COOKIE_NAME }} from './tmp/slice12-public-acceptance/helpers-testable.mjs';
+import fs from 'node:fs';
+
+fs.writeFileSync('{slice_dir / "auth-private.json"}', JSON.stringify({{
+  label: '{SAMPLE_LABEL}',
+  registrationAttemptedAt: '2026-11-02T13:33:00.000Z',
+  registered: '2026-11-02T13:33:05.000Z',
+  subjectId: 'sub-test-h19',
+  storageState: {{
+    cookies: [{{
+      name: EXACT_LEARNER_PKCE_COOKIE_NAME,
+      value: 'pkce_secret_token_verifier',
+      domain: 'lingora-learner-dev.vercel.app',
+      path: '/auth/confirm',
+    }}]
+  }}
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-meta.json"}', JSON.stringify({{
+  parsed: true,
+  provider_host: 'sncfyvpzwedqgwfpffkh.supabase.co',
+  type: 'signup',
+  redirect_to_origin: 'https://lingora-learner-dev.vercel.app',
+  redirect_to_path: '/auth/confirm',
+  recipient_matched: true,
+  recipient_hash: '{hashlib.sha256(SAMPLE_RECIPIENT.encode("utf-8")).hexdigest()}',
+  run_label: '{SAMPLE_LABEL}',
+  message_date: '2026-11-02T13:34:00.000Z',
+}}, null, 2));
+
+fs.writeFileSync('{slice_dir / "eml-url-private.txt"}', 'https://sncfyvpzwedqgwfpffkh.supabase.co/auth/v1/verify?token=pkce_secret_token_12345&type=signup&redirect_to=https%3A%2F%2Flingora-learner-dev.vercel.app%2Fauth%2Fconfirm');
+
+let navCount = 0;
+const mockDb = {{
+  query: async () => ({{ rows: [{{ id: 'sub-test-h19', email: '{SAMPLE_RECIPIENT}', label: '{SAMPLE_LABEL}', email_confirmed_at: null }}] }}),
+}};
+
+let rejected = false;
+try {{
+  await runAuth('confirm', {{
+    rootDir: '{tmp_path}',
+    dbClient: mockDb,
+    now: NaN,
+    onConfirmNavigate: async () => {{ navCount++; }},
+  }});
+}} catch (e) {{
+  rejected = true;
+}}
+
+console.log(JSON.stringify({{ rejected, navCount }}));
+"""
+        res_h19 = subprocess.run(["node", "-e", node_h19], capture_output=True, text=True)
+        out_h19 = [ln for ln in res_h19.stdout.strip().split("\n") if ln.startswith("{")]
+        parsed_h19 = json.loads(out_h19[-1]) if out_h19 else {}
+        ok("H19: actual runner refuses confirm when clock is nonfinite (NaN)",
+           parsed_h19.get("rejected") is True and parsed_h19.get("navCount") == 0)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Entry point
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2033,6 +2799,7 @@ if __name__ == "__main__":
     test_group_f()
     test_preflight_privacy()
     test_journey_checkpoint()
+    test_group_h_pkce_handoff()
 
     print(f"\n{'='*60}")
     print(f"Results: {_pass} passed, {_fail} failed")
