@@ -239,6 +239,12 @@ export const saveTeacherDraftSchema = z
   })
   .strict();
 
+export const activateLessonSchema = z
+  .object({
+    expectedRowVersion: lessonVersionSchema,
+  })
+  .strict();
+
 // =============================================================================
 // Helpers
 // =============================================================================
@@ -598,6 +604,15 @@ export async function lockAssignment(tx: any, lessonId: string) {
       current_teacher_id::text AS "currentTeacherId", scope_generation AS "scopeGeneration",
       row_version AS "rowVersion", requirement, scope
     FROM app.content_assignments WHERE lesson_id = ${lessonId.toLowerCase()}::uuid FOR UPDATE
+  `;
+  return rows[0] || null;
+}
+
+export async function lockLessonRevision(tx: any, revisionId: string) {
+  const rows = await tx.$queryRaw`
+    SELECT id::text, lesson_id::text AS "lessonId", revision_no AS "revisionNo",
+      status, row_version AS "rowVersion"
+    FROM app.lesson_revisions WHERE id = ${revisionId.toLowerCase()}::uuid FOR UPDATE
   `;
   return rows[0] || null;
 }
@@ -988,6 +1003,177 @@ export async function updateLesson(
     });
   } catch (err) {
     const errorRes = handleLessonPrismaError(err, 'updateLesson');
+    return {
+      status: errorRes.status,
+      error: errorRes.body.error,
+    };
+  }
+}
+
+export async function activateLesson(
+  adminAccountId: string,
+  courseId: string,
+  unitId: string,
+  lessonId: string,
+  rawBody: unknown,
+  prismaClient?: any
+): Promise<{ status: number; data?: { data: LessonDetailDto }; error?: ApiErrorEnvelope['error'] }> {
+  if (!isValidUuid(courseId) || !isValidUuid(unitId) || !isValidUuid(lessonId)) {
+    return {
+      status: 400,
+      error: {
+        code: 'INVALID_ID',
+        message: 'Mã định danh không đúng định dạng UUID.',
+      },
+    };
+  }
+
+  const parseResult = activateLessonSchema.safeParse(rawBody);
+  if (!parseResult.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parseResult.error.issues) {
+      fieldErrors[issue.path.join('.')] = issue.message;
+    }
+    return {
+      status: 400,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: parseResult.error.issues[0]?.message || 'Dữ liệu không hợp lệ.',
+        fields: fieldErrors,
+      },
+    };
+  }
+
+  const { expectedRowVersion } = parseResult.data;
+  const prisma = prismaClient || getProductPrisma();
+
+  try {
+    return await prisma.$transaction(async (tx: any) => {
+      // 1. Lock Account
+      const accounts = await lockAccounts(tx, [adminAccountId]);
+      const adminAcc = accounts.get(adminAccountId.toLowerCase());
+      if (!adminAcc || adminAcc.role !== 'ADMIN') {
+        throw new ControlledDraftError(403, {
+          code: 'FORBIDDEN',
+          message: 'Chỉ quản trị viên mới có quyền mở bài học cho học viên.',
+        });
+      }
+      if (adminAcc.status !== 'ACTIVE') {
+        throw new ControlledDraftError(403, {
+          code: 'ACCOUNT_INACTIVE',
+          message: 'Tài khoản quản trị viên đang chờ duyệt hoặc đã bị vô hiệu hóa.',
+        });
+      }
+
+      // 2. Lock Course (shared)
+      const courseRows = await tx.$queryRaw`
+        SELECT id::text, is_active AS "isActive"
+        FROM app.courses WHERE id = ${courseId.toLowerCase()}::uuid FOR SHARE
+      `;
+      const course = courseRows[0];
+      if (!course) {
+        throw new ControlledDraftError(404, {
+          code: 'COURSE_NOT_FOUND',
+          message: 'Khóa học không tồn tại.',
+        });
+      }
+      if (!course.isActive) {
+        throw new ControlledDraftError(409, {
+          code: 'COURSE_INACTIVE',
+          message: 'Khóa học đang bị vô hiệu hóa hoặc không hoạt động.',
+        });
+      }
+
+      // 3. Lock Lesson FOR UPDATE
+      const lesson = await lockLesson(tx, lessonId);
+      if (!lesson) {
+        throw new ControlledDraftError(404, {
+          code: 'LESSON_NOT_FOUND',
+          message: 'Không tìm thấy bài học tương ứng.',
+        });
+      }
+
+      // 4. Hierarchy revalidation
+      if (lesson.unitId.toLowerCase() !== unitId.toLowerCase()) {
+        throw new ControlledDraftError(404, {
+          code: 'LESSON_NOT_FOUND',
+          message: 'Bài học không thuộc đơn vị bài học đã chỉ định.',
+        });
+      }
+      const unit = await tx.unit.findUnique({
+        where: { id: unitId.toLowerCase() },
+        select: { id: true, courseId: true },
+      });
+      if (!unit || unit.courseId.toLowerCase() !== courseId.toLowerCase()) {
+        throw new ControlledDraftError(404, {
+          code: 'LESSON_NOT_FOUND',
+          message: 'Đơn vị bài học không thuộc khóa học đã chỉ định.',
+        });
+      }
+
+      // 5. CAS check on lesson.rowVersion
+      const actualVersion = (lesson.rowVersion ?? 1n).toString();
+      if (actualVersion !== expectedRowVersion) {
+        throw new ControlledDraftError(409, {
+          code: 'STALE_LESSON',
+          message: 'Dữ liệu bài học đã bị thay đổi bởi tác vụ khác. Vui lòng tải lại dữ liệu mới nhất.',
+        });
+      }
+
+      // 6. Already AVAILABLE matching version is a no-op
+      if (lesson.availability === 'AVAILABLE') {
+        return await getLesson(courseId, unitId, lessonId, tx);
+      }
+
+      // 7. Validate pinned active PUBLISHED revision
+      if (!lesson.activeRevisionId) {
+        throw new ControlledDraftError(409, {
+          code: 'NO_PUBLISHED_REVISION',
+          message: 'Bài học chưa có bản sửa đổi nào được xuất bản.',
+        });
+      }
+
+      const revision = await lockLessonRevision(tx, lesson.activeRevisionId);
+      if (!revision || revision.lessonId.toLowerCase() !== lesson.id.toLowerCase() || revision.status !== 'PUBLISHED') {
+        throw new ControlledDraftError(409, {
+          code: 'NO_PUBLISHED_REVISION',
+          message: 'Bản sửa đổi được gán cho bài học chưa được xuất bản.',
+        });
+      }
+
+      // 8. Validate valid supported core content (N >= 1)
+      const coreCount = await tx.lessonExercise.count({
+        where: {
+          lessonRevisionId: revision.id,
+          isCore: true,
+        },
+      });
+      if (coreCount < 1) {
+        throw new ControlledDraftError(409, {
+          code: 'INSUFFICIENT_CORE_CONTENT',
+          message: 'Bài học yêu cầu ít nhất một bài tập cốt lõi (core exercise) trước khi mở cho học viên.',
+        });
+      }
+
+      // 9. Update availability to AVAILABLE and increment rowVersion
+      await tx.lesson.update({
+        where: { id: lesson.id },
+        data: {
+          availability: 'AVAILABLE',
+          rowVersion: { increment: 1n },
+        },
+      });
+
+      return await getLesson(courseId, unitId, lessonId, tx);
+    }, { timeout: 30000 });
+  } catch (err) {
+    if (err instanceof ControlledDraftError) {
+      return {
+        status: err.status,
+        error: err.error,
+      };
+    }
+    const errorRes = handleLessonPrismaError(err, 'activateLesson');
     return {
       status: errorRes.status,
       error: errorRes.body.error,

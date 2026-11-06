@@ -181,6 +181,7 @@ export function ReviewDetailView({
         body: JSON.stringify({
           expectedLessonRowVersion: detail.lesson.rowVersion,
           expectedRevisionRowVersion: detail.revision.rowVersion,
+          makeAvailable: true,
         }),
       });
 
@@ -203,6 +204,59 @@ export function ReviewDetailView({
       setSuccessMessage('Đã xuất bản bài học thành công!');
     } catch {
       setErrorMessage('Lỗi mạng khi xuất bản bài học.');
+    } finally {
+      isPendingRef.current = false;
+      setIsPending(false);
+    }
+  };
+
+  const handleActivateLesson = async () => {
+    if (isPendingRef.current) return;
+    isPendingRef.current = true;
+    setIsPending(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setIsStaleConflict(false);
+
+    try {
+      const res = await fetch(
+        `/api/courses/${detail.lesson.courseId}/units/${detail.lesson.unitId}/lessons/${detail.lesson.id}/activate`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: window.location.origin,
+          },
+          body: JSON.stringify({
+            expectedRowVersion: detail.lesson.rowVersion,
+          }),
+        }
+      );
+
+      if (authFailed(res)) return;
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        if (res.status === 409) {
+          setIsStaleConflict(true);
+          setErrorMessage(data?.error?.message || 'Dữ liệu bài học đã bị thay đổi hoặc chưa đủ điều kiện mở cho học viên.');
+        } else {
+          setErrorMessage(data?.error?.message || 'Có lỗi xảy ra khi mở bài học cho học viên.');
+        }
+        return;
+      }
+
+      setDetail((prev) => ({
+        ...prev,
+        lesson: {
+          ...prev.lesson,
+          availability: 'AVAILABLE',
+          rowVersion: data?.data?.rowVersion || prev.lesson.rowVersion,
+        },
+      }));
+      setSuccessMessage('Đã mở bài học cho học viên thành công!');
+    } catch {
+      setErrorMessage('Lỗi mạng khi mở bài học cho học viên.');
     } finally {
       isPendingRef.current = false;
       setIsPending(false);
@@ -702,7 +756,7 @@ export function ReviewDetailView({
                 fontSize: '14px',
               }}
             >
-              Bản sửa đổi này đã được phê duyệt. Nhấn <strong>Xuất bản bài học</strong> để cập nhật phiên bản chính thức hoạt động.
+              Bản sửa đổi này đã được phê duyệt. Nhấn <strong>Xuất bản và mở cho học viên</strong> để cập nhật phiên bản chính thức và mở bài học cho người học.
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
@@ -713,7 +767,7 @@ export function ReviewDetailView({
                 disabled={isPending || isReloading}
                 style={{ background: '#16a34a', borderColor: '#15803d' }}
               >
-                {isPending ? 'Đang xuất bản...' : 'Xuất bản bài học'}
+                {isPending ? 'Đang xuất bản...' : 'Xuất bản và mở cho học viên'}
               </button>
             </div>
           </div>
@@ -745,7 +799,24 @@ export function ReviewDetailView({
               fontSize: '14px',
             }}
           >
-            Bản sửa đổi này <strong>đã được xuất bản</strong> và đang là phiên bản chính thức của bài học.
+            <div>
+              Bản sửa đổi này <strong>đã được xuất bản</strong> và đang là phiên bản chính thức của bài học.
+            </div>
+            {detail.lesson.availability !== 'AVAILABLE' && (
+              <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #a7f3d0', paddingTop: '10px' }}>
+                <span>Bài học đang ở trạng thái {detail.lesson.availability}. Bạn có thể mở bài học cho học viên ngay bây giờ.</span>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  id="btnActivateLesson"
+                  onClick={handleActivateLesson}
+                  disabled={isPending || isReloading}
+                  style={{ background: '#16a34a', borderColor: '#15803d', padding: '6px 14px', fontSize: '13px' }}
+                >
+                  {isPending ? 'Đang mở...' : 'Mở cho học viên'}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

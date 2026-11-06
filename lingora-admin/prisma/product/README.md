@@ -1,5 +1,8 @@
 # Lingora Product Database
 
+> **2026-10-29 Owner Override:** DATABASE READY: PASS (Accepted by Owner Override — 5 migrations applied on DEV). Admin Auth and frozen UI baseline are PASS. Slice 1 implementation is authorized. Historical closure/forensic harness acceptance and R2-01–12 are canceled; do not run retired forensic/closure tooling. Applied migration five is retained unchanged. Historical readiness statements below are superseded.
+
+
 Từ 2026-10-28: `WP-DB-REMAIN-01` đã hủy; không dùng preapply/Stage A/Stage B làm cổng chặn phát triển tính năng. Quy tắc hiện hành: [AGENTS.md](../../../AGENTS.md).
 
 ## Source

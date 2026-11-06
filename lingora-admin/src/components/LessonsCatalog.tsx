@@ -45,6 +45,8 @@ export function LessonsCatalog({
   const [fetchError, setFetchError] = useState<string | null>(initialError || null);
   const [forbiddenBanner, setForbiddenBanner] = useState<string | null>(null);
   const [mutationStatus, setMutationStatus] = useState<string | null>(null);
+  const [activatingId, setActivatingId] = useState<string | null>(null);
+  const [activationError, setActivationError] = useState<string | null>(null);
 
   // Modal states
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -205,6 +207,55 @@ export function LessonsCatalog({
     }, 50);
   };
 
+  const handleActivate = async (lesson: LessonSummaryDto) => {
+    if (activatingId) return;
+    setActivatingId(lesson.id);
+    setActivationError(null);
+    setMutationStatus(null);
+
+    try {
+      const res = await fetch(`/api/courses/${course.id}/units/${unit.id}/lessons/${lesson.id}/activate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: window.location.origin,
+        },
+        body: JSON.stringify({
+          expectedRowVersion: (lesson.rowVersion ?? '1').toString(),
+        }),
+      });
+
+      if (res.status === 401) {
+        setIsSessionLostOpen(true);
+        return;
+      }
+      if (res.status === 403) {
+        setForbiddenBanner('Tài khoản không có quyền mở bài học cho học viên.');
+        return;
+      }
+
+      const body = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const msg = body?.error?.message || 'Không thể mở bài học cho học viên.';
+        setActivationError(msg);
+        return;
+      }
+
+      const updated = body.data;
+      setLessons((prev) =>
+        prev.map((l) =>
+          l.id === lesson.id ? { ...l, availability: updated.availability, rowVersion: updated.rowVersion } : l
+        )
+      );
+      setMutationStatus(`Đã mở thành công bài học #${lesson.position} cho học viên.`);
+    } catch {
+      setActivationError('Lỗi mạng khi mở bài học cho học viên.');
+    } finally {
+      setActivatingId(null);
+    }
+  };
+
   const handleLogoutOnForbidden = async () => {
     try {
       removeDraft(account.id);
@@ -323,6 +374,37 @@ export function LessonsCatalog({
               style={{ marginBottom: '16px' }}
             >
               {mutationStatus}
+            </div>
+          )}
+
+          {/* Activation Error Alert */}
+          {activationError && (
+            <div
+              id="activationErrorAlert"
+              role="alert"
+              className="alert alert-error"
+              style={{
+                marginBottom: '16px',
+                padding: '12px 16px',
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '6px',
+                color: '#991b1b',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <span id="activationErrorMessage">{activationError}</span>
+              <button
+                type="button"
+                className="btn-text-action"
+                id="btnCloseActivationError"
+                style={{ color: '#991b1b', fontWeight: 600, marginLeft: '12px' }}
+                onClick={() => setActivationError(null)}
+              >
+                Đóng
+              </button>
             </div>
           )}
 
@@ -462,6 +544,18 @@ export function LessonsCatalog({
                         </td>
                         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <div className="col-actions" style={{ justifyContent: 'flex-end', whiteSpace: 'nowrap' }}>
+                            {l.availability !== 'AVAILABLE' && (
+                              <button
+                                type="button"
+                                className="btn-text-action btn-text-activate"
+                                id={`btn-activate-lesson-${l.id}`}
+                                disabled={activatingId === l.id}
+                                onClick={() => handleActivate(l)}
+                                style={{ color: '#16a34a', fontWeight: 500 }}
+                              >
+                                {activatingId === l.id ? 'Đang mở...' : 'Mở cho học viên'}
+                              </button>
+                            )}
                             <button
                               type="button"
                               className="btn-text-action btn-text-edit"

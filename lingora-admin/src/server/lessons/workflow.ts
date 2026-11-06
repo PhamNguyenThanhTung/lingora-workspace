@@ -61,6 +61,7 @@ export const publishLessonSchema = z
     expectedRevisionRowVersion: lessonVersionSchema,
     expectedLessonRowVersion: lessonVersionSchema,
     comment: text4000Schema.optional().nullable(),
+    makeAvailable: z.boolean().optional(),
   })
   .strict();
 
@@ -1212,7 +1213,7 @@ export async function publishReview(
     };
   }
 
-  const { expectedRevisionRowVersion, expectedLessonRowVersion, comment } = parseResult.data;
+  const { expectedRevisionRowVersion, expectedLessonRowVersion, comment, makeAvailable = false } = parseResult.data;
   const prisma = prismaClient || getProductPrisma();
 
   try {
@@ -1258,6 +1259,50 @@ export async function publishReview(
         });
       }
 
+      // Lock order for activation-bearing paths: Account -> Course(shared) -> Lesson -> Revision/review
+      let candidateCourseId: string | null = null;
+      if (makeAvailable) {
+        const candidateLesson = await tx.lesson.findUnique({
+          where: { id: revisionRef.lessonId },
+          select: { id: true, unitId: true },
+        });
+        if (!candidateLesson) {
+          throw new ControlledDraftError(404, {
+            code: 'LESSON_NOT_FOUND',
+            message: 'Không tìm thấy bài học tương ứng.',
+          });
+        }
+        const candidateUnit = await tx.unit.findUnique({
+          where: { id: candidateLesson.unitId.toLowerCase() },
+          select: { courseId: true },
+        });
+        if (!candidateUnit) {
+          throw new ControlledDraftError(404, {
+            code: 'LESSON_NOT_FOUND',
+            message: 'Không tìm thấy đơn vị bài học.',
+          });
+        }
+        candidateCourseId = candidateUnit.courseId;
+
+        const courseRows = await tx.$queryRaw`
+          SELECT id::text, is_active AS "isActive"
+          FROM app.courses WHERE id = ${candidateCourseId}::uuid FOR SHARE
+        `;
+        const course = courseRows[0];
+        if (!course) {
+          throw new ControlledDraftError(404, {
+            code: 'COURSE_NOT_FOUND',
+            message: 'Khóa học không tồn tại.',
+          });
+        }
+        if (!course.isActive) {
+          throw new ControlledDraftError(409, {
+            code: 'COURSE_INACTIVE',
+            message: 'Khóa học đang bị vô hiệu hóa hoặc không hoạt động.',
+          });
+        }
+      }
+
       // 2. Lock Lesson first to match the authoring transaction's lock order.
       const lesson = await lockLesson(tx, revisionRef.lessonId);
       if (!lesson) {
@@ -1265,6 +1310,19 @@ export async function publishReview(
           code: 'LESSON_NOT_FOUND',
           message: 'Không tìm thấy bài học tương ứng.',
         });
+      }
+
+      if (makeAvailable && candidateCourseId) {
+        const unit = await tx.unit.findUnique({
+          where: { id: lesson.unitId.toLowerCase() },
+          select: { courseId: true },
+        });
+        if (!unit || unit.courseId.toLowerCase() !== candidateCourseId.toLowerCase()) {
+          throw new ControlledDraftError(409, {
+            code: 'HIERARCHY_MISMATCH',
+            message: 'Bài học không còn thuộc khóa học đã khóa.',
+          });
+        }
       }
 
       // 3. Lock and recheck the pinned submission and exact revision.
@@ -1300,6 +1358,21 @@ export async function publishReview(
           code: 'REVISION_CONFLICT',
           message: `Chỉ có thể xuất bản bản sửa đổi đã được phê duyệt (APPROVED). Trạng thái hiện tại: ${revision.status}.`,
         });
+      }
+
+      if (makeAvailable) {
+        const coreCount = await tx.lessonExercise.count({
+          where: {
+            lessonRevisionId: revision.id,
+            isCore: true,
+          },
+        });
+        if (coreCount < 1) {
+          throw new ControlledDraftError(400, {
+            code: 'INSUFFICIENT_CORE_CONTENT',
+            message: 'Bài học yêu cầu ít nhất một bài tập cốt lõi (core exercise) trước khi mở cho học viên.',
+          });
+        }
       }
 
       const actualRevVersion = (revision.rowVersion ?? 1n).toString();
@@ -1349,11 +1422,11 @@ export async function publishReview(
       });
 
       // 8. Atomically update Lesson.activeRevisionId to target revision and increment lesson rowVersion
-      // Do NOT touch availability!
       await tx.lesson.update({
         where: { id: lesson.id },
         data: {
           activeRevisionId: revision.id,
+          ...(makeAvailable ? { availability: 'AVAILABLE' } : {}),
           rowVersion: { increment: 1n },
         },
       });
