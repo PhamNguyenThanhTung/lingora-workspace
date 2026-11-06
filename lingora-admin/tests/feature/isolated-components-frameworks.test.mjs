@@ -488,6 +488,7 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
     // 1. Open edit on level A1
     await page.click('#btn-edit-level-aaaa1111-1111-4111-8111-111111111111');
     await page.waitForSelector('#levelFormModal', { state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.id === 'levelCode');
 
     // Clear Vietnamese label (R2) and update English
     await page.fill('#levelCode', 'held');
@@ -934,6 +935,7 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
     // Open create level modal
     await page.click('#btnOpenCreateLevel');
     await page.waitForSelector('#levelFormModal', { state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.id === 'levelCode');
 
     await page.fill('#levelCode', 'C1');
     await page.fill('#levelPosition', '5');

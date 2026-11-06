@@ -24,9 +24,11 @@ const {
   requestChangesReview,
   approveReview,
   publishReview,
+  activateLesson,
 } = await import('../../src/server/lessons/index.ts');
 const { setProductPrismaForTest } = await import('../../src/server/db/index.js');
 const { POST: submitRoute } = await import('../../src/app/api/teacher/lessons/[lessonId]/submit/route.ts');
+const { POST: activateRoute } = await import('../../src/app/api/courses/[courseId]/units/[unitId]/lessons/[lessonId]/activate/route.ts');
 
 const adminId = '00000000-0000-4000-8000-000000000001';
 const teacherId = '11111111-1111-4111-8111-111111111111';
@@ -409,5 +411,190 @@ describe('S7-WORKFLOW: exact revision submit, review and publication', () => {
     assert.equal(fixture.state.revisionReviews.size, 2);
     const winner = changes.status === 200 ? 'CHANGES_REQUESTED' : 'APPROVED';
     assert.equal(fixture.state.revisions.get(draft.highestRevision.id).status, winner);
+  });
+
+  test('P1: publishReview with makeAvailable=true validates parent course, core exercises, and sets AVAILABLE', async () => {
+    const draft = await createDraft('MakeAvailable publish');
+    const submitted = await submitTeacherLesson(teacherId, lessonId, {
+      revisionId: draft.highestRevision.id,
+      expectedLessonRowVersion: draft.rowVersion,
+      expectedRevisionRowVersion: draft.highestRevision.rowVersion,
+    }, fixture.db);
+    assert.equal(submitted.status, 200);
+
+    const approved = await approveReview(adminId, submitted.data.submissionId, {
+      expectedRevisionRowVersion: fixture.state.revisions.get(draft.highestRevision.id).rowVersion.toString(),
+    }, fixture.db);
+    assert.equal(approved.status, 200);
+
+    // 1. Inactive course rejection
+    fixture.state.courses.get(courseId).isActive = false;
+    const inactiveCoursePublish = await publishReview(adminId, submitted.data.submissionId, {
+      expectedRevisionRowVersion: fixture.state.revisions.get(draft.highestRevision.id).rowVersion.toString(),
+      expectedLessonRowVersion: fixture.state.lessons.get(lessonId).rowVersion.toString(),
+      makeAvailable: true,
+    }, fixture.db);
+    assert.equal(inactiveCoursePublish.status, 409);
+    assert.equal(inactiveCoursePublish.error?.code, 'COURSE_INACTIVE');
+    assert.equal(fixture.state.lessons.get(lessonId).availability, 'PLANNED');
+    fixture.state.courses.get(courseId).isActive = true;
+
+    // 2. Successful publish with makeAvailable=true
+    fixture.calls.lockOrder.length = 0;
+    const published = await publishReview(adminId, submitted.data.submissionId, {
+      expectedRevisionRowVersion: fixture.state.revisions.get(draft.highestRevision.id).rowVersion.toString(),
+      expectedLessonRowVersion: fixture.state.lessons.get(lessonId).rowVersion.toString(),
+      makeAvailable: true,
+    }, fixture.db);
+    assert.equal(published.status, 200);
+    assert.equal(published.data?.data?.lesson?.availability, 'AVAILABLE');
+    assert.equal(fixture.state.lessons.get(lessonId).availability, 'AVAILABLE');
+    assert.equal(fixture.state.revisions.get(draft.highestRevision.id).status, 'PUBLISHED');
+    assert.deepEqual(fixture.calls.lockOrder.slice(0, 2), ['course', 'lesson']);
+  });
+
+  test('P1: activateLesson service enforces hierarchy, course activity, published revision, CAS and idempotency', async () => {
+    // Setup a published lesson with makeAvailable=true initially
+    const draft = await createDraft('Activation test draft');
+    const submitted = await submitTeacherLesson(teacherId, lessonId, {
+      revisionId: draft.highestRevision.id,
+      expectedLessonRowVersion: draft.rowVersion,
+      expectedRevisionRowVersion: draft.highestRevision.rowVersion,
+    }, fixture.db);
+    await approveReview(adminId, submitted.data.submissionId, {
+      expectedRevisionRowVersion: fixture.state.revisions.get(draft.highestRevision.id).rowVersion.toString(),
+    }, fixture.db);
+    fixture.state.courses.get(courseId).isActive = true;
+    await publishReview(adminId, submitted.data.submissionId, {
+      expectedRevisionRowVersion: fixture.state.revisions.get(draft.highestRevision.id).rowVersion.toString(),
+      expectedLessonRowVersion: fixture.state.lessons.get(lessonId).rowVersion.toString(),
+      makeAvailable: true,
+    }, fixture.db);
+
+    const lesson = fixture.state.lessons.get(lessonId);
+
+    // 1. Already AVAILABLE matching CAS is a no-op
+    const noopRes = await activateLesson(adminId, courseId, unitId, lessonId, {
+      expectedRowVersion: lesson.rowVersion.toString(),
+    }, fixture.db);
+    assert.equal(noopRes.status, 200);
+    assert.equal(noopRes.data?.data?.availability, 'AVAILABLE');
+    assert.equal(fixture.state.lessons.get(lessonId).rowVersion, lesson.rowVersion);
+
+    // Temporarily set lesson availability back to PLANNED for testing activation
+    lesson.availability = 'PLANNED';
+
+    // 2. Role / Status checks
+    const teacherDenied = await activateLesson(teacherId, courseId, unitId, lessonId, {
+      expectedRowVersion: lesson.rowVersion.toString(),
+    }, fixture.db);
+    assert.equal(teacherDenied.status, 403);
+    assert.equal(teacherDenied.error?.code, 'FORBIDDEN');
+
+    fixture.state.accounts.get(adminId).status = 'DISABLED';
+    const disabledAdminDenied = await activateLesson(adminId, courseId, unitId, lessonId, {
+      expectedRowVersion: lesson.rowVersion.toString(),
+    }, fixture.db);
+    assert.equal(disabledAdminDenied.status, 403);
+    assert.equal(disabledAdminDenied.error?.code, 'ACCOUNT_INACTIVE');
+    fixture.state.accounts.get(adminId).status = 'ACTIVE';
+
+    // 3. Inactive course rejection
+    fixture.state.courses.get(courseId).isActive = false;
+    const inactiveRes = await activateLesson(adminId, courseId, unitId, lessonId, {
+      expectedRowVersion: lesson.rowVersion.toString(),
+    }, fixture.db);
+    assert.equal(inactiveRes.status, 409);
+    assert.equal(inactiveRes.error?.code, 'COURSE_INACTIVE');
+    assert.equal(fixture.state.lessons.get(lessonId).availability, 'PLANNED');
+    fixture.state.courses.get(courseId).isActive = true;
+
+    // 4. Hierarchy mismatch
+    const wrongUnitRes = await activateLesson(adminId, courseId, '00000000-0000-4000-8000-000000000099', lessonId, {
+      expectedRowVersion: lesson.rowVersion.toString(),
+    }, fixture.db);
+    assert.equal(wrongUnitRes.status, 404);
+
+    // 5. Stale CAS check
+    const staleRes = await activateLesson(adminId, courseId, unitId, lessonId, {
+      expectedRowVersion: '999999',
+    }, fixture.db);
+    assert.equal(staleRes.status, 409);
+    assert.equal(staleRes.error?.code, 'STALE_LESSON');
+
+    // 6. Valid activation succeeds and increments rowVersion
+    fixture.calls.lockOrder.length = 0;
+    const initialRowVersion = lesson.rowVersion;
+    const activatedRes = await activateLesson(adminId, courseId, unitId, lessonId, {
+      expectedRowVersion: initialRowVersion.toString(),
+    }, fixture.db);
+    assert.equal(activatedRes.status, 200);
+    assert.equal(activatedRes.data?.data?.availability, 'AVAILABLE');
+    assert.equal(fixture.state.lessons.get(lessonId).availability, 'AVAILABLE');
+    assert.equal(fixture.state.lessons.get(lessonId).rowVersion, initialRowVersion + 1n);
+    assert.deepEqual(fixture.calls.lockOrder.slice(0, 2), ['course', 'lesson']);
+  });
+
+  test('P1: POST /api/courses/.../activate route enforces origin, json, auth, and executes activation', async () => {
+    // Setup published lesson with makeAvailable=false (so availability is PLANNED)
+    fixture.state.courses.get(courseId).isActive = true;
+    const draft = await createDraft('Route activation draft');
+    const submitted = await submitTeacherLesson(teacherId, lessonId, {
+      revisionId: draft.highestRevision.id,
+      expectedLessonRowVersion: draft.rowVersion,
+      expectedRevisionRowVersion: draft.highestRevision.rowVersion,
+    }, fixture.db);
+    await approveReview(adminId, submitted.data.submissionId, {
+      expectedRevisionRowVersion: fixture.state.revisions.get(draft.highestRevision.id).rowVersion.toString(),
+    }, fixture.db);
+    await publishReview(adminId, submitted.data.submissionId, {
+      expectedRevisionRowVersion: fixture.state.revisions.get(draft.highestRevision.id).rowVersion.toString(),
+      expectedLessonRowVersion: fixture.state.lessons.get(lessonId).rowVersion.toString(),
+      makeAvailable: false,
+    }, fixture.db);
+
+    globalThis.fetch = async () => Response.json({ id: adminId });
+    const lesson = fixture.state.lessons.get(lessonId);
+    currentCookieStore = {
+      getAll: () => [mockSessionCookie(adminId)],
+      get: (name) => (name.includes('auth-token') ? mockSessionCookie(adminId) : undefined),
+      set: () => {},
+      delete: () => {},
+    };
+
+    // 1. Foreign origin rejected with 403
+    const foreignOriginReq = new Request(`http://localhost/api/courses/${courseId}/units/${unitId}/lessons/${lessonId}/activate`, {
+      method: 'POST',
+      headers: { Origin: 'https://malicious.test', Host: 'localhost', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ expectedRowVersion: lesson.rowVersion.toString() }),
+    });
+    const foreignRes = await activateRoute(foreignOriginReq, {
+      params: Promise.resolve({ courseId, unitId, lessonId }),
+    });
+    assert.equal(foreignRes.status, 403);
+
+    // 2. Non-json rejected with 415
+    const nonJsonReq = new Request(`http://localhost/api/courses/${courseId}/units/${unitId}/lessons/${lessonId}/activate`, {
+      method: 'POST',
+      headers: { Origin: 'http://localhost', Host: 'localhost', 'Content-Type': 'text/plain' },
+      body: 'expectedRowVersion=1',
+    });
+    const nonJsonRes = await activateRoute(nonJsonReq, {
+      params: Promise.resolve({ courseId, unitId, lessonId }),
+    });
+    assert.equal(nonJsonRes.status, 415);
+
+    // 3. Valid admin request invokes activateLesson and returns 200
+    const validReq = new Request(`http://localhost/api/courses/${courseId}/units/${unitId}/lessons/${lessonId}/activate`, {
+      method: 'POST',
+      headers: { Origin: 'http://localhost', Host: 'localhost', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ expectedRowVersion: lesson.rowVersion.toString() }),
+    });
+    const validRes = await activateRoute(validReq, {
+      params: Promise.resolve({ courseId, unitId, lessonId }),
+    });
+    assert.equal(validRes.status, 200);
+    const body = await validRes.json();
+    assert.equal(body.data?.availability, 'AVAILABLE');
   });
 });

@@ -17,6 +17,9 @@ const externalDbPlugin = {
       path: dbUrl,
       external: true,
     }));
+    build.onResolve({ filter: /generated\/product-client/ }, () => ({
+      external: true,
+    }));
     build.onResolve({ filter: /^server-only$/ }, () => ({
       path: emptyModulePath,
     }));

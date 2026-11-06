@@ -219,6 +219,7 @@ test('production Admin review page calls pinned approve and publish endpoints an
     assert.deepEqual(calls[1].body, {
       expectedLessonRowVersion: detail.lesson.rowVersion,
       expectedRevisionRowVersion: '3',
+      makeAvailable: true,
     });
     assert.match(await page.locator('#badgeRevisionStatus').innerText(), /Đã xuất bản/);
     approveHold = Promise.resolve();

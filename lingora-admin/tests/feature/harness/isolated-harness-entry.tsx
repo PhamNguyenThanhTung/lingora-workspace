@@ -14,6 +14,8 @@ import { LessonDraftEditor } from '../../../src/components/LessonDraftEditor';
 import { ReviewDetailView } from '../../../src/components/ReviewDetailView';
 import { ReviewQueueCatalog } from '../../../src/components/ReviewQueueCatalog';
 import { AssessmentCatalog } from '../../../src/components/AssessmentCatalog';
+import { AuditEventsCatalog } from '../../../src/components/AuditEventsCatalog';
+import type { AuditEventDto, AuditFilters } from '../../../src/server/audit/types';
 import { TeacherHoldingView } from '../../../src/app/holding/TeacherHoldingView';
 import { AccessDeniedView } from '../../../src/components/AccessDeniedView';
 import { ServiceUnavailableView } from '../../../src/components/ServiceUnavailableView';
@@ -356,6 +358,66 @@ const MOCK_LESSON_DETAIL: LessonDetailDto = {
     },
   ],
 };
+
+const MOCK_AUDIT_FILTERS: AuditFilters = {
+  from: '2026-10-28T00:00:00.000Z',
+  to: '2026-11-04T00:00:00.000Z',
+  action: null,
+  outcome: null,
+};
+
+const MOCK_AUDIT_EVENTS: AuditEventDto[] = [
+  {
+    id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    occurredAt: '2026-11-03T14:30:00.123456Z',
+    actorKind: 'ACCOUNT',
+    actorId: '00000000-0000-4000-8000-000000000001',
+    action: 'TEACHER_PROVISIONED',
+    targetType: 'ACCOUNT',
+    targetId: '11111111-1111-4111-8111-111111111111',
+    outcome: 'SUCCESS',
+  },
+  {
+    id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+    occurredAt: '2026-11-03T10:15:00.654321Z',
+    actorKind: 'ACCOUNT',
+    actorId: '00000000-0000-4000-8000-000000000001',
+    action: 'TEACHER_DISABLED',
+    targetType: 'ACCOUNT',
+    targetId: '22222222-2222-4222-8222-222222222222',
+    outcome: 'SUCCESS',
+  },
+  {
+    id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+    occurredAt: '2026-11-02T08:00:00.000000Z',
+    actorKind: 'VERIFIED_AUTH_SUBJECT',
+    actorId: null,
+    action: 'TEACHER_ACTIVATED',
+    targetType: 'ACCOUNT',
+    targetId: '11111111-1111-4111-8111-111111111111',
+    outcome: 'SUCCESS',
+  },
+  {
+    id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+    occurredAt: '2026-11-01T16:45:00.000000Z',
+    actorKind: 'SYSTEM',
+    actorId: null,
+    action: 'LEARNER_BOOTSTRAPPED',
+    targetType: 'ACCOUNT',
+    targetId: '33333333-3333-4333-8333-333333333333',
+    outcome: 'SUCCESS',
+  },
+  {
+    id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+    occurredAt: '2026-10-31T09:20:00.000000Z',
+    actorKind: 'OTHER',
+    actorId: null,
+    action: 'OTHER',
+    targetType: 'OTHER',
+    targetId: '44444444-4444-4444-8444-444444444444',
+    outcome: 'DENIED',
+  },
+];
 
 function IsolatedHarnessApp() {
   const params = new URLSearchParams(window.location.search);
@@ -893,6 +955,59 @@ function IsolatedHarnessApp() {
 
   if (state === 'assessment-catalog-test') {
     return <AppShell account={MOCK_ADMIN}><AssessmentCatalog /></AppShell>;
+  }
+
+  // --- Audit Events States ---
+  if (state === 'audit-populated') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <AuditEventsCatalog
+          initialData={MOCK_AUDIT_EVENTS}
+          initialFilters={MOCK_AUDIT_FILTERS}
+          initialNextCursor="mock-next-cursor"
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'audit-empty') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <AuditEventsCatalog
+          initialData={[]}
+          initialFilters={MOCK_AUDIT_FILTERS}
+          initialNextCursor={null}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'audit-fetch-error') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <AuditEventsCatalog
+          initialData={[]}
+          initialFilters={MOCK_AUDIT_FILTERS}
+          initialNextCursor={null}
+          initialError="Không thể kết nối đến máy chủ Lingora (503 Service Unavailable)."
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'page-audit-wire') {
+    const pageProps = (window as any).__PAGE_PROPS__;
+    if (!pageProps?.account || !Array.isArray(pageProps.initialData)) {
+      throw new Error('Missing production AuditEventsPage props');
+    }
+    return (
+      <AppShell account={pageProps.account}>
+        <AuditEventsCatalog {...pageProps} />
+      </AppShell>
+    );
   }
 
   // Default: populated languages catalogue

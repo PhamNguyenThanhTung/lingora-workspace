@@ -65,7 +65,7 @@ export function startIsolatedServer(port = 3007) {
         res.setHeader('Access-Control-Allow-Origin', `http://localhost:${port}`);
         res.setHeader('Cache-Control', 'no-store, private');
 
-        if (pathname === '/' || pathname === '/index.html') {
+        if (pathname === '/' || pathname === '/index.html' || pathname === '/audit-events') {
           const state = url.searchParams.get('state');
           let injectedScript = '';
 
@@ -526,6 +526,49 @@ export function startIsolatedServer(port = 3007) {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
             const ReviewDetailPage = await compileAndLoadPage('src/app/review/[submissionId]/page.tsx', { useBridge: true });
             const jsx = await ReviewDetailPage({ params: Promise.resolve({ submissionId }) });
+            injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
+          } else if (state === 'page-audit-wire') {
+            const adminId = '00000000-0000-4000-8000-000000000001';
+            const mockDb = {
+              account: {
+                findUnique: async () => ({
+                  id: adminId,
+                  role: 'ADMIN',
+                  status: 'ACTIVE',
+                  displayName: 'Quản trị viên Hệ thống',
+                  uiLocale: 'vi',
+                }),
+              },
+              $queryRaw: async () => [
+                {
+                  id: '77777777-7777-4777-8777-777777777777',
+                  occurredAt: '2026-11-04T12:00:00.000000Z',
+                  actorKind: 'ACCOUNT',
+                  actorId: adminId,
+                  action: 'TEACHER_PROVISIONED',
+                  targetType: 'ACCOUNT',
+                  targetId: '88888888-8888-4888-8888-888888888888',
+                  outcome: 'SUCCESS',
+                },
+              ],
+            };
+            setCookieStore({
+              getAll: () => [createMockSessionCookie(adminId, 'admin@lingora.test')],
+              get: () => createMockSessionCookie(adminId, 'admin@lingora.test'),
+              set: () => {},
+              delete: () => {},
+            });
+            setProductPrismaForTest(mockDb);
+            globalThis.fetch = async () =>
+              new Response(JSON.stringify({ id: adminId, email: 'admin@lingora.test' }), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+              });
+            process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test-project-ref.supabase.co';
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+
+            const AuditEventsPage = await compileAndLoadPage('src/app/audit-events/page.tsx', { useBridge: true });
+            const jsx = await AuditEventsPage();
             injectedScript = `<script>window.__PAGE_PROPS__ = ${JSON.stringify({ account: jsx.props.account, ...jsx.props.children.props })};</script>`;
           }
 
@@ -1778,6 +1821,129 @@ export function startIsolatedServer(port = 3007) {
         if (pathname === '/api/auth/logout') {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ data: { success: true } }));
+          return;
+        }
+
+        if (pathname === '/api/audit-events' && req.method === 'GET') {
+          const urlObj = new URL(req.url, 'http://127.0.0.1');
+          const cursor = urlObj.searchParams.get('cursor');
+          const action = urlObj.searchParams.get('action');
+
+          if (cursor === 'cursor-error') {
+            res.writeHead(503, {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store, private',
+            });
+            res.end(JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: 'Cơ sở dữ liệu tạm thời không phản hồi. Vui lòng thử lại.' } }));
+            return;
+          }
+
+          if (cursor === 'cursor-denied') {
+            res.writeHead(403, {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store, private',
+            });
+            res.end(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Bạn không có quyền xem nhật ký hoạt động.' } }));
+            return;
+          }
+
+          const sendResponse = () => {
+            res.writeHead(200, {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store, private',
+            });
+            if (cursor) {
+              res.end(JSON.stringify({
+                data: [
+                  {
+                    id: '22222222-2222-4222-8222-222222222222',
+                    occurredAt: '2026-11-02T10:00:00.000000Z',
+                    actorKind: 'SYSTEM',
+                    actorId: null,
+                    action: 'TEACHER_DISABLED',
+                    targetType: 'ACCOUNT',
+                    targetId: '33333333-3333-4333-8333-333333333333',
+                    outcome: 'SUCCESS',
+                  },
+                ],
+                filters: {
+                  from: urlObj.searchParams.get('from') || '2026-10-28T00:00:00.000Z',
+                  to: urlObj.searchParams.get('to') || '2026-11-04T00:00:00.000Z',
+                  action: action || null,
+                  outcome: null,
+                },
+                nextCursor: null,
+              }));
+            } else {
+              res.end(JSON.stringify({
+                data: [
+                  {
+                    id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+                    occurredAt: '2026-11-03T14:30:00.123456Z',
+                    actorKind: 'ACCOUNT',
+                    actorId: '00000000-0000-4000-8000-000000000001',
+                    action: action || 'TEACHER_PROVISIONED',
+                    targetType: 'ACCOUNT',
+                    targetId: '11111111-1111-4111-8111-111111111111',
+                    outcome: 'SUCCESS',
+                  },
+                  {
+                    id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+                    occurredAt: '2026-11-03T10:15:00.654321Z',
+                    actorKind: 'ACCOUNT',
+                    actorId: '00000000-0000-4000-8000-000000000001',
+                    action: 'TEACHER_DISABLED',
+                    targetType: 'ACCOUNT',
+                    targetId: '22222222-2222-4222-8222-222222222222',
+                    outcome: 'SUCCESS',
+                  },
+                  {
+                    id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+                    occurredAt: '2026-11-02T08:00:00.000000Z',
+                    actorKind: 'VERIFIED_AUTH_SUBJECT',
+                    actorId: null,
+                    action: 'TEACHER_ACTIVATED',
+                    targetType: 'ACCOUNT',
+                    targetId: '11111111-1111-4111-8111-111111111111',
+                    outcome: 'SUCCESS',
+                  },
+                  {
+                    id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+                    occurredAt: '2026-11-01T16:45:00.000000Z',
+                    actorKind: 'SYSTEM',
+                    actorId: null,
+                    action: 'LEARNER_BOOTSTRAPPED',
+                    targetType: 'ACCOUNT',
+                    targetId: '44444444-4444-4444-8444-444444444444',
+                    outcome: 'SUCCESS',
+                  },
+                  {
+                    id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+                    occurredAt: '2026-10-30T09:20:00.000000Z',
+                    actorKind: 'ACCOUNT',
+                    actorId: '00000000-0000-4000-8000-000000000001',
+                    action: 'OTHER',
+                    targetType: 'OTHER',
+                    targetId: null,
+                    outcome: 'DENIED',
+                  },
+                ],
+                filters: {
+                  from: urlObj.searchParams.get('from') || '2026-10-28T00:00:00.000Z',
+                  to: urlObj.searchParams.get('to') || '2026-11-04T00:00:00.000Z',
+                  action: action || null,
+                  outcome: null,
+                },
+                nextCursor: 'cursor-page-2',
+              }));
+            }
+          };
+
+          if (cursor === 'cursor-held') {
+            setTimeout(sendResponse, 400);
+          } else {
+            sendResponse();
+          }
           return;
         }
 

@@ -17,8 +17,8 @@ const rootDir = fs.existsSync(path.resolve(process.cwd(), 'lingora-admin'))
   ? process.cwd()
   : path.resolve(process.cwd(), '..');
 const appDir = path.resolve(rootDir, 'lingora-admin');
-const SCREENSHOT_DIR = path.resolve(rootDir, 'plans/evidence/2026-10-29-slice-1-stabilization/screenshots');
-const SLICE2_SCREENSHOT_DIR = path.resolve(rootDir, 'plans/evidence/2026-10-29-slice-2/screenshots');
+const SCREENSHOT_DIR = process.env.E2E_SCREENSHOT_DIR || path.resolve(rootDir, 'plans/evidence/learning-mvp-20261105/e2e/screenshots');
+const SLICE2_SCREENSHOT_DIR = process.env.E2E_SLICE2_SCREENSHOT_DIR || path.resolve(rootDir, 'plans/evidence/learning-mvp-20261105/e2e/slice2-screenshots');
 
 async function waitForServer(url, timeoutMs = 25000) {
   const start = Date.now();
