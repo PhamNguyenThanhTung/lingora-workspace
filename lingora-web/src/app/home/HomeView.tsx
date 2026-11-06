@@ -66,6 +66,105 @@ export function HomeView({ data, errorState }: HomeViewProps) {
     Record<string, { code: string; message: string; status: number }>
   >({});
 
+  // Context recovery state (start level selection for existing null contexts)
+  const [recoveringContextId, setRecoveringContextId] = useState<string | null>(null);
+  const [recoveringSource, setRecoveringSource] = useState<'DEFAULT' | 'SELF_REPORT'>('DEFAULT');
+  const [recoveringLevelId, setRecoveringLevelId] = useState<string>('');
+  const [isRecovering, setIsRecovering] = useState<boolean>(false);
+
+  const handleOpenStartLevel = (ctx: LearningContextSummaryDto) => {
+    setRecoveringContextId(ctx.id);
+    setRecoveringSource('DEFAULT');
+    setRecoveringLevelId('');
+    if (!options && !isLoadingOptions) {
+      fetchOptions();
+    }
+  };
+
+  const handleCancelStartLevel = () => {
+    setRecoveringContextId(null);
+    setRecoveringSource('DEFAULT');
+    setRecoveringLevelId('');
+  };
+
+  const handleConfirmStartLevel = async (ctx: LearningContextSummaryDto) => {
+    if (isRecovering) return;
+    if (recoveringSource === 'SELF_REPORT' && !recoveringLevelId) {
+      setContextErrors((prev) => ({
+        ...prev,
+        [ctx.id]: {
+          code: 'VALIDATION_ERROR',
+          message: 'Vui lòng chọn trình độ khởi điểm.',
+          status: 400,
+        },
+      }));
+      return;
+    }
+
+    setIsRecovering(true);
+    setContextErrors((prev) => {
+      const next = { ...prev };
+      delete next[ctx.id];
+      return next;
+    });
+
+    const payload =
+      recoveringSource === 'DEFAULT'
+        ? {
+            startSource: 'DEFAULT',
+            expectedRowVersion: ctx.rowVersion,
+          }
+        : {
+            startSource: 'SELF_REPORT',
+            levelId: recoveringLevelId,
+            expectedRowVersion: ctx.rowVersion,
+          };
+
+    try {
+      const response = await fetch(`/api/learner/contexts/${ctx.id}/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.status === 401) {
+        router.push('/login');
+        return;
+      }
+
+      const json = await response.json();
+
+      if (!response.ok) {
+        setContextErrors((prev) => ({
+          ...prev,
+          [ctx.id]: {
+            code: json.error?.code || 'ERROR',
+            message: json.error?.message || 'Không thể chọn trình độ bắt đầu.',
+            status: response.status,
+          },
+        }));
+        return;
+      }
+
+      const updated: LearningContextSummaryDto = json.data;
+      setContexts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+      setRecoveringContextId(null);
+    } catch {
+      setContextErrors((prev) => ({
+        ...prev,
+        [ctx.id]: {
+          code: 'NETWORK_ERROR',
+          message: 'Lỗi kết nối mạng khi chọn trình độ. Vui lòng thử lại.',
+          status: 0,
+        },
+      }));
+    } finally {
+      setIsRecovering(false);
+    }
+  };
+
   const handleLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
@@ -411,7 +510,15 @@ export function HomeView({ data, errorState }: HomeViewProps) {
           <span className="brand-title">Lingora</span>
           <span className="badge badge-active">Học viên</span>
         </div>
-        <div className="user-nav">
+        <div className="user-nav" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <a
+            href="/review"
+            id="reviewNavBtn"
+            className="btn btn-outline"
+            style={{ textDecoration: 'none', padding: '6px 14px', fontSize: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}
+          >
+            Ôn từ vựng
+          </a>
           {identityNode}
           <button
             type="button"
@@ -419,6 +526,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
             className="btn btn-outline"
             onClick={handleLogout}
             disabled={isLoggingOut}
+            style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             {isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}
           </button>
@@ -729,8 +837,8 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   return (
     <div id="homeView" className="app-container">
       {renderHeader(
-        <div id="learnerIdentity" className="user-identity">
-          <span className="user-name">
+        <div id="learnerIdentity" className="user-identity" style={{ maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span className="user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {learner.displayName || `Học viên (${learner.id.slice(0, 8)})`}
           </span>
         </div>
@@ -881,7 +989,117 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                       </div>
                     )}
 
-                    {/* Actions: Pause / Resume + Enter course */}
+                    {/* Inline recovery form for null contexts */}
+                    {recoveringContextId === ctx.id && (
+                      <div
+                        id={`startLevelSection-${ctx.id}`}
+                        style={{
+                          marginTop: '14px',
+                          padding: '14px',
+                          border: '1px solid var(--border-color, #e2e8f0)',
+                          borderRadius: '6px',
+                          background: 'var(--subtle-bg, #f8fafc)',
+                        }}
+                      >
+                        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px' }}>
+                          Chọn trình độ bắt đầu
+                        </h3>
+                        {isLoadingOptions && (
+                          <p style={{ color: 'var(--text-muted)' }}>Đang tải danh sách trình độ...</p>
+                        )}
+                        <div style={{ marginBottom: '10px' }}>
+                          <label
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              cursor: 'pointer',
+                              marginBottom: '6px',
+                            }}
+                          >
+                            <input
+                              type="radio"
+                              name={`startSource-${ctx.id}`}
+                              value="DEFAULT"
+                              checked={recoveringSource === 'DEFAULT'}
+                              onChange={() => setRecoveringSource('DEFAULT')}
+                              disabled={isRecovering}
+                            />
+                            <span>Trình độ mặc định (bài học đầu tiên)</span>
+                          </label>
+                          <label
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <input
+                              type="radio"
+                              name={`startSource-${ctx.id}`}
+                              value="SELF_REPORT"
+                              checked={recoveringSource === 'SELF_REPORT'}
+                              onChange={() => setRecoveringSource('SELF_REPORT')}
+                              disabled={isRecovering}
+                            />
+                            <span>Tự chọn trình độ</span>
+                          </label>
+                        </div>
+                        {recoveringSource === 'SELF_REPORT' && (
+                          <div style={{ marginBottom: '10px' }}>
+                            <label
+                              htmlFor={`startLevelSelect-${ctx.id}`}
+                              style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}
+                            >
+                              Trình độ
+                            </label>
+                            <select
+                              id={`startLevelSelect-${ctx.id}`}
+                              className="form-control"
+                              value={recoveringLevelId}
+                              onChange={(e) => setRecoveringLevelId(e.target.value)}
+                              disabled={isRecovering}
+                            >
+                              <option value="">-- Chọn trình độ --</option>
+                              {(() => {
+                                const lOpt = options?.languages.find(
+                                  (l) => l.id === ctx.targetLanguage.id
+                                );
+                                const cOpt = lOpt?.courses.find((c) => c.id === ctx.course.id);
+                                return (cOpt?.levels || []).map((lvl) => (
+                                  <option key={lvl.id} value={lvl.id}>
+                                    {lvl.code} - {getLocalizedText(lvl.label, uiLocale)}
+                                  </option>
+                                ));
+                              })()}
+                            </select>
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            type="button"
+                            id={`confirmStartLevelBtn-${ctx.id}`}
+                            className="btn btn-primary"
+                            onClick={() => handleConfirmStartLevel(ctx)}
+                            disabled={isRecovering}
+                          >
+                            {isRecovering ? 'Đang lưu...' : 'Xác nhận trình độ'}
+                          </button>
+                          <button
+                            type="button"
+                            id={`cancelStartLevelBtn-${ctx.id}`}
+                            className="btn btn-outline"
+                            onClick={handleCancelStartLevel}
+                            disabled={isRecovering}
+                          >
+                            Hủy
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Actions: Pause / Resume + Enter course / Start level */}
                     <div
                       style={{
                         marginTop: '16px',
@@ -897,7 +1115,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                             id={`pauseBtn-${ctx.id}`}
                             className="btn btn-outline"
                             onClick={() => handlePause(ctx)}
-                            disabled={isPending}
+                            disabled={isPending || isRecovering}
                           >
                             {isPending ? 'Đang tạm dừng...' : 'Tạm dừng'}
                           </button>
@@ -907,7 +1125,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                             id={`resumeBtn-${ctx.id}`}
                             className="btn btn-outline"
                             onClick={() => handleResume(ctx)}
-                            disabled={isPending}
+                            disabled={isPending || isRecovering}
                           >
                             {isPending ? 'Đang tiếp tục...' : 'Tiếp tục học'}
                           </button>
@@ -915,19 +1133,31 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                       </div>
 
                       {ctx.status === 'ACTIVE' && ctx.course.isActive && (
-                        <a
-                          href={`/learn/${ctx.id}`}
-                          id={`enterContextBtn-${ctx.id}`}
-                          className="btn btn-primary"
-                          style={{
-                            textDecoration: 'none',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          Vào học
-                        </a>
+                        ctx.workingLevel ? (
+                          <a
+                            href={`/learn/${ctx.id}`}
+                            id={`enterContextBtn-${ctx.id}`}
+                            className="btn btn-primary"
+                            style={{
+                              textDecoration: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            Vào học
+                          </a>
+                        ) : recoveringContextId !== ctx.id ? (
+                          <button
+                            type="button"
+                            id={`startLevelBtn-${ctx.id}`}
+                            className="btn btn-primary"
+                            onClick={() => handleOpenStartLevel(ctx)}
+                            disabled={isPending || isRecovering}
+                          >
+                            Chọn trình độ bắt đầu
+                          </button>
+                        ) : null
                       )}
                     </div>
                   </article>

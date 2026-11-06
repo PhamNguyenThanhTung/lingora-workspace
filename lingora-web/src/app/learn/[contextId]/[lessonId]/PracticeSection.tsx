@@ -630,6 +630,87 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
             </div>
           )}
 
+          {attempt.reviewEntries && attempt.reviewEntries.length > 0 && (
+            <div
+              id="practiceFeedbackReview"
+              style={{
+                marginTop: '24px',
+                marginBottom: '20px',
+                textAlign: 'left',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+              }}
+            >
+              <h4 style={{ fontSize: 'var(--font-size-heading)', fontWeight: 600, marginBottom: '8px' }}>
+                Chi tiết câu trả lời và giải thích
+              </h4>
+              {attempt.reviewEntries.map((entry, index) => (
+                <div
+                  key={entry.lessonExerciseId || index}
+                  className="review-entry-card"
+                  data-exercise-id={entry.lessonExerciseId}
+                  style={{
+                    padding: '16px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: `1px solid ${entry.isCorrect ? 'var(--primary-green, #10b981)' : 'var(--danger-red, #ef4444)'}`,
+                    backgroundColor: 'var(--canvas-bg)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontWeight: 600, fontSize: 'var(--font-size-sub)' }}>
+                      Câu {index + 1} ({entry.type})
+                    </span>
+                    <span
+                      className={`badge review-correctness ${entry.isCorrect ? 'badge-active' : 'badge-paused'}`}
+                      style={{
+                        color: entry.isCorrect ? 'var(--primary-green)' : 'var(--danger-red)',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {entry.isCorrect ? 'Đúng' : 'Sai'}
+                    </span>
+                  </div>
+
+                  <p className="review-prompt" style={{ marginBottom: '10px', fontWeight: 500 }}>
+                    {entry.prompt}
+                  </p>
+
+                  <div style={{ fontSize: 'var(--font-size-sub)', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Câu trả lời của bạn: </span>
+                    <span className="review-user-answer" style={{ fontWeight: 600 }}>
+                      {entry.userResponse || '(Chưa có câu trả lời)'}
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: 'var(--font-size-sub)', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Đáp án đúng: </span>
+                    <span className="review-correct-answer" style={{ fontWeight: 600, color: 'var(--primary-green)' }}>
+                      {entry.correctAnswer}
+                    </span>
+                  </div>
+
+                  {entry.explanation && (
+                    <div
+                      className="review-explanation"
+                      style={{
+                        marginTop: '8px',
+                        padding: '8px 12px',
+                        backgroundColor: 'var(--surface-bg)',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: 'var(--font-size-sub)',
+                        color: 'var(--text-body)',
+                        borderLeft: '3px solid var(--primary-green)',
+                      }}
+                    >
+                      <strong>Giải thích:</strong> {entry.explanation}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
           <div>
             <button
               type="button"

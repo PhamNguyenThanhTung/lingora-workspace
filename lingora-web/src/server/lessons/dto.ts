@@ -187,6 +187,22 @@ export interface PracticeResponseDto {
   formativeFeedback: string;
 }
 
+export interface PracticeReviewEntryDto {
+  lessonExerciseId: string;
+  position: number;
+  type: string;
+  prompt: string;
+  userResponse: string;
+  userResponses: Array<{
+    ordinal: number;
+    text: string;
+    isCorrect: boolean;
+  }>;
+  isCorrect: boolean;
+  correctAnswer: string;
+  explanation: string | null;
+}
+
 export interface PracticeAttemptDto {
   id: string;
   contextId: string;
@@ -206,6 +222,7 @@ export interface PracticeAttemptDto {
   queuePosition: number | null;
   exercises: LearnerExerciseDto[];
   responses: PracticeResponseDto[];
+  reviewEntries?: PracticeReviewEntryDto[] | null;
 }
 
 export interface PracticeAttemptEnvelope {

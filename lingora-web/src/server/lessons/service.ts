@@ -91,6 +91,9 @@ export async function loadLearnerCatalogue(contextId: string, verifiedUserId: st
   const rows = await db.lessonConsumption.findMany({ where: { contextId: c.id }, select: { lessonRevisionId: true, completedAt: true } });
   const reading = new Map(rows.map(r => [r.lessonRevisionId, r.completedAt ? 'COMPLETED' as const : 'IN_PROGRESS' as const]));
   result.units = units.map(unit => ({ id: unit.id, position: unit.position, names: labels(unit.names), lessons: unit.lessons.map(l => ({ id: l.id, position: l.position, isRequired: l.isRequired, title: labels(l.activeRevision!.title), isLocked: l.isLocked, ...(l.isLocked ? { lockReason: 'Cần hoàn thành bài học trước' } : {}), activeRevisionId: l.isLocked ? null : l.activeRevisionId, readingState: reading.get(l.activeRevisionId!) ?? 'NOT_STARTED' })) }));
+  if (result.units.length === 0) {
+    result.message = 'Chưa có bài học nào được phát hành trong trình độ này.';
+  }
   return result;
 }
 export async function loadLearnerLessonDetail(contextId: string, lessonId: string, verifiedUserId: string): Promise<LearnerLessonDetailDto> {

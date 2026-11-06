@@ -124,8 +124,18 @@ export function CatalogueView({ data, errorState }: CatalogueViewProps) {
         {units.length === 0 ? (
           <div id="emptyCatalogueState" className="empty-state-box">
             <p className="empty-state-text">
-              {message || 'Chưa có trình độ học hiện tại.'}
+              {message || (!context.workingLevel ? 'Chưa có trình độ học hiện tại.' : 'Chưa có bài học nào được phát hành trong trình độ này.')}
             </p>
+            {!context.workingLevel && (
+              <a
+                href="/home"
+                id="selectStartLevelBtn"
+                className="btn btn-primary"
+                style={{ textDecoration: 'none', marginTop: '12px', display: 'inline-block' }}
+              >
+                Chọn trình độ bắt đầu
+              </a>
+            )}
           </div>
         ) : (
           <div id="unitList" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -210,6 +220,7 @@ export function CatalogueView({ data, errorState }: CatalogueViewProps) {
                             {lesson.isLocked ? (
                               <button
                                 type="button"
+                                id={`lockedBtn-${lesson.id}`}
                                 className="btn btn-outline"
                                 disabled
                                 style={{ cursor: 'not-allowed', opacity: 0.6 }}

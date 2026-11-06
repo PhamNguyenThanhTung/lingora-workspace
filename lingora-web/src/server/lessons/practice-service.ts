@@ -15,6 +15,7 @@ import {
   type PracticeFinalizeResultDto,
   type LearnerExerciseDto,
   type PracticeScoreDto,
+  type PracticeReviewEntryDto,
 } from './dto.ts';
 import { publicExercise } from './content.ts';
 import {
@@ -149,6 +150,120 @@ export function deriveQueueState(
   };
 }
 
+function formatUserResponseText(type: string, promptData: any, input: unknown): string {
+  if (!input || typeof input !== 'object') return '';
+  const data = input as any;
+  if (type === 'MCQ' || type === 'LISTENING') {
+    const optionId = typeof data.optionId === 'string' ? data.optionId : '';
+    const options = Array.isArray(promptData?.options) ? promptData.options : [];
+    const matched = options.find((o: any) => o.id === optionId);
+    return matched?.text || optionId;
+  }
+  if (type === 'REORDER') {
+    const tokenIds = Array.isArray(data.tokenIds) ? data.tokenIds : [];
+    const tokens = Array.isArray(promptData?.tokens) ? promptData.tokens : [];
+    const tokenMap = new Map<string, string>(tokens.map((t: any) => [t.id, t.text]));
+    return tokenIds.map((id: string) => tokenMap.get(id) || id).join(' ');
+  }
+  if (type === 'FILL_BLANK' || type === 'GRAMMAR') {
+    return typeof data.text === 'string' ? data.text.trim() : '';
+  }
+  return '';
+}
+
+function formatCorrectAnswerText(type: string, promptData: any, gradingData: any): string {
+  if (!gradingData || typeof gradingData !== 'object') return '';
+  if (type === 'MCQ' || type === 'LISTENING') {
+    const correctOptionId = gradingData.correctOptionId;
+    const options = Array.isArray(promptData?.options) ? promptData.options : [];
+    const matched = options.find((o: any) => o.id === correctOptionId);
+    return matched?.text || String(correctOptionId || '');
+  }
+  if (type === 'REORDER') {
+    const correctOrder = Array.isArray(gradingData.correctOrder) ? gradingData.correctOrder : [];
+    const tokens = Array.isArray(promptData?.tokens) ? promptData.tokens : [];
+    const tokenMap = new Map<string, string>(tokens.map((t: any) => [t.id, t.text]));
+    return correctOrder.map((id: string) => tokenMap.get(id) || id).join(' ');
+  }
+  if (type === 'FILL_BLANK' || type === 'GRAMMAR') {
+    const acceptedAnswers = gradingData.acceptedAnswers;
+    if (Array.isArray(acceptedAnswers)) {
+      return acceptedAnswers.map((a: unknown) => String(a).trim()).filter(Boolean).join(' / ');
+    }
+    return String(acceptedAnswers || '');
+  }
+  return '';
+}
+
+export function buildPracticeReviewEntries(
+  coreExercises: ExerciseWithSecret[],
+  responses: Array<{
+    lessonExerciseId: string;
+    responseOrdinal: number;
+    queuePosition: number;
+    isCorrect: boolean;
+    input: unknown;
+  }>
+): PracticeReviewEntryDto[] {
+  const responsesByExercise = new Map<
+    string,
+    Array<{ ordinal: number; text: string; isCorrect: boolean }>
+  >();
+
+  for (const resp of responses) {
+    const ex = coreExercises.find((e) => e.id === resp.lessonExerciseId);
+    const type = ex?.itemRevision.type || '';
+    const promptData = ex?.itemRevision.promptData;
+    const list = responsesByExercise.get(resp.lessonExerciseId) || [];
+    list.push({
+      ordinal: resp.responseOrdinal,
+      text: formatUserResponseText(type, promptData, resp.input),
+      isCorrect: resp.isCorrect,
+    });
+    responsesByExercise.set(resp.lessonExerciseId, list);
+  }
+
+  return coreExercises.map((ex) => {
+    const type = ex.itemRevision.type;
+    const promptData = ex.itemRevision.promptData as any;
+    const gradingData = ex.itemRevision.gradingSecret?.gradingData as any;
+    const feedbackData = ex.itemRevision.gradingSecret?.feedbackData as any;
+
+    const rawExplanation = feedbackData?.explanation;
+    const explanation =
+      typeof rawExplanation === 'string' && rawExplanation.trim().length > 0
+        ? rawExplanation.trim()
+        : null;
+
+    const exerciseResponses = responsesByExercise.get(ex.id) || [];
+    const isCorrect = exerciseResponses.some((r) => r.isCorrect);
+    const lastResponse = exerciseResponses[exerciseResponses.length - 1];
+
+    let prompt = '';
+    if (type === 'FILL_BLANK') {
+      prompt = promptData?.sentence || promptData?.prompt || '';
+    } else if (type === 'GRAMMAR') {
+      prompt = promptData?.sourceSentence || promptData?.prompt || '';
+    } else {
+      prompt = promptData?.prompt || '';
+    }
+
+    const correctAnswer = formatCorrectAnswerText(type, promptData, gradingData);
+
+    return {
+      lessonExerciseId: ex.id,
+      position: ex.position,
+      type,
+      prompt,
+      userResponse: lastResponse?.text || '',
+      userResponses: exerciseResponses,
+      isCorrect,
+      correctAnswer,
+      explanation,
+    };
+  });
+}
+
 export async function buildAttemptDto(
   db: Db,
   attempt: {
@@ -193,6 +308,11 @@ export async function buildAttemptDto(
     };
   }
 
+  let reviewEntries: PracticeReviewEntryDto[] | null = null;
+  if (isCompleted) {
+    reviewEntries = buildPracticeReviewEntries(coreExercises, attempt.responses);
+  }
+
   const responsesDto: PracticeResponseDto[] = attempt.responses.map(r => ({
     id: r.id,
     lessonExerciseId: r.lessonExerciseId,
@@ -227,6 +347,7 @@ export async function buildAttemptDto(
     queuePosition: isCompleted ? null : queue.queuePosition,
     exercises: publicExercisesList,
     responses: responsesDto,
+    reviewEntries,
   };
 }
 

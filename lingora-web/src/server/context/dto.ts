@@ -124,6 +124,24 @@ export const contextPatchSchema = z.object({
 
 export type ContextPatchInput = z.infer<typeof contextPatchSchema>;
 
+export const contextStartDefaultSchema = z.object({
+  startSource: z.literal('DEFAULT'),
+  expectedRowVersion: z.string().regex(/^[1-9]\d*$/),
+}).strict();
+
+export const contextStartSelfReportSchema = z.object({
+  startSource: z.literal('SELF_REPORT'),
+  levelId: pgUuidSchema,
+  expectedRowVersion: z.string().regex(/^[1-9]\d*$/),
+}).strict();
+
+export const contextStartSchema = z.union([
+  contextStartDefaultSchema,
+  contextStartSelfReportSchema,
+]);
+
+export type ContextStartInput = z.infer<typeof contextStartSchema>;
+
 export class ContextServiceError extends Error {
   status: number;
   code: string;
