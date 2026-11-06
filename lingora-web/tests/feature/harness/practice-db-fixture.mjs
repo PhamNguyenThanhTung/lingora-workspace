@@ -27,12 +27,12 @@ export async function createPracticeFixture(db, {fiveTypes=false} = {}) {
     exerciseId: id(),
   };
 
-  // Upsert 'en' language for system defaults
-  await db.language.upsert({
-    where: { code: 'en' },
-    create: { code: 'en', names: { en: 'English' }, isUiLocale: true, isLearnable: true },
-    update: {},
-  });
+  // DB-native concurrent-safe insert for 'en' language
+  await db.$executeRaw`
+    INSERT INTO app.languages (id, code, names, is_learnable, is_ui_locale, created_at, updated_at)
+    VALUES (gen_random_uuid(), 'en', '{"en": "English"}'::jsonb, true, true, NOW(), NOW())
+    ON CONFLICT (code) DO NOTHING
+  `;
 
   // Insert corresponding auth.users records for accounts
   for (const uid of [f.admin, f.teacher, f.learnerA, f.learnerB]) {
@@ -184,12 +184,8 @@ export async function createPracticeFixture(db, {fiveTypes=false} = {}) {
   assert.equal(approved.status,200,JSON.stringify(approved));
   revision = await db.lessonRevision.findUnique({where:{id:f.revision}});
   const currentLesson = await db.lesson.findUnique({where:{id:f.lesson}});
-  const published = await publishReview(f.admin,submitted.data.submissionId,{expectedRevisionRowVersion:revision.rowVersion.toString(),expectedLessonRowVersion:currentLesson.rowVersion.toString()},db);
+  const published = await publishReview(f.admin,submitted.data.submissionId,{expectedRevisionRowVersion:revision.rowVersion.toString(),expectedLessonRowVersion:currentLesson.rowVersion.toString(),makeAvailable:true},db);
   assert.equal(published.status,200,JSON.stringify(published));
-  await db.lesson.update({
-    where: { id: f.lesson },
-    data: { availability: 'AVAILABLE', activeRevisionId: f.revision },
-  });
 
   // Learning Contexts
   await db.learningContext.createMany({

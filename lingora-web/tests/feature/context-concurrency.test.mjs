@@ -7,6 +7,7 @@ import {
   createLearningContext,
   patchLearningContext,
   loadContextOptions,
+  startLearningContext,
 } from '../../src/server/context/service.ts';
 import { mutateLessonConsumption, getLessonReading } from '../../src/server/lessons/service.ts';
 import {
@@ -777,23 +778,31 @@ test('Real PostgreSQL: Learner holds Lesson shared lock; competing lesson withdr
   await db.lesson.update({ where: { id: f.lesson }, data: { availability: 'AVAILABLE' } });
 });
 
-test('Real PostgreSQL: Lesson writer withdraws all lessons; honest null start chosen', async () => {
+test('Real PostgreSQL: Lesson writer withdraws all lessons; create fails 409 COURSE_NO_AVAILABLE_LESSONS without row', async () => {
   await db.learningContext.deleteMany({ where: { learnerId: f.learnerA } });
 
   await other.lesson.update({ where: { id: f.lesson }, data: { availability: 'PLANNED' } });
   await other.lesson.update({ where: { id: f.lesson2 }, data: { availability: 'PLANNED' } });
 
   const ctxId = randomUUID();
-  const res = await createLearningContext(f.learnerA, {
-    contextId: ctxId,
-    languageId: f.lang,
-    courseId: f.course,
-    startSource: 'DEFAULT',
-  }, db);
+  await assert.rejects(
+    async () => {
+      await createLearningContext(f.learnerA, {
+        contextId: ctxId,
+        languageId: f.lang,
+        courseId: f.course,
+        startSource: 'DEFAULT',
+      }, db);
+    },
+    (err) => {
+      assert.equal(err.status, 409);
+      assert.equal(err.code, 'COURSE_NO_AVAILABLE_LESSONS');
+      return true;
+    }
+  );
 
-  assert.equal(res.selectedStartLevel, null);
-  assert.equal(res.workingLevel, null);
-  assert.equal(res.startSource, null);
+  const contextCount = await db.learningContext.count({ where: { id: ctxId } });
+  assert.equal(contextCount, 0, 'No context row written when no available lessons');
 
   // Restore
   await other.lesson.update({ where: { id: f.lesson }, data: { availability: 'AVAILABLE' } });
@@ -1556,4 +1565,86 @@ test('Real PostgreSQL: Nonempty mature SRS card state and valid review history p
   assert.equal(finalCard.rowVersion, 3n);
   assert.equal(finalCard.lastReviewedAt?.toISOString(), new Date(revMicro).toISOString());
   assert.equal(finalCard.dueAt.toISOString(), new Date(dueMicro).toISOString());
+});
+
+test('Real PostgreSQL R6: simultaneous startLearningContext on unconfigured context converges with one winner and replay', async () => {
+  // Clear any existing contexts for Learner A to stay clean
+  await db.learningContext.deleteMany({ where: { learnerId: f.learnerA } });
+
+  const ctxRecovId = randomUUID();
+  // Create an unconfigured context (working_level_id = null)
+  await db.$executeRaw`
+    INSERT INTO app.learning_contexts (id, learner_id, language_id, course_id, status, working_level_id, selected_start_level_id, start_source, row_version, created_at, updated_at)
+    VALUES (${ctxRecovId}::uuid, ${f.learnerA}::uuid, ${f.lang}::uuid, ${f.course}::uuid, 'ACTIVE', NULL, NULL, NULL, 1, NOW(), NOW())
+  `;
+
+  // Two concurrent calls attempting startLearningContext with DEFAULT
+  const [res1, res2] = await Promise.all([
+    startLearningContext(f.learnerA, ctxRecovId, { startSource: 'DEFAULT', expectedRowVersion: '1' }, db),
+    startLearningContext(f.learnerA, ctxRecovId, { startSource: 'DEFAULT', expectedRowVersion: '1' }, other),
+  ]);
+
+  // Both should succeed (one performs update, the other converges via BigInt(expVersion) + 1n replay)
+  assert.equal(res1.id, ctxRecovId);
+  assert.equal(res2.id, ctxRecovId);
+  assert.equal(res1.workingLevel?.id, f.level);
+  assert.equal(res2.workingLevel?.id, f.level);
+  assert.equal(res1.selectedStartLevel?.id, f.level);
+  assert.equal(res2.selectedStartLevel?.id, f.level);
+
+  // Check DB state: exactly 1 update occurred, row_version = 2n
+  const dbCtx = await db.learningContext.findUnique({ where: { id: ctxRecovId } });
+  assert.equal(dbCtx.workingLevelId, f.level);
+  assert.equal(dbCtx.selectedStartLevelId, f.level);
+  assert.equal(dbCtx.rowVersion, 2n);
+});
+
+test('Real PostgreSQL R6: startLearningContext with stale rowVersion or already configured fails 409', async () => {
+  await db.learningContext.deleteMany({ where: { learnerId: f.learnerA } });
+
+  const ctxRecovId = randomUUID();
+  await db.$executeRaw`
+    INSERT INTO app.learning_contexts (id, learner_id, language_id, course_id, status, working_level_id, selected_start_level_id, start_source, row_version, created_at, updated_at)
+    VALUES (${ctxRecovId}::uuid, ${f.learnerA}::uuid, ${f.lang}::uuid, ${f.course}::uuid, 'ACTIVE', NULL, NULL, NULL, 1, NOW(), NOW())
+  `;
+
+  // 1. Mismatched version on unconfigured context
+  await assert.rejects(
+    startLearningContext(f.learnerA, ctxRecovId, { startSource: 'DEFAULT', expectedRowVersion: '99' }, db),
+    (err) => err.status === 409 && err.code === 'STALE_ROW_VERSION'
+  );
+
+  // 2. Configure successfully
+  await startLearningContext(f.learnerA, ctxRecovId, { startSource: 'DEFAULT', expectedRowVersion: '1' }, db);
+
+  // 3. Second call with different startSource on already configured context fails
+  await assert.rejects(
+    startLearningContext(f.learnerA, ctxRecovId, { startSource: 'SELF_REPORT', levelId: f.level2, expectedRowVersion: '1' }, db),
+    (err) => err.status === 409
+  );
+});
+
+test('Real PostgreSQL R6: startLearningContext rejects context with learning history (409 CONTEXT_HAS_HISTORY)', async () => {
+  await db.learningContext.deleteMany({ where: { learnerId: f.learnerA } });
+
+  const ctxHistId = randomUUID();
+  await db.$executeRaw`
+    INSERT INTO app.learning_contexts (id, learner_id, language_id, course_id, status, working_level_id, selected_start_level_id, start_source, row_version, created_at, updated_at)
+    VALUES (${ctxHistId}::uuid, ${f.learnerA}::uuid, ${f.lang}::uuid, ${f.course}::uuid, 'ACTIVE', NULL, NULL, NULL, 1, NOW(), NOW())
+  `;
+
+  // Insert a consumption row to simulate learning history
+  await db.lessonConsumption.create({
+    data: {
+      id: randomUUID(),
+      contextId: ctxHistId,
+      lessonId: f.lesson,
+      lessonRevisionId: f.revision,
+    },
+  });
+
+  await assert.rejects(
+    startLearningContext(f.learnerA, ctxHistId, { startSource: 'DEFAULT', expectedRowVersion: '1' }, db),
+    (err) => err.status === 409 && err.code === 'CONTEXT_HAS_HISTORY'
+  );
 });

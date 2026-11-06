@@ -781,4 +781,148 @@ describe('Slice 11: Practice Attempt Lifecycle & Routes', () => {
     assert.equal(card.rowVersion, 5n, 'Existing rowVersion must remain 5');
     assert.equal(card.dueAt.toISOString(), existingDueAt.toISOString(), 'Existing dueAt must remain unchanged');
   });
+
+  describe('P3: Bounded Post-Completion Review & Explanation', () => {
+    test('in-flight attempt has reviewEntries === null and exposes zero answers or explanations', async () => {
+      const attemptId = randomUUID();
+      const reqStart = new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ attemptId, expectedPublishedRevisionId: revision1Id }),
+      });
+      const resStart = await attemptsRoute.POST(reqStart, { params: Promise.resolve({ contextId, lessonId: lesson1Id }) });
+      assert.equal(resStart.status, 200);
+      const startJson = await resStart.json();
+      assert.equal(startJson.data.isCompleted, false);
+      assert.equal(startJson.data.reviewEntries, null);
+
+      // GET attempt detail also has reviewEntries === null
+      const reqGet = new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}`, {
+        method: 'GET',
+        headers: authHeaders(),
+      });
+      const resGet = await attemptDetailRoute.GET(reqGet, { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(resGet.status, 200);
+      const getJson = await resGet.json();
+      assert.equal(getJson.data.reviewEntries, null);
+    });
+
+    test('finalized attempt contains plain-text review entries and explanations for all 5 exercise types', async () => {
+      const attemptId = randomUUID();
+      const reqStart = new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ attemptId, expectedPublishedRevisionId: revision1Id }),
+      });
+      const resStart = await attemptsRoute.POST(reqStart, { params: Promise.resolve({ contextId, lessonId: lesson1Id }) });
+      assert.equal(resStart.status, 200);
+
+      // 1. MCQ (ex-mcq-1) - answer correctly
+      const res1 = await responsesRoute.POST(new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}/responses`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ operationKey: randomUUID(), lessonExerciseId: 'ex-mcq-1', input: { optionId: 'opt-1' } }),
+      }), { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(res1.status, 200);
+
+      // 2. FILL_BLANK (ex-fill-2) - answer incorrectly first, then correctly
+      const res2 = await responsesRoute.POST(new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}/responses`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ operationKey: randomUUID(), lessonExerciseId: 'ex-fill-2', input: { text: 'wrong' } }),
+      }), { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(res2.status, 200);
+
+      // 3. REORDER (ex-reorder-3) - answer correctly
+      const res3 = await responsesRoute.POST(new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}/responses`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ operationKey: randomUUID(), lessonExerciseId: 'ex-reorder-3', input: { tokenIds: ['t-1', 't-2', 't-3'] } }),
+      }), { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(res3.status, 200);
+
+      // 4. LISTENING (ex-listen-4) - answer correctly
+      const res4 = await responsesRoute.POST(new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}/responses`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ operationKey: randomUUID(), lessonExerciseId: 'ex-listen-4', input: { optionId: 'opt-l1' } }),
+      }), { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(res4.status, 200);
+
+      // 5. GRAMMAR (ex-grammar-5) - answer correctly
+      const res5 = await responsesRoute.POST(new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}/responses`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ operationKey: randomUUID(), lessonExerciseId: 'ex-grammar-5', input: { text: 'Subject + To Be + Noun' } }),
+      }), { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(res5.status, 200);
+
+      // Re-try question 2 (FILL_BLANK) - answer correctly
+      const res6 = await responsesRoute.POST(new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}/responses`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ operationKey: randomUUID(), lessonExerciseId: 'ex-fill-2', input: { text: 'meet' } }),
+      }), { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(res6.status, 200);
+
+      // Finalize attempt
+      const resFin = await finalizeRoute.POST(new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}/finalize`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ operationKey: randomUUID() }),
+      }), { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(resFin.status, 200);
+      const finJson = await resFin.json();
+      const attempt = finJson.data.attempt;
+      assert.equal(attempt.isCompleted, true);
+      assert.ok(Array.isArray(attempt.reviewEntries));
+      assert.equal(attempt.reviewEntries.length, 5);
+
+      // Entry 1: MCQ
+      const mcq = attempt.reviewEntries.find(e => e.lessonExerciseId === 'ex-mcq-1');
+      assert.ok(mcq);
+      assert.equal(mcq.isCorrect, true);
+      assert.equal(mcq.userResponse, 'Hello');
+      assert.equal(mcq.correctAnswer, 'Hello');
+      assert.equal(mcq.explanation, 'Hello là lời chào thông dụng.');
+
+      // Entry 2: FILL_BLANK (final response was meet)
+      const fill = attempt.reviewEntries.find(e => e.lessonExerciseId === 'ex-fill-2');
+      assert.ok(fill);
+      assert.equal(fill.isCorrect, true);
+      assert.equal(fill.userResponse, 'meet');
+      assert.equal(fill.correctAnswer, 'meet / see');
+
+      // Entry 3: REORDER
+      const reorder = attempt.reviewEntries.find(e => e.lessonExerciseId === 'ex-reorder-3');
+      assert.ok(reorder);
+      assert.equal(reorder.isCorrect, true);
+      assert.equal(reorder.userResponse, 'How are you?');
+      assert.equal(reorder.correctAnswer, 'How are you?');
+
+      // Entry 4: LISTENING
+      const listen = attempt.reviewEntries.find(e => e.lessonExerciseId === 'ex-listen-4');
+      assert.ok(listen);
+      assert.equal(listen.isCorrect, true);
+      assert.equal(listen.userResponse, 'Chào buổi sáng');
+      assert.equal(listen.correctAnswer, 'Chào buổi sáng');
+
+      // Entry 5: GRAMMAR
+      const grammar = attempt.reviewEntries.find(e => e.lessonExerciseId === 'ex-grammar-5');
+      assert.ok(grammar);
+      assert.equal(grammar.isCorrect, true);
+      assert.equal(grammar.userResponse, 'Subject + To Be + Noun');
+      assert.equal(grammar.correctAnswer, 'Subject + To Be + Noun');
+
+      // GET attempt detail reproduces exact same reviewEntries
+      const reqGet = new Request(`http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}`, {
+        method: 'GET',
+        headers: authHeaders(),
+      });
+      const resGet = await attemptDetailRoute.GET(reqGet, { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) });
+      assert.equal(resGet.status, 200);
+      const getJson = await resGet.json();
+      assert.deepEqual(getJson.data.reviewEntries, attempt.reviewEntries);
+    });
+  });
 });

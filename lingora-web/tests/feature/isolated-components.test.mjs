@@ -218,6 +218,67 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     await context.close();
   });
 
+  test('HomeView R8: narrow mobile 390px viewport preserves header bounding boxes without multi-line button wrapping', async () => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const page = await context.newPage();
+
+    await page.goto(`${TEST_URL}?state=home-valid`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#homeView', { state: 'visible' });
+
+    // 1. Verify "Ôn từ vựng" button bounding box is single line (<= 48px height)
+    const reviewBtn = page.locator('#reviewNavBtn');
+    await reviewBtn.waitFor({ state: 'visible' });
+    const reviewBox = await reviewBtn.boundingBox();
+    assert.ok(reviewBox, 'reviewNavBtn bounding box must exist');
+    assert.ok(reviewBox.height <= 48, `reviewNavBtn height must be single-line (<=48px), got ${reviewBox.height}`);
+    assert.ok(reviewBox.x + reviewBox.width <= 390, `reviewNavBtn must fit inside 390px width, got x+w=${reviewBox.x + reviewBox.width}`);
+
+    // 2. Verify logout button bounding box
+    const logoutBtn = page.locator('#logoutBtn');
+    const logoutBox = await logoutBtn.boundingBox();
+    assert.ok(logoutBox, 'logoutBtn bounding box must exist');
+    assert.ok(logoutBox.x + logoutBox.width <= 390, `logoutBtn must fit inside 390px width, got x+w=${logoutBox.x + logoutBox.width}`);
+
+    // 3. Verify keyboard focus and clickability
+    await reviewBtn.focus();
+    const isReviewFocused = await page.evaluate(() => document.activeElement?.id === 'reviewNavBtn');
+    assert.equal(isReviewFocused, true, 'reviewNavBtn must be keyboard focusable');
+
+    await context.close();
+  });
+
+  test('HomeView: null context displays "Chọn trình độ bắt đầu" and opens recovery form on click', async () => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    await page.goto(`${TEST_URL}?state=home-null-context`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#homeView', { state: 'visible' });
+
+    // Verify card shows Chưa xếp lớp and startLevelBtn
+    const cardText = await page.textContent('.context-card');
+    assert.match(cardText, /Chưa xếp lớp/);
+
+    const startBtn = await page.waitForSelector('#startLevelBtn-ctx-null-1', { state: 'visible' });
+    assert.ok(startBtn);
+
+    // Clicking button opens the start level form
+    await page.click('#startLevelBtn-ctx-null-1');
+    await page.waitForSelector('#startLevelSection-ctx-null-1', { state: 'visible' });
+
+    const confirmBtn = await page.isVisible('#confirmStartLevelBtn-ctx-null-1');
+    assert.equal(confirmBtn, true);
+
+    const cancelBtn = await page.isVisible('#cancelStartLevelBtn-ctx-null-1');
+    assert.equal(cancelBtn, true);
+
+    // Clicking cancel hides the start level form
+    await page.click('#cancelStartLevelBtn-ctx-null-1');
+    const formVisible = await page.isVisible('#startLevelSection-ctx-null-1');
+    assert.equal(formVisible, false);
+
+    await context.close();
+  });
+
   test('HomeView: empty context displays "Bạn chưa có lộ trình học." and keeps Logout usable', async () => {
     const context = await browser.newContext();
     const page = await context.newPage();

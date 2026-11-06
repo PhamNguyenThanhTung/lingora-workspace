@@ -163,13 +163,9 @@ export async function createContextConcurrencyFixture(db) {
   const pub2 = await publishReview(f.admin, sub2.data.submissionId, {
     expectedRevisionRowVersion: rev2Pub.rowVersion.toString(),
     expectedLessonRowVersion: cur2.rowVersion.toString(),
+    makeAvailable: true,
   }, db);
   assert.equal(pub2.status, 200);
-
-  await db.lesson.update({
-    where: { id: f.lesson2 },
-    data: { availability: 'AVAILABLE', activeRevisionId: f.revision2 },
-  });
 
   // Second Learnable Language (lang2) and Course (course2)
   f.lang2 = id();
@@ -274,13 +270,9 @@ export async function createContextConcurrencyFixture(db) {
   const pubJA = await publishReview(f.admin, subJA.data.submissionId, {
     expectedRevisionRowVersion: revJAPub.rowVersion.toString(),
     expectedLessonRowVersion: curJA.rowVersion.toString(),
+    makeAvailable: true,
   }, db);
   assert.equal(pubJA.status, 200, JSON.stringify(pubJA));
-
-  await db.lesson.update({
-    where: { id: f.lessonCourse2 },
-    data: { availability: 'AVAILABLE', activeRevisionId: f.revisionCourse2 },
-  });
 
   // Third Learnable Language (lang3) and Course (course3)
   f.lang3 = id();
@@ -305,6 +297,88 @@ export async function createContextConcurrencyFixture(db) {
       defaultStartLevelId: f.level,
     },
   });
+
+  f.unitCourse3 = id();
+  f.lessonCourse3 = id();
+  f.assignmentCourse3 = id();
+  f.episodeCourse3 = id();
+  f.revisionCourse3 = id();
+
+  await db.unit.create({
+    data: {
+      id: f.unitCourse3,
+      courseId: f.course3,
+      levelId: f.level,
+      code: 'FR-U1',
+      names: { vi: 'Chương 1 Tiếng Pháp', en: 'French Unit 1' },
+      position: 1,
+    },
+  });
+
+  await db.lesson.create({
+    data: {
+      id: f.lessonCourse3,
+      unitId: f.unitCourse3,
+      position: 1,
+      availability: 'PLANNED',
+    },
+  });
+
+  await db.contentAssignment.create({
+    data: { id: f.assignmentCourse3, createdBy: f.admin, currentTeacherId: f.teacher, lessonId: f.lessonCourse3 },
+  });
+
+  await db.assignmentHistory.create({
+    data: {
+      id: f.episodeCourse3,
+      assignmentId: f.assignmentCourse3,
+      sequenceNo: 1,
+      eventType: 'ASSIGNED',
+      nextTeacherId: f.teacher,
+      scopeGeneration: 1n,
+      changedBy: f.admin,
+      scopeSnapshot: { unit: 'FR-U1' },
+    },
+  });
+
+  await db.lessonRevision.create({
+    data: {
+      id: f.revisionCourse3,
+      lessonId: f.lessonCourse3,
+      revisionNo: 1,
+      assignmentId: f.assignmentCourse3,
+      creationAssignmentEpisodeId: f.episodeCourse3,
+      status: 'DRAFT',
+      title: { vi: 'Bài Pháp 1', en: 'French Lesson 1' },
+      contentBlocks: [{ type: 'paragraph', text: 'Nội dung bài Pháp 1' }],
+      createdBy: f.teacher,
+      lastEditedBy: f.teacher,
+    },
+  });
+
+  await addExerciseToRevision(db, f.teacher, f.episodeCourse3, f.revisionCourse3);
+
+  const subFR = await submitTeacherLesson(f.teacher, f.lessonCourse3, {
+    revisionId: f.revisionCourse3,
+    expectedLessonRowVersion: '1',
+    expectedRevisionRowVersion: '1',
+  }, db);
+  assert.equal(subFR.status, 200, JSON.stringify(subFR));
+
+  const revFRRow = await db.lessonRevision.findUnique({ where: { id: f.revisionCourse3 } });
+  const appFR = await approveReview(f.admin, subFR.data.submissionId, {
+    expectedRevisionRowVersion: revFRRow.rowVersion.toString(),
+  }, db);
+  assert.equal(appFR.status, 200, JSON.stringify(appFR));
+
+  const revFRPub = await db.lessonRevision.findUnique({ where: { id: f.revisionCourse3 } });
+  const curFR = await db.lesson.findUnique({ where: { id: f.lessonCourse3 } });
+  const pubFR = await publishReview(f.admin, subFR.data.submissionId, {
+    expectedRevisionRowVersion: revFRPub.rowVersion.toString(),
+    expectedLessonRowVersion: curFR.rowVersion.toString(),
+    makeAvailable: true,
+  }, db);
+  assert.equal(pubFR.status, 200, JSON.stringify(pubFR));
 
   return f;
 }

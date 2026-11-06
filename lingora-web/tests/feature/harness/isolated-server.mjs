@@ -113,8 +113,8 @@ export async function startIsolatedServer(port = 3019) {
 
     await requests.run(store, async () => {
       try {
-        if (url.pathname === '/login' || url.pathname === '/home') {
-          const kind = url.pathname === '/login' ? 'login' : 'home';
+        if (url.pathname === '/login' || url.pathname === '/home' || url.pathname === '/review') {
+          const kind = url.pathname === '/login' ? 'login' : url.pathname === '/home' ? 'home' : 'review';
           const element = await modules[`${kind}Page`].default();
           writeCookies();
           res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -350,6 +350,8 @@ export async function startIsolatedServer(port = 3019) {
           '/api/auth/login': modules.login.POST,
           '/api/auth/logout': modules.logout.POST,
           '/api/learner/context': modules.context.GET,
+          '/api/learner/review/start': modules.reviewStartApi.POST,
+          '/api/learner/review/respond': modules.reviewRespondApi.POST,
         }[url.pathname];
 
         if (handler) {

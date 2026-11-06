@@ -160,6 +160,19 @@ test('Practice UI: Start attempt -> submit responses across 5 exercise types -> 
     const scoreText = await page.locator('#practiceCompletionScore').textContent();
     assert.match(scoreText, /10 \/ 10 \(100%\)/);
 
+    // Verification: P3 feedback review rendered with cards, answers, correctness, explanations
+    await page.locator('#practiceFeedbackReview').waitFor({ state: 'visible' });
+    const cards = page.locator('.review-entry-card');
+    assert.equal(await cards.count(), 5);
+    const firstPrompt = await cards.first().locator('.review-prompt').textContent();
+    assert.match(firstPrompt, /Chọn câu chào hỏi thông dụng/);
+    const firstUserAnswer = await cards.first().locator('.review-user-answer').textContent();
+    assert.match(firstUserAnswer, /Hello/);
+    const firstCorrectness = await cards.first().locator('.review-correctness').textContent();
+    assert.match(firstCorrectness, /Đúng/);
+    const firstExplanation = await cards.first().locator('.review-explanation').textContent();
+    assert.match(firstExplanation, /Hello là lời chào thông dụng/);
+
     // Verification: Redo practice button is present
     const redoBtn = page.locator('#redoPracticeBtn');
     await redoBtn.waitFor({ state: 'visible' });

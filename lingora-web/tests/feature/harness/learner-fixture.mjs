@@ -361,6 +361,21 @@ export function fixtureDb(state) {
   state.attempts ||= [];
   state.responses ||= [];
   state.srsCards ||= [];
+  state.srsReviewOperations ||= [];
+  state.vocabularyConcepts ||= [
+    {
+      id: 'vocab-concept-1',
+      canonicalForm: 'Hello',
+      senseKey: 'greeting',
+      phonetic: 'həˈləʊ',
+      partOfSpeech: 'interjection',
+      meaningLabels: {
+        vi: 'Xin chào',
+        en: 'Used as a greeting or to begin a conversation',
+      },
+      example: 'Hello, how are you today?',
+    },
+  ];
   state.commandReceipts ||= [];
 
   const many = (rows, args) => ordered(rows.filter(r => matches(r, args?.where)), args?.orderBy).map(r => projected(r, args));
@@ -644,9 +659,28 @@ export function fixtureDb(state) {
     srsCard: {
       findUnique: async args => {
         const where = args.where.learnerId_vocabularyId || args.where.id_learnerId || args.where;
-        return first(state.srsCards, { ...args, where });
+        const row = first(state.srsCards, { ...args, where });
+        if (row && args?.include?.vocabulary && !row.vocabulary) {
+          row.vocabulary = (state.vocabularyConcepts || []).find(v => v.id === row.vocabularyId) || null;
+        }
+        return row;
+      },
+      findFirst: async args => {
+        const rows = state.srsCards.map(c => {
+          if (!c.vocabulary) {
+            c.vocabulary = (state.vocabularyConcepts || []).find(v => v.id === c.vocabularyId) || null;
+          }
+          return c;
+        });
+        return first(rows, args);
       },
       findMany: async args => many(state.srsCards, args),
+      update: async ({ where, data }) => {
+        const target = state.srsCards.find(r => r.id === where.id);
+        if (!target) throw new Error('Card not found for update');
+        Object.assign(target, data);
+        return target;
+      },
       create: async ({ data }) => {
         const row = {
           id: randomUUID(),
@@ -661,10 +695,27 @@ export function fixtureDb(state) {
           createdAt: new Date(),
           updatedAt: new Date(),
           rowVersion: 1n,
+          vocabulary: (state.vocabularyConcepts || []).find(v => v.id === data.vocabularyId) || null,
         };
         state.srsCards.push(row);
         return row;
       },
+    },
+    srsReviewOperation: {
+      findUnique: async args => {
+        const where = args.where.learnerId_operationKey || args.where;
+        return first(state.srsReviewOperations, { ...args, where });
+      },
+      create: async ({ data }) => {
+        const row = {
+          id: randomUUID(),
+          ...data,
+          createdAt: new Date(),
+        };
+        state.srsReviewOperations.push(row);
+        return row;
+      },
+      findMany: async args => many(state.srsReviewOperations, args),
     },
     commandReceipt: {
       findUnique: async args => {
@@ -698,6 +749,7 @@ export function fixtureDb(state) {
         responses: structuredClone(state.responses),
         completions: structuredClone(state.completions),
         srsCards: structuredClone(state.srsCards),
+        srsReviewOperations: structuredClone(state.srsReviewOperations),
         commandReceipts: structuredClone(state.commandReceipts),
       };
       try {
@@ -709,6 +761,7 @@ export function fixtureDb(state) {
         state.responses = snap.responses;
         state.completions = snap.completions;
         state.srsCards = snap.srsCards;
+        state.srsReviewOperations = snap.srsReviewOperations;
         state.commandReceipts = snap.commandReceipts;
         throw e;
       }
@@ -718,6 +771,12 @@ export function fixtureDb(state) {
       if (sql.includes('clock_timestamp')) {
         const now = new Date();
         return [{ ts: now, completed_at: now, qualifying_date: now }];
+      }
+      if (sql.includes('app.accounts') && sql.includes('FOR UPDATE')) {
+        return [{ id: values[0] }];
+      }
+      if (sql.includes('app.srs_cards') && sql.includes('FOR UPDATE')) {
+        return [{ id: values[0], row_version: 1n }];
       }
       if (sql.includes('app.lesson_consumptions')) {
         return state.consumptions.filter(r => r.contextId === values[0] && r.lessonRevisionId === values[1]).map(r => ({ id: r.id }));

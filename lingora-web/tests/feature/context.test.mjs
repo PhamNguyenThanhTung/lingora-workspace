@@ -8,7 +8,7 @@ import os from 'node:os';
 import { loadLearnerContext } from '../../src/server/context/loader.ts';
 import { setLearnerPrismaForTest } from '../../src/server/db/index.ts';
 import { getLearnerCookieName } from '../../src/server/auth/env.ts';
-import { loadContextOptions, createLearningContext, patchLearningContext } from '../../src/server/context/service.ts';
+import { loadContextOptions, createLearningContext, patchLearningContext, startLearningContext } from '../../src/server/context/service.ts';
 
 function createMockSessionCookie(userId = LEARNER_A_ID, email = 'learner.a@lingora.edu.vn') {
   const cookieName = getLearnerCookieName('https://sncfyvpzwedqgwfpffkh.supabase.co');
@@ -50,6 +50,7 @@ mock.module('next/headers.js', {
 const { GET: contextRoute, POST: contextPostRoute } = await import('../../src/app/api/learner/context/route.ts');
 const { GET: contextOptionsRoute } = await import('../../src/app/api/learner/context/options/route.ts');
 const { PATCH: contextPatchRoute } = await import('../../src/app/api/learner/contexts/[contextId]/route.ts');
+const { POST: contextStartRoute } = await import('../../src/app/api/learner/contexts/[contextId]/start/route.ts');
 
 const LEARNER_A_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const LEARNER_B_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
@@ -1852,5 +1853,368 @@ describe('Slice 12: PostgreSQL Concurrency Suite Environment Guards (Finding 7)'
       /Explicit owned loopback DB required/,
       `Expected explicit owned loopback DB diagnostic; got status=${result.status}, output=${combinedOutput}`
     );
+  });
+});
+
+describe('P2: Safe initial-level selection and recovery (startLearningContext & route)', () => {
+  const NULL_CTX_ID = '99999999-9999-4999-8999-999999999999';
+
+  function createStartDb(contextOverrides = {}, customState = {}) {
+    const lang = { id: LANG_EN_ID, code: 'en', names: { vi: 'Tiếng Anh' }, isLearnable: true };
+    const course = {
+      id: COURSE_EN_ID,
+      languageId: LANG_EN_ID,
+      frameworkId: FW_CEFR_ID,
+      names: { vi: 'Khóa Anh' },
+      isActive: customState.courseIsActive !== undefined ? customState.courseIsActive : true,
+      language: lang,
+      framework: { id: FW_CEFR_ID, code: 'CEFR', version: '2020', names: { vi: 'CEFR' } },
+    };
+    const levelA1 = { id: LVL_A1_ID, frameworkId: FW_CEFR_ID, code: 'A1', label: { vi: 'Mới bắt đầu' }, position: 1 };
+    const levelA2 = { id: LVL_A2_ID, frameworkId: FW_CEFR_ID, code: 'A2', label: { vi: 'Sơ cấp' }, position: 2 };
+
+    const initialContext = {
+      id: NULL_CTX_ID,
+      learnerId: LEARNER_A_ID,
+      languageId: LANG_EN_ID,
+      courseId: COURSE_EN_ID,
+      status: 'ACTIVE',
+      rowVersion: 1n,
+      startSource: null,
+      selectedStartLevelId: null,
+      workingLevelId: null,
+      startResultId: null,
+      selfReport: null,
+      language: lang,
+      course: course,
+      selectedStartLevel: null,
+      workingLevel: null,
+      ...contextOverrides,
+    };
+
+    const state = {
+      accounts: [{ id: LEARNER_A_ID, role: 'LEARNER', status: 'ACTIVE' }],
+      contexts: [initialContext],
+      levels: [levelA1, levelA2],
+      units: [
+        {
+          id: 'u-1',
+          courseId: COURSE_EN_ID,
+          levelId: LVL_A1_ID,
+          level: levelA1,
+          lessons: [
+            {
+              id: 'l-1',
+              unitId: 'u-1',
+              availability: 'AVAILABLE',
+              activeRevisionId: 'rev-1',
+              activeRevision: { id: 'rev-1', lessonId: 'l-1', status: 'PUBLISHED' },
+            },
+          ],
+        },
+      ],
+      consumptions: [],
+      attempts: [],
+      completions: [],
+      assessmentAttempts: [],
+      ...customState,
+    };
+
+    const mockPrisma = {
+      $transaction: async (fn) => fn(mockPrisma),
+      $queryRaw: async (sql, ...args) => {
+        const str = Array.isArray(sql) ? sql.join('?') : String(sql);
+        if (str.includes('clock_timestamp')) return [{ ts: new Date() }];
+        if (str.includes('app.lesson_revisions')) {
+          return state.units.flatMap((u) =>
+            u.lessons.filter((l) => l.activeRevisionId).map((l) => ({ id: l.activeRevisionId, lessonId: l.id, status: l.activeRevision?.status || 'PUBLISHED' }))
+          );
+        }
+        if (str.includes('FROM app.levels') && str.includes('FOR SHARE')) {
+          return state.levels.map((l) => ({ id: l.id, position: l.position }));
+        }
+        if (str.includes('FROM app.units') && str.includes('FOR SHARE')) {
+          return state.units.map((u) => ({ id: u.id }));
+        }
+        if (str.includes('FROM app.lessons') && str.includes('FOR SHARE')) {
+          return state.units.flatMap((u) => u.lessons.map((l) => ({ id: l.id, activeRevisionId: l.activeRevisionId })));
+        }
+        return [{ id: 'locked' }];
+      },
+      $executeRaw: async (strings, ...v) => {
+        const sql = strings.join('');
+        if (sql.includes('UPDATE app.learning_contexts')) {
+          const selectedStartLevelId = v[0];
+          const workingLevelId = v[1];
+          const startSource = v[2];
+          const selfReport = v[3] ? JSON.parse(v[3]) : null;
+          const ctx = state.contexts.find((c) => c.id === NULL_CTX_ID);
+          if (ctx) {
+            ctx.selectedStartLevelId = selectedStartLevelId;
+            ctx.workingLevelId = workingLevelId;
+            ctx.startSource = startSource;
+            ctx.selfReport = selfReport;
+            ctx.selectedStartLevel = state.levels.find((l) => l.id === selectedStartLevelId) || null;
+            ctx.workingLevel = state.levels.find((l) => l.id === workingLevelId) || null;
+            ctx.rowVersion = ctx.rowVersion + 1n;
+          }
+        }
+        return 1;
+      },
+      account: {
+        findUnique: async ({ where }) => state.accounts.find((a) => a.id === where.id) || null,
+      },
+      language: {
+        findUnique: async ({ where }) => (where.id === LANG_EN_ID ? lang : null),
+      },
+      course: {
+        findUnique: async ({ where }) => (where.id === COURSE_EN_ID ? course : null),
+      },
+      level: {
+        findUnique: async ({ where }) => state.levels.find((l) => l.id === where.id) || null,
+      },
+      unit: {
+        findMany: async () => state.units,
+        count: async () => state.units.length,
+      },
+      lesson: {
+        count: async () => state.units.flatMap((u) => u.lessons).length,
+      },
+      learningContext: {
+        findFirst: async ({ where }) => {
+          const c = state.contexts.find((ctx) => ctx.id === where.id && (!where.learnerId || ctx.learnerId === where.learnerId));
+          if (!c) return null;
+          return {
+            ...c,
+            _count: {
+              lessonConsumptions: state.consumptions.length,
+              lessonAttempts: state.attempts.length,
+              lessonCompletions: state.completions.length,
+              assessmentAttempts: state.assessmentAttempts.length,
+            },
+          };
+        },
+        findUnique: async ({ where }) => {
+          const c = state.contexts.find((ctx) => ctx.id === where.id);
+          if (!c) return null;
+          return {
+            ...c,
+            _count: {
+              lessonConsumptions: state.consumptions.length,
+              lessonAttempts: state.attempts.length,
+              lessonCompletions: state.completions.length,
+              assessmentAttempts: state.assessmentAttempts.length,
+            },
+          };
+        },
+        count: async () => state.contexts.filter((c) => c.status === 'ACTIVE').length,
+      },
+    };
+
+    return { mockPrisma, state };
+  }
+
+  test('P2: createLearningContext with startSource=DEFAULT returns 409 COURSE_NO_AVAILABLE_LESSONS when course has no lessons', async () => {
+    const { mockPrisma, state } = createStartDb();
+    // Empty units
+    state.units = [];
+
+    await assert.rejects(
+      async () => {
+        await createLearningContext(
+          LEARNER_A_ID,
+          {
+            contextId: 'aaaaaaaa-1111-4111-8111-111111111111',
+            languageId: LANG_EN_ID,
+            courseId: COURSE_EN_ID,
+            startSource: 'DEFAULT',
+          },
+          mockPrisma
+        );
+      },
+      (err) => {
+        assert.equal(err.status, 409);
+        assert.equal(err.code, 'COURSE_NO_AVAILABLE_LESSONS');
+        return true;
+      }
+    );
+  });
+
+  test('P2: POST /api/contexts/[id]/start route validates Origin, Content-Type, UUID and auth', async () => {
+    const { mockPrisma } = createStartDb();
+    setLearnerPrismaForTest(mockPrisma);
+
+    // 1. Foreign origin returns 403
+    const foreignRes = await contextStartRoute(
+      new Request(`http://localhost:3000/api/learner/contexts/${NULL_CTX_ID}/start`, {
+        method: 'POST',
+        headers: { Origin: 'http://evil.com', Host: 'localhost:3000', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startSource: 'DEFAULT', expectedRowVersion: '1' }),
+      }),
+      { params: Promise.resolve({ contextId: NULL_CTX_ID }) }
+    );
+    assert.equal(foreignRes.status, 403);
+
+    // 2. Non-json returns 415
+    const nonJsonRes = await contextStartRoute(
+      new Request(`http://localhost:3000/api/learner/contexts/${NULL_CTX_ID}/start`, {
+        method: 'POST',
+        headers: { Origin: 'http://localhost:3000', Host: 'localhost:3000', 'Content-Type': 'text/plain' },
+        body: 'startSource=DEFAULT',
+      }),
+      { params: Promise.resolve({ contextId: NULL_CTX_ID }) }
+    );
+    assert.equal(nonJsonRes.status, 415);
+
+    // 3. Invalid UUID returns 400
+    const badIdRes = await contextStartRoute(
+      new Request('http://localhost:3000/api/learner/contexts/not-a-uuid/start', {
+        method: 'POST',
+        headers: { Origin: 'http://localhost:3000', Host: 'localhost:3000', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startSource: 'DEFAULT', expectedRowVersion: '1' }),
+      }),
+      { params: Promise.resolve({ contextId: 'not-a-uuid' }) }
+    );
+    assert.equal(badIdRes.status, 400);
+
+    // 4. Valid route call with DEFAULT recovers context and returns 200
+    currentCookieStore = {
+      getAll: () => [createMockSessionCookie(LEARNER_A_ID)],
+      get: (name) => (name.includes('auth-token') ? createMockSessionCookie(LEARNER_A_ID) : undefined),
+      set: () => {},
+      delete: () => {},
+    };
+    globalThis.fetch = async () =>
+      new Response(JSON.stringify({ id: LEARNER_A_ID, email: 'learner.a@lingora.edu.vn', email_confirmed_at: '2026-10-31T00:00:00Z' }), { status: 200 });
+
+    const validRes = await contextStartRoute(
+      new Request(`http://localhost:3000/api/learner/contexts/${NULL_CTX_ID}/start`, {
+        method: 'POST',
+        headers: { Origin: 'http://localhost:3000', Host: 'localhost:3000', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startSource: 'DEFAULT', expectedRowVersion: '1' }),
+      }),
+      { params: Promise.resolve({ contextId: NULL_CTX_ID }) }
+    );
+    assert.equal(validRes.status, 200);
+    const json = await validRes.json();
+    assert.equal(json.data.startSource, 'DEFAULT');
+    assert.equal(json.data.selectedStartLevel.id, LVL_A1_ID);
+    assert.equal(json.data.workingLevel.id, LVL_A1_ID);
+    assert.equal(json.data.rowVersion, '2');
+  });
+
+  test('P2: startLearningContext service rejects foreign context, inactive status, configured level, history and stale CAS', async () => {
+    // 1. Foreign context returns 404
+    const { mockPrisma: p1 } = createStartDb({ learnerId: LEARNER_B_ID });
+    await assert.rejects(
+      async () => {
+        await startLearningContext(LEARNER_A_ID, NULL_CTX_ID, { startSource: 'DEFAULT', expectedRowVersion: '1' }, p1);
+      },
+      (err) => {
+        assert.equal(err.status, 404);
+        assert.equal(err.code, 'NOT_FOUND');
+        return true;
+      }
+    );
+
+    // 2. PAUSED context returns 409 CONTEXT_NOT_ACTIVE
+    const { mockPrisma: p2 } = createStartDb({ status: 'PAUSED' });
+    await assert.rejects(
+      async () => {
+        await startLearningContext(LEARNER_A_ID, NULL_CTX_ID, { startSource: 'DEFAULT', expectedRowVersion: '1' }, p2);
+      },
+      (err) => {
+        assert.equal(err.status, 409);
+        assert.equal(err.code, 'CONTEXT_NOT_ACTIVE');
+        return true;
+      }
+    );
+
+    // 3. Already-configured context returns 409 CONTEXT_ALREADY_CONFIGURED
+    const { mockPrisma: p3 } = createStartDb({ selectedStartLevelId: LVL_A1_ID, workingLevelId: LVL_A1_ID });
+    await assert.rejects(
+      async () => {
+        await startLearningContext(LEARNER_A_ID, NULL_CTX_ID, { startSource: 'DEFAULT', expectedRowVersion: '1' }, p3);
+      },
+      (err) => {
+        assert.equal(err.status, 409);
+        assert.equal(err.code, 'CONTEXT_ALREADY_CONFIGURED');
+        return true;
+      }
+    );
+
+    // 4. Context with history returns 409 CONTEXT_HAS_HISTORY
+    const { mockPrisma: p4 } = createStartDb({}, { consumptions: [{ id: 'cons-1' }] });
+    await assert.rejects(
+      async () => {
+        await startLearningContext(LEARNER_A_ID, NULL_CTX_ID, { startSource: 'DEFAULT', expectedRowVersion: '1' }, p4);
+      },
+      (err) => {
+        assert.equal(err.status, 409);
+        assert.equal(err.code, 'CONTEXT_HAS_HISTORY');
+        return true;
+      }
+    );
+
+    // 5. Stale CAS returns 409 STALE_ROW_VERSION
+    const { mockPrisma: p5 } = createStartDb();
+    await assert.rejects(
+      async () => {
+        await startLearningContext(LEARNER_A_ID, NULL_CTX_ID, { startSource: 'DEFAULT', expectedRowVersion: '999' }, p5);
+      },
+      (err) => {
+        assert.equal(err.status, 409);
+        assert.equal(err.code, 'STALE_ROW_VERSION');
+        return true;
+      }
+    );
+
+    // 6. Inactive course returns 403 COURSE_INACTIVE
+    const { mockPrisma: p6 } = createStartDb({}, { courseIsActive: false });
+    await assert.rejects(
+      async () => {
+        await startLearningContext(LEARNER_A_ID, NULL_CTX_ID, { startSource: 'DEFAULT', expectedRowVersion: '1' }, p6);
+      },
+      (err) => {
+        assert.equal(err.status, 403);
+        assert.equal(err.code, 'COURSE_INACTIVE');
+        return true;
+      }
+    );
+  });
+
+  test('P2: startLearningContext with SELF_REPORT sets specified level and supports single replay', async () => {
+    const { mockPrisma, state } = createStartDb();
+
+    // 1. Valid SELF_REPORT start
+    const result = await startLearningContext(
+      LEARNER_A_ID,
+      NULL_CTX_ID,
+      {
+        startSource: 'SELF_REPORT',
+        levelId: LVL_A1_ID,
+        expectedRowVersion: '1',
+      },
+      mockPrisma
+    );
+
+    assert.equal(result.startSource, 'SELF_REPORT');
+    assert.equal(result.selectedStartLevel.id, LVL_A1_ID);
+    assert.equal(result.workingLevel.id, LVL_A1_ID);
+    assert.equal(result.rowVersion, '2');
+
+    // 2. Exact same payload retry with prior expectedRowVersion ('1') returns current state (idempotent replay)
+    const replay = await startLearningContext(
+      LEARNER_A_ID,
+      NULL_CTX_ID,
+      {
+        startSource: 'SELF_REPORT',
+        levelId: LVL_A1_ID,
+        expectedRowVersion: '1',
+      },
+      mockPrisma
+    );
+    assert.equal(replay.rowVersion, '2');
+    assert.equal(replay.selectedStartLevel.id, LVL_A1_ID);
   });
 });

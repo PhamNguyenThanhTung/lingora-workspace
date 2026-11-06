@@ -61,16 +61,12 @@ describe('Package A: Real PostgreSQL Production Bootstrap', () => {
     prisma2 = new PrismaClient({ datasources: { db: { url: validatedTestUrl } }, log: [] });
     await prisma2.$connect();
 
-    // Ensure 'en' UI language exists for foreign key constraints
-    await prisma.language.upsert({
-      where: { code: 'en' },
-      update: {},
-      create: {
-        code: 'en',
-        names: { en: 'English' },
-        isUiLocale: true,
-      },
-    });
+    // DB-native concurrent-safe insert for 'en' language
+    await prisma.$executeRaw`
+      INSERT INTO app.languages (id, code, names, is_learnable, is_ui_locale, created_at, updated_at)
+      VALUES (gen_random_uuid(), 'en', '{"en": "English"}'::jsonb, true, true, NOW(), NOW())
+      ON CONFLICT (code) DO NOTHING
+    `;
   });
 
   after(async () => {

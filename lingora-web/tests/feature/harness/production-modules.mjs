@@ -26,6 +26,9 @@ export async function compileProductionModules() {
     attemptDetailApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/route.ts',
     responsesApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/responses/route.ts',
     finalizeApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/finalize/route.ts',
+    reviewPage: 'src/app/review/page.tsx',
+    reviewStartApi: 'src/app/api/learner/review/start/route.ts',
+    reviewRespondApi: 'src/app/api/learner/review/respond/route.ts',
   };
   const result = {};
   try {

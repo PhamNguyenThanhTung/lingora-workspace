@@ -4,6 +4,7 @@ import { LoginForm } from '../../../src/app/login/LoginForm';
 import { HomeView } from '../../../src/app/home/HomeView';
 import { CatalogueView } from '../../../src/app/learn/[contextId]/CatalogueView';
 import { LessonPlayerView } from '../../../src/app/learn/[contextId]/[lessonId]/LessonPlayerView';
+import { ReviewView } from '../../../src/app/review/ReviewView';
 import type { LearnerContextEnvelope } from '../../../src/server/context/dto.ts';
 
 const MOCK_VALID_DATA: LearnerContextEnvelope['data'] = {
@@ -63,6 +64,42 @@ const MOCK_EMPTY_DATA: LearnerContextEnvelope['data'] = {
   contexts: [],
 };
 
+const MOCK_NULL_CONTEXT_DATA: LearnerContextEnvelope['data'] = {
+  learner: {
+    id: '11111111-1111-4111-8111-111111111111',
+    displayName: 'Nguyễn Văn Học',
+    role: 'LEARNER',
+    status: 'ACTIVE',
+    uiLocale: 'vi',
+  },
+  contexts: [
+    {
+      id: 'ctx-null-1',
+      status: 'ACTIVE',
+      rowVersion: '1',
+      startSource: null,
+      targetLanguage: {
+        id: 'lang-1',
+        code: 'en',
+        names: { vi: 'Tiếng Anh', en: 'English' },
+      },
+      course: {
+        id: 'course-1',
+        names: { vi: 'Tiếng Anh Giao Tiếp Cơ Bản', en: 'Basic Conversational English' },
+        isActive: true,
+      },
+      framework: {
+        id: 'fw-1',
+        code: 'CEFR',
+        version: '2020',
+        names: { vi: 'Khung Tham Chiếu Châu Âu', en: 'CEFR' },
+      },
+      selectedStartLevel: null,
+      workingLevel: null,
+    },
+  ],
+};
+
 function HarnessRoot() {
   const bootstrap = document.getElementById('production-page');
   if (bootstrap) {
@@ -71,6 +108,7 @@ function HarnessRoot() {
     if (page.kind === 'home') return <HomeView {...page.props} />;
     if (page.kind === 'catalogue') return <CatalogueView {...page.props} />;
     if (page.kind === 'lessonPlayer') return <LessonPlayerView {...page.props} />;
+    if (page.kind === 'review') return <ReviewView {...page.props} />;
   }
   const params = new URLSearchParams(window.location.search);
   const state = params.get('state') || 'login';
@@ -78,8 +116,12 @@ function HarnessRoot() {
   switch (state) {
     case 'login':
       return <LoginForm />;
+    case 'review':
+      return <ReviewView learner={{ id: '11111111-1111-4111-8111-111111111111' }} />;
     case 'home-valid':
       return <HomeView data={MOCK_VALID_DATA} />;
+    case 'home-null-context':
+      return <HomeView data={MOCK_NULL_CONTEXT_DATA} />;
     case 'home-empty':
       return <HomeView data={MOCK_EMPTY_DATA} />;
     case 'home-403':
