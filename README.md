@@ -28,11 +28,16 @@ Không commit `.env`, database credentials, service-role key hay thông tin đă
 ## Kiểm thử
 
 - Chạy test tính năng và UI: `npm run test:feature`, `npm run test:components`, `npm run test:all`.
-- Chạy PostgreSQL integration suites: `npm run test:integration:lessons` (Slice 10 consumption concurrency), `npm run test:integration:practice` (Slice 11 practice concurrency) và `npm run test:integration:onboarding` (Slice 12 bootstrap/context lifecycle). Các lệnh này dùng runner cục bộ (`scripts/local-test-db.mjs`) khởi tạo PostgreSQL loopback tạm thời qua `embedded-postgres`, không yêu cầu database ngoài.
-
-Default `test:integration:onboarding` còn có race khởi tạo fixture `en` giữa hai test file; đây là nợ test harness. Historical run tuần tự34/34 không đồng nghĩa default command PASS. Lệnh tuần tự và provenance của các gate được ghi trong [audit](plans/2026-11-04-takeover-audit.md).
+- Chạy PostgreSQL integration suites: `npm run test:integration:lessons` (Slice 10 consumption concurrency), `npm run test:integration:practice` (Slice 11 practice concurrency), `npm run test:integration:onboarding` (Slice 12 bootstrap/context lifecycle), `npm run test:integration:srs` (SRS concurrency) và `npm run test:e2e:learning` (Learning MVP end-to-end). Các lệnh này dùng runner cục bộ (`scripts/local-test-db.mjs`) khởi tạo PostgreSQL loopback tạm thời qua `embedded-postgres`, không yêu cầu database ngoài.
+- Race khởi tạo fixture `en` trong `test:integration:onboarding` đã được xử lý bằng `ON CONFLICT DO NOTHING`; cả 2 lượt chạy liên tiếp trên cluster mới đều đạt 37/37 PASS với concurrency thực tế.
 
 ## Tiến độ và tài liệu
+
+Core Learner MVP (P0–P7) cùng đợt hiệu chỉnh duy nhất (Correction Round 1) theo đánh giá Astra đã hoàn tất và vượt qua nghiệm thu local ngày 05/11 theo [kế hoạch](plans/2026-11-05-learning-mvp.md): kích hoạt bài học Admin, phục hồi LearningContext trình độ ban đầu, xem lại kết quả bài tập kèm lời giải thích ngữ liệu, ôn tập SRS từ vựng đến hạn (thuật toán 1, 3, 7, 14, 30 ngày) với idempotency giao dịch, đồng hồ fail-closed, layout mobile 390px chuẩn và bộ giáo trình mẫu A1. Toàn bộ 14 cổng kiểm thử, integration và E2E bằng Chromium trên loopback DB và synthetic auth provider đều PASS (exit code 0). Đăng ký/đăng nhập thật và level-up/assessment được bảo lưu hoãn lại theo phạm vi hợp đồng.
+
+Trang nhật ký Admin chỉ đọc (`/audit-events`) đã qua kiểm chứng local ngày05/11: lọc/phân trang, quyền ACTIVE ADMIN và UI mobile PASS; chưa commit/deploy. Xem [plan](plans/2026-11-04-admin-audit-viewer.md) và [bằng chứng](plans/admin-audit-viewer-codex-verification-20261105.md). Đây là maintenance độc lập, chưa bao gồm toàn bộ báo cáo UC-14 và không thay đổi trạng thái Slice12.
+
+Helper Slice12 đã sửa cửa sổ handoff PKCE ngày05/11:166 kiểm tra helper,2 kiểm tra runner URL/state/restart và41 regression đăng ký/callback PASS;5 negative controls bắt đúng lỗi. [Bằng chứng](plans/slice-12-pkce-handoff-verification-20261105.md). Chưa có lượt đăng ký/xác nhận thật mới; Slice12 vẫn NOT ACCEPTED, [lượt tiếp theo](plans/2026-11-05-slice-12-next-public-attempt.md) mới là đề xuất chờ cho phép riêng.
 
 Các Slice 1 đến Slice 11 đã ACCEPTED (Admin catalogue, Teacher authoring/submission, Admin review/publish, Assessment authoring, Learner auth/context, Lesson reading/consumption, Practice attempt/grading).
 Slice 12 đã implement; helper được sửa tại `137f246`, follow-up checkpoint `a795a4e` có 146/146 test offline PASS. Lần public acceptance 04/11 trên Learner/Staff READY đúng SHA đó: registration200, provider verify303 và callback có code, nhưng login không có `confirmed=1`. Cleanup/đối soát độc lập PASS, residue0; Slice12 vẫn **NOT ACCEPTED**, Slice13 chưa mở. Xem [kết quả lần thử](plans/slice-12-public-acceptance-20261104.md), [audit lịch sử](plans/2026-11-04-takeover-audit.md) và [execution spec](plans/2026-11-04-slice-12-public-acceptance.md).

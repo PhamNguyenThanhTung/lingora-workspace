@@ -121,6 +121,7 @@ try {
     SLICE11_TEST_DATABASE_URL: url11,
     SLICE11_LOCAL_DATABASE_URL: url11,
     SLICE11_TEST_DATABASE_OWNED: '1',
+    SAMPLE_CURRICULUM_DATABASE_URL: url11,
   };
 
   const child = spawn(args[0], args.slice(1), {

@@ -21,7 +21,10 @@
     "test:components": "npm run test:components -w lingora-admin && npm run test:components -w lingora-web",
     "test:integration:lessons": "node scripts/local-test-db.mjs npm run test:integration:lessons -w lingora-web",
     "test:integration:practice": "node scripts/local-test-db.mjs npm run test:integration:practice -w lingora-web",
-    "test:integration:onboarding": "node scripts/local-test-db.mjs npm run test:integration:onboarding -w lingora-web"
+    "test:integration:onboarding": "node scripts/local-test-db.mjs npm run test:integration:onboarding -w lingora-web",
+    "test:integration:srs": "node scripts/local-test-db.mjs npm run test:integration:srs -w lingora-web",
+    "test:integration:sample": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks lingora-admin/tests/feature/sample-curriculum-postgres.test.mjs",
+    "test:e2e:learning": "node scripts/local-test-db.mjs npm run test:e2e:learning -w lingora-web"
   },
   "devDependencies": {
     "embedded-postgres": "18.6.0-beta.19"
