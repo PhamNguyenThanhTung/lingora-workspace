@@ -1,11 +1,20 @@
 import { revisionChildRelations, unsupportedChildren, sameVocabularyMetadata, vocabularySnapshotSchema } from './snapshot.ts';
+import { persistLessonRevisionBlocks } from './blocks.ts';
 import { z } from 'zod';
+import {
+  parsePersistedLessonContent,
+  toLegacyParagraphProjection,
+  toLessonPresentationDto,
+  type PresentationBlock,
+  type LessonPresentationDto,
+} from '@lingora/lesson-content';
 import { getProductPrisma } from '../db/index.js';
 import { isValidUuid, type ApiErrorEnvelope } from '../frameworks/index.ts';
 import {
   saveTeacherDraftExtendedSchema,
   computeExerciseFingerprint,
   normalizeVocabularyTerm,
+  lessonBlockCollectionSchema,
   type ExerciseInput,
   type VocabularyInput,
   type ExerciseType,
@@ -16,6 +25,7 @@ export {
   saveTeacherDraftExtendedSchema,
   computeExerciseFingerprint,
   normalizeVocabularyTerm,
+  lessonBlockCollectionSchema,
   type ExerciseInput,
   type VocabularyInput,
   type ExerciseType,
@@ -128,10 +138,34 @@ export interface LessonSummaryDto {
   editabilityReason: string | null;
 }
 
+export interface TeacherReviewCommentDto {
+  id: string;
+  lessonRevisionId: string;
+  revisionNo: number;
+  blockKey: string | null;
+  itemRevisionId: string | null;
+  author: {
+    id: string;
+    displayName: string | null;
+  };
+  body: string;
+  status: string;
+  rowVersion: string;
+  resolvedAt: string | null;
+  resolvedBy: {
+    id: string;
+    displayName: string | null;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface LessonDetailDto extends LessonSummaryDto {
   currentDraft: {
     title: Record<string, string>;
     contentBlocks: Array<{ type: 'paragraph'; text: string }>;
+    contentSchemaVersion?: number;
+    blocks?: PresentationBlock[];
   } | null;
   revisions: LessonRevisionSummaryDto[];
 }
@@ -140,6 +174,10 @@ export interface TeacherLessonDetailDto extends LessonDetailDto {
   courseContext: LessonDetailDto['courseContext'] & {
     languageId: string;
   };
+  contentSchemaVersion?: number;
+  blocks?: PresentationBlock[];
+  presentation?: LessonPresentationDto;
+  reviewComments?: TeacherReviewCommentDto[];
   exercises: TeacherExerciseDto[];
   vocabulary: TeacherVocabularyDto[];
   latestFeedback?: {
@@ -340,7 +378,11 @@ export function evaluateEditability(highestRev: any, languageId?: string): { isE
       editabilityReason: 'Bản nháp đã từng được nộp duyệt hoặc có dấu vết quy trình nộp, không thể chỉnh sửa.',
     };
   }
-  if (!isSupportedTitle(highestRev.title) || !isSupportedContentBlocks(highestRev.contentBlocks)) {
+  const contentSupported = highestRev.contentSchemaVersion === 1
+    ? !parsePersistedLessonContent(highestRev).blocks.some(block => block.type === 'UNSUPPORTED')
+    : isSupportedContentBlocks(highestRev.contentBlocks);
+
+  if (!isSupportedTitle(highestRev.title) || !contentSupported) {
     return {
       isEditable: false,
       editabilityReason: 'Cấu trúc tiêu đề hoặc nội dung bản nháp chứa định dạng không được hỗ trợ để sửa đổi.',
@@ -430,14 +472,26 @@ export function toLessonDetailDto(lesson: any): LessonDetailDto {
 
   let currentDraft: LessonDetailDto['currentDraft'] = null;
   if (highestRev) {
-    // Only expose currentDraft if title & contentBlocks are supported
+    // Expose currentDraft for V1 canonical blocks or V0 legacy paragraphs
     const supportedTitle = isSupportedTitle(highestRev.title);
-    const supportedBlocks = isSupportedContentBlocks(highestRev.contentBlocks);
-    if (supportedTitle && supportedBlocks) {
-      currentDraft = {
-        title: parseJsonRecord(highestRev.title),
-        contentBlocks: highestRev.contentBlocks as Array<{ type: 'paragraph'; text: string }>,
-      };
+    if (supportedTitle) {
+      if (highestRev.contentSchemaVersion === 1) {
+        const parsed = parsePersistedLessonContent(highestRev);
+        currentDraft = {
+          title: parseJsonRecord(highestRev.title),
+          contentBlocks: toLegacyParagraphProjection(parsed.blocks),
+          contentSchemaVersion: 1,
+          blocks: parsed.blocks,
+        };
+      } else if (isSupportedContentBlocks(highestRev.contentBlocks)) {
+        const parsed = parsePersistedLessonContent(highestRev);
+        currentDraft = {
+          title: parseJsonRecord(highestRev.title),
+          contentBlocks: highestRev.contentBlocks as Array<{ type: 'paragraph'; text: string }>,
+          contentSchemaVersion: 0,
+          blocks: parsed.blocks,
+        };
+      }
     }
   }
 
@@ -514,6 +568,49 @@ export function toTeacherLessonDetailDto(lesson: any, languageId?: string): Teac
 
   const courseLangId = languageId || lesson.unit?.course?.languageId || '';
 
+  const parsedContent = highestRev
+    ? parsePersistedLessonContent(highestRev)
+    : { contentSchemaVersion: 0, blocks: [] };
+
+  const reviewComments: TeacherReviewCommentDto[] = [];
+  for (const rev of sortedRevisions) {
+    if (Array.isArray(rev.reviewComments)) {
+      for (const c of rev.reviewComments) {
+        reviewComments.push({
+          id: c.id,
+          lessonRevisionId: c.lessonRevisionId,
+          revisionNo: rev.revisionNo,
+          blockKey: c.blockKey ?? null,
+          itemRevisionId: c.itemRevisionId ?? null,
+          author: {
+            id: c.author?.id ?? c.authorAccountId,
+            displayName: c.author?.displayName ?? null,
+          },
+          body: c.body,
+          status: c.status,
+          rowVersion: (c.rowVersion ?? 1n).toString(),
+          resolvedAt: c.resolvedAt
+            ? (c.resolvedAt instanceof Date ? c.resolvedAt.toISOString() : new Date(c.resolvedAt).toISOString())
+            : null,
+          resolvedBy: c.resolvedBy
+            ? {
+                id: c.resolvedBy.id,
+                displayName: c.resolvedBy.displayName ?? null,
+              }
+            : null,
+          createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : new Date(c.createdAt).toISOString(),
+          updatedAt: c.updatedAt instanceof Date ? c.updatedAt.toISOString() : new Date(c.updatedAt).toISOString(),
+        });
+      }
+    }
+  }
+
+  const presentation = toLessonPresentationDto(
+    parsedContent,
+    vocabulary,
+    exercises
+  );
+
   let latestFeedback: TeacherLessonDetailDto['latestFeedback'] = null;
   if (highestRev && highestRev.status === 'CHANGES_REQUESTED') {
     const revReviews = Array.isArray(highestRev.reviews) ? highestRev.reviews : [];
@@ -532,6 +629,10 @@ export function toTeacherLessonDetailDto(lesson: any, languageId?: string): Teac
       ...baseDetail.courseContext,
       languageId: courseLangId,
     },
+    contentSchemaVersion: parsedContent.contentSchemaVersion,
+    blocks: parsedContent.blocks,
+    presentation,
+    reviewComments,
     exercises,
     vocabulary,
     latestFeedback,
@@ -1804,14 +1905,29 @@ export async function saveTeacherLessonDraft(
   }
 
   const {
+    contentSchemaVersion: inputContentSchemaVersion,
     title: inputTitle,
     contentBlocks,
+    blocks: inputBlocks,
     changeSummary,
     expectedRowVersion,
     expectedRevisionId,
     exercises: inputExercises,
     vocabulary: inputVocabulary,
   } = parseResult.data;
+
+  if (inputBlocks !== undefined) {
+    const blockCheck = lessonBlockCollectionSchema.safeParse(inputBlocks);
+    if (!blockCheck.success) {
+      return {
+        status: 400,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: blockCheck.error.issues[0]?.message || 'Khối nội dung không hợp lệ.',
+        },
+      };
+    }
+  }
 
   // Check duplicate positions in exercises
   if (inputExercises) {
@@ -2009,6 +2125,11 @@ export async function saveTeacherLessonDraft(
         }
       }
 
+      const targetContentSchemaVersion =
+        inputBlocks !== undefined
+          ? 1
+          : (highestRev ? (highestRev.contentSchemaVersion ?? 0) : 0);
+
       // 8. Validate highest revision editability
       if (highestRev) {
         if (highestRev.status === 'IN_REVIEW' || highestRev.status === 'APPROVED') {
@@ -2044,13 +2165,46 @@ export async function saveTeacherLessonDraft(
           }
         }
 
-        if (!isSupportedTitle(highestRev.title) || !isSupportedContentBlocks(highestRev.contentBlocks)) {
+        if (highestRev.contentSchemaVersion === 1) {
+          if (inputBlocks === undefined && contentBlocks !== undefined) {
+            throw new ControlledDraftError(409, {
+              code: 'LEGACY_SAVE_FORBIDDEN_ON_V1',
+              message: 'Không thể lưu bản nháp bằng trình soạn thảo cũ khi bản sửa đổi trước đó sử dụng cấu trúc khối nội dung V1.',
+            });
+          }
+        }
+
+        if (!isSupportedTitle(highestRev.title)) {
           throw new ControlledDraftError(409, {
             code: 'UNSUPPORTED_DRAFT_CONTENT',
             message: 'Bản nháp hiện tại chứa cấu trúc dữ liệu không được hỗ trợ để chỉnh sửa.',
           });
         }
 
+        if (highestRev.contentSchemaVersion === 0 && !isSupportedContentBlocks(highestRev.contentBlocks)) {
+          throw new ControlledDraftError(409, {
+            code: 'UNSUPPORTED_DRAFT_CONTENT',
+            message: 'Bản nháp hiện tại chứa cấu trúc dữ liệu không được hỗ trợ để chỉnh sửa.',
+          });
+        }
+
+      }
+
+      if (
+        inputContentSchemaVersion !== undefined &&
+        inputContentSchemaVersion !== targetContentSchemaVersion
+      ) {
+        throw new ControlledDraftError(400, {
+          code: 'CONTENT_SCHEMA_VERSION_MISMATCH',
+          message: 'Phiên bản nội dung yêu cầu không khớp với cấu trúc nội dung được gửi hoặc kế thừa.',
+        });
+      }
+
+      if (!highestRev && inputBlocks === undefined && contentBlocks === undefined) {
+        throw new ControlledDraftError(400, {
+          code: 'VALIDATION_ERROR',
+          message: 'Yêu cầu cung cấp nội dung bài học (blocks hoặc contentBlocks).',
+        });
       }
 
       // 9. Fetch course target language
@@ -2253,6 +2407,11 @@ export async function saveTeacherLessonDraft(
       const coverageCatalogGeneration = highestRev?.coverageCatalogGeneration ?? null;
       const coverageSnapshot = highestRev?.coverageSnapshot ?? null;
 
+      const resolvedContentBlocks =
+        targetContentSchemaVersion === 1
+          ? []
+          : (contentBlocks !== undefined ? contentBlocks : (highestRev?.contentBlocks ?? []));
+
       // 13. Insert new LessonRevision
       const newRev = await tx.lessonRevision.create({
         data: {
@@ -2264,7 +2423,8 @@ export async function saveTeacherLessonDraft(
           creationAssignmentEpisodeId: latestEpisode.id,
           status: 'DRAFT',
           title: mergedTitle,
-          contentBlocks,
+          contentBlocks: resolvedContentBlocks,
+          contentSchemaVersion: targetContentSchemaVersion,
           topicIds,
           skillIds,
           purposeTags,
@@ -2275,6 +2435,31 @@ export async function saveTeacherLessonDraft(
           rowVersion: 1n,
         },
       });
+
+      if (targetContentSchemaVersion === 1) {
+        if (inputBlocks !== undefined) {
+          if (inputBlocks.length > 0) {
+            await persistLessonRevisionBlocks(tx, newRev.id, inputBlocks);
+          }
+        } else if (highestRev && highestRev.contentSchemaVersion === 1) {
+          const predBlocks = await tx.lessonContentBlock.findMany({
+            where: { lessonRevisionId: highestRev.id.toLowerCase() },
+            orderBy: { position: 'asc' },
+          });
+          if (predBlocks.length > 0) {
+            await tx.lessonContentBlock.createMany({
+              data: predBlocks.map((b: any) => ({
+                lessonRevisionId: newRev.id,
+                blockKey: b.blockKey,
+                type: b.type,
+                position: b.position,
+                schemaVersion: b.schemaVersion,
+                content: b.content,
+              })),
+            });
+          }
+        }
+      }
 
       // 14. Persist Exercises
       if (inputExercises === undefined) {

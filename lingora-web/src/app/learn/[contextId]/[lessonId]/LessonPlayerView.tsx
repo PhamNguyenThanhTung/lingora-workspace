@@ -3,6 +3,11 @@
 import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { PracticeSection } from './PracticeSection';
+import { LessonContent } from '@lingora/lesson-content/LessonContent';
+import {
+  toLessonPresentationDto,
+  adaptLegacyParagraphs,
+} from '@lingora/lesson-content';
 import type {
   LearnerLessonDetailDto,
   LearnerExerciseDto,
@@ -44,7 +49,6 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
   const [isActionPending, setIsActionPending] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [isStale, setIsStale] = useState(false);
-  const [audioErrors, setAudioErrors] = useState<Record<string, boolean>>({});
 
   const handleRetry = () => {
     startRetry(() => router.refresh());
@@ -346,314 +350,18 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
           </div>
         ) : (
           <div id="lessonContentContainer" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            {/* Paragraph Content Blocks */}
-            <section id="contentBlocksSection" className="lesson-section">
-              <h2
-                style={{
-                  fontSize: 'var(--font-size-heading)',
-                  fontWeight: 700,
-                  marginBottom: '16px',
-                  paddingBottom: '8px',
-                  borderBottom: '1px solid var(--border-subtle)',
-                }}
-              >
-                Bài đọc
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', lineHeight: 1.7 }}>
-                {revision.contentBlocks.map((block, idx) => (
-                  <p key={idx} className="lesson-paragraph">
-                    {block.text}
-                  </p>
-                ))}
-              </div>
-            </section>
-
-            {/* Vocabulary Section */}
-            {vocabulary.length > 0 && (
-              <section id="vocabularySection" className="lesson-section">
-                <h2
-                  style={{
-                    fontSize: 'var(--font-size-heading)',
-                    fontWeight: 700,
-                    marginBottom: '16px',
-                    paddingBottom: '8px',
-                    borderBottom: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  Từ vựng bài học ({vocabulary.length})
-                </h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '14px' }}>
-                  {vocabulary.map((v: LearnerVocabularyDto) => {
-                    const snap = v.displaySnapshot;
-                    const meaningVi = snap.meaningLabels?.vi || '';
-                    const meaningEn = snap.meaningLabels?.en || '';
-
-                    return (
-                      <div
-                        key={v.id}
-                        className="vocab-card"
-                        data-vocab-id={v.id}
-                        style={{
-                          padding: '14px 16px',
-                          backgroundColor: 'var(--surface-bg)',
-                          border: '1px solid var(--border-subtle)',
-                          borderRadius: 'var(--radius-md)',
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px' }}>
-                          <span style={{ fontSize: '18px', fontWeight: 700, color: 'var(--primary-green)' }}>
-                            {snap.canonicalForm}
-                          </span>
-                          {snap.phonetic && (
-                            <span style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)' }}>
-                              /{snap.phonetic}/
-                            </span>
-                          )}
-                        </div>
-
-                        {snap.partOfSpeech && (
-                          <div style={{ marginBottom: '6px' }}>
-                            <span
-                              style={{
-                                fontSize: 'var(--font-size-ref)',
-                                fontStyle: 'italic',
-                                color: 'var(--text-muted)',
-                              }}
-                            >
-                              ({snap.partOfSpeech})
-                            </span>
-                          </div>
-                        )}
-
-                        <div style={{ fontSize: 'var(--font-size-body)', marginBottom: '4px' }}>
-                          {meaningVi && <div>{meaningVi}</div>}
-                          {meaningEn && (
-                            <div style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sub)' }}>
-                              {meaningEn}
-                            </div>
-                          )}
-                        </div>
-
-                        {snap.example && (
-                          <div
-                            style={{
-                              marginTop: '8px',
-                              paddingTop: '6px',
-                              borderTop: '1px dashed var(--border-subtle)',
-                              fontSize: 'var(--font-size-sub)',
-                              color: 'var(--text-muted)',
-                              fontStyle: 'italic',
-                            }}
-                          >
-                            &ldquo;{snap.example}&rdquo;
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-
-            {/* Read-Only Exercises Section */}
-            {exercises.length > 0 && (
-              <section id="exercisesSection" className="lesson-section">
-                <h2
-                  style={{
-                    fontSize: 'var(--font-size-heading)',
-                    fontWeight: 700,
-                    marginBottom: '16px',
-                    paddingBottom: '8px',
-                    borderBottom: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  Bài tập đọc hiểu ({exercises.length})
-                </h2>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  {exercises.map((ex: LearnerExerciseDto) => {
-                    const prompt = (ex.promptData as any)?.prompt || '';
-                    const hasAudioError = audioErrors[ex.id];
-
-                    return (
-                      <div
-                        key={ex.id}
-                        className="exercise-card"
-                        data-exercise-id={ex.id}
-                        data-exercise-type={ex.type}
-                        style={{
-                          padding: '18px 20px',
-                          backgroundColor: 'var(--surface-bg)',
-                          border: '1px solid var(--border-subtle)',
-                          borderRadius: 'var(--radius-md)',
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            marginBottom: '10px',
-                          }}
-                        >
-                          <span style={{ fontWeight: 600 }}>
-                            Bài tập {ex.position}: {ex.type}
-                          </span>
-                          <span className="badge badge-default" style={{ fontSize: 'var(--font-size-ref)' }}>
-                            Chỉ đọc
-                          </span>
-                        </div>
-
-                        <p style={{ marginBottom: '14px', fontSize: 'var(--font-size-body)' }}>{prompt}</p>
-
-                        {/* MCQ Type */}
-                        {ex.type === 'MCQ' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {((ex.promptData as any)?.options || []).map((opt: any) => (
-                              <div
-                                key={opt.id}
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '10px',
-                                  padding: '10px 14px',
-                                  border: '1px solid var(--border-subtle)',
-                                  borderRadius: 'var(--radius-sm)',
-                                  backgroundColor: 'var(--canvas-bg)',
-                                }}
-                              >
-                                <input type="radio" disabled name={`mcq-${ex.id}`} id={`opt-${ex.id}-${opt.id}`} />
-                                <label htmlFor={`opt-${ex.id}-${opt.id}`} style={{ cursor: 'default' }}>
-                                  {opt.text}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* FILL_BLANK Type */}
-                        {ex.type === 'FILL_BLANK' && (
-                          <div
-                            style={{
-                              padding: '12px 16px',
-                              backgroundColor: 'var(--canvas-bg)',
-                              borderRadius: 'var(--radius-sm)',
-                              border: '1px solid var(--border-subtle)',
-                              fontSize: 'var(--font-size-body)',
-                            }}
-                          >
-                            {((ex.promptData as any)?.sentence || '').replace(
-                              '____',
-                              '[ ____________ ]'
-                            )}
-                          </div>
-                        )}
-
-                        {/* REORDER Type */}
-                        {ex.type === 'REORDER' && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                            {((ex.promptData as any)?.tokens || []).map((t: any) => (
-                              <span
-                                key={t.id}
-                                style={{
-                                  padding: '6px 12px',
-                                  backgroundColor: 'var(--canvas-bg)',
-                                  border: '1px solid var(--border-control)',
-                                  borderRadius: 'var(--radius-sm)',
-                                  fontWeight: 500,
-                                }}
-                              >
-                                {t.text}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* LISTENING Type */}
-                        {ex.type === 'LISTENING' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {(ex.promptData as any)?.audioUrl && (
-                              <div>
-                                <audio
-                                  controls
-                                  src={(ex.promptData as any).audioUrl}
-                                  onError={() =>
-                                    setAudioErrors((prev) => ({ ...prev, [ex.id]: true }))
-                                  }
-                                  style={{ width: '100%', maxWidth: '400px' }}
-                                />
-                                {hasAudioError && (
-                                  <div
-                                    id={`audioError-${ex.id}`}
-                                    className="audio-error-box"
-                                    role="alert"
-                                    style={{
-                                      marginTop: '6px',
-                                      fontSize: 'var(--font-size-sub)',
-                                      color: 'var(--danger-red)',
-                                    }}
-                                  >
-                                    Không thể tải âm thanh. Vui lòng thử lại.
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                              {((ex.promptData as any)?.options || []).map((opt: any) => (
-                                <div
-                                  key={opt.id}
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    padding: '10px 14px',
-                                    border: '1px solid var(--border-subtle)',
-                                    borderRadius: 'var(--radius-sm)',
-                                    backgroundColor: 'var(--canvas-bg)',
-                                  }}
-                                >
-                                  <input type="radio" disabled name={`listening-${ex.id}`} id={`opt-${ex.id}-${opt.id}`} />
-                                  <label htmlFor={`opt-${ex.id}-${opt.id}`} style={{ cursor: 'default' }}>
-                                    {opt.text}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* GRAMMAR Type */}
-                        {ex.type === 'GRAMMAR' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <div
-                              style={{
-                                padding: '10px 14px',
-                                backgroundColor: 'var(--canvas-bg)',
-                                borderRadius: 'var(--radius-sm)',
-                                border: '1px solid var(--border-subtle)',
-                              }}
-                            >
-                              <span style={{ fontWeight: 600 }}>Câu gốc: </span>
-                              {(ex.promptData as any)?.sourceSentence}
-                            </div>
-                            <div
-                              style={{
-                                padding: '10px 14px',
-                                backgroundColor: 'var(--canvas-bg)',
-                                borderRadius: 'var(--radius-sm)',
-                                border: '1px solid var(--border-subtle)',
-                              }}
-                            >
-                              <span style={{ fontWeight: 600 }}>Cấu trúc mẫu: </span>
-                              {(ex.promptData as any)?.targetPattern}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
+            <LessonContent
+              presentation={
+                revision.presentation ??
+                toLessonPresentationDto(
+                  revision.blocks && revision.blocks.length > 0
+                    ? revision.blocks
+                    : adaptLegacyParagraphs(revision.id, revision.contentBlocks),
+                  vocabulary,
+                  exercises
+                )
+              }
+            />
           </div>
         )}
 

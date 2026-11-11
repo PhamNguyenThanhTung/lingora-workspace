@@ -56,6 +56,8 @@ model Account {
   publishedVersions    AssessmentVersion[]   @relation("VersionPublishedBy")
 
   reviews              RevisionReview[]      @relation("ReviewActor")
+  authoredReviewComments RevisionReviewComment[] @relation("ReviewCommentAuthor")
+  resolvedReviewComments RevisionReviewComment[] @relation("ReviewCommentResolvedBy")
   receipts             CommandReceipt[]
   auditEvents          AuditEvent[]          @relation("AuditActor")
   provisioningRequests ProvisioningRequest[] @relation("ProvisioningRequestedBy")
@@ -262,6 +264,7 @@ model LessonRevision {
   creationAssignmentEpisodeId   String             @map("creation_assignment_episode_id") @db.Uuid
   status                        String             @default("DRAFT") @db.Text
   title                         Json               @db.JsonB
+  contentSchemaVersion          Int                @default(0) @map("content_schema_version")
   contentBlocks                 Json               @default("[]") @map("content_blocks") @db.JsonB
   topicIds                      String[]           @default([]) @map("topic_ids")
   skillIds                      String[]           @default([]) @map("skill_ids")
@@ -304,6 +307,8 @@ model LessonRevision {
   attempts                      LessonAttempt[]    @relation("LessonAttemptRevision")
   consumptions                  LessonConsumption[] @relation("LessonConsumptionRevision")
   assessmentVersionItems        AssessmentVersionItem[] @relation("VersionItemSourceLessonRevision")
+  blocks                        LessonContentBlock[]
+  reviewComments                RevisionReviewComment[]
 
   @@unique([lessonId, revisionNo], map: "lesson_revisions_lesson_id_revision_no_key")
   @@unique([id, lessonId], map: "lesson_revisions_id_lesson_id_key")
@@ -411,6 +416,7 @@ model ItemRevision {
   mediaBindings               MediaBinding[]
   assessmentVersionItems      AssessmentVersionItem[] @relation("VersionItemRevisionItem")
   provenanceVersionItems      AssessmentVersionItem[] @relation("VersionItemSourceLessonProvenance")
+  reviewComments              RevisionReviewComment[]
 
   @@unique([itemId, revisionNo], map: "item_revisions_item_id_revision_no_key")
   @@unique([id, itemId], map: "item_revisions_id_item_id_key")
@@ -453,6 +459,64 @@ model LessonExercise {
   @@unique([lessonRevisionId, itemId], map: "lesson_exercises_lesson_revision_id_item_id_key")
   @@unique([id, lessonRevisionId], map: "lesson_exercises_id_lesson_revision_id_key")
   @@map("lesson_exercises")
+  @@schema("app")
+}
+
+enum LessonBlockType {
+  HEADING
+  TEXT
+  GRAMMAR
+  EXAMPLE
+  DIALOGUE
+  CALLOUT
+  MEDIA
+  VOCABULARY
+  DIVIDER
+
+  @@map("lesson_block_type")
+  @@schema("app")
+}
+
+model LessonContentBlock {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lessonRevisionId String          @map("lesson_revision_id") @db.Uuid
+  blockKey         String          @map("block_key") @db.Text
+  type             LessonBlockType
+  position         Int
+  schemaVersion    Int             @default(1) @map("schema_version")
+  content          Json            @db.JsonB
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  lessonRevision   LessonRevision  @relation(fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@unique([lessonRevisionId, blockKey], map: "lesson_content_blocks_revision_block_key")
+  @@unique([lessonRevisionId, position], map: "lesson_content_blocks_revision_position_key")
+  @@map("lesson_content_blocks")
+  @@schema("app")
+}
+
+model RevisionReviewComment {
+  id                  String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lessonRevisionId    String          @map("lesson_revision_id") @db.Uuid
+  blockKey            String?         @map("block_key") @db.Text
+  itemRevisionId      String?         @map("item_revision_id") @db.Uuid
+  authorAccountId     String          @map("author_account_id") @db.Uuid
+  body                String          @db.Text
+  status              String          @default("OPEN") @db.Text
+  rowVersion          BigInt          @default(1) @map("row_version")
+  resolvedAt          DateTime?       @map("resolved_at") @db.Timestamptz(6)
+  resolvedByAccountId String?         @map("resolved_by_account_id") @db.Uuid
+  createdAt           DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  lessonRevision      LessonRevision  @relation(fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  author              Account         @relation("ReviewCommentAuthor", fields: [authorAccountId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  resolvedBy          Account?        @relation("ReviewCommentResolvedBy", fields: [resolvedByAccountId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  itemRevision        ItemRevision?   @relation(fields: [itemRevisionId, lessonRevisionId], references: [id, authoringLessonRevisionId], onUpdate: NoAction, onDelete: Restrict, map: "revision_review_comments_item_authoring_lesson_fkey")
+
+  @@index([lessonRevisionId, status, createdAt], map: "revision_review_comments_rev_status_created_idx")
+  @@index([lessonRevisionId, blockKey], map: "revision_review_comments_rev_block_key_idx")
+  @@map("revision_review_comments")
   @@schema("app")
 }
 

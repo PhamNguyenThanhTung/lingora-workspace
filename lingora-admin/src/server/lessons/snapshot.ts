@@ -3,6 +3,14 @@ import { exerciseInputSchema } from './content.ts';
 import { isValidUuid } from '../frameworks/index.ts';
 
 export const revisionChildRelations = {
+  blocks: { orderBy: { position: 'asc' as const } },
+  reviewComments: {
+    orderBy: { createdAt: 'asc' as const },
+    include: {
+      author: { select: { id: true, displayName: true } },
+      resolvedBy: { select: { id: true, displayName: true } },
+    },
+  },
   authoredItemRevisions: {
     where: { item: { is: { origin: 'ASSESSMENT' } } },
     orderBy: [{ itemId: 'asc' }, { revisionNo: 'asc' }],

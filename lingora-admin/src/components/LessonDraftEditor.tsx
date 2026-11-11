@@ -13,6 +13,9 @@ import type {
 } from '@/server/lessons';
 import type { ExerciseType } from '@/server/lessons/content';
 import type { AssessmentBlueprintDto, TeacherAssessmentItemDto } from '@/server/assessments/types';
+import type { LessonBlock } from '@lingora/lesson-content';
+import { StudioLayout } from './lesson-studio';
+import { generateBlockKey } from './lesson-studio/block-operations';
 
 function isValidAudioReferenceUrl(rawUrl: string): boolean {
   if (typeof rawUrl !== 'string') return false;
@@ -50,6 +53,7 @@ function isValidAudioReferenceUrl(rawUrl: string): boolean {
 
 export interface LessonDraftEditorProps {
   initialLesson: LessonDetailDto | TeacherLessonDetailDto;
+  previewOnly?: boolean;
   account: {
     id: string;
     role: string;
@@ -96,6 +100,7 @@ export interface StagedVocabulary {
 
 export function LessonDraftEditor({
   initialLesson,
+  previewOnly = false,
   account,
 }: LessonDraftEditorProps) {
   const [lesson, setLesson] = useState<TeacherLessonDetailDto>(initialLesson as TeacherLessonDetailDto);
@@ -109,6 +114,39 @@ export function LessonDraftEditor({
   const [paragraphs, setParagraphs] = useState<Array<{ type: 'paragraph'; text: string }>>(
     initialBlocks.map((b) => ({ type: 'paragraph', text: b.text }))
   );
+
+  const initialV1Blocks: LessonBlock[] =
+    ((initialLesson as any).blocks as LessonBlock[]) ||
+    ((initialLesson.currentDraft as any)?.blocks as LessonBlock[]) ||
+    [];
+
+  const initialIsV1 =
+    (initialLesson as any).contentSchemaVersion === 1 ||
+    (initialLesson.currentDraft as any)?.contentSchemaVersion === 1;
+
+  const [useV1Studio, setUseV1Studio] = useState<boolean>(initialIsV1);
+  const [blocks, setBlocks] = useState<LessonBlock[]>(() => {
+    if (initialV1Blocks.length > 0) {
+      return initialV1Blocks;
+    }
+    if (initialBlocks.length > 0) {
+      return initialBlocks.map((b, idx) => ({
+        blockKey: generateBlockKey('TEXT'),
+        type: 'TEXT' as const,
+        position: idx + 1,
+        schemaVersion: 1,
+        content: {
+          nodes: [
+            {
+              type: 'paragraph' as const,
+              runs: [{ text: b.text }],
+            },
+          ],
+        },
+      }));
+    }
+    return [];
+  });
 
   // Staged Exercises & Vocabulary
   const initExercises = (initialLesson as TeacherLessonDetailDto).exercises || [];
@@ -164,13 +202,14 @@ export function LessonDraftEditor({
   const highestRev = sortedRevisions[0] || lesson.highestRevision || null;
   const currentStatus = highestRev ? highestRev.status : 'DRAFT';
 
-  const editorActuallyEditable = (lesson.isEditable || isSuccessorEditing) && !isPending && !isReloading && !sessionLost;
+  const editorActuallyEditable = !previewOnly && (lesson.isEditable || isSuccessorEditing) && !isPending && !isReloading && !sessionLost;
 
   // Baseline state for dirty checking
   const [persistedBaseline, setPersistedBaseline] = useState(() => ({
     titleVi: initialTitle.vi || '',
     titleEn: initialTitle.en || '',
     paragraphs: initialBlocks.map((b) => b.text),
+    blocksJson: JSON.stringify(initialV1Blocks),
     exerciseFingerprints: initExercises.map((ex) =>
       JSON.stringify({
         pos: ex.position,
@@ -207,8 +246,10 @@ export function LessonDraftEditor({
     titleVi !== persistedBaseline.titleVi ||
     titleEn !== persistedBaseline.titleEn ||
     changeSummary.trim().length > 0 ||
-    paragraphs.length !== persistedBaseline.paragraphs.length ||
-    paragraphs.some((p, i) => p.text !== persistedBaseline.paragraphs[i]) ||
+    (useV1Studio
+      ? JSON.stringify(blocks) !== persistedBaseline.blocksJson
+      : (paragraphs.length !== persistedBaseline.paragraphs.length ||
+         paragraphs.some((p, i) => p.text !== persistedBaseline.paragraphs[i]))) ||
     exercises.length !== persistedBaseline.exerciseFingerprints.length ||
     exercises.some((ex, i) => {
       const currentFp = JSON.stringify({
@@ -372,6 +413,7 @@ export function LessonDraftEditor({
   };
 
   useEffect(() => {
+    if (previewOnly) return;
     let active = true;
     const loadAssessmentAuthoring = async () => {
       setAssessmentLoadError(null);
@@ -401,7 +443,7 @@ export function LessonDraftEditor({
     };
     void loadAssessmentAuthoring();
     return () => { active = false; };
-  }, [lesson.id, lesson.highestRevision?.id]);
+  }, [lesson.id, lesson.highestRevision?.id, previewOnly]);
 
   const reconcile = (next: TeacherLessonDetailDto) => {
     if (!next || next.id !== lesson.id || !Array.isArray(next.revisions)) throw new Error('Invalid lesson response');
@@ -410,6 +452,21 @@ export function LessonDraftEditor({
     setTitleEn(next.currentDraft?.title.en || '');
     setParagraphs(next.currentDraft?.contentBlocks.map((block) => ({ ...block })) || []);
     setChangeSummary('');
+
+    const nextIsV1 =
+      (next as any).contentSchemaVersion === 1 ||
+      (next.currentDraft as any)?.contentSchemaVersion === 1;
+
+    const nextBlocks: LessonBlock[] = nextIsV1
+      ? ((next as any).blocks as LessonBlock[]) ||
+        ((next.currentDraft as any)?.blocks as LessonBlock[]) ||
+        []
+      : [];
+
+    if (nextIsV1) {
+      setBlocks(nextBlocks);
+      setUseV1Studio(true);
+    }
 
     if (Array.isArray(next.exercises)) {
       setExercises(
@@ -450,6 +507,7 @@ export function LessonDraftEditor({
       titleVi: next.currentDraft?.title.vi || '',
       titleEn: next.currentDraft?.title.en || '',
       paragraphs: (next.currentDraft?.contentBlocks || []).map((b) => b.text),
+      blocksJson: JSON.stringify(nextBlocks),
       exerciseFingerprints: (next.exercises || []).map((ex) =>
         JSON.stringify({
           pos: ex.position,
@@ -485,7 +543,7 @@ export function LessonDraftEditor({
   };
 
   const handleSubmitForReview = async () => {
-    if (isPendingRef.current) return;
+    if (previewOnly || isPendingRef.current) return;
     if (isDirty) {
       setGeneralError('Vui lòng lưu bản nháp trước khi nộp duyệt.');
       return;
@@ -549,7 +607,7 @@ export function LessonDraftEditor({
   };
 
   const handleReloadLatestToken = async () => {
-    if (isPendingRef.current) return;
+    if (previewOnly || isPendingRef.current) return;
     isPendingRef.current = true;
     setIsReloading(true);
     setGeneralError(null);
@@ -1103,12 +1161,8 @@ export function LessonDraftEditor({
     try {
       const payloadTitle = { vi: trimmedVi, en: trimmedEn };
 
-      const payload = {
+      const payload: any = {
         title: payloadTitle,
-        contentBlocks: paragraphs.map((p) => ({
-          type: 'paragraph' as const,
-          text: p.text,
-        })),
         changeSummary: changeSummary.trim() || undefined,
         expectedRowVersion: lesson.rowVersion,
         expectedRevisionId: lesson.highestRevision?.id || null,
@@ -1143,6 +1197,16 @@ export function LessonDraftEditor({
           return item;
         }),
       };
+
+      if (useV1Studio) {
+        payload.contentSchemaVersion = 1;
+        payload.blocks = blocks;
+      } else {
+        payload.contentBlocks = paragraphs.map((p) => ({
+          type: 'paragraph' as const,
+          text: p.text,
+        }));
+      }
 
       const res = await fetch(`/api/teacher/lessons/${lesson.id}/draft`, {
         method: 'PATCH',
@@ -1194,11 +1258,11 @@ export function LessonDraftEditor({
   if (forbidden) return <AccessDeniedView accountId={account.id} message="Tài khoản không còn quyền truy cập bài học. Vui lòng đăng xuất." />;
 
   return (
-    <div className="page-content" style={{ maxWidth: '960px', margin: '0 auto' }}>
+    <div className="page-content" style={{ maxWidth: useV1Studio ? '1200px' : '960px', margin: '0 auto', boxSizing: 'border-box' }}>
       {/* Return link */}
       <nav className="catalog-breadcrumbs" style={{ marginBottom: '16px' }}>
         <a
-          href="/my-lessons"
+          href={previewOnly ? '/teacher-preview' : '/my-lessons'}
           className="breadcrumb-link"
           id="btnBackToMyLessons"
           aria-disabled={isPending || isReloading}
@@ -1206,7 +1270,7 @@ export function LessonDraftEditor({
             if (isPendingRef.current) e.preventDefault();
           }}
         >
-          &larr; Quay lại danh sách bài học
+          &larr; {previewOnly ? 'Quay lại danh sách preview' : 'Quay lại danh sách bài học'}
         </a>
       </nav>
 
@@ -1245,6 +1309,11 @@ export function LessonDraftEditor({
         <p className="page-description" style={{ margin: 0 }}>
           {unitName}. Soạn các đoạn văn, bài tập và từ vựng, sau đó lưu bản nháp nguyên khối.
         </p>
+        {previewOnly && (
+          <p role="note" className="page-description" style={{ marginTop: '8px' }}>
+            Chế độ xem trước local — dữ liệu minh họa, các thay đổi không được lưu.
+          </p>
+        )}
       </div>
 
       {/* Changes Requested Banner */}
@@ -1363,7 +1432,7 @@ export function LessonDraftEditor({
       )}
 
       {/* Read-only Alert when not editable and not handled by above banners */}
-      {!lesson.isEditable && !isSuccessorEditing && currentStatus !== 'CHANGES_REQUESTED' && currentStatus !== 'PUBLISHED' && currentStatus !== 'IN_REVIEW' && currentStatus !== 'APPROVED' && (
+      {!previewOnly && !lesson.isEditable && !isSuccessorEditing && currentStatus !== 'CHANGES_REQUESTED' && currentStatus !== 'PUBLISHED' && currentStatus !== 'IN_REVIEW' && currentStatus !== 'APPROVED' && (
         <div
           className="form-error-banner"
           role="alert"
@@ -1503,9 +1572,10 @@ export function LessonDraftEditor({
           )}
         </div>
 
-        {/* Content Paragraphs Section */}
+        {/* Content Section (Studio V1 or Legacy V0 Paragraphs) */}
         <div
           className="form-section"
+          id="lessonContentSection"
           style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
@@ -1514,97 +1584,161 @@ export function LessonDraftEditor({
             marginBottom: '20px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '16px',
+              flexWrap: 'wrap',
+              gap: '8px',
+            }}
+          >
             <div>
               <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#0f172a' }}>
-                2. Nội dung bài học (Các đoạn văn)
+                2. Nội dung bài học {useV1Studio ? '(Lesson Studio V1)' : '(Các đoạn văn)'}
               </h2>
               <span style={{ fontSize: '13px', color: '#64748b' }}>
-                Tổng số: {paragraphs.length} / 50 đoạn văn
+                {useV1Studio
+                  ? `Tổng số: ${blocks.length} / 50 khối nội dung`
+                  : `Tổng số: ${paragraphs.length} / 50 đoạn văn`}
               </span>
             </div>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              id="btnAddParagraph"
-              onClick={handleAddParagraph}
-              disabled={!editorActuallyEditable || paragraphs.length >= 50}
-              style={{ fontSize: '13px', padding: '6px 12px' }}
-            >
-              + Thêm đoạn văn
-            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {!useV1Studio && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  id="btnToggleStudioMode"
+                  onClick={() => {
+                    const adaptedBlocks: LessonBlock[] = paragraphs.map((p, idx) => {
+                      const existingBlock = blocks[idx];
+                      const key = existingBlock?.blockKey || generateBlockKey('TEXT');
+                      return {
+                        blockKey: key,
+                        type: 'TEXT' as const,
+                        position: idx + 1,
+                        schemaVersion: 1,
+                        content: {
+                          nodes: [
+                            {
+                              type: 'paragraph' as const,
+                              runs: [{ text: p.text }],
+                            },
+                          ],
+                        },
+                      };
+                    });
+                    setBlocks(adaptedBlocks);
+                    setUseV1Studio(true);
+                  }}
+                  style={{ fontSize: '12px', padding: '5px 10px' }}
+                  title="Chuyển nội dung đoạn văn hiện tại sang Lesson Studio V1"
+                >
+                  Chuyển sang Lesson Studio (V1)
+                </button>
+              )}
+
+              {!useV1Studio && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  id="btnAddParagraph"
+                  onClick={handleAddParagraph}
+                  disabled={!editorActuallyEditable || paragraphs.length >= 50}
+                  style={{ fontSize: '13px', padding: '6px 12px' }}
+                >
+                  + Thêm đoạn văn
+                </button>
+              )}
+            </div>
           </div>
 
-          {paragraphs.length === 0 ? (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '24px',
-                background: '#f8fafc',
-                borderRadius: '6px',
-                color: '#64748b',
-                fontStyle: 'italic',
-                fontSize: '14px',
-              }}
-              id="emptyParagraphsNotice"
-            >
-              Chưa có đoạn văn nào. Bạn có thể nhấn &quot;Thêm đoạn văn&quot; hoặc lưu bản nháp chỉ có tiêu đề.
-            </div>
+          {useV1Studio ? (
+            <StudioLayout
+              blocks={blocks}
+              onBlocksChange={setBlocks}
+              vocabulary={vocabulary}
+              exercises={exercises}
+              title={{ vi: titleVi, en: titleEn }}
+              readOnly={!editorActuallyEditable}
+              isPending={isPending}
+            />
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {paragraphs.map((p, idx) => (
+            <>
+              {paragraphs.length === 0 ? (
                 <div
-                  key={idx}
-                  id={`paragraphItem-${idx}`}
                   style={{
+                    textAlign: 'center',
+                    padding: '24px',
                     background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
                     borderRadius: '6px',
-                    padding: '12px 16px',
+                    color: '#64748b',
+                    fontStyle: 'italic',
+                    fontSize: '14px',
                   }}
+                  id="emptyParagraphsNotice"
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    <label
-                      htmlFor={`inputParagraph-${idx}`}
-                      style={{ fontSize: '13px', fontWeight: 600, color: '#475569' }}
-                    >
-                      Đoạn văn #{idx + 1}
-                    </label>
-                    <button
-                      type="button"
-                      className="btn-text-action btn-text-delete"
-                      id={`btnRemoveParagraph-${idx}`}
-                      onClick={() => handleRemoveParagraph(idx)}
-                      disabled={!editorActuallyEditable}
-                      style={{ fontSize: '12px' }}
-                    >
-                      Xóa đoạn
-                    </button>
-                  </div>
-                  <textarea
-                    id={`inputParagraph-${idx}`}
-                    className="form-input"
-                    rows={4}
-                    value={p.text}
-                    onChange={(e) => handleParagraphChange(idx, e.target.value)}
-                    maxLength={20000}
-                    placeholder="Nhập nội dung đoạn văn..."
-                    disabled={!editorActuallyEditable}
-                    style={{ resize: 'vertical' }}
-                  />
-                  <div style={{ textAlign: 'right', fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                    {p.text.length} / 20.000 ký tự
-                  </div>
+                  Chưa có đoạn văn nào. Bạn có thể nhấn &quot;Thêm đoạn văn&quot; hoặc lưu bản nháp chỉ có tiêu đề.
                 </div>
-              ))}
-            </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {paragraphs.map((p, idx) => (
+                    <div
+                      key={idx}
+                      id={`paragraphItem-${idx}`}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '6px',
+                        padding: '12px 16px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '8px',
+                        }}
+                      >
+                        <label
+                          htmlFor={`inputParagraph-${idx}`}
+                          style={{ fontSize: '13px', fontWeight: 600, color: '#475569' }}
+                        >
+                          Đoạn văn #{idx + 1}
+                        </label>
+                        <button
+                          type="button"
+                          className="btn-text-action btn-text-delete"
+                          id={`btnRemoveParagraph-${idx}`}
+                          onClick={() => handleRemoveParagraph(idx)}
+                          disabled={!editorActuallyEditable}
+                          style={{ fontSize: '12px' }}
+                        >
+                          Xóa đoạn
+                        </button>
+                      </div>
+                      <textarea
+                        id={`inputParagraph-${idx}`}
+                        className="form-input"
+                        rows={4}
+                        value={p.text}
+                        onChange={(e) => handleParagraphChange(idx, e.target.value)}
+                        maxLength={20000}
+                        placeholder="Nhập nội dung đoạn văn..."
+                        disabled={!editorActuallyEditable}
+                        style={{ resize: 'vertical' }}
+                      />
+                      <div style={{ textAlign: 'right', fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                        {p.text.length} / 20.000 ký tự
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -1923,7 +2057,7 @@ export function LessonDraftEditor({
         {/* Submit action */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap' }}>
           <a
-            href="/my-lessons"
+            href={previewOnly ? '/teacher-preview' : '/my-lessons'}
             className="btn btn-secondary"
             id="btnCancelDraft"
             aria-disabled={isPending || isReloading}
@@ -1931,7 +2065,7 @@ export function LessonDraftEditor({
               if (isPendingRef.current) e.preventDefault();
             }}
           >
-            Hủy / Quay lại
+              {previewOnly ? 'Quay lại danh sách preview' : 'Hủy / Quay lại'}
           </a>
 
           {(lesson.isEditable || isSuccessorEditing) && (
@@ -1939,7 +2073,7 @@ export function LessonDraftEditor({
               type="submit"
               className="btn btn-secondary"
               id="btnSaveDraft"
-              disabled={isPending || isReloading || isStaleConflict || sessionLost}
+              disabled={previewOnly || isPending || isReloading || isStaleConflict || sessionLost}
               style={{ minWidth: '140px' }}
             >
               {isPending ? 'Đang lưu...' : 'Lưu bản nháp'}

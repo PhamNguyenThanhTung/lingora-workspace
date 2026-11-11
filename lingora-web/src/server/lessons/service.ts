@@ -3,6 +3,11 @@ import type { Prisma, PrismaClient } from '../../../../lingora-admin/generated/p
 import { getLearnerPrisma } from '../db/index.ts';
 import { consumptionPostSchema, isValidUuid, LessonServiceError, type ConsumptionPostInput, type LearnerCatalogueDto, type LearnerLessonDetailDto, type LessonReadingDto } from './dto.ts';
 import { publicExercise, publicVocabulary } from './content.ts';
+import {
+  parsePersistedLessonContent,
+  toLegacyParagraphProjection,
+  toLessonPresentationDto,
+} from '@lingora/lesson-content';
 
 export type Db = PrismaClient | Prisma.TransactionClient;
 export const levelSelect = { id: true, frameworkId: true, code: true, label: true, position: true } as const;
@@ -65,7 +70,32 @@ export async function authorizedLesson(db: Db, context: Context, lessonId: strin
   if (!context.workingLevelId || !context.workingLevel) return fail(409, 'CONTEXT_NO_WORKING_LEVEL', 'Chưa có trình độ học hiện tại.');
   const lesson = await db.lesson.findFirst({
     where: { id: lessonId, availability: 'AVAILABLE' },
-    select: { ...lessonSummary, unit: { select: unitSelect }, activeRevision: { select: { ...revisionSummary, revisionNo: true, contentBlocks: true, topicIds: true, skillIds: true, purposeTags: true } } },
+    select: {
+      ...lessonSummary,
+      unit: { select: unitSelect },
+      activeRevision: {
+        select: {
+          ...revisionSummary,
+          revisionNo: true,
+          contentSchemaVersion: true,
+          contentBlocks: true,
+          blocks: {
+            orderBy: { position: 'asc' },
+            select: {
+              id: true,
+              blockKey: true,
+              type: true,
+              position: true,
+              schemaVersion: true,
+              content: true,
+            },
+          },
+          topicIds: true,
+          skillIds: true,
+          purposeTags: true,
+        },
+      },
+    },
   });
   if (!lesson || !published(lesson) || lesson.unit.courseId !== context.courseId) return fail(404, 'NOT_FOUND', 'Bài học không khả dụng.');
   if (lesson.unit.levelId !== lesson.unit.level.id || lesson.unit.level.frameworkId !== context.course.frameworkId) return fail(409, 'CONTEXT_INCONSISTENT', 'Khung năng lực của bài học không nhất quán.');
@@ -104,11 +134,39 @@ export async function loadLearnerLessonDetail(contextId: string, lessonId: strin
     select: { id: true, lessonRevisionId: true, itemId: true, itemRevisionId: true, position: true, isCore: true, item: { select: { id: true, origin: true } }, itemRevision: { select: { id: true, itemId: true, type: true, schemaVersion: true, promptData: true, assessmentBlueprintId: true } } },
   });
   const vocabulary = await db.lessonVocabularyLink.findMany({ where: { lessonRevisionId: rev.id }, orderBy: [{ position: 'asc' }, { id: 'asc' }], select: { id: true, position: true, isCore: true, displaySnapshot: true } });
+
+  const parsed = parsePersistedLessonContent(rev);
+  const contentBlocks = parsed.contentSchemaVersion === 0 && Array.isArray(rev.contentBlocks)
+    ? rev.contentBlocks.map(block => {
+        const b = block as { type?: unknown; text?: unknown } | null;
+        if (b?.type !== 'paragraph' || typeof b.text !== 'string') return fail(409, 'CONTENT_INCONSISTENT', 'Định dạng nội dung không được hỗ trợ.');
+        return { type: 'paragraph', text: b.text };
+      })
+    : toLegacyParagraphProjection(parsed.blocks);
+
+  const cleanExercises = exercises.filter(ex => ex.item.origin === 'PRACTICE' && ex.itemRevision.assessmentBlueprintId == null).map(ex => {
+    if (ex.itemRevision.id !== ex.itemRevisionId || ex.itemRevision.itemId !== ex.itemId || ex.item.id !== ex.itemId || ex.lessonRevisionId !== rev.id) return fail(409, 'CONTENT_INCONSISTENT', 'Phiên bản bài tập không nhất quán.');
+    return publicExercise(ex);
+  });
+  const cleanVocabulary = vocabulary.map(publicVocabulary);
+
   return {
     contextId: c.id, lessonId: l.id, unit: { id: l.unit.id, position: l.unit.position, names: labels(l.unit.names) },
-    revision: { id: rev.id, revisionNo: rev.revisionNo, title: labels(rev.title), contentBlocks: Array.isArray(rev.contentBlocks) ? rev.contentBlocks.map(block => { const b = block as { type?: unknown; text?: unknown } | null; if (b?.type !== 'paragraph' || typeof b.text !== 'string') return fail(409, 'CONTENT_INCONSISTENT', 'Định dạng nội dung không được hỗ trợ.'); return { type: 'paragraph', text: b.text }; }) : fail(409, 'CONTENT_INCONSISTENT', 'Định dạng nội dung không được hỗ trợ.'), topicIds: rev.topicIds, skillIds: rev.skillIds, purposeTags: rev.purposeTags },
-    exercises: exercises.filter(ex => ex.item.origin === 'PRACTICE' && ex.itemRevision.assessmentBlueprintId == null).map(ex => { if (ex.itemRevision.id !== ex.itemRevisionId || ex.itemRevision.itemId !== ex.itemId || ex.item.id !== ex.itemId || ex.lessonRevisionId !== rev.id) return fail(409, 'CONTENT_INCONSISTENT', 'Phiên bản bài tập không nhất quán.'); return publicExercise(ex); }),
-    vocabulary: vocabulary.map(publicVocabulary), consumption: readingDto(c.id, l.id, rev.id, await readingRow(db, c.id, rev.id)),
+    revision: {
+      id: rev.id,
+      revisionNo: rev.revisionNo,
+      title: labels(rev.title),
+      contentSchemaVersion: parsed.contentSchemaVersion,
+      contentBlocks,
+      blocks: parsed.blocks,
+      presentation: toLessonPresentationDto(parsed, cleanVocabulary, cleanExercises),
+      topicIds: rev.topicIds,
+      skillIds: rev.skillIds,
+      purposeTags: rev.purposeTags,
+    },
+    exercises: cleanExercises,
+    vocabulary: cleanVocabulary,
+    consumption: readingDto(c.id, l.id, rev.id, await readingRow(db, c.id, rev.id)),
   };
 }
 export async function getLessonReading(contextId: string, lessonId: string, verifiedUserId: string): Promise<LessonReadingDto> {

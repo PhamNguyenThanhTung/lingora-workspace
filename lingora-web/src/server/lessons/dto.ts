@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { PresentationBlock, LessonPresentationDto } from '@lingora/lesson-content';
 
 export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -114,7 +115,10 @@ export interface LearnerLessonDetailDto {
     id: string;
     revisionNo: number;
     title: Record<string, string>;
+    contentSchemaVersion?: number;
     contentBlocks: Array<{ type: string; text: string }>;
+    blocks?: PresentationBlock[];
+    presentation?: LessonPresentationDto;
     topicIds: string[];
     skillIds: string[];
     purposeTags: string[];

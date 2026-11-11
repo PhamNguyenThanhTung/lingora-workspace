@@ -1,4 +1,12 @@
 import { z } from 'zod';
+import {
+  parsePersistedLessonContent,
+  toLegacyParagraphProjection,
+  toLessonPresentationDto,
+  validateLessonBlocks,
+  type PresentationBlock,
+  type LessonPresentationDto,
+} from '@lingora/lesson-content';
 import { getProductPrisma } from '../db/index.js';
 import { isValidUuid, type ApiErrorEnvelope } from '../frameworks/index.ts';
 import {
@@ -23,6 +31,23 @@ import { revisionChildRelations, unsupportedChildren } from './snapshot.ts';
 
 import { WORKFLOW_STATUS_LABELS, getWorkflowStatusLabel } from './workflow-status.ts';
 export { WORKFLOW_STATUS_LABELS, getWorkflowStatusLabel };
+
+function hasSupportedV1Blocks(rawBlocks: unknown): boolean {
+  if (!Array.isArray(rawBlocks)) return false;
+
+  const blocks = rawBlocks.map(raw => {
+    if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return raw;
+    const { blockKey, type, position, schemaVersion, content } = raw as Record<string, unknown>;
+    return { blockKey, type, position, schemaVersion, content };
+  });
+
+  try {
+    validateLessonBlocks(blocks);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // =============================================================================
 // Schemas
@@ -162,7 +187,10 @@ export interface ReviewDetailDto {
     status: string;
     statusLabel: string;
     title: Record<string, string>;
+    contentSchemaVersion?: number;
     contentBlocks: Array<{ type: 'paragraph'; text: string }>;
+    blocks?: PresentationBlock[];
+    presentation?: LessonPresentationDto;
     changeSummary: string | null;
     rowVersion: string;
     createdAt: string;
@@ -412,7 +440,11 @@ export async function submitTeacherLesson(
       }
 
       // 7. Structural validation: title, content blocks, child associations and schemas.
-      if (!isSupportedTitle(highestRev.title) || !isSupportedContentBlocks(highestRev.contentBlocks)) {
+      const hasSupportedContent = highestRev.contentSchemaVersion === 1
+        ? hasSupportedV1Blocks(highestRev.blocks)
+        : isSupportedContentBlocks(highestRev.contentBlocks);
+
+      if (!isSupportedTitle(highestRev.title) || !hasSupportedContent) {
         throw new ControlledDraftError(400, {
           code: 'UNSUPPORTED_DRAFT_CONTENT',
           message: 'Bản nháp hiện tại chứa cấu trúc dữ liệu không được hỗ trợ để nộp duyệt.',
@@ -734,6 +766,9 @@ export async function getReviewDetail(
             vocabularyLinks: {
               orderBy: { position: 'asc' },
             },
+            blocks: {
+              orderBy: { position: 'asc' },
+            },
             lesson: {
               include: {
                 unit: {
@@ -813,6 +848,8 @@ export async function getReviewDetail(
       displaySnapshot: vl.displaySnapshot,
     }));
 
+    const parsedContent = parsePersistedLessonContent(rev);
+
     const detailDto: ReviewDetailDto = {
       submissionId: submission.id,
       assignmentEpisode: submission.assignmentEpisode
@@ -842,7 +879,12 @@ export async function getReviewDetail(
         status: rev.status,
         statusLabel: getWorkflowStatusLabel(rev.status),
         title: parseJsonRecord(rev.title),
-        contentBlocks: Array.isArray(rev.contentBlocks) ? rev.contentBlocks : [],
+        contentSchemaVersion: parsedContent.contentSchemaVersion,
+        contentBlocks: parsedContent.contentSchemaVersion === 1
+          ? toLegacyParagraphProjection(parsedContent.blocks)
+          : (Array.isArray(rev.contentBlocks) ? rev.contentBlocks : []),
+        blocks: parsedContent.blocks,
+        presentation: toLessonPresentationDto(parsedContent, vocabulary, exercises),
         changeSummary: rev.changeSummary || null,
         rowVersion: (rev.rowVersion ?? 1n).toString(),
         createdAt: (rev.createdAt instanceof Date ? rev.createdAt : new Date(rev.createdAt)).toISOString(),

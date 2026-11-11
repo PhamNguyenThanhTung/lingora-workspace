@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
+import { lessonBlocksCollectionSchema, type LessonBlock } from '@lingora/lesson-content';
+
+export const lessonBlockCollectionSchema = lessonBlocksCollectionSchema;
+export type { LessonBlock };
 
 import { isValidUuid } from '../frameworks/index.ts';
 export { isValidUuid };
@@ -491,6 +495,7 @@ const lessonVersionSchema = z.string({ message: 'expectedRowVersion là bắt bu
 
 export const saveTeacherDraftExtendedSchema = z
   .object({
+    contentSchemaVersion: z.union([z.literal(0), z.literal(1)]).optional(),
     title: z
       .object({
         vi: z.string({ message: 'Tiêu đề tiếng Việt phải là chuỗi ký tự' }).trim().max(300, 'Tiêu đề tiếng Việt tối đa 300 ký tự').optional(),
@@ -510,7 +515,9 @@ export const saveTeacherDraftExtendedSchema = z
           })
           .strict()
       )
-      .max(50, 'Tối đa 50 đoạn văn'),
+      .max(50, 'Tối đa 50 đoạn văn')
+      .optional(),
+    blocks: lessonBlocksCollectionSchema.optional(),
     changeSummary: z
       .string({ message: 'Tóm tắt thay đổi phải là chuỗi ký tự' })
       .trim()
@@ -533,4 +540,42 @@ export const saveTeacherDraftExtendedSchema = z
       .max(MAX_COLLECTION_SIZE, 'Tối đa 100 từ vựng trong một bài học')
       .optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((data, ctx) => {
+    if (data.blocks !== undefined && data.contentBlocks !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Không được gửi contentBlocks khi lưu bản sửa đổi định dạng khối nội dung V1.',
+        path: ['contentBlocks'],
+      });
+    }
+
+    if (data.contentSchemaVersion === 1 && data.contentBlocks !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Không được gửi contentBlocks khi khai báo định dạng khối nội dung V1.',
+        path: ['contentBlocks'],
+      });
+    }
+
+    if (data.contentSchemaVersion === 0 && data.blocks !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Không được gửi blocks khi không sử dụng định dạng khối nội dung V1.',
+        path: ['blocks'],
+      });
+    }
+
+    const isV1 = data.blocks !== undefined || data.contentSchemaVersion === 1;
+    if (isV1) {
+      if (data.expectedRevisionId === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'expectedRevisionId là bắt buộc khi lưu bản sửa đổi định dạng khối nội dung V1 (sử dụng null nếu tạo bản đầu tiên).',
+          path: ['expectedRevisionId'],
+        });
+      }
+    }
+  });
+
+export type SaveTeacherDraftExtendedInput = z.infer<typeof saveTeacherDraftExtendedSchema>;

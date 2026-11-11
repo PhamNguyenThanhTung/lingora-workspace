@@ -12,7 +12,8 @@
     "test:feature": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth.test.mjs tests/feature/context.test.mjs tests/feature/login-flow.test.mjs tests/feature/review-regressions.test.mjs tests/feature/session-transport.test.mjs tests/feature/prisma-runtime.test.mjs tests/feature/lessons.test.mjs tests/feature/lesson-review-regressions.test.mjs tests/feature/practice.test.mjs tests/feature/practice-review-regressions.test.mjs tests/feature/auth-registration.test.mjs tests/feature/confirmation-transport.test.mjs tests/feature/srs.test.mjs",
     "test:components": "node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/isolated-components.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/production-pages.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/lesson-pages.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/practice-components.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/review-components.test.mjs && node --experimental-strip-types tests/feature/register-components.test.mjs",
     "test:browser:confirmation": "node tests/feature/confirmation-browser.mjs",
-    "test:all": "npm run test:feature && npm run test:components",
+    "test:landing": "node tests/feature/landing-page.test.mjs",
+    "test:all": "npm run build && npm run test:feature && npm run test:components && npm run test:landing",
     "test:integration:lessons": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/lesson-concurrency.test.mjs",
     "test:integration:practice": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/practice-concurrency.test.mjs",
     "test:integration:onboarding": "node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth-bootstrap-postgres.test.mjs tests/feature/context-concurrency.test.mjs",
@@ -20,6 +21,7 @@
     "test:e2e:learning": "node --experimental-strip-types tests/feature/learning-mvp-e2e.test.mjs"
   },
   "dependencies": {
+    "@lingora/lesson-content": "*",
     "@prisma/client": "6.19.3",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.118.0",

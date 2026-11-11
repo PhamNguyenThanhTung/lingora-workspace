@@ -4,14 +4,15 @@
   "private": true,
   "workspaces": [
     "lingora-admin",
-    "lingora-web"
+    "lingora-web",
+    "packages/lesson-content"
   ],
   "scripts": {
     "dev": "npm run dev -w lingora-admin",
     "build": "npm run build -w lingora-admin && npm run build -w lingora-web",
     "start": "npm run start -w lingora-admin",
-    "typecheck": "npm run typecheck -w lingora-admin && npm run typecheck -w lingora-web",
-    "test:feature": "npm run test:feature -w lingora-admin && npm run test:feature -w lingora-web",
+    "typecheck": "npm run typecheck -w lingora-admin && npm run typecheck -w lingora-web && npm run typecheck -w @lingora/lesson-content",
+    "test:feature": "npm run test:feature -w lingora-admin && npm run test:feature -w lingora-web && npm run test:feature -w @lingora/lesson-content",
     "test:e2e": "npm run test:e2e -w lingora-admin",
     "test:all": "npm run test:all -w lingora-admin && npm run test:all -w lingora-web",
     "db:product:validate": "npm run db:product:validate -w lingora-admin",
@@ -24,6 +25,7 @@
     "test:integration:onboarding": "node scripts/local-test-db.mjs npm run test:integration:onboarding -w lingora-web",
     "test:integration:srs": "node scripts/local-test-db.mjs npm run test:integration:srs -w lingora-web",
     "test:integration:sample": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks lingora-admin/tests/feature/sample-curriculum-postgres.test.mjs",
+    "test:integration:studio": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs lingora-admin/tests/feature/studio-postgres.test.mjs",
     "test:e2e:learning": "node scripts/local-test-db.mjs npm run test:e2e:learning -w lingora-web"
   },
   "devDependencies": {
