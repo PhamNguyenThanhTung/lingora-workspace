@@ -420,15 +420,6 @@ export function AuditEventsCatalog({
           caption-side: top;
         }
         @media (max-width: 768px) {
-          /* Keep the existing navigation usable without squeezing this page beside it. */
-          .app-container:has(#auditEventsCatalog) {
-            flex-direction: column;
-          }
-          .app-container:has(#auditEventsCatalog) > .app-sidebar {
-            width: 100%;
-            border-right: 0;
-            border-bottom: 1px solid var(--sidebar-border);
-          }
           #auditEventsCatalog {
             padding: 16px;
           }

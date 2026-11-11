@@ -2,6 +2,7 @@ import ActivateTeacherPage from '../../../src/app/activate-teacher/page';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppShell } from '../../../src/components/AppShell';
+import { AdminDashboard } from '../../../src/components/AdminDashboard';
 import { LanguagesCatalog } from '../../../src/components/LanguagesCatalog';
 import { FrameworksCatalog } from '../../../src/components/FrameworksCatalog';
 import { LevelsCatalog } from '../../../src/components/LevelsCatalog';
@@ -442,6 +443,13 @@ function IsolatedHarnessApp() {
   }, [state]);
 
   if (!mounted) return null;
+
+  if (state === 'dashboard' || state === 'dashboard-empty' || state === 'dashboard-error') {
+    return <AppShell account={MOCK_ADMIN}><AdminDashboard displayName={MOCK_ADMIN.displayName} counts={{ languages: 7, courses: 3, teachers: 4, reviews: state === 'dashboard-error' ? null : state === 'dashboard-empty' ? 0 : 2 }} queue={state === 'dashboard-error' ? null : state === 'dashboard-empty' ? [] : [
+      { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', title: 'Chào hỏi và giới thiệu bản thân', submitter: 'Nguyễn Thị Lan', submittedAt: '2026-11-06T08:30:00Z' },
+      { id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', title: 'Gia đình và những người xung quanh', submitter: 'Trần Văn Minh', submittedAt: '2026-11-06T09:15:00Z' },
+    ]} /></AppShell>;
+  }
 
   if (state === 'teacher-holding') {
     return (

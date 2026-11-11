@@ -73,6 +73,10 @@ async function run() {
     );
     console.log('✔ R11: Production /test-harness route verified removed (HTTP 404)');
 
+    const dashboardRes = await fetch(`${NEXT_URL}/dashboard`, { redirect: 'manual' });
+    assert.ok([302, 307, 308].includes(dashboardRes.status), 'Unauthenticated /dashboard must redirect');
+    assert.ok(dashboardRes.headers.get('location')?.includes('/login'), '/dashboard redirects to login');
+
     // Unauthenticated guard: /languages redirects to /login
     const langPageRes = await fetch(`${NEXT_URL}/languages`, { redirect: 'manual' });
     assert.ok(

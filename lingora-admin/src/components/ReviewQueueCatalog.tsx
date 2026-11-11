@@ -84,7 +84,7 @@ export function ReviewQueueCatalog({
             background: '#ffffff',
             border: '1px solid #e2e8f0',
             borderRadius: '8px',
-            overflow: 'hidden',
+            overflowX: 'auto',
           }}
         >
           <table className="data-table" id="reviewQueueTable" aria-label="Danh sách bài học chờ kiểm duyệt">

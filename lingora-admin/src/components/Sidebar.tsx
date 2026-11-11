@@ -1,197 +1,64 @@
 'use client';
 
 import React from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { removeDraft, clearAllDrafts } from './draftStorage';
+import { usePathname } from 'next/navigation';
+import { NavigationIcon, type NavigationIconName } from './NavigationIcon';
+
+export const adminNavGroups: { label: string; items: { href: string; label: string; id: string; icon: NavigationIconName }[] }[] = [
+  { label: 'Không gian làm việc', items: [
+    { href: '/dashboard', label: 'Tổng quan', id: 'navDashboard', icon: 'overview' },
+  ] },
+  { label: 'Quản lý nội dung', items: [
+    { href: '/languages', label: 'Quản lý ngôn ngữ', id: 'navLanguages', icon: 'languages' },
+    { href: '/frameworks', label: 'Khung năng lực', id: 'navFrameworks', icon: 'frameworks' },
+    { href: '/courses', label: 'Khóa học', id: 'navCourses', icon: 'courses' },
+    { href: '/assessments', label: 'Đánh giá', id: 'navAssessments', icon: 'assessments' },
+    { href: '/review', label: 'Kiểm duyệt', id: 'navReview', icon: 'review' },
+  ] },
+  { label: 'Quản trị hệ thống', items: [
+    { href: '/teachers', label: 'Giáo viên', id: 'navTeachers', icon: 'teachers' },
+    { href: '/audit-events', label: 'Nhật ký hoạt động', id: 'navAuditEvents', icon: 'audit' },
+  ] },
+];
 
 export interface SidebarProps {
-  account: {
-    id: string;
-    role: string;
-    status: string;
-    displayName: string | null;
-  };
+  account: { id: string; role: string; status: string; displayName: string | null };
+  collapsed?: boolean;
+  mobile?: boolean;
+  onToggle?: () => void;
+  onNavigate?: () => void;
 }
 
-export function Sidebar({ account }: SidebarProps) {
-  const router = useRouter();
+export function Sidebar({ account, collapsed = false, mobile = false, onToggle, onNavigate }: SidebarProps) {
   const pathname = usePathname();
-
-  const isLanguagesActive = pathname === '/languages' || pathname.startsWith('/languages/');
-  const isFrameworksActive = pathname === '/frameworks' || pathname.startsWith('/frameworks/');
-  const isCoursesActive = pathname === '/courses' || pathname.startsWith('/courses/');
-  const isTeachersActive = pathname === '/teachers' || pathname.startsWith('/teachers/');
-  const isAssessmentsActive = pathname === '/assessments' || pathname.startsWith('/assessments/');
-  const isReviewActive = pathname === '/review' || pathname.startsWith('/review/');
-  const isAuditEventsActive = pathname === '/audit-events' || pathname.startsWith('/audit-events/');
-  const isMyLessonsActive = pathname === '/my-lessons' || pathname.startsWith('/my-lessons/');
   const isTeacher = account.role === 'TEACHER';
-
-  const handleLogout = async () => {
-    // Clear draft in isolated try/catch so storage errors never abort logout
-    try {
-      removeDraft(account.id);
-      clearAllDrafts();
-    } catch {
-      // Safe isolation
-    }
-
-    try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Origin': window.location.origin,
-        },
-      });
-    } catch {
-      // Ignore network errors on logout
-    } finally {
-      router.push('/login');
-      router.refresh();
-    }
-  };
-
-  const getInitials = (name: string | null) => {
-    if (!name) return 'CB';
-    const parts = name.trim().split(/\s+/);
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  };
+  const groups = isTeacher ? [{ label: 'Không gian giảng dạy', items: [
+    { href: '/my-lessons', label: 'Bài học được phân công', id: 'navTeacherLessons', icon: 'courses' as const },
+  ] }] : adminNavGroups;
 
   return (
     <aside className="app-sidebar" aria-label="Điều hướng chính">
       <div className="brand-section">
-        <div className="brand-name">Lingora</div>
-        <div className="brand-tagline">Quản trị & Giảng dạy</div>
-      </div>
-
-      <nav className="nav-section">
-        {isTeacher ? (
-          <a
-            href="/my-lessons"
-            className={`nav-item ${isMyLessonsActive ? 'active' : ''}`}
-            id="navTeacherLessons"
-          >
-            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-            </svg>
-            <span>Bài học được phân công</span>
-          </a>
-        ) : (
-          <>
-            <a
-              href="/languages"
-              className={`nav-item ${isLanguagesActive ? 'active' : ''}`}
-              id="navLanguages"
-            >
-              <svg className="nav-icon" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              </svg>
-              <span>Quản lý ngôn ngữ</span>
-            </a>
-            <a
-              href="/frameworks"
-              className={`nav-item ${isFrameworksActive ? 'active' : ''}`}
-              id="navFrameworks"
-            >
-              <svg className="nav-icon" viewBox="0 0 24 24">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                <polyline points="2 17 12 22 22 17"></polyline>
-                <polyline points="2 12 12 17 22 12"></polyline>
-              </svg>
-              <span>Khung năng lực</span>
-            </a>
-            <a
-              href="/courses"
-              className={`nav-item ${isCoursesActive ? 'active' : ''}`}
-              id="navCourses"
-            >
-              <svg className="nav-icon" viewBox="0 0 24 24">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
-              <span>Khóa học</span>
-            </a>
-            <a
-              href="/teachers"
-              className={`nav-item ${isTeachersActive ? 'active' : ''}`}
-              id="navTeachers"
-            >
-              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              <span>Giáo viên</span>
-            </a>
-            <a
-              href="/assessments"
-              className={`nav-item ${isAssessmentsActive ? 'active' : ''}`}
-              id="navAssessments"
-            >
-              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M4 5h16M4 12h10M4 19h16"></path>
-                <circle cx="18" cy="12" r="2"></circle>
-              </svg>
-              <span>Đánh giá</span>
-            </a>
-            <a
-              href="/review"
-              className={`nav-item ${isReviewActive ? 'active' : ''}`}
-              id="navReview"
-            >
-              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 11l3 3L22 4"></path>
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-              </svg>
-              <span>Kiểm duyệt</span>
-            </a>
-            <a
-              href="/audit-events"
-              className={`nav-item ${isAuditEventsActive ? 'active' : ''}`}
-              id="navAuditEvents"
-              aria-current={isAuditEventsActive ? 'page' : undefined}
-            >
-              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              <span>Nhật ký hoạt động</span>
-            </a>
-          </>
-        )}
-      </nav>
-
-      <div className="account-section">
-        <div className="account-info-group">
-          <div className="account-avatar" aria-hidden="true">
-            {getInitials(account.displayName)}
-          </div>
-          <div className="account-name" title={account.displayName || 'Cán bộ quản trị'}>
-            {account.displayName || (isTeacher ? 'Giáo viên' : 'Quản trị viên')}
-          </div>
-        </div>
-        <button
-          type="button"
-          id="btnLogout"
-          onClick={handleLogout}
-          className="logout-btn"
-          title="Đăng xuất"
-          aria-label="Đăng xuất"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
+        <a className="brand-link" href={isTeacher ? '/my-lessons' : '/dashboard'} aria-label="Lingora" onClick={onNavigate}>
+          <span className="brand-mark" aria-hidden="true">L<span /></span>
+          <span className="brand-copy"><span className="brand-name">Lingora<span className="brand-admin">{isTeacher ? 'TEACHER' : 'ADMIN'}</span></span><span className="brand-tagline">{isTeacher ? 'Không gian giảng dạy' : 'Trung tâm quản trị'}</span></span>
+        </a>
+        <button type="button" className="shell-icon-button sidebar-toggle" onClick={onToggle} aria-label={mobile ? 'Đóng menu' : collapsed ? 'Mở rộng thanh bên' : 'Thu gọn thanh bên'} aria-expanded={mobile || !collapsed} aria-controls="sidebarNavigation" title={mobile ? 'Đóng menu' : collapsed ? 'Mở rộng thanh bên' : 'Thu gọn thanh bên'}>
+          <NavigationIcon name={mobile ? 'close' : 'panel'} />
         </button>
       </div>
+      <nav className="nav-section" id="sidebarNavigation">
+        {groups.map(group => <div className="nav-group" key={group.label}>
+          <div className="nav-group-label">{group.label}</div>
+          {group.items.map(item => {
+            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return <a key={item.href} href={item.href} id={item.id} className={`nav-item${active ? ' active' : ''}`} aria-label={item.label} aria-current={active ? 'page' : undefined} title={collapsed && !mobile ? item.label : undefined} onClick={onNavigate}>
+              <NavigationIcon name={item.icon} /><span className="nav-label">{item.label}</span>
+            </a>;
+          })}
+        </div>)}
+      </nav>
+      <div className="sidebar-footer"><NavigationIcon name={isTeacher ? 'courses' : 'overview'} /><span>Lingora Workspace<span>Nền tảng học ngoại ngữ</span></span></div>
     </aside>
   );
 }

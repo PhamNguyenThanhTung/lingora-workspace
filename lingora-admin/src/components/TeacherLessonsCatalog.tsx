@@ -9,6 +9,7 @@ import type { LessonSummaryDto } from '@/server/lessons';
 export interface TeacherLessonsCatalogProps {
   initialLessons?: LessonSummaryDto[];
   initialError?: string | null;
+  lessonHrefPrefix?: string;
   account: {
     id: string;
     role: string;
@@ -20,6 +21,7 @@ export interface TeacherLessonsCatalogProps {
 export function TeacherLessonsCatalog({
   initialLessons = [],
   initialError,
+  lessonHrefPrefix = '/my-lessons',
   account,
 }: TeacherLessonsCatalogProps) {
   const [lessons, setLessons] = useState<LessonSummaryDto[]>(initialLessons);
@@ -143,7 +145,7 @@ export function TeacherLessonsCatalog({
                     </td>
                     <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                       <a
-                        href={`/my-lessons/${l.id}`}
+                        href={`${lessonHrefPrefix}/${l.id}`}
                         className="btn-text-action btn-text-view"
                         id={`btn-open-lesson-${l.id}`}
                       >

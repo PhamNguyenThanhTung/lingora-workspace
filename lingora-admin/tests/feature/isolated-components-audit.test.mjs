@@ -583,8 +583,18 @@ describe('Audit Events: Isolated Component & Browser Suite', () => {
         }
       }
 
-      // Sidebar navigation & logout must remain intact and visible
-      assert.ok(await page.isVisible('.app-sidebar'), `Sidebar visible at ${vp.width}px`);
+      // Mobile navigation is available through its drawer; desktop navigation stays visible.
+      if (width < 768) {
+        assert.equal(await page.isVisible('.app-sidebar'), false, 'Mobile drawer starts closed');
+        const menu = page.getByRole('button', { name: 'Mở menu', exact: true });
+        await menu.click();
+        assert.ok(await page.isVisible('#navAuditEvents'), `Audit navigation reachable at ${width}px`);
+        assert.equal(await page.locator('#navAuditEvents').getAttribute('aria-current'), 'page');
+        await page.keyboard.press('Escape');
+        assert.equal(await menu.evaluate(el => el === document.activeElement), true, 'Drawer restores menu focus');
+      } else {
+        assert.ok(await page.isVisible('.app-sidebar'), `Sidebar visible at ${vp.width}px`);
+      }
       assert.ok(await page.isVisible('.logout-btn'), `Logout button visible at ${vp.width}px`);
 
       // Table wrapper must handle horizontal scroll
