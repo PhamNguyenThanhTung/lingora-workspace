@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { LessonBlock } from '@lingora/lesson-content';
+import type { ReviewCommentDto } from '@/server/lessons/comments';
 import styles from './studio-styles';
 
 export interface StudioOutlineProps {
@@ -11,6 +12,7 @@ export interface StudioOutlineProps {
   vocabularyCount: number;
   exerciseCount: number;
   coreExerciseCount: number;
+  comments?: ReviewCommentDto[];
 }
 
 export function StudioOutline({
@@ -20,8 +22,10 @@ export function StudioOutline({
   vocabularyCount,
   exerciseCount,
   coreExerciseCount,
+  comments = [],
 }: StudioOutlineProps) {
   const headings = blocks.filter((b) => b.type === 'HEADING');
+  const openCommentsCount = comments.filter((c) => c.status === 'OPEN').length;
 
   const handleHeadingClick = (blockKey: string) => {
     onSelectBlock(blockKey);
@@ -66,6 +70,18 @@ export function StudioOutline({
             {exerciseCount} ({coreExerciseCount} cốt lõi)
           </span>
         </div>
+        {openCommentsCount > 0 && (
+          <div
+            className={styles.outlineBadge}
+            id="badgeOutlineOpenComments"
+            style={{ background: '#fef3c7', color: '#92400e' }}
+          >
+            <span>Nhận xét đang mở:</span>
+            <span className={styles.outlineBadgeValue} style={{ fontWeight: 700, color: '#b45309' }}>
+              💬 {openCommentsCount}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Heading Structure */}
@@ -84,6 +100,9 @@ export function StudioOutline({
             const isActive = activeBlockKey === hBlock.blockKey;
             const level = headingContent.level || 2;
             const text = headingContent.text || `Tiêu đề H${level}`;
+            const headingComments = comments.filter(
+              (c) => c.blockKey === hBlock.blockKey && c.status === 'OPEN'
+            );
 
             return (
               <li key={hBlock.blockKey} role="none">
@@ -97,8 +116,26 @@ export function StudioOutline({
                   onClick={() => handleHeadingClick(hBlock.blockKey)}
                   title={`H${level}: ${text}`}
                   id={`outlineHeading-${hBlock.blockKey}`}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  <span style={{ opacity: 0.6, marginRight: '4px' }}>H{level}</span> {text}
+                  <span>
+                    <span style={{ opacity: 0.6, marginRight: '4px' }}>H{level}</span> {text}
+                  </span>
+                  {headingComments.length > 0 && (
+                    <span
+                      style={{
+                        background: '#fef3c7',
+                        color: '#b45309',
+                        padding: '1px 5px',
+                        borderRadius: '999px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                      }}
+                      title={`${headingComments.length} nhận xét đang chờ xử lý`}
+                    >
+                      💬 {headingComments.length}
+                    </span>
+                  )}
                 </button>
               </li>
             );

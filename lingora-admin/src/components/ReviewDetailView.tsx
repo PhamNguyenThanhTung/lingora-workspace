@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { ReviewDetailDto } from '@/server/lessons/workflow';
+import type { ReviewCommentDto } from '@/server/lessons/comments';
+import { BlockComments } from './lesson-studio/BlockComments';
 
 export interface ReviewDetailViewProps {
   initialDetail: ReviewDetailDto;
@@ -21,6 +23,7 @@ export function ReviewDetailView({
 }: ReviewDetailViewProps) {
   const [detail, setDetail] = useState<ReviewDetailDto>(initialDetail);
   const [comment, setComment] = useState('');
+  const [comments, setComments] = useState<ReviewCommentDto[]>([]);
   const [isPending, setIsPending] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(initialError || null);
@@ -28,6 +31,91 @@ export function ReviewDetailView({
   const [isStaleConflict, setIsStaleConflict] = useState(false);
 
   const isPendingRef = useRef(false);
+
+  useEffect(() => {
+    if (!detail.lesson.id) return;
+    let active = true;
+    const fetchComments = async () => {
+      try {
+        const res = await fetch(`/api/lessons/${detail.lesson.id}/comments`, { cache: 'no-store' });
+        if (!res.ok || !active) return;
+        const data = await res.json();
+        const list = data?.data?.comments || (Array.isArray(data?.data) ? data.data : []);
+        if (active && Array.isArray(list)) {
+          setComments(list);
+        }
+      } catch {
+        // safe silent
+      }
+    };
+    void fetchComments();
+    return () => { active = false; };
+  }, [detail.lesson.id, detail.revision.id]);
+
+  const handleAddComment = async (body: string, blockKey?: string | null, itemRevisionId?: string | null) => {
+    const res = await fetch(`/api/lessons/${detail.lesson.id}/revisions/${detail.revision.id}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: window.location.origin,
+      },
+      body: JSON.stringify({
+        body,
+        blockKey: blockKey || undefined,
+        itemRevisionId: itemRevisionId || undefined,
+      }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data?.error?.message || 'Không thể tạo nhận xét.');
+    }
+    const data = await res.json();
+    const created = data?.data?.data || data?.data;
+    if (created) {
+      setComments((prev) => [...prev, created]);
+      setSuccessMessage('Đã thêm nhận xét kiểm duyệt thành công.');
+    }
+  };
+
+  const handleResolveComment = async (commentId: string, expectedRowVersion: string) => {
+    const res = await fetch(`/api/lessons/${detail.lesson.id}/comments/${commentId}/resolve`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: window.location.origin,
+      },
+      body: JSON.stringify({ expectedRowVersion }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data?.error?.message || 'Không thể đánh dấu đã xử lý.');
+    }
+    const data = await res.json();
+    const updated = data?.data?.data || data?.data;
+    if (updated) {
+      setComments((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+    }
+  };
+
+  const handleReopenComment = async (commentId: string, expectedRowVersion: string) => {
+    const res = await fetch(`/api/lessons/${detail.lesson.id}/comments/${commentId}/reopen`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: window.location.origin,
+      },
+      body: JSON.stringify({ expectedRowVersion }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data?.error?.message || 'Không thể mở lại nhận xét.');
+    }
+    const data = await res.json();
+    const updated = data?.data?.data || data?.data;
+    if (updated) {
+      setComments((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+    }
+  };
 
   const authFailed = (res: Response): boolean => {
     if (res.status === 401) {
@@ -388,7 +476,22 @@ export function ReviewDetailView({
         </div>
       )}
 
-      {/* Section 1: Content Paragraphs */}
+      {/* Revision-wide Comments */}
+      <div style={{ marginBottom: '20px' }}>
+        <BlockComments
+          comments={comments}
+          isRevisionWide={true}
+          canAdd={account.role === 'ADMIN' && detail.revision.status === 'IN_REVIEW'}
+          canResolve={true}
+          canReopen={account.role === 'ADMIN'}
+          onAddComment={handleAddComment}
+          onResolve={handleResolveComment}
+          onReopen={handleReopenComment}
+          disabled={isPending}
+        />
+      </div>
+
+      {/* Section 1: Content Blocks */}
       <div
         className="form-section"
         style={{
@@ -400,9 +503,72 @@ export function ReviewDetailView({
         }}
       >
         <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#0f172a' }}>
-          1. Nội dung bài học ({detail.revision.contentBlocks.length} đoạn văn)
+          1. Nội dung bài học {detail.revision.contentSchemaVersion === 1 ? `(${detail.revision.blocks?.length || 0} khối nội dung V1)` : `(${detail.revision.contentBlocks.length} đoạn văn)`}
         </h2>
-        {detail.revision.contentBlocks.length === 0 ? (
+        {detail.revision.contentSchemaVersion === 1 && detail.revision.blocks && detail.revision.blocks.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {detail.revision.blocks.map((block) => (
+              <div
+                key={block.blockKey}
+                id={`review-block-${block.blockKey}`}
+                style={{
+                  padding: '16px',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '6px',
+                }}
+              >
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, fontSize: '13px' }}>#{block.position}</span>
+                  <span className="badge" style={{ background: '#eff6ff', color: '#1d4ed8', fontSize: '12px' }}>
+                    {block.type}
+                  </span>
+                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>{block.blockKey}</span>
+                </div>
+
+                <div style={{ fontSize: '14px', lineHeight: '1.6', background: '#f8fafc', padding: '10px 14px', borderRadius: '4px' }}>
+                  {block.type === 'HEADING' && <strong>{(block.content as any)?.text} (H{(block.content as any)?.level || 2})</strong>}
+                  {block.type === 'TEXT' && <div>{(block.content as any)?.nodes?.[0]?.runs?.[0]?.text || '—'}</div>}
+                  {block.type === 'EXAMPLE' && (
+                    <div>
+                      {(block.content as any)?.text}
+                      {(block.content as any)?.translation && <div style={{ color: '#64748b', fontSize: '13px' }}>{(block.content as any).translation}</div>}
+                    </div>
+                  )}
+                  {block.type === 'DIALOGUE' && (
+                    <div>
+                      {((block.content as any)?.lines || []).map((l: any, i: number) => (
+                        <div key={i}><strong>{l.speaker}:</strong> {l.text}</div>
+                      ))}
+                    </div>
+                  )}
+                  {block.type === 'CALLOUT' && (
+                    <div>
+                      <strong>[{(block.content as any)?.tone?.toUpperCase()}]</strong> {(block.content as any)?.title || ''}
+                      <div>{(block.content as any)?.document?.nodes?.[0]?.runs?.[0]?.text || ''}</div>
+                    </div>
+                  )}
+                  {block.type === 'MEDIA' && <div>Âm thanh: {(block.content as any)?.audioReferenceUrl}</div>}
+                  {block.type === 'GRAMMAR' && <div><strong>{(block.content as any)?.title}:</strong> {(block.content as any)?.explanation}</div>}
+                  {block.type === 'VOCABULARY' && <div>[Khối hiển thị danh sách từ vựng bài học]</div>}
+                  {block.type === 'DIVIDER' && <hr />}
+                </div>
+
+                <BlockComments
+                  comments={comments}
+                  targetBlockKey={block.blockKey}
+                  canAdd={account.role === 'ADMIN' && detail.revision.status === 'IN_REVIEW'}
+                  canResolve={true}
+                  canReopen={account.role === 'ADMIN'}
+                  onAddComment={handleAddComment}
+                  onResolve={handleResolveComment}
+                  onReopen={handleReopenComment}
+                  disabled={isPending}
+                />
+              </div>
+            ))}
+          </div>
+        ) : detail.revision.contentBlocks.length === 0 ? (
           <p style={{ color: '#94a3b8', fontStyle: 'italic', margin: 0 }}>Không có đoạn văn nào.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -531,6 +697,20 @@ export function ReviewDetailView({
                     <strong>Giải thích đáp án:</strong> {ex.feedbackData.explanation}
                   </div>
                 )}
+
+                <div style={{ marginTop: '12px' }}>
+                  <BlockComments
+                    comments={comments}
+                    targetItemRevisionId={ex.itemRevisionId}
+                    canAdd={account.role === 'ADMIN' && detail.revision.status === 'IN_REVIEW'}
+                    canResolve={true}
+                    canReopen={account.role === 'ADMIN'}
+                    onAddComment={handleAddComment}
+                    onResolve={handleResolveComment}
+                    onReopen={handleReopenComment}
+                    disabled={isPending}
+                  />
+                </div>
               </div>
             ))}
           </div>

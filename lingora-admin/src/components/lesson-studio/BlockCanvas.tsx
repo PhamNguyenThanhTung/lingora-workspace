@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import type { LessonBlock, LessonBlockType } from '@lingora/lesson-content';
+import type { ReviewCommentDto } from '@/server/lessons/comments';
 import { BlockToolbar, BlockActionToolbar, AVAILABLE_BLOCK_TYPES } from './BlockToolbar';
 import { BlockEditor } from './BlockEditor';
+import { BlockComments } from './BlockComments';
 import styles from './studio-styles';
 
 export interface BlockCanvasProps {
@@ -16,6 +18,12 @@ export interface BlockCanvasProps {
   onMoveBlock: (blockKey: string, direction: 'up' | 'down') => void;
   onReorderBlocks: (fromIndex: number, toIndex: number) => void;
   onAddBlock: (type: LessonBlockType, targetIndex?: number) => void;
+  comments?: ReviewCommentDto[];
+  onResolveComment?: (commentId: string, rowVersion: string) => Promise<void>;
+  onReopenComment?: (commentId: string, rowVersion: string) => Promise<void>;
+  onAddComment?: (body: string, blockKey?: string | null, itemRevisionId?: string | null) => Promise<void>;
+  canAddComments?: boolean;
+  canResolveComments?: boolean;
   readOnly?: boolean;
   isPending?: boolean;
 }
@@ -30,6 +38,12 @@ export function BlockCanvas({
   onMoveBlock,
   onReorderBlocks,
   onAddBlock,
+  comments = [],
+  onResolveComment,
+  onReopenComment,
+  onAddComment,
+  canAddComments = false,
+  canResolveComments = true,
   readOnly = false,
   isPending = false,
 }: BlockCanvasProps) {
@@ -75,8 +89,55 @@ export function BlockCanvas({
     return item ? item.badgeClass : styles.blockTypeBadge;
   };
 
+  // Find comments for blocks that no longer exist (orphaned)
+  const currentBlockKeySet = new Set(blocks.map((b) => b.blockKey));
+  const orphanedComments = comments.filter(
+    (c) => c.blockKey && !currentBlockKeySet.has(c.blockKey)
+  );
+
   return (
     <div className={styles.canvasColumn} id="studioCanvas">
+      {/* Revision-wide Comments Banner */}
+      {comments.length > 0 && (
+        <BlockComments
+          comments={comments}
+          isRevisionWide={true}
+          canResolve={canResolveComments && !readOnly}
+          canReopen={Boolean(onReopenComment)}
+          canAdd={canAddComments}
+          onResolve={onResolveComment}
+          onReopen={onReopenComment}
+          onAddComment={onAddComment}
+          disabled={disabled}
+        />
+      )}
+
+      {/* Orphaned Comments (Targeted to deleted or missing blocks) */}
+      {orphanedComments.length > 0 && (
+        <div
+          className={styles.commentsSection}
+          id="orphanedCommentsSection"
+          style={{ background: '#fff1f2', borderColor: '#fecdd3', marginBottom: '16px' }}
+        >
+          <div className={styles.commentsHeader} style={{ color: '#be123c' }}>
+            <span>⚠️ Nhận xét trên các khối đã bị gỡ / thay đổi ({orphanedComments.length})</span>
+          </div>
+          <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#881337' }}>
+            Các nhận xét dưới đây thuộc các khối nội dung không còn trong bản nháp hiện tại. Bạn vẫn có thể xem và xử lý.
+          </p>
+          <BlockComments
+            comments={orphanedComments}
+            targetBlockKey={orphanedComments[0]?.blockKey}
+            canResolve={canResolveComments && !readOnly}
+            canReopen={Boolean(onReopenComment)}
+            canAdd={false}
+            onResolve={onResolveComment}
+            onReopen={onReopenComment}
+            disabled={disabled}
+          />
+        </div>
+      )}
+
       {/* Top Insertion Toolbar */}
       <BlockToolbar onAddBlock={(type) => onAddBlock(type)} disabled={disabled} />
 
@@ -97,6 +158,9 @@ export function BlockCanvas({
             const isActive = activeBlockKey === block.blockKey;
             const isDragging = draggedIndex === index;
             const isDropTarget = dropTargetIndex === index;
+            const blockOpenCommentsCount = comments.filter(
+              (c) => c.blockKey === block.blockKey && c.status === 'OPEN'
+            ).length;
 
             return (
               <div
@@ -129,6 +193,12 @@ export function BlockCanvas({
                     <span className={`${styles.blockTypeBadge} ${getBadgeClass(block.type)}`}>
                       {block.type}
                     </span>
+
+                    {blockOpenCommentsCount > 0 && (
+                      <span className={styles.commentBadgeOpen} id={`badgeOpenComment-${block.blockKey}`}>
+                        💬 {blockOpenCommentsCount} yêu cầu
+                      </span>
+                    )}
                   </div>
 
                   {/* Actions Toolbar */}
@@ -172,6 +242,21 @@ export function BlockCanvas({
                   onChange={(patch) => onUpdateBlock(block.blockKey, patch)}
                   disabled={disabled}
                 />
+
+                {/* Block Comments */}
+                <div onClick={(e) => e.stopPropagation()}>
+                  <BlockComments
+                    comments={comments}
+                    targetBlockKey={block.blockKey}
+                    canResolve={canResolveComments && !readOnly}
+                    canReopen={Boolean(onReopenComment)}
+                    canAdd={canAddComments}
+                    onResolve={onResolveComment}
+                    onReopen={onReopenComment}
+                    onAddComment={onAddComment}
+                    disabled={disabled}
+                  />
+                </div>
               </div>
             );
           })

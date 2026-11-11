@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import type { LessonBlock, LessonBlockType } from '@lingora/lesson-content';
+import type { ReviewCommentDto } from '@/server/lessons/comments';
 import {
   addBlock,
   duplicateBlock,
@@ -43,6 +44,12 @@ export interface StudioLayoutProps {
     vi?: string;
     en?: string;
   };
+  comments?: ReviewCommentDto[];
+  onResolveComment?: (commentId: string, rowVersion: string) => Promise<void>;
+  onReopenComment?: (commentId: string, rowVersion: string) => Promise<void>;
+  onAddComment?: (body: string, blockKey?: string | null, itemRevisionId?: string | null) => Promise<void>;
+  canAddComments?: boolean;
+  canResolveComments?: boolean;
   readOnly?: boolean;
   isPending?: boolean;
 }
@@ -53,6 +60,12 @@ export function StudioLayout({
   vocabulary = [],
   exercises = [],
   title,
+  comments = [],
+  onResolveComment,
+  onReopenComment,
+  onAddComment,
+  canAddComments = false,
+  canResolveComments = true,
   readOnly = false,
   isPending = false,
 }: StudioLayoutProps) {
@@ -166,6 +179,7 @@ export function StudioLayout({
             vocabularyCount={vocabulary.length}
             exerciseCount={exercises.length}
             coreExerciseCount={coreExercisesCount}
+            comments={comments}
           />
         </div>
 
@@ -181,6 +195,12 @@ export function StudioLayout({
             onMoveBlock={handleMoveBlock}
             onReorderBlocks={handleReorderBlocks}
             onAddBlock={handleAddBlock}
+            comments={comments}
+            onResolveComment={onResolveComment}
+            onReopenComment={onReopenComment}
+            onAddComment={onAddComment}
+            canAddComments={canAddComments}
+            canResolveComments={canResolveComments}
             readOnly={readOnly}
             isPending={isPending}
           />

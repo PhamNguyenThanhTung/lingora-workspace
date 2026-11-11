@@ -590,6 +590,106 @@ export const studioCss = `
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
 }
+
+.commentsSection {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+}
+
+.commentsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.commentItem {
+  background: #ffffff;
+  border: 1px solid #fef3c7;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.commentMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.commentBadgeOpen {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.commentBadgeResolved {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.commentBody {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1e293b;
+  white-space: pre-wrap;
+}
+
+.commentActionBtn {
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.commentActionBtn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.commentActionBtnSuccess {
+  border-color: #86efac;
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.commentActionBtnSuccess:hover:not(:disabled) {
+  background: #dcfce7;
+  border-color: #4ade80;
+}
 `;
 
 export const styles: Record<string, string> = {
@@ -660,6 +760,15 @@ export const styles: Record<string, string> = {
   previewViewportMobile: 'previewViewportMobile',
   viewTabBtn: 'viewTabBtn',
   viewTabBtnActive: 'viewTabBtnActive',
+  commentsSection: 'commentsSection',
+  commentsHeader: 'commentsHeader',
+  commentItem: 'commentItem',
+  commentMeta: 'commentMeta',
+  commentBadgeOpen: 'commentBadgeOpen',
+  commentBadgeResolved: 'commentBadgeResolved',
+  commentBody: 'commentBody',
+  commentActionBtn: 'commentActionBtn',
+  commentActionBtnSuccess: 'commentActionBtnSuccess',
 };
 
 export default styles;

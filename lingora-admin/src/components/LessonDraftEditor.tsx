@@ -14,6 +14,7 @@ import type {
 import type { ExerciseType } from '@/server/lessons/content';
 import type { AssessmentBlueprintDto, TeacherAssessmentItemDto } from '@/server/assessments/types';
 import type { LessonBlock } from '@lingora/lesson-content';
+import type { ReviewCommentDto } from '@/server/lessons/comments';
 import { StudioLayout } from './lesson-studio';
 import { generateBlockKey } from './lesson-studio/block-operations';
 
@@ -195,6 +196,10 @@ export function LessonDraftEditor({
   const [sessionLost, setSessionLost] = useState(false);
   const [forbidden, setForbidden] = useState(false);
   const [isSuccessorEditing, setIsSuccessorEditing] = useState(false);
+
+  // Comments (T10) & Local Backup (T11)
+  const [comments, setComments] = useState<ReviewCommentDto[]>([]);
+  const [availableBackup, setAvailableBackup] = useState<{ timestamp: number; data: any } | null>(null);
 
   // Derived revision & workflow state
   const revisions = Array.isArray(lesson.revisions) ? lesson.revisions : [];
@@ -540,6 +545,180 @@ export function LessonDraftEditor({
       ),
     });
     setIsSuccessorEditing(false);
+  };
+
+  // --- Local Draft Backup & Recovery (T11) ---
+  const backupStorageKey = `lingora_draft_backup_${lesson.id}`;
+
+  // Check on mount for unsaved local backup
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.localStorage || previewOnly) return;
+    try {
+      const raw = window.localStorage.getItem(backupStorageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (
+        parsed &&
+        (parsed.blocks?.length > 0 ||
+          parsed.paragraphs?.length > 0 ||
+          (parsed.titleVi && parsed.titleVi.trim().length > 0) ||
+          (parsed.titleEn && parsed.titleEn.trim().length > 0))
+      ) {
+        const isDifferent =
+          (parsed.titleVi !== undefined && parsed.titleVi !== initialTitle.vi) ||
+          (parsed.titleEn !== undefined && parsed.titleEn !== initialTitle.en) ||
+          (Array.isArray(parsed.blocks) && JSON.stringify(parsed.blocks) !== JSON.stringify(initialV1Blocks)) ||
+          (Array.isArray(parsed.paragraphs) && JSON.stringify(parsed.paragraphs) !== JSON.stringify(initialBlocks));
+        if (isDifferent) {
+          setAvailableBackup({
+            timestamp: parsed.timestamp || Date.now(),
+            data: parsed,
+          });
+        }
+      }
+    } catch {
+      // Ignore corrupted localStorage
+    }
+  }, [lesson.id, previewOnly]);
+
+  // Debounced auto-save backup when dirty
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.localStorage || previewOnly) return;
+    if (!editorActuallyEditable || !isDirty) return;
+
+    const timer = setTimeout(() => {
+      try {
+        const backupData = {
+          timestamp: Date.now(),
+          lessonId: lesson.id,
+          useV1Studio,
+          titleVi,
+          titleEn,
+          blocks,
+          paragraphs,
+          changeSummary,
+        };
+        window.localStorage.setItem(backupStorageKey, JSON.stringify(backupData));
+      } catch {
+        // LocalStorage quota or access error
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [lesson.id, previewOnly, editorActuallyEditable, isDirty, useV1Studio, titleVi, titleEn, blocks, paragraphs, changeSummary]);
+
+  const handleRestoreBackup = () => {
+    if (!availableBackup?.data) return;
+    const { data } = availableBackup;
+    if (typeof data.titleVi === 'string') setTitleVi(data.titleVi);
+    if (typeof data.titleEn === 'string') setTitleEn(data.titleEn);
+    if (typeof data.useV1Studio === 'boolean') setUseV1Studio(data.useV1Studio);
+    if (Array.isArray(data.blocks)) setBlocks(data.blocks);
+    if (Array.isArray(data.paragraphs)) setParagraphs(data.paragraphs);
+    if (typeof data.changeSummary === 'string') setChangeSummary(data.changeSummary);
+    setAvailableBackup(null);
+    setSuccessMessage('Đã khôi phục dữ liệu từ bản sao lưu cục bộ.');
+  };
+
+  const handleDiscardBackup = () => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.removeItem(backupStorageKey);
+    }
+    setAvailableBackup(null);
+  };
+
+  // Keyboard shortcut Ctrl+S / Cmd+S (T11)
+  useEffect(() => {
+    const handleSaveShortcut = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        if (
+          !isPendingRef.current &&
+          !isStaleConflict &&
+          !sessionLost &&
+          !forbidden &&
+          editorActuallyEditable
+        ) {
+          const form = document.getElementById('lessonDraftForm') as HTMLFormElement | null;
+          if (form) {
+            form.requestSubmit();
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', handleSaveShortcut);
+    return () => window.removeEventListener('keydown', handleSaveShortcut);
+  }, [editorActuallyEditable, isStaleConflict, sessionLost, forbidden]);
+
+  // --- Review Comments (T10) ---
+  const fetchComments = async () => {
+    try {
+      const res = await fetch(`/api/lessons/${lesson.id}/comments`, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        setComments(json.comments || json.data || []);
+      }
+    } catch {
+      // Non-blocking
+    }
+  };
+
+  useEffect(() => {
+    if (!previewOnly) {
+      void fetchComments();
+    }
+  }, [lesson.id, previewOnly]);
+
+  const handleResolveComment = async (commentId: string, expectedRowVersion: string) => {
+    try {
+      const res = await fetch(`/api/lessons/${lesson.id}/comments/${commentId}/resolve`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: window.location.origin,
+        },
+        body: JSON.stringify({ expectedRowVersion }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const updated = json.data;
+        setComments((prev) =>
+          prev.map((c) => (c.id === commentId ? { ...c, ...updated, status: 'RESOLVED' } : c))
+        );
+      } else {
+        const json = await res.json().catch(() => ({}));
+        alert(json.error?.message || 'Không thể đánh dấu đã xử lý.');
+        void fetchComments();
+      }
+    } catch {
+      alert('Lỗi kết nối khi đánh dấu đã xử lý.');
+    }
+  };
+
+  const handleReopenComment = async (commentId: string, expectedRowVersion: string) => {
+    try {
+      const res = await fetch(`/api/lessons/${lesson.id}/comments/${commentId}/reopen`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: window.location.origin,
+        },
+        body: JSON.stringify({ expectedRowVersion }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const updated = json.data;
+        setComments((prev) =>
+          prev.map((c) => (c.id === commentId ? { ...c, ...updated, status: 'OPEN' } : c))
+        );
+      } else {
+        const json = await res.json().catch(() => ({}));
+        alert(json.error?.message || 'Không thể mở lại nhận xét.');
+        void fetchComments();
+      }
+    } catch {
+      alert('Lỗi kết nối khi mở lại nhận xét.');
+    }
   };
 
   const handleSubmitForReview = async () => {
@@ -1246,6 +1425,13 @@ export function LessonDraftEditor({
       setIsPending(false);
       isPendingRef.current = false;
 
+      // Clear local backup on successful server save
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(backupStorageKey);
+      }
+      setAvailableBackup(null);
+      void fetchComments();
+
       const newRevNo = updated.highestRevision?.revisionNo || 1;
       setSuccessMessage(`Đã lưu bản nháp thành công (Bản sửa đổi #${newRevNo}).`);
     } catch {
@@ -1503,6 +1689,55 @@ export function LessonDraftEditor({
         </div>
       )}
 
+      {/* Local Backup Restore Banner (T11) */}
+      {availableBackup && (
+        <div
+          role="region"
+          id="backupRestoreBanner"
+          style={{
+            background: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            borderRadius: '8px',
+            padding: '14px 16px',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div>
+            <div style={{ fontWeight: 600, color: '#1e40af', fontSize: '14px' }}>
+              Phát hiện bản thảo tự động lưu trên trình duyệt
+            </div>
+            <div style={{ color: '#3b82f6', fontSize: '13px', marginTop: '2px' }}>
+              Lưu lúc: {new Date(availableBackup.timestamp).toLocaleTimeString()} ngày {new Date(availableBackup.timestamp).toLocaleDateString()}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              id="btnRestoreBackup"
+              onClick={handleRestoreBackup}
+              style={{ fontSize: '13px', padding: '6px 14px' }}
+            >
+              Khôi phục nội dung
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              id="btnDiscardBackup"
+              onClick={handleDiscardBackup}
+              style={{ fontSize: '13px', padding: '6px 14px' }}
+            >
+              Bỏ qua
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Editor Form */}
       <form onSubmit={handleSubmit} id="lessonDraftForm">
         {/* Title Section */}
@@ -1662,6 +1897,11 @@ export function LessonDraftEditor({
               vocabulary={vocabulary}
               exercises={exercises}
               title={{ vi: titleVi, en: titleEn }}
+              comments={comments}
+              onResolveComment={handleResolveComment}
+              onReopenComment={account.role === 'ADMIN' ? handleReopenComment : undefined}
+              canResolveComments={true}
+              canAddComments={account.role === 'ADMIN'}
               readOnly={!editorActuallyEditable}
               isPending={isPending}
             />
