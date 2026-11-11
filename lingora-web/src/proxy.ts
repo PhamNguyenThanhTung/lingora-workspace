@@ -29,6 +29,14 @@ export function applyProxyAuthToResponse(
  * Note: Proxy refresh is not authorization; protected routes verify identity explicitly.
  */
 export async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === '/') {
+    return NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    });
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,

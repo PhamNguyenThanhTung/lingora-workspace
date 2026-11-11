@@ -39,6 +39,16 @@ test('real expired-session refresh propagates new chunk cookies downstream and a
   const redirect=applyProxyAuthToResponse(response,NextResponse.redirect(new URL('https://learner.test/login')));
   assertHeaders(redirect.headers);assertCookies(redirect.cookies.getAll());
 });
+test('public root route / and query variations bypass proxy auth initialization without refresh',async()=>{
+  expire();const cookie=[...jar].map(([name,value])=>`${name}=${value}`).join('; ');
+  const rootResponse=await proxy(new NextRequest('https://learner.test/',{headers:{cookie}}));
+  assert.equal(state.refreshes ?? 0,0);
+  assert.equal(rootResponse.cookies.getAll().length,0);
+
+  const queryResponse=await proxy(new NextRequest('https://learner.test/?ref=campaign&lang=vi',{headers:{cookie}}));
+  assert.equal(state.refreshes ?? 0,0);
+  assert.equal(queryResponse.cookies.getAll().length,0);
+});
 for(const status of [200,403,503])test(`actual context response${status} preserves refreshed SDK cookies/headers`,async()=>{
   expire();if(status===403)state.account=null;if(status===503)state.dbFailure=true;
   const response=await contextRoute(new Request('https://learner.test/api/learner/context'));

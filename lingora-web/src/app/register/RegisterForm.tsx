@@ -206,16 +206,27 @@ export function RegisterForm() {
               {isPending ? 'Đang đăng ký...' : 'Đăng ký'}
             </button>
 
-            <div className="login-footer" style={{ marginTop: '16px', textAlign: 'center', fontSize: '14px' }}>
-              <span style={{ color: 'var(--text-muted, #666)' }}>Đã có tài khoản? </span>
-              <Link
-                href="/login"
-                id="toLoginLink"
-                className="login-link"
-                style={{ color: 'var(--primary-green, #10b981)', textDecoration: 'underline', fontWeight: 500 }}
-              >
-                Đăng nhập
-              </Link>
+            <div className="login-footer" style={{ marginTop: '16px', textAlign: 'center', fontSize: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div>
+                <span style={{ color: 'var(--text-muted, #666)' }}>Đã có tài khoản? </span>
+                <Link
+                  href="/login"
+                  id="toLoginLink"
+                  className="login-link"
+                  style={{ color: 'var(--primary-green, #10b981)', textDecoration: 'underline', fontWeight: 500 }}
+                >
+                  Đăng nhập
+                </Link>
+              </div>
+              <div>
+                <Link
+                  href="/"
+                  id="toHomeLandingLink"
+                  style={{ color: 'var(--text-muted, #666)', fontSize: '13px', textDecoration: 'none' }}
+                >
+                  ← Quay lại trang giới thiệu
+                </Link>
+              </div>
             </div>
           </form>
         )}
