@@ -61,6 +61,8 @@ model Account {
   receipts             CommandReceipt[]
   auditEvents          AuditEvent[]          @relation("AuditActor")
   provisioningRequests ProvisioningRequest[] @relation("ProvisioningRequestedBy")
+  xpEvents             XpEvent[]             @relation("LearnerXpEvents")
+  achievements         LearnerAchievement[]  @relation("LearnerAchievements")
 
   @@map("accounts")
   @@schema("app")
@@ -120,6 +122,7 @@ model Level {
   startContexts       LearningContext[]     @relation("ContextStartLevel")
   workingContexts     LearningContext[]     @relation("ContextWorkingLevel")
   assessmentResults   AssessmentResult[]    @relation("AssessmentResultRecommendedLevel")
+  startPlans          LearningPlan[]        @relation("PlanStartLevel")
 
   @@unique([frameworkId, code], map: "levels_framework_id_code_key")
   @@unique([frameworkId, position], map: "levels_framework_id_position_key")
@@ -149,6 +152,7 @@ model Course {
 
   units                      Unit[]
   learningContexts           LearningContext[]
+  learningPlans              LearningPlan[]
   assessmentBlueprints       AssessmentBlueprint[]
 
   @@map("courses")
@@ -594,9 +598,33 @@ model LearningContext {
   lessonAttempts       LessonAttempt[]
   lessonCompletions    LessonCompletion[]
   assessmentAttempts   AssessmentAttempt[]
+  learningPlans        LearningPlan[]
 
   @@unique([learnerId, languageId], map: "learning_contexts_learner_id_language_id_key")
   @@map("learning_contexts")
+  @@schema("app")
+}
+
+model LearningPlan {
+  id                     String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contextId              String          @map("context_id") @db.Uuid
+  courseId               String          @map("course_id") @db.Uuid
+  startLevelId           String          @map("start_level_id") @db.Uuid
+  source                 String          @db.Text
+  dailyGoalMinutes       Int             @map("daily_goal_minutes")
+  status                 String          @default("ACTIVE") @db.Text
+  recommendationSnapshot Json            @map("recommendation_snapshot") @db.JsonB
+  createdAt              DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  replacedAt             DateTime?       @map("replaced_at") @db.Timestamptz(6)
+
+  context                LearningContext @relation(fields: [contextId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  course                 Course          @relation(fields: [courseId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  startLevel             Level           @relation("PlanStartLevel", fields: [startLevelId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@index([contextId], map: "learning_plans_context_id_idx")
+  @@index([courseId], map: "learning_plans_course_id_idx")
+  @@index([startLevelId], map: "learning_plans_start_level_id_idx")
+  @@map("learning_plans")
   @@schema("app")
 }
 
@@ -995,4 +1023,37 @@ model AuditEvent {
 
   @@map("audit_events")
   @@schema("app_private")
+}
+
+model XpEvent {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  learnerId String   @map("learner_id") @db.Uuid
+  eventType String   @map("event_type") @db.Text
+  sourceId  String   @map("source_id") @db.Uuid
+  xp        Int
+  localDate DateTime @map("local_date") @db.Date
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  learner   Account  @relation("LearnerXpEvents", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@unique([learnerId, eventType, sourceId], map: "xp_events_learner_event_source_key")
+  @@index([learnerId, localDate], map: "xp_events_learner_local_date_idx")
+  @@map("xp_events")
+  @@schema("app")
+}
+
+model LearnerAchievement {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  learnerId       String   @map("learner_id") @db.Uuid
+  achievementCode String   @map("achievement_code") @db.Text
+  sourceId        String   @map("source_id") @db.Uuid
+  awardedAt       DateTime @default(now()) @map("awarded_at") @db.Timestamptz(6)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  learner         Account  @relation("LearnerAchievements", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@unique([learnerId, achievementCode], map: "learner_achievements_learner_code_key")
+  @@index([learnerId], map: "learner_achievements_learner_id_idx")
+  @@map("learner_achievements")
+  @@schema("app")
 }

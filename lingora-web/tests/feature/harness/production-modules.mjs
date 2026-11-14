@@ -29,6 +29,8 @@ export async function compileProductionModules() {
     reviewPage: 'src/app/review/page.tsx',
     reviewStartApi: 'src/app/api/learner/review/start/route.ts',
     reviewRespondApi: 'src/app/api/learner/review/respond/route.ts',
+    homeApi: 'src/app/api/learner/home/route.ts',
+    pathApi: 'src/app/api/learner/contexts/[contextId]/path/route.ts',
   };
   const result = {};
   try {

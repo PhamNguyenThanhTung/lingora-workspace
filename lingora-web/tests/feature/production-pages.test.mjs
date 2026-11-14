@@ -20,7 +20,7 @@ async function withLearner(run){
 }
 test('actual LoginPage/Form → real login route/session → actual HomePage/loader → UI; logout leaves no authenticated request',async()=>{
   await withLearner(async page=>{
-    await page.getByText('Khóa học A',{exact:true}).waitFor();
+    await page.getByRole('heading', { name: 'Khóa học A', exact: true }).waitFor();
     const response=await page.request.get(`${origin}/api/learner/context`);
     assert.equal(response.status(),200);assert.equal((await response.json()).data.learner.id,learnerId);
     await page.goto(`${origin}/login`);await page.waitForURL(`${origin}/home`);
@@ -45,7 +45,7 @@ test('actual HomePage context503 → actual retry callback → loader and visibl
   await withLearner(async page=>{
     server.fixture.contextFailure=true;await page.reload();await page.locator('#retryBtn').waitFor();
     assert.equal((await page.request.get(`${origin}/api/learner/context`)).status(),503);
-    server.fixture.contextFailure=false;await page.locator('#retryBtn').click();await page.getByText('Khóa học A',{exact:true}).waitFor();
+    server.fixture.contextFailure=false;await page.locator('#retryBtn').click();await page.getByRole('heading', { name: 'Khóa học A', exact: true }).waitFor();
     assert.equal(await page.locator('#errorBox').count(),0);
   });
 });
@@ -53,7 +53,7 @@ test('actual HomePage inconsistent409 → actual retry returns owned data; inval
   await withLearner(async page=>{
     server.fixture.contexts[0].course.framework.id='eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';await page.reload();await page.getByText('Dữ liệu không nhất quán',{exact:true}).waitFor();
     assert.equal((await page.request.get(`${origin}/api/learner/context`)).status(),409);
-    server.fixture.contexts=[contextRow()];await page.locator('#retryBtn').click();await page.getByText('Khóa học A',{exact:true}).waitFor();
+    server.fixture.contexts=[contextRow()];await page.locator('#retryBtn').click();await page.getByRole('heading', { name: 'Khóa học A', exact: true }).waitFor();
     server.fixture.expired=true;await page.reload();await page.waitForURL(`${origin}/login`);
     assert.equal((await page.request.get(`${origin}/api/learner/context`)).status(),401);
   });
@@ -75,7 +75,7 @@ test('actual HomePage create context (DEFAULT) → card v1 → enter first lesso
     await page.getByText('Bạn chưa có lộ trình học.',{exact:true}).waitFor();
     await page.locator('#createContextForm').waitFor();
     await page.locator('#submitCreateContextBtn').click();
-    await page.getByText('Khóa học A',{exact:true}).waitFor();
+    await page.getByRole('heading', { name: 'Khóa học A', exact: true }).waitFor();
     const enterBtn = page.locator('[id^="enterContextBtn-"]');
     await enterBtn.waitFor();
     const href = await enterBtn.getAttribute('href');
@@ -140,7 +140,7 @@ test('actual HomePage create context with SELF_REPORT level selection',async()=>
     await page.locator('#startSourceSelfReport').check();
     await page.locator('#createLevelSelect').waitFor();
     await page.locator('#submitCreateContextBtn').click();
-    await page.getByText('Khóa học A',{exact:true}).waitFor();
+    await page.getByRole('heading', { name: 'Khóa học A', exact: true }).waitFor();
     const card = page.locator('.context-card').first();
     await card.waitFor();
     assert.ok((await card.innerText()).includes('A1'));
@@ -192,7 +192,7 @@ test('actual HomePage create context lost response after commit retains payload;
 
     // Exactly one persisted context (deduped safely on replay)
     assert.equal(server.fixture.contexts.length, 1);
-    await page.getByText('Khóa học A',{exact:true}).waitFor();
+    await page.getByRole('heading', { name: 'Khóa học A', exact: true }).waitFor();
   });
 });
 test('actual HomePage stale rowVersion 409 displays alert with reload action',async()=>{
@@ -324,7 +324,7 @@ test('actual UI with ACTIVE + PAUSED contexts can create 3rd language into free 
       levelId: server.fixture.levels[0].id,
       position: 1,
       names: { vi: 'Chương 1' },
-      lessons: [{ id: 'l-ja', availability: 'AVAILABLE', activeRevisionId: 'rev-ja', activeRevision: { id: 'rev-ja', lessonId: 'l-ja', status: 'PUBLISHED' } }],
+      lessons: [{ id: 'l-ja', unitId: 'u-ja', availability: 'AVAILABLE', activeRevisionId: 'rev-ja', activeRevision: { id: 'rev-ja', lessonId: 'l-ja', status: 'PUBLISHED' } }],
     };
     const unit3 = {
       id: 'u-fr',
@@ -332,15 +332,15 @@ test('actual UI with ACTIVE + PAUSED contexts can create 3rd language into free 
       levelId: server.fixture.levels[0].id,
       position: 1,
       names: { vi: 'Chương 1' },
-      lessons: [{ id: 'l-fr', availability: 'AVAILABLE', activeRevisionId: 'rev-fr', activeRevision: { id: 'rev-fr', lessonId: 'l-fr', status: 'PUBLISHED' } }],
+      lessons: [{ id: 'l-fr', unitId: 'u-fr', availability: 'AVAILABLE', activeRevisionId: 'rev-fr', activeRevision: { id: 'rev-fr', lessonId: 'l-fr', status: 'PUBLISHED' } }],
     };
 
     server.fixture.languages.push(lang2, lang3);
     server.fixture.courses.push(course2, course3);
     server.fixture.units.push(unit2, unit3);
 
-    const ctx1 = { ...contextRow(), id: 'ctx-1', languageId: lang1.id, courseId: server.fixture.courses[0].id, status: 'ACTIVE', rowVersion: 1n };
-    const ctx2 = { ...contextRow(), id: 'ctx-2', languageId: lang2Id, courseId: course2Id, status: 'PAUSED', rowVersion: 2n, language: lang2, course: course2 };
+    const ctx1 = { ...contextRow(), id: '11111111-cccc-4ccc-8ccc-111111111111', languageId: lang1.id, courseId: server.fixture.courses[0].id, status: 'ACTIVE', rowVersion: 1n };
+    const ctx2 = { ...contextRow(), id: '22222222-dddd-4ddd-8ddd-222222222222', languageId: lang2Id, courseId: course2Id, status: 'PAUSED', rowVersion: 2n, language: lang2, course: course2 };
     server.fixture.contexts = [ctx1, ctx2];
 
     await page.reload();
@@ -357,7 +357,7 @@ test('actual UI with ACTIVE + PAUSED contexts can create 3rd language into free 
     await page.locator('#submitCreateContextBtn').click();
 
     // Context card for course 3 appears
-    await page.getByText('Khóa Pháp', { exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'Khóa Pháp', exact: true }).waitFor();
     assert.equal(server.fixture.contexts.length, 3);
     const activeContexts = server.fixture.contexts.filter((c) => c.status === 'ACTIVE');
     assert.equal(activeContexts.length, 2);

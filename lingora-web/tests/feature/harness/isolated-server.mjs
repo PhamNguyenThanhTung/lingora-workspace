@@ -289,6 +289,23 @@ export async function startIsolatedServer(port = 3019) {
           return;
         }
 
+        const pathMatch = url.pathname.match(
+          /^\/api\/learner\/contexts\/([a-zA-Z0-9_-]+)\/path$/
+        );
+        if (pathMatch && req.method === 'GET') {
+          const response = await modules.pathApi.GET(
+            new Request(url, { method: req.method, headers: req.headers }),
+            { params: Promise.resolve({ contextId: pathMatch[1] }) }
+          );
+          response.headers.forEach((value, key) => {
+            if (key !== 'set-cookie') res.setHeader(key, value);
+          });
+          writeCookies();
+          res.statusCode = response.status;
+          res.end(await response.text());
+          return;
+        }
+
         const contextPatchMatch = url.pathname.match(
           /^\/api\/learner\/contexts\/([a-zA-Z0-9_-]+)$/
         );
@@ -349,6 +366,7 @@ export async function startIsolatedServer(port = 3019) {
         const handler = {
           '/api/auth/login': modules.login.POST,
           '/api/auth/logout': modules.logout.POST,
+          '/api/learner/home': modules.homeApi.GET,
           '/api/learner/context': modules.context.GET,
           '/api/learner/review/start': modules.reviewStartApi.POST,
           '/api/learner/review/respond': modules.reviewRespondApi.POST,

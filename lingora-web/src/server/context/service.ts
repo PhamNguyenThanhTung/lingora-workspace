@@ -1,6 +1,8 @@
 import 'server-only';
 import { Prisma } from '../../../../lingora-admin/generated/product-client/index.js';
 import { getLearnerPrisma } from '../db/index.ts';
+import { published as isPublishedLesson } from '../lessons/service.ts';
+export { isPublishedLesson };
 import {
   contextCreateSchema,
   contextPatchSchema,
@@ -29,16 +31,6 @@ export async function clock(db: any): Promise<Date> {
     throw new ContextServiceError(503, 'SERVICE_UNAVAILABLE', 'Không thể xác định thời gian cơ sở dữ liệu.');
   }
   return rows[0].ts;
-}
-
-export function isPublishedLesson(lesson: any): boolean {
-  return (
-    lesson.availability === 'AVAILABLE' &&
-    !!lesson.activeRevisionId &&
-    lesson.activeRevision?.id === lesson.activeRevisionId &&
-    lesson.activeRevision?.lessonId === lesson.id &&
-    lesson.activeRevision?.status === 'PUBLISHED'
-  );
 }
 
 export const contextSelectWithRowVersion = {

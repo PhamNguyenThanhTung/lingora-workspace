@@ -312,12 +312,12 @@ test('header focus moves to a visible control when resizing across the mobile br
     assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('href')), '#faq');
 
     await page.setViewportSize({ width: 1024, height: 900 });
-    await page.waitForFunction(() => {
-      const active = document.activeElement;
-      return active instanceof HTMLAnchorElement && active.getAttribute('href') === '#faq';
-    });
-    assert.equal(await page.locator('#mobileLandingNav').count(), 0);
-    assert.ok(await page.locator('nav[aria-label="Điều hướng trang giới thiệu"] a[href="#faq"]').isVisible());
+    await page.locator('#mobileLandingNav').waitFor({ state: 'detached' });
+    const desktopFaq = page.locator('nav[aria-label="Điều hướng trang giới thiệu"] a[href="#faq"]');
+    await desktopFaq.waitFor({ state: 'visible' });
+    await page.waitForFunction(() =>
+      document.activeElement === document.querySelector('nav[aria-label="Điều hướng trang giới thiệu"] a[href="#faq"]')
+    );
   } finally {
     await page.close();
   }

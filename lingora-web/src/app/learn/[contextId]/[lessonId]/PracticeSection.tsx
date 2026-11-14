@@ -27,6 +27,14 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const [textInput, setTextInput] = useState('');
   const [reorderTokens, setReorderTokens] = useState<string[]>([]);
   const [lastFeedback, setLastFeedback] = useState<{ isCorrect: boolean; message: string } | null>(null);
+  const [finalizeReward, setFinalizeReward] = useState<{
+    lessonXp: number;
+    questXp: number;
+    earnedAchievements: Array<{ code: string; title: string; description: string }>;
+    newlyEnrolledCount: number;
+    firstTryAccuracy: number;
+    streak: number;
+  } | null>(initialAttempt?.rewards ?? null);
   const busy = useRef(false);
   // A lost response may follow commit. Keep its identity/payload until resolved.
   const pending = useRef<Command | null>(null);
@@ -76,6 +84,17 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
         setLastFeedback({ isCorrect: feedback.isCorrect, message: feedback.formativeFeedback });
       } else setLastFeedback(null);
       if (command.kind === 'finalize' && !dto.isCompleted) throw new Error('Chưa ghi nhận kết quả hoàn thành. Vui lòng thử lại.');
+      if (command.kind === 'start') setFinalizeReward(null);
+      if (command.kind === 'finalize' && result.data) {
+        setFinalizeReward({
+          lessonXp: Number(result.data.lessonXp || 0),
+          questXp: Number(result.data.questXp || 0),
+          earnedAchievements: Array.isArray(result.data.earnedAchievements) ? result.data.earnedAchievements : [],
+          newlyEnrolledCount: Number(result.data.newlyEnrolledCount || 0),
+          firstTryAccuracy: Number(result.data.firstTryAccuracy || 0),
+          streak: Number(result.data.streak || 0),
+        });
+      }
       pending.current = null;
       setUncertain(false);
       setAttempt(dto);
@@ -84,7 +103,6 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
         setIsStale(true);
         setActionError('Nội dung đã được cập nhật. Tải lại để bắt đầu bài làm theo nội dung mới.');
       }
-      if (command.kind === 'finalize') router.refresh();
     } catch (err: unknown) {
       setUncertain(true);
       setActionError(err instanceof Error ? err.message : 'Chưa nhận được kết quả. Vui lòng thử lại.');
@@ -609,6 +627,78 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
           </div>
 
           {attempt.lessonRevisionId !== revisionId && <p>Bài làm này thuộc nội dung trước. Luyện tập lại sẽ dùng nội dung hiện tại.</p>}
+          {finalizeReward && (
+            <div
+              id="practiceCelebrationBox"
+              style={{
+                maxWidth: '520px',
+                margin: '0 auto 24px auto',
+                padding: '20px',
+                backgroundColor: 'var(--surface-bg)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-subtle)',
+                boxShadow: 'var(--shadow-sm)',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, color: 'var(--primary-green)', marginBottom: '8px' }}>
+                🎉 Phần thưởng & Thành tích
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px', marginTop: '12px', marginBottom: '16px' }}>
+                <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>XP nhận được</div>
+                  <div id="celebrationTotalXp" style={{ fontSize: '20px', fontWeight: 800, color: '#f59e0b', marginTop: '4px' }}>
+                    +{finalizeReward.lessonXp + finalizeReward.questXp} XP
+                  </div>
+                  {finalizeReward.questXp > 0 && (
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                      (+{finalizeReward.lessonXp} bài, +{finalizeReward.questXp} nhiệm vụ)
+                    </div>
+                  )}
+                </div>
+                <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Chính xác lần 1</div>
+                  <div id="celebrationAccuracy" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
+                    {Math.round(finalizeReward.firstTryAccuracy)}%
+                  </div>
+                </div>
+                <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Chuỗi ngày</div>
+                  <div id="celebrationStreak" style={{ fontSize: '20px', fontWeight: 800, color: '#ef4444', marginTop: '4px' }}>
+                    🔥 {finalizeReward.streak} ngày
+                  </div>
+                </div>
+                {finalizeReward.newlyEnrolledCount > 0 && (
+                  <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Từ nạp SRS</div>
+                    <div id="celebrationWordsEnrolled" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--primary-green)', marginTop: '4px' }}>
+                      +{finalizeReward.newlyEnrolledCount} từ
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {finalizeReward.earnedAchievements && finalizeReward.earnedAchievements.length > 0 && (
+                <div id="celebrationAchievements" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#ecfdf5', borderRadius: 'var(--radius-sm)', border: '1px solid #10b981' }}>
+                  <div style={{ fontWeight: 700, color: '#047857', marginBottom: '8px', fontSize: '14px' }}>
+                    🏆 Huy hiệu mới mở khóa!
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {finalizeReward.earnedAchievements.map(ach => (
+                      <div key={ach.code} className="earned-achievement-badge" style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left', backgroundColor: '#ffffff', padding: '8px 12px', borderRadius: '6px' }}>
+                        <span style={{ fontSize: '22px' }}>🎖️</span>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '13px' }}>{ach.title}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{ach.description}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {attempt.score && (
             <div
               id="practiceScoreBox"
@@ -711,7 +801,21 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
             </div>
           )}
 
-          <div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <a
+              href={'/home?contextId=' + encodeURIComponent(contextId)}
+              id="celebrationHomeBtn"
+              className="btn btn-primary"
+              style={{
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '10px 20px',
+                fontWeight: 600,
+              }}
+            >
+              Về lộ trình học tập
+            </a>
             <button
               type="button"
               id="redoPracticeBtn"

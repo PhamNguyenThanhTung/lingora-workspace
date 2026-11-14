@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useEffect, useTransition, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import type {
   LearnerContextEnvelope,
@@ -9,10 +9,12 @@ import type {
   CourseOptionDto,
 } from '../../server/context/dto.ts';
 import type { LoadLearnerContextResult } from '../../server/context/loader.ts';
+import type { HomeDto } from '../../server/context/home-dto.ts';
+import type { LoadLearnerHomeResult } from '../../server/context/home-loader.ts';
 
 interface HomeViewProps {
-  data?: LearnerContextEnvelope['data'];
-  errorState?: Extract<LoadLearnerContextResult, { ok: false }>;
+  data?: (LearnerContextEnvelope['data'] & Partial<HomeDto>) | HomeDto;
+  errorState?: Extract<LoadLearnerHomeResult | LoadLearnerContextResult, { ok: false }>;
 }
 
 function getLocalizedText(obj: unknown, locale = 'vi'): string {
@@ -32,14 +34,51 @@ function generateContextId(): string {
   });
 }
 
+const PURPOSE_LABELS: Record<string, string> = {
+  TRAVEL: 'Du lịch & Khám phá',
+  WORK: 'Công việc & Sự nghiệp',
+  SCHOOL: 'Học tập & Nhà trường',
+  EXAM: 'Luyện thi & Chứng chỉ',
+  CONVERSATION: 'Giao tiếp hàng ngày',
+  CULTURE: 'Văn hóa & Đời sống',
+  ENTERTAINMENT: 'Giải trí & Phim ảnh',
+  OTHER: 'Mục đích khác',
+};
+
+const INTEREST_LABELS: Record<string, string> = {
+  TRAVEL: 'Du lịch',
+  BUSINESS: 'Kinh doanh & Khởi nghiệp',
+  ACADEMICS: 'Học thuật & Nghiên cứu',
+  DAILY_LIFE: 'Đời sống & Thường nhật',
+  CULTURE: 'Văn hóa & Lịch sử',
+  ENTERTAINMENT: 'Giải trí & Nghệ thuật',
+  TECHNOLOGY: 'Công nghệ & Đổi mới',
+  FOOD: 'Ẩm thực & Nấu ăn',
+  NEWS: 'Tin tức & Xã hội',
+  SCIENCE: 'Khoa học & Tự nhiên',
+};
+
 export function HomeView({ data, errorState }: HomeViewProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isRetrying, startRetry] = useTransition();
   const [logoutError, setLogoutError] = useState<string | null>(null);
 
+  const homeData = data as Partial<HomeDto> | undefined;
+  const totalXp = homeData?.totalXp ?? 0;
+  const streak = homeData?.streak ?? { currentStreak: 0, longestStreak: 0, activeDays: [], todayCompleted: false };
+  const quests = homeData?.quests ?? [];
+  const dailyProgress = homeData?.dailyProgress ?? { dailyGoalMinutes: 10, completedLessonsToday: 0, reviewsCompletedToday: 0 };
+  const recentAchievement = homeData?.recentAchievement ?? null;
+  const reviewDue = homeData?.reviewDue ?? 0;
+
   // Authoritative contexts state
   const [contexts, setContexts] = useState<LearningContextSummaryDto[]>(data?.contexts || []);
+
+  const selectedContext = contexts.find(context => context.id === homeData?.selectedContextId);
+  const pathUsable = selectedContext?.status === 'ACTIVE' && selectedContext.course.isActive;
+  const continueLearning = pathUsable ? homeData?.continueLearning ?? null : null;
+  const pathNodes = pathUsable ? homeData?.path ?? [] : [];
 
   useEffect(() => {
     if (data?.contexts) {
@@ -71,6 +110,196 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   const [recoveringSource, setRecoveringSource] = useState<'DEFAULT' | 'SELF_REPORT'>('DEFAULT');
   const [recoveringLevelId, setRecoveringLevelId] = useState<string>('');
   const [isRecovering, setIsRecovering] = useState<boolean>(false);
+
+  // Context goal editing state
+  const [editingGoalContextId, setEditingGoalContextId] = useState<string | null>(null);
+  const [goalMinutesState, setGoalMinutesState] = useState<Record<string, number>>({});
+  const [purposeDraft, setPurposeDraft] = useState<Record<string, string | null>>({});
+  const [interestsDraft, setInterestsDraft] = useState<Record<string, string[]>>({});
+  const [serverPreferences, setServerPreferences] = useState<Record<string, any>>({});
+  const pendingGoalPayloads = useRef(new Map<string, string>());
+  const savingGoals = useRef(new Set<string>());
+  const [isLoadingPlan, setIsLoadingPlan] = useState<Record<string, boolean>>({});
+  const [isUpdatingGoal, setIsUpdatingGoal] = useState<Record<string, boolean>>({});
+  const [goalErrors, setGoalErrors] = useState<Record<string, { code: string; message: string; status: number } | null>>({});
+
+  const handleOpenGoalEditor = async (ctx: LearningContextSummaryDto) => {
+    const isClosing = editingGoalContextId === ctx.id;
+    if (isClosing) {
+      setEditingGoalContextId(null);
+      return;
+    }
+
+    setEditingGoalContextId(ctx.id);
+    if (pendingGoalPayloads.current.has(ctx.id)) return;
+    setGoalErrors((prev) => ({ ...prev, [ctx.id]: null }));
+
+    // Fetch plan & preferences via GET
+    setIsLoadingPlan((prev) => ({ ...prev, [ctx.id]: true }));
+    try {
+      const res = await fetch(`/api/learner/contexts/${ctx.id}/plan`);
+      if (res.status === 401) {
+        router.push('/login');
+        return;
+      }
+      if (!res.ok) throw new Error();
+      {
+        const json = await res.json();
+        const data = json.data;
+        if (data?.rowVersion) {
+          setContexts((prev) =>
+            prev.map((c) => (c.id === ctx.id ? { ...c, rowVersion: data.rowVersion } : c))
+          );
+        }
+        const prefs = data?.preferences || {};
+        setServerPreferences((prev) => ({ ...prev, [ctx.id]: prefs }));
+        setGoalMinutesState((prev) => ({ ...prev, [ctx.id]: prefs.dailyGoalMinutes ?? 10 }));
+        setPurposeDraft((prev) => ({ ...prev, [ctx.id]: prefs.purpose ?? null }));
+        setInterestsDraft((prev) => ({
+          ...prev,
+          [ctx.id]: Array.isArray(prefs.interests) ? [...prefs.interests] : [],
+        }));
+      }
+    } catch {
+      setServerPreferences(prev => ({ ...prev, [ctx.id]: undefined }));
+      setGoalErrors(prev => ({
+        ...prev,
+        [ctx.id]: { code: 'PLAN_LOAD_FAILED', message: 'Không thể tải mục tiêu đã lưu. Hãy thử tải lại.', status: 0 },
+      }));
+    } finally {
+      setIsLoadingPlan((prev) => ({ ...prev, [ctx.id]: false }));
+    }
+  };
+
+  const handleSaveGoal = async (ctx: LearningContextSummaryDto) => {
+    if (savingGoals.current.has(ctx.id) || !serverPreferences[ctx.id]) return;
+    savingGoals.current.add(ctx.id);
+    setIsUpdatingGoal((prev) => ({ ...prev, [ctx.id]: true }));
+    setGoalErrors((prev) => ({ ...prev, [ctx.id]: null }));
+
+    const opId = generateContextId();
+    const serverPref = serverPreferences[ctx.id] || {};
+    const minutes = goalMinutesState[ctx.id] ?? 10;
+    const purpose = purposeDraft[ctx.id] ?? null;
+    const currentInterests = interestsDraft[ctx.id] ?? [];
+
+    const payload: Record<string, any> = {
+      operationId: opId,
+      expectedRowVersion: ctx.rowVersion,
+    };
+
+    if (minutes !== serverPref.dailyGoalMinutes) {
+      payload.dailyGoalMinutes = minutes;
+    }
+    if (purpose !== (serverPref.purpose ?? null)) {
+      payload.purpose = purpose;
+    }
+    const oldInterests = serverPref.interests || [];
+    const interestsChanged =
+      currentInterests.length !== oldInterests.length ||
+      currentInterests.some((int: string) => !oldInterests.includes(int));
+    if (interestsChanged) {
+      payload.interests = currentInterests;
+    }
+
+    const requestBody = pendingGoalPayloads.current.get(ctx.id) ?? JSON.stringify(payload);
+    pendingGoalPayloads.current.set(ctx.id, requestBody);
+
+    try {
+      const response = await fetch(`/api/learner/contexts/${ctx.id}/plan`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      });
+
+      if (response.status === 401) {
+        router.push('/login');
+        return;
+      }
+
+      const json = await response.json();
+      if (!response.ok) {
+        if (response.status < 500) pendingGoalPayloads.current.delete(ctx.id);
+        if (response.status === 409) {
+          // Stale rowVersion: re-fetch fresh rowVersion and serverPreferences while keeping learner's draft intact
+          const attempted = JSON.parse(requestBody);
+          try {
+            const freshRes = await fetch(`/api/learner/contexts/${ctx.id}/plan`);
+            if (!freshRes.ok) throw new Error();
+            {
+              const freshJson = await freshRes.json();
+              if (freshJson.data?.rowVersion) {
+                setContexts((prev) =>
+                  prev.map((c) => (c.id === ctx.id ? { ...c, rowVersion: freshJson.data.rowVersion } : c))
+                );
+              }
+              if (freshJson.data?.preferences) {
+                const fresh = freshJson.data.preferences;
+                setServerPreferences((prev) => ({ ...prev, [ctx.id]: fresh }));
+                setGoalMinutesState(prev => ({ ...prev, [ctx.id]: attempted.dailyGoalMinutes ?? fresh.dailyGoalMinutes }));
+                setPurposeDraft(prev => ({ ...prev, [ctx.id]: 'purpose' in attempted ? attempted.purpose : fresh.purpose }));
+                setInterestsDraft(prev => ({ ...prev, [ctx.id]: attempted.interests ?? fresh.interests }));
+              }
+            }
+          } catch {
+            setServerPreferences(prev => ({ ...prev, [ctx.id]: undefined }));
+          }
+
+          setGoalErrors((prev) => ({
+            ...prev,
+            [ctx.id]: {
+              code: 'STALE_VERSION',
+              message: 'Lộ trình đã được cập nhật từ phiên khác. Lựa chọn của bạn đã được giữ lại, vui lòng kiểm tra và nhấn Lưu lại.',
+              status: 409,
+            },
+          }));
+          return;
+        }
+
+        setGoalErrors((prev) => ({
+          ...prev,
+          [ctx.id]: {
+            code: json.error?.code || 'UPDATE_ERROR',
+            message: json.error?.message || 'Không thể cập nhật mục tiêu học.',
+            status: response.status,
+          },
+        }));
+        return;
+      }
+
+      pendingGoalPayloads.current.delete(ctx.id);
+      // Synchronize authoritative state using response
+      if (json.data?.rowVersion) {
+        setContexts((prev) =>
+          prev.map((c) => (c.id === ctx.id ? { ...c, rowVersion: json.data.rowVersion } : c))
+        );
+      }
+      setServerPreferences((prev) => ({
+        ...prev,
+        [ctx.id]: {
+          dailyGoalMinutes: minutes,
+          purpose,
+          interests: currentInterests,
+        },
+      }));
+      setEditingGoalContextId(null);
+      router.refresh();
+    } catch {
+      setGoalErrors((prev) => ({
+        ...prev,
+        [ctx.id]: {
+          code: 'NETWORK_ERROR',
+          message: 'Lỗi mạng khi cập nhật mục tiêu. Vui lòng thử lại.',
+          status: 0,
+        },
+      }));
+    } finally {
+      savingGoals.current.delete(ctx.id);
+      setIsUpdatingGoal((prev) => ({ ...prev, [ctx.id]: false }));
+    }
+  };
 
   const handleOpenStartLevel = (ctx: LearningContextSummaryDto) => {
     setRecoveringContextId(ctx.id);
@@ -150,6 +379,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
 
       const updated: LearningContextSummaryDto = json.data;
       setContexts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+      router.refresh();
       setRecoveringContextId(null);
     } catch {
       setContextErrors((prev) => ({
@@ -371,6 +601,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
         return [...prev, created];
       });
 
+      router.refresh();
       // Generate a new operation ID for future operations only after success
       setCreateOperationId(generateContextId());
       setShowCreateForm(false);
@@ -430,6 +661,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
       // Authoritative reconciliation
       const updated: LearningContextSummaryDto = json.data;
       setContexts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+      router.refresh();
     } catch {
       setContextErrors((prev) => ({
         ...prev,
@@ -488,6 +720,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
       // Authoritative reconciliation
       const updated: LearningContextSummaryDto = json.data;
       setContexts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+      router.refresh();
     } catch {
       setContextErrors((prev) => ({
         ...prev,
@@ -517,7 +750,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
             className="btn btn-outline"
             style={{ textDecoration: 'none', padding: '6px 14px', fontSize: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
-            Ôn từ vựng
+            Ôn từ vựng{reviewDue > 0 ? ` (${reviewDue})` : ''}
           </a>
           {identityNode}
           <button
@@ -866,11 +1099,329 @@ export function HomeView({ data, errorState }: HomeViewProps) {
           <div>
             <div id="emptyContextState" className="empty-state-box">
               <p className="empty-state-text">Bạn chưa có lộ trình học.</p>
+              <div style={{ marginTop: '16px' }}>
+                <a
+                  href="/onboarding"
+                  id="startOnboardingBtn"
+                  className="btn btn-primary"
+                  style={{ textDecoration: 'none', display: 'inline-block' }}
+                >
+                  Bắt đầu lộ trình học cá nhân
+                </a>
+              </div>
             </div>
             {renderCreateForm()}
           </div>
         ) : (
           <div>
+            {/* Gamification & Quests Overview */}
+            {(totalXp > 0 || streak.currentStreak > 0 || quests.length > 0 || dailyProgress.dailyGoalMinutes > 0) && (
+              <div
+                id="gamificationOverview"
+                style={{
+                  marginBottom: '20px',
+                  padding: '16px',
+                  backgroundColor: 'var(--surface-bg, #ffffff)',
+                  border: '1px solid var(--border-color, #e2e8f0)',
+                  borderRadius: '8px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <div id="currentStreakDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '1.4rem' }}>🔥</span>
+                      <div>
+                        <strong id="streakBadge" style={{ fontSize: '1rem', display: 'block' }}>{streak.currentStreak} ngày</strong>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Kỷ lục: {streak.longestStreak} ngày</span>
+                      </div>
+                    </div>
+                    <div id="totalXpDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '1.4rem' }}>⚡</span>
+                      <div>
+                        <strong id="totalXpBadge" style={{ fontSize: '1rem', display: 'block' }}>{totalXp} XP</strong>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Tổng điểm</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="dailyGoalDisplay" style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    <span>Mục tiêu: {dailyProgress.dailyGoalMinutes} phút • {dailyProgress.completedLessonsToday} bài học • {dailyProgress.reviewsCompletedToday} từ đã ôn</span>
+                  </div>
+                </div>
+
+                {streak.today && (
+                  <details style={{ margin: '0 0 12px' }}>
+                    <summary>Lịch học 28 ngày</summary>
+                    <ul id="streakCalendar" aria-label="Lịch học 28 ngày" style={{
+                      listStyle: 'none', padding: 0, display: 'grid',
+                      gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '4px', maxWidth: '350px',
+                    }}>
+                      {Array.from({ length: 28 }, (_, index) => {
+                        const date = new Date(streak.today + 'T00:00:00.000Z');
+                        date.setUTCDate(date.getUTCDate() - 27 + index);
+                        const key = date.toISOString().slice(0, 10);
+                        const active = streak.activeDays.includes(key);
+                        return <li key={key} title={key} aria-label={key + (active ? ' đã học' : ' chưa học')}
+                          style={{ textAlign: 'center', border: '1px solid var(--border-subtle, #e2e8f0)', borderRadius: '4px' }}>
+                          {key.slice(-2)} {active ? '✓' : '·'}
+                        </li>;
+                      })}
+                    </ul>
+                  </details>
+                )}
+
+                {/* Daily Quests */}
+                {quests.length > 0 && (
+                  <div style={{ borderTop: '1px solid var(--border-subtle, #f1f5f9)', paddingTop: '12px' }}>
+                    <h3 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '8px' }}>Nhiệm vụ hàng ngày</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px' }}>
+                      {quests.map((q) => (
+                        <div
+                          key={q.id}
+                          id={`quest-${q.id}`}
+                          className="quest-item"
+                          style={{
+                            padding: '10px',
+                            borderRadius: '6px',
+                            border: '1px solid var(--border-subtle, #e2e8f0)',
+                            backgroundColor: q.isCompleted ? 'var(--subtle-bg, #f8fafc)' : 'var(--surface-bg, #fff)',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{q.title}</span>
+                            <span className={`badge ${q.isCompleted ? 'badge-active' : 'badge-paused'}`} style={{ fontSize: '0.75rem' }}>
+                              +{q.xpReward} XP
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ flex: 1, height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                              <div
+                                style={{
+                                  width: `${Math.round((q.progress / q.target) * 100)}%`,
+                                  height: '100%',
+                                  backgroundColor: q.isCompleted ? 'var(--primary-green, #10b981)' : '#3b82f6',
+                                }}
+                              />
+                            </div>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                              {q.progress}/{q.target}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Achievement if any */}
+                {recentAchievement && (
+                  <div
+                    id="recentAchievementBanner"
+                    style={{
+                      marginTop: '12px',
+                      padding: '8px 12px',
+                      backgroundColor: '#fef3c7',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    <span>🏆</span>
+                    <span>
+                      <strong>Thành tựu mới:</strong> {recentAchievement.title} - {recentAchievement.description}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Continue Learning CTA Banner */}
+            {continueLearning && (
+              <div
+                id="continueLearningBanner"
+                style={{
+                  marginBottom: '20px',
+                  padding: '16px 20px',
+                  backgroundColor: 'var(--primary-bg-subtle, #ecfdf5)',
+                  border: '1px solid var(--primary-green, #10b981)',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                }}
+              >
+                <div>
+                  <span className="badge badge-active" style={{ marginBottom: '4px', fontSize: '0.75rem' }}>
+                    {continueLearning.status === 'IN_PROGRESS' ? 'Đang làm bài' : 'Bài học tiếp theo'}
+                  </span>
+                  <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '2px 0' }}>
+                    {continueLearning.title}
+                  </h2>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    {continueLearning.unitTitle}
+                  </span>
+                </div>
+                <a
+                  href={continueLearning.href}
+                  id="continueLearningBtn"
+                  className="btn btn-primary"
+                  style={{ textDecoration: 'none', padding: '8px 20px', fontSize: '0.95rem' }}
+                >
+                  {continueLearning.status === 'IN_PROGRESS' ? 'Tiếp tục bài làm' : 'Bắt đầu học'}
+                </a>
+              </div>
+            )}
+
+            {homeData && contexts.length > 1 && (
+              <label style={{ display: 'block', marginBottom: '14px' }}>
+                Lộ trình đang xem
+                <select
+                  aria-label="Lộ trình đang xem"
+                  className="form-control"
+                  value={homeData.selectedContextId ?? ''}
+                  onChange={event => router.push('/home?contextId=' + encodeURIComponent(event.target.value))}
+                >
+                  {contexts.map(ctx => <option key={ctx.id} value={ctx.id}>{getLocalizedText(ctx.course.names)}</option>)}
+                </select>
+              </label>
+            )}
+            {homeData?.pathMessage && <p role="status">{homeData.pathMessage}</p>}
+
+            {/* Learning Path (Vertical) */}
+            {pathNodes.length > 0 && (
+              <section
+                id="learningPathSection"
+                style={{
+                  marginBottom: '28px',
+                  padding: '18px',
+                  backgroundColor: 'var(--surface-bg, #ffffff)',
+                  border: '1px solid var(--border-color, #e2e8f0)',
+                  borderRadius: '8px',
+                }}
+              >
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '14px' }}>
+                  Lộ trình bài học
+                </h2>
+                <div id="learningPathList" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {pathNodes.map((node, index) => {
+                    const isNavigable = node.state === 'COMPLETED' || node.state === 'CURRENT' || node.state === 'AVAILABLE';
+                    return (
+                      <div
+                        key={node.lessonId || index}
+                        id={`pathNode-${node.lessonId}`}
+                        data-state={node.state}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '12px 14px',
+                          borderRadius: '6px',
+                          border: node.state === 'CURRENT'
+                            ? '2px solid var(--primary-green, #10b981)'
+                            : '1px solid var(--border-subtle, #e2e8f0)',
+                          backgroundColor: node.state === 'CURRENT'
+                            ? 'var(--primary-bg-subtle, #f0fdf4)'
+                            : node.state === 'LOCKED' || node.state === 'COMING_SOON'
+                            ? 'var(--subtle-bg, #f8fafc)'
+                            : 'var(--surface-bg, #ffffff)',
+                          opacity: node.state === 'LOCKED' || node.state === 'COMING_SOON' ? 0.75 : 1,
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span
+                            style={{
+                              width: '28px',
+                              height: '28px',
+                              borderRadius: '50%',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              backgroundColor: node.state === 'COMPLETED'
+                                ? 'var(--primary-green, #10b981)'
+                                : node.state === 'CURRENT'
+                                ? '#3b82f6'
+                                : '#94a3b8',
+                              color: '#ffffff',
+                            }}
+                          >
+                            {node.state === 'COMPLETED' ? '✓' : index + 1}
+                          </span>
+                          <div>
+                            {isNavigable ? (
+                              <a
+                                href={node.href}
+                                id={`pathLink-${node.lessonId}`}
+                                className="path-node-link"
+                                style={{
+                                  textDecoration: 'none',
+                                  color: 'inherit',
+                                  fontWeight: 600,
+                                  fontSize: '0.95rem',
+                                  display: 'block',
+                                }}
+                              >
+                                {node.title}
+                              </a>
+                            ) : (
+                              <span
+                                id={`pathDisabled-${node.lessonId}`}
+                                style={{
+                                  fontWeight: 600,
+                                  fontSize: '0.95rem',
+                                  color: 'var(--text-muted, #64748b)',
+                                  display: 'block',
+                                  cursor: 'not-allowed',
+                                }}
+                              >
+                                {node.title}
+                              </span>
+                            )}
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                              {node.unitTitle}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {node.score != null && (
+                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary-green, #10b981)' }}>
+                              {node.score}%
+                            </span>
+                          )}
+                          <span
+                            className={`badge ${
+                              node.state === 'COMPLETED'
+                                ? 'badge-active'
+                                : node.state === 'CURRENT'
+                                ? 'badge-active'
+                                : 'badge-paused'
+                            }`}
+                            style={{ fontSize: '0.75rem' }}
+                          >
+                            {node.state === 'COMPLETED'
+                              ? 'Đã hoàn thành'
+                              : node.state === 'CURRENT'
+                              ? 'Đang học'
+                              : node.state === 'AVAILABLE'
+                              ? 'Chưa bắt đầu'
+                              : node.state === 'LOCKED'
+                              ? 'Đang khóa'
+                              : 'Sắp ra mắt'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
             {/* Header controls for existing contexts */}
             <div
               style={{
@@ -884,14 +1435,24 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 Đang có {activeCount}/2 lộ trình hoạt động
               </span>
               {!showCreateForm && activeCount < 2 && (
-                <button
-                  type="button"
-                  id="openCreateContextBtn"
-                  className="btn btn-outline"
-                  onClick={() => setShowCreateForm(true)}
-                >
-                  Thêm lộ trình mới
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <a
+                    href="/onboarding"
+                    id="addOnboardingLanguageBtn"
+                    className="btn btn-primary"
+                    style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                  >
+                    Thêm ngôn ngữ
+                  </a>
+                  <button
+                    type="button"
+                    id="openCreateContextBtn"
+                    className="btn btn-outline"
+                    onClick={() => setShowCreateForm(true)}
+                  >
+                    Thêm lộ trình mới
+                  </button>
+                </div>
               )}
             </div>
 
@@ -965,6 +1526,139 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                           v{ctx.rowVersion}
                         </span>
                       </div>
+                    </div>
+
+                    {/* Goal update section for context */}
+                    <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--border-color, #e2e8f0)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Mục tiêu học:</span>
+                        <button
+                          type="button"
+                          id={`editGoalBtn-${ctx.id}`}
+                          className="btn btn-outline"
+                          style={{ fontSize: '0.8rem', padding: '2px 8px' }}
+                          onClick={() => handleOpenGoalEditor(ctx)}
+                          disabled={ctx.status !== 'ACTIVE' || !ctx.workingLevel || isUpdatingGoal[ctx.id]}
+                        >
+                          {editingGoalContextId === ctx.id ? 'Đóng' : 'Cập nhật mục tiêu'}
+                        </button>
+                      </div>
+
+                      {editingGoalContextId === ctx.id && (
+                        <div id={`goalEditor-${ctx.id}`} style={{ marginTop: '8px', padding: '12px', background: 'var(--subtle-bg, #f8fafc)', borderRadius: '6px' }}>
+                          {isLoadingPlan[ctx.id] ? (
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
+                              Đang tải thông tin mục tiêu...
+                            </p>
+                          ) : (
+                            <>
+                              <div style={{ marginBottom: '10px' }}>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>
+                                  Số phút học mỗi ngày:
+                                </label>
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                  {[5, 10, 15, 20].map((mins) => {
+                                    const currentSelected = (goalMinutesState[ctx.id] || 10) === mins;
+                                    return (
+                                      <button
+                                        key={mins}
+                                        type="button"
+                                        id={`selectGoal-${ctx.id}-${mins}`}
+                                        className={`btn ${currentSelected ? 'btn-primary' : 'btn-outline'}`}
+                                        style={{ fontSize: '0.8rem', padding: '4px 8px' }}
+                                        onClick={() => setGoalMinutesState((prev) => ({ ...prev, [ctx.id]: mins }))}
+                                        disabled={isUpdatingGoal[ctx.id] || pendingGoalPayloads.current.has(ctx.id)}
+                                      >
+                                        {mins}p
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              <div style={{ marginBottom: '10px' }}>
+                                <label htmlFor={`purposeSelect-${ctx.id}`} style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>
+                                  Mục đích học tập:
+                                </label>
+                                <select
+                                  id={`purposeSelect-${ctx.id}`}
+                                  className="form-control"
+                                  value={purposeDraft[ctx.id] || ''}
+                                  onChange={(e) => setPurposeDraft((prev) => ({ ...prev, [ctx.id]: e.target.value ? e.target.value : null }))}
+                                  disabled={isUpdatingGoal[ctx.id] || pendingGoalPayloads.current.has(ctx.id)}
+                                  style={{ width: '100%', fontSize: '0.85rem', padding: '6px 8px' }}
+                                >
+                                  <option value="">-- Chưa thiết lập --</option>
+                                  {Object.entries(PURPOSE_LABELS).map(([k, label]) => (
+                                    <option key={k} value={k}>{label}</option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div style={{ marginBottom: '12px' }}>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>
+                                  Chủ đề quan tâm (tối đa 5):
+                                </label>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                  {Object.entries(INTEREST_LABELS).map(([k, label]) => {
+                                    const isChecked = (interestsDraft[ctx.id] || []).includes(k);
+                                    return (
+                                      <button
+                                        key={k}
+                                        type="button"
+                                        id={`interestPill-${ctx.id}-${k}`}
+                                        className={`btn ${isChecked ? 'btn-primary' : 'btn-outline'}`}
+                                        style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: '12px' }}
+                                        disabled={isUpdatingGoal[ctx.id] || pendingGoalPayloads.current.has(ctx.id)}
+                                        onClick={() => {
+                                          setInterestsDraft((prev) => {
+                                            const current = prev[ctx.id] || [];
+                                            if (current.includes(k)) {
+                                              return { ...prev, [ctx.id]: current.filter((x) => x !== k) };
+                                            }
+                                            if (current.length >= 5) return prev;
+                                            return { ...prev, [ctx.id]: [...current, k] };
+                                          });
+                                        }}
+                                      >
+                                        {label}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {goalErrors[ctx.id] && (
+                                <div id={`goalAlert-${ctx.id}`} role="alert" className="login-alert" style={{ marginBottom: '8px', fontSize: '0.8rem', padding: '6px 8px' }}>
+                                  <span>{goalErrors[ctx.id]?.message}</span>
+                                </div>
+                              )}
+
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                <button
+                                  type="button"
+                                  id={`saveGoalBtn-${ctx.id}`}
+                                  className="btn btn-primary"
+                                  style={{ fontSize: '0.8rem', padding: '4px 12px' }}
+                                  disabled={isUpdatingGoal[ctx.id] || !serverPreferences[ctx.id] || ctx.status !== 'ACTIVE'}
+                                  onClick={() => handleSaveGoal(ctx)}
+                                >
+                                  {isUpdatingGoal[ctx.id] ? 'Đang lưu...' : pendingGoalPayloads.current.has(ctx.id) ? 'Thử lưu lại' : 'Lưu mục tiêu'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-outline"
+                                  style={{ fontSize: '0.8rem', padding: '4px 8px' }}
+                                  disabled={isUpdatingGoal[ctx.id] || pendingGoalPayloads.current.has(ctx.id)}
+                                  onClick={() => setEditingGoalContextId(null)}
+                                >
+                                  Hủy
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Context error alert if any */}

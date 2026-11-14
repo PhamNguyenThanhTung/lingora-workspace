@@ -1,13 +1,18 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { loadLearnerContext } from '../../server/context/loader.ts';
+import { loadLearnerHome } from '../../server/context/home-loader.ts';
 import { HomeView } from './HomeView';
 
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage() {
+export default async function HomePage(props?: {
+  searchParams?: Promise<{ contextId?: string }>;
+}) {
   const cookieStore = await cookies();
-  const result = await loadLearnerContext(cookieStore);
+  const searchParams = props?.searchParams ? await props.searchParams : undefined;
+  const result = await loadLearnerHome(cookieStore, {
+    contextId: searchParams?.contextId,
+  });
 
   if (!result.ok) {
     if (result.status === 401) {

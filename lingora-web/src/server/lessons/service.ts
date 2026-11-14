@@ -28,7 +28,7 @@ type Reading = Prisma.LessonConsumptionGetPayload<{ select: typeof readingSelect
 export const labels = (value: unknown): Record<string, string> => Object.fromEntries(Object.entries(value && typeof value === 'object' && !Array.isArray(value) ? value : {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string'));
 export const fail = (status: number, code: string, message: string): never => { throw new LessonServiceError(status, code, message); };
 export function validId(id: string) { if (!isValidUuid(id)) fail(400, 'VALIDATION_ERROR', 'Mã định danh không hợp lệ.'); return id.toLowerCase(); }
-export function published(lesson: Summary) {
+export function published(lesson: Pick<Summary, 'id' | 'availability' | 'activeRevisionId'> & { activeRevision?: Pick<NonNullable<Summary['activeRevision']>, 'id' | 'lessonId' | 'status'> | null }) {
   return lesson.availability === 'AVAILABLE' && !!lesson.activeRevisionId && lesson.activeRevision?.id === lesson.activeRevisionId && lesson.activeRevision.lessonId === lesson.id && lesson.activeRevision.status === 'PUBLISHED';
 }
 export async function ownedContext(db: Db, id: string, actorId: string): Promise<Context> {
@@ -45,26 +45,30 @@ export async function ownedContext(db: Db, id: string, actorId: string): Promise
 }
 
 // Catalogue, detail and mutations share the same publication/order/graded gate.
-async function hierarchy(db: Db, context: Context) {
-  if (!context.workingLevel) return [];
+export async function loadLessonHierarchy(db: Db, courseId: string, frameworkId: string, workingPosition: number, completed: ReadonlySet<string>, includeComingSoon = false) {
   const units = await db.unit.findMany({
-    where: { courseId: context.courseId, level: { frameworkId: context.course.frameworkId, position: { lte: context.workingLevel.position } } },
-    select: { ...unitSelect, lessons: { where: { availability: 'AVAILABLE', activeRevisionId: { not: null } }, select: lessonSummary, orderBy: [{ position: 'asc' }, { id: 'asc' }] } },
+    where: { courseId, level: { frameworkId, ...(includeComingSoon ? {} : { position: { lte: workingPosition } }) } },
+    select: { ...unitSelect, lessons: { where: includeComingSoon ? { availability: { in: ['AVAILABLE', 'PLANNED'] } } : { availability: 'AVAILABLE', activeRevisionId: { not: null } }, select: lessonSummary, orderBy: [{ position: 'asc' }, { id: 'asc' }] } },
     orderBy: [{ level: { position: 'asc' } }, { position: 'asc' }, { id: 'asc' }],
   });
-  const completed = new Set((await db.lessonCompletion.findMany({ where: { contextId: context.id }, select: { lessonId: true } })).map(c => c.lessonId));
   let precedingRequiredCompleted = true;
   return units.map(unit => {
-    if (unit.courseId !== context.courseId || unit.level.id !== unit.levelId || unit.level.frameworkId !== context.course.frameworkId) fail(409, 'CONTEXT_INCONSISTENT', 'Đơn vị học không nhất quán với lộ trình.');
-    const earlier = unit.level.position < context.workingLevel!.position;
-    const lessons = unit.lessons.filter(published).map(lesson => {
+    if (unit.courseId !== courseId || unit.level.id !== unit.levelId || unit.level.frameworkId !== frameworkId) fail(409, 'CONTEXT_INCONSISTENT', 'Đơn vị học không nhất quán với lộ trình.');
+    const earlier = unit.level.position < workingPosition;
+    const lessons = unit.lessons.filter(lesson => published(lesson) || (includeComingSoon && lesson.availability === 'PLANNED')).map(lesson => {
       if (lesson.unitId !== unit.id) fail(409, 'CONTEXT_INCONSISTENT', 'Bài học không nhất quán với đơn vị học.');
-      const isLocked = !earlier && !completed.has(lesson.id) && !precedingRequiredCompleted;
-      if (!earlier && lesson.isRequired && !completed.has(lesson.id)) precedingRequiredCompleted = false;
+      if (!published(lesson)) return { ...lesson, isLocked: true };
+      const isLocked = unit.level.position > workingPosition || (!earlier && !completed.has(lesson.id) && !precedingRequiredCompleted);
+      if (unit.level.position === workingPosition && lesson.isRequired && !completed.has(lesson.id)) precedingRequiredCompleted = false;
       return { ...lesson, isLocked };
     });
     return { ...unit, lessons };
   }).filter(unit => unit.lessons.length > 0);
+}
+async function hierarchy(db: Db, context: Context) {
+  if (!context.workingLevel) return [];
+  const completions = await db.lessonCompletion.findMany({ where: { contextId: context.id }, select: { lessonId: true } });
+  return loadLessonHierarchy(db, context.courseId, context.course.frameworkId, context.workingLevel.position, new Set(completions.map(row => row.lessonId)));
 }
 export async function authorizedLesson(db: Db, context: Context, lessonId: string) {
   if (!context.workingLevelId || !context.workingLevel) return fail(409, 'CONTEXT_NO_WORKING_LEVEL', 'Chưa có trình độ học hiện tại.');

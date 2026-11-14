@@ -373,4 +373,92 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
 
     await context.close();
   });
+
+  test('HomeView: goal editor fetches plan via GET, saves changed preferences, and handles stale 409', async () => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    let getPlanCount = 0;
+    let postPayload = null;
+    let postStatus = 200;
+
+    await page.route('**/api/learner/contexts/ctx-1/plan', async (route) => {
+      if (route.request().method() === 'GET') {
+        getPlanCount++;
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            data: {
+              status: 'READY',
+              rowVersion: '1',
+              preferences: {
+                dailyGoalMinutes: 10,
+                purpose: 'TRAVEL',
+                interests: ['CULTURE'],
+              },
+            },
+          }),
+        });
+      }
+      if (route.request().method() === 'POST') {
+        postPayload = route.request().postDataJSON();
+        if (postStatus === 409) {
+          return route.fulfill({
+            status: 409,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              error: {
+                code: 'CONTEXT_VERSION_CONFLICT',
+                message: 'Phiên bản lộ trình đã thay đổi.',
+              },
+            }),
+          });
+        }
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            data: {
+              rowVersion: '2',
+              plan: { id: 'plan-updated' },
+            },
+          }),
+        });
+      }
+      return route.continue();
+    });
+
+    await page.goto(`${TEST_URL}?state=home-valid`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#editGoalBtn-ctx-1', { state: 'visible' });
+
+    // Open goal editor
+    await page.click('#editGoalBtn-ctx-1');
+    await page.waitForSelector('#goalEditor-ctx-1', { state: 'visible' });
+    assert.equal(getPlanCount, 1);
+
+    // Initial purpose should be TRAVEL from server preferences
+    await page.waitForSelector('#purposeSelect-ctx-1', { state: 'visible' });
+    const selectedPurpose = await page.$eval('#purposeSelect-ctx-1', (el) => el.value);
+    assert.equal(selectedPurpose, 'TRAVEL');
+
+    // Change goal minutes to 15p
+    await page.click('#selectGoal-ctx-1-15');
+
+    // Save goal with success
+    await page.click('#saveGoalBtn-ctx-1');
+
+    // Editor should close and rowVersion should update to v2
+    await page.waitForSelector('#goalEditor-ctx-1', { state: 'hidden' });
+    const rowVerText = await page.textContent('#rowVersion-ctx-1');
+    assert.match(rowVerText, /v2/);
+
+    // Verify payload sent only changed fields + operationId + expectedRowVersion
+    assert.ok(postPayload.operationId);
+    assert.equal(postPayload.expectedRowVersion, '1');
+    assert.equal(postPayload.dailyGoalMinutes, 15);
+    assert.equal(postPayload.purpose, undefined); // purpose didn't change!
+
+    await context.close();
+  });
 });

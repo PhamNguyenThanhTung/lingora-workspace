@@ -227,6 +227,7 @@ export interface PracticeAttemptDto {
   exercises: LearnerExerciseDto[];
   responses: PracticeResponseDto[];
   reviewEntries?: PracticeReviewEntryDto[] | null;
+  rewards?: PracticeRewardsDto;
 }
 
 export interface PracticeAttemptEnvelope {
@@ -242,7 +243,18 @@ export interface PracticeResponseEnvelope {
   data: PracticeResponseResultDto;
 }
 
-export interface PracticeFinalizeResultDto {
+import type { AchievementDto } from '../gamification/dto.ts';
+
+export interface PracticeRewardsDto {
+  lessonXp: number;
+  questXp: number;
+  earnedAchievements: AchievementDto[];
+  newlyEnrolledCount: number;
+  firstTryAccuracy: number;
+  streak: number;
+}
+
+export interface PracticeFinalizeResultDto extends PracticeRewardsDto {
   attempt: PracticeAttemptDto;
   isFirstCompletion: boolean;
 }

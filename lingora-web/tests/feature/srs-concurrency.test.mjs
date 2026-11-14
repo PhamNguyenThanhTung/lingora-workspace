@@ -537,7 +537,9 @@ function createInjectedClockDb(targetDb, fixedIsoTimestamp) {
 }
 
 test('Real PostgreSQL Injected-Clock: dueAt boundary (exact clock, 1ms future rejection, overdue acceptance)', async () => {
-  const fixedClockIso = '2026-11-06T12:00:00.000Z';
+  const now = new Date();
+  now.setMilliseconds(0);
+  const fixedClockIso = now.toISOString();
   const clockDb = createInjectedClockDb(db, fixedClockIso);
 
   // 1. Card 1ms in future relative to clock
@@ -546,7 +548,7 @@ test('Real PostgreSQL Injected-Clock: dueAt boundary (exact clock, 1ms future re
       learnerId: f.learnerA,
       vocabularyId: f.vocabId,
       stage: 1,
-      dueAt: new Date('2026-11-06T12:00:00.001Z'),
+      dueAt: new Date(now.getTime() + 1),
       enrollmentSource: 'OPTIONAL_CHOICE',
       sourceLessonVocabularyId: f.vocabLinkId,
     },
@@ -591,7 +593,7 @@ test('Real PostgreSQL Injected-Clock: dueAt boundary (exact clock, 1ms future re
       learnerId: f.learnerA,
       vocabularyId: f.vocabId,
       stage: 1,
-      dueAt: new Date('2026-11-06T12:00:00.000Z'),
+      dueAt: new Date(now.getTime()),
       enrollmentSource: 'OPTIONAL_CHOICE',
       sourceLessonVocabularyId: f.vocabLinkId,
     },

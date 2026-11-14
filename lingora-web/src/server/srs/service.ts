@@ -15,6 +15,7 @@ import {
   verifySrsToken,
   computeSrsInputHash,
 } from './token.ts';
+import { evaluateAndAwardSrsGamification } from '../gamification/service.ts';
 
 type Db = PrismaClient | Prisma.TransactionClient;
 
@@ -311,7 +312,7 @@ export async function respondSrsReview(
     });
 
     // Record immutable review operation
-    await tx.srsReviewOperation.create({
+    const reviewOp = await tx.srsReviewOperation.create({
       data: {
         cardId: card.id,
         learnerId: verifiedUserId,
@@ -327,6 +328,15 @@ export async function respondSrsReview(
         qualifyingLocalDate,
         inputHash: canonicalInputHash,
       },
+    });
+
+    // Gamification evaluation & XP award
+    await evaluateAndAwardSrsGamification(tx, {
+      learnerId: verifiedUserId,
+      reviewOpId: reviewOp.id,
+      qualifyingLocalDate,
+      reviewedAt: dbNow,
+      timezone: account.timezone,
     });
 
     // Find next due card using DB clock

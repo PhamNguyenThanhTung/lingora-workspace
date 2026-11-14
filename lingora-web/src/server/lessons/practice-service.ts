@@ -29,6 +29,10 @@ import {
   validId,
   fail,
 } from './service.ts';
+import {
+  evaluateAndAwardFinalizeGamification,
+  computeQualifyingLocalDate,
+} from '../gamification/service.ts';
 
 type Db = PrismaClient | Prisma.TransactionClient;
 
@@ -264,6 +268,23 @@ export function buildPracticeReviewEntries(
   });
 }
 
+async function loadPracticeRewards(db: Db, attemptId: string, operationKey: string) {
+  const receipt = await db.commandReceipt.findFirst({
+    where: { command: 'COMPLETE_LESSON', targetId: attemptId, operationKey },
+    select: { safeResult: true },
+  });
+  const data = receipt?.safeResult;
+  if (!data || typeof data !== 'object' || Array.isArray(data) || typeof data.lessonXp !== 'number') return;
+  return {
+    lessonXp: data.lessonXp,
+    questXp: Number(data.questXp ?? 0),
+    earnedAchievements: Array.isArray(data.earnedAchievements) ? data.earnedAchievements as unknown as import('../gamification/dto.ts').AchievementDto[] : [],
+    newlyEnrolledCount: Number(data.newlyEnrolledCount ?? 0),
+    firstTryAccuracy: Number(data.firstTryAccuracy ?? 0),
+    streak: Number(data.streak ?? 0),
+  };
+}
+
 export async function buildAttemptDto(
   db: Db,
   attempt: {
@@ -273,6 +294,7 @@ export async function buildAttemptDto(
     lessonRevisionId: string;
     startedAt: Date;
     completedAt: Date | null;
+    completionOperationKey?: string | null;
     nCore: number;
     kFirstWrong: number | null;
     contributionUnits: number | null;
@@ -325,6 +347,10 @@ export async function buildAttemptDto(
     formativeFeedback: r.isCorrect ? 'Chính xác!' : 'Chưa chính xác.',
   }));
 
+  const rewards = isCompleted && attempt.completionOperationKey
+    ? await loadPracticeRewards(db, attempt.id, attempt.completionOperationKey)
+    : undefined;
+
   const publicExercisesList: LearnerExerciseDto[] = coreExercises.map(ex => publicExercise(ex));
   const nextExPublic = queue.nextExercise ? publicExercise(queue.nextExercise) : null;
 
@@ -348,6 +374,7 @@ export async function buildAttemptDto(
     exercises: publicExercisesList,
     responses: responsesDto,
     reviewEntries,
+    ...(rewards && { rewards }),
   };
 }
 
@@ -736,9 +763,19 @@ export async function finalizePracticeAttempt(
         return fail(409, 'OPERATION_KEY_CONFLICT', 'Mã thao tác hoàn tất đã được sử dụng với nội dung khác.');
       }
       const currentLesson = await authorizedLesson(tx, c, lessonId);
-      const attemptDto = await buildAttemptDto(tx, attempt, currentLesson.activeRevisionId);
-      const isFirst = (existingReceipt.safeResult as any)?.isFirstCompletion ?? false;
-      return { attempt: attemptDto, isFirstCompletion: isFirst };
+      const attemptDto = await buildAttemptDto(tx, { ...attempt, completionOperationKey: null }, currentLesson.activeRevisionId);
+      const sr = existingReceipt.safeResult as any;
+      const isFirst = sr?.isFirstCompletion ?? false;
+      return {
+        attempt: attemptDto,
+        isFirstCompletion: isFirst,
+        lessonXp: sr?.lessonXp ?? 0,
+        questXp: sr?.questXp ?? 0,
+        earnedAchievements: sr?.earnedAchievements ?? [],
+        newlyEnrolledCount: sr?.newlyEnrolledCount ?? 0,
+        firstTryAccuracy: sr?.firstTryAccuracy ?? Math.round(100 * (attempt.nCore - (attempt.kFirstWrong ?? 0)) / attempt.nCore),
+        streak: sr?.streak ?? 0,
+      };
     }
 
     // Pointer check: uncommitted finalization requires active revision (D3)
@@ -798,15 +835,14 @@ export async function finalizePracticeAttempt(
     const contributionUnits = responses.reduce((sum, r) => sum + r.contributionUnits, 0);
 
     // DB clock follows locks
-    const clockRows = await tx.$queryRaw<Array<{ completed_at: Date; qualifying_date: Date }>>`
-      SELECT instant.ts AS completed_at, (timezone(${account.timezone}, instant.ts))::date AS qualifying_date
-      FROM (SELECT clock_timestamp() AS ts) AS instant
+    const clockRows = await tx.$queryRaw<Array<{ completed_at: Date }>>`
+      SELECT clock_timestamp() AS completed_at
     `;
-    const { completed_at: completedAt, qualifying_date: qualifyingLocalDate } = clockRows[0] ?? {};
-    if (!(completedAt instanceof Date) || !Number.isFinite(completedAt.valueOf()) ||
-        !(qualifyingLocalDate instanceof Date) || !Number.isFinite(qualifyingLocalDate.valueOf())) {
+    const completedAt = clockRows[0]?.completed_at;
+    if (!(completedAt instanceof Date) || !Number.isFinite(completedAt.valueOf())) {
       throw new Error('Database completion clock unavailable');
     }
+    const { localDate: qualifyingLocalDate } = computeQualifyingLocalDate(completedAt, account.timezone);
 
     // Atomically update LessonAttempt
     const updatedAttempt = await tx.lessonAttempt.update({
@@ -862,33 +898,70 @@ export async function finalizePracticeAttempt(
 
     const dueAt = new Date(completedAt.getTime() + 24 * 60 * 60 * 1000); // stage 1, due after 1 day
 
+    let newlyEnrolledCount = 0;
     for (const link of coreVocabLinks) {
-      await tx.$executeRaw`
-        INSERT INTO app.srs_cards (
-          learner_id,
-          vocabulary_id,
-          stage,
-          due_at,
-          enrollment_source,
-          source_attempt_id,
-          source_lesson_vocabulary_id,
-          created_at,
-          updated_at,
-          row_version
-        ) VALUES (
-          ${account.id}::uuid,
-          ${link.vocabularyId}::uuid,
-          1,
-          ${dueAt},
-          'CORE_COMPLETION',
-          ${attemptId}::uuid,
-          ${link.id}::uuid,
-          ${completedAt},
-          ${completedAt},
-          1
-        ) ON CONFLICT (learner_id, vocabulary_id) DO NOTHING
-      `;
+      if (typeof (tx as any).$executeRaw === 'function') {
+        const rows = await tx.$executeRaw`
+          INSERT INTO app.srs_cards (
+            learner_id,
+            vocabulary_id,
+            stage,
+            due_at,
+            enrollment_source,
+            source_attempt_id,
+            source_lesson_vocabulary_id,
+            created_at,
+            updated_at,
+            row_version
+          ) VALUES (
+            ${account.id}::uuid,
+            ${link.vocabularyId}::uuid,
+            1,
+            ${dueAt},
+            'CORE_COMPLETION',
+            ${attemptId}::uuid,
+            ${link.id}::uuid,
+            ${completedAt},
+            ${completedAt},
+            1
+          ) ON CONFLICT (learner_id, vocabulary_id) DO NOTHING
+        `;
+        newlyEnrolledCount += Number(rows || 0);
+      } else {
+        const existingCard = await (tx as any).srsCard.findUnique({
+          where: { learnerId_vocabularyId: { learnerId: account.id, vocabularyId: link.vocabularyId } },
+        });
+        if (!existingCard) {
+          await (tx as any).srsCard.create({
+            data: {
+              learnerId: account.id,
+              vocabularyId: link.vocabularyId,
+              stage: 1,
+              dueAt,
+              enrollmentSource: 'CORE_COMPLETION',
+              sourceAttemptId: attemptId,
+              sourceLessonVocabularyId: link.id,
+              createdAt: completedAt,
+              updatedAt: completedAt,
+              rowVersion: 1n,
+            },
+          });
+          newlyEnrolledCount += 1;
+        }
+      }
     }
+
+    const gamificationResult = await evaluateAndAwardFinalizeGamification(tx, {
+      learnerId: verifiedUserId,
+      completionId: completion?.id || attemptId,
+      isFirstCompletion,
+      qualifyingLocalDate,
+      completedAt,
+      timezone: account.timezone,
+      nCore,
+      kFirstWrong,
+      newlyEnrolledCount,
+    });
 
     // Insert CommandReceipt
     await tx.commandReceipt.create({
@@ -906,14 +979,29 @@ export async function finalizePracticeAttempt(
           responseCount: expectedTotal,
           completedAt: completedAt.toISOString(),
           isFirstCompletion,
-        },
+          lessonXp: gamificationResult.lessonXp,
+          questXp: gamificationResult.questXp,
+          earnedAchievements: gamificationResult.earnedAchievements as unknown as Prisma.InputJsonValue,
+          newlyEnrolledCount: gamificationResult.newlyEnrolledCount,
+          firstTryAccuracy: gamificationResult.firstTryAccuracy,
+          streak: gamificationResult.streak,
+        } as unknown as Prisma.InputJsonValue,
         committedAt: completedAt,
       },
     });
 
-    const attemptDto = await buildAttemptDto(tx, updatedAttempt, currentLesson.activeRevisionId);
+    const attemptDto = await buildAttemptDto(tx, { ...updatedAttempt, completionOperationKey: null }, currentLesson.activeRevisionId);
 
-    return { attempt: attemptDto, isFirstCompletion };
+    return {
+      attempt: attemptDto,
+      isFirstCompletion,
+      lessonXp: gamificationResult.lessonXp,
+      questXp: gamificationResult.questXp,
+      earnedAchievements: gamificationResult.earnedAchievements,
+      newlyEnrolledCount: gamificationResult.newlyEnrolledCount,
+      firstTryAccuracy: gamificationResult.firstTryAccuracy,
+      streak: gamificationResult.streak,
+    };
   }, { isolationLevel: 'ReadCommitted', timeout: 15000 });
 }
 

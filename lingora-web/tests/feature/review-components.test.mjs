@@ -175,9 +175,7 @@ test('P5 SRS UI: Due card progression: prompt -> reveal -> rate -> next card -> 
     await page.locator('#rateRememberedBtn').click();
 
     // 2. Second card: "Goodbye"
-    await page.locator('.srs-canonical-form').waitFor({ state: 'visible' });
-    const word2 = await page.locator('.srs-canonical-form').textContent();
-    assert.match(word2, /Goodbye/);
+    await page.locator('.srs-canonical-form').filter({ hasText: 'Goodbye' }).waitFor({ state: 'visible' });
 
     // Reveal and rate "Chưa nhớ"
     await page.locator('#revealAnswerBtn').click();

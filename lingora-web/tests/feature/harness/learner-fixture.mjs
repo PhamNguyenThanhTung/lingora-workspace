@@ -301,6 +301,9 @@ export function token(user = confirmedUser(), expiresIn = 3600) {
 }
 
 export function setupEnv() {
+  process.env.SUPABASE_URL = providerOrigin;
+  process.env.SUPABASE_PUBLISHABLE_KEY = 'local-public-key';
+  process.env.SUPABASE_ANON_KEY = 'local-public-key';
   process.env.NEXT_PUBLIC_SUPABASE_URL = providerOrigin;
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'local-public-key';
 }
@@ -362,6 +365,8 @@ export function fixtureDb(state) {
   state.responses ||= [];
   state.srsCards ||= [];
   state.srsReviewOperations ||= [];
+  state.xpEvents ||= [];
+  state.learnerAchievements ||= [];
   state.vocabularyConcepts ||= [
     {
       id: 'vocab-concept-1',
@@ -675,6 +680,7 @@ export function fixtureDb(state) {
         return first(rows, args);
       },
       findMany: async args => many(state.srsCards, args),
+      count: async args => state.srsCards.filter(r => matches(r, args?.where)).length,
       update: async ({ where, data }) => {
         const target = state.srsCards.find(r => r.id === where.id);
         if (!target) throw new Error('Card not found for update');
@@ -718,6 +724,7 @@ export function fixtureDb(state) {
       findMany: async args => many(state.srsReviewOperations, args),
     },
     commandReceipt: {
+      findFirst: async args => first(state.commandReceipts, args),
       findUnique: async args => {
         const where = args.where.actorId_command_operationKey || args.where;
         return first(state.commandReceipts, { ...args, where });
@@ -741,6 +748,40 @@ export function fixtureDb(state) {
         return row;
       },
     },
+    xpEvent: {
+      findMany: async args => many(state.xpEvents, args),
+      count: async args => state.xpEvents.filter(r => matches(r, args?.where)).length,
+      aggregate: async args => {
+        const rows = state.xpEvents.filter(r => matches(r, args?.where));
+        const sum = rows.reduce((acc, r) => acc + (r.xp || 0), 0);
+        return { _sum: { xp: sum } };
+      },
+      create: async ({ data }) => {
+        if (state.xpEvents.some(r => r.learnerId === data.learnerId && r.eventType === data.eventType && r.sourceId === data.sourceId)) {
+          throw Object.assign(new Error('XpEvent unique conflict'), { code: 'P2002' });
+        }
+        const row = { id: randomUUID(), ...data, createdAt: data.createdAt || new Date() };
+        state.xpEvents.push(row);
+        return row;
+      },
+    },
+    learnerAchievement: {
+      findMany: async args => many(state.learnerAchievements, args),
+      findFirst: async args => first(state.learnerAchievements, args),
+      findUnique: async args => {
+        const where = args.where.learnerId_achievementCode || args.where;
+        return first(state.learnerAchievements, { ...args, where });
+      },
+      count: async args => state.learnerAchievements.filter(r => matches(r, args?.where)).length,
+      create: async ({ data }) => {
+        if (state.learnerAchievements.some(r => r.learnerId === data.learnerId && r.achievementCode === data.achievementCode)) {
+          throw Object.assign(new Error('LearnerAchievement unique conflict'), { code: 'P2002' });
+        }
+        const row = { id: randomUUID(), ...data, awardedAt: data.awardedAt || new Date(), createdAt: new Date() };
+        state.learnerAchievements.push(row);
+        return row;
+      },
+    },
     $transaction: async fn => {
       const snap = {
         contexts: structuredClone(state.contexts),
@@ -751,6 +792,8 @@ export function fixtureDb(state) {
         srsCards: structuredClone(state.srsCards),
         srsReviewOperations: structuredClone(state.srsReviewOperations),
         commandReceipts: structuredClone(state.commandReceipts),
+        xpEvents: structuredClone(state.xpEvents),
+        learnerAchievements: structuredClone(state.learnerAchievements),
       };
       try {
         return await fn(db);
@@ -763,6 +806,8 @@ export function fixtureDb(state) {
         state.srsCards = snap.srsCards;
         state.srsReviewOperations = snap.srsReviewOperations;
         state.commandReceipts = snap.commandReceipts;
+        state.xpEvents = snap.xpEvents;
+        state.learnerAchievements = snap.learnerAchievements;
         throw e;
       }
     },
@@ -778,10 +823,10 @@ export function fixtureDb(state) {
       if (sql.includes('app.srs_cards') && sql.includes('FOR UPDATE')) {
         return [{ id: values[0], row_version: 1n }];
       }
-      if (sql.includes('app.lesson_consumptions')) {
+      if (sql.includes('app.lesson_consumptions') && sql.includes('FOR UPDATE')) {
         return state.consumptions.filter(r => r.contextId === values[0] && r.lessonRevisionId === values[1]).map(r => ({ id: r.id }));
       }
-      if (sql.includes('app.lesson_attempts')) {
+      if (sql.includes('app.lesson_attempts') && sql.includes('FOR UPDATE')) {
         return state.attempts.filter(r => r.id === values[0]).map(r => ({ id: r.id }));
       }
       const getUnitLessons = (u) => (u.lessons && u.lessons.length > 0) ? u.lessons : (state.lessons || []).filter(l => l.unitId === u.id);
@@ -807,6 +852,131 @@ export function fixtureDb(state) {
         const targetCourseId = values[0]?.toLowerCase?.() || values[0];
         const units = targetCourseId ? (state.units || []).filter(u => u.courseId?.toLowerCase() === targetCourseId) : (state.units || []);
         return units.map(u => ({ id: u.id, levelId: u.levelId, position: u.position }));
+      }
+      if (sql.includes('INSERT INTO app.learner_achievements')) {
+        const [learnerId, code, sourceId, awardedAt] = values;
+        if (state.learnerAchievements.some(a => a.learnerId === learnerId && a.achievementCode === code)) {
+          return [];
+        }
+        state.learnerAchievements.push({
+          id: randomUUID(),
+          learnerId,
+          achievementCode: code,
+          sourceId,
+          awardedAt: awardedAt || new Date(),
+          createdAt: awardedAt || new Date(),
+        });
+        return [{ achievement_code: code }];
+      }
+      if (sql.includes('AS lesson_count')) {
+        const targetLearnerId = values[0];
+        const localDate = values[1];
+        const dateStr = (localDate instanceof Date ? localDate.toISOString() : String(localDate)).substring(0, 10);
+        let lessonCount = 0;
+        let reviewCount = 0;
+        for (const a of state.attempts || []) {
+          if (a.completedAt && a.qualifyingLocalDate) {
+            const ctx = state.contexts.find(c => c.id === a.contextId);
+            if (!ctx || ctx.learnerId === targetLearnerId) {
+              const dStr = (a.qualifyingLocalDate instanceof Date ? a.qualifyingLocalDate.toISOString() : String(a.qualifyingLocalDate)).substring(0, 10);
+              if (dStr === dateStr) lessonCount++;
+            }
+          }
+        }
+        for (const s of state.srsReviewOperations || []) {
+          if (s.learnerId === targetLearnerId && s.kind === 'SCHEDULE' && s.qualifyingLocalDate) {
+            const dStr = (s.qualifyingLocalDate instanceof Date ? s.qualifyingLocalDate.toISOString() : String(s.qualifyingLocalDate)).substring(0, 10);
+            if (dStr === dateStr) reviewCount++;
+          }
+        }
+        return [{ lesson_count: lessonCount, review_count: reviewCount }];
+      }
+      if (sql.includes('active_date')) {
+        const targetLearnerId = values[0];
+        const dateSet = new Set();
+        for (const a of state.attempts) {
+          if (a.completedAt && a.qualifyingLocalDate) {
+            const ctx = state.contexts.find(c => c.id === a.contextId);
+            if (!ctx || ctx.learnerId === targetLearnerId) {
+              const dStr = (a.qualifyingLocalDate instanceof Date ? a.qualifyingLocalDate.toISOString() : String(a.qualifyingLocalDate)).substring(0, 10);
+              dateSet.add(dStr);
+            }
+          }
+        }
+        for (const s of state.srsReviewOperations) {
+          if (s.learnerId === targetLearnerId && s.kind === 'SCHEDULE' && s.qualifyingLocalDate) {
+            const dStr = (s.qualifyingLocalDate instanceof Date ? s.qualifyingLocalDate.toISOString() : String(s.qualifyingLocalDate)).substring(0, 10);
+            dateSet.add(dStr);
+          }
+        }
+        const sorted = Array.from(dateSet).sort().reverse();
+        return sorted.map(d => ({ active_date: d }));
+      }
+      if (sql.includes('total_xp')) {
+        const targetLearnerId = values[0];
+        const total = (state.xpEvents || [])
+          .filter(e => e.learnerId === targetLearnerId)
+          .reduce((sum, e) => sum + (e.xp || 0), 0);
+        return [{ total_xp: total }];
+      }
+      if (sql.includes('FROM app.xp_events') && sql.includes('GROUP BY event_type')) {
+        const targetLearnerId = values[0];
+        const localDate = values[1];
+        const dateStr = (localDate instanceof Date ? localDate.toISOString() : String(localDate)).substring(0, 10);
+        const counts = {};
+        for (const e of state.xpEvents || []) {
+          if (e.learnerId === targetLearnerId) {
+            const eDateStr = (e.localDate instanceof Date ? e.localDate.toISOString() : String(e.localDate)).substring(0, 10);
+            if (eDateStr === dateStr && (e.eventType === 'LESSON_COMPLETION' || e.eventType === 'SRS_REVIEW')) {
+              counts[e.eventType] = (counts[e.eventType] || 0) + 1;
+            }
+          }
+        }
+        return Object.entries(counts).map(([type, cnt]) => ({ event_type: type, cnt }));
+      }
+      if (sql.includes('FROM app.xp_events') && sql.includes('source_id IN')) {
+        const targetLearnerId = values[0];
+        const localDate = values[1];
+        const dateStr = (localDate instanceof Date ? localDate.toISOString() : String(localDate)).substring(0, 10);
+        const s1 = values[2];
+        const s2 = values[3];
+        const matches = (state.xpEvents || []).filter(e => {
+          if (e.learnerId !== targetLearnerId || e.eventType !== 'DAILY_QUEST') return false;
+          const eDateStr = (e.localDate instanceof Date ? e.localDate.toISOString() : String(e.localDate)).substring(0, 10);
+          return eDateStr === dateStr && (e.sourceId === s1 || e.sourceId === s2);
+        });
+        return matches.map(m => ({ source_id: m.sourceId }));
+      }
+      if (sql.includes('FROM app.xp_events') && sql.includes('COUNT(*)::int AS cnt')) {
+        const targetLearnerId = values[0];
+        const localDate = values[1];
+        const dateStr = (localDate instanceof Date ? localDate.toISOString() : String(localDate)).substring(0, 10);
+        const eventType = sql.includes('LESSON_COMPLETION') ? 'LESSON_COMPLETION' : sql.includes('SRS_REVIEW') ? 'SRS_REVIEW' : null;
+        const cnt = (state.xpEvents || []).filter(e => {
+          if (e.learnerId !== targetLearnerId || (eventType && e.eventType !== eventType)) return false;
+          const eDateStr = (e.localDate instanceof Date ? e.localDate.toISOString() : String(e.localDate)).substring(0, 10);
+          return eDateStr === dateStr;
+        }).length;
+        return [{ cnt }];
+      }
+      if (sql.includes('FROM app.lesson_completions lc') && sql.includes('COUNT(*)::int AS cnt')) {
+        const targetLearnerId = values[0];
+        const cnt = (state.completions || []).filter(c => {
+          const ctx = state.contexts.find(cx => cx.id === c.contextId);
+          return !ctx || ctx.learnerId === targetLearnerId;
+        }).length;
+        return [{ cnt }];
+      }
+      if (sql.includes('COUNT(DISTINCT sc.vocabulary_id)::int AS cnt')) {
+        const targetLearnerId = values[0];
+        const distinctVocab = new Set();
+        for (const op of state.srsReviewOperations || []) {
+          if (op.learnerId === targetLearnerId && op.kind === 'SCHEDULE') {
+            const card = (state.srsCards || []).find(c => c.id === op.cardId);
+            if (card?.vocabularyId) distinctVocab.add(card.vocabularyId);
+          }
+        }
+        return [{ cnt: distinctVocab.size }];
       }
       return [];
     },
@@ -839,6 +1009,34 @@ export function fixtureDb(state) {
           completedAt: v[3],
           createdAt: v[4],
         });
+      }
+      if (sql.includes('INSERT INTO app.xp_events')) {
+        const learnerId = v[0];
+        let eventType = 'LESSON_COMPLETION';
+        let xp = 30;
+        if (sql.includes('SRS_REVIEW')) {
+          eventType = 'SRS_REVIEW';
+          xp = 1;
+        } else if (sql.includes('DAILY_QUEST')) {
+          eventType = 'DAILY_QUEST';
+          xp = 10;
+        }
+        const sourceId = v[1];
+        const localDate = v[2];
+        const createdAt = v[3] || new Date();
+        if (state.xpEvents.some(r => r.learnerId === learnerId && r.eventType === eventType && r.sourceId === sourceId)) {
+          return 0;
+        }
+        state.xpEvents.push({
+          id: randomUUID(),
+          learnerId,
+          eventType,
+          sourceId,
+          xp,
+          localDate: localDate instanceof Date ? localDate : new Date(localDate),
+          createdAt: createdAt instanceof Date ? createdAt : new Date(createdAt),
+        });
+        return 1;
       }
       if (sql.includes('INSERT INTO app.srs_cards')) {
         // interpolated values: [account.id, link.vocabularyId, dueAt, attemptId, link.id, completedAt, completedAt]
