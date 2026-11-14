@@ -33,6 +33,8 @@ Không commit `.env`, database credentials, service-role key hay thông tin đă
 
 ## Tiến độ và tài liệu
 
+Sprint 3 (Onboarding và Learning Plan) và Sprint 4 (Home, Learning Path và Gamification) đã qua nghiệm thu local trên PostgreSQL và Chromium. [Kết quả audit](plans/2026-11-14-project-audit.md) và [kế hoạch Sprint 5 — SRS v2 và Flashcards](plans/2026-11-14-sprint-5-srs-v2-flashcards.md).
+
 Core Learner MVP (P0–P7) cùng đợt hiệu chỉnh duy nhất (Correction Round 1) theo đánh giá Astra đã hoàn tất và vượt qua nghiệm thu local ngày 05/11 theo [kế hoạch](plans/2026-11-05-learning-mvp.md): kích hoạt bài học Admin, phục hồi LearningContext trình độ ban đầu, xem lại kết quả bài tập kèm lời giải thích ngữ liệu, ôn tập SRS từ vựng đến hạn (thuật toán 1, 3, 7, 14, 30 ngày) với idempotency giao dịch, đồng hồ fail-closed, layout mobile 390px chuẩn và bộ giáo trình mẫu A1. Toàn bộ 14 cổng kiểm thử, integration và E2E bằng Chromium trên loopback DB và synthetic auth provider đều PASS (exit code 0). Đăng ký/đăng nhập thật và level-up/assessment được bảo lưu hoãn lại theo phạm vi hợp đồng.
 
 Trang nhật ký Admin chỉ đọc (`/audit-events`) đã qua kiểm chứng local ngày05/11: lọc/phân trang, quyền ACTIVE ADMIN và UI mobile PASS; chưa commit/deploy. Xem [plan](plans/2026-11-04-admin-audit-viewer.md) và [bằng chứng](plans/admin-audit-viewer-codex-verification-20261105.md). Đây là maintenance độc lập, chưa bao gồm toàn bộ báo cáo UC-14 và không thay đổi trạng thái Slice12.
