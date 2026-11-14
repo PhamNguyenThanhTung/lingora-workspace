@@ -57,6 +57,11 @@ export function startIsolatedServer(port = 3007) {
         await buildHarnessBundle();
       }
 
+      delete process.env.SUPABASE_URL;
+      delete process.env.SUPABASE_PUBLISHABLE_KEY;
+      delete process.env.SUPABASE_ANON_KEY;
+      delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
       const server = http.createServer(async (req, res) => {
         const url = new URL(req.url, `http://localhost:${port}`);
         const pathname = url.pathname;

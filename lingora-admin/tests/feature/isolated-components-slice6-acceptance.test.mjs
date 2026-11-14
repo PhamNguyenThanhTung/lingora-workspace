@@ -14,9 +14,19 @@ async function withSeed(ex,run){
  try{
  await page.goto('http://127.0.0.1:3022/?state=page-teacher-draft-wire');await page.locator('#lessonDraftForm').waitFor();
  const {initialLesson:base}=await page.evaluate(()=>window.__PAGE_PROPS__);
- const dto={...base,rowVersion:'10',exercises:[ex],vocabulary:[vocab]};const path=`/api/teacher/lessons/${base.id}/draft`;
+ const dto={...base,rowVersion:'10',exercises:[ex],vocabulary:[vocab]};const lessonPath=`/api/teacher/lessons/${base.id}`,path=`${lessonPath}/draft`;
  let calls=[],respond=route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({data:dto})});
- await page.route('**/api/**',async route=>{const r=route.request();calls.push({path:new URL(r.url()).pathname,method:r.method(),body:r.postDataJSON()});await respond(route);});
+ await page.route('**/api/**',async route=>{
+  const request=route.request();
+  const requestPath=new URL(request.url()).pathname;
+  if(request.method()==='GET'&&requestPath.endsWith('/comments')){
+   return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({comments:[],data:[]})});
+  }
+  if(requestPath===path||(request.method()==='GET'&&requestPath===lessonPath)){
+   calls.push({path:requestPath,method:request.method(),body:request.postDataJSON()});
+  }
+  return respond(route);
+ });
  await page.locator('#btnSaveDraft').click();await page.locator('#draftSaveSuccess').waitFor();
  await run({page,dto,path,calls,setRespond:f=>{respond=f;}});
  }finally{await context.close();}
@@ -78,3 +88,59 @@ for(const status of [503,401,403])test(`Vocabulary lookup ${status} has recovera
  else if(status===403)await page.getByRole('heading',{name:/Truy cập bị từ chối/}).waitFor();
  else {await page.locator('#errorVocabModal').waitFor();assert.equal(await page.locator('#inputVocabSearch').inputValue(),'Retained lookup');setRespond(route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({data:[]})}));await page.locator('#btnSearchVocab').click();await page.waitForFunction(()=>!document.querySelector('#btnSearchVocab').disabled);assert.equal(await page.locator('#inputVocabSearch').inputValue(),'Retained lookup');}
 }));
+
+test('Studio backup is scoped to the signed-in teacher', async () => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const url = 'http://127.0.0.1:3022/?state=page-teacher-draft-wire';
+  try {
+    await page.goto(url);
+    await page.locator('#lessonDraftForm').waitFor();
+    const backupKey = await page.evaluate(() => {
+      const { initialLesson, account } = window.__PAGE_PROPS__;
+      const backup = {
+        titleVi: 'Bản nháp của giáo viên khác',
+        timestamp: Date.now(),
+        baseRowVersion: initialLesson.rowVersion,
+        baseRevisionId: initialLesson.highestRevision?.id ?? null,
+      };
+      const key = `lingora_draft_backup_${account.id}_${initialLesson.id}`;
+      localStorage.setItem(`lingora_draft_backup_${initialLesson.id}`, JSON.stringify(backup));
+      localStorage.setItem(`lingora_draft_backup_other_teacher_${initialLesson.id}`, JSON.stringify(backup));
+      return key;
+    });
+
+    await page.reload();
+    await page.locator('#lessonDraftForm').waitFor();
+    assert.equal(await page.locator('#btnRestoreBackup').count(), 0);
+    await page.locator('#inputDraftTitleVi').fill('Bản nháp của tôi');
+    await page.waitForFunction(key => Boolean(localStorage.getItem(key)), backupKey);
+    await page.reload();
+    await page.locator('#btnRestoreBackup').click();
+    assert.equal(await page.locator('#inputDraftTitleVi').inputValue(), 'Bản nháp của tôi');
+  } finally {
+    await context.close();
+  }
+});
+
+test('Studio saves rich-text links that use an allowed relative path', async () => withSeed(
+  exercise('MCQ', { correctOptionId: 'a' }, { options: [{ id: 'a', text: 'A' }, { id: 'b', text: 'B' }] }),
+  async ({ page, calls }) => {
+    await page.getByRole('button', { name: 'Chuyển sang Lesson Studio (V1)' }).click();
+    await page.locator('#btnAddBlock-text').click();
+    const link = page.locator('#studioCanvas input[id^="textContent-"][id$="-link"]').last();
+    await link.fill('/review');
+    const editor = link.locator('..');
+    await editor.getByRole('button', { name: 'Gắn link' }).click();
+    await editor.getByRole('button', { name: 'Bỏ link' }).waitFor();
+    await page.locator('#studioCanvas textarea[id^="textContent-"]').last().fill('Đường dẫn ôn tập');
+    const response = page.waitForResponse(r => r.request().method() === 'PATCH' && new URL(r.url()).pathname.endsWith('/draft'),
+      { timeout: 3500 });
+    await page.locator('#btnSaveDraft').click();
+    await response;
+    const blocks = calls.at(-1).body.blocks;
+    assert.ok(blocks.some(block => block.type === 'TEXT' && block.content.nodes.some(node =>
+      node.type === 'paragraph' && node.runs.some(run => run.link?.url === '/review')
+    )));
+  },
+));

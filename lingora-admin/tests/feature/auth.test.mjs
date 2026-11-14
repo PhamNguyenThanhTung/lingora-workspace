@@ -85,6 +85,10 @@ export function createMockSessionCookie(userId = DUMMY_ADMIN_ID, email = 'admin@
 const originalFetch = globalThis.fetch;
 
 beforeEach(() => {
+  delete process.env.SUPABASE_URL;
+  delete process.env.SUPABASE_PUBLISHABLE_KEY;
+  delete process.env.SUPABASE_ANON_KEY;
+  delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://sncfyvpzwedqgwfpffkh.supabase.co';
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key-placeholder';
   currentCookieStore = {

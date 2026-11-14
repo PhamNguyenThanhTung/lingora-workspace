@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { isSafeRichTextUrl } from '@lingora/lesson-content';
 import type {
   LessonBlock,
   CalloutTone,
@@ -8,6 +9,7 @@ import type {
   BoundedTextDocument,
   DialogueLine,
   GrammarExample,
+  TextRun,
 } from '@lingora/lesson-content';
 import styles from './studio-styles';
 
@@ -19,6 +21,60 @@ interface TextDocumentEditorProps {
   onChange: (document: BoundedTextDocument) => void;
 }
 
+interface TextRunEditorProps {
+  run: TextRun;
+  id: string;
+  disabled: boolean;
+  onChange: (patch: Partial<TextRun>) => void;
+}
+
+function TextRunEditor({ run, id, disabled, onChange }: TextRunEditorProps) {
+  const [linkUrl, setLinkUrl] = useState(run.link?.url || '');
+  const [linkError, setLinkError] = useState<string | null>(null);
+
+  useEffect(() => setLinkUrl(run.link?.url || ''), [run.link?.url]);
+
+  const applyLink = () => {
+    if (!isSafeRichTextUrl(linkUrl)) {
+      setLinkError('Nhập đường dẫn HTTP(S) hoặc đường dẫn tương đối an toàn.');
+      return;
+    }
+    setLinkError(null);
+    onChange({ link: { url: linkUrl, ...(run.link?.title ? { title: run.link.title } : {}) } });
+  };
+
+  return (
+    <>
+      <textarea
+        id={id}
+        className={styles.formTextarea}
+        rows={2}
+        value={run.text}
+        disabled={disabled}
+        maxLength={20000}
+        onChange={(event) => onChange({ text: event.target.value })}
+      />
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginTop: '5px' }}>
+        <button type="button" className={styles.blockActionButton} aria-pressed={Boolean(run.bold)} disabled={disabled} onClick={() => onChange({ bold: !run.bold })}>
+          Đậm
+        </button>
+        <button type="button" className={styles.blockActionButton} aria-pressed={Boolean(run.italic)} disabled={disabled} onClick={() => onChange({ italic: !run.italic })}>
+          Nghiêng
+        </button>
+        <label className={styles.formLabel} htmlFor={`${id}-link`}>Liên kết</label>
+        <input id={`${id}-link`} type="text" inputMode="url" className={styles.formInput} value={linkUrl} maxLength={2048} disabled={disabled} onChange={(event) => setLinkUrl(event.target.value)} style={{ flex: 1, minWidth: '180px' }} />
+        <button type="button" className={styles.blockActionButton} disabled={disabled} onClick={applyLink}>
+          Gắn link
+        </button>
+        {run.link && <button type="button" className={styles.blockActionButton} disabled={disabled} onClick={() => { setLinkUrl(''); onChange({ link: undefined }); }}>
+          Bỏ link
+        </button>}
+      </div>
+      {linkError && <div role="alert" style={{ color: '#b91c1c', fontSize: '12px' }}>{linkError}</div>}
+    </>
+  );
+}
+
 function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: TextDocumentEditorProps) {
   const safeDoc = document && Array.isArray(document.nodes) && document.nodes.length > 0
     ? document
@@ -27,7 +83,7 @@ function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: T
   const updateRun = (
     nodeIndex: number,
     runIndex: number,
-    text: string,
+    patch: Partial<TextRun>,
     itemIndex?: number
   ) => {
     const nodes = safeDoc.nodes.map((node, currentNodeIndex) => {
@@ -37,7 +93,7 @@ function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: T
         return {
           ...node,
           runs: node.runs.map((run, currentRunIndex) =>
-            currentRunIndex === runIndex ? { ...run, text } : run
+            currentRunIndex === runIndex ? { ...run, ...patch } : run
           ),
         };
       }
@@ -50,7 +106,7 @@ function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: T
             : {
                 ...item,
                 runs: item.runs.map((run, currentRunIndex) =>
-                  currentRunIndex === runIndex ? { ...run, text } : run
+                  currentRunIndex === runIndex ? { ...run, ...patch } : run
                 ),
               }
         ),
@@ -60,8 +116,29 @@ function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: T
     onChange({ ...safeDoc, nodes });
   };
 
+  const convertParagraphToList = (nodeIndex: number) => {
+    const nodes = safeDoc.nodes.map((node, index) => index !== nodeIndex || node.type !== 'paragraph'
+      ? node
+      : { type: 'list' as const, style: 'bullet' as const, items: [{ runs: node.runs }] });
+    onChange({ ...safeDoc, nodes });
+  };
+
+  const toggleListStyle = (nodeIndex: number) => {
+    const nodes = safeDoc.nodes.map((node, index) => index !== nodeIndex || node.type !== 'list'
+      ? node
+      : { ...node, style: node.style === 'bullet' ? 'ordered' as const : 'bullet' as const });
+    onChange({ ...safeDoc, nodes });
+  };
+
+  const addListItem = (nodeIndex: number) => {
+    const nodes = safeDoc.nodes.map((node, index) => index !== nodeIndex || node.type !== 'list'
+      ? node
+      : { ...node, items: [...node.items, { runs: [{ text: '' }] }] });
+    onChange({ ...safeDoc, nodes });
+  };
+
   const renderRuns = (
-    runs: Array<{ text: string }>,
+    runs: TextRun[],
     nodeIndex: number,
     itemIndex?: number
   ) => runs.map((run, runIndex) => {
@@ -75,14 +152,11 @@ function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: T
         <label className={styles.formLabel} htmlFor={runId}>
           {location}, phần văn bản {runIndex + 1}
         </label>
-        <textarea
+        <TextRunEditor
           id={runId}
-          className={styles.formTextarea}
-          rows={2}
-          value={run.text}
+          run={run}
           disabled={disabled}
-          maxLength={20000}
-          onChange={(event) => updateRun(nodeIndex, runIndex, event.target.value, itemIndex)}
+          onChange={(patch) => updateRun(nodeIndex, runIndex, patch, itemIndex)}
         />
       </div>
     );
@@ -94,9 +168,15 @@ function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: T
       {safeDoc.nodes.map((node, nodeIndex) => node.type === 'paragraph' ? (
         <div key={`${idPrefix}-paragraph-${nodeIndex}`}>
           {renderRuns(node.runs, nodeIndex)}
+          <button type="button" className={styles.blockActionButton} disabled={disabled} onClick={() => convertParagraphToList(nodeIndex)}>
+            Chuyển đoạn thành danh sách
+          </button>
         </div>
       ) : (
         <div key={`${idPrefix}-list-${nodeIndex}`}>
+          <button type="button" className={styles.blockActionButton} disabled={disabled} onClick={() => toggleListStyle(nodeIndex)}>
+            {node.style === 'bullet' ? 'Đổi thành danh sách đánh số' : 'Đổi thành danh sách dấu đầu dòng'}
+          </button>
           {node.items.map((item, itemIndex) => (
             <div
               key={`${idPrefix}-list-${nodeIndex}-item-${itemIndex}`}
@@ -108,6 +188,9 @@ function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: T
               <div style={{ flex: 1 }}>{renderRuns(item.runs, nodeIndex, itemIndex)}</div>
             </div>
           ))}
+          <button type="button" className={styles.blockActionButton} disabled={disabled || node.items.length >= 50} onClick={() => addListItem(nodeIndex)}>
+            Thêm mục danh sách
+          </button>
         </div>
       ))}
     </div>

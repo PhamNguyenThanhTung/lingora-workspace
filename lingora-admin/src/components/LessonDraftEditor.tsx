@@ -199,7 +199,10 @@ export function LessonDraftEditor({
 
   // Comments (T10) & Local Backup (T11)
   const [comments, setComments] = useState<ReviewCommentDto[]>([]);
-  const [availableBackup, setAvailableBackup] = useState<{ timestamp: number; data: any } | null>(null);
+  const [availableBackup, setAvailableBackup] = useState<{
+    timestamp: number;
+    data: any;
+  } | null>(null);
 
   // Derived revision & workflow state
   const revisions = Array.isArray(lesson.revisions) ? lesson.revisions : [];
@@ -548,7 +551,12 @@ export function LessonDraftEditor({
   };
 
   // --- Local Draft Backup & Recovery (T11) ---
-  const backupStorageKey = `lingora_draft_backup_${lesson.id}`;
+  const backupStorageKey = `lingora_draft_backup_${account.id}_${lesson.id}`;
+  const backupMatchesCurrentRevision = Boolean(
+    availableBackup &&
+    availableBackup.data.baseRowVersion === lesson.rowVersion &&
+    availableBackup.data.baseRevisionId === (lesson.highestRevision?.id || null)
+  );
 
   // Check on mount for unsaved local backup
   useEffect(() => {
@@ -557,19 +565,45 @@ export function LessonDraftEditor({
       const raw = window.localStorage.getItem(backupStorageKey);
       if (!raw) return;
       const parsed = JSON.parse(raw);
-      if (
-        parsed &&
-        (parsed.blocks?.length > 0 ||
-          parsed.paragraphs?.length > 0 ||
-          (parsed.titleVi && parsed.titleVi.trim().length > 0) ||
-          (parsed.titleEn && parsed.titleEn.trim().length > 0))
-      ) {
+      if (parsed && typeof parsed === 'object') {
         const isDifferent =
           (parsed.titleVi !== undefined && parsed.titleVi !== initialTitle.vi) ||
           (parsed.titleEn !== undefined && parsed.titleEn !== initialTitle.en) ||
+          (typeof parsed.changeSummary === 'string' && parsed.changeSummary.trim().length > 0) ||
           (Array.isArray(parsed.blocks) && JSON.stringify(parsed.blocks) !== JSON.stringify(initialV1Blocks)) ||
-          (Array.isArray(parsed.paragraphs) && JSON.stringify(parsed.paragraphs) !== JSON.stringify(initialBlocks));
-        if (isDifferent) {
+          (Array.isArray(parsed.paragraphs) && JSON.stringify(parsed.paragraphs) !== JSON.stringify(initialBlocks)) ||
+          (Array.isArray(parsed.exercises) && JSON.stringify(parsed.exercises) !== JSON.stringify(initExercises.map((ex) => ({
+            localId: ex.id,
+            sourceExerciseId: ex.id,
+            position: ex.position,
+            isCore: ex.isCore,
+            type: ex.type,
+            promptData: ex.promptData || {},
+            gradingData: ex.gradingData || {},
+            feedbackData: ex.feedbackData ? JSON.parse(JSON.stringify(ex.feedbackData)) : undefined,
+          })))) ||
+          (Array.isArray(parsed.vocabulary) && JSON.stringify(parsed.vocabulary) !== JSON.stringify(initVocabulary.map((v) => ({
+            localId: v.id,
+            sourceLinkId: v.id,
+            vocabularyId: v.vocabularyId,
+            position: v.position,
+            isCore: v.isCore,
+            displayInfo: {
+              canonicalForm: v.displaySnapshot?.canonicalForm || '',
+              senseKey: v.displaySnapshot?.senseKey || 'default',
+              meaningVi: v.displaySnapshot?.meaningLabels?.vi,
+              meaningEn: v.displaySnapshot?.meaningLabels?.en,
+              phonetic: v.displaySnapshot?.phonetic,
+              partOfSpeech: v.displaySnapshot?.partOfSpeech,
+              example: v.displaySnapshot?.example,
+            },
+          }))));
+        if (isDifferent && (
+          Array.isArray(parsed.blocks) || Array.isArray(parsed.paragraphs) ||
+          Array.isArray(parsed.exercises) || Array.isArray(parsed.vocabulary) ||
+          typeof parsed.titleVi === 'string' || typeof parsed.titleEn === 'string' ||
+          typeof parsed.changeSummary === 'string'
+        )) {
           setAvailableBackup({
             timestamp: parsed.timestamp || Date.now(),
             data: parsed,
@@ -579,7 +613,7 @@ export function LessonDraftEditor({
     } catch {
       // Ignore corrupted localStorage
     }
-  }, [lesson.id, previewOnly]);
+  }, [backupStorageKey, previewOnly]);
 
   // Debounced auto-save backup when dirty
   useEffect(() => {
@@ -591,11 +625,15 @@ export function LessonDraftEditor({
         const backupData = {
           timestamp: Date.now(),
           lessonId: lesson.id,
+          baseRowVersion: lesson.rowVersion,
+          baseRevisionId: lesson.highestRevision?.id || null,
           useV1Studio,
           titleVi,
           titleEn,
           blocks,
           paragraphs,
+          exercises,
+          vocabulary,
           changeSummary,
         };
         window.localStorage.setItem(backupStorageKey, JSON.stringify(backupData));
@@ -605,24 +643,28 @@ export function LessonDraftEditor({
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [lesson.id, previewOnly, editorActuallyEditable, isDirty, useV1Studio, titleVi, titleEn, blocks, paragraphs, changeSummary]);
+  }, [backupStorageKey, lesson.id, lesson.rowVersion, lesson.highestRevision?.id, previewOnly, editorActuallyEditable, isDirty, useV1Studio, titleVi, titleEn, blocks, paragraphs, exercises, vocabulary, changeSummary]);
 
   const handleRestoreBackup = () => {
-    if (!availableBackup?.data) return;
+    if (!availableBackup?.data || !backupMatchesCurrentRevision) return;
     const { data } = availableBackup;
     if (typeof data.titleVi === 'string') setTitleVi(data.titleVi);
     if (typeof data.titleEn === 'string') setTitleEn(data.titleEn);
     if (typeof data.useV1Studio === 'boolean') setUseV1Studio(data.useV1Studio);
     if (Array.isArray(data.blocks)) setBlocks(data.blocks);
     if (Array.isArray(data.paragraphs)) setParagraphs(data.paragraphs);
+    if (Array.isArray(data.exercises)) setExercises(data.exercises);
+    if (Array.isArray(data.vocabulary)) setVocabulary(data.vocabulary);
     if (typeof data.changeSummary === 'string') setChangeSummary(data.changeSummary);
     setAvailableBackup(null);
     setSuccessMessage('Đã khôi phục dữ liệu từ bản sao lưu cục bộ.');
   };
 
   const handleDiscardBackup = () => {
-    if (typeof window !== 'undefined' && window.localStorage) {
+    try {
       window.localStorage.removeItem(backupStorageKey);
+    } catch {
+      // Browser storage can be unavailable.
     }
     setAvailableBackup(null);
   };
@@ -1426,10 +1468,7 @@ export function LessonDraftEditor({
       isPendingRef.current = false;
 
       // Clear local backup on successful server save
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.removeItem(backupStorageKey);
-      }
-      setAvailableBackup(null);
+      handleDiscardBackup();
       void fetchComments();
 
       const newRevNo = updated.highestRevision?.revisionNo || 1;
@@ -1714,17 +1753,24 @@ export function LessonDraftEditor({
             <div style={{ color: '#3b82f6', fontSize: '13px', marginTop: '2px' }}>
               Lưu lúc: {new Date(availableBackup.timestamp).toLocaleTimeString()} ngày {new Date(availableBackup.timestamp).toLocaleDateString()}
             </div>
+            {!backupMatchesCurrentRevision && (
+              <div role="alert" style={{ color: '#b91c1c', fontSize: '13px', marginTop: '6px' }}>
+                Bản sao lưu thuộc phiên bản cũ hoặc không có thông tin phiên bản nên không thể tự khôi phục lên bản hiện tại.
+              </div>
+            )}
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button
-              type="button"
-              className="btn btn-primary"
-              id="btnRestoreBackup"
-              onClick={handleRestoreBackup}
-              style={{ fontSize: '13px', padding: '6px 14px' }}
-            >
-              Khôi phục nội dung
-            </button>
+            {backupMatchesCurrentRevision && (
+              <button
+                type="button"
+                className="btn btn-primary"
+                id="btnRestoreBackup"
+                onClick={handleRestoreBackup}
+                style={{ fontSize: '13px', padding: '6px 14px' }}
+              >
+                Khôi phục nội dung
+              </button>
+            )}
             <button
               type="button"
               className="btn btn-secondary"

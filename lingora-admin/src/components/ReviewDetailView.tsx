@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { ReviewDetailDto } from '@/server/lessons/workflow';
 import type { ReviewCommentDto } from '@/server/lessons/comments';
+import { LessonContent } from '@lingora/lesson-content/LessonContent';
 import { BlockComments } from './lesson-studio/BlockComments';
 
 export interface ReviewDetailViewProps {
@@ -527,31 +528,16 @@ export function ReviewDetailView({
                 </div>
 
                 <div style={{ fontSize: '14px', lineHeight: '1.6', background: '#f8fafc', padding: '10px 14px', borderRadius: '4px' }}>
-                  {block.type === 'HEADING' && <strong>{(block.content as any)?.text} (H{(block.content as any)?.level || 2})</strong>}
-                  {block.type === 'TEXT' && <div>{(block.content as any)?.nodes?.[0]?.runs?.[0]?.text || '—'}</div>}
-                  {block.type === 'EXAMPLE' && (
-                    <div>
-                      {(block.content as any)?.text}
-                      {(block.content as any)?.translation && <div style={{ color: '#64748b', fontSize: '13px' }}>{(block.content as any).translation}</div>}
-                    </div>
-                  )}
-                  {block.type === 'DIALOGUE' && (
-                    <div>
-                      {((block.content as any)?.lines || []).map((l: any, i: number) => (
-                        <div key={i}><strong>{l.speaker}:</strong> {l.text}</div>
-                      ))}
-                    </div>
-                  )}
-                  {block.type === 'CALLOUT' && (
-                    <div>
-                      <strong>[{(block.content as any)?.tone?.toUpperCase()}]</strong> {(block.content as any)?.title || ''}
-                      <div>{(block.content as any)?.document?.nodes?.[0]?.runs?.[0]?.text || ''}</div>
-                    </div>
-                  )}
-                  {block.type === 'MEDIA' && <div>Âm thanh: {(block.content as any)?.audioReferenceUrl}</div>}
-                  {block.type === 'GRAMMAR' && <div><strong>{(block.content as any)?.title}:</strong> {(block.content as any)?.explanation}</div>}
-                  {block.type === 'VOCABULARY' && <div>[Khối hiển thị danh sách từ vựng bài học]</div>}
-                  {block.type === 'DIVIDER' && <hr />}
+                  <LessonContent
+                    presentation={{
+                      contentSchemaVersion: 1,
+                      blocks: [block],
+                      vocabulary: block.type === 'VOCABULARY'
+                        ? detail.revision.presentation?.vocabulary || []
+                        : [],
+                      exercises: [],
+                    }}
+                  />
                 </div>
 
                 <BlockComments

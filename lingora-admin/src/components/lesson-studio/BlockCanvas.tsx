@@ -49,7 +49,7 @@ export function BlockCanvas({
 }: BlockCanvasProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
-  const [insertionTarget, setInsertionTarget] = useState<{ blockKey: string; index: number } | null>(null);
+  const [insertionTarget, setInsertionTarget] = useState<{ blockKey: string; side: 'before' | 'after' } | null>(null);
 
   const disabled = readOnly || isPending;
 
@@ -125,16 +125,38 @@ export function BlockCanvas({
           <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#881337' }}>
             Các nhận xét dưới đây thuộc các khối nội dung không còn trong bản nháp hiện tại. Bạn vẫn có thể xem và xử lý.
           </p>
-          <BlockComments
-            comments={orphanedComments}
-            targetBlockKey={orphanedComments[0]?.blockKey}
-            canResolve={canResolveComments && !readOnly}
-            canReopen={Boolean(onReopenComment)}
-            canAdd={false}
-            onResolve={onResolveComment}
-            onReopen={onReopenComment}
-            disabled={disabled}
-          />
+          {[...new Set(orphanedComments.map((comment) => comment.blockKey!))].map((blockKey) => (
+            <BlockComments
+              key={blockKey}
+              comments={orphanedComments}
+              targetBlockKey={blockKey}
+              canResolve={canResolveComments && !readOnly}
+              canReopen={Boolean(onReopenComment)}
+              canAdd={false}
+              onResolve={onResolveComment}
+              onReopen={onReopenComment}
+              disabled={disabled}
+            />
+          ))}
+        </div>
+      )}
+
+      {comments.some((comment) => comment.itemRevisionId) && (
+        <div className={styles.commentsSection} style={{ marginBottom: '16px' }}>
+          <div className={styles.commentsHeader}>Nhận xét gắn với bài tập</div>
+          {[...new Set(comments.flatMap((comment) => comment.itemRevisionId ? [comment.itemRevisionId] : []))].map((itemRevisionId) => (
+            <BlockComments
+              key={itemRevisionId}
+              comments={comments}
+              targetItemRevisionId={itemRevisionId}
+              canResolve={canResolveComments && !readOnly}
+              canReopen={Boolean(onReopenComment)}
+              canAdd={false}
+              onResolve={onResolveComment}
+              onReopen={onReopenComment}
+              disabled={disabled}
+            />
+          ))}
         </div>
       )}
 
@@ -209,8 +231,8 @@ export function BlockCanvas({
                     isLast={index === blocks.length - 1}
                     onMoveUp={() => onMoveBlock(block.blockKey, 'up')}
                     onMoveDown={() => onMoveBlock(block.blockKey, 'down')}
-                    onAddBefore={() => setInsertionTarget({ blockKey: block.blockKey, index })}
-                    onAddAfter={() => setInsertionTarget({ blockKey: block.blockKey, index: index + 1 })}
+                    onAddBefore={() => setInsertionTarget({ blockKey: block.blockKey, side: 'before' })}
+                    onAddAfter={() => setInsertionTarget({ blockKey: block.blockKey, side: 'after' })}
                     onDuplicate={() => onDuplicateBlock(block.blockKey)}
                     onDelete={() => onDeleteBlock(block.blockKey)}
                     disabled={disabled}
@@ -220,10 +242,10 @@ export function BlockCanvas({
                 {insertionTarget?.blockKey === block.blockKey && (
                   <div className={styles.blockBody} onClick={(e) => e.stopPropagation()}>
                     <p className={styles.formLabel}>
-                      Chọn loại khối để chèn {insertionTarget.index === index ? 'trước' : 'sau'} khối này
+                      Chọn loại khối để chèn {insertionTarget.side === 'before' ? 'trước' : 'sau'} khối này
                     </p>
                     <BlockToolbar
-                      targetIndex={insertionTarget.index}
+                      targetIndex={index + (insertionTarget.side === 'after' ? 1 : 0)}
                       onAddBlock={(type, targetIndex) => {
                         onAddBlock(type, targetIndex);
                         setInsertionTarget(null);

@@ -35,6 +35,7 @@ export function BlockComments({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actioningId, setActioningId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Filter comments belonging to this target
   const relevantComments = comments.filter((c) => {
@@ -62,6 +63,7 @@ export function BlockComments({
     if (!trimmed || !onAddComment || isSubmitting) return;
 
     setIsSubmitting(true);
+    setActionError(null);
     try {
       await onAddComment(
         trimmed,
@@ -70,6 +72,8 @@ export function BlockComments({
       );
       setNewCommentBody('');
       setShowAddForm(false);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Không thể gửi nhận xét. Vui lòng thử lại.');
     } finally {
       setIsSubmitting(false);
     }
@@ -78,8 +82,11 @@ export function BlockComments({
   const handleResolve = async (comment: ReviewCommentDto) => {
     if (!onResolve || actioningId) return;
     setActioningId(comment.id);
+    setActionError(null);
     try {
       await onResolve(comment.id, comment.rowVersion);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Không thể cập nhật nhận xét. Vui lòng thử lại.');
     } finally {
       setActioningId(null);
     }
@@ -88,8 +95,11 @@ export function BlockComments({
   const handleReopen = async (comment: ReviewCommentDto) => {
     if (!onReopen || actioningId) return;
     setActioningId(comment.id);
+    setActionError(null);
     try {
       await onReopen(comment.id, comment.rowVersion);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Không thể mở lại nhận xét. Vui lòng thử lại.');
     } finally {
       setActioningId(null);
     }
@@ -124,6 +134,8 @@ export function BlockComments({
           </button>
         )}
       </div>
+
+      {actionError && <div role="alert" style={{ color: '#b91c1c', fontSize: '13px', marginBottom: '8px' }}>{actionError}</div>}
 
       {/* Add Comment Form */}
       {canAdd && showAddForm && (

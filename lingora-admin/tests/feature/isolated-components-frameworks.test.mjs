@@ -136,7 +136,8 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
     await page.click('#btn-edit-framework-11111111-1111-4111-8111-111111111111');
     await page.waitForSelector('#frameworkFormModal', { state: 'visible' });
 
-    // Verify prefilled data
+    // Verify prefilled data after the edit form has initialized.
+    await page.waitForFunction(() => document.querySelector('#frameworkCode')?.value === 'CEFR');
     const prefilled = await page.evaluate(() => ({
       code: document.querySelector('#frameworkCode')?.value,
       version: document.querySelector('#frameworkVersion')?.value,
