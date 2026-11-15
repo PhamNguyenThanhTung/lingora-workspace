@@ -364,6 +364,8 @@ export function fixtureDb(state) {
   state.attempts ||= [];
   state.responses ||= [];
   state.srsCards ||= [];
+  state.srsMemoryStates ||= [];
+  state.srsReviewSessions ||= [];
   state.srsReviewOperations ||= [];
   state.xpEvents ||= [];
   state.learnerAchievements ||= [];
@@ -679,7 +681,15 @@ export function fixtureDb(state) {
         });
         return first(rows, args);
       },
-      findMany: async args => many(state.srsCards, args),
+      findMany: async args => {
+        const rows = state.srsCards.map(c => {
+          if (!c.vocabulary) {
+            c.vocabulary = (state.vocabularyConcepts || []).find(v => v.id === c.vocabularyId) || null;
+          }
+          return c;
+        });
+        return many(rows, args);
+      },
       count: async args => state.srsCards.filter(r => matches(r, args?.where)).length,
       update: async ({ where, data }) => {
         const target = state.srsCards.find(r => r.id === where.id);
@@ -722,6 +732,71 @@ export function fixtureDb(state) {
         return row;
       },
       findMany: async args => many(state.srsReviewOperations, args),
+    },
+    srsMemoryState: {
+      findUnique: async args => {
+        const where = args.where.cardId_skill || args.where;
+        return first(state.srsMemoryStates, { ...args, where });
+      },
+      findFirst: async args => first(state.srsMemoryStates, args),
+      findMany: async args => many(state.srsMemoryStates, args),
+      create: async ({ data }) => {
+        const row = {
+          id: randomUUID(),
+          state: 1,
+          count: 0,
+          lapse: 0,
+          rowVersion: 1n,
+          ...data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        state.srsMemoryStates.push(row);
+        return row;
+      },
+      update: async ({ where, data }) => {
+        const target = state.srsMemoryStates.find(r => r.id === where.id);
+        if (!target) throw new Error('Memory state not found for update');
+        Object.assign(target, data, { updatedAt: new Date() });
+        return target;
+      },
+    },
+    srsReviewSession: {
+      findUnique: async args => first(state.srsReviewSessions, args),
+      findFirst: async args => first(state.srsReviewSessions, args),
+      findMany: async args => many(state.srsReviewSessions, args),
+      create: async ({ data }) => {
+        const row = {
+          id: randomUUID(),
+          status: 'ACTIVE',
+          sessionLimit: 20,
+          cardIds: [],
+          currentIndex: 0,
+          completedCount: 0,
+          rowVersion: 1n,
+          ...data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        state.srsReviewSessions.push(row);
+        return row;
+      },
+      update: async ({ where, data }) => {
+        const target = state.srsReviewSessions.find(r => r.id === where.id);
+        if (!target) throw new Error('Review session not found for update');
+        Object.assign(target, data, { updatedAt: new Date() });
+        return target;
+      },
+      updateMany: async ({ where, data }) => {
+        let count = 0;
+        for (const target of state.srsReviewSessions) {
+          if (matches(target, where)) {
+            Object.assign(target, data, { updatedAt: new Date() });
+            count++;
+          }
+        }
+        return { count };
+      },
     },
     commandReceipt: {
       findFirst: async args => first(state.commandReceipts, args),
@@ -790,6 +865,8 @@ export function fixtureDb(state) {
         responses: structuredClone(state.responses),
         completions: structuredClone(state.completions),
         srsCards: structuredClone(state.srsCards),
+        srsMemoryStates: structuredClone(state.srsMemoryStates),
+        srsReviewSessions: structuredClone(state.srsReviewSessions),
         srsReviewOperations: structuredClone(state.srsReviewOperations),
         commandReceipts: structuredClone(state.commandReceipts),
         xpEvents: structuredClone(state.xpEvents),
@@ -804,6 +881,8 @@ export function fixtureDb(state) {
         state.responses = snap.responses;
         state.completions = snap.completions;
         state.srsCards = snap.srsCards;
+        state.srsMemoryStates = snap.srsMemoryStates;
+        state.srsReviewSessions = snap.srsReviewSessions;
         state.srsReviewOperations = snap.srsReviewOperations;
         state.commandReceipts = snap.commandReceipts;
         state.xpEvents = snap.xpEvents;

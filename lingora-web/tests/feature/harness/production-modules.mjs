@@ -31,6 +31,11 @@ export async function compileProductionModules() {
     reviewRespondApi: 'src/app/api/learner/review/respond/route.ts',
     homeApi: 'src/app/api/learner/home/route.ts',
     pathApi: 'src/app/api/learner/contexts/[contextId]/path/route.ts',
+    srsSessionsApi: 'src/app/api/srs/sessions/route.ts',
+    srsSessionDetailApi: 'src/app/api/srs/sessions/[sessionId]/route.ts',
+    srsSessionRevealApi: 'src/app/api/srs/sessions/[sessionId]/reveal/route.ts',
+    srsSessionReviewsApi: 'src/app/api/srs/sessions/[sessionId]/reviews/route.ts',
+    srsSessionCompleteApi: 'src/app/api/srs/sessions/[sessionId]/complete/route.ts',
   };
   const result = {};
   try {

@@ -15,6 +15,7 @@ import {
   verifySrsToken,
   computeSrsInputHash,
 } from './token.ts';
+import { calculatePolicyBSchedule } from './scheduler.ts';
 import { evaluateAndAwardSrsGamification } from '../gamification/service.ts';
 
 type Db = PrismaClient | Prisma.TransactionClient;
@@ -281,22 +282,17 @@ export async function respondSrsReview(
       throw new SrsServiceError(409, 'CARD_NOT_DUE', 'Thẻ từ vựng chưa đến hạn ôn tập.');
     }
 
-    // Calculate stage and nextDueAt
-    let nextStage: number;
-    let nextDueAt: Date;
+    // Calculate stage and nextDueAt via Policy B scheduler
+    const scheduleResult = calculatePolicyBSchedule({
+      priorStage: card.stage,
+      priorDueAt: card.dueAt,
+      rating: input.rating,
+      reviewedAt: dbNow,
+    });
     const priorStage = card.stage;
     const priorDueAt = card.dueAt;
-
-    if (input.rating === 'REMEMBERED') {
-      nextStage = Math.min(priorStage + 1, 5);
-      const intervals = [1, 3, 7, 14, 30];
-      const intervalDays = intervals[nextStage - 1];
-      nextDueAt = new Date(dbNow.getTime() + intervalDays * 24 * 60 * 60 * 1000);
-    } else {
-      // FORGOTTEN
-      nextStage = 1;
-      nextDueAt = new Date(dbNow.getTime() + 1 * 24 * 60 * 60 * 1000);
-    }
+    const nextStage = scheduleResult.nextStage;
+    const nextDueAt = scheduleResult.nextDueAt;
 
     const qualifyingLocalDate = computeQualifyingLocalDate(dbNow, account.timezone);
 
@@ -310,6 +306,44 @@ export async function respondSrsReview(
         rowVersion: card.rowVersion + 1n,
       },
     });
+
+    // Update or initialize SrsMemoryState for MEANING skill
+    const existingMemoryState = await tx.srsMemoryState.findUnique({
+      where: {
+        cardId_skill: {
+          cardId: card.id,
+          skill: 'MEANING',
+        },
+      },
+    });
+
+    if (existingMemoryState) {
+      await tx.srsMemoryState.update({
+        where: { id: existingMemoryState.id },
+        data: {
+          schedulerVersion: 'POLICY_B',
+          state: nextStage,
+          dueAt: nextDueAt,
+          lastReviewedAt: dbNow,
+          count: existingMemoryState.count + 1,
+          lapse: input.rating === 'FORGOTTEN' ? existingMemoryState.lapse + 1 : existingMemoryState.lapse,
+          rowVersion: existingMemoryState.rowVersion + 1n,
+        },
+      });
+    } else {
+      await tx.srsMemoryState.create({
+        data: {
+          cardId: card.id,
+          skill: 'MEANING',
+          schedulerVersion: 'POLICY_B',
+          state: nextStage,
+          dueAt: nextDueAt,
+          lastReviewedAt: dbNow,
+          count: 1,
+          lapse: input.rating === 'FORGOTTEN' ? 1 : 0,
+        },
+      });
+    }
 
     // Record immutable review operation
     const reviewOp = await tx.srsReviewOperation.create({

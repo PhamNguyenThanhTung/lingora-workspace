@@ -363,6 +363,44 @@ export async function startIsolatedServer(port = 3019) {
           return;
         }
 
+        const srsSessionMatch = url.pathname.match(
+          /^\/api\/srs\/sessions\/([0-9a-f-]{36})(?:\/(reveal|reviews|complete))?$/
+        );
+        if (srsSessionMatch) {
+          const sessionId = srsSessionMatch[1];
+          const subAction = srsSessionMatch[2];
+          let handler = null;
+          if (!subAction && req.method === 'GET') {
+            handler = modules.srsSessionDetailApi.GET;
+          } else if (subAction === 'reveal' && req.method === 'POST') {
+            handler = modules.srsSessionRevealApi.POST;
+          } else if (subAction === 'reviews' && req.method === 'POST') {
+            handler = modules.srsSessionReviewsApi.POST;
+          } else if (subAction === 'complete' && req.method === 'POST') {
+            handler = modules.srsSessionCompleteApi.POST;
+          }
+          if (handler) {
+            const chunks = [];
+            for await (const chunk of req) chunks.push(chunk);
+            const body = Buffer.concat(chunks);
+            const response = await handler(
+              new Request(url, {
+                method: req.method,
+                headers: req.headers,
+                ...(body.length ? { body } : {}),
+              }),
+              { params: Promise.resolve({ sessionId }) }
+            );
+            response.headers.forEach((value, key) => {
+              if (key !== 'set-cookie') res.setHeader(key, value);
+            });
+            writeCookies();
+            res.statusCode = response.status;
+            res.end(await response.text());
+            return;
+          }
+        }
+
         const handler = {
           '/api/auth/login': modules.login.POST,
           '/api/auth/logout': modules.logout.POST,
@@ -370,6 +408,7 @@ export async function startIsolatedServer(port = 3019) {
           '/api/learner/context': modules.context.GET,
           '/api/learner/review/start': modules.reviewStartApi.POST,
           '/api/learner/review/respond': modules.reviewRespondApi.POST,
+          '/api/srs/sessions': modules.srsSessionsApi.POST,
         }[url.pathname];
 
         if (handler) {

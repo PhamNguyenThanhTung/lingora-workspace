@@ -47,6 +47,7 @@ model Account {
   createdVocabulary    VocabularyConcept[]   @relation("VocabularyCreatedBy")
   srsCards             SrsCard[]             @relation("SrsCardLearner")
   srsReviewOperations  SrsReviewOperation[]  @relation("SrsReviewOperationLearner")
+  srsReviewSessions    SrsReviewSession[]    @relation("SrsReviewSessionLearner")
 
   createdItems         ItemIdentity[]        @relation("ItemIdentityCreatedBy")
   createdItemRevs      ItemRevision[]        @relation("ItemRevisionCreatedBy")
@@ -599,6 +600,7 @@ model LearningContext {
   lessonCompletions    LessonCompletion[]
   assessmentAttempts   AssessmentAttempt[]
   learningPlans        LearningPlan[]
+  srsReviewSessions    SrsReviewSession[]
 
   @@unique([learnerId, languageId], map: "learning_contexts_learner_id_language_id_key")
   @@map("learning_contexts")
@@ -744,6 +746,7 @@ model SrsCard {
   sourceLessonVocabulary  LessonVocabularyLink? @relation("SrsCardSourceLink", fields: [sourceLessonVocabularyId], references: [id], onUpdate: NoAction, onDelete: Restrict)
 
   reviewOperations        SrsReviewOperation[]
+  memoryStates            SrsMemoryState[]
 
   @@unique([learnerId, vocabularyId], map: "srs_cards_learner_id_vocabulary_id_key")
   @@unique([id, learnerId], map: "srs_cards_id_learner_id_key")
@@ -767,6 +770,7 @@ model SrsReviewOperation {
   reviewedAt            DateTime            @default(now()) @map("reviewed_at") @db.Timestamptz(6)
   qualifyingLocalDate   DateTime?           @map("qualifying_local_date") @db.Date
   inputHash             String              @map("input_hash") @db.Text
+  sessionResponse       Json?               @map("session_response") @db.JsonB
   createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
 
   card                  SrsCard             @relation(fields: [cardId, learnerId], references: [id, learnerId], onUpdate: NoAction, onDelete: Restrict, map: "srs_review_operations_card_learner_fkey")
@@ -776,6 +780,53 @@ model SrsReviewOperation {
 
   @@unique([learnerId, operationKey], map: "srs_review_operations_learner_id_operation_key_key")
   @@map("srs_review_operations")
+  @@schema("app")
+}
+
+model SrsMemoryState {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cardId           String    @map("card_id") @db.Uuid
+  skill            String    @default("MEANING") @db.Text
+  schedulerVersion String    @default("POLICY_B") @map("scheduler_version") @db.Text
+  state            Int       @default(1) @db.SmallInt
+  stability        Float?    @db.DoublePrecision
+  difficulty       Float?    @db.DoublePrecision
+  dueAt            DateTime  @map("due_at") @db.Timestamptz(6)
+  lastReviewedAt   DateTime? @map("last_reviewed_at") @db.Timestamptz(6)
+  count            Int       @default(0) @db.Integer
+  lapse            Int       @default(0) @db.Integer
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion       BigInt    @default(1) @map("row_version")
+
+  card             SrsCard   @relation(fields: [cardId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@unique([cardId, skill], map: "srs_memory_states_card_id_skill_key")
+  @@index([dueAt], map: "srs_memory_states_due_at_idx")
+  @@map("srs_memory_states")
+  @@schema("app")
+}
+
+model SrsReviewSession {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  learnerId      String           @map("learner_id") @db.Uuid
+  contextId      String?          @map("context_id") @db.Uuid
+  status         String           @default("ACTIVE") @db.Text
+  sessionLimit   Int              @default(20) @map("session_limit")
+  cardIds        Json             @default("[]") @map("card_ids") @db.JsonB
+  currentIndex   Int              @default(0) @map("current_index")
+  completedCount Int              @default(0) @map("completed_count")
+  expiresAt      DateTime         @map("expires_at") @db.Timestamptz(6)
+  completedAt    DateTime?        @map("completed_at") @db.Timestamptz(6)
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion     BigInt           @default(1) @map("row_version")
+
+  learner        Account          @relation("SrsReviewSessionLearner", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+  context        LearningContext? @relation(fields: [contextId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@index([learnerId, createdAt], map: "srs_review_sessions_learner_id_idx")
+  @@map("srs_review_sessions")
   @@schema("app")
 }
 

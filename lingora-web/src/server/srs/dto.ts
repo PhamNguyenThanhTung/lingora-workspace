@@ -16,6 +16,7 @@ export interface SrsPromptCardDto {
   partOfSpeech: string | null;
   example: string | null;
   meaningLabels: Record<string, string>;
+  audioUrl?: string | null;
 }
 
 export interface ReviewStartResultDto {

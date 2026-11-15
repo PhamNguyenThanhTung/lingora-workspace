@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import type { SrsPromptCardDto } from '../../server/srs/dto.ts';
+import type { SrsFrontPromptCardDto, SrsRevealedCardDto } from '../../server/srs/session-service.ts';
 
 interface ReviewViewProps {
   learner?: {
@@ -14,174 +14,259 @@ interface ReviewViewProps {
 type ReviewState = 'initial' | 'prompt' | 'done';
 
 interface PendingOperation {
-  token: string;
+  sessionId: string;
+  cardId: string;
   operationKey: string;
   rating: 'REMEMBERED' | 'FORGOTTEN';
 }
 
+interface SessionProgress {
+  currentIndex: number;
+  completedCount: number;
+  total: number;
+}
+
+interface SessionSnapshot {
+  sessionId: string;
+  status: 'ACTIVE' | 'COMPLETED' | 'EXPIRED';
+  progress: SessionProgress;
+  currentItem?: SrsFrontPromptCardDto | null;
+}
+
+class ReviewRequestError extends Error {}
+
+const SESSION_STORAGE_KEY = 'lingora_srs_session_id';
+
 export function ReviewView({ learner, authError }: ReviewViewProps) {
   const [state, setState] = useState<ReviewState>('initial');
-  const [card, setCard] = useState<SrsPromptCardDto | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [card, setCard] = useState<SrsFrontPromptCardDto | null>(null);
+  const [revealedCard, setRevealedCard] = useState<SrsRevealedCardDto | null>(null);
+  const [progress, setProgress] = useState<SessionProgress>({ currentIndex: 0, completedCount: 0, total: 0 });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSessionExpired, setIsSessionExpired] = useState(false);
-  const [sessionCount, setSessionCount] = useState(0);
+  const [needsSync, setNeedsSync] = useState(false);
   const [pendingOp, setPendingOp] = useState<PendingOperation | null>(null);
   const [authErrorMessage, setAuthErrorMessage] = useState<string | null>(authError || null);
 
-  // Double submit guard & retry idempotency
   const busyRef = useRef(false);
-  const pendingOpRef = useRef<PendingOperation | null>(null);
+  const retryRef = useRef<(() => void) | null>(null);
+  const rateRememberedBtnRef = useRef<HTMLButtonElement | null>(null);
+  const answerSectionRef = useRef<HTMLDivElement | null>(null);
+  const isRevealed = revealedCard !== null;
+  const cardActionDisabled = isSubmitting || !!pendingOp || isSessionExpired || needsSync || !!authErrorMessage;
 
-  // Clear pending operation on mount/unmount
-  useEffect(() => {
-    return () => {
-      busyRef.current = false;
-      pendingOpRef.current = null;
-    };
-  }, []);
+  function expire() {
+    window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    setIsSessionExpired(true);
+    setNeedsSync(false);
+    setPendingOp(null);
+    setErrorMessage('Phiên ôn tập đã hết hạn. Vui lòng bắt đầu phiên mới.');
+  }
 
-  async function handleStartReview() {
+  function applySession(data: SessionSnapshot) {
+    setPendingOp(null);
+    setNeedsSync(false);
+    setRevealedCard(null);
+    setProgress(data.progress);
+    if (data.status === 'EXPIRED') {
+      expire();
+    } else if (data.status === 'COMPLETED') {
+      window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      setState('done');
+      setCard(null);
+      setSessionId(null);
+    } else if (data.currentItem) {
+      window.sessionStorage.setItem(SESSION_STORAGE_KEY, data.sessionId);
+      setSessionId(data.sessionId);
+      setCard(data.currentItem);
+      setState('prompt');
+    }
+  }
+
+  async function runAction(action: () => Promise<void>, error: string) {
     if (busyRef.current) return;
     busyRef.current = true;
     setIsSubmitting(true);
     setErrorMessage(null);
-    setIsSessionExpired(false);
-    setPendingOp(null);
-    pendingOpRef.current = null;
-    setSessionCount(0);
-
+    retryRef.current = () => { void runAction(action, error); };
     try {
-      const response = await fetch('/api/learner/review/start', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Origin: window.location.origin,
-        },
-        body: JSON.stringify({}),
-      });
-
-      const result = await response.json();
-      if (!response.ok) {
-        if (response.status === 401) {
-          setAuthErrorMessage(result.error?.message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-          return;
-        }
-        setErrorMessage(result.error?.message || 'Không thể bắt đầu phiên ôn tập. Vui lòng thử lại.');
-        return;
-      }
-
-      if (result.data?.done || !result.data?.card) {
-        setState('done');
-        setCard(null);
-        setToken(null);
-      } else {
-        setState('prompt');
-        setCard(result.data.card);
-        setToken(result.data.token);
-        setIsRevealed(false);
-      }
-    } catch {
-      setErrorMessage('Lỗi kết nối khi khởi tạo phiên ôn tập. Vui lòng thử lại.');
+      await action();
+      retryRef.current = null;
+    } catch (e) {
+      setErrorMessage(e instanceof ReviewRequestError ? e.message : error);
     } finally {
       busyRef.current = false;
       setIsSubmitting(false);
     }
   }
 
-  async function submitRating(op: PendingOperation) {
-    if (busyRef.current) return;
-    busyRef.current = true;
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    setPendingOp(op);
-    pendingOpRef.current = op;
+  function handleAuthError(status: number, message: string | undefined) {
+    if (status !== 401 && status !== 403) return false;
+    window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    setPendingOp(null);
+    setAuthErrorMessage(message || 'Bạn không thể tiếp tục phiên ôn tập. Vui lòng đăng nhập lại.');
+    return true;
+  }
 
-    try {
-      const response = await fetch('/api/learner/review/respond', {
+  async function refreshSession(id: string) {
+    setNeedsSync(true);
+    setPendingOp(null);
+    setRevealedCard(null);
+    retryRef.current = () => { void runAction(() => refreshSession(id), 'Không thể tải lại phiên ôn tập.'); };
+    const response = await fetch(`/api/srs/sessions/${id}`);
+    const result = await response.json();
+    if (!response.ok) {
+      if (handleAuthError(response.status, result.error?.message)) return;
+      if (response.status === 404) {
+        window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        setNeedsSync(false);
+        setState('initial');
+        setCard(null);
+        setSessionId(null);
+        return;
+      }
+      throw new ReviewRequestError(result.error?.message || 'Không thể tải lại phiên ôn tập.');
+    }
+    applySession(result.data);
+  }
+
+  useEffect(() => {
+    if (!learner || authError) return;
+    const savedSessionId = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (savedSessionId) {
+      void runAction(() => refreshSession(savedSessionId), 'Không thể tải lại phiên ôn tập.');
+    }
+  }, [learner?.id, authError]);
+
+  function handleStartReview() {
+    void runAction(async () => {
+      setIsSessionExpired(false);
+      const response = await fetch('/api/srs/sessions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Origin: window.location.origin,
-        },
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: 20 }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        if (handleAuthError(response.status, result.error?.message)) return;
+        throw new ReviewRequestError(result.error?.message || 'Không thể bắt đầu phiên ôn tập.');
+      }
+      applySession(result.data);
+    }, 'Lỗi kết nối khi khởi tạo phiên ôn tập. Vui lòng thử lại.');
+  }
+
+  async function handleSessionError(response: Response, error: { code?: string; message?: string } | undefined, id: string) {
+    if (handleAuthError(response.status, error?.message)) return;
+    if (response.status === 409) {
+      if (error?.code === 'SESSION_EXPIRED') {
+        expire();
+        return;
+      }
+      if (error?.code === 'STALE_OPERATION' || error?.code === 'SESSION_COMPLETED' || error?.code === 'OPERATION_CONFLICT') {
+        await refreshSession(id);
+        return;
+      }
+    }
+    throw new ReviewRequestError(error?.message || 'Không thể cập nhật phiên ôn tập.');
+  }
+
+  function handleReveal() {
+    if (!sessionId || !card || cardActionDisabled || isRevealed) return;
+    void runAction(async () => {
+      const response = await fetch(`/api/srs/sessions/${sessionId}/reveal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cardId: card.cardId }),
+      });
+      const result = await response.json();
+      if (!response.ok) return handleSessionError(response, result.error, sessionId);
+      setRevealedCard(result.data);
+    }, 'Lỗi kết nối khi lật thẻ. Vui lòng thử lại.');
+  }
+
+  useEffect(() => {
+    if (isRevealed && !isSubmitting) {
+      (rateRememberedBtnRef.current ?? answerSectionRef.current)?.focus();
+    }
+  }, [isRevealed, isSubmitting]);
+
+  function handleRate(rating: PendingOperation['rating']) {
+    if (!sessionId || !card || cardActionDisabled || !isRevealed || busyRef.current) return;
+    const id = sessionId;
+    const op = { cardId: card.cardId, operationKey: crypto.randomUUID(), rating };
+    setPendingOp({ ...op, sessionId: id });
+
+    void runAction(async () => {
+      const response = await fetch(`/api/srs/sessions/${id}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(op),
       });
-
       const result = await response.json();
-      if (!response.ok) {
-        if (response.status === 401) {
-          setAuthErrorMessage(result.error?.message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-          setPendingOp(null);
-          pendingOpRef.current = null;
-          return;
-        }
-        if (
-          (response.status === 409 && (result.error?.code === 'SESSION_EXPIRED' || result.error?.code === 'STALE_OPERATION')) ||
-          (response.status === 400 && (result.error?.code === 'INVALID_TOKEN' || result.error?.code === 'CARD_NOT_DUE'))
-        ) {
-          setIsSessionExpired(true);
-          setPendingOp(null);
-          pendingOpRef.current = null;
-        }
-        setErrorMessage(result.error?.message || 'Không thể ghi nhận đánh giá. Vui lòng thử lại.');
-        return;
-      }
-
-      // Success: clear pending operation
-      setPendingOp(null);
-      pendingOpRef.current = null;
-      setSessionCount((prev) => prev + 1);
-
-      if (result.data?.done || !result.data?.card) {
-        setState('done');
-        setCard(null);
-        setToken(null);
-      } else {
-        setState('prompt');
-        setCard(result.data.card);
-        setToken(result.data.token);
-        setIsRevealed(false);
-      }
-    } catch {
-      setErrorMessage('Lỗi kết nối mạng khi gửi đánh giá. Vui lòng nhấn "Thử lại gửi kết quả".');
-    } finally {
-      busyRef.current = false;
-      setIsSubmitting(false);
-    }
+      if (!response.ok) return handleSessionError(response, result.error, id);
+      applySession(result.data);
+    }, 'Lỗi kết nối mạng khi gửi đánh giá. Vui lòng nhấn "Thử lại gửi kết quả".');
   }
 
-  function handleRate(rating: 'REMEMBERED' | 'FORGOTTEN') {
-    if (!token || isSubmitting || pendingOp !== null || isSessionExpired) return;
-    const op: PendingOperation = {
-      token,
-      operationKey: crypto.randomUUID(),
-      rating,
-    };
-    void submitRating(op);
-  }
-
-  function handleRetry() {
-    if (pendingOpRef.current) {
-      void submitRating(pendingOpRef.current);
-    } else {
-      void handleStartReview();
-    }
+  function handleComplete() {
+    if (!sessionId || cardActionDisabled) return;
+    const id = sessionId;
+    void runAction(async () => {
+      const response = await fetch(`/api/srs/sessions/${id}/complete`, { method: 'POST' });
+      const result = await response.json();
+      if (!response.ok) return handleSessionError(response, result.error, id);
+      applySession(result.data);
+    }, 'Không thể kết thúc phiên ôn tập. Vui lòng thử lại.');
   }
 
   function handleRestart() {
+    window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
     setState('initial');
+    setSessionId(null);
     setCard(null);
-    setToken(null);
-    setIsRevealed(false);
-    setErrorMessage(null);
-    setIsSessionExpired(false);
+    setRevealedCard(null);
     setPendingOp(null);
-    pendingOpRef.current = null;
-    setSessionCount(0);
-    void handleStartReview();
+    handleStartReview();
   }
+
+  // S5-04 / Finding 5: Accessible keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Do not intercept input fields
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      // When focus is on a button or link, let native Enter or Space activate THAT element!
+      const isFocusedOnActionable =
+        e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement;
+
+      if (state === 'prompt' && !cardActionDisabled) {
+        if (!isRevealed) {
+          // If not focused on an actionable element, Space or Enter triggers reveal
+          if (!isFocusedOnActionable && (e.key === ' ' || e.key === 'Enter')) {
+            e.preventDefault();
+            void handleReveal();
+          }
+        } else {
+          // Rating shortcuts:
+          // '1' or 'f' / 'F' triggers FORGOTTEN
+          // '2' or 'r' / 'R' triggers REMEMBERED
+          // Note: Enter does NOT trigger REMEMBERED globally to avoid hijacking focused buttons!
+          if (e.key === '1' || e.key === 'f' || e.key === 'F') {
+            e.preventDefault();
+            handleRate('FORGOTTEN');
+          } else if (e.key === '2' || e.key === 'r' || e.key === 'R') {
+            e.preventDefault();
+            handleRate('REMEMBERED');
+          }
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
 
   return (
     <div
@@ -192,6 +277,21 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
         flexDirection: 'column',
       }}
     >
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @media (prefers-reduced-motion: reduce) {
+              * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+              }
+            }
+          `,
+        }}
+      />
+
       {/* Header */}
       <header
         className="app-header"
@@ -220,14 +320,22 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
           >
             Lingora
           </a>
-          <span className="badge badge-active" style={{ whiteSpace: 'nowrap' }}>Ôn từ vựng</span>
+          <span className="badge badge-active" style={{ whiteSpace: 'nowrap' }}>
+            Ôn từ vựng
+          </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <a
             href="/home"
             id="navHomeBtn"
             className="btn btn-outline"
-            style={{ textDecoration: 'none', fontSize: '14px', padding: '6px 14px', whiteSpace: 'nowrap', flexShrink: 0 }}
+            style={{
+              textDecoration: 'none',
+              fontSize: '14px',
+              padding: '6px 14px',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
           >
             Về trang chủ
           </a>
@@ -279,18 +387,18 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                 type="button"
                 id="retryReviewBtn"
                 className="btn btn-primary"
-                onClick={handleRetry}
+                onClick={() => retryRef.current?.()}
                 disabled={isSubmitting}
                 style={{ marginTop: '10px' }}
               >
-                {isSubmitting ? 'Đang thử lại...' : (pendingOp ? 'Thử lại gửi kết quả' : 'Thử lại')}
+                {isSubmitting ? 'Đang thử lại...' : pendingOp ? 'Thử lại gửi kết quả' : 'Thử lại'}
               </button>
             )}
           </div>
         )}
 
         {/* State 1: Initial */}
-        {state === 'initial' && !authErrorMessage && !authError && (
+        {state === 'initial' && !authErrorMessage && !authError && !needsSync && !isSessionExpired && (
           <div
             id="srsInitialBox"
             style={{
@@ -320,7 +428,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
           </div>
         )}
 
-        {/* State 2: Active Prompt Card */}
+        {/* State 2: Active Prompt Flashcard */}
         {state === 'prompt' && card && (
           <div
             id="srsReviewCard"
@@ -346,11 +454,21 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                 color: 'var(--text-muted)',
               }}
             >
-              <span id="sessionCounter">Đã ôn: {sessionCount} từ</span>
-              <span>Phiên học đang diễn ra</span>
+              <span id="sessionCounter">
+                Đã ôn: {progress.completedCount} / {progress.total} từ
+              </span>
+              <button
+                type="button"
+                id="completeReviewBtn"
+                className="btn btn-outline"
+                onClick={handleComplete}
+                disabled={cardActionDisabled}
+              >
+                Kết thúc phiên
+              </button>
             </div>
 
-            {/* Prompt Word */}
+            {/* Prompt Word / Front of Flashcard */}
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
               <div
                 className="srs-canonical-form"
@@ -364,67 +482,36 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                 {card.canonicalForm}
               </div>
 
-              {card.phonetic && (
-                <div
-                  className="srs-phonetic"
-                  style={{
-                    fontSize: '18px',
-                    color: 'var(--text-muted)',
-                    fontFamily: 'monospace',
-                    marginBottom: '6px',
-                  }}
-                >
-                  /{card.phonetic}/
-                </div>
-              )}
-
-              {card.partOfSpeech && (
-                <span
-                  className="srs-part-of-speech badge badge-active"
-                  style={{ fontSize: '13px' }}
-                >
-                  {card.partOfSpeech}
-                </span>
-              )}
-
-              {card.example && (
-                <div
-                  className="srs-example"
-                  style={{
-                    marginTop: '16px',
-                    fontStyle: 'italic',
-                    color: 'var(--text-muted)',
-                    fontSize: '15px',
-                  }}
-                >
-                  &ldquo;{card.example}&rdquo;
-                </div>
-              )}
             </div>
 
-            {/* Reveal Answer Section */}
-            {!isRevealed ? (
+            {/* Reveal Answer / Flip Card Section */}
+            {!revealedCard ? (
               <div style={{ textAlign: 'center', marginTop: '12px' }}>
                 <button
                   type="button"
                   id="revealAnswerBtn"
                   className="btn btn-outline"
-                  onClick={() => setIsRevealed(true)}
-                  disabled={isSubmitting || !!pendingOp || isSessionExpired}
+                  onClick={handleReveal}
+                  disabled={cardActionDisabled}
                   style={{ width: '100%', padding: '12px', fontWeight: 600 }}
+                  aria-expanded="false"
+                  aria-controls="srsAnswerSection"
                 >
-                  Xem nghĩa
+                  Lật thẻ (Xem nghĩa)
                 </button>
               </div>
             ) : (
               <div
                 id="srsAnswerSection"
+                ref={answerSectionRef}
+                tabIndex={-1}
                 style={{
                   backgroundColor: 'var(--canvas-bg)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-sm, 6px)',
                   padding: '20px',
                   marginTop: '10px',
+                  outline: 'none',
                 }}
               >
                 <div style={{ marginBottom: '16px' }}>
@@ -432,9 +519,43 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                     Ý NGHĨA
                   </div>
                   <div className="srs-meaning" style={{ fontSize: '18px', fontWeight: 600 }}>
-                    {card.meaningLabels.vi || Object.values(card.meaningLabels)[0] || '(Không có nghĩa)'}
+                    {revealedCard.meaningLabels.vi || Object.values(revealedCard.meaningLabels)[0] || '(Không có nghĩa)'}
                   </div>
                 </div>
+
+                {revealedCard.phonetic && (
+                  <div
+                    className="srs-phonetic"
+                    style={{
+                      fontSize: '18px',
+                      color: 'var(--text-muted)',
+                      fontFamily: 'monospace',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    /{revealedCard.phonetic}/
+                  </div>
+                )}
+
+                {revealedCard.partOfSpeech && (
+                  <span className="srs-part-of-speech badge badge-active" style={{ fontSize: '13px' }}>
+                    {revealedCard.partOfSpeech}
+                  </span>
+                )}
+
+                {revealedCard.example && (
+                  <div
+                    className="srs-example"
+                    style={{
+                      marginTop: '16px',
+                      fontStyle: 'italic',
+                      color: 'var(--text-muted)',
+                      fontSize: '15px',
+                    }}
+                  >
+                    &ldquo;{revealedCard.example}&rdquo;
+                  </div>
+                )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '20px' }}>
                   <button
@@ -442,9 +563,10 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                     id="rateForgottenBtn"
                     className="btn btn-secondary"
                     onClick={() => handleRate('FORGOTTEN')}
-                    disabled={isSubmitting || !!pendingOp || isSessionExpired}
+                    disabled={cardActionDisabled}
                     style={{
                       padding: '12px',
+                      minHeight: '44px',
                       fontWeight: 600,
                       color: 'var(--danger-red, #dc2626)',
                       border: '1px solid var(--danger-red, #dc2626)',
@@ -456,10 +578,11 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                   <button
                     type="button"
                     id="rateRememberedBtn"
+                    ref={rateRememberedBtnRef}
                     className="btn btn-primary"
                     onClick={() => handleRate('REMEMBERED')}
-                    disabled={isSubmitting || !!pendingOp || isSessionExpired}
-                    style={{ padding: '12px', fontWeight: 600 }}
+                    disabled={cardActionDisabled}
+                    style={{ padding: '12px', minHeight: '44px', fontWeight: 600 }}
                   >
                     {isSubmitting ? 'Đang lưu...' : 'Đã nhớ'}
                   </button>
@@ -502,8 +625,8 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
               Hoàn thành ôn tập!
             </h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '24px', lineHeight: 1.5 }}>
-              {sessionCount > 0
-                ? `Bạn đã hoàn tất ôn tập ${sessionCount} từ vựng trong phiên này. Không còn từ nào cần ôn tập lúc này.`
+              {progress.total > 0
+                ? `Bạn đã hoàn tất ôn tập ${progress.completedCount} từ vựng trong phiên này.`
                 : 'Hiện tại bạn không có từ vựng nào đến hạn ôn tập.'}
             </p>
             <a

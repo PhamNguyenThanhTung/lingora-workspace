@@ -160,14 +160,12 @@ test('P5 SRS UI: Due card progression: prompt -> reveal -> rate -> next card -> 
     await page.locator('#srsReviewCard').waitFor({ state: 'visible' });
     const word1 = await page.locator('.srs-canonical-form').textContent();
     assert.match(word1, /Hello/);
-    const phonetic1 = await page.locator('.srs-phonetic').textContent();
-    assert.match(phonetic1, /həˈləʊ/);
-    const example1 = await page.locator('.srs-example').textContent();
-    assert.match(example1, /Hello, how are you today/);
+    assert.equal(await page.locator('.srs-phonetic, .srs-example, .srs-meaning').count(), 0);
 
-    // Reveal answer
     await page.locator('#revealAnswerBtn').click();
     await page.locator('#srsAnswerSection').waitFor({ state: 'visible' });
+    assert.match(await page.locator('.srs-phonetic').textContent(), /həˈləʊ/);
+    assert.match(await page.locator('.srs-example').textContent(), /Hello, how are you today/);
     const meaning1 = await page.locator('.srs-meaning').textContent();
     assert.match(meaning1, /Xin chào/);
 
@@ -263,7 +261,7 @@ test('P5 SRS UI R5: Network failure before response -> retains pending operation
     const capturedBodies = [];
     let shouldFail = true;
 
-    await page.route('**/api/learner/review/respond', async (route) => {
+    await page.route('**/api/srs/sessions/*/reviews', async (route) => {
       const body = route.request().postDataJSON();
       capturedBodies.push(body);
       if (shouldFail) {
@@ -300,7 +298,7 @@ test('P5 SRS UI R5: Network failure before response -> retains pending operation
     // Assert that the exact same operationKey was used on retry
     assert.equal(capturedBodies.length, 2);
     assert.equal(capturedBodies[0].operationKey, capturedBodies[1].operationKey);
-    assert.equal(capturedBodies[0].token, capturedBodies[1].token);
+    assert.equal(capturedBodies[0].cardId, capturedBodies[1].cardId);
     assert.equal(capturedBodies[0].rating, capturedBodies[1].rating);
 
     // Only 1 operation recorded in DB
@@ -336,7 +334,7 @@ test('P5 SRS UI R5: POST committed on server but response dropped -> retry idemp
     await page.locator('#srsAnswerSection').waitFor({ state: 'visible' });
 
     let requestCount = 0;
-    await page.route('**/api/learner/review/respond', async (route) => {
+    await page.route('**/api/srs/sessions/*/reviews', async (route) => {
       requestCount++;
       if (requestCount === 1) {
         // Fetch to actual server to let it commit in DB, but return 500 error to browser client
@@ -394,13 +392,13 @@ test('P5 SRS UI R5: Invalid or expired token locks card and displays restart but
     await page.locator('#srsReviewCard').waitFor({ state: 'visible' });
     await page.locator('#revealAnswerBtn').click();
 
-    // Mock 400 INVALID_TOKEN response
-    await page.route('**/api/learner/review/respond', async (route) => {
+    // Mock 409 SESSION_EXPIRED response
+    await page.route('**/api/srs/sessions/*/reviews', async (route) => {
       await route.fulfill({
-        status: 400,
+        status: 409,
         contentType: 'application/json',
         body: JSON.stringify({
-          error: { code: 'INVALID_TOKEN', message: 'Mã xác thực phiên ôn tập không hợp lệ.' },
+          error: { code: 'SESSION_EXPIRED', message: 'Phiên ôn tập đã hết hạn.' },
         }),
       });
     });
@@ -417,14 +415,52 @@ test('P5 SRS UI R5: Invalid or expired token locks card and displays restart but
     assert.equal(await page.locator('#rateForgottenBtn').isDisabled(), true);
 
     // Unroute and click restart
-    await page.unroute('**/api/learner/review/respond');
+    await page.unroute('**/api/srs/sessions/*/reviews');
     await page.locator('#restartReviewBtn').click();
 
     // Re-starts fresh review session
     await page.locator('#srsReviewCard').waitFor({ state: 'visible' });
     assert.equal(await page.locator('#restartReviewBtn').isVisible(), false);
     const counterText = await page.locator('#sessionCounter').textContent();
-    assert.match(counterText, /Đã ôn: 0 từ/, 'Session count must be reset to 0 on new/restarted session');
+    assert.match(counterText, /Đã ôn:\s*0\s*\/\s*1\s*từ/, 'Session count must be reset to 0 on new/restarted session');
+  });
+});
+
+test('P5 SRS UI: a stale rating refreshes the prompt and can end the session', async () => {
+  const cardIds = [randomUUID(), randomUUID()];
+  server.fixture.srsCards = cardIds.map((id, index) => ({
+    id,
+    learnerId: server.fixture.account.id,
+    vocabularyId: `vocab-${index + 1}`,
+    stage: 1,
+    dueAt: new Date(Date.now() - (2 - index) * 60_000),
+    lastReviewedAt: null,
+    enrollmentSource: 'CORE_COMPLETION',
+    rowVersion: 1n,
+  }));
+
+  await withLearner(async page => {
+    await page.goto(`${origin}/review`);
+    await page.locator('#startReviewBtn').click();
+    await page.locator('#revealAnswerBtn').click();
+    await page.locator('#rateRememberedBtn').waitFor();
+
+    // Another session has already reviewed this card.
+    server.fixture.srsCards[0].dueAt = new Date(Date.now() + 60_000);
+    await page.locator('#rateRememberedBtn').click();
+    await page.getByText('Goodbye', { exact: true }).waitFor();
+    await page.locator('#revealAnswerBtn').click();
+    await page.getByText('Tạm biệt', { exact: true }).waitFor();
+    assert.equal(await page.locator('#rateRememberedBtn').isEnabled(), true);
+
+    const [completed] = await Promise.all([
+      page.waitForResponse(response => response.url().endsWith('/complete') && response.request().method() === 'POST'),
+      page.locator('#completeReviewBtn').click(),
+    ]);
+    assert.equal(completed.status(), 200);
+    assert.equal((await completed.json()).data.progress.completedCount, 0);
+    await page.locator('#srsDoneBox').waitFor();
+    assert.equal(server.fixture.srsReviewOperations.length, 0);
   });
 });
 
