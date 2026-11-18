@@ -35,6 +35,18 @@ export interface LessonContentProps {
     | null;
   className?: string;
   locale?: string;
+  onStartWritingPractice?: (character: {
+    characterId: string;
+    blockKey?: string;
+    glyph: string;
+    scriptType?: string;
+    strokeCount?: number;
+    meaning?: string;
+    primaryReading?: string;
+    romanization?: string;
+    showStrokeAnimation?: boolean;
+    guidedWriting?: boolean;
+  }) => void;
 }
 
 function renderTextRun(run: TextRun, key: number | string): React.ReactNode {
@@ -469,6 +481,223 @@ function renderGrammarBlock(block: { content: GrammarContent }, key: string): Re
   );
 }
 
+function renderCharacterBlock(
+  block: any,
+  key: string,
+  onStartWritingPractice?: (char: any) => void
+): React.ReactNode {
+  const content = block.content || block;
+  const glyph = content.glyph || block.glyph || '';
+  const scriptType = content.scriptType || block.scriptType || '';
+  const strokeCount = content.strokeCount ?? block.strokeCount ?? 0;
+  const showMeaning = content.showMeaning ?? block.showMeaning ?? false;
+  const showReading = content.showReading ?? block.showReading ?? false;
+  const showStrokeAnimation = content.showStrokeAnimation ?? block.showStrokeAnimation ?? false;
+  const guidedWriting = content.guidedWriting ?? block.guidedWriting ?? false;
+  const meaning = showMeaning ? (content.meaning || block.meaning) : null;
+  const primaryReading = showReading ? (content.primaryReading || block.primaryReading) : null;
+  const romanization = showReading ? (content.romanization || block.romanization) : null;
+
+  return h(
+    'div',
+    {
+      key,
+      id: `lesson-character-${block.blockKey}`,
+      'data-block-type': 'CHARACTER',
+      'data-block-key': block.blockKey,
+      className: 'lingora-block-character lesson-character-card',
+      style: {
+        border: '1px solid var(--border-subtle, #e2e8f0)',
+        borderRadius: '12px',
+        padding: '24px',
+        background: 'var(--surface-primary, #ffffff)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        margin: '12px 0',
+      },
+    },
+    h(
+      'div',
+      {
+        style: {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+          borderBottom: '1px solid var(--border-subtle, #f1f5f9)',
+          paddingBottom: '16px',
+        },
+      },
+      h(
+        'div',
+        {
+          style: {
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: '16px',
+          },
+        },
+        h(
+          'span',
+          {
+            id: `character-glyph-${block.blockKey}`,
+            className: 'character-glyph',
+            style: {
+              fontSize: '48px',
+              fontWeight: 700,
+              lineHeight: 1,
+              fontFamily: 'serif',
+              color: 'var(--text-primary, #0f172a)',
+            },
+          },
+          glyph
+        ),
+        h(
+          'span',
+          {
+            id: `character-script-${block.blockKey}`,
+            className: 'badge',
+            style: {
+              fontSize: '12px',
+              padding: '2px 8px',
+              borderRadius: '4px',
+              background: '#e0e7ff',
+              color: '#3730a3',
+            },
+          },
+          scriptType
+        ),
+        h(
+          'span',
+          {
+            id: `character-strokes-${block.blockKey}`,
+            className: 'badge',
+            style: {
+              fontSize: '12px',
+              padding: '2px 8px',
+              borderRadius: '4px',
+              background: '#f1f5f9',
+              color: '#334155',
+            },
+          },
+          `${strokeCount} nét`
+        )
+      ),
+      h(
+        'div',
+        {
+          style: {
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap',
+          },
+        },
+        showStrokeAnimation
+          ? h(
+              'span',
+              {
+                id: `character-badge-anim-${block.blockKey}`,
+                className: 'badge',
+                style: {
+                  fontSize: '12px',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  background: '#dcfce7',
+                  color: '#166534',
+                },
+              },
+              'Hoạt ảnh nét'
+            )
+          : null,
+        guidedWriting
+          ? h(
+              'span',
+              {
+                id: `character-badge-guided-${block.blockKey}`,
+                className: 'badge',
+                style: {
+                  fontSize: '12px',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  background: '#fef3c7',
+                  color: '#92400e',
+                },
+              },
+              'Luyện viết'
+            )
+          : null,
+        onStartWritingPractice && (guidedWriting || showStrokeAnimation)
+          ? h(
+              'button',
+              {
+                type: 'button',
+                id: `start-practice-btn-${block.blockKey}`,
+                'data-block-key': block.blockKey,
+                'data-character-id': content.characterId || block.characterId,
+                className: 'btn btn-primary practice-writing-btn',
+                onClick: () => {
+                  onStartWritingPractice({
+                    characterId: content.characterId || block.characterId,
+                    blockKey: block.blockKey,
+                    glyph,
+                    scriptType,
+                    strokeCount,
+                    meaning,
+                    primaryReading,
+                    romanization,
+                    showStrokeAnimation,
+                    guidedWriting,
+                  });
+                },
+                style: {
+                  fontSize: '12px',
+                  padding: '3px 10px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                },
+              },
+              guidedWriting ? 'Luyện viết chữ' : 'Xem thứ tự nét'
+            )
+          : null
+      )
+    ),
+    (meaning || primaryReading || romanization)
+      ? h(
+          'div',
+          {
+            style: {
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              fontSize: '14px',
+            },
+          },
+          meaning
+            ? h(
+                'div',
+                { id: `character-meaning-${block.blockKey}` },
+                h('strong', null, 'Ý nghĩa: '),
+                meaning
+              )
+            : null,
+          (primaryReading || romanization)
+            ? h(
+                'div',
+                { id: `character-reading-${block.blockKey}` },
+                h('strong', null, 'Cách đọc: '),
+                primaryReading || '',
+                romanization ? ` (${romanization})` : ''
+              )
+            : null
+        )
+      : null
+  );
+}
+
 function renderUnsupportedBlock(
   block: UnsupportedBlockDto | { blockKey?: string; type: string; originalType?: string; message?: string },
   key: string
@@ -579,6 +808,35 @@ function renderVocabularySection(
                 )
               : null
           ),
+          snap.characters?.length
+            ? h(
+                'div',
+                {
+                  className: 'vocab-character-breakdown',
+                  'aria-label': 'Các chữ trong từ',
+                  style: { display: 'flex', gap: '10px', margin: '8px 0', flexWrap: 'wrap' },
+                },
+                [...snap.characters].sort((a, b) => a.position - b.position).map((character) =>
+                  h(
+                    'span',
+                    {
+                      key: `${character.characterId}-${character.position}`,
+                      className: 'vocab-character-item',
+                      'data-character-position': character.position,
+                      style: { display: 'inline-flex', alignItems: 'baseline', gap: '5px' },
+                    },
+                    h('strong', { style: { fontSize: '20px' } }, character.glyph),
+                    h(
+                      'span',
+                      { style: { fontSize: '12px', color: 'var(--text-muted, #64748b)' } },
+                      [character.primaryReading, character.meaning]
+                        .filter((value): value is string => typeof value === 'string' && value.length > 0)
+                        .join(' · ')
+                    )
+                  )
+                )
+              )
+            : null,
           snap.partOfSpeech
             ? h(
                 'div',
@@ -984,6 +1242,9 @@ export function LessonContent(props: LessonContentProps): React.ReactElement {
             renderVocabularySection(vocabulary, props.locale)
           )
         );
+        break;
+      case 'CHARACTER':
+        renderedBlocks.push(renderCharacterBlock(block as any, key, props.onStartWritingPractice));
         break;
       case 'UNSUPPORTED':
         renderedBlocks.push(renderUnsupportedBlock(block as any, key));

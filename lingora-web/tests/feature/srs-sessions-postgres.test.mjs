@@ -8,9 +8,11 @@ import {
   getReviewSession,
   revealSessionCurrentItem,
   submitSessionReview,
+  submitSessionWritingAttempt,
   completeReviewSession,
   SrsServiceError,
 } from '../../src/server/srs/index.ts';
+import { resolveWritingCharactersForCards } from '../../src/server/srs/session-service.ts';
 import { createPracticeFixture } from './harness/practice-db-fixture.mjs';
 
 const url = process.env.SLICE11_TEST_DATABASE_URL;
@@ -738,4 +740,843 @@ test('Real PostgreSQL S5-03: completeReviewSession revalidates active learner un
     async () => completeReviewSession(f.learnerA, session.sessionId, db),
     (err) => err instanceof SrsServiceError && err.status === 403 && err.code === 'ACCOUNT_INACTIVE'
   );
+});
+
+test('Real PostgreSQL S6-09: WRITING SRS enrolls lazily, hides answers, grades each character, and schedules independently', async () => {
+  const priorEnabled = process.env.WRITING_SRS_ENABLED;
+  const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+  delete process.env.WRITING_SRS_ENABLED;
+
+  try {
+    const fixture = await createPracticeFixture(db, { writingCharacter: true, secondWritingCharacter: true });
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerA;
+    await db.vocabularyCharacter.createMany({
+      data: [
+        { vocabularyId: fixture.vocabId, characterId: fixture.characterId, position: 1 },
+        { vocabularyId: fixture.vocabId, characterId: fixture.secondCharacterId, position: 2 },
+      ],
+    });
+    const meaningDueAt = new Date(Date.now() - 60_000);
+    const card = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: fixture.vocabId,
+        stage: 2,
+        dueAt: meaningDueAt,
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+
+    const disabledSession = await createReviewSession(fixture.learnerA, {}, db);
+    assert.equal(disabledSession.currentItem.canonicalForm, 'Hello');
+    assert.equal(await db.srsMemoryState.count({ where: { cardId: card.id, skill: 'WRITING' } }), 0);
+    await assert.rejects(
+      () => submitSessionReview(fixture.learnerA, disabledSession.sessionId, { cardId: card.id, operationKey: randomUUID(), rating: 'GOOD' }, db),
+      err => err instanceof SrsServiceError && err.status === 400 && err.code === 'INVALID_RATING',
+    );
+
+    process.env.WRITING_SRS_ENABLED = 'true';
+    const enabledAt = new Date();
+    const firstSession = await createReviewSession(fixture.learnerA, {}, db);
+    assert.equal(firstSession.currentItem.canonicalForm, 'Hello');
+    const writingState = await db.srsMemoryState.findUnique({
+      where: { cardId_skill: { cardId: card.id, skill: 'WRITING' } },
+    });
+    assert.ok(writingState);
+    assert.ok(writingState.dueAt.getTime() >= enabledAt.getTime() + 86_399_000);
+    assert.equal((await db.srsCard.findUnique({ where: { id: card.id } })).dueAt.getTime(), meaningDueAt.getTime());
+
+    await db.srsCard.update({ where: { id: card.id }, data: { dueAt: new Date(Date.now() + 86_400_000) } });
+    await db.srsMemoryState.update({ where: { id: writingState.id }, data: { dueAt: new Date(Date.now() - 1000) } });
+    const session = await createReviewSession(fixture.learnerA, {}, db);
+    assert.equal(session.currentItem.skill, 'WRITING');
+    assert.deepEqual(session.currentItem.meaningLabels, { vi: 'Xin chào' });
+    assert.equal(session.currentItem.writing.characterNumber, 1);
+    assert.equal(session.currentItem.writing.characterCount, 2);
+    assert.equal(session.currentItem.writing.strokeCount, 1);
+    assert.equal('canonicalForm' in session.currentItem, false);
+    assert.equal('glyph' in session.currentItem, false);
+    assert.equal('characters' in session.currentItem, false);
+
+    const firstAttempt = {
+      cardId: card.id,
+      operationKey: randomUUID(),
+      characterNumber: 1,
+      candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+    };
+    const attempt1 = await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, firstAttempt, db);
+    assert.equal(attempt1.currentItem.writing.attemptedCharacters, 1);
+    assert.equal(attempt1.currentItem.writing.characterNumber, 2);
+    assert.equal(attempt1.currentItem.writing.revealedCharacters, null);
+    await assert.rejects(
+      () => submitSessionReview(fixture.learnerA, session.sessionId, { cardId: card.id, operationKey: randomUUID(), rating: 'GOOD' }, db),
+      err => err instanceof SrsServiceError && err.status === 409 && err.code === 'WRITING_ATTEMPT_REQUIRED',
+    );
+    assert.deepEqual(
+      await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, firstAttempt, db),
+      attempt1,
+    );
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        ...firstAttempt,
+        candidateStrokes: [{ points: [[0.9, 0.5], [0.1, 0.5]] }],
+      }, db),
+      err => err instanceof SrsServiceError && err.status === 409 && err.code === 'OPERATION_CONFLICT',
+    );
+
+    const attempt2 = await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+      cardId: card.id,
+      operationKey: randomUUID(),
+      characterNumber: 2,
+      candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+    }, db);
+    const revealed = attempt2.currentItem.writing.revealedCharacters;
+    assert.equal(revealed.length, 2);
+    assert.deepEqual(revealed.map(character => character.glyph), ['文', '字']);
+    assert.ok(revealed.every(character => Number.isInteger(character.score)));
+    const storedSession = await db.srsReviewSession.findUnique({ where: { id: session.sessionId } });
+    assert.equal(JSON.stringify(storedSession.cardIds).includes('candidateStrokes'), false);
+    assert.equal(JSON.stringify(storedSession.cardIds).includes('0.1,0.5'), false);
+
+    const beforeReviewCard = await db.srsCard.findUnique({ where: { id: card.id } });
+    const beforeWritingState = await db.srsMemoryState.findUnique({ where: { cardId_skill: { cardId: card.id, skill: 'WRITING' } } });
+    const review = { cardId: card.id, operationKey: randomUUID(), rating: 'GOOD' };
+    await assert.rejects(
+      () => submitSessionReview(fixture.learnerA, session.sessionId, review, db, { _injectFaultBeforeSessionCommit: true }),
+      /INJECTED_FAULT_BEFORE_SESSION_COMMIT/,
+    );
+    const rolledBackState = await db.srsMemoryState.findUnique({ where: { cardId_skill: { cardId: card.id, skill: 'WRITING' } } });
+    assert.equal(rolledBackState.rowVersion, beforeWritingState.rowVersion);
+    assert.equal(rolledBackState.dueAt.getTime(), beforeWritingState.dueAt.getTime());
+    assert.equal(await db.srsReviewOperation.count({ where: { cardId: card.id, skill: 'WRITING' } }), 0);
+    assert.equal(await db.xpEvent.count({ where: { learnerId: fixture.learnerA, eventType: 'SRS_REVIEW' } }), 0);
+
+    const result = await submitSessionReview(fixture.learnerA, session.sessionId, review, db);
+    assert.equal(result.recordedRating, 'GOOD');
+    assert.equal(result.status, 'COMPLETED');
+    assert.deepEqual(await submitSessionReview(fixture.learnerA, session.sessionId, review, db), result);
+
+    const afterReviewCard = await db.srsCard.findUnique({ where: { id: card.id } });
+    assert.equal(afterReviewCard.dueAt.getTime(), beforeReviewCard.dueAt.getTime());
+    const afterWriting = await db.srsMemoryState.findUnique({ where: { cardId_skill: { cardId: card.id, skill: 'WRITING' } } });
+    assert.equal(afterWriting.schedulerVersion, 'FSRS_6_TS_FSRS_5_4_2');
+    assert.equal(afterWriting.count, 1);
+    assert.ok(afterWriting.dueAt > beforeReviewCard.dueAt);
+    const operation = await db.srsReviewOperation.findUnique({ where: { learnerId_operationKey: { learnerId: fixture.learnerA, operationKey: review.operationKey } } });
+    assert.equal(operation.skill, 'WRITING');
+    assert.equal(operation.schedulerVersion, 'FSRS_6_TS_FSRS_5_4_2');
+    assert.equal(operation.rating, 'GOOD');
+    assert.ok(operation.schedulerLog);
+    assert.equal(await db.xpEvent.count({ where: { learnerId: fixture.learnerA, eventType: 'SRS_REVIEW', sourceId: operation.id } }), 1);
+  } finally {
+    if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+    else process.env.WRITING_SRS_ENABLED = priorEnabled;
+    if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+    else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+  }
+});
+
+test('Real PostgreSQL S6-10.2a: Published snapshot eligibility gates WRITING cards and protects prompt secrecy', async () => {
+  const priorEnabled = process.env.WRITING_SRS_ENABLED;
+  const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+  process.env.WRITING_SRS_ENABLED = 'true';
+  process.env.WRITING_SRS_LEARNER_IDS = f.learnerA;
+
+  try {
+    // 1. Catalogue-only: Link has empty snapshot, but catalogue has mapping
+    const catChar = await db.writingCharacter.create({
+      data: {
+        languageId: f.lang,
+        glyph: '貓',
+        scriptType: 'KANJI',
+        meaning: 'cat',
+        primaryReading: 'neko',
+        romanization: 'neko',
+        strokeCount: 1,
+      },
+    });
+    await db.characterStrokeData.create({
+      data: {
+        characterId: catChar.id,
+        version: 1,
+        strokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+        source: 'SELF_AUTHORED',
+        license: 'CC-BY-4.0',
+        provenance: { source: 'TEST' },
+      },
+    });
+    await db.vocabularyCharacter.create({
+      data: { vocabularyId: f.vocabId, characterId: catChar.id, position: 1 },
+    });
+    const cardCatOnly = await db.srsCard.create({
+      data: {
+        learnerId: f.learnerA,
+        vocabularyId: f.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() - 60_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: f.vocabLinkId, // snapshot has NO characters
+      },
+    });
+    const resolvedCatOnly = await resolveWritingCharactersForCards(db, [{
+      id: cardCatOnly.id,
+      vocabularyId: f.vocabId,
+      sourceLessonVocabularyId: f.vocabLinkId,
+      vocabulary: { canonicalForm: 'Hello', languageId: f.lang },
+    }]);
+    assert.equal(resolvedCatOnly.has(cardCatOnly.id), false, 'Catalogue-only card without snapshot characters must be ineligible');
+
+    // 2. Draft-only revision rejected
+    const vocabDraft = await db.vocabularyConcept.create({
+      data: {
+        languageId: f.lang,
+        canonicalForm: 'DraftWord',
+        normalizedForm: 'draftword',
+        senseKey: 'draft',
+        meaningLabels: { en: 'Draft' },
+        createdBy: f.teacher,
+      },
+    });
+    const draftRev = await db.lessonRevision.create({
+      data: {
+        lessonId: f.lesson,
+        revisionNo: 91,
+        assignmentId: f.assignment,
+        creationAssignmentEpisodeId: f.episode,
+        status: 'DRAFT',
+        title: { en: 'Draft Rev' },
+        createdBy: f.teacher,
+        lastEditedBy: f.teacher,
+      },
+    });
+    const linkDraft = await db.lessonVocabularyLink.create({
+      data: {
+        lessonRevisionId: draftRev.id,
+        vocabularyId: vocabDraft.id,
+        position: 1,
+        isCore: true,
+        displaySnapshot: {
+          languageId: f.lang,
+          characters: [{
+            characterId: catChar.id,
+            position: 1,
+            glyph: '貓',
+            strokeCount: 1,
+            strokeVersion: 1,
+          }],
+        },
+      },
+    });
+    const cardDraft = await db.srsCard.create({
+      data: {
+        learnerId: f.learnerA,
+        vocabularyId: vocabDraft.id,
+        stage: 1,
+        dueAt: new Date(Date.now() - 60_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: linkDraft.id,
+      },
+    });
+    const resolvedDraft = await resolveWritingCharactersForCards(db, [{
+      id: cardDraft.id,
+      vocabularyId: vocabDraft.id,
+      sourceLessonVocabularyId: linkDraft.id,
+      vocabulary: { canonicalForm: 'DraftWord', languageId: f.lang },
+    }]);
+    assert.equal(resolvedDraft.has(cardDraft.id), false, 'Draft revision link must be ineligible');
+
+    // 3. Archived publication is accepted
+    const fArch = await createPracticeFixture(db, { writingCharacter: true });
+    await db.lesson.update({
+      where: { id: fArch.lesson },
+      data: { availability: 'PLANNED', activeRevisionId: null },
+    });
+    await db.lessonRevision.update({
+      where: { id: fArch.revision },
+      data: {
+        status: 'ARCHIVED',
+        endedAt: new Date(),
+      },
+    });
+    const cardArchived = await db.srsCard.create({
+      data: {
+        learnerId: fArch.learnerA,
+        vocabularyId: fArch.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() - 60_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fArch.vocabLinkId,
+      },
+    });
+    const resolvedArchived = await resolveWritingCharactersForCards(db, [{
+      id: cardArchived.id,
+      vocabularyId: fArch.vocabId,
+      sourceLessonVocabularyId: fArch.vocabLinkId,
+      vocabulary: { canonicalForm: 'Hello', languageId: fArch.lang },
+    }]);
+    assert.equal(resolvedArchived.has(cardArchived.id), true, 'Archived published revision must be eligible');
+    assert.equal(resolvedArchived.get(cardArchived.id)?.[0]?.glyph, '文');
+
+    // 4. Invalid template geometry rejected (out of [0, 1] bounds)
+    const fBad = await createPracticeFixture(db, { writingCharacter: true });
+    await db.characterStrokeData.update({
+      where: { characterId: fBad.characterId },
+      data: { strokes: [{ points: [[0.1, 0.5], [1.5, 0.5]] }] }, // 1.5 is > 1.0 -> invalid template
+    });
+    const cardBadGeom = await db.srsCard.create({
+      data: {
+        learnerId: fBad.learnerA,
+        vocabularyId: fBad.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() - 60_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fBad.vocabLinkId,
+      },
+    });
+    const resolvedBadGeom = await resolveWritingCharactersForCards(db, [{
+      id: cardBadGeom.id,
+      vocabularyId: fBad.vocabId,
+      sourceLessonVocabularyId: fBad.vocabLinkId,
+      vocabulary: { canonicalForm: 'Hello', languageId: fBad.lang },
+    }]);
+    assert.equal(resolvedBadGeom.has(cardBadGeom.id), false, 'Invalid template geometry must be ineligible');
+
+    // 5. Chinese prompt secrecy: echoes of canonicalForm / glyph stripped pre-reveal
+    const fZh = await createPracticeFixture(db, {
+      writingCharacter: true,
+      canonicalForm: '人口',
+      meaningLabels: { vi: 'Dân số', en: 'population', zh: '人口' },
+    });
+    const cardZh = await db.srsCard.create({
+      data: {
+        learnerId: fZh.learnerA,
+        vocabularyId: fZh.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() + 86_400_000), // future MEANING
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fZh.vocabLinkId,
+      },
+    });
+    process.env.WRITING_SRS_LEARNER_IDS = fZh.learnerA;
+    await createReviewSession(fZh.learnerA, {}, db);
+    await db.srsMemoryState.update({
+      where: { cardId_skill: { cardId: cardZh.id, skill: 'WRITING' } },
+      data: { dueAt: new Date(Date.now() - 1000) },
+    });
+    const zhSession = await createReviewSession(fZh.learnerA, {}, db);
+    assert.equal(zhSession.currentItem.skill, 'WRITING');
+    assert.deepEqual(zhSession.currentItem.meaningLabels, { vi: 'Dân số', en: 'population' });
+    assert.equal('zh' in zhSession.currentItem.meaningLabels, false, 'Echoing zh meaning label must be stripped pre-reveal');
+  } finally {
+    if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+    else process.env.WRITING_SRS_ENABLED = priorEnabled;
+    if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+    else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+  }
+});
+
+test('Real PostgreSQL S6-10.2b: Independent WRITING initialization, due order merging, and limit filtering', async () => {
+  const priorEnabled = process.env.WRITING_SRS_ENABLED;
+  const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+  process.env.WRITING_SRS_ENABLED = 'true';
+  process.env.WRITING_SRS_LEARNER_IDS = f.learnerA;
+
+  try {
+    const fixture = await createPracticeFixture(db, { writingCharacter: true });
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerA;
+
+    // Card 1: Meaning is 10 days in the future
+    const futureMeaningDue = new Date(Date.now() + 10 * 86_400_000);
+    const card1 = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: fixture.vocabId,
+        stage: 1,
+        dueAt: futureMeaningDue,
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+
+    // 1. Initial review session initializes WRITING memory state independently
+    const sessionInit = await createReviewSession(fixture.learnerA, { limit: 10 }, db);
+    assert.equal(sessionInit.status, 'COMPLETED'); // no cards due yet
+    assert.equal(sessionInit.progress.total, 0);
+
+    // Verify MEANING dueAt was NOT touched
+    const card1AfterInit = await db.srsCard.findUniqueOrThrow({ where: { id: card1.id } });
+    assert.equal(card1AfterInit.dueAt.getTime(), futureMeaningDue.getTime());
+
+    // Verify WRITING memory state exists with ~1 day interval
+    const writingState = await db.srsMemoryState.findUnique({
+      where: { cardId_skill: { cardId: card1.id, skill: 'WRITING' } },
+    });
+    assert.ok(writingState);
+    assert.ok(writingState.dueAt.getTime() >= Date.now() + 86_300_000);
+
+    // Concurrent/repeat call to createReviewSession doesn't create duplicate or fail
+    const sessionRepeat = await createReviewSession(fixture.learnerA, { limit: 10 }, db);
+    assert.equal(sessionRepeat.progress.total, 0);
+    assert.equal(await db.srsMemoryState.count({ where: { cardId: card1.id, skill: 'WRITING' } }), 1);
+
+    // 2. Prove due WRITING item enters queue while MEANING is still future
+    await db.srsMemoryState.update({
+      where: { id: writingState.id },
+      data: { dueAt: new Date(Date.now() - 3600_000) }, // WRITING due 1 hour ago
+    });
+    const sessionWritingDue = await createReviewSession(fixture.learnerA, { limit: 10 }, db);
+    assert.equal(sessionWritingDue.progress.total, 1);
+    assert.equal(sessionWritingDue.currentItem.cardId, card1.id);
+    assert.equal(sessionWritingDue.currentItem.skill, 'WRITING');
+
+    // 3. Merging due order: Card 2 (MEANING due 2 hours ago) should appear before Card 1 (WRITING due 1 hour ago)
+    const vocab2 = await db.vocabularyConcept.create({
+      data: {
+        languageId: fixture.lang,
+        canonicalForm: 'SecondWord',
+        normalizedForm: 'secondword',
+        senseKey: 'second',
+        meaningLabels: { en: 'Second' },
+        createdBy: fixture.teacher,
+      },
+    });
+    const card2 = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: vocab2.id,
+        stage: 1,
+        dueAt: new Date(Date.now() - 7200_000), // MEANING due 2 hours ago
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+    const sessionMerged = await createReviewSession(fixture.learnerA, { limit: 10 }, db);
+    assert.equal(sessionMerged.progress.total, 2);
+    // Index 0: Card 2 (MEANING due earlier)
+    assert.equal(sessionMerged.currentItem.cardId, card2.id);
+    assert.equal(sessionMerged.currentItem.canonicalForm, 'SecondWord');
+
+    // 4. Session limit after eligibility: ineligible due WRITING does not crowd out eligible card
+    const vocab3 = await db.vocabularyConcept.create({
+      data: {
+        languageId: fixture.lang,
+        canonicalForm: 'ThirdWord',
+        normalizedForm: 'thirdword',
+        senseKey: 'third',
+        meaningLabels: { en: 'Third' },
+        createdBy: fixture.teacher,
+      },
+    });
+    const cardIneligible = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: vocab3.id,
+        stage: 1,
+        dueAt: new Date(Date.now() + 86_400_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: f.vocabLinkId, // snapshot has no characters -> ineligible for WRITING
+      },
+    });
+    await db.srsMemoryState.create({
+      data: {
+        cardId: cardIneligible.id,
+        skill: 'WRITING',
+        schedulerVersion: 'FSRS_6_TS_FSRS_5_4_2',
+        state: 1,
+        stability: 1.0,
+        difficulty: 5.0,
+        dueAt: new Date(Date.now() - 10000_000), // earlier dueAt
+        count: 0,
+        lapse: 0,
+        scheduledDays: 1,
+        learningSteps: 0,
+      },
+    });
+    // With limit: 1 and Card 2 (MEANING) moved to future: Card 1 (eligible WRITING) must be selected!
+    await db.srsCard.update({ where: { id: card2.id }, data: { dueAt: new Date(Date.now() + 86_400_000) } });
+    const sessionLimited = await createReviewSession(fixture.learnerA, { limit: 1 }, db);
+    assert.equal(sessionLimited.progress.total, 1);
+    assert.equal(sessionLimited.currentItem.cardId, card1.id);
+    assert.equal(sessionLimited.currentItem.skill, 'WRITING');
+  } finally {
+    if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+    else process.env.WRITING_SRS_ENABLED = priorEnabled;
+    if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+    else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+  }
+});
+
+test('Real PostgreSQL S6-10.2c: WRITING attempt request contract, character identity, concurrency, and overlapping sessions', async () => {
+  const priorEnabled = process.env.WRITING_SRS_ENABLED;
+  const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+  process.env.WRITING_SRS_ENABLED = 'true';
+
+  try {
+    const fixture = await createPracticeFixture(db, { writingCharacter: true, secondWritingCharacter: true });
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerA;
+
+    const card = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: fixture.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() + 86_400_000), // future MEANING
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+
+    // Initialize WRITING
+    await createReviewSession(fixture.learnerA, {}, db);
+    const writingState = await db.srsMemoryState.findUniqueOrThrow({
+      where: { cardId_skill: { cardId: card.id, skill: 'WRITING' } },
+    });
+    await db.srsMemoryState.update({
+      where: { id: writingState.id },
+      data: { dueAt: new Date(Date.now() - 1000) },
+    });
+
+    const session = await createReviewSession(fixture.learnerA, {}, db);
+    assert.equal(session.currentItem.skill, 'WRITING');
+    assert.equal(session.currentItem.writing.characterNumber, 1);
+
+    // 1. Invalid characterNumber: 0 returns 400
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: card.id,
+        operationKey: randomUUID(),
+        characterNumber: 0,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, db),
+      err => err instanceof SrsServiceError && err.status === 400,
+    );
+
+    // 2. Two tabs race ordinal 1 on separate PostgreSQL connections.
+    const competingKeys = [randomUUID(), randomUUID()];
+    const competingAttempts = await Promise.allSettled([db, otherDb].map((client, index) =>
+      submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: card.id,
+        operationKey: competingKeys[index],
+        characterNumber: 1,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, client),
+    ));
+    const winningAttemptIndex = competingAttempts.findIndex(attempt => attempt.status === 'fulfilled');
+    const res1 = competingAttempts[winningAttemptIndex].value;
+    const key1 = competingKeys[winningAttemptIndex];
+    const staleAttempt = competingAttempts[1 - winningAttemptIndex];
+    assert.equal(competingAttempts.filter(attempt => attempt.status === 'fulfilled').length, 1);
+    assert.equal(staleAttempt.status, 'rejected');
+    assert.ok(staleAttempt.reason instanceof SrsServiceError);
+    assert.equal(staleAttempt.reason.code, 'STALE_OPERATION');
+    assert.equal(res1.currentItem.writing.characterNumber, 2);
+    assert.equal(res1.currentItem.writing.attemptedCharacters, 1);
+
+    // 3. Reusing key1 with different ordinal (characterNumber: 2) -> OPERATION_CONFLICT (409)
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: card.id,
+        operationKey: key1,
+        characterNumber: 2,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, db),
+      err => err instanceof SrsServiceError && err.status === 409 && err.code === 'OPERATION_CONFLICT',
+    );
+
+    // 4. Reusing key1 with different strokes on same ordinal 1 -> OPERATION_CONFLICT (409)
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: card.id,
+        operationKey: key1,
+        characterNumber: 1,
+        candidateStrokes: [{ points: [[0.2, 0.5], [0.8, 0.5]] }],
+      }, db),
+      err => err instanceof SrsServiceError && err.status === 409 && err.code === 'OPERATION_CONFLICT',
+    );
+
+    // Same key exact replay -> succeeds with identical response
+    const replay1 = await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+      cardId: card.id,
+      operationKey: key1,
+      characterNumber: 1,
+      candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+    }, db);
+    assert.deepEqual(replay1, res1);
+
+    // 5. Submit ordinal 2 -> reveals both characters
+    const key3 = randomUUID();
+    const res2 = await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+      cardId: card.id,
+      operationKey: key3,
+      characterNumber: 2,
+      candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+    }, db);
+    assert.equal(res2.currentItem.writing.attemptedCharacters, 2);
+    assert.equal(res2.currentItem.writing.revealedCharacters?.length, 2);
+
+    // 6. Complete review for the card
+    const reviewOpKey = randomUUID();
+    const reviewRes = await submitSessionReview(fixture.learnerA, session.sessionId, {
+      cardId: card.id,
+      operationKey: reviewOpKey,
+      rating: 'GOOD',
+    }, db);
+    assert.equal(reviewRes.status, 'COMPLETED');
+  } finally {
+    if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+    else process.env.WRITING_SRS_ENABLED = priorEnabled;
+    if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+    else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+  }
+});
+
+test('Real PostgreSQL S6-10.2d: Rollout continuity, mid-session toggle, replay, and cross-skill isolation', async () => {
+  const priorEnabled = process.env.WRITING_SRS_ENABLED;
+  const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+  process.env.WRITING_SRS_ENABLED = 'true';
+
+  try {
+    const fixture = await createPracticeFixture(db, { writingCharacter: true });
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerA;
+
+    // Card 1: Eligible for WRITING, due now
+    const card1 = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: fixture.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() + 86_400_000), // future MEANING
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+    // Card 2: MEANING due now
+    const vocab2 = await db.vocabularyConcept.create({
+      data: {
+        languageId: fixture.lang,
+        canonicalForm: 'RolloutMeaning',
+        normalizedForm: 'rolloutmeaning',
+        senseKey: 'rollout-meaning',
+        meaningLabels: { en: 'Rollout Meaning' },
+        createdBy: fixture.teacher,
+      },
+    });
+    const card2 = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: vocab2.id,
+        stage: 1,
+        dueAt: new Date(Date.now() - 3600_000), // past due MEANING
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+
+    // Initialize WRITING
+    await createReviewSession(fixture.learnerA, {}, db);
+    await db.srsMemoryState.update({
+      where: { cardId_skill: { cardId: card1.id, skill: 'WRITING' } },
+      data: { dueAt: new Date(Date.now() - 7200_000) }, // WRITING due earlier than MEANING
+    });
+
+    // Create session containing [Card 1 (WRITING), Card 2 (MEANING)]
+    const session = await createReviewSession(fixture.learnerA, { limit: 10 }, db);
+    assert.equal(session.progress.total, 2);
+    assert.equal(session.currentItem.skill, 'WRITING');
+    assert.equal(session.currentItem.cardId, card1.id);
+
+    // Commit attempt 1 for Card 1
+    const opKeyAttempt1 = randomUUID();
+    const attemptPayload = {
+      cardId: card1.id,
+      operationKey: opKeyAttempt1,
+      characterNumber: 1,
+      candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+    };
+    const attemptRes = await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, attemptPayload, db);
+    assert.equal(attemptRes.currentItem.writing.attemptedCharacters, 1);
+
+    // NOW DISABLE WRITING SRS!
+    delete process.env.WRITING_SRS_ENABLED;
+
+    // 1. GET session skips disabled WRITING and reconciles to Card 2 (MEANING)
+    const reconciledSession = await getReviewSession(fixture.learnerA, session.sessionId, db);
+    assert.equal(reconciledSession.status, 'ACTIVE');
+    assert.equal(reconciledSession.currentItem.cardId, card2.id);
+    assert.equal(reconciledSession.currentItem.canonicalForm, 'RolloutMeaning');
+    assert.equal(reconciledSession.progress.currentIndex, 1); // skipped slot
+    assert.equal(reconciledSession.progress.completedCount, 0); // completedCount unchanged!
+
+    // Verify WRITING receipts and memory state in DB are preserved
+    const storedSession = await db.srsReviewSession.findUniqueOrThrow({ where: { id: session.sessionId } });
+    const storedWritingEntry = storedSession.cardIds.find(e => typeof e === 'object' && e.cardId === card1.id);
+    assert.ok(storedWritingEntry);
+    assert.equal(storedWritingEntry.attempts.length, 1);
+    assert.equal(storedWritingEntry.attempts[0].operationKey, opKeyAttempt1);
+
+    // 2. Replay of committed operation succeeds even while disabled!
+    const replayRes = await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, attemptPayload, db);
+    assert.deepEqual(replayRes, attemptRes);
+
+    // 3. New WRITING submission while disabled is rejected (404 / disabled)
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: card1.id,
+        operationKey: randomUUID(),
+        characterNumber: 1,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, db),
+      err => err instanceof SrsServiceError && (err.status === 404 || err.status === 403),
+    );
+
+    // 4. Learner reviews Card 2 (MEANING) as REMEMBERED -> session finishes cleanly
+    const meaningOpKey = randomUUID();
+    const meaningReviewRes = await submitSessionReview(fixture.learnerA, session.sessionId, {
+      cardId: card2.id,
+      operationKey: meaningOpKey,
+      rating: 'REMEMBERED',
+    }, db);
+    assert.equal(meaningReviewRes.status, 'COMPLETED');
+    assert.equal(meaningReviewRes.progress.completedCount, 1);
+
+    // Verify WRITING memory state of card 1 is still intact
+    const card1WritingState = await db.srsMemoryState.findUnique({
+      where: { cardId_skill: { cardId: card1.id, skill: 'WRITING' } },
+    });
+    assert.ok(card1WritingState);
+
+    // 6. Re-enabling restores eligibility on next session
+    process.env.WRITING_SRS_ENABLED = 'true';
+    const reenabledSession = await createReviewSession(fixture.learnerA, {}, db);
+    assert.equal(reenabledSession.progress.total, 1);
+    assert.equal(reenabledSession.currentItem.cardId, card1.id);
+    assert.equal(reenabledSession.currentItem.skill, 'WRITING');
+  } finally {
+    if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+    else process.env.WRITING_SRS_ENABLED = priorEnabled;
+    if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+    else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+  }
+});
+
+test('Real PostgreSQL: a stale WRITING rating cannot mutate the following MEANING entry for the same card', async () => {
+  const priorEnabled = process.env.WRITING_SRS_ENABLED;
+  const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+  process.env.WRITING_SRS_ENABLED = 'true';
+
+  try {
+    const fixture = await createPracticeFixture(db, { writingCharacter: true });
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerA;
+    const card = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: fixture.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() - 2 * 3_600_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+
+    await createReviewSession(fixture.learnerA, {}, db);
+    await db.srsMemoryState.update({
+      where: { cardId_skill: { cardId: card.id, skill: 'WRITING' } },
+      data: { dueAt: new Date(Date.now() - 3 * 3_600_000) },
+    });
+    const session = await createReviewSession(fixture.learnerA, {}, db);
+    assert.equal(session.currentItem.skill, 'WRITING');
+    assert.equal(session.progress.total, 2);
+
+    await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+      cardId: card.id,
+      operationKey: randomUUID(),
+      characterNumber: 1,
+      candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+    }, db);
+    const writingReview = await submitSessionReview(fixture.learnerA, session.sessionId, {
+      cardId: card.id,
+      operationKey: randomUUID(),
+      rating: 'GOOD',
+    }, db);
+    assert.equal(writingReview.status, 'ACTIVE');
+    assert.equal(writingReview.currentItem.skill, undefined);
+    assert.equal(writingReview.currentItem.canonicalForm, 'Hello');
+
+    const meaningBefore = await db.srsCard.findUniqueOrThrow({ where: { id: card.id } });
+    const staleWritingKey = randomUUID();
+    await assert.rejects(
+      () => submitSessionReview(fixture.learnerA, session.sessionId, {
+        cardId: card.id,
+        operationKey: staleWritingKey,
+        rating: 'GOOD',
+      }, db),
+      error => error instanceof SrsServiceError && error.code === 'INVALID_RATING',
+    );
+    assert.equal(await db.srsReviewOperation.count({ where: { learnerId: fixture.learnerA, operationKey: staleWritingKey } }), 0);
+    const meaningAfter = await db.srsCard.findUniqueOrThrow({ where: { id: card.id } });
+    assert.equal(meaningAfter.stage, meaningBefore.stage);
+    assert.equal(meaningAfter.dueAt.getTime(), meaningBefore.dueAt.getTime());
+    assert.equal(meaningAfter.rowVersion, meaningBefore.rowVersion);
+
+    const meaningReview = await submitSessionReview(fixture.learnerA, session.sessionId, {
+      cardId: card.id,
+      operationKey: randomUUID(),
+      rating: 'REMEMBERED',
+    }, db);
+    assert.equal(meaningReview.status, 'COMPLETED');
+  } finally {
+    if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+    else process.env.WRITING_SRS_ENABLED = priorEnabled;
+    if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+    else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+  }
+});
+
+test('Real PostgreSQL: new WRITING attempts must match the published character order in the session queue', async () => {
+  const priorEnabled = process.env.WRITING_SRS_ENABLED;
+  const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+  process.env.WRITING_SRS_ENABLED = 'true';
+
+  try {
+    const fixture = await createPracticeFixture(db, { writingCharacter: true, secondWritingCharacter: true });
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerA;
+    const card = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: fixture.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() + 86_400_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+    await createReviewSession(fixture.learnerA, {}, db);
+    await db.srsMemoryState.update({
+      where: { cardId_skill: { cardId: card.id, skill: 'WRITING' } },
+      data: { dueAt: new Date(Date.now() - 1000) },
+    });
+    const session = await createReviewSession(fixture.learnerA, {}, db);
+    const storedSession = await db.srsReviewSession.findUniqueOrThrow({ where: { id: session.sessionId } });
+    const [entry] = storedSession.cardIds;
+    entry.characters = entry.characters.reverse();
+    await db.srsReviewSession.update({ where: { id: session.sessionId }, data: { cardIds: [entry] } });
+
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: card.id,
+        operationKey: randomUUID(),
+        characterNumber: 1,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, db),
+      error => error instanceof SrsServiceError && error.code === 'CONTENT_INCONSISTENT',
+    );
+    const unchanged = await db.srsReviewSession.findUniqueOrThrow({ where: { id: session.sessionId } });
+    assert.equal(unchanged.cardIds[0].attempts.length, 0);
+  } finally {
+    if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+    else process.env.WRITING_SRS_ENABLED = priorEnabled;
+    if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+    else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+  }
 });

@@ -332,6 +332,7 @@ export const studioCss = `
 .blockTypeBadgeGrammar { background: #fae8ff; color: #86198f; }
 .blockTypeBadgeDivider { background: #f1f5f9; color: #64748b; }
 .blockTypeBadgeVocabulary { background: #fef9c3; color: #854d0e; }
+.blockTypeBadgeCharacter { background: #fce7f3; color: #9d174d; }
 
 .blockPositionBadge {
   font-size: 11px;
@@ -738,6 +739,7 @@ export const styles: Record<string, string> = {
   blockTypeBadgeGrammar: 'blockTypeBadgeGrammar',
   blockTypeBadgeDivider: 'blockTypeBadgeDivider',
   blockTypeBadgeVocabulary: 'blockTypeBadgeVocabulary',
+  blockTypeBadgeCharacter: 'blockTypeBadgeCharacter',
   blockPositionBadge: 'blockPositionBadge',
   blockActions: 'blockActions',
   blockActionButton: 'blockActionButton',

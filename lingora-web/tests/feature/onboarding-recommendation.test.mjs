@@ -193,7 +193,12 @@ function buildMockDb(options = {}) {
     course: {
       findMany: async ({ where }) => {
         if (where.languageId === LANG_EMPTY_ID) return [];
-        return courses.filter((c) => c.languageId === where.languageId && (!where.isActive || c.isActive));
+        return courses.filter((c) =>
+          c.languageId === where.languageId &&
+          (!where.isActive || c.isActive) &&
+          (!where.id || c.id === where.id) &&
+          (where.AND || []).every((condition) => !condition.id?.in || condition.id.in.includes(c.id))
+        );
       },
       findFirst: async ({ where }) => {
         return courses.find((c) => c.id === where.id && c.languageId === where.languageId) || null;
@@ -355,6 +360,28 @@ describe('S3-01: Recommendation Foundation & Preview', () => {
       assert.equal(res.startLevel.id, LVL_A1_ID);
       assert.deepEqual(res.reasonCodes, ['LOWEST_AVAILABLE_LEVEL']);
       assert.equal(res.nextLesson?.id, 'l2');
+    });
+
+    test('DEFAULT honors an explicit course instead of switching to a purpose match', async () => {
+      const db = buildMockDb({
+        includeCourseB: true,
+        courseAPurposeTags: ['TRAVEL'],
+        courseBPurposeTags: ['WORK'],
+      });
+      const selected = await resolveRecommendation(db, {
+        languageId: LANG_EN_ID,
+        purpose: 'WORK',
+        entryChoice: { startSource: 'DEFAULT', courseId: COURSE_A_ID },
+      });
+
+      assert.equal(selected?.course.id, COURSE_A_ID);
+      const outsideLockedScope = await resolveRecommendation(db, {
+        languageId: LANG_EN_ID,
+        purpose: 'WORK',
+        entryChoice: { startSource: 'DEFAULT', courseId: COURSE_A_ID },
+        courseIds: [COURSE_B_ID],
+      });
+      assert.equal(outsideLockedScope, null);
     });
 
     test('DEFAULT skips level completely when all lessons in level are draft', async () => {

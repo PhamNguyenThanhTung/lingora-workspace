@@ -9,15 +9,16 @@ import { BlockComments } from './BlockComments';
 import styles from './studio-styles';
 
 export interface BlockCanvasProps {
-  blocks: LessonBlock[];
+  blocks: any[];
   activeBlockKey: string | null;
+  lessonId?: string;
   onSelectBlock: (blockKey: string) => void;
-  onUpdateBlock: (blockKey: string, patch: Partial<LessonBlock>) => void;
+  onUpdateBlock: (blockKey: string, patch: Partial<any>) => void;
   onDeleteBlock: (blockKey: string) => void;
   onDuplicateBlock: (blockKey: string) => void;
   onMoveBlock: (blockKey: string, direction: 'up' | 'down') => void;
   onReorderBlocks: (fromIndex: number, toIndex: number) => void;
-  onAddBlock: (type: LessonBlockType, targetIndex?: number) => void;
+  onAddBlock: (type: any, targetIndex?: number) => void;
   comments?: ReviewCommentDto[];
   onResolveComment?: (commentId: string, rowVersion: string) => Promise<void>;
   onReopenComment?: (commentId: string, rowVersion: string) => Promise<void>;
@@ -31,6 +32,7 @@ export interface BlockCanvasProps {
 export function BlockCanvas({
   blocks,
   activeBlockKey,
+  lessonId,
   onSelectBlock,
   onUpdateBlock,
   onDeleteBlock,
@@ -239,7 +241,7 @@ export function BlockCanvas({
                   />
                 </div>
 
-                {insertionTarget?.blockKey === block.blockKey && (
+                {insertionTarget && insertionTarget.blockKey === block.blockKey && (
                   <div className={styles.blockBody} onClick={(e) => e.stopPropagation()}>
                     <p className={styles.formLabel}>
                       Chọn loại khối để chèn {insertionTarget.side === 'before' ? 'trước' : 'sau'} khối này
@@ -263,6 +265,7 @@ export function BlockCanvas({
                   block={block}
                   onChange={(patch) => onUpdateBlock(block.blockKey, patch)}
                   disabled={disabled}
+                  lessonId={lessonId}
                 />
 
                 {/* Block Comments */}

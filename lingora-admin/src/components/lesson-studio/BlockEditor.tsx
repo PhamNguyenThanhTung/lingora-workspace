@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { isSafeRichTextUrl } from '@lingora/lesson-content';
 import type {
   LessonBlock,
@@ -197,13 +197,624 @@ function TextDocumentEditor({ document, idPrefix, label, disabled, onChange }: T
   );
 }
 
-export interface BlockEditorProps {
-  block: LessonBlock;
-  onChange: (patch: Partial<LessonBlock>) => void;
-  disabled?: boolean;
+interface CharacterOption {
+  id: string;
+  languageId: string;
+  glyph: string;
+  scriptType: string;
+  strokeCount: number;
+  meaning: string | null;
+  primaryReading: string | null;
+  romanization: string | null;
+  hasStrokes: boolean;
 }
 
-export function BlockEditor({ block, onChange, disabled = false }: BlockEditorProps) {
+interface CharacterBlockEditorProps {
+  block: any;
+  onChange: (patch: Partial<any>) => void;
+  disabled: boolean;
+  lessonId?: string;
+}
+
+function CharacterBlockEditor({ block, onChange, disabled, lessonId }: CharacterBlockEditorProps) {
+  const { blockKey, content, selectedLabel } = block;
+  const characterId = content?.characterId || '';
+  const showMeaning = content?.showMeaning ?? true;
+  const showReading = content?.showReading ?? true;
+  const showStrokeAnimation = content?.showStrokeAnimation ?? false;
+  const guidedWriting = content?.guidedWriting ?? false;
+
+  const [showPicker, setShowPicker] = useState(!characterId);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [submittedQuery, setSubmittedQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchResults, setSearchResults] = useState<CharacterOption[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+
+  const activeControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (activeControllerRef.current) {
+        activeControllerRef.current.abort();
+        activeControllerRef.current = null;
+      }
+    };
+  }, []);
+
+  const fetchOptions = async (query: string) => {
+    if (!lessonId) return;
+
+    if (activeControllerRef.current) {
+      activeControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    activeControllerRef.current = controller;
+
+    setIsSearching(true);
+    setIsLoadingMore(false);
+    setSearchError(null);
+    setHasSearched(true);
+    setSubmittedQuery(query);
+    setSearchResults([]);
+    setNextCursor(null);
+    setHasMore(false);
+
+    try {
+      const res = await fetch(
+        `/api/teacher/lessons/${lessonId}/character-options?q=${encodeURIComponent(query || '')}`,
+        {
+          headers: { Origin: window.location.origin },
+          signal: controller.signal,
+        }
+      );
+
+      if (activeControllerRef.current !== controller || controller.signal.aborted) {
+        return;
+      }
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        if (activeControllerRef.current !== controller || controller.signal.aborted) {
+          return;
+        }
+        setSearchError(json?.error?.message || 'Không thể tải danh sách ký tự.');
+        setSearchResults([]);
+        setNextCursor(null);
+        setHasMore(false);
+        return;
+      }
+
+      const json = await res.json();
+      if (activeControllerRef.current !== controller || controller.signal.aborted) {
+        return;
+      }
+
+      const items = Array.isArray(json.data) ? json.data : [];
+      setSearchResults(items);
+      const cursor = json.nextCursor ?? json.pagination?.nextCursor ?? null;
+      setNextCursor(cursor);
+      setHasMore(Boolean(json.hasMore ?? cursor ?? json.pagination?.hasMore));
+    } catch (err: any) {
+      if (err?.name === 'AbortError' || controller.signal.aborted) {
+        return;
+      }
+      if (activeControllerRef.current !== controller) {
+        return;
+      }
+      setSearchError('Lỗi kết nối khi tải danh sách ký tự.');
+      setSearchResults([]);
+      setNextCursor(null);
+      setHasMore(false);
+    } finally {
+      if (activeControllerRef.current === controller) {
+        setIsSearching(false);
+        activeControllerRef.current = null;
+      }
+    }
+  };
+
+  const fetchMoreOptions = async () => {
+    if (!lessonId || !nextCursor || isLoadingMore || isSearching) return;
+
+    if (activeControllerRef.current) {
+      activeControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    activeControllerRef.current = controller;
+
+    setIsLoadingMore(true);
+    setSearchError(null);
+    const queryToUse = submittedQuery;
+    const cursorToUse = nextCursor;
+
+    try {
+      const res = await fetch(
+        `/api/teacher/lessons/${lessonId}/character-options?q=${encodeURIComponent(queryToUse || '')}&cursor=${encodeURIComponent(cursorToUse)}`,
+        {
+          headers: { Origin: window.location.origin },
+          signal: controller.signal,
+        }
+      );
+
+      if (activeControllerRef.current !== controller || controller.signal.aborted) {
+        return;
+      }
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        if (activeControllerRef.current !== controller || controller.signal.aborted) {
+          return;
+        }
+        setSearchError(json?.error?.message || 'Không thể tải thêm ký tự.');
+        return;
+      }
+
+      const json = await res.json();
+      if (activeControllerRef.current !== controller || controller.signal.aborted) {
+        return;
+      }
+
+      const newItems = Array.isArray(json.data) ? json.data : [];
+      setSearchResults((prev) => {
+        const existingIds = new Set(prev.map((item) => item.id));
+        const filtered = newItems.filter((item: CharacterOption) => !existingIds.has(item.id));
+        return [...prev, ...filtered];
+      });
+      const cursor = json.nextCursor ?? json.pagination?.nextCursor ?? null;
+      setNextCursor(cursor);
+      setHasMore(Boolean(json.hasMore ?? cursor ?? json.pagination?.hasMore));
+    } catch (err: any) {
+      if (err?.name === 'AbortError' || controller.signal.aborted) {
+        return;
+      }
+      if (activeControllerRef.current !== controller) {
+        return;
+      }
+      setSearchError('Lỗi kết nối khi tải thêm ký tự.');
+    } finally {
+      if (activeControllerRef.current === controller) {
+        setIsLoadingMore(false);
+        activeControllerRef.current = null;
+      }
+    }
+  };
+
+  const handleOpenPicker = () => {
+    if (activeControllerRef.current) {
+      activeControllerRef.current.abort();
+      activeControllerRef.current = null;
+    }
+    setShowPicker(true);
+    setSearchQuery('');
+    setSubmittedQuery('');
+    setSearchResults([]);
+    setNextCursor(null);
+    setHasMore(false);
+    setSearchError(null);
+    setIsSearching(false);
+    setIsLoadingMore(false);
+    void fetchOptions('');
+  };
+
+  const handleClosePicker = () => {
+    if (activeControllerRef.current) {
+      activeControllerRef.current.abort();
+      activeControllerRef.current = null;
+    }
+    setIsSearching(false);
+    setIsLoadingMore(false);
+    setShowPicker(false);
+  };
+
+  const handleSelectOption = (opt: CharacterOption) => {
+    if (activeControllerRef.current) {
+      activeControllerRef.current.abort();
+      activeControllerRef.current = null;
+    }
+    setIsSearching(false);
+    setIsLoadingMore(false);
+    onChange({
+      content: {
+        ...content,
+        characterId: opt.id,
+      },
+      selectedLabel: {
+        glyph: opt.glyph,
+        scriptType: opt.scriptType,
+        strokeCount: opt.strokeCount,
+        meaning: opt.meaning,
+        primaryReading: opt.primaryReading,
+        romanization: opt.romanization,
+        hasStrokes: opt.hasStrokes,
+      },
+    });
+    setShowPicker(false);
+  };
+
+  const updateFlag = (flagName: string, value: boolean) => {
+    onChange({
+      content: {
+        ...content,
+        [flagName]: value,
+      },
+      ...(selectedLabel ? { selectedLabel } : {}),
+    });
+  };
+
+  const hasMissingStrokes = Boolean(
+    selectedLabel &&
+    selectedLabel.hasStrokes === false &&
+    (showStrokeAnimation || guidedWriting)
+  );
+
+  return (
+    <div className={styles.blockBody} id={`characterBlockBody-${blockKey}`}>
+      {/* Selected character display or picker toggle */}
+      {characterId && !showPicker ? (
+        <div
+          id={`character-selected-card-${blockKey}`}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '12px 16px',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}
+        >
+          {selectedLabel ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div
+                style={{
+                  fontSize: '36px',
+                  fontWeight: 'bold',
+                  width: '64px',
+                  height: '64px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#f8fafc',
+                  borderRadius: '8px',
+                  border: '2px solid #cbd5e1',
+                  color: '#0f172a',
+                }}
+                aria-label={`Ký tự ${selectedLabel.glyph}`}
+              >
+                {selectedLabel.glyph}
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '15px' }}>
+                    {selectedLabel.scriptType}
+                  </span>
+                  <span style={{ color: '#64748b', fontSize: '13px' }}>
+                    ({selectedLabel.strokeCount} nét)
+                  </span>
+                  {selectedLabel.hasStrokes === true ? (
+                    <span
+                      id={`character-badge-strokes-${blockKey}`}
+                      style={{
+                        background: '#dcfce7',
+                        color: '#15803d',
+                        fontSize: '11px',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      ✓ Có dữ liệu nét
+                    </span>
+                  ) : selectedLabel.hasStrokes === false ? (
+                    <span
+                      id={`character-badge-nostrokes-${blockKey}`}
+                      style={{
+                        background: '#fef3c7',
+                        color: '#b45309',
+                        fontSize: '11px',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      ⚠ Chưa có dữ liệu nét
+                    </span>
+                  ) : null}
+                </div>
+                <div style={{ fontSize: '13px', color: '#334155', marginTop: '4px' }}>
+                  <strong>Nghĩa:</strong> {selectedLabel.meaning || '(chưa có)'}
+                </div>
+                <div style={{ fontSize: '13px', color: '#475569', marginTop: '2px' }}>
+                  <strong>Cách đọc:</strong> {selectedLabel.primaryReading || selectedLabel.romanization || '(chưa có)'}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <span>Ký tự đã chọn</span>
+          )}
+          <button
+            type="button"
+            id={`character-change-btn-${blockKey}`}
+            className={styles.blockActionButton}
+            onClick={handleOpenPicker}
+            disabled={disabled}
+            style={{ padding: '6px 12px' }}
+          >
+            Đổi ký tự khác
+          </button>
+        </div>
+      ) : null}
+
+      {/* Character picker search & options list */}
+      {(showPicker || !characterId) && (
+        <div
+          id={`character-picker-${blockKey}`}
+          style={{
+            padding: '12px',
+            background: '#f8fafc',
+            border: '1px solid #cbd5e1',
+            borderRadius: '8px',
+            marginBottom: '12px',
+          }}
+        >
+          <div style={{ fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '8px' }}>
+            Tra cứu và chọn ký tự từ danh mục khóa học:
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <input
+              id={`character-search-input-${blockKey}`}
+              type="text"
+              className={styles.formInput}
+              placeholder="Nhập chữ, nghĩa hoặc cách đọc (hoặc để trống tìm tất cả)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  void fetchOptions(searchQuery);
+                }
+              }}
+              disabled={disabled || isSearching}
+              style={{ flex: 1, minWidth: '200px' }}
+            />
+            <button
+              type="button"
+              id={`character-search-btn-${blockKey}`}
+              className={styles.blockActionButton}
+              onClick={() => void fetchOptions(searchQuery)}
+              disabled={disabled || isSearching}
+              style={{ padding: '6px 14px' }}
+            >
+              {isSearching ? 'Đang tìm...' : 'Tìm kiếm'}
+            </button>
+            {characterId && (
+              <button
+                type="button"
+                className={styles.blockActionButton}
+                onClick={handleClosePicker}
+                disabled={disabled}
+              >
+                Đóng
+              </button>
+            )}
+          </div>
+
+          {/* Pending State */}
+          {isSearching && (
+            <div id={`character-search-loading-${blockKey}`} style={{ color: '#64748b', fontSize: '13px', marginTop: '10px' }}>
+              Đang tra cứu danh mục ký tự...
+            </div>
+          )}
+
+          {/* Error State */}
+          {searchError && (
+            <div id={`character-search-error-${blockKey}`} role="alert" style={{ color: '#b91c1c', fontSize: '13px', marginTop: '10px' }}>
+              {searchError}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {hasSearched && !isSearching && searchResults.length === 0 && !searchError && (
+            <div id={`character-search-empty-${blockKey}`} style={{ color: '#64748b', fontSize: '13px', marginTop: '10px' }}>
+              Không tìm thấy ký tự phù hợp trong khóa học này.
+            </div>
+          )}
+
+          {/* Results list */}
+          {searchResults.length > 0 && !isSearching && (
+            <div
+              id={`character-search-results-${blockKey}`}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                gap: '8px',
+                marginTop: '12px',
+                maxHeight: '220px',
+                overflowY: 'auto',
+              }}
+            >
+              {searchResults.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  id={`character-option-${opt.id}`}
+                  onClick={() => handleSelectOption(opt)}
+                  disabled={disabled}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '8px 12px',
+                    background: '#ffffff',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                  aria-label={`Chọn ký tự ${opt.glyph} ${opt.meaning || ''}`}
+                >
+                  <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>
+                    {opt.glyph}
+                  </span>
+                  <div style={{ fontSize: '12px', overflow: 'hidden' }}>
+                    <div style={{ fontWeight: 600, color: '#1e293b' }}>
+                      {opt.scriptType} ({opt.strokeCount} nét)
+                    </div>
+                    {opt.meaning && (
+                      <div style={{ color: '#475569', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                        {opt.meaning}
+                      </div>
+                    )}
+                    <div style={{ fontSize: '11px', color: opt.hasStrokes ? '#15803d' : '#b45309' }}>
+                      {opt.hasStrokes ? '✓ Có nét' : '⚠ Thiếu nét'}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination: Load More Button */}
+          {hasMore && nextCursor && !isSearching && (
+            <div style={{ textAlign: 'center', marginTop: '10px' }}>
+              <button
+                type="button"
+                id={`character-search-load-more-${blockKey}`}
+                className={styles.blockActionButton}
+                onClick={() => void fetchMoreOptions()}
+                disabled={disabled || isLoadingMore}
+                style={{ padding: '6px 16px', fontSize: '13px' }}
+              >
+                {isLoadingMore ? 'Đang tải thêm...' : 'Tải thêm ký tự'}
+              </button>
+            </div>
+          )}
+
+          {isLoadingMore && (
+            <div
+              id={`character-search-loading-more-${blockKey}`}
+              style={{ color: '#64748b', fontSize: '12px', marginTop: '6px', textAlign: 'center' }}
+            >
+              Đang tải thêm các ký tự tiếp theo...
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Unselected character notice */}
+      {!characterId && (
+        <div id={`character-unselected-warning-${blockKey}`} style={{ color: '#b91c1c', fontSize: '12px', marginBottom: '12px' }}>
+          * Vui lòng chọn một ký tự để hoàn thành khối.
+        </div>
+      )}
+
+      {/* The 4 Feature Flags */}
+      <div
+        id={`character-flags-${blockKey}`}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '12px',
+          padding: '12px',
+          background: '#f8fafc',
+          borderRadius: '6px',
+          border: '1px solid #e2e8f0',
+        }}
+      >
+        <label
+          htmlFor={`character-flag-meaning-${blockKey}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: disabled ? 'default' : 'pointer' }}
+        >
+          <input
+            type="checkbox"
+            id={`character-flag-meaning-${blockKey}`}
+            checked={Boolean(showMeaning)}
+            onChange={(e) => updateFlag('showMeaning', e.target.checked)}
+            disabled={disabled}
+          />
+          <span>Hiển thị nghĩa</span>
+        </label>
+
+        <label
+          htmlFor={`character-flag-reading-${blockKey}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: disabled ? 'default' : 'pointer' }}
+        >
+          <input
+            type="checkbox"
+            id={`character-flag-reading-${blockKey}`}
+            checked={Boolean(showReading)}
+            onChange={(e) => updateFlag('showReading', e.target.checked)}
+            disabled={disabled}
+          />
+          <span>Hiển thị cách đọc</span>
+        </label>
+
+        <label
+          htmlFor={`character-flag-stroke-anim-${blockKey}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: disabled ? 'default' : 'pointer' }}
+        >
+          <input
+            type="checkbox"
+            id={`character-flag-stroke-anim-${blockKey}`}
+            checked={Boolean(showStrokeAnimation)}
+            onChange={(e) => updateFlag('showStrokeAnimation', e.target.checked)}
+            disabled={disabled}
+          />
+          <span>Hoạt ảnh thứ tự nét</span>
+        </label>
+
+        <label
+          htmlFor={`character-flag-guided-writing-${blockKey}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: disabled ? 'default' : 'pointer' }}
+        >
+          <input
+            type="checkbox"
+            id={`character-flag-guided-writing-${blockKey}`}
+            checked={Boolean(guidedWriting)}
+            onChange={(e) => updateFlag('guidedWriting', e.target.checked)}
+            disabled={disabled}
+          />
+          <span>Luyện viết có hướng dẫn</span>
+        </label>
+      </div>
+
+      {/* Warning when stroke-dependent flags are on but character lacks strokes */}
+      {hasMissingStrokes && (
+        <div
+          id={`character-stroke-warning-${blockKey}`}
+          role="alert"
+          style={{
+            marginTop: '8px',
+            padding: '8px 12px',
+            background: '#fef3c7',
+            color: '#92400e',
+            borderRadius: '6px',
+            fontSize: '13px',
+            border: '1px solid #fde68a',
+          }}
+        >
+          ⚠️ Ký tự &quot;{selectedLabel?.glyph}&quot; chưa có dữ liệu nét trong hệ thống. Server sẽ từ chối lưu bản nháp nếu bật Hoạt ảnh thứ tự nét hoặc Luyện viết có hướng dẫn.
+        </div>
+      )}
+    </div>
+  );
+}
+
+export interface BlockEditorProps {
+  block: any;
+  onChange: (patch: Partial<any>) => void;
+  disabled?: boolean;
+  lessonId?: string;
+}
+
+export function BlockEditor({ block, onChange, disabled = false, lessonId }: BlockEditorProps) {
   const { type, content, blockKey } = block;
 
   switch (type) {
@@ -702,6 +1313,17 @@ export function BlockEditor({ block, onChange, disabled = false }: BlockEditorPr
             trong bài học này theo vị trí của khối trong luồng bài học.
           </div>
         </div>
+      );
+    }
+
+    case 'CHARACTER': {
+      return (
+        <CharacterBlockEditor
+          block={block}
+          onChange={onChange}
+          disabled={disabled}
+          lessonId={lessonId}
+        />
       );
     }
 

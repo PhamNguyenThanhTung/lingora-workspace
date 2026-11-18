@@ -874,6 +874,9 @@ export function lessonsFixture() {
         return structuredClone(row);
       },
     },
+    vocabularyCharacter: {
+      findMany: async () => [],
+    },
     lessonVocabularyLink: {
       findUnique: async ({ where }) => {
         if (where.id) return structuredClone(state.lessonVocabularyLinks.get(where.id?.toLowerCase()) || null);

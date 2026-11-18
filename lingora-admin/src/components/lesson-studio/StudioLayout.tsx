@@ -17,8 +17,9 @@ import { StudioPreview } from './StudioPreview';
 import styles, { studioCss } from './studio-styles';
 
 export interface StudioLayoutProps {
-  blocks: LessonBlock[];
-  onBlocksChange: (blocks: LessonBlock[]) => void;
+  blocks: any[];
+  onBlocksChange: (blocks: any[]) => void;
+  lessonId?: string;
   vocabulary?: Array<{
     localId: string;
     position: number;
@@ -57,6 +58,7 @@ export interface StudioLayoutProps {
 export function StudioLayout({
   blocks,
   onBlocksChange,
+  lessonId,
   vocabulary = [],
   exercises = [],
   title,
@@ -76,7 +78,7 @@ export function StudioLayout({
 
   const coreExercisesCount = exercises.filter((ex) => ex.isCore).length;
 
-  const handleAddBlock = (type: LessonBlockType, targetIndex?: number) => {
+  const handleAddBlock = (type: any, targetIndex?: number) => {
     const nextBlocks = addBlock(blocks, type, targetIndex);
     onBlocksChange(nextBlocks);
     // Focus vào block mới chèn
@@ -188,6 +190,7 @@ export function StudioLayout({
           <BlockCanvas
             blocks={blocks}
             activeBlockKey={activeBlockKey}
+            lessonId={lessonId}
             onSelectBlock={setActiveBlockKey}
             onUpdateBlock={handleUpdateBlock}
             onDeleteBlock={handleDeleteBlock}

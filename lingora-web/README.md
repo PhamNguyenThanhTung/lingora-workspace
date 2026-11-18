@@ -2,7 +2,8 @@
 
 Learner application and trusted server boundary. Staff management remains in `lingora-admin`.
 
-- Configure the three variables in `.env.example` using ignored `.env.local` locally or Vercel project settings. No Supabase Admin/service key is needed by this app.
+- Configure the required Supabase and database variables from `.env.example` using ignored `.env.local` locally or Vercel project settings. No Supabase Admin/service key is needed by this app.
+- WRITING SRS stays disabled unless `WRITING_SRS_ENABLED=true` and the learner UUID appears in the comma-separated `WRITING_SRS_LEARNER_IDS` allowlist.
 - Public entry: `/` introduces Lingora; `/home` is the learner workspace after login. Staff management remains in `lingora-admin`.
 - From the repository root: `npm run dev -w lingora-web -- --port 3001`, `npm run build -w lingora-web`, `npm run test:feature -w lingora-web`, and `npm run test:components -w lingora-web`. `npm run test:all -w lingora-web` builds once, then runs feature, component, and landing browser tests sequentially.
 - PostgreSQL integration suites: run from repo root via `npm run test:integration:lessons` and `npm run test:integration:practice` (backed by loopback runner `scripts/local-test-db.mjs`).

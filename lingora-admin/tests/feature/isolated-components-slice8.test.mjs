@@ -278,9 +278,10 @@ test('Delayed conflict refresh cannot overwrite the Blueprint selected while its
   });
 });
 
-test('Assembly dependency errors expose a retry and reload eligible items', async () => {
+test('Assembly lists stay independent when either dependency fails', async () => {
   await withPage('assessment-catalog-test', async (page) => {
     let eligibleReads = 0;
+    let versionReads = 0;
     const item = eligibleItem(ids.mcqRevision, 'MCQ', 1);
     await page.route('**/api/**', async (route) => {
       const request = route.request(); const url = new URL(request.url());
@@ -292,15 +293,26 @@ test('Assembly dependency errors expose a retry and reload eligible items', asyn
         if (eligibleReads === 1) return fulfill(route, 503, { error: { message: 'Eligible items unavailable.' } });
         return fulfill(route, 200, { data: [item] });
       }
-      if (url.pathname === `/api/assessment-blueprints/${ids.blueprint}/versions`) return fulfill(route, 200, { data: [] });
+      if (url.pathname === `/api/assessment-blueprints/${ids.blueprint}/versions`) {
+        versionReads++;
+        if (versionReads === 2) return route.abort();
+        return fulfill(route, 200, { data: [versionDto([])] });
+      }
       if (url.pathname === `/api/assessment-blueprints/${ids.blueprint}` && request.method() === 'GET') return fulfill(route, 200, { data: blueprint() });
       return fulfill(route, 404, {});
     });
 
     await page.getByText('Eligible items unavailable.').waitFor();
+    assert.equal(await page.getByText('Chưa có bài tập cùng Blueprint', { exact: false }).count(), 0);
+    await page.getByRole('button', { name: /#1 · IN_REVIEW/ }).waitFor();
     await page.getByRole('button', { name: 'Tải lại dữ liệu lắp ghép' }).click();
-    await page.getByLabel(`Chọn ${ids.mcqRevision}`).waitFor();
+    await page.getByLabel(`Chọn ${ids.mcqRevision}`).waitFor({ timeout: 3000 });
+    assert.equal(await page.getByRole('button', { name: /#1 · IN_REVIEW/ }).count(), 0);
+    assert.equal(await page.getByText('Chưa có phiên bản.', { exact: true }).count(), 0);
     assert.equal(eligibleReads, 2);
+    await page.getByRole('button', { name: 'Tải lại dữ liệu lắp ghép' }).click();
+    await page.getByRole('button', { name: /#1 · IN_REVIEW/ }).waitFor();
+    assert.equal(versionReads, 3);
   });
 });
 

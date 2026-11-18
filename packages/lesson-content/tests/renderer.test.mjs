@@ -340,6 +340,10 @@ test('T06: LessonContent renderer - All 9 Canonical Block Types', async (t) => {
           partOfSpeech: 'adj',
           meaningLabels: { vi: 'phổ biến khắp nơi', en: 'present everywhere' },
           example: 'Smartphones are ubiquitous today.',
+          characters: [
+            { characterId: 'b0000000-0000-4000-8000-000000000002', position: 2, glyph: '本', scriptType: 'KANJI', primaryReading: 'ほん', meaning: 'sách' },
+            { characterId: 'b0000000-0000-4000-8000-000000000001', position: 1, glyph: '日', scriptType: 'KANJI', primaryReading: 'にち', meaning: 'ngày' },
+          ],
         },
       },
     ];
@@ -374,6 +378,10 @@ test('T06: LessonContent renderer - All 9 Canonical Block Types', async (t) => {
     assert.ok(html.includes('(adj)'));
     assert.ok(html.includes('phổ biến khắp nơi'));
     assert.ok(html.includes('Smartphones are ubiquitous today.'));
+    assert.ok(html.includes('vocab-character-breakdown'));
+    assert.ok(html.includes('日'));
+    assert.ok(html.includes('本'));
+    assert.ok(html.indexOf('日') < html.indexOf('本'));
     // Ensures vocabulary section is NOT rendered twice!
     const occurrences = (html.match(/id="vocabularySection"/g) || []).length;
     assert.equal(occurrences, 1);

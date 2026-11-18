@@ -4,6 +4,13 @@ Nền tảng học ngoại ngữ với ba vai trò: **Learner** học và ôn t�
 **Teacher** biên soạn nội dung được phân công, **Admin** quản trị và duyệt nội dung.
 Mã nguồn gồm hai workspace: `lingora-admin/` (quản trị, biên soạn) và `lingora-web/` (học viên).
 
+## Truy cập
+
+- [Học viên — Lingora](https://lingora-learner-dev.vercel.app/)
+- [Giáo viên và quản trị viên](https://lingora-workspace.vercel.app/)
+
+Chạy cục bộ: `npm run dev -w lingora-web -- --port 3001` cho ứng dụng học viên; `npm run dev` cho ứng dụng giáo viên và quản trị viên.
+
 ## Stack
 
 Next.js 16, React 19, TypeScript, Zod, Prisma 6 và Supabase Auth/PostgreSQL.

@@ -4,6 +4,7 @@ import { LoginForm } from '../../../src/app/login/LoginForm';
 import { HomeView } from '../../../src/app/home/HomeView';
 import { CatalogueView } from '../../../src/app/learn/[contextId]/CatalogueView';
 import { LessonPlayerView } from '../../../src/app/learn/[contextId]/[lessonId]/LessonPlayerView';
+import { WritingPracticeModal } from '../../../src/app/learn/[contextId]/[lessonId]/WritingPracticeModal';
 import { ReviewView } from '../../../src/app/review/ReviewView';
 import type { LearnerContextEnvelope } from '../../../src/server/context/dto.ts';
 
@@ -108,6 +109,7 @@ function HarnessRoot() {
     if (page.kind === 'home') return <HomeView {...page.props} />;
     if (page.kind === 'catalogue') return <CatalogueView {...page.props} />;
     if (page.kind === 'lessonPlayer') return <LessonPlayerView {...page.props} />;
+    if (page.kind === 'writingPractice') return <WritingPracticeModal {...page.props} />;
     if (page.kind === 'review') return <ReviewView {...page.props} />;
   }
   const params = new URLSearchParams(window.location.search);
@@ -118,6 +120,37 @@ function HarnessRoot() {
       return <LoginForm />;
     case 'review':
       return <ReviewView learner={{ id: '11111111-1111-4111-8111-111111111111' }} />;
+    case 'writing-practice':
+    case 'writing-practice-animation-only':
+    case 'writing-practice-guided-only':
+      return (
+        <WritingPracticeModal
+          contextId="ctx-1"
+          lessonId="lesson-1"
+          expectedPublishedRevisionId="rev-1"
+          character={{
+            characterId: 'char-1',
+            glyph: '日',
+            scriptType: 'KANJI',
+            strokeCount: 4,
+            meaning: 'Mặt trời, ngày',
+            primaryReading: 'にち (nichi)',
+            romanization: 'nichi',
+            showStrokeAnimation: state !== 'writing-practice-guided-only',
+            guidedWriting: state !== 'writing-practice-animation-only',
+          }}
+          initialStrokeData={{
+            strokeVersion: 1,
+            strokes: [
+              { index: 1, path: 'M0.2,0.2 L0.2,0.8', points: [[0.2, 0.2], [0.2, 0.5], [0.2, 0.8]] },
+              { index: 2, path: 'M0.2,0.2 L0.8,0.2 L0.8,0.8', points: [[0.2, 0.2], [0.5, 0.2], [0.8, 0.2], [0.8, 0.5], [0.8, 0.8]] },
+              { index: 3, path: 'M0.2,0.5 L0.8,0.5', points: [[0.2, 0.5], [0.5, 0.5], [0.8, 0.5]] },
+              { index: 4, path: 'M0.2,0.8 L0.8,0.8', points: [[0.2, 0.8], [0.5, 0.8], [0.8, 0.8]] },
+            ],
+          }}
+          onClose={() => {}}
+        />
+      );
     case 'home-valid':
       return <HomeView data={MOCK_VALID_DATA} />;
     case 'home-null-context':

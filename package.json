@@ -20,20 +20,33 @@
     "db:product:migrate": "npm run db:product:migrate -w lingora-admin",
     "db:product:seed": "npm run db:product:seed -w lingora-admin",
     "test:components": "npm run test:components -w lingora-admin && npm run test:components -w lingora-web",
+    "test:integration:characters": "node scripts/local-test-db.mjs node --experimental-strip-types lingora-admin/tests/feature/characters-catalogue-postgres.test.mjs",
+    "test:integration:strokes": "node scripts/local-test-db.mjs node --experimental-strip-types lingora-admin/tests/feature/characters-strokes-postgres.test.mjs",
+    "test:integration:vocabulary-characters": "node scripts/local-test-db.mjs node --experimental-strip-types lingora-admin/tests/feature/characters-vocabulary-postgres.test.mjs",
+    "test:integration:character-block": "node scripts/local-test-db.mjs node --experimental-strip-types lingora-admin/tests/feature/character-block-postgres.test.mjs",
+    "test:integration:character-draft-save": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks lingora-admin/tests/feature/character-draft-save-postgres.test.mjs",
+    "test:integration:character-workflow": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks lingora-admin/tests/feature/character-workflow-postgres.test.mjs",
+    "test:integration:character-options": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks lingora-admin/tests/feature/character-options-route.test.mjs",
+    "test:e2e:character-studio": "node scripts/local-test-db.mjs node --experimental-strip-types lingora-admin/tests/feature/character-studio-browser.test.mjs",
     "test:integration:lessons": "node scripts/local-test-db.mjs npm run test:integration:lessons -w lingora-web",
     "test:integration:practice": "node scripts/local-test-db.mjs npm run test:integration:practice -w lingora-web",
     "test:integration:onboarding": "node scripts/local-test-db.mjs npm run test:integration:onboarding -w lingora-web",
     "test:integration:srs": "node scripts/local-test-db.mjs npm run test:integration:srs -w lingora-web",
+    "test:integration:writing": "node scripts/local-test-db.mjs npm run test:integration:writing -w lingora-web",
+    "test:integration:japanese": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs lingora-web/tests/feature/japanese-curriculum-postgres.test.mjs",
+    "test:integration:chinese": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs lingora-web/tests/feature/chinese-curriculum-postgres.test.mjs",
     "test:integration:sample": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks lingora-admin/tests/feature/sample-curriculum-postgres.test.mjs",
     "test:integration:studio": "node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs lingora-admin/tests/feature/studio-postgres.test.mjs",
     "test:e2e:learning": "node scripts/local-test-db.mjs npm run test:e2e:learning -w lingora-web",
     "test:integration:gamification": "node scripts/local-test-db.mjs npm run test:integration:gamification -w lingora-web",
     "test:e2e:gamification": "node scripts/local-test-db.mjs npm run test:e2e:gamification -w lingora-web",
     "test:e2e:onboarding": "node scripts/local-test-db.mjs npm run test:e2e:onboarding -w lingora-web",
-    "test:e2e:srs": "node scripts/local-test-db.mjs npm run test:e2e:srs -w lingora-web"
+    "test:e2e:srs": "node scripts/local-test-db.mjs npm run test:e2e:srs -w lingora-web",
+    "test:e2e:writing": "npm run build && node scripts/local-test-db.mjs npm run test:e2e:writing -w lingora-web"
   },
   "devDependencies": {
-    "embedded-postgres": "18.6.0-beta.19"
+    "embedded-postgres": "18.6.0-beta.19",
+    "next": "16.4.5"
   },
   "overrides": {
     "@prisma/config": {

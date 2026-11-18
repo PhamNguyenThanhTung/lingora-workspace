@@ -27,6 +27,8 @@ describe('Package A: Dedicated Registration UI & Component Tests', () => {
 
     await page.goto(`${server.origin}/register`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#authView', { state: 'visible' });
+    const emailField = page.getByRole('textbox', { name: 'Email' });
+    assert.equal(await emailField.getAttribute('placeholder'), 'ban@example.com');
 
     // 1. Initial focus on email input
     const isFocused = await page.evaluate(() => document.activeElement?.id === 'registerEmail');

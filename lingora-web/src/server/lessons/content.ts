@@ -24,7 +24,21 @@ export function publicExercise(ex: { id: string; itemId: string; itemRevisionId:
   if (ex.itemRevision.schemaVersion !== 1 || !parsed?.success) throw new LessonServiceError(409, 'CONTENT_INCONSISTENT', 'Định dạng bài tập không được hỗ trợ.');
   return { id: ex.id, itemId: ex.itemId, itemRevisionId: ex.itemRevisionId, position: ex.position, isCore: ex.isCore, type, schemaVersion: 1, promptData: parsed.data };
 }
-const snapshot = z.object({ schemaVersion: z.literal(1).optional(), languageId: text.optional(), canonicalForm: text, senseKey: text.optional(), meaningLabels: z.record(text, text), phonetic: text.nullable().optional(), partOfSpeech: text.nullable().optional(), example: text.nullable().optional() });
+const snapshot = z.object({
+  schemaVersion: z.literal(1).optional(),
+  languageId: text.optional(),
+  canonicalForm: text,
+  senseKey: text.optional(),
+  meaningLabels: z.record(text, text),
+  phonetic: text.nullable().optional(),
+  partOfSpeech: text.nullable().optional(),
+  example: text.nullable().optional(),
+  characters: z.array(z.object({
+    characterId: text,
+    position: z.number().int().positive(),
+    glyph: text,
+  })).optional(),
+});
 export function publicVocabulary(link: { id: string; position: number; isCore: boolean; displaySnapshot: unknown }): LearnerVocabularyDto {
   const parsed = snapshot.safeParse(link.displaySnapshot);
   if (!parsed.success) throw new LessonServiceError(409, 'CONTENT_INCONSISTENT', 'Định dạng từ vựng không được hỗ trợ.');

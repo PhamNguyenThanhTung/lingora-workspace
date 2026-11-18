@@ -3,6 +3,7 @@
 import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { PracticeSection } from './PracticeSection';
+import { WritingPracticeModal, type WritingPracticeCharacter } from './WritingPracticeModal';
 import { LessonContent } from '@lingora/lesson-content/LessonContent';
 import {
   toLessonPresentationDto,
@@ -46,6 +47,7 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
   const [readingState, setReadingState] = useState<ReadingState>(
     data?.consumption?.state || 'NOT_STARTED'
   );
+  const [activePracticeCharacter, setActivePracticeCharacter] = useState<WritingPracticeCharacter | null>(null);
   const [isActionPending, setIsActionPending] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [isStale, setIsStale] = useState(false);
@@ -351,6 +353,7 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
         ) : (
           <div id="lessonContentContainer" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             <LessonContent
+              onStartWritingPractice={setActivePracticeCharacter}
               presentation={
                 revision.presentation ??
                 toLessonPresentationDto(
@@ -363,6 +366,17 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
               }
             />
           </div>
+        )}
+
+        {/* Writing Practice Modal */}
+        {activePracticeCharacter && data && (
+          <WritingPracticeModal
+            contextId={data.contextId}
+            lessonId={data.lessonId}
+            expectedPublishedRevisionId={revision.id}
+            character={activePracticeCharacter}
+            onClose={() => setActivePracticeCharacter(null)}
+          />
         )}
 
         {/* Interactive Practice Section */}

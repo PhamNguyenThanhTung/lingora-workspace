@@ -124,7 +124,7 @@ export function LoginForm() {
               id="loginEmail"
               ref={emailInputRef}
               className="form-input"
-              placeholder="hocvien@lingora.edu.vn"
+              placeholder="ban@example.com"
               autoComplete="username"
               disabled={isPending}
               value={email}

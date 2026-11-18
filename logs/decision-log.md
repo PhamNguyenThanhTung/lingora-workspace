@@ -513,3 +513,35 @@ ADR-036 completion, 2/1/0 half-unit scoring and N+K denominator, redo/history an
 
 ### Status
 ACCEPTED — EXPLICIT PO PRODUCT DECISION; IMPLEMENTATION SPEC ISSUED; NO IMPLEMENTATION OR LIVE ACTION AUTHORIZATION
+
+## ADR-045 — WRITING SRS rating, identity and rollout
+
+### Date
+2026-11-17
+
+### Category
+product-behavior / SRS / writing-practice
+
+### Approval Evidence
+The Product Owner explicitly selected **“Duyệt đề xuất (Recommended)”** for `plans/2026-11-17-s6-09-writing-srs-decision-proposal.md` on 2026-11-17. This approves the bounded product behavior below and authorizes S6-09.2 implementation. It does not approve production deployment or a live database migration.
+
+### Context
+ADR-035/036/041 preserve server-authoritative SRS, Policy B, two ratings, one card per learner+Vocabulary, hidden due queues and immutable scored assessments. Sprint 6 adds lesson writing practice and a four-rating WRITING SRS request. Existing `SrsMemoryState` can separate skill state, while current review operations and client flow are MEANING-oriented.
+
+### Decision
+1. WRITING is a separate SRS skill on the existing learner+Vocabulary card. MEANING keeps Policy B, its two ratings, schedule and history unchanged. WRITING uses four explicit learner ratings `AGAIN`, `HARD`, `GOOD`, `EASY` with a separately versioned FSRS scheduler. The writing score never selects or derives a rating.
+2. A WRITING review item represents one enrolled Vocabulary. Its mapped characters are attempted in `VocabularyCharacter.position` order and receive one rating for the word. A Vocabulary is eligible only when its mapped characters have usable published stroke data. A character without a Vocabulary link remains lesson-only; do not create a synthetic Vocabulary or a per-character SRS card.
+3. Preserve existing enrollment: core Vocabulary enrolls on valid lesson completion; optional Vocabulary requires Add to Review. Create a separate WRITING state for an enrolled Vocabulary only when it becomes eligible. Its initial due date is at least one day after that state is initialized. Never modify MEANING state or due dates.
+4. A session starts before item selection and exposes only its current item. Before each character's first valid writing attempt, hide its glyph, reference strokes, reading and revealing media. Once all characters have valid server-graded attempts, expose the glyphs and feedback, then allow the learner to choose a rating. This review does not create lesson completion, unlock progression or enter Placement/Level-up scoring.
+5. A WRITING schedule operation is idempotent and stores skill, scheduler version and immutable scheduler/evidence receipt. State, operation, session progress and reward commit atomically. One valid first review may award the existing SRS activity reward; retry, replay and reinforcement do not award twice. Vocabulary achievements continue to count distinct Vocabulary identity.
+6. Retain WritingAttempt receipts and SRS review operations under their existing history policy. Do not persist raw stroke coordinates in the SRS record. Overall retention/anonymization duration remains governed by NFR and is not newly set here.
+7. WRITING rollout uses a dedicated disabled-by-default control that can enable synthetic/internal learners and later a cohort. Disabling it stops new WRITING sessions and reviews; keep existing WRITING states and receipts so rollout can resume. Migration is additive and is not reversed during rollback.
+
+### Alternatives
+Keep Policy B/two ratings for WRITING (rejected because it does not meet the four-rating request); create independent cards per character including standalone glyphs (rejected because it changes the existing Vocabulary identity/enrollment/reward model); defer WRITING SRS (not selected).
+
+### Implementation Notes
+Use a maintained scheduler implementation with a pinned model/package version, persist enough state to reproduce each transition, and leave MEANING on its existing scheduler. The official [`ts-fsrs@5.4.2` documentation](https://github.com/open-spaced-repetition/ts-fsrs/blob/v5.4.2/packages/fsrs/README.md) uses `fsrs()`, `createEmptyCard()` and `scheduler.next()`, supports four ratings and lists Node.js `>=20.0.0`; its 5.0 release introduced FSRS-6. The repository runtime is Node 24.22.1, and no deployment Node pin was found. S6-09.2 therefore uses this compatible pinned package/model rather than imposing the newer v6 Node 24 minimum. Implementation config uses documented 90% requested retention, disables interval fuzz and short-term learning steps, and stores FSRS states in the existing state field with an offset of one; scheduled days and learning steps are persisted separately. The initial WRITING review is due one day after state initialization. Rollout is controlled by `WRITING_SRS_ENABLED=true` plus a comma-separated `WRITING_SRS_LEARNER_IDS` UUID allowlist; both default to disabled/empty in `.env.example`.
+
+### Status
+ACCEPTED — EXPLICIT PO PRODUCT DECISION; S6-09.2 IMPLEMENTATION AUTHORIZED; DEPLOYMENT/LIVE MIGRATION NOT AUTHORIZED

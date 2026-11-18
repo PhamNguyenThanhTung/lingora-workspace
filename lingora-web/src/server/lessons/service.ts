@@ -139,7 +139,7 @@ export async function loadLearnerLessonDetail(contextId: string, lessonId: strin
   });
   const vocabulary = await db.lessonVocabularyLink.findMany({ where: { lessonRevisionId: rev.id }, orderBy: [{ position: 'asc' }, { id: 'asc' }], select: { id: true, position: true, isCore: true, displaySnapshot: true } });
 
-  const parsed = parsePersistedLessonContent(rev);
+  const parsed = parsePersistedLessonContent(rev, { allowCharacter: true });
   const contentBlocks = parsed.contentSchemaVersion === 0 && Array.isArray(rev.contentBlocks)
     ? rev.contentBlocks.map(block => {
         const b = block as { type?: unknown; text?: unknown } | null;

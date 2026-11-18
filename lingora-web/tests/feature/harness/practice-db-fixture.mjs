@@ -2,7 +2,13 @@ import { randomUUID } from 'node:crypto';
 import assert from 'node:assert/strict';
 import {submitTeacherLesson,approveReview,publishReview} from '../../../../lingora-admin/src/server/lessons/index.ts';
 
-export async function createPracticeFixture(db, {fiveTypes=false} = {}) {
+export async function createPracticeFixture(db, {
+  fiveTypes = false,
+  writingCharacter = false,
+  secondWritingCharacter = false,
+  canonicalForm = 'Hello',
+  meaningLabels = { vi: 'Xin chào', en: 'Hello' },
+} = {}) {
   const id = () => randomUUID();
   const f = {
     admin: id(),
@@ -99,12 +105,94 @@ export async function createPracticeFixture(db, {fiveTypes=false} = {}) {
       assignmentId: f.assignment,
       creationAssignmentEpisodeId: f.episode,
       status: 'DRAFT',
+      contentSchemaVersion: writingCharacter ? 1 : 0,
       title: { en: 'Published local X' },
       contentBlocks: [{ type: 'paragraph', text: 'Local X content' }],
       createdBy: f.teacher,
       lastEditedBy: f.teacher,
     },
   });
+
+  if (writingCharacter) {
+    const character = await db.writingCharacter.create({
+      data: {
+        languageId: f.lang,
+        glyph: '文',
+        scriptType: 'KANJI',
+        meaning: 'chữ viết',
+        primaryReading: 'ぶん',
+        romanization: 'bun',
+        strokeCount: 1,
+      },
+    });
+    const strokes = [{
+      index: 1,
+      path: 'M0.1,0.5 L0.9,0.5',
+      start: [0.1, 0.5],
+      end: [0.9, 0.5],
+      points: [[0.1, 0.5], [0.9, 0.5]],
+    }];
+    await db.characterStrokeData.create({
+      data: {
+        characterId: character.id,
+        version: 1,
+        strokes,
+        source: 'synthetic-test-fixture',
+        license: 'CC0-1.0',
+      },
+    });
+    await db.lessonContentBlock.create({
+      data: {
+        lessonRevisionId: f.revision,
+        blockKey: 'script-character',
+        type: 'CHARACTER',
+        position: 1,
+        schemaVersion: 1,
+        content: {
+          characterId: character.id,
+          showMeaning: true,
+          showReading: true,
+          showStrokeAnimation: true,
+          guidedWriting: true,
+          snapshot: {
+            glyph: character.glyph,
+            scriptType: character.scriptType,
+            meaning: character.meaning,
+            primaryReading: character.primaryReading,
+            romanization: character.romanization,
+            strokeCount: character.strokeCount,
+            strokeVersion: 1,
+            metadata: {},
+          },
+        },
+      },
+    });
+    f.characterId = character.id;
+    f.strokeData = strokes;
+
+    if (secondWritingCharacter) {
+      const char2 = await db.writingCharacter.create({
+        data: {
+          languageId: f.lang,
+          glyph: '字',
+          scriptType: 'KANJI',
+          meaning: 'chữ',
+          primaryReading: 'じ',
+          strokeCount: 1,
+        },
+      });
+      await db.characterStrokeData.create({
+        data: {
+          characterId: char2.id,
+          version: 1,
+          strokes,
+          source: 'synthetic-test-fixture',
+          license: 'CC0-1.0',
+        },
+      });
+      f.secondCharacterId = char2.id;
+    }
+  }
 
   // Practice Exercise (MCQ)
   const item = await db.itemIdentity.create({
@@ -150,10 +238,10 @@ export async function createPracticeFixture(db, {fiveTypes=false} = {}) {
     data: {
       id: f.vocabId,
       languageId: f.lang,
-      canonicalForm: 'Hello',
-      normalizedForm: 'hello',
+      canonicalForm,
+      normalizedForm: canonicalForm.toLowerCase(),
       senseKey: 'greeting',
-      meaningLabels: { vi: 'Xin chào', en: 'Hello' },
+      meaningLabels,
       createdBy: f.teacher,
     },
   });
@@ -167,9 +255,35 @@ export async function createPracticeFixture(db, {fiveTypes=false} = {}) {
       displaySnapshot: {
         schemaVersion: 1,
         languageId: f.lang,
-        canonicalForm: 'Hello',
+        canonicalForm,
         senseKey: 'greeting',
-        meaningLabels: { vi: 'Xin chào', en: 'Hello' },
+        meaningLabels,
+        ...(writingCharacter ? {
+          characters: [
+            {
+              characterId: f.characterId,
+              position: 1,
+              glyph: '文',
+              scriptType: 'KANJI',
+              meaning: 'văn tự',
+              primaryReading: 'ぶん',
+              romanization: 'bun',
+              strokeCount: 1,
+              strokeVersion: 1,
+            },
+            ...(secondWritingCharacter ? [{
+              characterId: f.secondCharacterId,
+              position: 2,
+              glyph: '字',
+              scriptType: 'KANJI',
+              meaning: 'chữ',
+              primaryReading: 'じ',
+              romanization: 'ji',
+              strokeCount: 1,
+              strokeVersion: 1,
+            }] : []),
+          ],
+        } : {}),
       },
     },
   });

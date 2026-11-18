@@ -655,6 +655,10 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
     // Click edit on UNIT-01
     await page.click('#btn-edit-unit-44444444-4444-4444-8444-444444444040');
     await page.waitForSelector('#unitFormModal', { state: 'visible' });
+    await page.waitForFunction(() =>
+      document.querySelector('#inputUnitCode')?.value === 'UNIT-01' &&
+      document.querySelector('#inputUnitPosition')?.value === '1'
+    );
 
     // Verify modal title and populated inputs
     const title = await page.textContent('#unitModalTitle');

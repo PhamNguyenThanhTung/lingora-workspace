@@ -100,6 +100,11 @@ export interface LearnerVocabularyDto {
     phonetic?: string | null;
     partOfSpeech?: string | null;
     example?: string | null;
+    characters?: Array<{
+      characterId: string;
+      position: number;
+      glyph: string;
+    }>;
   };
 }
 

@@ -120,6 +120,39 @@ test('Real PostgreSQL: Double-submit with same contextId & intent converges idem
   assert.equal(totalPlans, 1);
 });
 
+test('Real PostgreSQL: Explicit DEFAULT course choice is part of the idempotency fingerprint', async () => {
+  const learner = await createFreshLearner(db);
+  const contextId = randomUUID();
+  const payload = {
+    contextId,
+    languageId: f.lang,
+    entryChoice: { startSource: 'DEFAULT', courseId: f.course },
+    expectedCourseId: f.course,
+    expectedStartLevelId: f.level,
+  };
+
+  await completeOnboarding(learner, payload, db);
+  await assert.rejects(completeOnboarding(learner, {
+    ...payload,
+    entryChoice: { startSource: 'DEFAULT' },
+  }, db), { status: 409, code: 'CONTEXT_CONFLICT' });
+});
+
+test('Complete rejects an explicit DEFAULT course that went inactive after preview', async () => {
+  const learner = await createFreshLearner(db);
+  const contextId = randomUUID();
+  await db.course.update({ where: { id: f.course }, data: { isActive: false } });
+
+  await assert.rejects(completeOnboarding(learner, {
+    contextId,
+    languageId: f.lang,
+    entryChoice: { startSource: 'DEFAULT', courseId: f.course },
+    expectedCourseId: f.course,
+    expectedStartLevelId: f.level,
+  }, db), { status: 409, code: 'RECOMMENDATION_CHANGED' });
+  assert.equal(await db.learningContext.count({ where: { id: contextId } }), 0);
+});
+
 test('Real PostgreSQL: Reusing contextId with conflicting payload fails 409 CONTEXT_CONFLICT', async () => {
   const learner = await createFreshLearner(db);
   const contextId = randomUUID();

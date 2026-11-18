@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import type { ReviewDetailDto } from '@/server/lessons/workflow';
+import type { ReviewDetailDto, AdminCharacterBlock } from '@/server/lessons/workflow';
 import type { ReviewCommentDto } from '@/server/lessons/comments';
 import { LessonContent } from '@lingora/lesson-content/LessonContent';
 import { BlockComments } from './lesson-studio/BlockComments';
@@ -528,16 +528,135 @@ export function ReviewDetailView({
                 </div>
 
                 <div style={{ fontSize: '14px', lineHeight: '1.6', background: '#f8fafc', padding: '10px 14px', borderRadius: '4px' }}>
-                  <LessonContent
-                    presentation={{
-                      contentSchemaVersion: 1,
-                      blocks: [block],
-                      vocabulary: block.type === 'VOCABULARY'
-                        ? detail.revision.presentation?.vocabulary || []
-                        : [],
-                      exercises: [],
-                    }}
-                  />
+                  {block.type === 'CHARACTER' ? (
+                    (() => {
+                      const charBlock = block as AdminCharacterBlock;
+                      return (
+                        <div
+                          id={`review-character-card-${charBlock.blockKey}`}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '20px',
+                            flexWrap: 'wrap',
+                          }}
+                        >
+                          <div
+                            id={`review-character-glyph-${charBlock.blockKey}`}
+                            style={{
+                              fontSize: '40px',
+                              fontWeight: 'bold',
+                              width: '72px',
+                              height: '72px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              background: '#ffffff',
+                              borderRadius: '8px',
+                              border: '2px solid #cbd5e1',
+                              color: '#0f172a',
+                            }}
+                            aria-label={`Ký tự ${charBlock.glyph}`}
+                          >
+                            {charBlock.glyph}
+                          </div>
+
+                          <div style={{ flex: 1, minWidth: '240px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                              <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '15px' }}>
+                                {charBlock.scriptType}
+                              </span>
+                              <span style={{ color: '#64748b', fontSize: '13px' }}>
+                                ({charBlock.strokeCount} nét)
+                              </span>
+                              {typeof charBlock.strokeVersion === 'number' ? (
+                                <span
+                                  id={`review-character-badge-pin-${charBlock.blockKey}`}
+                                  style={{
+                                    background: '#dcfce7',
+                                    color: '#15803d',
+                                    fontSize: '11px',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  ✓ Ghim nét v{charBlock.strokeVersion}
+                                </span>
+                              ) : (
+                                <span
+                                  id={`review-character-badge-nopin-${charBlock.blockKey}`}
+                                  style={{
+                                    background: '#f1f5f9',
+                                    color: '#64748b',
+                                    fontSize: '11px',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  Ký tự tĩnh (không ghim nét)
+                                </span>
+                              )}
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                              <span
+                                id={`review-character-anim-badge-${charBlock.blockKey}`}
+                                style={{
+                                  fontSize: '11px',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  fontWeight: 500,
+                                  background: charBlock.showStrokeAnimation ? '#e0f2fe' : '#f1f5f9',
+                                  color: charBlock.showStrokeAnimation ? '#0369a1' : '#64748b',
+                                }}
+                              >
+                                Hoạt ảnh nét: {charBlock.showStrokeAnimation ? `Bật${typeof charBlock.strokeVersion === 'number' ? ` (v${charBlock.strokeVersion})` : ''}` : 'Tắt'}
+                              </span>
+                              <span
+                                id={`review-character-guided-badge-${charBlock.blockKey}`}
+                                style={{
+                                  fontSize: '11px',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  fontWeight: 500,
+                                  background: charBlock.guidedWriting ? '#e0f2fe' : '#f1f5f9',
+                                  color: charBlock.guidedWriting ? '#0369a1' : '#64748b',
+                                }}
+                              >
+                                Luyện viết: {charBlock.guidedWriting ? `Bật${typeof charBlock.strokeVersion === 'number' ? ` (v${charBlock.strokeVersion})` : ''}` : 'Tắt'}
+                              </span>
+                            </div>
+
+                            {charBlock.showMeaning && (
+                              <div id={`review-character-meaning-${charBlock.blockKey}`} style={{ fontSize: '13px', color: '#334155', marginTop: '2px' }}>
+                                <strong>Nghĩa:</strong> {charBlock.meaning || '(trống)'}
+                              </div>
+                            )}
+
+                            {charBlock.showReading && (
+                              <div id={`review-character-reading-${charBlock.blockKey}`} style={{ fontSize: '13px', color: '#475569', marginTop: '2px' }}>
+                                <strong>Cách đọc:</strong> {charBlock.primaryReading || charBlock.romanization || '(trống)'}
+                                {charBlock.romanization && charBlock.primaryReading ? ` (${charBlock.romanization})` : ''}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    <LessonContent
+                      presentation={{
+                        contentSchemaVersion: 1,
+                        blocks: [block as any],
+                        vocabulary: block.type === 'VOCABULARY'
+                          ? detail.revision.presentation?.vocabulary || []
+                          : [],
+                        exercises: [],
+                      }}
+                    />
+                  )}
                 </div>
 
                 <BlockComments

@@ -238,6 +238,14 @@ async function run() {
 
     // Verify Continue Learning banner is present
     await page.waitForSelector('#continueLearningBanner', { timeout: 10000 });
+    const continueLink = page.locator('#continueLearningBtn');
+    assert.equal((await continueLink.innerText()).trim(), 'Bắt đầu học');
+    assert.match((await page.locator('#pathProgressSummary').innerText()).trim(), /^0\/2 bài đã hoàn thành$/);
+    assert.equal(await page.evaluate(() => {
+      const action = document.querySelector('#continueLearningBanner');
+      const gamification = document.querySelector('#gamificationOverview');
+      return !!action && !!gamification && Boolean(action.compareDocumentPosition(gamification) & Node.DOCUMENT_POSITION_FOLLOWING);
+    }), true, 'The main learning action must appear before gamification');
 
     // Verify Path nodes: Lesson 1 is present
     await page.waitForSelector(`#pathNode-${lesson1Id}`, { timeout: 10000 });
@@ -253,7 +261,6 @@ async function run() {
     // Step 2: Click Continue Learning to enter Lesson 1 Practice
     // -------------------------------------------------------------
     console.log('Clicking continue learning CTA...');
-    const continueLink = page.locator('#continueLearningBtn');
     await continueLink.focus();
     await continueLink.press('Enter');
     await page.waitForURL(`**/learn/${CONTEXT_ID}/${lesson1Id}`);

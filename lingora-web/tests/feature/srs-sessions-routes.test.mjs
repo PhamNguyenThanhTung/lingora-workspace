@@ -34,6 +34,7 @@ mock.module('next/headers.js', {
 const sessionsRoute = await import('../../src/app/api/srs/sessions/route.ts');
 const sessionDetailRoute = await import('../../src/app/api/srs/sessions/[sessionId]/route.ts');
 const sessionReviewsRoute = await import('../../src/app/api/srs/sessions/[sessionId]/reviews/route.ts');
+const sessionWritingAttemptsRoute = await import('../../src/app/api/srs/sessions/[sessionId]/writing-attempts/route.ts');
 const sessionCompleteRoute = await import('../../src/app/api/srs/sessions/[sessionId]/complete/route.ts');
 
 function setAuthenticatedCookie(userId = learnerId, email = fixtureEmail) {
@@ -224,6 +225,65 @@ describe('S5-03: SRS Sessions API Route Handlers', () => {
     assert.equal(body.data.status, 'COMPLETED');
     assert.equal(body.data.progress.completedCount, 1);
     assert.equal(body.data.recordedRating, 'REMEMBERED');
+  });
+
+  test('POST /api/srs/sessions/:sessionId/writing-attempts rejects cross-origin and malformed stroke input', async () => {
+    const foreignOrigin = await sessionWritingAttemptsRoute.POST(
+      new Request('http://localhost:3000/api/srs/sessions/session-id/writing-attempts', {
+        method: 'POST',
+        headers: { Origin: 'https://evil.com', 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      }),
+      { params: { sessionId: randomUUID() } },
+    );
+    assert.equal(foreignOrigin.status, 403);
+
+    const invalid = await sessionWritingAttemptsRoute.POST(
+      new Request('http://localhost:3000/api/srs/sessions/session-id/writing-attempts', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ cardId: randomUUID(), operationKey: randomUUID(), characterNumber: 1, candidateStrokes: [{ points: [[0, 0], [1.1, 0.5]] }] }),
+      }),
+      { params: { sessionId: randomUUID() } },
+    );
+    assert.equal(invalid.status, 400);
+    assert.equal((await invalid.json()).error.code, 'VALIDATION_ERROR');
+
+    // Reject missing characterNumber
+    const missingOrdinal = await sessionWritingAttemptsRoute.POST(
+      new Request('http://localhost:3000/api/srs/sessions/session-id/writing-attempts', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ cardId: randomUUID(), operationKey: randomUUID(), candidateStrokes: [{ points: [[0, 0], [0.5, 0.5]] }] }),
+      }),
+      { params: { sessionId: randomUUID() } },
+    );
+    assert.equal(missingOrdinal.status, 400);
+    assert.equal((await missingOrdinal.json()).error.code, 'VALIDATION_ERROR');
+
+    // Reject invalid characterNumber (<= 0)
+    const invalidOrdinal = await sessionWritingAttemptsRoute.POST(
+      new Request('http://localhost:3000/api/srs/sessions/session-id/writing-attempts', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ cardId: randomUUID(), operationKey: randomUUID(), characterNumber: 0, candidateStrokes: [{ points: [[0, 0], [0.5, 0.5]] }] }),
+      }),
+      { params: { sessionId: randomUUID() } },
+    );
+    assert.equal(invalidOrdinal.status, 400);
+    assert.equal((await invalidOrdinal.json()).error.code, 'VALIDATION_ERROR');
+
+    // Strict body: reject extra sessionId in request body
+    const extraSessionId = await sessionWritingAttemptsRoute.POST(
+      new Request('http://localhost:3000/api/srs/sessions/session-id/writing-attempts', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ sessionId: randomUUID(), cardId: randomUUID(), operationKey: randomUUID(), characterNumber: 1, candidateStrokes: [{ points: [[0, 0], [0.5, 0.5]] }] }),
+      }),
+      { params: { sessionId: randomUUID() } },
+    );
+    assert.equal(extraSessionId.status, 400);
+    assert.equal((await extraSessionId.json()).error.code, 'VALIDATION_ERROR');
   });
 
   test('POST /api/srs/sessions/:sessionId/complete seals session', async () => {

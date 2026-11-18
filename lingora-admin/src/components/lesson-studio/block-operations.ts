@@ -1,5 +1,7 @@
 import type { LessonBlock, LessonBlockType } from '@lingora/lesson-content';
 
+export type StudioBlockType = LessonBlockType | 'CHARACTER';
+
 let blockKeyCounter = 0;
 
 /**
@@ -17,10 +19,10 @@ export function generateBlockKey(type: string = 'block'): string {
  * Tạo một khối nội dung mặc định hợp lệ theo từng LessonBlockType với schemaVersion=1.
  */
 export function createDefaultBlock(
-  type: LessonBlockType,
+  type: StudioBlockType,
   position: number = 1,
   customKey?: string
-): LessonBlock {
+): any {
   const blockKey = customKey || generateBlockKey(type);
   const normalizedPosition = Math.max(1, Math.floor(position));
 
@@ -159,6 +161,21 @@ export function createDefaultBlock(
         },
       };
 
+    case 'CHARACTER':
+      return {
+        blockKey,
+        type: 'CHARACTER',
+        position: normalizedPosition,
+        schemaVersion: 1,
+        content: {
+          characterId: '',
+          showMeaning: true,
+          showReading: true,
+          showStrokeAnimation: false,
+          guidedWriting: false,
+        },
+      };
+
     default: {
       const exhaustiveCheck: never = type;
       throw new Error(`Kiểu khối nội dung không được hỗ trợ: ${exhaustiveCheck}`);
@@ -169,7 +186,7 @@ export function createDefaultBlock(
 /**
  * Chuẩn hóa lại position cho danh sách blocks (1-based index tăng dần liên tục).
  */
-export function normalizePositions(blocks: LessonBlock[]): LessonBlock[] {
+export function normalizePositions(blocks: any[]): any[] {
   return blocks.map((block, index) => {
     const nextPos = index + 1;
     if (block.position === nextPos) return block;
@@ -182,10 +199,10 @@ export function normalizePositions(blocks: LessonBlock[]): LessonBlock[] {
  * Chuẩn hóa lại position 1-based index tăng dần.
  */
 export function addBlock(
-  blocks: LessonBlock[],
-  type: LessonBlockType,
+  blocks: any[],
+  type: StudioBlockType,
   targetIndex?: number
-): LessonBlock[] {
+): any[] {
   const insertIndex =
     targetIndex === undefined || targetIndex < 0 || targetIndex > blocks.length
       ? blocks.length

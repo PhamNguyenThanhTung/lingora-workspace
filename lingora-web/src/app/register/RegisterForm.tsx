@@ -146,7 +146,7 @@ export function RegisterForm() {
                 id="registerEmail"
                 ref={emailInputRef}
                 className="form-input"
-                placeholder="hocvien@lingora.edu.vn"
+                placeholder="ban@example.com"
                 autoComplete="email"
                 disabled={isPending}
                 value={email}

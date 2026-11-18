@@ -1,12 +1,81 @@
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
-import { lessonBlocksCollectionSchema, type LessonBlock } from '@lingora/lesson-content';
+import {
+  headingBlockSchema,
+  textBlockSchema,
+  grammarBlockSchema,
+  exampleBlockSchema,
+  dialogueBlockSchema,
+  calloutBlockSchema,
+  mediaBlockSchema,
+  vocabularyBlockSchema,
+  dividerBlockSchema,
+  characterBlockAuthorInputSchema,
+  MAX_BLOCKS_PER_REVISION,
+  MAX_BLOCK_PAYLOAD_BYTES,
+  type LessonBlock,
+} from '@lingora/lesson-content';
 
-export const lessonBlockCollectionSchema = lessonBlocksCollectionSchema;
-export type { LessonBlock };
-
-import { isValidUuid } from '../frameworks/index.ts';
+import { isValidUuid, type ApiErrorEnvelope } from '../frameworks/index.ts';
 export { isValidUuid };
+
+export class ControlledDraftError extends Error {
+  status: number;
+  error: ApiErrorEnvelope['error'];
+  constructor(status: number, error: ApiErrorEnvelope['error']) {
+    super(error?.message || 'ControlledDraftError');
+    this.status = status;
+    this.error = error;
+    this.name = 'ControlledDraftError';
+  }
+}
+
+export const teacherLessonAuthorBlockSchema = z.discriminatedUnion('type', [
+  headingBlockSchema,
+  textBlockSchema,
+  grammarBlockSchema,
+  exampleBlockSchema,
+  dialogueBlockSchema,
+  calloutBlockSchema,
+  mediaBlockSchema,
+  vocabularyBlockSchema,
+  dividerBlockSchema,
+  characterBlockAuthorInputSchema,
+]);
+
+export type TeacherLessonAuthorBlock = z.infer<typeof teacherLessonAuthorBlockSchema>;
+
+export const teacherLessonAuthorBlocksCollectionSchema = z
+  .array(teacherLessonAuthorBlockSchema)
+  .max(MAX_BLOCKS_PER_REVISION, `Tối đa ${MAX_BLOCKS_PER_REVISION} khối nội dung trong một bài học`)
+  .superRefine((blocks, ctx) => {
+    const keySet = new Set<string>();
+    const posSet = new Set<number>();
+
+    for (let i = 0; i < blocks.length; i++) {
+      const b = blocks[i];
+      if (keySet.has(b.blockKey)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Khóa khối nội dung (blockKey) không được trùng lặp: ${b.blockKey}`,
+          path: [i, 'blockKey'],
+        });
+      }
+      keySet.add(b.blockKey);
+
+      if (posSet.has(b.position)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Thứ tự vị trí (position) của các khối không được trùng lặp: ${b.position}`,
+          path: [i, 'position'],
+        });
+      }
+      posSet.add(b.position);
+    }
+  });
+
+export const lessonBlockCollectionSchema = teacherLessonAuthorBlocksCollectionSchema;
+export type { LessonBlock };
 
 export const MAX_COLLECTION_SIZE = 100;
 export const MAX_POSITION = 2147483647;
@@ -517,7 +586,7 @@ export const saveTeacherDraftExtendedSchema = z
       )
       .max(50, 'Tối đa 50 đoạn văn')
       .optional(),
-    blocks: lessonBlocksCollectionSchema.optional(),
+    blocks: teacherLessonAuthorBlocksCollectionSchema.optional(),
     changeSummary: z
       .string({ message: 'Tóm tắt thay đổi phải là chuỗi ký tự' })
       .trim()

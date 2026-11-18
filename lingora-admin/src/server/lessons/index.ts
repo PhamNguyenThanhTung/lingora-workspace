@@ -1,5 +1,11 @@
 import { revisionChildRelations, unsupportedChildren, sameVocabularyMetadata, vocabularySnapshotSchema } from './snapshot.ts';
-import { persistLessonRevisionBlocks } from './blocks.ts';
+import {
+  persistLessonRevisionBlocks,
+  resolveAndPersistLessonRevisionBlocks,
+  validatePersistedLessonBlock,
+  validatePersistedLessonBlocks,
+  validatePersistedRevisionCharacterBlocks,
+} from './blocks.ts';
 import { z } from 'zod';
 import {
   parsePersistedLessonContent,
@@ -7,6 +13,7 @@ import {
   toLessonPresentationDto,
   type PresentationBlock,
   type LessonPresentationDto,
+  characterBlockPersistedSchema,
 } from '@lingora/lesson-content';
 import { getProductPrisma } from '../db/index.js';
 import { isValidUuid, type ApiErrorEnvelope } from '../frameworks/index.ts';
@@ -15,9 +22,11 @@ import {
   computeExerciseFingerprint,
   normalizeVocabularyTerm,
   lessonBlockCollectionSchema,
+  ControlledDraftError,
   type ExerciseInput,
   type VocabularyInput,
   type ExerciseType,
+  type TeacherLessonAuthorBlock,
 } from './content.ts';
 
 export { isValidUuid };
@@ -26,9 +35,14 @@ export {
   computeExerciseFingerprint,
   normalizeVocabularyTerm,
   lessonBlockCollectionSchema,
+  ControlledDraftError,
+  validatePersistedLessonBlock,
+  validatePersistedLessonBlocks,
+  validatePersistedRevisionCharacterBlocks,
   type ExerciseInput,
   type VocabularyInput,
   type ExerciseType,
+  type TeacherLessonAuthorBlock,
 };
 export {
   WORKFLOW_STATUS_LABELS,
@@ -91,6 +105,18 @@ export interface VocabularyOptionDto {
   phonetic: string | null;
   partOfSpeech: string | null;
   example: string | null;
+}
+
+export interface CharacterOptionDto {
+  id: string;
+  languageId: string;
+  glyph: string;
+  scriptType: string;
+  strokeCount: number;
+  meaning: string | null;
+  primaryReading: string | null;
+  romanization: string | null;
+  hasStrokes: boolean;
 }
 
 export interface LessonAssignmentDto {
@@ -170,12 +196,15 @@ export interface LessonDetailDto extends LessonSummaryDto {
   revisions: LessonRevisionSummaryDto[];
 }
 
-export interface TeacherLessonDetailDto extends LessonDetailDto {
+export interface TeacherLessonDetailDto extends Omit<LessonDetailDto, 'currentDraft' | 'blocks'> {
+  currentDraft: (Omit<NonNullable<LessonDetailDto['currentDraft']>, 'blocks'> & {
+    blocks?: any[];
+  }) | null;
   courseContext: LessonDetailDto['courseContext'] & {
     languageId: string;
   };
   contentSchemaVersion?: number;
-  blocks?: PresentationBlock[];
+  blocks?: any[];
   presentation?: LessonPresentationDto;
   reviewComments?: TeacherReviewCommentDto[];
   exercises: TeacherExerciseDto[];
@@ -189,17 +218,6 @@ export interface TeacherLessonDetailDto extends LessonDetailDto {
 export interface TeacherOptionDto {
   id: string;
   displayName: string | null;
-}
-
-export class ControlledDraftError extends Error {
-  status: number;
-  error: ApiErrorEnvelope['error'];
-  constructor(status: number, error: ApiErrorEnvelope['error']) {
-    super(error?.message || 'ControlledDraftError');
-    this.status = status;
-    this.error = error;
-    this.name = 'ControlledDraftError';
-  }
 }
 
 // =============================================================================
@@ -331,6 +349,48 @@ export function hasUnsupportedRevisionAssociations(rev: any, languageId?: string
   return unsupportedChildren(rev, languageId, allowFrozenPredecessor);
 }
 
+export function isSupportedPersistedContent(highestRev: any): boolean {
+  if (highestRev.contentSchemaVersion !== 1) {
+    return isSupportedContentBlocks(highestRev.contentBlocks);
+  }
+
+  const parsed = parsePersistedLessonContent(highestRev);
+  const rawBlocks = Array.isArray(highestRev.blocks) ? highestRev.blocks : [];
+  const rawMap = new Map<string, any>(rawBlocks.map((b: any) => [b.blockKey, b]));
+
+  for (const block of parsed.blocks) {
+    if (block.type === 'UNSUPPORTED') {
+      if (block.originalType === 'CHARACTER') {
+        const raw = rawMap.get(block.blockKey);
+        if (!raw) return false;
+        let content = (raw as any).content;
+        if (typeof content === 'string') {
+          try {
+            content = JSON.parse(content);
+          } catch {
+            return false;
+          }
+        }
+        const candidate = {
+          blockKey: (raw as any).blockKey,
+          type: 'CHARACTER',
+          position: (raw as any).position,
+          schemaVersion: (raw as any).schemaVersion ?? 1,
+          content,
+        };
+        const res = characterBlockPersistedSchema.safeParse(candidate);
+        if (!res.success) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 export function evaluateEditability(highestRev: any, languageId?: string): { isEditable: boolean; editabilityReason: string | null } {
   if (!highestRev) {
     return { isEditable: true, editabilityReason: null };
@@ -378,9 +438,7 @@ export function evaluateEditability(highestRev: any, languageId?: string): { isE
       editabilityReason: 'Bản nháp đã từng được nộp duyệt hoặc có dấu vết quy trình nộp, không thể chỉnh sửa.',
     };
   }
-  const contentSupported = highestRev.contentSchemaVersion === 1
-    ? !parsePersistedLessonContent(highestRev).blocks.some(block => block.type === 'UNSUPPORTED')
-    : isSupportedContentBlocks(highestRev.contentBlocks);
+  const contentSupported = isSupportedPersistedContent(highestRev);
 
   if (!isSupportedTitle(highestRev.title) || !contentSupported) {
     return {
@@ -461,6 +519,78 @@ export function toLessonSummaryDto(lesson: any): LessonSummaryDto {
     isEditable,
     editabilityReason,
   };
+}
+
+export function projectAuthorBlocks(rawBlocks: any[]): any[] {
+  if (!Array.isArray(rawBlocks)) return [];
+  return rawBlocks.map((b) => {
+    if (b.type === 'CHARACTER') {
+      let content = b.content;
+      if (typeof content === 'string') {
+        try {
+          content = JSON.parse(content);
+        } catch {
+          return {
+            blockKey: b.blockKey,
+            type: 'UNSUPPORTED',
+            position: b.position,
+            schemaVersion: b.schemaVersion ?? 1,
+            originalType: 'CHARACTER',
+            message: 'Khối nội dung không được hỗ trợ trong phiên bản hiện tại.',
+          };
+        }
+      }
+      const candidate = {
+        blockKey: b.blockKey,
+        type: 'CHARACTER',
+        position: b.position,
+        schemaVersion: b.schemaVersion ?? 1,
+        content,
+      };
+      const parsedChar = characterBlockPersistedSchema.safeParse(candidate);
+      if (!parsedChar.success) {
+        return {
+          blockKey: b.blockKey,
+          type: 'UNSUPPORTED',
+          position: b.position,
+          schemaVersion: b.schemaVersion ?? 1,
+          originalType: 'CHARACTER',
+          message: 'Khối nội dung không được hỗ trợ trong phiên bản hiện tại.',
+        };
+      }
+      const valid = parsedChar.data;
+      const snap = valid.content.snapshot;
+      return {
+        blockKey: valid.blockKey,
+        type: 'CHARACTER' as const,
+        position: valid.position,
+        schemaVersion: valid.schemaVersion,
+        content: {
+          characterId: valid.content.characterId,
+          showMeaning: valid.content.showMeaning,
+          showReading: valid.content.showReading,
+          showStrokeAnimation: valid.content.showStrokeAnimation,
+          guidedWriting: valid.content.guidedWriting,
+        },
+        selectedLabel: snap ? {
+          glyph: snap.glyph,
+          scriptType: snap.scriptType,
+          strokeCount: snap.strokeCount,
+          meaning: snap.meaning ?? null,
+          primaryReading: snap.primaryReading ?? null,
+          romanization: snap.romanization ?? null,
+          hasStrokes: typeof snap.strokeVersion === 'number' && snap.strokeVersion > 0 ? true : undefined,
+        } : undefined,
+      };
+    }
+    return {
+      blockKey: b.blockKey,
+      type: b.type,
+      position: b.position,
+      schemaVersion: b.schemaVersion ?? 1,
+      content: b.content,
+    };
+  });
 }
 
 export function toLessonDetailDto(lesson: any): LessonDetailDto {
@@ -623,14 +753,76 @@ export function toTeacherLessonDetailDto(lesson: any, languageId?: string): Teac
     }
   }
 
+  const rawBlocks = highestRev && Array.isArray(highestRev.blocks) ? highestRev.blocks : [];
+  const rawMap = new Map<string, any>(rawBlocks.map((b: any) => [b.blockKey, b]));
+
+  const projectedBlocks = parsedContent.blocks.map((block) => {
+    if (block.type === 'UNSUPPORTED' && block.originalType === 'CHARACTER') {
+      const raw = rawMap.get(block.blockKey);
+      if (raw) {
+        let content = (raw as any).content;
+        if (typeof content === 'string') {
+          try {
+            content = JSON.parse(content);
+          } catch {
+            return block;
+          }
+        }
+        const candidate = {
+          blockKey: (raw as any).blockKey,
+          type: 'CHARACTER',
+          position: (raw as any).position,
+          schemaVersion: (raw as any).schemaVersion ?? 1,
+          content,
+        };
+        const parsedChar = characterBlockPersistedSchema.safeParse(candidate);
+        if (parsedChar.success) {
+          const valid = parsedChar.data;
+          const snap = valid.content.snapshot;
+          return {
+            blockKey: valid.blockKey,
+            type: 'CHARACTER' as const,
+            position: valid.position,
+            schemaVersion: valid.schemaVersion,
+            content: {
+              characterId: valid.content.characterId,
+              showMeaning: valid.content.showMeaning,
+              showReading: valid.content.showReading,
+              showStrokeAnimation: valid.content.showStrokeAnimation,
+              guidedWriting: valid.content.guidedWriting,
+            },
+            selectedLabel: snap ? {
+              glyph: snap.glyph,
+              scriptType: snap.scriptType,
+              strokeCount: snap.strokeCount,
+              meaning: snap.meaning ?? null,
+              primaryReading: snap.primaryReading ?? null,
+              romanization: snap.romanization ?? null,
+              hasStrokes: typeof snap.strokeVersion === 'number' && snap.strokeVersion > 0 ? true : undefined,
+            } : undefined,
+          };
+        }
+      }
+    }
+    return block;
+  });
+
+  const currentDraft = baseDetail.currentDraft
+    ? {
+        ...baseDetail.currentDraft,
+        blocks: projectedBlocks,
+      }
+    : null;
+
   return {
     ...baseDetail,
+    currentDraft,
     courseContext: {
       ...baseDetail.courseContext,
       languageId: courseLangId,
     },
     contentSchemaVersion: parsedContent.contentSchemaVersion,
-    blocks: parsedContent.blocks,
+    blocks: projectedBlocks,
     presentation,
     reviewComments,
     exercises,
@@ -1855,6 +2047,324 @@ export async function getTeacherVocabularyOptions(
   }
 }
 
+export interface CharacterCursorPayload {
+  id: string;
+  strokeCount: number;
+  glyph: string;
+}
+
+export function encodeCharacterCursor(payload: CharacterCursorPayload): string {
+  const jsonStr = JSON.stringify({
+    id: payload.id,
+    strokeCount: payload.strokeCount,
+    glyph: payload.glyph,
+  });
+  return Buffer.from(jsonStr, 'utf8').toString('base64url');
+}
+
+export function decodeCharacterCursor(cursorStr: string): CharacterCursorPayload | null {
+  if (typeof cursorStr !== 'string' || cursorStr.trim() === '' || cursorStr.length > 1024) {
+    return null;
+  }
+  if (isValidUuid(cursorStr)) {
+    return { id: cursorStr.toLowerCase(), strokeCount: -1, glyph: '' };
+  }
+  try {
+    const buf = Buffer.from(cursorStr, 'base64url');
+    const jsonStr = buf.toString('utf8');
+    if (buf.toString('base64url') !== cursorStr) {
+      return null;
+    }
+    const parsed = JSON.parse(jsonStr);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return null;
+    }
+    if (typeof (parsed as any).id !== 'string' || !isValidUuid((parsed as any).id)) {
+      return null;
+    }
+    return {
+      id: (parsed as any).id.toLowerCase(),
+      strokeCount: typeof (parsed as any).strokeCount === 'number' ? (parsed as any).strokeCount : -1,
+      glyph: typeof (parsed as any).glyph === 'string' ? (parsed as any).glyph : '',
+    };
+  } catch {
+    return null;
+  }
+}
+
+export interface TeacherCharacterOptionsData {
+  data: CharacterOptionDto[];
+  nextCursor?: string | null;
+  hasMore?: boolean;
+  pagination?: {
+    nextCursor: string | null;
+    hasMore: boolean;
+  };
+}
+
+export async function getTeacherCharacterOptions(
+  teacherAccountId: string,
+  lessonId: string,
+  rawQuery: string,
+  continuationOrPrismaClient?: string | null | any,
+  prismaClient?: any
+): Promise<{ status: number; data?: TeacherCharacterOptionsData; error?: ApiErrorEnvelope['error'] }> {
+  if (!isValidUuid(lessonId)) {
+    return {
+      status: 400,
+      error: {
+        code: 'INVALID_ID',
+        message: 'Mã định danh bài học không đúng định dạng UUID.',
+      },
+    };
+  }
+
+  let continuation: string | undefined | null;
+  let prisma: any;
+
+  if (
+    continuationOrPrismaClient &&
+    typeof continuationOrPrismaClient === 'object' &&
+    ('$connect' in continuationOrPrismaClient || 'writingCharacter' in continuationOrPrismaClient)
+  ) {
+    continuation = undefined;
+    prisma = continuationOrPrismaClient;
+  } else {
+    continuation = continuationOrPrismaClient;
+    prisma = prismaClient || getProductPrisma();
+  }
+
+  try {
+    const teacher = await prisma.account.findUnique({
+      where: { id: teacherAccountId.toLowerCase() },
+    });
+    if (!teacher || teacher.role !== 'TEACHER') {
+      return {
+        status: 403,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Chỉ giáo viên mới có quyền tra cứu ký tự bài học.',
+        },
+      };
+    }
+    if (teacher.status !== 'ACTIVE') {
+      return {
+        status: 403,
+        error: {
+          code: 'ACCOUNT_INACTIVE',
+          message: 'Tài khoản giáo viên đang chờ duyệt hoặc đã bị vô hiệu hóa.',
+        },
+      };
+    }
+
+    const lesson = await prisma.lesson.findFirst({
+      where: {
+        id: lessonId.toLowerCase(),
+        assignment: {
+          currentTeacherId: teacherAccountId.toLowerCase(),
+        },
+      },
+      include: {
+        unit: {
+          include: {
+            course: true,
+          },
+        },
+      },
+    });
+
+    if (!lesson) {
+      return {
+        status: 404,
+        error: {
+          code: 'LESSON_NOT_FOUND',
+          message: 'Bài học không tồn tại hoặc không được phân công cho bạn.',
+        },
+      };
+    }
+
+    const courseLanguageId = lesson.unit?.course?.languageId;
+    if (!courseLanguageId) {
+      return {
+        status: 503,
+        error: {
+          code: 'SERVICE_UNAVAILABLE',
+          message: 'Không tìm thấy ngôn ngữ mục tiêu của khóa học.',
+        },
+      };
+    }
+
+    const trimmedQ = (rawQuery || '').trim();
+    if (trimmedQ.length > 300) {
+      return {
+        status: 400,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Từ tìm kiếm tối đa 300 ký tự.',
+        },
+      };
+    }
+
+    const where: any = {
+      languageId: courseLanguageId.toLowerCase(),
+    };
+
+    if (trimmedQ) {
+      where.OR = [
+        { glyph: { contains: trimmedQ } },
+        { meaning: { contains: trimmedQ, mode: 'insensitive' } },
+        { primaryReading: { contains: trimmedQ, mode: 'insensitive' } },
+        { romanization: { contains: trimmedQ, mode: 'insensitive' } },
+      ];
+    }
+
+    let cursorPayload: CharacterCursorPayload | null = null;
+    if (continuation !== undefined && continuation !== null && continuation !== '') {
+      cursorPayload = decodeCharacterCursor(continuation);
+      if (!cursorPayload) {
+        return {
+          status: 400,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Tham số phân trang không hợp lệ.',
+          },
+        };
+      }
+
+      const cursorChar = await prisma.writingCharacter.findFirst({
+        where: {
+          ...where,
+          id: cursorPayload.id,
+        },
+        select: {
+          id: true,
+          strokeCount: true,
+          glyph: true,
+        },
+      });
+
+      if (!cursorChar) {
+        return {
+          status: 400,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Tham số phân trang không hợp lệ hoặc không thuộc phạm vi tra cứu.',
+          },
+        };
+      }
+    }
+
+    const characters = await prisma.writingCharacter.findMany({
+      where,
+      include: {
+        strokeData: {
+          select: {
+            version: true,
+          },
+        },
+      },
+      orderBy: [
+        { strokeCount: 'asc' },
+        { glyph: 'asc' },
+        { id: 'asc' },
+      ],
+      take: 21,
+      skip: cursorPayload ? 1 : 0,
+      cursor: cursorPayload ? { id: cursorPayload.id } : undefined,
+    });
+
+    const hasMore = characters.length > 20;
+    const pagedCharacters = hasMore ? characters.slice(0, 20) : characters;
+    const lastItem = hasMore && pagedCharacters.length > 0 ? pagedCharacters[pagedCharacters.length - 1] : null;
+    const nextCursor = lastItem
+      ? encodeCharacterCursor({
+          id: lastItem.id,
+          strokeCount: lastItem.strokeCount,
+          glyph: lastItem.glyph,
+        })
+      : null;
+
+    const dtos: CharacterOptionDto[] = pagedCharacters.map((c: any) => ({
+      id: c.id,
+      languageId: c.languageId,
+      glyph: c.glyph,
+      scriptType: c.scriptType,
+      strokeCount: c.strokeCount,
+      meaning: c.meaning || null,
+      primaryReading: c.primaryReading || null,
+      romanization: c.romanization || null,
+      hasStrokes: typeof c.strokeData?.version === 'number' && c.strokeData.version > 0,
+    }));
+
+    return {
+      status: 200,
+      data: {
+        data: dtos,
+        nextCursor,
+        hasMore,
+        pagination: {
+          nextCursor,
+          hasMore,
+        },
+      },
+    };
+  } catch {
+    return {
+      status: 503,
+      error: {
+        code: 'SERVICE_UNAVAILABLE',
+        message: 'Cơ sở dữ liệu tạm thời không phản hồi. Vui lòng thử lại sau.',
+      },
+    };
+  }
+}
+
+async function pinVocabularyCharacters(
+  tx: any,
+  vocabularyId: string,
+  languageId: string,
+  snapshot: Record<string, any>
+): Promise<Record<string, any>> {
+  if (Array.isArray(snapshot.characters)) return snapshot;
+
+  const mappings = await tx.vocabularyCharacter.findMany({
+    where: {
+      vocabularyId,
+      vocabulary: { languageId },
+      character: { languageId },
+    },
+    orderBy: { position: 'asc' },
+    include: {
+      character: {
+        select: {
+          glyph: true,
+          scriptType: true,
+          meaning: true,
+          primaryReading: true,
+          romanization: true,
+          strokeCount: true,
+          strokeData: { select: { version: true } },
+        },
+      },
+    },
+  });
+
+  return {
+    ...snapshot,
+    characters: mappings.map((mapping: any) => ({
+      characterId: mapping.characterId.toLowerCase(),
+      position: mapping.position,
+      glyph: mapping.character.glyph,
+      scriptType: mapping.character.scriptType,
+      meaning: mapping.character.meaning,
+      primaryReading: mapping.character.primaryReading,
+      romanization: mapping.character.romanization,
+      strokeCount: mapping.character.strokeCount,
+      strokeVersion: mapping.character.strokeData?.version ?? null,
+    })),
+  };
+}
+
 export async function saveTeacherLessonDraft(
   teacherAccountId: string,
   lessonId: string,
@@ -2439,7 +2949,7 @@ export async function saveTeacherLessonDraft(
       if (targetContentSchemaVersion === 1) {
         if (inputBlocks !== undefined) {
           if (inputBlocks.length > 0) {
-            await persistLessonRevisionBlocks(tx, newRev.id, inputBlocks);
+            await resolveAndPersistLessonRevisionBlocks(tx, newRev.id, courseLanguageId, inputBlocks);
           }
         } else if (highestRev && highestRev.contentSchemaVersion === 1) {
           const predBlocks = await tx.lessonContentBlock.findMany({
@@ -2624,16 +3134,25 @@ export async function saveTeacherLessonDraft(
 
       // 16. Persist Vocabulary
       if (inputVocabulary === undefined) {
-        // Clone predecessor vocabulary links preserving stored displaySnapshot byte-for-JSON-value
+        // Preserve the predecessor meaning while pinning characters on this new revision.
         if (highestRev?.vocabularyLinks) {
           for (const pred of highestRev.vocabularyLinks) {
+            const snapshot = await pinVocabularyCharacters(
+              tx,
+              pred.vocabularyId.toLowerCase(),
+              courseLanguageId.toLowerCase(),
+              pred.displaySnapshot as Record<string, any>
+            );
+            if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
+              throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
+            }
             await tx.lessonVocabularyLink.create({
               data: {
                 lessonRevisionId: newRev.id,
                 vocabularyId: pred.vocabularyId.toLowerCase(),
                 position: pred.position,
                 isCore: pred.isCore,
-                displaySnapshot: pred.displaySnapshot,
+                displaySnapshot: snapshot,
               },
             });
           }
@@ -2642,20 +3161,29 @@ export async function saveTeacherLessonDraft(
         for (const vocInput of inputVocabulary) {
           if (vocInput.sourceLinkId) {
             const pred = predVocabMap.get(vocInput.sourceLinkId.toLowerCase())!;
+            const snapshot = await pinVocabularyCharacters(
+              tx,
+              pred.vocabularyId.toLowerCase(),
+              courseLanguageId.toLowerCase(),
+              pred.displaySnapshot as Record<string, any>
+            );
+            if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
+              throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
+            }
             await tx.lessonVocabularyLink.create({
               data: {
                 lessonRevisionId: newRev.id,
                 vocabularyId: pred.vocabularyId.toLowerCase(),
                 position: vocInput.position,
                 isCore: vocInput.isCore ?? true,
-                displaySnapshot: pred.displaySnapshot, // preserved byte-for-JSON-value!
+                displaySnapshot: snapshot,
               },
             });
           } else if (vocInput.vocabularyId) {
             const concept = await tx.vocabularyConcept.findUnique({
               where: { id: vocInput.vocabularyId.toLowerCase() },
             });
-            const snapshot = {
+            const baseSnapshot = {
               schemaVersion: 1,
               languageId: concept.languageId,
               canonicalForm: concept.canonicalForm,
@@ -2665,6 +3193,12 @@ export async function saveTeacherLessonDraft(
               partOfSpeech: concept.partOfSpeech || null,
               example: concept.example || null,
             };
+            const snapshot = await pinVocabularyCharacters(
+              tx,
+              concept.id.toLowerCase(),
+              courseLanguageId.toLowerCase(),
+              baseSnapshot
+            );
             if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
               throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
             }
@@ -2712,7 +3246,7 @@ export async function saveTeacherLessonDraft(
                 },
               });
             }
-            const snapshot = {
+            const baseSnapshot = {
               schemaVersion: 1,
               languageId: concept.languageId,
               canonicalForm: concept.canonicalForm,
@@ -2722,6 +3256,12 @@ export async function saveTeacherLessonDraft(
               partOfSpeech: concept.partOfSpeech || null,
               example: concept.example || null,
             };
+            const snapshot = await pinVocabularyCharacters(
+              tx,
+              concept.id.toLowerCase(),
+              courseLanguageId.toLowerCase(),
+              baseSnapshot
+            );
             if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
               throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
             }

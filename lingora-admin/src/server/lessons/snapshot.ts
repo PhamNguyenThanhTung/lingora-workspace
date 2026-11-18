@@ -30,6 +30,17 @@ export const revisionChildRelations = {
   vocabularyLinks: { orderBy: { position: 'asc' }, include: { vocabulary: true } },
 };
 const labels = z.record(z.string(), z.string());
+const vocabularyCharacterSnapshotSchema = z.object({
+  characterId: z.string().refine(isValidUuid),
+  position: z.number().int().min(1),
+  glyph: z.string().min(1),
+  scriptType: z.string().min(1),
+  meaning: z.string().nullable(),
+  primaryReading: z.string().nullable(),
+  romanization: z.string().nullable(),
+  strokeCount: z.number().int().min(1),
+  strokeVersion: z.number().int().min(1).nullable(),
+}).strict();
 export const vocabularySnapshotSchema = z.object({
   schemaVersion: z.literal(1),
   languageId: z.string().refine(isValidUuid),
@@ -39,6 +50,7 @@ export const vocabularySnapshotSchema = z.object({
   phonetic: z.string().max(300).nullable().optional(),
   partOfSpeech: z.string().max(100).nullable().optional(),
   example: z.string().max(4000).nullable().optional(),
+  characters: z.array(vocabularyCharacterSnapshotSchema).optional(),
 }).strict();
 
 export function unsupportedChildren(rev: any, languageId?: string, allowFrozenPredecessor = false): boolean {

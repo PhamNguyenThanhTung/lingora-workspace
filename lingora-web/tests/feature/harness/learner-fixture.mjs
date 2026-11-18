@@ -384,6 +384,8 @@ export function fixtureDb(state) {
     },
   ];
   state.commandReceipts ||= [];
+  state.writingSessions ||= [];
+  state.writingAttempts ||= [];
 
   const many = (rows, args) => ordered(rows.filter(r => matches(r, args?.where)), args?.orderBy).map(r => projected(r, args));
   const first = (rows, args) => many(rows, args)[0] || null;
@@ -527,7 +529,65 @@ export function fixtureDb(state) {
       findMany: async args => many(state.exercises, args),
     },
     lessonVocabularyLink: {
-      findMany: async args => many(state.vocabulary, args),
+      findUnique: async args => first(state.vocabulary || [], args),
+      findFirst: async args => first(state.vocabulary || [], args),
+      findMany: async args => many(state.vocabulary || [], args),
+    },
+    vocabularyCharacter: {
+      findFirst: async args => {
+        const rows = (state.vocabularyCharacters || []).map(vc => ({
+          ...vc,
+          character: (state.characters || []).find(c => c.id === vc.characterId) || null,
+          vocabulary: (state.vocabularyConcepts || []).find(v => v.id === vc.vocabularyId) || null,
+        }));
+        return first(rows, args);
+      },
+      findMany: async args => {
+        const rows = (state.vocabularyCharacters || []).map(vc => ({
+          ...vc,
+          character: (state.characters || []).find(c => c.id === vc.characterId) || null,
+          vocabulary: (state.vocabularyConcepts || []).find(v => v.id === vc.vocabularyId) || null,
+        }));
+        return many(rows, args);
+      },
+    },
+    writingCharacter: {
+      findUnique: async args => {
+        const item = first(state.characters || [], args);
+        if (!item) return null;
+        if (args?.include?.strokeData) {
+          const sd = (state.strokeData || []).find(s => s.characterId === item.id);
+          return { ...item, strokeData: sd || null };
+        }
+        return item;
+      },
+      findFirst: async args => {
+        const item = first(state.characters || [], args);
+        if (!item) return null;
+        if (args?.include?.strokeData) {
+          const sd = (state.strokeData || []).find(s => s.characterId === item.id);
+          return { ...item, strokeData: sd || null };
+        }
+        return item;
+      },
+      findMany: async args => many(state.characters || [], args),
+    },
+    characterStrokeData: {
+      findUnique: async args => {
+        const rows = (state.strokeData || []).map(sd => ({
+          ...sd,
+          character: (state.characters || []).find(c => c.id === sd.characterId) || null,
+        }));
+        return first(rows, args);
+      },
+      findFirst: async args => {
+        const rows = (state.strokeData || []).map(sd => ({
+          ...sd,
+          character: (state.characters || []).find(c => c.id === sd.characterId) || null,
+        }));
+        return first(rows, args);
+      },
+      findMany: async args => many(state.strokeData || [], args),
     },
     lessonCompletion: {
       findUnique: async args => {
@@ -798,6 +858,90 @@ export function fixtureDb(state) {
         return { count };
       },
     },
+    writingSession: {
+      findUnique: async args => {
+        const where = args.where.learnerId_operationKey || args.where;
+        const rows = (state.writingSessions || []).map(s => ({
+          ...s,
+          character: (state.characters || []).find(c => c.id === s.characterId) || null,
+        }));
+        return first(rows, { ...args, where });
+      },
+      findFirst: async args => {
+        const where = args.where?.learnerId_operationKey || args.where;
+        const rows = (state.writingSessions || []).map(s => ({
+          ...s,
+          character: (state.characters || []).find(c => c.id === s.characterId) || null,
+        }));
+        return first(rows, { ...args, where });
+      },
+      findMany: async args => {
+        const rows = (state.writingSessions || []).map(s => ({
+          ...s,
+          character: (state.characters || []).find(c => c.id === s.characterId) || null,
+        }));
+        return many(rows, args);
+      },
+      create: async ({ data }) => {
+        if (data.operationKey && state.writingSessions.some(s => s.learnerId === data.learnerId && s.operationKey === data.operationKey)) {
+          throw Object.assign(new Error('Writing session operationKey unique conflict'), { code: 'P2002' });
+        }
+        const row = {
+          id: randomUUID(),
+          status: 'ACTIVE',
+          rowVersion: 1n,
+          ...data,
+          startedAt: data.startedAt || new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        state.writingSessions.push(row);
+        const char = (state.characters || []).find(c => c.id === row.characterId) || null;
+        return { ...row, character: char };
+      },
+      update: async ({ where, data }) => {
+        const target = state.writingSessions.find(s => s.id === where.id);
+        if (!target) throw new Error('Writing session not found for update');
+        Object.assign(target, data, { updatedAt: new Date() });
+        return target;
+      },
+      updateMany: async ({ where, data }) => {
+        const target = state.writingSessions.find(s => matches(s, where));
+        if (!target) return { count: 0 };
+        for (const [key, value] of Object.entries(data)) {
+          target[key] = value && typeof value === 'object' && 'increment' in value
+            ? (target[key] || 0n) + BigInt(value.increment)
+            : value;
+        }
+        return { count: 1 };
+      },
+    },
+    writingAttempt: {
+      findUnique: async args => {
+        const where = args.where.learnerId_operationKey || args.where;
+        return first(state.writingAttempts || [], { ...args, where });
+      },
+      findFirst: async args => {
+        const where = args.where?.learnerId_operationKey || args.where;
+        return first(state.writingAttempts || [], { ...args, where });
+      },
+      findMany: async args => many(state.writingAttempts || [], args),
+      count: async args => (state.writingAttempts || []).filter(r => matches(r, args?.where)).length,
+      create: async ({ data }) => {
+        if (state.writingAttempts.some(a => a.learnerId === data.learnerId && a.operationKey === data.operationKey)) {
+          throw Object.assign(new Error('Writing attempt operationKey unique conflict'), { code: 'P2002' });
+        }
+        const row = {
+          id: randomUUID(),
+          details: {},
+          receipt: null,
+          ...data,
+          createdAt: new Date(),
+        };
+        state.writingAttempts.push(row);
+        return row;
+      },
+    },
     commandReceipt: {
       findFirst: async args => first(state.commandReceipts, args),
       findUnique: async args => {
@@ -896,8 +1040,13 @@ export function fixtureDb(state) {
         const now = new Date();
         return [{ ts: now, completed_at: now, qualifying_date: now }];
       }
-      if (sql.includes('app.accounts') && sql.includes('FOR UPDATE')) {
-        return [{ id: values[0] }];
+      if (sql.includes('app.accounts') && (sql.includes('FOR UPDATE') || sql.includes('FOR NO KEY UPDATE'))) {
+        return state.account?.id === values[0] ? [{ id: values[0] }] : [];
+      }
+      if (sql.includes('app.writing_sessions') && sql.includes('FOR UPDATE')) {
+        return (state.writingSessions || [])
+          .filter((session) => session.id === values[0] && session.learnerId === values[1])
+          .map((session) => ({ id: session.id }));
       }
       if (sql.includes('app.srs_cards') && sql.includes('FOR UPDATE')) {
         return [{ id: values[0], row_version: 1n }];
@@ -920,6 +1069,13 @@ export function fixtureDb(state) {
         const units = targetCourseId ? (state.units || []).filter(u => u.courseId?.toLowerCase() === targetCourseId) : (state.units || []);
         const lessons = units.flatMap(u => getUnitLessons(u));
         return lessons.map(l => l.activeRevision).filter(Boolean).map(r => ({ id: r.id, lessonId: r.lessonId, status: r.status }));
+      }
+      if (sql.includes('active_revision_id =') && sql.includes('app.lessons')) {
+        const lesson = (state.lessons || []).find(l => l.id === values[0]);
+        const activeRevisionId = lesson?.activeRevisionId || lesson?.activeRevision?.id;
+        return lesson?.availability === 'AVAILABLE' && activeRevisionId === values[1]
+          ? [{ id: lesson.id }]
+          : [];
       }
       if (sql.includes('app.lessons') && (sql.includes('FOR SHARE') || sql.includes('availability = \'AVAILABLE\''))) {
         const targetCourseId = values[0]?.toLowerCase?.() || values[0];
@@ -1137,6 +1293,7 @@ export function fixtureDb(state) {
       return 1;
     },
   };
+  db.$transaction = async operation => operation(db);
   return db;
 }
 

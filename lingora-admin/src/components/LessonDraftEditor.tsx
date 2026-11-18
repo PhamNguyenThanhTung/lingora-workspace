@@ -13,7 +13,11 @@ import type {
 } from '@/server/lessons';
 import type { ExerciseType } from '@/server/lessons/content';
 import type { AssessmentBlueprintDto, TeacherAssessmentItemDto } from '@/server/assessments/types';
-import type { LessonBlock } from '@lingora/lesson-content';
+import {
+  characterBlockAuthorInputContentSchema,
+  characterBlockAuthorInputSchema,
+  type LessonBlock,
+} from '@lingora/lesson-content';
 import type { ReviewCommentDto } from '@/server/lessons/comments';
 import { StudioLayout } from './lesson-studio';
 import { generateBlockKey } from './lesson-studio/block-operations';
@@ -116,9 +120,9 @@ export function LessonDraftEditor({
     initialBlocks.map((b) => ({ type: 'paragraph', text: b.text }))
   );
 
-  const initialV1Blocks: LessonBlock[] =
-    ((initialLesson as any).blocks as LessonBlock[]) ||
-    ((initialLesson.currentDraft as any)?.blocks as LessonBlock[]) ||
+  const initialV1Blocks: any[] =
+    ((initialLesson as any).blocks as any[]) ||
+    ((initialLesson.currentDraft as any)?.blocks as any[]) ||
     [];
 
   const initialIsV1 =
@@ -126,7 +130,7 @@ export function LessonDraftEditor({
     (initialLesson.currentDraft as any)?.contentSchemaVersion === 1;
 
   const [useV1Studio, setUseV1Studio] = useState<boolean>(initialIsV1);
-  const [blocks, setBlocks] = useState<LessonBlock[]>(() => {
+  const [blocks, setBlocks] = useState<any[]>(() => {
     if (initialV1Blocks.length > 0) {
       return initialV1Blocks;
     }
@@ -465,9 +469,9 @@ export function LessonDraftEditor({
       (next as any).contentSchemaVersion === 1 ||
       (next.currentDraft as any)?.contentSchemaVersion === 1;
 
-    const nextBlocks: LessonBlock[] = nextIsV1
-      ? ((next as any).blocks as LessonBlock[]) ||
-        ((next.currentDraft as any)?.blocks as LessonBlock[]) ||
+    const nextBlocks: any[] = nextIsV1
+      ? ((next as any).blocks as any[]) ||
+        ((next.currentDraft as any)?.blocks as any[]) ||
         []
       : [];
 
@@ -648,10 +652,40 @@ export function LessonDraftEditor({
   const handleRestoreBackup = () => {
     if (!availableBackup?.data || !backupMatchesCurrentRevision) return;
     const { data } = availableBackup;
+
+    let restoredBlocks: TeacherLessonDetailDto['blocks'];
+    if (Array.isArray(data.blocks)) {
+      restoredBlocks = [];
+      const serverBlocks = lesson.blocks ?? lesson.currentDraft?.blocks ?? [];
+      const trustedLabels = new Map(
+        serverBlocks
+          .filter((block) => block.type === 'CHARACTER' && block.selectedLabel)
+          .map((block) => [block.content.characterId.toLowerCase(), block.selectedLabel])
+      );
+
+      for (const block of data.blocks) {
+        if (block?.type !== 'CHARACTER') {
+          restoredBlocks.push(block);
+          continue;
+        }
+
+        const { blockKey, type, position, schemaVersion, content } = block;
+        const parsed = characterBlockAuthorInputSchema.safeParse({ blockKey, type, position, schemaVersion, content });
+        if (!parsed.success) {
+          handleDiscardBackup();
+          setGeneralError('Bản sao lưu cục bộ chứa khối nội dung không hợp lệ hoặc đã bị lỗi. Đã khôi phục về trạng thái an toàn từ máy chủ.');
+          return;
+        }
+
+        const selectedLabel = trustedLabels.get(parsed.data.content.characterId.toLowerCase());
+        restoredBlocks.push({ ...parsed.data, selectedLabel });
+      }
+    }
+
     if (typeof data.titleVi === 'string') setTitleVi(data.titleVi);
     if (typeof data.titleEn === 'string') setTitleEn(data.titleEn);
     if (typeof data.useV1Studio === 'boolean') setUseV1Studio(data.useV1Studio);
-    if (Array.isArray(data.blocks)) setBlocks(data.blocks);
+    if (restoredBlocks) setBlocks(restoredBlocks);
     if (Array.isArray(data.paragraphs)) setParagraphs(data.paragraphs);
     if (Array.isArray(data.exercises)) setExercises(data.exercises);
     if (Array.isArray(data.vocabulary)) setVocabulary(data.vocabulary);
@@ -1420,8 +1454,37 @@ export function LessonDraftEditor({
       };
 
       if (useV1Studio) {
+        for (const b of blocks) {
+          if (b.type === 'CHARACTER') {
+            const parsed = characterBlockAuthorInputContentSchema.safeParse(b.content);
+            if (!parsed.success) {
+              setGeneralError('Vui lòng chọn ký tự hợp lệ và kiểm tra cấu hình cho tất cả các khối ký tự trước khi lưu.');
+              setIsPending(false);
+              isPendingRef.current = false;
+              return;
+            }
+          }
+        }
         payload.contentSchemaVersion = 1;
-        payload.blocks = blocks;
+        payload.blocks = blocks.map((b) => {
+          if (b.type === 'CHARACTER') {
+            const parsed = characterBlockAuthorInputContentSchema.parse(b.content);
+            return {
+              blockKey: b.blockKey,
+              type: 'CHARACTER' as const,
+              position: b.position,
+              schemaVersion: b.schemaVersion ?? 1,
+              content: {
+                characterId: parsed.characterId,
+                showMeaning: parsed.showMeaning,
+                showReading: parsed.showReading,
+                showStrokeAnimation: parsed.showStrokeAnimation,
+                guidedWriting: parsed.guidedWriting,
+              },
+            };
+          }
+          return b;
+        });
       } else {
         payload.contentBlocks = paragraphs.map((p) => ({
           type: 'paragraph' as const,
@@ -1785,7 +1848,12 @@ export function LessonDraftEditor({
       )}
 
       {/* Editor Form */}
-      <form onSubmit={handleSubmit} id="lessonDraftForm">
+      <form
+        onSubmit={handleSubmit}
+        id="lessonDraftForm"
+        data-row-version={lesson.rowVersion}
+        data-revision-id={highestRev?.id || ''}
+      >
         {/* Title Section */}
         <div
           className="form-section"
@@ -1940,6 +2008,7 @@ export function LessonDraftEditor({
             <StudioLayout
               blocks={blocks}
               onBlocksChange={setBlocks}
+              lessonId={lesson.id}
               vocabulary={vocabulary}
               exercises={exercises}
               title={{ vi: titleVi, en: titleEn }}

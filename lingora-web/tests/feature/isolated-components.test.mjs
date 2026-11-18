@@ -191,6 +191,7 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
 
     await page.goto(`${TEST_URL}?state=home-valid`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#homeView', { state: 'visible' });
+    await page.getByRole('heading', { name: 'Chào Nguyễn Văn Học!' }).waitFor();
 
     // Verify learner identity
     const learnerName = await page.textContent('#learnerIdentity');
@@ -205,11 +206,10 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     assert.match(targetLang, /Tiếng Anh/);
 
     const cardText = await page.textContent('.context-card');
-    assert.match(cardText, /CEFR \(2020\)/);
-    assert.match(cardText, /A1 Mới bắt đầu/);
+    assert.doesNotMatch(cardText, /CEFR \(2020\)|A1 Mới bắt đầu|Đang mở|Phiên bản lộ trình|v1/);
     assert.match(cardText, /A2 Sơ cấp/);
-    assert.match(cardText, /Đang mở/);
     assert.match(cardText, /Đang học/);
+    assert.equal(await page.locator('#rowVersion-ctx-1').count(), 0);
 
     // Verify Logout button exists and is usable
     const logoutVisible = await page.isVisible('#logoutBtn');
@@ -288,6 +288,8 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
 
     const emptyText = await page.textContent('#emptyContextState');
     assert.match(emptyText, /Bạn chưa có lộ trình học/);
+    assert.equal(await page.locator('#startOnboardingBtn').getAttribute('href'), '/onboarding');
+    assert.equal(await page.locator('#createContextForm').count(), 0);
 
     const logoutVisible = await page.isVisible('#logoutBtn');
     assert.equal(logoutVisible, true);
@@ -448,10 +450,9 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     // Save goal with success
     await page.click('#saveGoalBtn-ctx-1');
 
-    // Editor should close and rowVersion should update to v2
+    // Editor closes; version remains an API concurrency detail, not learner-facing text.
     await page.waitForSelector('#goalEditor-ctx-1', { state: 'hidden' });
-    const rowVerText = await page.textContent('#rowVersion-ctx-1');
-    assert.match(rowVerText, /v2/);
+    assert.equal(await page.locator('#rowVersion-ctx-1').count(), 0);
 
     // Verify payload sent only changed fields + operationId + expectedRowVersion
     assert.ok(postPayload.operationId);

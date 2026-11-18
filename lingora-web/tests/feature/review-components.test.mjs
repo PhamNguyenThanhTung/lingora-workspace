@@ -495,3 +495,433 @@ test('P5 SRS UI: Account-wide SRS functions with paused learning context', async
     assert.match(word, /Hello/);
   });
 });
+
+test('S6-09 WRITING SRS UI hides glyphs until every character is graded, then offers four ratings', async () => {
+  const sessionId = randomUUID();
+  const cardId = randomUUID();
+  const operationKeys = [];
+  let attemptedCharacters = 0;
+  let recordedRating;
+
+  await withLearner(async page => {
+    await page.route('**/api/srs/sessions', async route => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            sessionId,
+            status: 'ACTIVE',
+            progress: { currentIndex: 0, completedCount: 0, total: 1 },
+            currentItem: {
+              cardId,
+              skill: 'WRITING',
+              meaningLabels: { vi: 'chữ viết' },
+              writing: { characterNumber: 1, characterCount: 2, strokeCount: 1, attemptedCharacters: 0, revealedCharacters: null },
+            },
+          },
+        }),
+      });
+    });
+    await page.route('**/api/srs/sessions/*/writing-attempts', async route => {
+      const payload = route.request().postDataJSON();
+      operationKeys.push(payload.operationKey);
+      assert.equal(payload.cardId, cardId);
+      assert.equal(payload.characterNumber, attemptedCharacters + 1);
+      assert.equal('sessionId' in payload, false, 'Body must not contain sessionId');
+      assert.equal(payload.candidateStrokes.length, 1);
+      assert.ok(payload.candidateStrokes[0].points.length >= 2);
+      attemptedCharacters += 1;
+      const revealedCharacters = attemptedCharacters === 2
+        ? [
+          { glyph: '文', score: 94, band: 'EXCELLENT', passed: true, details: { strokeCount: { expected: 1, actual: 1, diff: 0 }, strokeFeedback: [] } },
+          { glyph: '字', score: 88, band: 'EXCELLENT', passed: true, details: { strokeCount: { expected: 1, actual: 1, diff: 0 }, strokeFeedback: [] } },
+        ]
+        : null;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            sessionId,
+            status: 'ACTIVE',
+            progress: { currentIndex: 0, completedCount: 0, total: 1 },
+            currentItem: {
+              cardId,
+              skill: 'WRITING',
+              meaningLabels: { vi: 'chữ viết' },
+              writing: {
+                characterNumber: Math.min(attemptedCharacters + 1, 2),
+                characterCount: 2,
+                strokeCount: attemptedCharacters === 2 ? 0 : 1,
+                attemptedCharacters,
+                revealedCharacters,
+              },
+            },
+          },
+        }),
+      });
+    });
+    await page.route('**/api/srs/sessions/*/reviews', async route => {
+      recordedRating = route.request().postDataJSON().rating;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: { sessionId, status: 'COMPLETED', progress: { currentIndex: 1, completedCount: 1, total: 1 }, currentItem: null, recordedRating } }),
+      });
+    });
+    await page.route(`**/api/srs/sessions/${sessionId}`, async route => {
+      if (recordedRating) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ data: { sessionId, status: 'COMPLETED', progress: { currentIndex: 1, completedCount: 1, total: 1 }, currentItem: null } }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            sessionId,
+            status: 'ACTIVE',
+            progress: { currentIndex: 0, completedCount: 0, total: 1 },
+            currentItem: {
+              cardId,
+              skill: 'WRITING',
+              meaningLabels: { vi: 'chữ viết' },
+              writing: {
+                characterNumber: Math.min(attemptedCharacters + 1, 2),
+                characterCount: 2,
+                strokeCount: attemptedCharacters === 2 ? 0 : 1,
+                attemptedCharacters,
+                revealedCharacters: attemptedCharacters === 2 ? [
+                  { glyph: '文', score: 94, band: 'EXCELLENT', passed: true, details: { strokeCount: { expected: 1, actual: 1, diff: 0 }, strokeFeedback: [] } },
+                  { glyph: '字', score: 88, band: 'EXCELLENT', passed: true, details: { strokeCount: { expected: 1, actual: 1, diff: 0 }, strokeFeedback: [] } },
+                ] : null,
+              },
+            },
+          },
+        }),
+      });
+    });
+
+    await page.goto(`${origin}/review`);
+    await page.locator('#startReviewBtn').click();
+    await page.getByText('chữ viết', { exact: true }).waitFor();
+    assert.equal(await page.getByText('文', { exact: true }).count(), 0);
+    assert.equal(await page.getByText('字', { exact: true }).count(), 0);
+
+    for (let index = 0; index < 2; index++) {
+      const canvas = page.locator('#srs-writing-canvas');
+      const box = await canvas.boundingBox();
+      assert.ok(box);
+      await page.mouse.move(box.x + 30, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width - 30, box.y + box.height / 2);
+      await page.mouse.up();
+      await page.locator('#srs-writing-submit').click();
+      if (index === 0) {
+        await page.getByText('Ký tự 2/2', { exact: false }).waitFor();
+        assert.equal(await page.getByText('文', { exact: true }).count(), 0);
+      }
+    }
+
+    await page.getByText('文', { exact: true }).waitFor();
+    await page.getByText('字', { exact: true }).waitFor();
+    for (const rating of ['AGAIN', 'HARD', 'GOOD', 'EASY']) {
+      await page.locator(`#rateWriting${rating}Btn`).waitFor({ state: 'visible' });
+    }
+    await page.locator('#rateWritingGOODBtn').click();
+    await page.locator('#srsDoneBox').waitFor();
+  });
+
+  assert.equal(operationKeys.length, 2);
+  assert.notEqual(operationKeys[0], operationKeys[1]);
+  assert.equal(recordedRating, 'GOOD');
+});
+
+test('S6-10.2e Canvas limits: caps at 128 strokes, 256 points/stroke, and 4096 total points, and allows clearing at limit', async () => {
+  const sessionId = randomUUID();
+  const cardId = randomUUID();
+
+  await withLearner(async page => {
+    await page.route('**/api/srs/sessions', async route => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            sessionId,
+            status: 'ACTIVE',
+            progress: { currentIndex: 0, completedCount: 0, total: 1 },
+            currentItem: {
+              cardId,
+              skill: 'WRITING',
+              meaningLabels: { vi: 'giới hạn nét' },
+              writing: { characterNumber: 1, characterCount: 1, strokeCount: 1, attemptedCharacters: 0, revealedCharacters: null },
+            },
+          },
+        }),
+      });
+    });
+
+    await page.goto(`${origin}/review`);
+    await page.locator('#startReviewBtn').click();
+    await page.locator('#srs-writing-canvas').waitFor();
+
+    // 1. Point limit per stroke: dispatch pointerdown + 300 moves + pointerup
+    await page.evaluate(() => {
+      const svg = document.getElementById('srs-writing-canvas');
+      const rect = svg.getBoundingClientRect();
+      const fire = (type, x, y) => svg.dispatchEvent(new PointerEvent(type, {
+        clientX: rect.left + x, clientY: rect.top + y, button: 0, bubbles: true, pointerId: 1,
+      }));
+      fire('pointerdown', 10, 10);
+      for (let i = 0; i < 300; i++) {
+        fire('pointermove', 10 + (i % 50), 10 + Math.floor(i / 50));
+      }
+      fire('pointerup', 50, 50);
+    });
+
+    const pointCount = await page.evaluate(() => {
+      const polyline = document.querySelector('#srs-writing-canvas polyline');
+      return polyline ? polyline.getAttribute('points').trim().split(' ').length : 0;
+    });
+    assert.equal(pointCount, 256, 'Should cap at 256 points per stroke');
+
+    // 2. Stroke limit: dispatch 130 strokes (2 points each)
+    await page.evaluate(() => {
+      const svg = document.getElementById('srs-writing-canvas');
+      const rect = svg.getBoundingClientRect();
+      const fire = (type, x, y) => svg.dispatchEvent(new PointerEvent(type, {
+        clientX: rect.left + x, clientY: rect.top + y, button: 0, bubbles: true, pointerId: 1,
+      }));
+      document.getElementById('srs-writing-clear').click();
+      for (let s = 0; s < 130; s++) {
+        fire('pointerdown', 10, 10);
+        fire('pointermove', 20, 20);
+        fire('pointerup', 20, 20);
+      }
+    });
+
+    const strokeCount = await page.evaluate(() => {
+      return document.querySelectorAll('#srs-writing-canvas polyline').length;
+    });
+    assert.equal(strokeCount, 128, 'Should cap at 128 strokes');
+
+    // 3. Learner can clear canvas even when limit is reached
+    const clearBtn = page.locator('#srs-writing-clear');
+    assert.equal(await clearBtn.isEnabled(), true);
+    await clearBtn.click();
+    const countAfterClear = await page.evaluate(() => {
+      return document.querySelectorAll('#srs-writing-canvas polyline').length;
+    });
+    assert.equal(countAfterClear, 0, 'Canvas should be clear');
+  });
+});
+
+test('S6-10.2e ReviewView: definitive 400 releases canvas; ambiguous failure retains key and replays exact payload', async () => {
+  const sessionId = randomUUID();
+  const cardId = randomUUID();
+  const attemptRequests = [];
+  let attemptCallCount = 0;
+  let sessionRefreshes = 0;
+
+  await withLearner(async page => {
+    await page.route('**/api/srs/sessions', async route => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            sessionId,
+            status: 'ACTIVE',
+            progress: { currentIndex: 0, completedCount: 0, total: 1 },
+            currentItem: {
+              cardId,
+              skill: 'WRITING',
+              meaningLabels: { vi: 'thử lại' },
+              writing: { characterNumber: 1, characterCount: 1, strokeCount: 1, attemptedCharacters: 0, revealedCharacters: null },
+            },
+          },
+        }),
+      });
+    });
+
+    await page.route('**/api/srs/sessions/*/writing-attempts', async route => {
+      const payload = route.request().postDataJSON();
+      attemptRequests.push(payload);
+      attemptCallCount += 1;
+
+      if (attemptCallCount === 1) {
+        await route.fulfill({
+          status: 400,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: { code: 'INVALID_STROKE_GEOMETRY', message: 'Nét vẽ không tạo thành đường đi hợp lệ.' } }),
+        });
+      } else if (attemptCallCount === 2) {
+        await route.fulfill({
+          status: 503,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: { code: 'SERVICE_UNAVAILABLE', message: 'Dịch vụ tạm thời bận.' } }),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            data: {
+              sessionId,
+              status: 'ACTIVE',
+              progress: { currentIndex: 0, completedCount: 0, total: 1 },
+              currentItem: {
+                cardId,
+                skill: 'WRITING',
+                meaningLabels: { vi: 'thử lại' },
+                writing: {
+                  characterNumber: 1,
+                  characterCount: 1,
+                  strokeCount: 0,
+                  attemptedCharacters: 1,
+                  revealedCharacters: [
+                    { glyph: '文', score: 90, band: 'EXCELLENT', passed: true, details: { strokeCount: { expected: 1, actual: 1, diff: 0 }, strokeFeedback: [] } },
+                  ],
+                },
+              },
+            },
+          }),
+        });
+      }
+    });
+    await page.route(`**/api/srs/sessions/${sessionId}`, async route => {
+      sessionRefreshes += 1;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            sessionId,
+            status: 'COMPLETED',
+            progress: { currentIndex: 1, completedCount: 0, total: 1 },
+            currentItem: null,
+          },
+        }),
+      });
+    });
+
+    await page.goto(`${origin}/review`);
+    await page.locator('#startReviewBtn').click();
+    await page.locator('#srs-writing-canvas').waitFor();
+
+    // 1. First drawing and submit -> gets 400
+    const canvas = page.locator('#srs-writing-canvas');
+    const box = await canvas.boundingBox();
+    assert.ok(box);
+    await page.mouse.move(box.x + 30, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width - 30, box.y + box.height / 2);
+    await page.mouse.up();
+    await page.locator('#srs-writing-submit').click();
+
+    // Verify 400 message shown and canvas is released (submit button enabled after drawing or retry cleared)
+    await page.getByText('Nét vẽ không tạo thành đường đi hợp lệ.').waitFor();
+    assert.equal(await page.locator('#retryReviewBtn').count(), 0, 'Retry button should NOT exist for definitive 400');
+
+    // 2. Redraw and submit again -> fresh key generated, gets 503
+    await page.locator('#srs-writing-clear').click();
+    await page.mouse.move(box.x + 40, box.y + 40);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width - 40, box.y + 40);
+    await page.mouse.up();
+    await page.locator('#srs-writing-submit').click();
+
+    // Verify second request has different operationKey
+    assert.equal(attemptRequests.length, 2);
+    assert.notEqual(attemptRequests[0].operationKey, attemptRequests[1].operationKey);
+
+    // Verify ambiguous failure keeps retry button and locks canvas
+    await page.locator('#retryReviewBtn').waitFor({ state: 'visible' });
+
+    // 3. Click retry -> exact replay of second request payload
+    await page.locator('#retryReviewBtn').click();
+    assert.equal(attemptRequests.length, 3);
+    assert.equal(attemptRequests[2].operationKey, attemptRequests[1].operationKey, 'Retry must send exact same operationKey');
+    assert.deepEqual(attemptRequests[2].candidateStrokes, attemptRequests[1].candidateStrokes, 'Retry must send exact same strokes');
+    assert.equal(attemptRequests[2].characterNumber, attemptRequests[1].characterNumber);
+
+    // The POST replay can return an old prompt, so the UI follows it with a session refresh.
+    await page.locator('#srsDoneBox').waitFor();
+    assert.equal(sessionRefreshes, 1);
+  });
+});
+
+test('S6-10.2d ReviewView: rollout disable on submission refreshes session and advances without infinite retry loop', async () => {
+  const sessionId = randomUUID();
+  const cardId = randomUUID();
+  let refreshCalled = false;
+
+  await withLearner(async page => {
+    await page.route('**/api/srs/sessions', async route => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            sessionId,
+            status: 'ACTIVE',
+            progress: { currentIndex: 0, completedCount: 0, total: 1 },
+            currentItem: {
+              cardId,
+              skill: 'WRITING',
+              meaningLabels: { vi: 'vô hiệu hóa' },
+              writing: { characterNumber: 1, characterCount: 1, strokeCount: 1, attemptedCharacters: 0, revealedCharacters: null },
+            },
+          },
+        }),
+      });
+    });
+
+    await page.route('**/api/srs/sessions/*/writing-attempts', async route => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Phiên luyện viết không tồn tại.' } }),
+      });
+    });
+
+    await page.route(`**/api/srs/sessions/${sessionId}`, async route => {
+      refreshCalled = true;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            sessionId,
+            status: 'COMPLETED',
+            progress: { currentIndex: 1, completedCount: 0, total: 1 },
+            currentItem: null,
+          },
+        }),
+      });
+    });
+
+    await page.goto(`${origin}/review`);
+    await page.locator('#startReviewBtn').click();
+    await page.locator('#srs-writing-canvas').waitFor();
+
+    const canvas = page.locator('#srs-writing-canvas');
+    const box = await canvas.boundingBox();
+    assert.ok(box);
+    await page.mouse.move(box.x + 30, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width - 30, box.y + box.height / 2);
+    await page.mouse.up();
+    await page.locator('#srs-writing-submit').click();
+
+    // Client must refresh via GET and show completed box without retry loop
+    await page.locator('#srsDoneBox').waitFor();
+    assert.equal(refreshCalled, true);
+  });
+});

@@ -64,6 +64,8 @@ model Account {
   provisioningRequests ProvisioningRequest[] @relation("ProvisioningRequestedBy")
   xpEvents             XpEvent[]             @relation("LearnerXpEvents")
   achievements         LearnerAchievement[]  @relation("LearnerAchievements")
+  writingSessions      WritingSession[]      @relation("WritingSessionLearner")
+  writingAttempts      WritingAttempt[]      @relation("WritingAttemptLearner")
 
   @@map("accounts")
   @@schema("app")
@@ -84,6 +86,7 @@ model Language {
   learningContexts       LearningContext[]
   assessmentBlueprints   AssessmentBlueprint[]
   vocabularyConcepts     VocabularyConcept[]
+  writingCharacters      WritingCharacter[]
 
   @@map("languages")
   @@schema("app")
@@ -198,6 +201,7 @@ model Lesson {
   attempts         LessonAttempt[]
   consumptions     LessonConsumption[]
   completions      LessonCompletion[]
+  writingSessions  WritingSession[]
 
   @@unique([unitId, position], map: "lessons_unit_id_position_key")
   @@map("lessons")
@@ -314,6 +318,7 @@ model LessonRevision {
   assessmentVersionItems        AssessmentVersionItem[] @relation("VersionItemSourceLessonRevision")
   blocks                        LessonContentBlock[]
   reviewComments                RevisionReviewComment[]
+  writingSessions               WritingSession[]
 
   @@unique([lessonId, revisionNo], map: "lesson_revisions_lesson_id_revision_no_key")
   @@unique([id, lessonId], map: "lesson_revisions_id_lesson_id_key")
@@ -342,6 +347,7 @@ model VocabularyConcept {
 
   lessonLinks    LessonVocabularyLink[]
   srsCards       SrsCard[]
+  characters     VocabularyCharacter[]
 
   @@unique([languageId, normalizedForm, senseKey], map: "vocabulary_concepts_lang_norm_sense_key")
   @@map("vocabulary_concepts")
@@ -477,6 +483,7 @@ enum LessonBlockType {
   MEDIA
   VOCABULARY
   DIVIDER
+  CHARACTER
 
   @@map("lesson_block_type")
   @@schema("app")
@@ -601,6 +608,7 @@ model LearningContext {
   assessmentAttempts   AssessmentAttempt[]
   learningPlans        LearningPlan[]
   srsReviewSessions    SrsReviewSession[]
+  writingSessions      WritingSession[]
 
   @@unique([learnerId, languageId], map: "learning_contexts_learner_id_language_id_key")
   @@map("learning_contexts")
@@ -761,16 +769,21 @@ model SrsReviewOperation {
   operationKey          String              @map("operation_key") @db.Uuid
   kind                  String              @db.Text
   rating                String              @db.Text
+  skill                 String              @default("MEANING") @db.Text
+  schedulerVersion      String              @default("POLICY_B") @map("scheduler_version") @db.Text
   sessionKey            String              @map("session_key") @db.Uuid
   reinforcesOperationId String?             @map("reinforces_operation_id") @db.Uuid
   priorStage            Int?                @map("prior_stage") @db.SmallInt
   priorDueAt            DateTime?           @map("prior_due_at") @db.Timestamptz(6)
-  nextStage             Int                 @map("next_stage") @db.SmallInt
+  nextStage             Int?                @map("next_stage") @db.SmallInt
+  priorState            Int?                @map("prior_state") @db.SmallInt
+  nextState             Int?                @map("next_state") @db.SmallInt
   nextDueAt             DateTime            @map("next_due_at") @db.Timestamptz(6)
   reviewedAt            DateTime            @default(now()) @map("reviewed_at") @db.Timestamptz(6)
   qualifyingLocalDate   DateTime?           @map("qualifying_local_date") @db.Date
   inputHash             String              @map("input_hash") @db.Text
   sessionResponse       Json?               @map("session_response") @db.JsonB
+  schedulerLog          Json?               @map("scheduler_log") @db.JsonB
   createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
 
   card                  SrsCard             @relation(fields: [cardId, learnerId], references: [id, learnerId], onUpdate: NoAction, onDelete: Restrict, map: "srs_review_operations_card_learner_fkey")
@@ -795,6 +808,8 @@ model SrsMemoryState {
   lastReviewedAt   DateTime? @map("last_reviewed_at") @db.Timestamptz(6)
   count            Int       @default(0) @db.Integer
   lapse            Int       @default(0) @db.Integer
+  scheduledDays    Int       @default(0) @map("scheduled_days") @db.Integer
+  learningSteps    Int       @default(0) @map("learning_steps") @db.Integer
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   rowVersion       BigInt    @default(1) @map("row_version")
@@ -1106,5 +1121,126 @@ model LearnerAchievement {
   @@unique([learnerId, achievementCode], map: "learner_achievements_learner_code_key")
   @@index([learnerId], map: "learner_achievements_learner_id_idx")
   @@map("learner_achievements")
+  @@schema("app")
+}
+
+model WritingCharacter {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  languageId     String   @map("language_id") @db.Uuid
+  glyph          String   @db.Text
+  scriptType     String   @map("script_type") @db.Text
+  meaning        String?  @db.Text
+  primaryReading String?  @map("primary_reading") @db.Text
+  romanization   String?  @db.Text
+  strokeCount    Int      @map("stroke_count")
+  metadata       Json     @default("{}") @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion     BigInt   @default(1) @map("row_version")
+
+  language       Language @relation(fields: [languageId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_characters_language_fkey")
+  strokeData     CharacterStrokeData?
+  vocabularyCharacters VocabularyCharacter[]
+  writingSessions      WritingSession[]
+  writingAttempts      WritingAttempt[]
+
+  @@unique([languageId, glyph], map: "writing_characters_language_id_glyph_key")
+  @@index([languageId], map: "writing_characters_language_id_idx")
+  @@index([scriptType], map: "writing_characters_script_type_idx")
+  @@map("writing_characters")
+  @@schema("app")
+}
+
+model CharacterStrokeData {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  characterId String   @unique @map("character_id") @db.Uuid
+  version     Int      @default(1) @map("version")
+  strokes     Json     @db.JsonB
+  source      String   @db.Text
+  license     String   @db.Text
+  provenance  Json     @default("{}") @db.JsonB
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion  BigInt   @default(1) @map("row_version")
+
+  character   WritingCharacter @relation(fields: [characterId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "character_stroke_data_character_fkey")
+
+  @@map("character_stroke_data")
+  @@schema("app")
+}
+
+model VocabularyCharacter {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vocabularyId String   @map("vocabulary_id") @db.Uuid
+  characterId  String   @map("character_id") @db.Uuid
+  position     Int      @map("position")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion   BigInt   @default(1) @map("row_version")
+
+  vocabulary   VocabularyConcept @relation(fields: [vocabularyId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "vocabulary_characters_vocabulary_fkey")
+  character    WritingCharacter  @relation(fields: [characterId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "vocabulary_characters_character_fkey")
+
+  @@unique([vocabularyId, position], map: "vocabulary_characters_vocabulary_id_position_key")
+  @@index([vocabularyId], map: "vocabulary_characters_vocabulary_id_idx")
+  @@index([characterId], map: "vocabulary_characters_character_id_idx")
+  @@map("vocabulary_characters")
+  @@schema("app")
+}
+
+model WritingSession {
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  learnerId        String            @map("learner_id") @db.Uuid
+  contextId        String            @map("context_id") @db.Uuid
+  lessonId         String            @map("lesson_id") @db.Uuid
+  lessonRevisionId String            @map("lesson_revision_id") @db.Uuid
+  characterId      String            @map("character_id") @db.Uuid
+  strokeVersion    Int               @map("stroke_version") @db.Integer
+  graderVersion    Int               @default(1) @map("grader_version") @db.Integer
+  status           String            @default("ACTIVE") @db.Text
+  operationKey     String?           @map("operation_key") @db.Uuid
+  sourceKey        String?           @map("source_key") @db.Text
+  startedAt        DateTime          @default(now()) @map("started_at") @db.Timestamptz(6)
+  completedAt      DateTime?         @map("completed_at") @db.Timestamptz(6)
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rowVersion       BigInt            @default(1) @map("row_version")
+
+  learner          Account           @relation("WritingSessionLearner", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_learner_fkey")
+  context          LearningContext   @relation(fields: [contextId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_context_fkey")
+  lesson           Lesson            @relation(fields: [lessonId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_lesson_fkey")
+  lessonRevision   LessonRevision    @relation(fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_revision_fkey")
+  character        WritingCharacter  @relation(fields: [characterId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_character_fkey")
+  attempts         WritingAttempt[]
+
+  @@unique([learnerId, operationKey], map: "writing_sessions_learner_id_operation_key_key")
+  @@unique([id, learnerId, characterId], map: "writing_sessions_id_learner_character_key")
+  @@index([learnerId, status], map: "writing_sessions_learner_id_status_idx")
+  @@index([contextId, lessonId], map: "writing_sessions_context_id_lesson_id_idx")
+  @@map("writing_sessions")
+  @@schema("app")
+}
+
+model WritingAttempt {
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionId        String            @map("session_id") @db.Uuid
+  learnerId        String            @map("learner_id") @db.Uuid
+  characterId      String            @map("character_id") @db.Uuid
+  operationKey     String            @map("operation_key") @db.Uuid
+  inputFingerprint String            @map("input_fingerprint") @db.Text
+  score            Int               @db.SmallInt
+  band             String            @db.Text
+  strokeCount      Int               @map("stroke_count") @db.SmallInt
+  details          Json              @default("{}") @db.JsonB
+  receipt          Json?             @map("receipt") @db.JsonB
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  session          WritingSession    @relation(fields: [sessionId, learnerId, characterId], references: [id, learnerId, characterId], onUpdate: NoAction, onDelete: Restrict, map: "writing_attempts_session_learner_character_fkey")
+  learner          Account           @relation("WritingAttemptLearner", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_attempts_learner_fkey")
+  character        WritingCharacter  @relation(fields: [characterId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_attempts_character_fkey")
+
+  @@unique([learnerId, operationKey], map: "writing_attempts_learner_id_operation_key_key")
+  @@index([sessionId, createdAt], map: "writing_attempts_session_id_created_at_idx")
+  @@map("writing_attempts")
   @@schema("app")
 }

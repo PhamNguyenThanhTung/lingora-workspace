@@ -2,22 +2,24 @@
 
 import React from 'react';
 import type { LessonBlockType } from '@lingora/lesson-content';
+import type { StudioBlockType } from './block-operations';
 import styles from './studio-styles';
 
 export interface BlockToolbarProps {
-  onAddBlock: (type: LessonBlockType, targetIndex?: number) => void;
+  onAddBlock: (type: StudioBlockType, targetIndex?: number) => void;
   targetIndex?: number;
   disabled?: boolean;
 }
 
 export const AVAILABLE_BLOCK_TYPES: Array<{
-  type: LessonBlockType;
+  type: StudioBlockType;
   label: string;
   badgeClass: string;
   icon: string;
 }> = [
   { type: 'HEADING', label: 'Tiêu đề (Heading)', badgeClass: styles.blockTypeBadgeHeading, icon: 'H' },
   { type: 'TEXT', label: 'Văn bản (Text)', badgeClass: styles.blockTypeBadgeText, icon: '¶' },
+  { type: 'CHARACTER', label: 'Ký tự (Character)', badgeClass: styles.blockTypeBadgeCharacter, icon: '字' },
   { type: 'EXAMPLE', label: 'Ví dụ (Example)', badgeClass: styles.blockTypeBadgeExample, icon: '💬' },
   { type: 'DIALOGUE', label: 'Hội thoại (Dialogue)', badgeClass: styles.blockTypeBadgeDialogue, icon: '👥' },
   { type: 'CALLOUT', label: 'Ghi chú (Callout)', badgeClass: styles.blockTypeBadgeCallout, icon: '💡' },

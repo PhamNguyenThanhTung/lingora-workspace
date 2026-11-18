@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import type { CandidateStrokeInput } from '@lingora/lesson-content';
 import type { SrsFrontPromptCardDto, SrsRevealedCardDto } from '../../server/srs/session-service.ts';
+import { WritingSrsAttempt } from './WritingSrsAttempt.tsx';
 
 interface ReviewViewProps {
   learner?: {
@@ -17,7 +19,15 @@ interface PendingOperation {
   sessionId: string;
   cardId: string;
   operationKey: string;
-  rating: 'REMEMBERED' | 'FORGOTTEN';
+  rating: 'REMEMBERED' | 'FORGOTTEN' | 'AGAIN' | 'HARD' | 'GOOD' | 'EASY';
+}
+
+interface PendingWritingAttempt {
+  sessionId: string;
+  cardId: string;
+  operationKey: string;
+  characterNumber: number;
+  candidateStrokes: CandidateStrokeInput[];
 }
 
 interface SessionProgress {
@@ -48,14 +58,18 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
   const [isSessionExpired, setIsSessionExpired] = useState(false);
   const [needsSync, setNeedsSync] = useState(false);
   const [pendingOp, setPendingOp] = useState<PendingOperation | null>(null);
+  const [pendingWritingAttempt, setPendingWritingAttempt] = useState<PendingWritingAttempt | null>(null);
+  const [canRetry, setCanRetry] = useState(false);
   const [authErrorMessage, setAuthErrorMessage] = useState<string | null>(authError || null);
 
   const busyRef = useRef(false);
   const retryRef = useRef<(() => void) | null>(null);
   const rateRememberedBtnRef = useRef<HTMLButtonElement | null>(null);
   const answerSectionRef = useRef<HTMLDivElement | null>(null);
-  const isRevealed = revealedCard !== null;
-  const cardActionDisabled = isSubmitting || !!pendingOp || isSessionExpired || needsSync || !!authErrorMessage;
+  const isWritingCard = Boolean(card && 'skill' in card && card.skill === 'WRITING');
+  const writingCard = card && 'skill' in card ? card : null;
+  const isRevealed = revealedCard !== null || Boolean(writingCard?.writing.revealedCharacters);
+  const cardActionDisabled = isSubmitting || !!pendingOp || !!pendingWritingAttempt || isSessionExpired || needsSync || !!authErrorMessage;
 
   function expire() {
     window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
@@ -67,6 +81,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
 
   function applySession(data: SessionSnapshot) {
     setPendingOp(null);
+    setPendingWritingAttempt(null);
     setNeedsSync(false);
     setRevealedCard(null);
     setProgress(data.progress);
@@ -90,10 +105,12 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
     busyRef.current = true;
     setIsSubmitting(true);
     setErrorMessage(null);
+    setCanRetry(true);
     retryRef.current = () => { void runAction(action, error); };
     try {
       await action();
       retryRef.current = null;
+      setCanRetry(false);
     } catch (e) {
       setErrorMessage(e instanceof ReviewRequestError ? e.message : error);
     } finally {
@@ -159,12 +176,25 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
 
   async function handleSessionError(response: Response, error: { code?: string; message?: string } | undefined, id: string) {
     if (handleAuthError(response.status, error?.message)) return;
-    if (response.status === 409) {
+    if (response.status === 400) {
+      setPendingWritingAttempt(null);
+      setPendingOp(null);
+      retryRef.current = null;
+      setCanRetry(false);
+      setErrorMessage(error?.message || 'Dữ liệu không hợp lệ. Vui lòng thử lại.');
+      return;
+    }
+    if (response.status === 404 || response.status === 409) {
       if (error?.code === 'SESSION_EXPIRED') {
         expire();
         return;
       }
-      if (error?.code === 'STALE_OPERATION' || error?.code === 'SESSION_COMPLETED' || error?.code === 'OPERATION_CONFLICT') {
+      if (
+        response.status === 404 ||
+        error?.code === 'STALE_OPERATION' ||
+        error?.code === 'SESSION_COMPLETED' ||
+        error?.code === 'OPERATION_CONFLICT'
+      ) {
         await refreshSession(id);
         return;
       }
@@ -173,7 +203,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
   }
 
   function handleReveal() {
-    if (!sessionId || !card || cardActionDisabled || isRevealed) return;
+    if (!sessionId || !card || isWritingCard || cardActionDisabled || isRevealed) return;
     void runAction(async () => {
       const response = await fetch(`/api/srs/sessions/${sessionId}/reveal`, {
         method: 'POST',
@@ -194,6 +224,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
 
   function handleRate(rating: PendingOperation['rating']) {
     if (!sessionId || !card || cardActionDisabled || !isRevealed || busyRef.current) return;
+    if (isWritingCard ? !['AGAIN', 'HARD', 'GOOD', 'EASY'].includes(rating) : !['REMEMBERED', 'FORGOTTEN'].includes(rating)) return;
     const id = sessionId;
     const op = { cardId: card.cardId, operationKey: crypto.randomUUID(), rating };
     setPendingOp({ ...op, sessionId: id });
@@ -206,8 +237,37 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
       });
       const result = await response.json();
       if (!response.ok) return handleSessionError(response, result.error, id);
-      applySession(result.data);
+      if (isWritingCard) await refreshSession(id);
+      else applySession(result.data);
     }, 'Lỗi kết nối mạng khi gửi đánh giá. Vui lòng nhấn "Thử lại gửi kết quả".');
+  }
+
+  function handleWritingAttempt(candidateStrokes: CandidateStrokeInput[]) {
+    if (!sessionId || !writingCard || cardActionDisabled || isRevealed || busyRef.current) return;
+    const id = sessionId;
+    const op = pendingWritingAttempt ?? {
+      sessionId: id,
+      cardId: writingCard.cardId,
+      operationKey: crypto.randomUUID(),
+      characterNumber: writingCard.writing.characterNumber,
+      candidateStrokes,
+    };
+    setPendingWritingAttempt(op);
+    void runAction(async () => {
+      const response = await fetch(`/api/srs/sessions/${id}/writing-attempts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cardId: op.cardId,
+          operationKey: op.operationKey,
+          characterNumber: op.characterNumber,
+          candidateStrokes: op.candidateStrokes,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) return handleSessionError(response, result.error, id);
+      await refreshSession(id);
+    }, 'Lỗi kết nối mạng khi gửi bài viết. Vui lòng nhấn "Thử lại".');
   }
 
   function handleComplete() {
@@ -228,6 +288,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
     setCard(null);
     setRevealedCard(null);
     setPendingOp(null);
+    setPendingWritingAttempt(null);
     handleStartReview();
   }
 
@@ -241,7 +302,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
       const isFocusedOnActionable =
         e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement;
 
-      if (state === 'prompt' && !cardActionDisabled) {
+      if (state === 'prompt' && !cardActionDisabled && !isWritingCard) {
         if (!isRevealed) {
           // If not focused on an actionable element, Space or Enter triggers reveal
           if (!isFocusedOnActionable && (e.key === ' ' || e.key === 'Enter')) {
@@ -382,7 +443,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
               >
                 {isSubmitting ? 'Đang khởi động lại...' : 'Bắt đầu phiên ôn tập mới'}
               </button>
-            ) : (
+            ) : canRetry ? (
               <button
                 type="button"
                 id="retryReviewBtn"
@@ -391,9 +452,9 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                 disabled={isSubmitting}
                 style={{ marginTop: '10px' }}
               >
-                {isSubmitting ? 'Đang thử lại...' : pendingOp ? 'Thử lại gửi kết quả' : 'Thử lại'}
+                {isSubmitting ? 'Đang thử lại...' : pendingOp || pendingWritingAttempt ? 'Thử lại gửi kết quả' : 'Thử lại'}
               </button>
-            )}
+            ) : null}
           </div>
         )}
 
@@ -479,13 +540,72 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                   marginBottom: '8px',
                 }}
               >
-                {card.canonicalForm}
+                {'skill' in card
+                  ? card.meaningLabels.vi || Object.values(card.meaningLabels)[0] || '(Không có nghĩa)'
+                  : card.canonicalForm}
               </div>
+              {writingCard && <span className="badge badge-active">WRITING · viết theo nghĩa</span>}
 
             </div>
 
             {/* Reveal Answer / Flip Card Section */}
-            {!revealedCard ? (
+            {writingCard ? (
+              writingCard.writing.revealedCharacters ? (
+                <div
+                  id="srsAnswerSection"
+                  ref={answerSectionRef}
+                  tabIndex={-1}
+                  style={{ backgroundColor: 'var(--canvas-bg)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm, 6px)', padding: '20px', outline: 'none' }}
+                >
+                  <h2 style={{ marginTop: 0 }}>Kết quả luyện viết</h2>
+                  <div style={{ display: 'grid', gap: '12px' }}>
+                    {writingCard.writing.revealedCharacters.map((character, index) => (
+                      <div key={`${character.glyph}-${index}`} style={{ display: 'flex', gap: '16px', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px' }}>
+                        <span lang="ja" style={{ fontSize: '36px', minWidth: '48px', textAlign: 'center' }}>{character.glyph}</span>
+                        <div>
+                          <strong>Điểm {character.score}/100 · {character.passed ? 'Đạt' : 'Cần luyện thêm'}</strong>
+                          <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
+                            Số nét: {character.details.strokeCount.actual}/{character.details.strokeCount.expected} · {character.band}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{ marginBottom: '12px' }}>Tự chọn mức độ nhớ để lên lịch lần ôn tiếp theo.</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }}>
+                    {([
+                      ['AGAIN', 'Lại · AGAIN'],
+                      ['HARD', 'Khó · HARD'],
+                      ['GOOD', 'Tốt · GOOD'],
+                      ['EASY', 'Dễ · EASY'],
+                    ] as const).map(([rating, label]) => (
+                      <button
+                        key={rating}
+                        type="button"
+                        id={`rateWriting${rating}Btn`}
+                        ref={rating === 'GOOD' ? rateRememberedBtnRef : undefined}
+                        className={rating === 'GOOD' ? 'btn btn-primary' : 'btn btn-outline'}
+                        onClick={() => handleRate(rating)}
+                        disabled={cardActionDisabled}
+                        style={{ minHeight: '48px', fontWeight: 600 }}
+                      >
+                        {isSubmitting ? 'Đang lưu...' : label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <WritingSrsAttempt
+                  key={`${writingCard.cardId}-${writingCard.writing.characterNumber}`}
+                  characterNumber={writingCard.writing.characterNumber}
+                  characterCount={writingCard.writing.characterCount}
+                  strokeCount={writingCard.writing.strokeCount}
+                  disabled={cardActionDisabled}
+                  isSubmitting={isSubmitting}
+                  onSubmit={handleWritingAttempt}
+                />
+              )
+            ) : !revealedCard ? (
               <div style={{ textAlign: 'center', marginTop: '12px' }}>
                 <button
                   type="button"

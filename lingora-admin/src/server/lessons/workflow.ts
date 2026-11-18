@@ -6,6 +6,7 @@ import {
   validateLessonBlocks,
   type PresentationBlock,
   type LessonPresentationDto,
+  characterBlockPersistedSchema,
 } from '@lingora/lesson-content';
 import { getProductPrisma } from '../db/index.js';
 import { isValidUuid, type ApiErrorEnvelope } from '../frameworks/index.ts';
@@ -19,6 +20,8 @@ import {
   isSupportedTitle,
   isSupportedContentBlocks,
   handleLessonPrismaError,
+  validatePersistedLessonBlocks,
+  validatePersistedRevisionCharacterBlocks,
 } from './index.ts';
 import { type ExerciseType } from './content.ts';
 import { revisionChildRelations, unsupportedChildren } from './snapshot.ts';
@@ -42,7 +45,7 @@ function hasSupportedV1Blocks(rawBlocks: unknown): boolean {
   });
 
   try {
-    validateLessonBlocks(blocks);
+    validatePersistedLessonBlocks(blocks);
     return true;
   } catch {
     return false;
@@ -160,6 +163,26 @@ export interface ReviewHistoryEventDto {
   revisionRowVersion: string;
 }
 
+export interface AdminCharacterBlock {
+  type: 'CHARACTER';
+  blockKey: string;
+  position: number;
+  schemaVersion: 1;
+  glyph: string;
+  scriptType: string;
+  strokeCount: number;
+  showMeaning: boolean;
+  showReading: boolean;
+  showStrokeAnimation: boolean;
+  guidedWriting: boolean;
+  meaning?: string | null;
+  primaryReading?: string | null;
+  romanization?: string | null;
+  strokeVersion?: number;
+}
+
+export type AdminReviewBlock = PresentationBlock | AdminCharacterBlock;
+
 export interface ReviewDetailDto {
   submissionId: string;
   assignmentEpisode: {
@@ -189,7 +212,7 @@ export interface ReviewDetailDto {
     title: Record<string, string>;
     contentSchemaVersion?: number;
     contentBlocks: Array<{ type: 'paragraph'; text: string }>;
-    blocks?: PresentationBlock[];
+    blocks?: AdminReviewBlock[];
     presentation?: LessonPresentationDto;
     changeSummary: string | null;
     rowVersion: string;
@@ -470,6 +493,10 @@ export async function submitTeacherLesson(
           code: 'UNSUPPORTED_DRAFT_CONTENT',
           message: 'Bản sửa đổi hiện tại chứa bài tập, từ vựng hoặc liên kết không được hỗ trợ để nộp duyệt.',
         });
+      }
+
+      if (highestRev.contentSchemaVersion === 1) {
+        await validatePersistedRevisionCharacterBlocks(tx, courseLanguageId, highestRev.blocks);
       }
 
       // 8. Freeze exact referenced ItemRevisions
@@ -850,6 +877,68 @@ export async function getReviewDetail(
 
     const parsedContent = parsePersistedLessonContent(rev);
 
+    // Build Admin Review Blocks: preserve canonical V1 presentation blocks,
+    // and project valid persisted CHARACTER blocks using strict snapshot allowlist.
+    const rawBlocksByBlockKey = new Map<string, any>();
+    if (Array.isArray(rev.blocks)) {
+      for (const raw of rev.blocks) {
+        if (raw && typeof raw === 'object' && typeof (raw as any).blockKey === 'string') {
+          rawBlocksByBlockKey.set((raw as any).blockKey, raw);
+        }
+      }
+    }
+
+    const adminBlocks: AdminReviewBlock[] = parsedContent.blocks.map((block) => {
+      if (block.type === 'UNSUPPORTED' && (block as any).originalType === 'CHARACTER') {
+        const raw = rawBlocksByBlockKey.get(block.blockKey);
+        if (raw) {
+          let content = raw.content;
+          if (typeof content === 'string') {
+            try {
+              content = JSON.parse(content);
+            } catch {
+              return block;
+            }
+          }
+          const candidate = {
+            blockKey: raw.blockKey,
+            type: raw.type,
+            position: raw.position,
+            schemaVersion: raw.schemaVersion,
+            content,
+          };
+          const parsedChar = characterBlockPersistedSchema.safeParse(candidate);
+          if (parsedChar.success) {
+            const { content } = parsedChar.data;
+            const { snapshot } = content;
+            const adminCharBlock: AdminCharacterBlock = {
+              type: 'CHARACTER',
+              blockKey: parsedChar.data.blockKey,
+              position: parsedChar.data.position,
+              schemaVersion: 1,
+              glyph: snapshot.glyph,
+              scriptType: snapshot.scriptType,
+              strokeCount: snapshot.strokeCount,
+              showMeaning: content.showMeaning,
+              showReading: content.showReading,
+              showStrokeAnimation: content.showStrokeAnimation,
+              guidedWriting: content.guidedWriting,
+              ...(content.showMeaning ? { meaning: snapshot.meaning ?? null } : {}),
+              ...(content.showReading ? {
+                primaryReading: snapshot.primaryReading ?? null,
+                romanization: snapshot.romanization ?? null,
+              } : {}),
+              ...(typeof snapshot.strokeVersion === 'number' && snapshot.strokeVersion > 0
+                ? { strokeVersion: snapshot.strokeVersion }
+                : {}),
+            };
+            return adminCharBlock;
+          }
+        }
+      }
+      return block;
+    });
+
     const detailDto: ReviewDetailDto = {
       submissionId: submission.id,
       assignmentEpisode: submission.assignmentEpisode
@@ -883,7 +972,7 @@ export async function getReviewDetail(
         contentBlocks: parsedContent.contentSchemaVersion === 1
           ? toLegacyParagraphProjection(parsedContent.blocks)
           : (Array.isArray(rev.contentBlocks) ? rev.contentBlocks : []),
-        blocks: parsedContent.blocks,
+        blocks: adminBlocks,
         presentation: toLessonPresentationDto(parsedContent, vocabulary, exercises),
         changeSummary: rev.changeSummary || null,
         rowVersion: (rev.rowVersion ?? 1n).toString(),
@@ -1431,6 +1520,56 @@ export async function publishReview(
           code: 'STALE_LESSON',
           message: 'Dữ liệu bài học đã bị thay đổi bởi tác vụ khác. Vui lòng tải lại dữ liệu mới nhất.',
         });
+      }
+
+      // Validate course language and canonical blocks / CHARACTER references & pins
+      const unit = await tx.unit.findUnique({
+        where: { id: lesson.unitId.toLowerCase() },
+        select: { course: { select: { languageId: true } } },
+      });
+      const courseLanguageId = unit?.course?.languageId;
+      if (!courseLanguageId) {
+        throw new ControlledDraftError(400, {
+          code: 'UNSUPPORTED_DRAFT_CONTENT',
+          message: 'Không tìm thấy thông tin ngôn ngữ của khóa học.',
+        });
+      }
+
+      const fullRevision = await tx.lessonRevision.findUnique({
+        where: { id: revision.id },
+        select: {
+          id: true,
+          contentSchemaVersion: true,
+          contentBlocks: true,
+          title: true,
+          blocks: {
+            orderBy: { position: 'asc' },
+          },
+        },
+      });
+
+      if (!fullRevision) {
+        throw new ControlledDraftError(404, {
+          code: 'LESSON_REVISION_NOT_FOUND',
+          message: 'Không tìm thấy bản sửa đổi tương ứng với bản nộp.',
+        });
+      }
+
+      if (fullRevision.contentSchemaVersion === 1) {
+        if (!hasSupportedV1Blocks(fullRevision.blocks)) {
+          throw new ControlledDraftError(400, {
+            code: 'UNSUPPORTED_DRAFT_CONTENT',
+            message: 'Bản sửa đổi chứa cấu trúc dữ liệu không được hỗ trợ để xuất bản.',
+          });
+        }
+        await validatePersistedRevisionCharacterBlocks(tx, courseLanguageId, fullRevision.blocks);
+      } else {
+        if (!isSupportedContentBlocks(fullRevision.contentBlocks)) {
+          throw new ControlledDraftError(400, {
+            code: 'UNSUPPORTED_DRAFT_CONTENT',
+            message: 'Bản sửa đổi chứa cấu trúc dữ liệu không được hỗ trợ để xuất bản.',
+          });
+        }
       }
 
       const prevActiveRevisionId = lesson.activeRevisionId;

@@ -10,7 +10,9 @@ import {
   assertNoForbiddenOutbound,
 } from '../../../scripts/test-network-guard.mjs';
 import {
+  createLesson,
   assignLesson,
+  listTeacherAssignedLessons,
   getTeacherLessonDetail,
   toTeacherLessonDetailDto,
   saveTeacherLessonDraft,
@@ -19,6 +21,7 @@ import {
 import {
   submitTeacherLesson,
   getReviewDetail,
+  requestChangesReview,
   approveReview,
   publishReview,
 } from '../../src/server/lessons/workflow.ts';
@@ -2127,6 +2130,519 @@ describe('T05: Real Concurrency & Immutability Verification', () => {
       SELECT count(*)::int AS count FROM app.lesson_revisions WHERE lesson_id = '${raceLessonId}'
     `);
     assert.equal(revCount2.rows[0].count, 0);
+  });
+});
+
+describe('T06: Teacher Assignment Workflow Packages 1–3 Integration', () => {
+  const workflowTeacherBId = '33333333-3333-4333-8333-333333333333';
+  const workflowInactiveTeacherId = '44444444-4444-4444-8444-444444444444';
+  const workflowLearnerId = '55555555-5555-4555-8555-555555555555';
+
+  let pkgCourseId;
+  let pkgUnitId;
+  let pkgContextId;
+  let pkgLessonId;
+  let pkgAssignmentId;
+  let v1RevisionId;
+  let submission1Id;
+  let v2RevisionId;
+  let submission2Id;
+
+  before(async () => {
+    await pgClient.query(`
+      INSERT INTO auth.users (id, email) VALUES
+        ('${workflowTeacherBId}', 'teacherB.workflow@lingora.test'),
+        ('${workflowInactiveTeacherId}', 'inactive.teacher@lingora.test'),
+        ('${workflowLearnerId}', 'learner.workflow@lingora.test')
+      ON CONFLICT (id) DO NOTHING;
+
+      INSERT INTO app.accounts (id, role, status, display_name, ui_locale, created_at, updated_at)
+      VALUES
+        ('${workflowTeacherBId}', 'TEACHER', 'ACTIVE', 'Giáo viên B', 'vi', NOW(), NOW()),
+        ('${workflowInactiveTeacherId}', 'TEACHER', 'DISABLED', 'Giáo viên Không hoạt động', 'vi', NOW(), NOW()),
+        ('${workflowLearnerId}', 'LEARNER', 'ACTIVE', 'Học viên Workflow', 'vi', NOW(), NOW())
+      ON CONFLICT (id) DO UPDATE SET
+        status = EXCLUDED.status,
+        role = EXCLUDED.role;
+    `);
+
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: { framework: true },
+    });
+    const level = await prisma.level.findFirst({
+      where: { frameworkId: course.frameworkId },
+    });
+
+    const newCourse = await prisma.course.create({
+      data: {
+        languageId: course.languageId,
+        frameworkId: course.frameworkId,
+        defaultStartLevelId: level.id,
+        names: { vi: 'Khóa học quy trình giáo viên', en: 'Teacher Workflow Course' },
+        isActive: true,
+      },
+    });
+    pkgCourseId = newCourse.id;
+
+    const newUnit = await prisma.unit.create({
+      data: {
+        courseId: pkgCourseId,
+        levelId: level.id,
+        code: 'PKG-WF-U01',
+        names: { vi: 'Đơn vị phân công bài học', en: 'Assignment Workflow Unit' },
+        position: 1,
+      },
+    });
+    pkgUnitId = newUnit.id;
+
+    const newCtx = await prisma.learningContext.create({
+      data: {
+        learnerId: workflowLearnerId,
+        courseId: pkgCourseId,
+        languageId: course.languageId,
+        startSource: 'DEFAULT',
+        selectedStartLevelId: level.id,
+        workingLevelId: level.id,
+        status: 'ACTIVE',
+      },
+    });
+    pkgContextId = newCtx.id;
+  });
+
+  test('Checkpoint 1: Admin creates lesson shell & assigns Teacher A; permission boundaries & visibility', async () => {
+    // 1. Admin creates planned lesson shell
+    const createRes = await createLesson(
+      testAdminId,
+      pkgCourseId,
+      pkgUnitId,
+      { position: 1, isRequired: true },
+      prisma
+    );
+    assert.equal(createRes.status, 201, `Create lesson failed: ${JSON.stringify(createRes.error)}`);
+    assert.ok(createRes.data?.data);
+    pkgLessonId = createRes.data.data.id;
+    assert.equal(createRes.data.data.availability, 'PLANNED');
+
+    // 2. Non-admin (Teacher) attempting createLesson is rejected with 403
+    const teacherCreate = await createLesson(
+      testTeacherId,
+      pkgCourseId,
+      pkgUnitId,
+      { position: 2, isRequired: true },
+      prisma
+    );
+    assert.equal(teacherCreate.status, 403);
+    assert.equal(teacherCreate.error?.code, 'FORBIDDEN');
+
+    // 3. Admin assigns Teacher A
+    const lessonFresh1 = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    const assignRes = await assignLesson(
+      testAdminId,
+      pkgCourseId,
+      pkgUnitId,
+      pkgLessonId,
+      { teacherId: testTeacherId, expectedRowVersion: String(lessonFresh1.rowVersion) },
+      prisma
+    );
+    assert.equal(assignRes.status, 200, `Assign failed: ${JSON.stringify(assignRes.error)}`);
+    assert.equal(assignRes.data?.data?.assignment?.currentTeacher?.id, testTeacherId);
+
+    // Verify assignment and initial history episode in DB
+    const [assignRow, historyRows] = await Promise.all([
+      pgClient.query(`SELECT id, current_teacher_id, scope_generation FROM app.content_assignments WHERE lesson_id = '${pkgLessonId}'`),
+      pgClient.query(`SELECT sequence_no, event_type, next_teacher_id, scope_generation FROM app.assignment_history WHERE assignment_id IN (SELECT id FROM app.content_assignments WHERE lesson_id = '${pkgLessonId}') ORDER BY sequence_no ASC`),
+    ]);
+    assert.equal(assignRow.rows.length, 1);
+    pkgAssignmentId = assignRow.rows[0].id;
+    assert.equal(assignRow.rows[0].current_teacher_id, testTeacherId);
+    assert.equal(assignRow.rows[0].scope_generation.toString(), '1');
+    assert.equal(historyRows.rows.length, 1);
+    assert.equal(historyRows.rows[0].event_type, 'ASSIGNED');
+    assert.equal(historyRows.rows[0].next_teacher_id, testTeacherId);
+
+    // 4. Non-admin (Teacher) attempting assignLesson is rejected with 403
+    const lessonFresh2 = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    const teacherAssign = await assignLesson(
+      testTeacherId,
+      pkgCourseId,
+      pkgUnitId,
+      pkgLessonId,
+      { teacherId: workflowTeacherBId, expectedRowVersion: String(lessonFresh2.rowVersion) },
+      prisma
+    );
+    assert.equal(teacherAssign.status, 403);
+
+    // 5. Admin assigning to INACTIVE teacher is rejected with 409 INVALID_TEACHER_TARGET
+    const inactiveAssign = await assignLesson(
+      testAdminId,
+      pkgCourseId,
+      pkgUnitId,
+      pkgLessonId,
+      { teacherId: workflowInactiveTeacherId, expectedRowVersion: String(lessonFresh2.rowVersion) },
+      prisma
+    );
+    assert.equal(inactiveAssign.status, 409);
+    assert.equal(inactiveAssign.error?.code, 'INVALID_TEACHER_TARGET');
+
+    // 6. List teacher assigned lessons: Teacher A sees the lesson, Teacher B does NOT
+    const listA = await listTeacherAssignedLessons(testTeacherId, prisma);
+    assert.equal(listA.status, 200);
+    assert.ok(listA.data?.data?.some((l) => l.id === pkgLessonId), 'Teacher A must see assigned lesson');
+
+    const listB = await listTeacherAssignedLessons(workflowTeacherBId, prisma);
+    assert.equal(listB.status, 200);
+    assert.ok(!listB.data?.data?.some((l) => l.id === pkgLessonId), 'Teacher B must NOT see lesson');
+  });
+
+  test('Checkpoint 2: Teacher A authors, saves V1 draft, reloads, submits; URL & API security for unassigned & reassignment', async () => {
+    // 1. Teacher A opens detail
+    const detailA = await getTeacherLessonDetail(testTeacherId, pkgLessonId, prisma);
+    assert.equal(detailA.status, 200);
+    assert.equal(detailA.data?.data?.isEditable, true);
+    assert.equal(detailA.data?.data?.highestRevision, null);
+
+    // 2. Unassigned Teacher B cannot access detail (404 LESSON_NOT_FOUND)
+    const detailB = await getTeacherLessonDetail(workflowTeacherBId, pkgLessonId, prisma);
+    assert.equal(detailB.status, 404);
+    assert.equal(detailB.error?.code, 'LESSON_NOT_FOUND');
+
+    // 3. Teacher A saves initial V1 draft
+    const blocks = [
+      {
+        blockKey: 'blk-pkg-h1',
+        type: 'HEADING',
+        position: 1,
+        schemaVersion: 1,
+        content: { level: 2, text: 'Gói 1-3: Bài học mẫu' },
+      },
+      {
+        blockKey: 'blk-pkg-t1',
+        type: 'TEXT',
+        position: 2,
+        schemaVersion: 1,
+        content: {
+          nodes: [
+            {
+              type: 'paragraph',
+              runs: [{ text: 'Nội dung bài học khởi tạo bởi Giáo viên A.' }],
+            },
+          ],
+        },
+      },
+    ];
+
+    const exercises = [
+      {
+        position: 1,
+        isCore: true,
+        type: 'MCQ',
+        promptData: {
+          prompt: 'Ai là tác giả của bản thảo đầu tiên?',
+          options: [
+            { id: 'opt_a', text: 'Giáo viên A' },
+            { id: 'opt_b', text: 'Giáo viên B' },
+          ],
+        },
+        gradingData: { correctOptionId: 'opt_a' },
+        feedbackData: { explanation: 'Giáo viên A được phân công đầu tiên.' },
+      },
+    ];
+
+    const lessonFresh1 = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    const saveRes = await saveTeacherLessonDraft(
+      testTeacherId,
+      pkgLessonId,
+      {
+        title: { vi: 'Bài học kiểm tra vòng đời', en: 'Lifecycle test lesson' },
+        contentSchemaVersion: 1,
+        blocks,
+        exercises,
+        expectedRowVersion: String(lessonFresh1.rowVersion),
+        expectedRevisionId: null,
+      },
+      prisma
+    );
+    assert.equal(saveRes.status, 200, `Initial save failed: ${JSON.stringify(saveRes.error)}`);
+    assert.ok(saveRes.data?.data);
+    v1RevisionId = saveRes.data.data.highestRevision.id;
+    assert.equal(saveRes.data.data.highestRevision.revisionNo, 1);
+    assert.equal(saveRes.data.data.highestRevision.status, 'DRAFT');
+
+    // 4. Reload detail: verify persisted content
+    const reloaded = await getTeacherLessonDetail(testTeacherId, pkgLessonId, prisma);
+    assert.equal(reloaded.status, 200);
+    assert.equal(reloaded.data?.data?.highestRevision?.id, v1RevisionId);
+    assert.equal(reloaded.data?.data?.blocks?.length, 2);
+    assert.equal(reloaded.data?.data?.exercises?.length, 1);
+
+    // 5. Unassigned Teacher B cannot save or submit (404 LESSON_NOT_FOUND)
+    const lessonFresh2 = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    const saveB = await saveTeacherLessonDraft(
+      workflowTeacherBId,
+      pkgLessonId,
+      {
+        title: { vi: 'Hacking draft' },
+        contentSchemaVersion: 1,
+        blocks: [],
+        expectedRowVersion: String(lessonFresh2.rowVersion),
+        expectedRevisionId: v1RevisionId,
+      },
+      prisma
+    );
+    assert.equal(saveB.status, 404);
+    assert.equal(saveB.error?.code, 'LESSON_NOT_FOUND');
+
+    const submitB = await submitTeacherLesson(
+      workflowTeacherBId,
+      pkgLessonId,
+      {
+        revisionId: v1RevisionId,
+        expectedLessonRowVersion: String(lessonFresh2.rowVersion),
+        expectedRevisionRowVersion: '1',
+      },
+      prisma
+    );
+    assert.equal(submitB.status, 404);
+    assert.equal(submitB.error?.code, 'LESSON_NOT_FOUND');
+
+    // 6. Teacher A submits lesson (transitions to IN_REVIEW)
+    const rev1Fresh = await prisma.lessonRevision.findUnique({ where: { id: v1RevisionId } });
+    const submitA = await submitTeacherLesson(
+      testTeacherId,
+      pkgLessonId,
+      {
+        revisionId: v1RevisionId,
+        expectedLessonRowVersion: String(lessonFresh2.rowVersion),
+        expectedRevisionRowVersion: String(rev1Fresh.rowVersion),
+      },
+      prisma
+    );
+    assert.equal(submitA.status, 200, `Submit failed: ${JSON.stringify(submitA.error)}`);
+    assert.ok(submitA.data?.submissionId);
+    submission1Id = submitA.data.submissionId;
+
+    const rev1Db = await prisma.lessonRevision.findUnique({ where: { id: v1RevisionId } });
+    assert.equal(rev1Db.status, 'IN_REVIEW');
+
+    // Invariant: Direct modification of IN_REVIEW revision is rejected (409 DRAFT_NOT_EDITABLE)
+    const lessonFresh3 = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    const forbiddenEdit = await saveTeacherLessonDraft(
+      testTeacherId,
+      pkgLessonId,
+      {
+        title: { vi: 'Illegal edit' },
+        contentSchemaVersion: 1,
+        blocks: [],
+        expectedRowVersion: String(lessonFresh3.rowVersion),
+        expectedRevisionId: v1RevisionId,
+      },
+      prisma
+    );
+    assert.equal(forbiddenEdit.status, 409);
+    assert.equal(forbiddenEdit.error?.code, 'DRAFT_NOT_EDITABLE');
+
+    // 7. Reassignment & Stale Tab check:
+    // Admin reassigns lesson to Teacher B
+    const reassignRes = await assignLesson(
+      testAdminId,
+      pkgCourseId,
+      pkgUnitId,
+      pkgLessonId,
+      { teacherId: workflowTeacherBId, expectedRowVersion: String(lessonFresh3.rowVersion) },
+      prisma
+    );
+    assert.equal(reassignRes.status, 200);
+    assert.equal(reassignRes.data?.data?.assignment?.currentTeacher?.id, workflowTeacherBId);
+
+    // Stale tab save attempt by Teacher A with old expectedRowVersion from before reassignment:
+    const staleSave = await saveTeacherLessonDraft(
+      testTeacherId,
+      pkgLessonId,
+      {
+        title: { vi: 'Stale save from open tab' },
+        contentSchemaVersion: 1,
+        blocks: [],
+        expectedRowVersion: String(lessonFresh3.rowVersion),
+        expectedRevisionId: v1RevisionId,
+      },
+      prisma
+    );
+    assert.ok(staleSave.status === 404 || staleSave.status === 409, 'Stale tab save must fail with 404 or 409');
+
+    // Teacher A submit attempt after reassignment is rejected (404 LESSON_NOT_FOUND)
+    const staleSubmit = await submitTeacherLesson(
+      testTeacherId,
+      pkgLessonId,
+      {
+        revisionId: v1RevisionId,
+        expectedLessonRowVersion: String(lessonFresh3.rowVersion),
+        expectedRevisionRowVersion: '1',
+      },
+      prisma
+    );
+    assert.equal(staleSubmit.status, 404);
+  });
+
+  test('Checkpoint 3: Admin Review requests changes, feedback displayed, resubmit, publish, learner read & attribution', async () => {
+    // 1. Admin inspects review detail
+    const revDetail = await getReviewDetail(testAdminId, submission1Id, prisma);
+    assert.equal(revDetail.status, 200);
+
+    // 2. Admin requests changes with feedback comment
+    const rev1BeforeReq = await prisma.lessonRevision.findUnique({ where: { id: v1RevisionId } });
+    const reqChanges = await requestChangesReview(
+      testAdminId,
+      submission1Id,
+      {
+        expectedRevisionRowVersion: String(rev1BeforeReq.rowVersion),
+        comment: 'Cần bổ sung thêm ví dụ câu thoại mẫu và giải thích chi tiết.',
+      },
+      prisma
+    );
+    assert.equal(reqChanges.status, 200);
+    const rev1AfterReq = await prisma.lessonRevision.findUnique({ where: { id: v1RevisionId } });
+    assert.equal(rev1AfterReq.status, 'CHANGES_REQUESTED');
+
+    // 3. Currently assigned Teacher B opens detail: sees CHANGES_REQUESTED & latestFeedback
+    const detailAfterChanges = await getTeacherLessonDetail(workflowTeacherBId, pkgLessonId, prisma);
+    assert.equal(detailAfterChanges.status, 200);
+    assert.equal(detailAfterChanges.data?.data?.highestRevision?.status, 'CHANGES_REQUESTED');
+    assert.equal(
+      detailAfterChanges.data?.data?.latestFeedback?.comment,
+      'Cần bổ sung thêm ví dụ câu thoại mẫu và giải thích chi tiết.'
+    );
+
+    // 4. Teacher B saves successor draft incorporating feedback
+    const lessonFresh = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    const successorBlocks = [
+      {
+        blockKey: 'blk-pkg-h1',
+        type: 'HEADING',
+        position: 1,
+        schemaVersion: 1,
+        content: { level: 2, text: 'Gói 1-3: Bài học đã hoàn thiện theo góp ý' },
+      },
+      {
+        blockKey: 'blk-pkg-t1',
+        type: 'TEXT',
+        position: 2,
+        schemaVersion: 1,
+        content: {
+          nodes: [
+            {
+              type: 'paragraph',
+              runs: [{ text: 'Nội dung bài học đã được bổ sung bởi Giáo viên B.' }],
+            },
+          ],
+        },
+      },
+    ];
+
+    const successorSave = await saveTeacherLessonDraft(
+      workflowTeacherBId,
+      pkgLessonId,
+      {
+        title: { vi: 'Bài học hoàn thiện V2', en: 'Completed lesson V2' },
+        contentSchemaVersion: 1,
+        blocks: successorBlocks,
+        expectedRowVersion: String(lessonFresh.rowVersion),
+        expectedRevisionId: v1RevisionId,
+      },
+      prisma
+    );
+    assert.equal(successorSave.status, 200, `Successor save failed: ${JSON.stringify(successorSave.error)}`);
+    v2RevisionId = successorSave.data?.data?.highestRevision?.id;
+    assert.notEqual(v2RevisionId, v1RevisionId);
+    assert.equal(successorSave.data?.data?.highestRevision?.revisionNo, 2);
+    assert.equal(successorSave.data?.data?.highestRevision?.status, 'DRAFT');
+
+    // Verify immutability of Revision #1: still CHANGES_REQUESTED
+    const rev1Db = await prisma.lessonRevision.findUnique({ where: { id: v1RevisionId } });
+    assert.equal(rev1Db.status, 'CHANGES_REQUESTED');
+
+    // 5. Teacher B submits Revision #2
+    const lessonForSubmit = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    const rev2Db = await prisma.lessonRevision.findUnique({ where: { id: v2RevisionId } });
+    const submit2 = await submitTeacherLesson(
+      workflowTeacherBId,
+      pkgLessonId,
+      {
+        revisionId: v2RevisionId,
+        expectedLessonRowVersion: String(lessonForSubmit.rowVersion),
+        expectedRevisionRowVersion: String(rev2Db.rowVersion),
+      },
+      prisma
+    );
+    assert.equal(submit2.status, 200);
+    submission2Id = submit2.data.submissionId;
+
+    // 6. Admin approves Revision #2
+    const rev2BeforeApprove = await prisma.lessonRevision.findUnique({ where: { id: v2RevisionId } });
+    const approve2 = await approveReview(
+      testAdminId,
+      submission2Id,
+      { expectedRevisionRowVersion: String(rev2BeforeApprove.rowVersion) },
+      prisma
+    );
+    assert.equal(approve2.status, 200);
+
+    // 7. Admin publishes Revision #2 with makeAvailable: true
+    await prisma.course.update({ where: { id: pkgCourseId }, data: { isActive: true } });
+    const lessonBeforePublish = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    const rev2BeforePublish = await prisma.lessonRevision.findUnique({ where: { id: v2RevisionId } });
+    const publish2 = await publishReview(
+      testAdminId,
+      submission2Id,
+      {
+        expectedLessonRowVersion: String(lessonBeforePublish.rowVersion),
+        expectedRevisionRowVersion: String(rev2BeforePublish.rowVersion),
+        makeAvailable: true,
+      },
+      prisma
+    );
+    assert.equal(publish2.status, 200);
+
+    const publishedLesson = await prisma.lesson.findUnique({ where: { id: pkgLessonId } });
+    assert.equal(publishedLesson.availability, 'AVAILABLE');
+    assert.equal(publishedLesson.activeRevisionId, v2RevisionId);
+
+    // 8. Learner consumes published lesson via loadLearnerLessonDetail
+    const learnerDetail = await loadLearnerLessonDetail(pkgContextId, pkgLessonId, workflowLearnerId);
+    assert.ok(learnerDetail);
+    assert.equal(learnerDetail.revision.id, v2RevisionId);
+    assert.equal(learnerDetail.revision.revisionNo, 2);
+    assert.equal(learnerDetail.revision.title.vi, 'Bài học hoàn thiện V2');
+    assert.equal(learnerDetail.revision.blocks.length, 2);
+
+    // Zero secret leakage check
+    const presentationJson = JSON.stringify(learnerDetail.revision.presentation);
+    assert.ok(!presentationJson.includes('correctOptionId'), 'correctOptionId must NOT leak to learner');
+    assert.ok(!presentationJson.includes('gradingData'), 'gradingData must NOT leak to learner');
+
+    // 9. Attribution & Assignment History verification
+    const [rev1Row, rev2Row] = await Promise.all([
+      pgClient.query(`SELECT created_by, revision_no FROM app.lesson_revisions WHERE id = '${v1RevisionId}'`),
+      pgClient.query(`SELECT created_by, revision_no FROM app.lesson_revisions WHERE id = '${v2RevisionId}'`),
+    ]);
+    assert.equal(rev1Row.rows[0].created_by, testTeacherId, 'Revision 1 createdBy must be Teacher A');
+    assert.equal(rev2Row.rows[0].created_by, workflowTeacherBId, 'Revision 2 createdBy must be Teacher B');
+
+    const historyRows = await pgClient.query(`
+      SELECT sequence_no, event_type, previous_teacher_id, next_teacher_id, scope_generation
+      FROM app.assignment_history
+      WHERE assignment_id = '${pkgAssignmentId}'
+      ORDER BY sequence_no ASC
+    `);
+    assert.equal(historyRows.rows.length, 2);
+    assert.equal(historyRows.rows[0].sequence_no, 1);
+    assert.equal(historyRows.rows[0].event_type, 'ASSIGNED');
+    assert.equal(historyRows.rows[0].next_teacher_id, testTeacherId);
+
+    assert.equal(historyRows.rows[1].sequence_no, 2);
+    assert.equal(historyRows.rows[1].event_type, 'REASSIGNED');
+    assert.equal(historyRows.rows[1].previous_teacher_id, testTeacherId);
+    assert.equal(historyRows.rows[1].next_teacher_id, workflowTeacherBId);
   });
 });
 

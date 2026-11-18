@@ -35,8 +35,8 @@ export function AssessmentCatalog() {
   const [levels, setLevels] = useState<LevelChoice[]>([]);
   const [levelsError, setLevelsError] = useState<string | null>(null);
   const [levelsLoading, setLevelsLoading] = useState(false);
-  const [eligibleItems, setEligibleItems] = useState<EligibleAssessmentItemDto[]>([]);
-  const [versions, setVersions] = useState<AssessmentVersionDto[]>([]);
+  const [eligibleItems, setEligibleItems] = useState<EligibleAssessmentItemDto[] | null>(null);
+  const [versions, setVersions] = useState<AssessmentVersionDto[] | null>(null);
   const [selectedItemRevisionIds, setSelectedItemRevisionIds] = useState<string[]>([]);
   const [selectedVersion, setSelectedVersion] = useState<AssessmentVersionDto | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -144,28 +144,40 @@ export function AssessmentCatalog() {
 
   useEffect(() => {
     let active = true;
+    setEligibleItems(null);
+    setVersions(null);
+    setSelectedItemRevisionIds([]);
+    setSelectedVersion(null);
+    setAssemblyLoadError(null);
     if (!selectedBlueprint) {
-      setEligibleItems([]); setVersions([]); setSelectedItemRevisionIds([]); setSelectedVersion(null); setAssemblyLoadError(null);
+      setAssemblyLoading(false);
       return () => { active = false; };
     }
     setAssemblyLoading(true);
-    setAssemblyLoadError(null);
-    setSelectedItemRevisionIds([]);
-    setSelectedVersion(null);
-    Promise.all([
-      fetch(`/api/assessment-blueprints/${selectedBlueprint.id}/eligible-items`, { cache: 'no-store' }),
-      fetch(`/api/assessment-blueprints/${selectedBlueprint.id}/versions`, { cache: 'no-store' }),
-    ]).then(async ([itemResponse, versionResponse]) => {
-      const [itemBody, versionBody] = await Promise.all([resultBody(itemResponse), resultBody(versionResponse)]);
+    const baseUrl = `/api/assessment-blueprints/${selectedBlueprint.id}`;
+    const loadList = async (resource: string, loadError: string) => {
+      const response = await fetch(`${baseUrl}/${resource}`, { cache: 'no-store' });
+      const body = await resultBody(response);
+      if (!response.ok || !Array.isArray(body?.data)) {
+        return { error: body?.error?.message || loadError };
+      }
+      return { data: body.data };
+    };
+    const itemError = 'Không thể tải bài tập hợp lệ.';
+    const versionError = 'Không thể tải phiên bản đã lắp ghép.';
+    Promise.allSettled([
+      loadList('eligible-items', itemError),
+      loadList('versions', versionError),
+    ]).then(([items, versionList]) => {
       if (!active) return;
       const failures: string[] = [];
-      if (itemResponse.ok && Array.isArray(itemBody?.data)) setEligibleItems(itemBody.data);
-      else failures.push(itemBody?.error?.message || 'Không thể tải bài tập hợp lệ.');
-      if (versionResponse.ok && Array.isArray(versionBody?.data)) setVersions(versionBody.data);
-      else failures.push(versionBody?.error?.message || 'Không thể tải phiên bản đã lắp ghép.');
+      if (items.status === 'fulfilled' && items.value.data) setEligibleItems(items.value.data);
+      else failures.push(items.status === 'fulfilled' ? items.value.error : itemError);
+      if (versionList.status === 'fulfilled' && versionList.value.data) setVersions(versionList.value.data);
+      else failures.push(versionList.status === 'fulfilled' ? versionList.value.error : versionError);
       if (failures.length) setAssemblyLoadError(failures.join(' '));
-    }).catch(() => { if (active) setAssemblyLoadError('Lỗi kết nối khi tải dữ liệu lắp ghép.'); })
-      .finally(() => { if (active) setAssemblyLoading(false); });
+      setAssemblyLoading(false);
+    });
     return () => { active = false; };
   }, [selectedBlueprint?.id, selectedBlueprint?.generation, assemblyReloadToken]);
 
@@ -309,7 +321,7 @@ export function AssessmentCatalog() {
         return;
       }
       const created = body.data as AssessmentVersionDto;
-      setVersions((current) => [created, ...current.filter((entry) => entry.id !== created.id)]);
+      setVersions((current) => [created, ...(current ?? []).filter((entry) => entry.id !== created.id)]);
       setBlueprints((current) => current.map((entry) => entry.id === selectedBlueprint.id
         ? { ...entry, versionCount: (entry.versionCount || 0) + 1 }
         : entry));
@@ -319,7 +331,7 @@ export function AssessmentCatalog() {
     finally { setAssembling(false); }
   };
 
-  const selectedItems = useMemo(() => selectedItemRevisionIds.map((id) => eligibleItems.find((item) => item.itemRevisionId === id)).filter(Boolean) as EligibleAssessmentItemDto[], [eligibleItems, selectedItemRevisionIds]);
+  const selectedItems = useMemo(() => selectedItemRevisionIds.map((id) => eligibleItems?.find((item) => item.itemRevisionId === id)).filter(Boolean) as EligibleAssessmentItemDto[], [eligibleItems, selectedItemRevisionIds]);
   const selectedTypeCounts = selectedItems.reduce<Record<string, number>>((counts, item) => ({ ...counts, [item.type]: (counts[item.type] || 0) + 1 }), {});
 
   if (loading) return <main className="page-container"><p>Đang tải danh mục đánh giá…</p></main>;
@@ -413,7 +425,7 @@ export function AssessmentCatalog() {
           await refreshBlueprint(selectedBlueprint.id);
           setAssemblyReloadToken((current) => current + 1);
         }}>Tải lại dữ liệu lắp ghép</button></div>}
-        {assemblyLoading ? <p>Đang tải bài tập hợp lệ…</p> : <>
+        {assemblyLoading ? <p>Đang tải bài tập hợp lệ…</p> : eligibleItems === null ? null : <>
           <div className="table-wrap"><table className="data-table" aria-label="Bài tập đánh giá đã nộp">
             <thead><tr><th scope="col">Chọn</th><th scope="col">Kiểu</th><th scope="col">Câu hỏi</th><th scope="col">Bản học</th><th scope="col">Revision ID</th></tr></thead>
             <tbody>{eligibleItems.map((item) => {
@@ -439,7 +451,7 @@ export function AssessmentCatalog() {
           </div>
         </>}
 
-        <div style={{ marginTop: 24 }}>
+        {versions !== null && <div style={{ marginTop: 24 }}>
           <h3>Phiên bản đã tạo</h3>
           {versions.length === 0 ? <p>Chưa có phiên bản.</p> : <ul>{versions.map((version) => <li key={version.id}>
             <button type="button" className="btn-text-action" onClick={() => loadVersionDetail(version.id)}>#{version.versionNo} · {version.status} · {version.itemCount ?? '—'} câu · {version.id.slice(0, 8)}</button>
@@ -452,7 +464,7 @@ export function AssessmentCatalog() {
               Vị trí {item.position}: item <code>{item.itemId}</code>, revision <code>{item.itemRevisionId}</code>, source r{item.sourceLessonRevision.revisionNo} — {(item.itemRevision.promptData as any)?.prompt || item.itemRevision.type}
             </li>)}</ol>
           </div>}
-        </div>
+        </div>}
       </section>}
     </main>
   );

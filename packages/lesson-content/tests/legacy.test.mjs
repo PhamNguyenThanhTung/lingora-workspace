@@ -348,6 +348,29 @@ describe('T01: toLessonPresentationDto Public Boundary', () => {
         displaySnapshot: {
           canonicalForm: 'cat',
           meaningLabels: { vi: 'con mèo' },
+          characters: [
+            {
+              characterId: 'b0000000-0000-4000-8000-000000000002',
+              position: 2,
+              glyph: '本',
+              scriptType: 'KANJI',
+              meaning: 'sách',
+              primaryReading: 'ほん',
+              strokeCount: 5,
+              strokeVersion: 1,
+              strokes: [{ points: [[0, 0], [1, 1]] }],
+            },
+            {
+              characterId: 'b0000000-0000-4000-8000-000000000001',
+              position: 1,
+              glyph: '日',
+              scriptType: 'KANJI',
+              meaning: 'ngày',
+              primaryReading: 'にち',
+              strokeCount: 4,
+              strokeVersion: 1,
+            },
+          ],
         },
       },
       {
@@ -377,6 +400,11 @@ describe('T01: toLessonPresentationDto Public Boundary', () => {
     assert.equal(dto.vocabulary.length, 2);
     assert.equal(dto.vocabulary[0].id, 'v-1');
     assert.equal(dto.vocabulary[1].id, 'v-2');
+    assert.deepEqual(
+      dto.vocabulary[1].displaySnapshot.characters.map((character) => character.glyph),
+      ['日', '本']
+    );
+    assert.equal('strokes' in dto.vocabulary[1].displaySnapshot.characters[0], false);
 
     // Verify secrecy: no top-level grading data leaked!
     const ex2 = dto.exercises[1];

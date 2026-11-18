@@ -9,12 +9,56 @@ export interface UnsupportedBlockDto {
   message: string;
 }
 
-export type PresentationBlock = LessonBlock | UnsupportedBlockDto;
+export interface PublicCharacterBlock {
+  blockKey: string;
+  type: 'CHARACTER';
+  position: number;
+  schemaVersion: number;
+  characterId: string;
+  glyph: string;
+  scriptType: string;
+  strokeCount: number;
+  showMeaning: boolean;
+  showReading: boolean;
+  showStrokeAnimation: boolean;
+  guidedWriting: boolean;
+  meaning?: string;
+  primaryReading?: string;
+  romanization?: string;
+  strokeVersion?: number;
+  content?: {
+    characterId: string;
+    glyph: string;
+    scriptType: string;
+    strokeCount: number;
+    showMeaning: boolean;
+    showReading: boolean;
+    showStrokeAnimation: boolean;
+    guidedWriting: boolean;
+    meaning?: string;
+    primaryReading?: string;
+    romanization?: string;
+    strokeVersion?: number;
+  };
+}
+
+export type PresentationBlock = LessonBlock | UnsupportedBlockDto | PublicCharacterBlock;
 
 export interface PublicVocabularyDisplaySnapshot {
   canonicalForm: string;
   senseKey?: string;
   meaningLabels: Record<string, string>;
+  characters?: Array<{
+    characterId: string;
+    position: number;
+    glyph: string;
+    scriptType: string;
+    meaning?: string | null;
+    primaryReading?: string | null;
+    romanization?: string | null;
+    strokeCount?: number;
+    strokeVersion?: number | null;
+  }>;
   phonetic?: string | null;
   partOfSpeech?: string | null;
   example?: string | null;
@@ -141,6 +185,41 @@ export function sanitizePublicVocabulary(raw: unknown): PublicVocabularyDto | nu
   const displaySnapshot = (v.displaySnapshot && typeof v.displaySnapshot === 'object'
     ? v.displaySnapshot
     : {}) as Record<string, unknown>;
+  const characters = Array.isArray(displaySnapshot.characters)
+    ? displaySnapshot.characters
+        .map((rawCharacter) => {
+          if (!rawCharacter || typeof rawCharacter !== 'object') return null;
+          const character = rawCharacter as Record<string, unknown>;
+          if (
+            typeof character.characterId !== 'string' ||
+            typeof character.position !== 'number' || !Number.isInteger(character.position) ||
+            typeof character.glyph !== 'string' || typeof character.scriptType !== 'string'
+          ) return null;
+          return {
+            characterId: character.characterId,
+            position: character.position,
+            glyph: character.glyph,
+            scriptType: character.scriptType,
+            ...(typeof character.meaning === 'string' || character.meaning === null
+              ? { meaning: character.meaning as string | null }
+              : {}),
+            ...(typeof character.primaryReading === 'string' || character.primaryReading === null
+              ? { primaryReading: character.primaryReading as string | null }
+              : {}),
+            ...(typeof character.romanization === 'string' || character.romanization === null
+              ? { romanization: character.romanization as string | null }
+              : {}),
+            ...(typeof character.strokeCount === 'number' && Number.isInteger(character.strokeCount)
+              ? { strokeCount: character.strokeCount }
+              : {}),
+            ...(typeof character.strokeVersion === 'number' && Number.isInteger(character.strokeVersion)
+              ? { strokeVersion: character.strokeVersion }
+              : character.strokeVersion === null ? { strokeVersion: null } : {}),
+          };
+        })
+        .filter((character): character is NonNullable<typeof character> => character !== null)
+        .sort((a, b) => a.position - b.position)
+    : undefined;
 
   return {
     id: v.id,
@@ -149,6 +228,7 @@ export function sanitizePublicVocabulary(raw: unknown): PublicVocabularyDto | nu
     displaySnapshot: {
       canonicalForm: typeof displaySnapshot.canonicalForm === 'string' ? displaySnapshot.canonicalForm : '',
       senseKey: typeof displaySnapshot.senseKey === 'string' ? displaySnapshot.senseKey : 'default',
+      ...(characters ? { characters } : {}),
       meaningLabels: (displaySnapshot.meaningLabels && typeof displaySnapshot.meaningLabels === 'object'
         ? displaySnapshot.meaningLabels
         : {}) as Record<string, string>,
