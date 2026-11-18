@@ -6,7 +6,6 @@ import type {
   LearnerContextEnvelope,
   LearningContextSummaryDto,
   ContextOptionsData,
-  CourseOptionDto,
 } from '../../server/context/dto.ts';
 import type { LoadLearnerContextResult } from '../../server/context/loader.ts';
 import type { HomeDto } from '../../server/context/home-dto.ts';
@@ -86,18 +85,10 @@ export function HomeView({ data, errorState }: HomeViewProps) {
     }
   }, [data]);
 
-  // Context creation state
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [createOperationId, setCreateOperationId] = useState(() => generateContextId());
-  const [selectedLanguageId, setSelectedLanguageId] = useState('');
-  const [selectedCourseId, setSelectedCourseId] = useState('');
-  const [startSource, setStartSource] = useState<'DEFAULT' | 'SELF_REPORT'>('DEFAULT');
-  const [selectedLevelId, setSelectedLevelId] = useState('');
+  // Options are loaded only for recovery of existing contexts without a starting level.
   const [options, setOptions] = useState<ContextOptionsData | null>(null);
   const [isLoadingOptions, setIsLoadingOptions] = useState(false);
   const [optionsError, setOptionsError] = useState<string | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-  const [createError, setCreateError] = useState<{ code: string; message: string; status: number } | null>(null);
 
   // Context lifecycle actions state (pause/resume)
   const [pendingContexts, setPendingContexts] = useState<Record<string, boolean>>({});
@@ -420,9 +411,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
     startRetry(() => router.refresh());
   };
 
-  const [optionsFetchAttempted, setOptionsFetchAttempted] = useState(false);
-
-  // Fetch options for creation form
+  // Fetch options only when an existing context needs level recovery.
   const fetchOptions = async () => {
     setIsLoadingOptions(true);
     setOptionsError(null);
@@ -448,24 +437,6 @@ export function HomeView({ data, errorState }: HomeViewProps) {
       const optionsData: ContextOptionsData = json.data;
       setOptions(optionsData);
       setOptionsError(null);
-
-      // Auto-select first available unowned language and course if not yet selected
-      if (optionsData.languages.length > 0 && !selectedLanguageId) {
-        const unownedLang = optionsData.languages.find(
-          (l) => !contexts.some((c) => c.targetLanguage.id.toLowerCase() === l.id.toLowerCase())
-        );
-        const firstLang = unownedLang || optionsData.languages[0];
-        setSelectedLanguageId(firstLang.id);
-        if (firstLang.courses.length > 0) {
-          const firstCourse = firstLang.courses[0];
-          setSelectedCourseId(firstCourse.id);
-          if (firstCourse.defaultLevelId) {
-            setSelectedLevelId(firstCourse.defaultLevelId);
-          } else if (firstCourse.levels.length > 0) {
-            setSelectedLevelId(firstCourse.levels[0].id);
-          }
-        }
-      }
     } catch (err: any) {
       setOptionsError(err.message || 'Lỗi khi tải tùy chọn khóa học.');
     } finally {
@@ -476,145 +447,6 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   const handleRetryOptions = () => {
     setOptionsError(null);
     fetchOptions();
-  };
-
-  useEffect(() => {
-    // 1. Never fetch options on error/denied states or when no data is loaded
-    if (errorState || !data) return;
-
-    // 2. Active count check: at most two active contexts
-    const currentActiveCount = contexts.filter((c) => c.status === 'ACTIVE').length;
-    const canCreate = currentActiveCount < 2;
-    const isVisibleCreateFlow = (contexts.length === 0 || showCreateForm) && canCreate;
-
-    // 3. Stable options error after a single failed automatic fetch, explicit user retry
-    if (isVisibleCreateFlow && !options && !isLoadingOptions && !optionsError && !optionsFetchAttempted) {
-      setOptionsFetchAttempted(true);
-      fetchOptions();
-    }
-  }, [errorState, data, contexts, showCreateForm, options, isLoadingOptions, optionsError, optionsFetchAttempted]);
-
-  // Handle language change in form
-  const handleLanguageChange = (langId: string) => {
-    setSelectedLanguageId(langId);
-    setCreateError(null);
-    const lang = options?.languages.find((l) => l.id === langId);
-    if (lang && lang.courses.length > 0) {
-      const firstCourse = lang.courses[0];
-      setSelectedCourseId(firstCourse.id);
-      setStartSource('DEFAULT');
-      if (firstCourse.defaultLevelId) {
-        setSelectedLevelId(firstCourse.defaultLevelId);
-      } else if (firstCourse.levels.length > 0) {
-        setSelectedLevelId(firstCourse.levels[0].id);
-      } else {
-        setSelectedLevelId('');
-      }
-    } else {
-      setSelectedCourseId('');
-      setSelectedLevelId('');
-    }
-  };
-
-  // Handle course change in form
-  const handleCourseChange = (courseId: string) => {
-    setSelectedCourseId(courseId);
-    setCreateError(null);
-    const selectedCourse = currentCourses.find((c) => c.id === courseId);
-    setStartSource('DEFAULT');
-    if (selectedCourse?.defaultLevelId) {
-      setSelectedLevelId(selectedCourse.defaultLevelId);
-    } else if (selectedCourse && selectedCourse.levels.length > 0) {
-      setSelectedLevelId(selectedCourse.levels[0].id);
-    } else {
-      setSelectedLevelId('');
-    }
-  };
-
-  // Handle form submission
-  const handleCreateContext = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isCreating || !selectedLanguageId || !selectedCourseId) return;
-
-    if (startSource === 'SELF_REPORT' && !selectedLevelId) {
-      setCreateError({
-        code: 'VALIDATION_ERROR',
-        message: 'Vui lòng chọn trình độ khởi điểm.',
-        status: 400,
-      });
-      return;
-    }
-
-    setIsCreating(true);
-    setCreateError(null);
-
-    const payload =
-      startSource === 'DEFAULT'
-        ? {
-            contextId: createOperationId,
-            languageId: selectedLanguageId,
-            courseId: selectedCourseId,
-            startSource: 'DEFAULT',
-          }
-        : {
-            contextId: createOperationId,
-            languageId: selectedLanguageId,
-            courseId: selectedCourseId,
-            startSource: 'SELF_REPORT',
-            levelId: selectedLevelId,
-          };
-
-    try {
-      const response = await fetch('/api/learner/context', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.status === 401) {
-        router.push('/login');
-        return;
-      }
-
-      const json = await response.json();
-
-      if (!response.ok) {
-        setCreateError({
-          code: json.error?.code || 'ERROR',
-          message: json.error?.message || 'Không thể tạo lộ trình học.',
-          status: response.status,
-        });
-        return;
-      }
-
-      // Authoritative reconciliation: add/replace created context
-      const created: LearningContextSummaryDto = json.data;
-      setContexts((prev) => {
-        const index = prev.findIndex((c) => c.id === created.id);
-        if (index >= 0) {
-          const next = [...prev];
-          next[index] = created;
-          return next;
-        }
-        return [...prev, created];
-      });
-
-      router.refresh();
-      // Generate a new operation ID for future operations only after success
-      setCreateOperationId(generateContextId());
-      setShowCreateForm(false);
-      setCreateError(null);
-    } catch {
-      setCreateError({
-        code: 'NETWORK_ERROR',
-        message: 'Lỗi kết nối mạng. Vui lòng thử lại.',
-        status: 0,
-      });
-    } finally {
-      setIsCreating(false);
-    }
   };
 
   // Handle Pause
@@ -831,289 +663,189 @@ export function HomeView({ data, errorState }: HomeViewProps) {
 
   const { learner } = data;
   const uiLocale = learner.uiLocale || 'vi';
+  const displayName = learner.displayName?.trim() || 'bạn';
+  const selectedLanguage = selectedContext
+    ? getLocalizedText(selectedContext.targetLanguage.names, uiLocale) || selectedContext.targetLanguage.code
+    : '';
+  const selectedWorkingLevel = selectedContext?.workingLevel
+    ? `${selectedContext.workingLevel.code} - ${getLocalizedText(selectedContext.workingLevel.label, uiLocale)}`
+    : 'Chưa chọn trình độ bắt đầu';
+  const publishedPathCount = pathNodes.filter((node) => node.state !== 'COMING_SOON').length;
+  const completedPathCount = pathNodes.filter((node) => node.state === 'COMPLETED').length;
+  const pathStatus = selectedContext && !selectedContext.course.isActive
+    ? 'COURSE_INACTIVE'
+    : selectedContext?.status === 'PAUSED'
+    ? 'PAUSED'
+    : selectedContext && !selectedContext.workingLevel
+    ? 'NO_WORKING_LEVEL'
+    : selectedContext?.status === 'ACTIVE' && homeData?.pathStatus === 'PAUSED'
+    ? 'READY'
+    : homeData?.pathStatus;
 
-  // Derived options for current selection
-  const currentLanguage = options?.languages.find((l) => l.id === selectedLanguageId);
-  const currentCourses: CourseOptionDto[] = currentLanguage?.courses || [];
-  const currentCourse = currentCourses.find((c) => c.id === selectedCourseId);
-  const eligibleLevels = currentCourse?.levels || [];
-  const defaultLevel = eligibleLevels.find((l) => l.id === currentCourse?.defaultLevelId);
-
-  // Active contexts count
   const activeCount = contexts.filter((c) => c.status === 'ACTIVE').length;
-
-  const renderCreateForm = () => (
-    <div
-      id="createContextSection"
-      style={{
-        border: '1px solid var(--border-color, #e2e8f0)',
-        borderRadius: '8px',
-        padding: '20px',
-        marginTop: '16px',
-        backgroundColor: 'var(--card-bg, #ffffff)',
-      }}
-    >
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '12px' }}>
-        Tạo lộ trình học mới
-      </h2>
-
-      {isLoadingOptions && (
-        <p style={{ color: 'var(--text-muted)' }}>Đang tải danh sách ngôn ngữ và khóa học...</p>
-      )}
-
-      {optionsError && (
-        <div id="optionsErrorAlert" role="alert" className="login-alert" style={{ marginBottom: '12px' }}>
-          <span>{optionsError}</span>
-          <button
-            type="button"
-            id="retryOptionsBtn"
-            className="btn btn-outline"
-            style={{ marginLeft: '12px' }}
-            onClick={handleRetryOptions}
-          >
-            Thử lại tải tùy chọn
-          </button>
-        </div>
-      )}
-
-      {options && (
-        <form id="createContextForm" onSubmit={handleCreateContext}>
-          {/* Language selector */}
-          <div style={{ marginBottom: '16px' }}>
-            <label
-              htmlFor="createLanguageSelect"
-              style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}
-            >
-              Ngôn ngữ mục tiêu
-            </label>
-            <select
-              id="createLanguageSelect"
-              className="form-control"
-              value={selectedLanguageId}
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              disabled={isCreating}
-              style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
-            >
-              {options.languages.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {getLocalizedText(l.names, uiLocale) || l.code} ({l.code})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Course selector */}
-          <div style={{ marginBottom: '16px' }}>
-            <label
-              htmlFor="createCourseSelect"
-              style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}
-            >
-              Khóa học
-            </label>
-            {currentCourses.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)' }}>Chưa có khóa học nào cho ngôn ngữ này.</p>
-            ) : (
-              <select
-                id="createCourseSelect"
-                className="form-control"
-                value={selectedCourseId}
-                onChange={(e) => handleCourseChange(e.target.value)}
-                disabled={isCreating}
-                style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
-              >
-                {currentCourses.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {getLocalizedText(c.names, uiLocale)} - Khung {c.framework.code}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          {/* Starting point controls */}
-          {currentCourse && (
-            <div style={{ marginBottom: '16px' }}>
-              <span style={{ display: 'block', fontWeight: 600, marginBottom: '8px' }}>
-                Điểm khởi đầu học tập
-              </span>
-
-              {/* DEFAULT radio */}
-              <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    id="startSourceDefault"
-                    name="startSource"
-                    value="DEFAULT"
-                    checked={startSource === 'DEFAULT'}
-                    onChange={() => setStartSource('DEFAULT')}
-                    disabled={isCreating}
-                    style={{ marginRight: '8px', marginTop: '4px' }}
-                  />
-                  <div>
-                    <span style={{ fontWeight: 500 }}>
-                      Bắt đầu mặc định (Dự kiến:{' '}
-                      {defaultLevel
-                        ? `${defaultLevel.code} - ${getLocalizedText(defaultLevel.label, uiLocale)}`
-                        : 'Chưa có nội dung - Đang cập nhật'}
-                      )
-                    </span>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                      Bắt đầu từ trình độ có bài học đầu tiên trong chương trình học.
-                    </p>
-                  </div>
-                </label>
-              </div>
-
-              {/* SELF_REPORT radio */}
-              <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    id="startSourceSelfReport"
-                    name="startSource"
-                    value="SELF_REPORT"
-                    checked={startSource === 'SELF_REPORT'}
-                    onChange={() => setStartSource('SELF_REPORT')}
-                    disabled={isCreating || eligibleLevels.length === 0}
-                    style={{ marginRight: '8px', marginTop: '4px' }}
-                  />
-                  <div>
-                    <span style={{ fontWeight: 500 }}>
-                      Tự đánh giá trình độ (Chưa kiểm chứng)
-                    </span>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                      Chọn trực tiếp trình độ năng lực bạn tự tin để bắt đầu học.
-                    </p>
-                  </div>
-                </label>
-              </div>
-
-              {/* Level selector if SELF_REPORT */}
-              {startSource === 'SELF_REPORT' && (
-                <div style={{ marginLeft: '24px', marginTop: '8px' }}>
-                  {eligibleLevels.length === 0 ? (
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                      Khóa học này hiện chưa có trình độ nào có bài học phát hành để tự chọn.
-                    </p>
-                  ) : (
-                    <select
-                      id="createLevelSelect"
-                      className="form-control"
-                      value={selectedLevelId}
-                      onChange={(e) => setSelectedLevelId(e.target.value)}
-                      disabled={isCreating}
-                      style={{ padding: '6px 12px', borderRadius: '4px' }}
-                    >
-                      {eligibleLevels.map((lvl) => (
-                        <option key={lvl.id} value={lvl.id}>
-                          {lvl.code} - {getLocalizedText(lvl.label, uiLocale)}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Error and Alert */}
-          {createError && (
-            <div
-              id="createContextAlert"
-              role="alert"
-              className="login-alert"
-              style={{ marginBottom: '16px' }}
-            >
-              <span>{createError.message}</span>
-              {createError.status === 409 && (
-                <button
-                  type="button"
-                  id="createReloadBtn"
-                  className="btn btn-outline"
-                  style={{ marginLeft: '12px' }}
-                  onClick={() => router.refresh()}
-                >
-                  Tải lại dữ liệu
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Form Actions */}
-          <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-            <button
-              type="submit"
-              id="submitCreateContextBtn"
-              className="btn btn-primary"
-              disabled={isCreating || !selectedCourseId || (startSource === 'SELF_REPORT' && !selectedLevelId)}
-            >
-              {isCreating ? 'Đang tạo lộ trình...' : 'Bắt đầu học'}
-            </button>
-            {contexts.length > 0 && (
-              <button
-                type="button"
-                id="cancelCreateBtn"
-                className="btn btn-secondary"
-                onClick={() => setShowCreateForm(false)}
-                disabled={isCreating}
-              >
-                Hủy
-              </button>
-            )}
-          </div>
-        </form>
-      )}
-    </div>
-  );
 
   return (
     <div id="homeView" className="app-container">
       {renderHeader(
         <div id="learnerIdentity" className="user-identity" style={{ maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <span className="user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {learner.displayName || `Học viên (${learner.id.slice(0, 8)})`}
+            {displayName === 'bạn' ? 'Học viên' : displayName}
           </span>
         </div>
       )}
 
       <main className="content-area">
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            marginBottom: '8px',
-          }}
-        >
-          <h1 style={{ fontSize: 'var(--font-size-heading)', fontWeight: 700 }}>
-            Lộ trình học tập của tôi
-          </h1>
-          <span style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)' }}>
-            Ngôn ngữ giao diện: {uiLocale}
-          </span>
-        </div>
+        <h1 style={{ fontSize: 'var(--font-size-heading)', fontWeight: 700, marginBottom: '4px' }}>
+          Chào {displayName}!
+        </h1>
 
         {/* Empty Context State */}
         {contexts.length === 0 ? (
-          <div>
-            <div id="emptyContextState" className="empty-state-box">
-              <p className="empty-state-text">Bạn chưa có lộ trình học.</p>
-              <div style={{ marginTop: '16px' }}>
-                <a
-                  href="/onboarding"
-                  id="startOnboardingBtn"
-                  className="btn btn-primary"
-                  style={{ textDecoration: 'none', display: 'inline-block' }}
-                >
-                  Bắt đầu lộ trình học cá nhân
-                </a>
-              </div>
+          <div id="emptyContextState" className="empty-state-box">
+            <p className="empty-state-text">Bạn chưa có lộ trình học.</p>
+            <div style={{ marginTop: '16px' }}>
+              <a
+                href="/onboarding"
+                id="startOnboardingBtn"
+                className="btn btn-primary"
+                style={{ textDecoration: 'none', display: 'inline-block' }}
+              >
+                Bắt đầu học
+              </a>
             </div>
-            {renderCreateForm()}
           </div>
         ) : (
           <div>
+            {selectedContext && (
+              <p style={{ margin: '0 0 12px', color: 'var(--text-muted)' }}>
+                {selectedLanguage} · {selectedWorkingLevel}
+              </p>
+            )}
+
+            {continueLearning ? (
+              <div
+                id="continueLearningBanner"
+                style={{
+                  marginBottom: '12px',
+                  padding: '16px 20px',
+                  backgroundColor: 'var(--primary-bg-subtle, #ecfdf5)',
+                  border: '1px solid var(--primary-green, #10b981)',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                }}
+              >
+                <div>
+                  <span className="badge badge-active" style={{ marginBottom: '4px', fontSize: '0.75rem' }}>
+                    {continueLearning.status === 'IN_PROGRESS' ? 'Đang làm bài' : 'Bài học tiếp theo'}
+                  </span>
+                  <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '2px 0' }}>
+                    {continueLearning.title}
+                  </h2>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    {continueLearning.unitTitle}
+                  </span>
+                </div>
+                <a
+                  href={continueLearning.href}
+                  id="continueLearningBtn"
+                  className="btn btn-primary"
+                  style={{ textDecoration: 'none', padding: '8px 20px', fontSize: '0.95rem' }}
+                >
+                  {continueLearning.status === 'IN_PROGRESS' ? 'Tiếp tục học' : 'Bắt đầu học'}
+                </a>
+              </div>
+            ) : (
+              <section
+                id="continueLearningFallback"
+                role="status"
+                style={{
+                  marginBottom: '12px',
+                  padding: '16px 20px',
+                  border: '1px solid var(--border-color, #e2e8f0)',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                }}
+              >
+                <div>
+                  <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 4px' }}>
+                    {pathStatus === 'PAUSED' ? 'Lộ trình đang tạm dừng'
+                      : pathStatus === 'NO_WORKING_LEVEL' ? 'Chọn trình độ để bắt đầu'
+                      : pathStatus === 'COURSE_INACTIVE' ? 'Khóa học hiện chưa mở'
+                      : 'Chưa có bài học tiếp theo'}
+                  </h2>
+                  <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                    {homeData?.pathMessage || (pathStatus === 'PAUSED'
+                      ? 'Tiếp tục lộ trình khi bạn sẵn sàng.'
+                      : pathStatus === 'NO_WORKING_LEVEL'
+                      ? 'Chọn trình độ bắt đầu để xem bài học phù hợp.'
+                      : pathStatus === 'COURSE_INACTIVE'
+                      ? 'Bạn có thể xem lại thông tin lộ trình bên dưới.'
+                      : pathStatus === 'EMPTY_CURRICULUM'
+                      ? 'Chương trình này chưa có bài học được phát hành.'
+                      : 'Chọn một lộ trình để xem nội dung học.')}
+                  </span>
+                </div>
+                {selectedContext && pathStatus === 'PAUSED' ? (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => handleResume(selectedContext)}
+                    disabled={!!pendingContexts[selectedContext.id]}
+                  >
+                    {pendingContexts[selectedContext.id] ? 'Đang tiếp tục...' : 'Tiếp tục học'}
+                  </button>
+                ) : selectedContext && pathStatus === 'NO_WORKING_LEVEL' ? (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => handleOpenStartLevel(selectedContext)}
+                    disabled={!!pendingContexts[selectedContext.id] || isRecovering}
+                  >
+                    Chọn trình độ bắt đầu
+                  </button>
+                ) : reviewDue > 0 ? (
+                  <a href="/review" className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                    Ôn tập {reviewDue} nội dung đến hạn
+                  </a>
+                ) : pathStatus === 'EMPTY_CURRICULUM' && selectedContext ? (
+                  <a href={`/learn/${selectedContext.id}`} className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                    Xem danh sách bài học
+                  </a>
+                ) : (
+                  <a href="#contextList" className="btn btn-outline" style={{ textDecoration: 'none' }}>
+                    Xem lộ trình
+                  </a>
+                )}
+              </section>
+            )}
+
+            {homeData && contexts.length > 1 && (
+              <label style={{ display: 'block', marginBottom: '14px' }}>
+                Lộ trình đang xem
+                <select
+                  aria-label="Lộ trình đang xem"
+                  className="form-control"
+                  value={homeData.selectedContextId ?? ''}
+                  onChange={event => router.push('/home?contextId=' + encodeURIComponent(event.target.value))}
+                >
+                  {contexts.map(ctx => <option key={ctx.id} value={ctx.id}>{getLocalizedText(ctx.course.names, uiLocale)}</option>)}
+                </select>
+              </label>
+            )}
+            {publishedPathCount > 0 && (
+              <p id="pathProgressSummary" style={{ margin: '0 0 18px', color: 'var(--text-muted)' }}>
+                {completedPathCount}/{publishedPathCount} bài đã hoàn thành
+              </p>
+            )}
+
             {/* Gamification & Quests Overview */}
             {(totalXp > 0 || streak.currentStreak > 0 || quests.length > 0 || dailyProgress.dailyGoalMinutes > 0) && (
               <div
@@ -1236,60 +968,6 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 )}
               </div>
             )}
-
-            {/* Continue Learning CTA Banner */}
-            {continueLearning && (
-              <div
-                id="continueLearningBanner"
-                style={{
-                  marginBottom: '20px',
-                  padding: '16px 20px',
-                  backgroundColor: 'var(--primary-bg-subtle, #ecfdf5)',
-                  border: '1px solid var(--primary-green, #10b981)',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '12px',
-                }}
-              >
-                <div>
-                  <span className="badge badge-active" style={{ marginBottom: '4px', fontSize: '0.75rem' }}>
-                    {continueLearning.status === 'IN_PROGRESS' ? 'Đang làm bài' : 'Bài học tiếp theo'}
-                  </span>
-                  <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '2px 0' }}>
-                    {continueLearning.title}
-                  </h2>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    {continueLearning.unitTitle}
-                  </span>
-                </div>
-                <a
-                  href={continueLearning.href}
-                  id="continueLearningBtn"
-                  className="btn btn-primary"
-                  style={{ textDecoration: 'none', padding: '8px 20px', fontSize: '0.95rem' }}
-                >
-                  {continueLearning.status === 'IN_PROGRESS' ? 'Tiếp tục bài làm' : 'Bắt đầu học'}
-                </a>
-              </div>
-            )}
-
-            {homeData && contexts.length > 1 && (
-              <label style={{ display: 'block', marginBottom: '14px' }}>
-                Lộ trình đang xem
-                <select
-                  aria-label="Lộ trình đang xem"
-                  className="form-control"
-                  value={homeData.selectedContextId ?? ''}
-                  onChange={event => router.push('/home?contextId=' + encodeURIComponent(event.target.value))}
-                >
-                  {contexts.map(ctx => <option key={ctx.id} value={ctx.id}>{getLocalizedText(ctx.course.names)}</option>)}
-                </select>
-              </label>
-            )}
-            {homeData?.pathMessage && <p role="status">{homeData.pathMessage}</p>}
 
             {/* Learning Path (Vertical) */}
             {pathNodes.length > 0 && (
@@ -1428,14 +1106,12 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '12px',
                 marginBottom: '16px',
               }}
             >
-              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                Đang có {activeCount}/2 lộ trình hoạt động
-              </span>
-              {!showCreateForm && activeCount < 2 && (
-                <div style={{ display: 'flex', gap: '8px' }}>
+              {activeCount < 2 ? (
                   <a
                     href="/onboarding"
                     id="addOnboardingLanguageBtn"
@@ -1444,37 +1120,23 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                   >
                     Thêm ngôn ngữ
                   </a>
-                  <button
-                    type="button"
-                    id="openCreateContextBtn"
-                    className="btn btn-outline"
-                    onClick={() => setShowCreateForm(true)}
-                  >
-                    Thêm lộ trình mới
-                  </button>
-                </div>
+              ) : (
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                  Bạn đang học tối đa hai ngôn ngữ.
+                </span>
               )}
             </div>
-
-            {showCreateForm && activeCount < 2 && renderCreateForm()}
 
             <div id="contextList" className="context-grid">
               {contexts.map((ctx: LearningContextSummaryDto) => {
                 const courseTitle = getLocalizedText(ctx.course.names, uiLocale);
                 const langTitle = getLocalizedText(ctx.targetLanguage.names, uiLocale);
-                const fwTitle = `${ctx.framework.code} (${ctx.framework.version})`;
-                const startLvl = ctx.selectedStartLevel
-                  ? `${ctx.selectedStartLevel.code} - ${getLocalizedText(
-                      ctx.selectedStartLevel.label,
-                      uiLocale
-                    )}`
-                  : 'Chưa xếp lớp';
                 const workingLvl = ctx.workingLevel
                   ? `${ctx.workingLevel.code} - ${getLocalizedText(
                       ctx.workingLevel.label,
                       uiLocale
                     )}`
-                  : 'Chưa xếp lớp';
+                  : 'Chưa chọn trình độ';
 
                 const isPending = !!pendingContexts[ctx.id];
                 const cardError = contextErrors[ctx.id];
@@ -1499,32 +1161,8 @@ export function HomeView({ data, errorState }: HomeViewProps) {
 
                     <div className="context-details">
                       <div className="context-detail-row">
-                        <span className="context-detail-label">Khung năng lực</span>
-                        <span className="context-detail-value">{fwTitle}</span>
-                      </div>
-                      <div className="context-detail-row">
-                        <span className="context-detail-label">Trạng thái khóa học</span>
-                        <span className="context-detail-value">
-                          {ctx.course.isActive ? 'Đang mở' : 'Tạm khóa'}
-                        </span>
-                      </div>
-                      <div className="context-detail-row">
-                        <span className="context-detail-label">Trình độ khởi điểm</span>
-                        <span className="context-detail-value">{startLvl}</span>
-                      </div>
-                      <div className="context-detail-row">
                         <span className="context-detail-label">Trình độ hiện tại</span>
                         <span className="context-detail-value">{workingLvl}</span>
-                      </div>
-                      <div className="context-detail-row">
-                        <span className="context-detail-label">Phiên bản lộ trình</span>
-                        <span
-                          className="context-detail-value"
-                          id={`rowVersion-${ctx.id}`}
-                          data-row-version={ctx.rowVersion}
-                        >
-                          v{ctx.rowVersion}
-                        </span>
                       </div>
                     </div>
 
@@ -1700,6 +1338,14 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                         </h3>
                         {isLoadingOptions && (
                           <p style={{ color: 'var(--text-muted)' }}>Đang tải danh sách trình độ...</p>
+                        )}
+                        {optionsError && (
+                          <div id="optionsErrorAlert" role="alert" className="login-alert" style={{ marginBottom: '10px' }}>
+                            <span>{optionsError}</span>
+                            <button id="retryOptionsBtn" type="button" className="btn btn-outline" onClick={handleRetryOptions}>
+                              Thử tải lại
+                            </button>
+                          </div>
                         )}
                         <div style={{ marginBottom: '10px' }}>
                           <label

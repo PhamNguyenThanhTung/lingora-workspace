@@ -240,7 +240,7 @@ async function run() {
     await page.waitForSelector('#continueLearningBanner', { timeout: 10000 });
     const continueLink = page.locator('#continueLearningBtn');
     assert.equal((await continueLink.innerText()).trim(), 'Bắt đầu học');
-    assert.match((await page.locator('#pathProgressSummary').innerText()).trim(), /^0\/2 bài đã hoàn thành$/);
+    assert.match((await page.locator('#pathProgressSummary').innerText()).trim(), /^0\/3 bài đã hoàn thành$/);
     assert.equal(await page.evaluate(() => {
       const action = document.querySelector('#continueLearningBanner');
       const gamification = document.querySelector('#gamificationOverview');

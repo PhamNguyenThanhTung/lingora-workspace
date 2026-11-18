@@ -254,9 +254,9 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     await page.goto(`${TEST_URL}?state=home-null-context`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#homeView', { state: 'visible' });
 
-    // Verify card shows Chưa xếp lớp and startLevelBtn
+    // Verify card shows the learner-friendly missing-level state and recovery action
     const cardText = await page.textContent('.context-card');
-    assert.match(cardText, /Chưa xếp lớp/);
+    assert.match(cardText, /Chưa chọn trình độ/);
 
     const startBtn = await page.waitForSelector('#startLevelBtn-ctx-null-1', { state: 'visible' });
     assert.ok(startBtn);
