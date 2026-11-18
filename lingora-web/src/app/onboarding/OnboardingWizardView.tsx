@@ -66,6 +66,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
   const [dailyGoalMinutes, setDailyGoalMinutes] = useState<DailyGoalMinutes>(10);
   const [interests, setInterests] = useState<string[]>([]);
   const [startSource, setStartSource] = useState<'DEFAULT' | 'SELF_REPORT'>('DEFAULT');
+  const [defaultCourseId, setDefaultCourseId] = useState<string>('');
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [selectedLevelId, setSelectedLevelId] = useState<string>('');
 
@@ -80,31 +81,42 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
   const [completeError, setCompleteError] = useState<string | null>(null);
   const [completeResult, setCompleteResult] = useState<OnboardingCompleteData | null>(null);
 
-  // Load options on mount
-  useEffect(() => {
-    let active = true;
-    async function fetchOptions() {
-      try {
-        setIsLoadingOptions(true);
-        const res = await fetch('/api/learner/context/options');
-        if (!res.ok) {
-          throw new Error('Không thể tải danh sách khóa học. Vui lòng thử lại.');
-        }
-        const json = await res.json();
-        if (active) {
-          setOptions(json.data);
-          setIsLoadingOptions(false);
-        }
-      } catch (err: any) {
-        if (active) {
-          setOptionsError(err.message || 'Lỗi kết nối khi tải danh mục.');
-          setIsLoadingOptions(false);
-        }
+  const optionsRequestCount = useRef(0);
+  const isMounted = useRef(true);
+
+  const fetchOptions = async () => {
+    const requestId = ++optionsRequestCount.current;
+    setIsLoadingOptions(true);
+    setOptionsError(null);
+    try {
+      const res = await fetch('/api/learner/context/options');
+      if (!res.ok) {
+        let errorMsg = 'Không thể tải danh sách khóa học. Vui lòng thử lại.';
+        try {
+          const json = await res.json();
+          if (json?.error?.message) errorMsg = json.error.message;
+        } catch {}
+        throw new Error(errorMsg);
+      }
+      const json = await res.json();
+      if (isMounted.current && requestId === optionsRequestCount.current) {
+        setOptions(json.data);
+        setIsLoadingOptions(false);
+      }
+    } catch (err: any) {
+      if (isMounted.current && requestId === optionsRequestCount.current) {
+        setOptionsError(err.message || 'Lỗi kết nối khi tải danh mục.');
+        setIsLoadingOptions(false);
       }
     }
+  };
+
+  // Load options on mount
+  useEffect(() => {
+    isMounted.current = true;
     fetchOptions();
     return () => {
-      active = false;
+      isMounted.current = false;
     };
   }, []);
 
@@ -124,6 +136,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
           if ([5, 10, 15, 20].includes(draft.dailyGoalMinutes)) setDailyGoalMinutes(draft.dailyGoalMinutes);
           if (Array.isArray(draft.interests)) setInterests(draft.interests);
           if (draft.startSource === 'DEFAULT' || draft.startSource === 'SELF_REPORT') setStartSource(draft.startSource);
+          if (typeof draft.defaultCourseId === 'string') setDefaultCourseId(draft.defaultCourseId);
           if (typeof draft.courseId === 'string') setSelectedCourseId(draft.courseId);
           if (typeof draft.levelId === 'string') setSelectedLevelId(draft.levelId);
           if (typeof draft.step === 'number' && draft.step >= 1 && draft.step <= 6) setStep(draft.step);
@@ -153,6 +166,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
         dailyGoalMinutes,
         interests,
         startSource,
+        ...(defaultCourseId ? { defaultCourseId } : {}),
         courseId: selectedCourseId,
         levelId: selectedLevelId,
         step,
@@ -161,7 +175,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
     } catch {
       // Ignore sessionStorage quota errors
     }
-  }, [draftKey, contextId, selectedLanguageId, purpose, dailyGoalMinutes, interests, startSource, selectedCourseId, selectedLevelId, step, completeResult, pendingComplete]);
+  }, [draftKey, contextId, selectedLanguageId, purpose, dailyGoalMinutes, interests, startSource, defaultCourseId, selectedCourseId, selectedLevelId, step, completeResult, pendingComplete]);
 
   // Clear draft on successful complete
   const handleClearDraft = () => {
@@ -180,6 +194,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
   const handleSelectLanguage = (langId: string) => {
     if (langId !== selectedLanguageId) {
       setSelectedLanguageId(langId);
+      setDefaultCourseId('');
       setSelectedCourseId('');
       setSelectedLevelId('');
       setPreviewData(null);
@@ -211,7 +226,10 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
     setPreviewError(null);
     try {
       const entryChoice = startSource === 'DEFAULT'
-        ? { startSource: 'DEFAULT' as const }
+        ? {
+            startSource: 'DEFAULT' as const,
+            ...(defaultCourseId ? { courseId: defaultCourseId } : {}),
+          }
         : {
             startSource: 'SELF_REPORT' as const,
             courseId: selectedCourse?.id || selectedCourseId,
@@ -272,6 +290,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
     previewData,
     isLoadingPreview,
     selectedLanguageId,
+    defaultCourseId,
     completeResult,
     previewError,
     pendingComplete,
@@ -287,7 +306,10 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
       dailyGoalMinutes,
       interests,
       entryChoice: startSource === 'DEFAULT'
-        ? { startSource: 'DEFAULT' }
+        ? {
+            startSource: 'DEFAULT',
+            ...(defaultCourseId ? { courseId: defaultCourseId } : {}),
+          }
         : { startSource: 'SELF_REPORT', courseId: previewData!.course!.id, levelId: previewData!.startLevel!.id },
       expectedCourseId: previewData!.course!.id,
       expectedStartLevelId: previewData!.startLevel!.id,
@@ -302,6 +324,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
       sessionStorage.setItem(draftKey, JSON.stringify({
         contextId, pendingComplete: payload, languageId: selectedLanguageId, purpose, dailyGoalMinutes,
         interests, startSource, courseId: selectedCourseId, levelId: selectedLevelId, step: 6,
+        ...(defaultCourseId ? { defaultCourseId } : {}),
       }));
     } catch {}
 
@@ -395,54 +418,149 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
             Chọn ngôn ngữ mục tiêu để bắt đầu hành trình.
           </p>
 
-          {isLoadingOptions && <p style={{ color: 'var(--text-muted)' }}>Đang tải danh sách ngôn ngữ...</p>}
-          {optionsError && <div className="login-alert">{optionsError}</div>}
+          {isLoadingOptions && (
+            <p id="optionsLoading" style={{ color: 'var(--text-muted)' }}>
+              Đang tải danh sách ngôn ngữ...
+            </p>
+          )}
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '24px' }}>
-            {(options?.languages || []).map((lang) => {
-              const hasCourses = lang.courses.some((c) => c.levels.length > 0);
-              const alreadyActive = existingContexts.some((c) => c.targetLanguage.id === lang.id);
-              const isSelected = selectedLanguageId === lang.id;
-
-              return (
-                <div
-                  key={lang.id}
-                  id={`langOption-${lang.code}`}
-                  onClick={() => {
-                    if (hasCourses && !alreadyActive) handleSelectLanguage(lang.id);
-                  }}
-                  style={{
-                    padding: '16px',
-                    borderRadius: '8px',
-                    border: isSelected
-                      ? '2px solid var(--primary, #2563eb)'
-                      : '1px solid var(--border-color, #e2e8f0)',
-                    background: isSelected ? 'var(--subtle-bg, #eff6ff)' : '#fff',
-                    cursor: hasCourses && !alreadyActive ? 'pointer' : 'not-allowed',
-                    opacity: hasCourses && !alreadyActive ? 1 : 0.6,
-                    position: 'relative',
-                  }}
+          {optionsError && (
+            <div
+              id="optionsAlert"
+              role="alert"
+              className="login-alert"
+              style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}
+            >
+              <span>{optionsError}</span>
+              <div>
+                <button
+                  type="button"
+                  id="btnRetryOptions"
+                  className="btn btn-secondary"
+                  disabled={isLoadingOptions}
+                  onClick={fetchOptions}
                 >
-                  <div style={{ fontWeight: 600, fontSize: '1.05rem', marginBottom: '4px' }}>
-                    {getLocalized(lang.names)}
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    Mã: {lang.code.toUpperCase()}
-                  </div>
-                  {!hasCourses && (
-                    <span style={{ fontSize: '0.75rem', color: '#b45309', background: '#fef3c7', padding: '2px 6px', borderRadius: '4px', marginTop: '6px', display: 'inline-block' }}>
-                      Sắp có nội dung
-                    </span>
-                  )}
-                  {alreadyActive && (
-                    <span style={{ fontSize: '0.75rem', color: '#15803d', background: '#dcfce7', padding: '2px 6px', borderRadius: '4px', marginTop: '6px', display: 'inline-block' }}>
-                      Đã có lộ trình
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  {isLoadingOptions ? 'Đang thử lại...' : 'Thử lại'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+            <legend
+              style={{
+                position: 'absolute',
+                width: '1px',
+                height: '1px',
+                padding: 0,
+                margin: '-1px',
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                whiteSpace: 'nowrap',
+                border: 0,
+              }}
+            >
+              Danh sách ngôn ngữ có sẵn
+            </legend>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '24px' }}>
+              {(options?.languages || []).map((lang) => {
+                const hasCourses = lang.courses.some((c) => c.levels.length > 0);
+                const alreadyActive = existingContexts.some((c: any) => c.targetLanguage.id === lang.id);
+                const isSelected = selectedLanguageId === lang.id;
+                const langName = getLocalized(lang.names);
+                const isAvailable = hasCourses && !alreadyActive;
+
+                const descriptionId = !hasCourses
+                  ? `langStatusUnavailable-${lang.code}`
+                  : alreadyActive
+                  ? `langStatusOwned-${lang.code}`
+                  : undefined;
+
+                return (
+                  <label
+                    key={lang.id}
+                    id={`langOption-${lang.code}`}
+                    htmlFor={`langRadio-${lang.code}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '12px',
+                      padding: '16px',
+                      borderRadius: '8px',
+                      border: isSelected
+                        ? '2px solid var(--primary, #2563eb)'
+                        : '1px solid var(--border-color, #e2e8f0)',
+                      background: isSelected ? 'var(--subtle-bg, #eff6ff)' : '#fff',
+                      cursor: isAvailable ? 'pointer' : 'not-allowed',
+                      opacity: isAvailable ? 1 : 0.6,
+                      position: 'relative',
+                    }}
+                    onKeyDown={(e) => {
+                      if ((e.key === ' ' || e.key === 'Enter') && isAvailable) {
+                        e.preventDefault();
+                        handleSelectLanguage(lang.id);
+                      }
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      id={`langRadio-${lang.code}`}
+                      name="targetLanguage"
+                      value={lang.id}
+                      checked={isSelected}
+                      disabled={!isAvailable}
+                      onChange={() => {
+                        if (isAvailable) handleSelectLanguage(lang.id);
+                      }}
+                      aria-describedby={descriptionId}
+                      aria-label={langName}
+                      style={{ marginTop: '3px' }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: '1.05rem', marginBottom: '4px' }}>
+                        {langName}
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                        Mã: {lang.code.toUpperCase()}
+                      </div>
+                      {!hasCourses && (
+                        <span
+                          id={`langStatusUnavailable-${lang.code}`}
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#b45309',
+                            background: '#fef3c7',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            marginTop: '6px',
+                            display: 'inline-block',
+                          }}
+                        >
+                          {langName}: Sắp có nội dung
+                        </span>
+                      )}
+                      {alreadyActive && (
+                        <span
+                          id={`langStatusOwned-${lang.code}`}
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#15803d',
+                            background: '#dcfce7',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            marginTop: '6px',
+                            display: 'inline-block',
+                          }}
+                        >
+                          {langName}: Đã có lộ trình
+                        </span>
+                      )}
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
@@ -686,7 +804,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
               />
               <div>
                 <div style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '4px' }}>
-                  Bắt đầu từ đầu
+                  Mới bắt đầu
                 </div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   Học từ bài học đầu tiên trong trình độ cơ bản nhất. Dành cho người mới bắt đầu.
@@ -725,7 +843,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
               />
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '4px' }}>
-                  Tự chọn trình độ
+                  Tôi biết trình độ của mình
                 </div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
                   Bạn đã có kiến thức nền tảng và muốn bắt đầu từ trình độ phù hợp.
@@ -778,6 +896,29 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
               </div>
             </label>
           </div>
+
+          {startSource === 'DEFAULT' && candidateCourses.length > 1 && (
+            <div style={{ marginBottom: '20px' }}>
+              <label htmlFor="defaultCourseSelect" style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px', fontWeight: 600 }}>
+                Khóa học (tùy chọn)
+              </label>
+              <select
+                id="defaultCourseSelect"
+                className="form-control"
+                value={defaultCourseId}
+                onChange={(event) => {
+                  setDefaultCourseId(event.target.value);
+                  setPreviewData(null);
+                  setPreviewError(null);
+                }}
+              >
+                <option value="">Tự chọn theo đề xuất</option>
+                {candidateCourses.map((course) => (
+                  <option key={course.id} value={course.id}>{getLocalized(course.names)}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <button type="button" className="btn btn-secondary" onClick={() => setStep(4)}>
@@ -839,7 +980,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                 <div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Nguồn đề xuất</div>
                   <div style={{ fontWeight: 500 }}>
-                    {previewData.source === 'DEFAULT' ? 'Bắt đầu từ đầu' : 'Tự khai trình độ'}
+                    {previewData.source === 'DEFAULT' ? 'Mới bắt đầu' : 'Tôi biết trình độ của mình'}
                   </div>
                 </div>
 

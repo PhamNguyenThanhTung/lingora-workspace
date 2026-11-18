@@ -2,8 +2,8 @@
  * Sprint 3 Core End-to-End Acceptance Test
  *
  * Verifies full end-to-end user journeys on live PostgreSQL and Next.js production server:
- * 1. Learner 1: Onboarding with DEFAULT branch (Bắt đầu từ đầu) -> preview -> reload step 6 recovery -> complete -> first lesson entry.
- * 2. Learner 2: Onboarding with SELF_REPORT branch (Tự chọn trình độ) -> preview -> complete -> verifies DB provenance.
+ * 1. Learner 1: Onboarding with DEFAULT branch (Mới bắt đầu) -> preview -> reload step 6 recovery -> complete -> first lesson entry.
+ * 2. Learner 2: Onboarding with SELF_REPORT branch (Tôi biết trình độ của mình) -> preview -> complete -> verifies DB provenance.
  * 3. Learner 1: Goal and preferences update on Home -> CAS rowVersion -> plan replacement -> DB history check.
  */
 
@@ -442,7 +442,7 @@ async function run() {
     // Step 6: Preview
     await srPage.waitForSelector('#previewCard', { state: 'visible' });
     const srPreviewText = await srPage.textContent('#previewCard');
-    assert.match(srPreviewText, /Tự khai trình độ/);
+    assert.match(srPreviewText, /Tôi biết trình độ của mình/);
     assert.match(srPreviewText, /A1/);
     assert.match(srPreviewText, /20 phút \/ ngày/);
 
@@ -520,10 +520,7 @@ async function run() {
     assert.equal((await updateReplay).postData(), firstUpdateBody);
     await defPage.waitForSelector(`#goalEditor-${defCtx.id}`, { state: 'hidden' });
 
-    // Verify rowVersion updated on UI
-    const rowVerBadge = await defPage.textContent(`#rowVersion-${defCtx.id}`);
-    assert.match(rowVerBadge, /v2/);
-    console.log('✔ HomeView goal update completed; rowVersion bumped to v2');
+    assert.equal(JSON.parse(firstUpdateBody).expectedRowVersion, '1');
 
     await defPage.screenshot({ path: path.join(evidenceDir, '04-home-goal-updated.png') });
 
@@ -532,6 +529,7 @@ async function run() {
       SELECT row_version, study_preferences, purpose FROM app.learning_contexts WHERE id = '${defCtx.id}'
     `);
     assert.equal(String(updatedCtxRows.rows[0].row_version), '2');
+    console.log('✔ HomeView goal update used CAS version 1 and persisted version 2');
     assert.equal(updatedCtxRows.rows[0].purpose, 'CONVERSATION');
     const prefs = updatedCtxRows.rows[0].study_preferences;
     assert.equal(prefs.dailyGoalMinutes, 20);

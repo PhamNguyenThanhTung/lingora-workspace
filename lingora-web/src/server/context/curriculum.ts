@@ -68,7 +68,7 @@ export async function resolveRecommendation(
     purpose?: OnboardingPurpose | null;
     dailyGoalMinutes?: DailyGoalMinutes;
     entryChoice:
-      | { startSource: 'DEFAULT' }
+      | { startSource: 'DEFAULT'; courseId?: string }
       | { startSource: 'SELF_REPORT'; courseId?: string; levelId: string };
     contextId?: string | null;
     completedLessonIds?: Set<string>;
@@ -90,7 +90,12 @@ export async function resolveRecommendation(
   if (entryChoice.startSource === 'DEFAULT') {
     // 2. Fetch all active courses for this language
     const courses = await db.course.findMany({
-      where: { languageId, isActive: true, ...(courseIds && { id: { in: courseIds } }) },
+      where: {
+        languageId,
+        isActive: true,
+        ...(entryChoice.courseId && { id: entryChoice.courseId }),
+        ...(courseIds && { AND: [{ id: { in: courseIds } }] }),
+      },
       orderBy: [{ id: 'asc' }],
       include: {
         framework: {

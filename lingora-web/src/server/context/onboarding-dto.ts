@@ -45,6 +45,7 @@ export const dailyGoalSchema = z.union([
 
 export const entryChoiceDefaultSchema = z.object({
   startSource: z.literal('DEFAULT'),
+  courseId: pgUuidSchema.optional(),
 }).strict();
 
 export const entryChoiceSelfReportSchema = z.object({

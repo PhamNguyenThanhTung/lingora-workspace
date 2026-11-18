@@ -173,6 +173,11 @@ export async function startOnboardingServer(port = 3030) {
           previewData.startLevel = { id: 'lvl-a2', code: 'A2', label: { vi: 'A2 - Sơ cấp', en: 'Elementary' }, position: 2 };
         }
       }
+      if (parsed.entryChoice?.courseId) {
+        const selectedCourse = fixture.options.languages.flatMap((language) => language.courses)
+          .find((course) => course.id === parsed.entryChoice.courseId);
+        if (selectedCourse) previewData.course = { id: selectedCourse.id, names: selectedCourse.names };
+      }
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true, data: previewData }));
@@ -185,11 +190,20 @@ export async function startOnboardingServer(port = 3030) {
       fixture.completeCallCount++;
       fixture.lastCompletePayload = body ? JSON.parse(body) : null;
 
+      const response = JSON.parse(JSON.stringify(fixture.completeResponse));
+      const selectedCourseId = fixture.lastCompletePayload?.expectedCourseId;
+      const selectedCourse = fixture.options.languages.flatMap((language) => language.courses)
+        .find((course) => course.id === selectedCourseId);
+      if (selectedCourse && response.context?.course) {
+        response.context.course = { ...response.context.course, id: selectedCourse.id, names: selectedCourse.names };
+      }
+      if (selectedCourse && response.plan) response.plan.courseId = selectedCourse.id;
+
       res.writeHead(fixture.completeStatus, { 'Content-Type': 'application/json' });
       res.end(
         JSON.stringify(
           fixture.completeStatus === 200
-            ? { ok: true, data: fixture.completeResponse }
+            ? { ok: true, data: response }
             : fixture.completeResponse
         )
       );

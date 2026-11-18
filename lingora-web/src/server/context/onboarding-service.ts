@@ -44,7 +44,7 @@ function fail(status: number, code: string, message: string): never {
 
 function computeCompleteOnboardingInputHash(input: {
   languageId: string;
-  entryChoice: { startSource: 'DEFAULT' } | { startSource: 'SELF_REPORT'; courseId?: string; levelId: string };
+  entryChoice: { startSource: 'DEFAULT'; courseId?: string } | { startSource: 'SELF_REPORT'; courseId?: string; levelId: string };
   purpose: string | null;
   dailyGoalMinutes: number;
   interests: string[];
@@ -54,7 +54,9 @@ function computeCompleteOnboardingInputHash(input: {
   const canonical = JSON.stringify({
     dailyGoalMinutes: input.dailyGoalMinutes,
     entryChoice: input.entryChoice.startSource === 'DEFAULT'
-      ? { startSource: 'DEFAULT' }
+      ? input.entryChoice.courseId
+        ? { courseId: input.entryChoice.courseId.toLowerCase(), startSource: 'DEFAULT' }
+        : { startSource: 'DEFAULT' }
       : {
           courseId: input.entryChoice.courseId ? input.entryChoice.courseId.toLowerCase() : undefined,
           levelId: input.entryChoice.levelId.toLowerCase(),

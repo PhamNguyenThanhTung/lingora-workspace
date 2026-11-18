@@ -141,6 +141,10 @@ test('Real PostgreSQL: Explicit DEFAULT course choice is part of the idempotency
 test('Complete rejects an explicit DEFAULT course that went inactive after preview', async () => {
   const learner = await createFreshLearner(db);
   const contextId = randomUUID();
+  await db.lesson.updateMany({
+    where: { unit: { courseId: f.course } },
+    data: { availability: 'WITHDRAWN' },
+  });
   await db.course.update({ where: { id: f.course }, data: { isActive: false } });
 
   await assert.rejects(completeOnboarding(learner, {
