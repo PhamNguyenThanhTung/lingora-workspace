@@ -26,7 +26,8 @@
     "db:product:validate": "DATABASE_URL=\"${DATABASE_URL:-postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=app}\" DIRECT_URL=\"${DIRECT_URL:-postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=app}\" prisma validate --schema prisma/product/schema.prisma",
     "db:product:generate": "DATABASE_URL=\"${DATABASE_URL:-postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=app}\" DIRECT_URL=\"${DIRECT_URL:-postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=app}\" prisma generate --schema prisma/product/schema.prisma",
     "db:product:migrate": "prisma migrate deploy --schema prisma/product/schema.prisma",
-    "db:product:seed": "prisma db seed --schema prisma/product/schema.prisma"
+    "db:product:seed": "prisma db seed --schema prisma/product/schema.prisma",
+    "db:product:seed:demo": "node --experimental-strip-types ../scripts/seed-demo-course.mjs"
   },
   "prisma": {
     "seed": "node prisma/product/seed.mjs"
