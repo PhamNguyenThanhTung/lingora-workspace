@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
@@ -38,6 +38,9 @@ jobs:
 
       - name: Feature tests
         run: npm run test:feature
+
+      - name: Install Chromium for component tests
+        run: npx playwright install --with-deps chromium
 
       - name: Component tests
         run: npm run test:components
