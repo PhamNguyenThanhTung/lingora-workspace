@@ -44,6 +44,23 @@ export function FrameworkFormModal({
   const viInputRef = useRef<HTMLInputElement>(null);
 
   const isPendingRef = useRef(false);
+  const wasOpenRef = useRef(false);
+
+  useEffect(() => {
+    if (wasOpenRef.current && !isOpen) {
+      // Restore focus after the catalogue removes inert from the background.
+      queueMicrotask(() => {
+        if (!wasOpenRef.current) triggerElement?.focus();
+      });
+    }
+    wasOpenRef.current = isOpen;
+  }, [isOpen, triggerElement]);
+
+  useEffect(() => {
+    if (!isOpen || isPending) return;
+    if (codeError) codeInputRef.current?.focus();
+    else if (versionError) versionInputRef.current?.focus();
+  }, [isOpen, isPending, codeError, versionError]);
 
   useEffect(() => {
     setMounted(true);
@@ -89,6 +106,9 @@ export function FrameworkFormModal({
     setInitialized(true);
 
     const timer = setTimeout(() => {
+      if (modalRef.current && modalRef.current.contains(document.activeElement)) {
+        return;
+      }
       codeInputRef.current?.focus();
     }, 50);
 
@@ -137,12 +157,15 @@ export function FrameworkFormModal({
 
   const handleDismiss = () => {
     if (isPendingRef.current) return;
+    setCodeError(null);
+    setVersionError(null);
+    setGeneralError(null);
+    setCode('');
+    setVersion('');
+    setVi('');
+    setEn('');
+    setInitialized(false);
     onClose();
-    setTimeout(() => {
-      if (triggerElement && typeof triggerElement.focus === 'function') {
-        triggerElement.focus();
-      }
-    }, 50);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -217,13 +240,13 @@ export function FrameworkFormModal({
         const json = await response.json();
         isPendingRef.current = false;
         setIsPending(false);
+        setCode('');
+        setVersion('');
+        setVi('');
+        setEn('');
+        setInitialized(false);
         onClose();
         onSuccess(json.data, mode);
-        setTimeout(() => {
-          if (triggerElement && typeof triggerElement.focus === 'function') {
-            triggerElement.focus();
-          }
-        }, 50);
         return;
       }
 
@@ -240,10 +263,13 @@ export function FrameworkFormModal({
           setVersionError(errData.error.fields.version);
         }
         if (errData.error.fields.code) {
-          setTimeout(() => codeInputRef.current?.focus(), 50);
+          codeInputRef.current?.focus();
         } else if (errData.error.fields.version) {
-          setTimeout(() => versionInputRef.current?.focus(), 50);
+          versionInputRef.current?.focus();
         }
+      } else if (errData?.error?.code === 'DUPLICATE_CODE_VERSION') {
+        setCodeError(errData.error.message || 'Cặp mã khung và phiên bản này đã tồn tại trong hệ thống.');
+        codeInputRef.current?.focus();
       } else {
         setGeneralError(errData?.error?.message || 'Đã có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.');
       }
@@ -263,6 +289,7 @@ export function FrameworkFormModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="frameworkModalTitle"
+      data-initialized={initialized ? 'true' : 'false'}
       onClick={(e) => {
         if (e.target === e.currentTarget && !isPending) {
           handleDismiss();
