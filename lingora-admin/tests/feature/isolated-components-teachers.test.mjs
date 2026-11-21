@@ -9,7 +9,8 @@ const { chromium } = require('playwright');
 
 const TEST_PORT = 3011;
 const TEST_URL = `http://127.0.0.1:${TEST_PORT}`;
-const LOGS_DIR = '/home/tung/.codex/task-logs/slice-4-teachers';
+const LOGS_DIR = (await import('node:path')).join(process.env.LINGORA_TEST_ARTIFACTS_DIR ?? (await import('node:os')).tmpdir(), 'lingora-test-artifacts', 'slice-4-teachers');
+(await import('node:fs')).mkdirSync(LOGS_DIR, { recursive: true });
 
 describe('S4-TEACHERS: Isolated Component State & Interaction Suite', () => {
   let server;
