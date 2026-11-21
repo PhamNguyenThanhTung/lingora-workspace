@@ -225,6 +225,193 @@ describe('Sprint 4: S4-01 Home and Learning Path', () => {
     assert.equal(res.status, 404);
   });
 
+  test('loadLearnerHome: missing or invalid timezone marks gamification UNAVAILABLE without failing learning path or inventing UTC', async () => {
+    state.account.timezone = null;
+    const res = await loadLearnerHome(undefined, {
+      prisma: db,
+      authClient: {
+        auth: {
+          getUser: async () => ({
+            data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+            error: null,
+          }),
+        },
+      },
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res.ok, true);
+    if (!res.ok) return;
+    assert.equal(res.data.gamificationStatus, 'UNAVAILABLE');
+    assert.equal(res.data.streak.today, '');
+    assert.ok(res.data.gamificationMessage?.includes('Múi giờ tài khoản không hợp lệ'));
+    assert.ok(Array.isArray(res.data.path));
+
+    state.account.timezone = 'Invalid/Timezone_Name';
+    const res2 = await loadLearnerHome(undefined, {
+      prisma: db,
+      authClient: {
+        auth: {
+          getUser: async () => ({
+            data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+            error: null,
+          }),
+        },
+      },
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res2.ok, true);
+    if (!res2.ok) return;
+    assert.equal(res2.data.gamificationStatus, 'UNAVAILABLE');
+    assert.equal(res2.data.streak.today, '');
+    assert.ok(res2.data.gamificationMessage?.includes('Múi giờ tài khoản không hợp lệ'));
+  });
+
+  test('loadLearnerHome: missing account returns 403 FORBIDDEN and is not treated as a timezone error', async () => {
+    const authClient = {
+      auth: {
+        getUser: async () => ({
+          data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+          error: null,
+        }),
+      },
+    };
+    const customDb = {
+      ...db,
+      account: {
+        findUnique: async () => null,
+      },
+    };
+    const res = await loadLearnerHome(undefined, {
+      prisma: customDb,
+      authClient,
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res.ok, false);
+    if (res.ok) return;
+    assert.equal(res.status, 403);
+    assert.equal(res.error.code, 'FORBIDDEN');
+    assert.equal(res.error.message, 'Tài khoản chưa được khởi tạo phân hệ học viên.');
+  });
+
+  test('loadLearnerHome: returns 200 with empty contexts when learner has no contexts', async () => {
+    state.contexts = [];
+    const res = await loadLearnerHome(undefined, {
+      prisma: db,
+      authClient: {
+        auth: {
+          getUser: async () => ({
+            data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+            error: null,
+          }),
+        },
+      },
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res.ok, true);
+    if (!res.ok) return;
+    assert.equal(res.data.contexts.length, 0);
+    assert.equal(res.data.selectedContextId, null);
+    assert.equal(res.data.pathStatus, null);
+    assert.equal(res.data.continueLearning, null);
+  });
+
+  test('loadLearnerHome: returns 200 with NO_WORKING_LEVEL when context has no working level', async () => {
+    state.contexts[0].workingLevel = null;
+    state.contexts[0].workingLevelId = null;
+    const res = await loadLearnerHome(undefined, {
+      prisma: db,
+      authClient: {
+        auth: {
+          getUser: async () => ({
+            data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+            error: null,
+          }),
+        },
+      },
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res.ok, true);
+    if (!res.ok) return;
+    assert.equal(res.data.pathStatus, 'NO_WORKING_LEVEL');
+  });
+
+  test('loadLearnerHome: returns 200 with PAUSED when context is paused', async () => {
+    state.contexts[0].status = 'PAUSED';
+    const res = await loadLearnerHome(undefined, {
+      prisma: db,
+      authClient: {
+        auth: {
+          getUser: async () => ({
+            data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+            error: null,
+          }),
+        },
+      },
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res.ok, true);
+    if (!res.ok) return;
+    assert.equal(res.data.pathStatus, 'PAUSED');
+  });
+
+  test('loadLearnerHome: returns 200 with COURSE_INACTIVE when course is inactive', async () => {
+    state.contexts[0].course.isActive = false;
+    const res = await loadLearnerHome(undefined, {
+      prisma: db,
+      authClient: {
+        auth: {
+          getUser: async () => ({
+            data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+            error: null,
+          }),
+        },
+      },
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res.ok, true);
+    if (!res.ok) return;
+    assert.equal(res.data.pathStatus, 'COURSE_INACTIVE');
+  });
+
+  test('loadLearnerHome: returns 200 with EMPTY_CURRICULUM when course has no published lessons', async () => {
+    state.lessons = [];
+    const res = await loadLearnerHome(undefined, {
+      prisma: db,
+      authClient: {
+        auth: {
+          getUser: async () => ({
+            data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+            error: null,
+          }),
+        },
+      },
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res.ok, true);
+    if (!res.ok) return;
+    assert.equal(res.data.pathStatus, 'EMPTY_CURRICULUM');
+  });
+
+  test('loadLearnerHome: propagates ContextServiceError 409 as status 409, not 503', async () => {
+    state.contexts[0].course.languageId = '99999999-9999-4999-8999-999999999999';
+    const res = await loadLearnerHome(undefined, {
+      prisma: db,
+      authClient: {
+        auth: {
+          getUser: async () => ({
+            data: { user: { id: learnerId, email: 'learner@example.com', email_confirmed_at: '2026-10-31T00:00:00Z' } },
+            error: null,
+          }),
+        },
+      },
+      cookieStore: createMockCookieAdapter(),
+    });
+    assert.equal(res.ok, false);
+    if (res.ok) return;
+    assert.equal(res.status, 409);
+    assert.equal(res.error.code, 'CONTEXT_INCONSISTENT');
+  });
+
   test('GET /api/learner/home: route guard rejects unknown query parameters with 400', async () => {
     const req = new Request('http://localhost:3000/api/learner/home?invalidParam=123');
     const res = await homeGet(req);

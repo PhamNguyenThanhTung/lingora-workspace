@@ -949,7 +949,7 @@ describe('P3: Strict SRS Contract & Fault Boundaries (R4)', () => {
     assert.equal(card.rowVersion, 1n);
   });
 
-  test('invalid or empty timezone fails closed with 503 SERVICE_UNAVAILABLE', async () => {
+  test('invalid or empty timezone fails closed with 400 INVALID_TIMEZONE', async () => {
     const { cardId, card, tok } = seedCardAndToken();
 
     for (const badTz of ['Invalid/Timezone', '', null, undefined]) {
@@ -957,7 +957,7 @@ describe('P3: Strict SRS Contract & Fault Boundaries (R4)', () => {
       const countBefore = state.srsReviewOperations.length;
       await assert.rejects(
         async () => respondSrsReview(learnerId, { token: tok, operationKey: randomUUID(), rating: 'REMEMBERED' }, fixtureDb(state)),
-        (err) => err instanceof SrsServiceError && err.status === 503 && err.code === 'SERVICE_UNAVAILABLE'
+        (err) => err instanceof SrsServiceError && err.status === 400 && err.code === 'INVALID_TIMEZONE'
       );
       assert.equal(state.srsReviewOperations.length, countBefore);
       assert.equal(card.stage, 1);

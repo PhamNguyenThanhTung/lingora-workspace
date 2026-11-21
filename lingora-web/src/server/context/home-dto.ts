@@ -23,6 +23,8 @@ export interface ContinueLearningDto {
 
 export type PathStatus = 'READY' | 'PAUSED' | 'COURSE_INACTIVE' | 'NO_WORKING_LEVEL' | 'EMPTY_CURRICULUM';
 
+export type GamificationStatus = 'AVAILABLE' | 'UNAVAILABLE';
+
 export interface HomeDto {
   learner: LearnerDto;
   contexts: LearningContextSummaryDto[];
@@ -33,6 +35,8 @@ export interface HomeDto {
   pathStatus: PathStatus | null;
   pathMessage: string | null;
   reviewDue: number;
+  gamificationStatus?: GamificationStatus;
+  gamificationMessage?: string | null;
   dailyProgress: DailyProgressDto;
   streak: StreakDto;
   totalXp: number;

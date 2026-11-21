@@ -386,6 +386,7 @@ export function LanguageFormModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="languageModalTitle"
+      data-initialized={initialized ? 'true' : 'false'}
       onClick={(e) => {
         if (e.target === e.currentTarget && !isPending) {
           handleDismiss();

@@ -6,9 +6,10 @@ import { ContextServiceError, isValidUuid } from './dto.ts';
 import { loadLearnerContext, type LoadLearnerContextOptions } from './loader.ts';
 import { buildLearningPath } from './path-service.ts';
 import { getContextPlanSummary } from './onboarding-service.ts';
-import { getGamificationOverview } from '../gamification/service.ts';
+import { getGamificationOverview, getTotalXp, getRecentAchievement } from '../gamification/service.ts';
+import type { GamificationOverviewDto } from '../gamification/dto.ts';
 import { getDbTime } from '../srs/service.ts';
-import type { HomeDto } from './home-dto.ts';
+import type { HomeDto, GamificationStatus } from './home-dto.ts';
 
 export interface LoadLearnerHomeOptions extends LoadLearnerContextOptions {
   contextId?: string | null;
@@ -28,6 +29,9 @@ export type LoadLearnerHomeResult =
         message: string;
       };
     };
+
+import { normalizeStoredTimezone, isValidTimezone } from './timezone.ts';
+export { normalizeStoredTimezone, isValidTimezone };
 
 export async function loadLearnerHome(
   cookieStore?: CookieAdapter,
@@ -71,16 +75,60 @@ export async function loadLearnerHome(
       getDbTime(prisma),
       prisma.account.findUnique({ where: { id: learner.id }, select: { timezone: true } }),
     ]);
-    if (!account?.timezone) throw new Error('Learner timezone unavailable');
+
+    if (!account) {
+      return {
+        ok: false,
+        status: 403,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Tài khoản chưa được khởi tạo phân hệ học viên.',
+        },
+      };
+    }
+
     const selected = selectedContextId;
     const [planSummary, pathResult, reviewDue] = await Promise.all([
       selected ? getContextPlanSummary(selected, learner.id, prisma) : null,
       selected ? buildLearningPath(prisma, selected, learner.id) : null,
       prisma.srsCard.count({ where: { learnerId: learner.id, dueAt: { lte: dbNow } } }),
     ]);
-    const gamification = await getGamificationOverview(
-      prisma, learner.id, account.timezone, dbNow, planSummary?.preferences?.dailyGoalMinutes ?? 10,
-    );
+
+    const tzResult = normalizeStoredTimezone(account.timezone);
+    let gamification: GamificationOverviewDto;
+    let gamificationStatus: GamificationStatus = 'AVAILABLE';
+    let gamificationMessage: string | null = null;
+
+    if (tzResult.ok) {
+      const timezone = tzResult.timezone;
+      gamification = await getGamificationOverview(
+        prisma, learner.id, timezone, dbNow, planSummary?.preferences?.dailyGoalMinutes ?? 10,
+      );
+    } else {
+      const [totalXp, recentAchievement] = await Promise.all([
+        getTotalXp(prisma, learner.id),
+        getRecentAchievement(prisma, learner.id),
+      ]);
+      gamification = {
+        totalXp,
+        recentAchievement,
+        streak: {
+          currentStreak: 0,
+          longestStreak: 0,
+          activeDays: [],
+          todayCompleted: false,
+          today: '',
+        },
+        dailyProgress: {
+          dailyGoalMinutes: planSummary?.preferences?.dailyGoalMinutes ?? 10,
+          completedLessonsToday: 0,
+          reviewsCompletedToday: 0,
+        },
+        quests: [],
+      };
+      gamificationStatus = 'UNAVAILABLE';
+      gamificationMessage = 'Múi giờ tài khoản không hợp lệ. Dữ liệu chuỗi ngày học và nhiệm vụ hàng ngày tạm thời không khả dụng.';
+    }
 
     return {
       ok: true,
@@ -93,15 +141,23 @@ export async function loadLearnerHome(
         pathStatus: pathResult?.status ?? null,
         pathMessage: pathResult?.message ?? null,
         reviewDue,
+        gamificationStatus,
+        gamificationMessage,
         ...gamification,
       },
     };
   } catch (error) {
-    if (error instanceof LessonServiceError && (error.status === 404 || error.status === 409)) {
-      return { ok: false, status: error.status, error: error.error };
+    if (
+      error instanceof LessonServiceError &&
+      (error.status === 400 || error.status === 403 || error.status === 404 || error.status === 409)
+    ) {
+      return { ok: false, status: error.status as 400 | 403 | 404 | 409, error: error.error };
     }
-    if (error instanceof ContextServiceError && error.status === 404) {
-      return { ok: false, status: 404, error: { code: error.code, message: error.message } };
+    if (
+      error instanceof ContextServiceError &&
+      (error.status === 400 || error.status === 403 || error.status === 404 || error.status === 409)
+    ) {
+      return { ok: false, status: error.status as 400 | 403 | 404 | 409, error: { code: error.code, message: error.message } };
     }
     return {
       ok: false, status: 503,

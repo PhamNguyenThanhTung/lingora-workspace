@@ -26,6 +26,35 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
     if (server) await server.close();
   });
 
+  for (const [kind, state, trigger, modal, field] of [
+    ['Framework', 'frameworks-populated', '#btnOpenCreateFramework', '#frameworkFormModal', '#frameworkVersion'],
+    ['Level', 'levels-populated', '#btnOpenCreateLevel', '#levelFormModal', '#levelPosition'],
+  ]) {
+    test(`${kind} modal keeps input focus after immediate dismiss and reopen`, async () => {
+      const context = await browser.newContext();
+      try {
+        const page = await context.newPage();
+        await page.clock.install();
+        await page.goto(`${TEST_URL}?state=${state}`);
+        await page.waitForSelector(trigger);
+        await page.clock.pauseAt(await page.evaluate(() => Date.now()));
+        await page.locator(trigger).dispatchEvent('click');
+        await page.waitForSelector(`${modal}[data-initialized="true"]`);
+        await page.clock.runFor(50);
+        await page.keyboard.press('Escape');
+        await page.waitForSelector(modal, { state: 'hidden' });
+        await page.locator(trigger).dispatchEvent('click');
+        await page.waitForSelector(`${modal}[data-initialized="true"]`);
+        await page.fill(field, '25');
+        await page.clock.runFor(50);
+        assert.equal(await page.evaluate(() => document.activeElement?.id), field.slice(1));
+        assert.equal(await page.inputValue(field), '25');
+      } finally {
+        await context.close();
+      }
+    });
+  }
+
   // =========================================================================
   // 1. Frameworks Catalog & Form Modal (POST / PATCH / 409 / Clearing Locales)
   // =========================================================================
@@ -39,7 +68,7 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
 
     // 1. Open create modal
     await page.click('#btnOpenCreateFramework');
-    await page.waitForSelector('#frameworkFormModal', { state: 'visible' });
+    await page.waitForSelector('#frameworkFormModal[data-initialized="true"]', { state: 'visible' });
 
     // Initial focus on code input
     await page.waitForFunction(() => document.activeElement?.id === 'frameworkCode');
@@ -78,9 +107,12 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
     // Wait for held request to finish (450ms)
     await page.waitForSelector('#frameworkFormModal', { state: 'hidden' });
 
+    await page.waitForFunction(() => document.activeElement?.id === 'btnOpenCreateFramework', null, { timeout: 2000 });
+
     // 3. Test 409 duplicate rejection and retry retaining exact inputs
     await page.click('#btnOpenCreateFramework');
-    await page.waitForSelector('#frameworkFormModal', { state: 'visible' });
+    await page.waitForSelector('#frameworkFormModal[data-initialized="true"]', { state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.id === 'frameworkCode');
 
     await page.fill('#frameworkCode', 'CEFR');
     await page.fill('#frameworkVersion', '2020');
@@ -111,7 +143,8 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
 
     // 4. Fresh reopen must NOT restore stale inputs
     await page.click('#btnOpenCreateFramework');
-    await page.waitForSelector('#frameworkFormModal', { state: 'visible' });
+    await page.waitForSelector('#frameworkFormModal[data-initialized="true"]', { state: 'visible' });
+    await page.waitForFunction(() => document.querySelector('#frameworkCode')?.value === '');
     const freshValues = await page.evaluate(() => ({
       code: document.querySelector('#frameworkCode')?.value,
       version: document.querySelector('#frameworkVersion')?.value,
@@ -134,7 +167,7 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
 
     // 1. Open edit modal on CEFR
     await page.click('#btn-edit-framework-11111111-1111-4111-8111-111111111111');
-    await page.waitForSelector('#frameworkFormModal', { state: 'visible' });
+    await page.waitForSelector('#frameworkFormModal[data-initialized="true"]', { state: 'visible' });
 
     // Verify prefilled data after the edit form has initialized.
     await page.waitForFunction(() => document.querySelector('#frameworkCode')?.value === 'CEFR');
@@ -194,7 +227,7 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
 
     // 4. Reopen edit modal: authoritative server data shows cleared vi input
     await page.click('#btn-edit-framework-11111111-1111-4111-8111-111111111111');
-    await page.waitForSelector('#frameworkFormModal', { state: 'visible' });
+    await page.waitForSelector('#frameworkFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.querySelector('#frameworkNameEn')?.value === 'CEFR English Only');
 
     const reopenedValues = await page.evaluate(() => ({
@@ -396,7 +429,8 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
 
     // 1. Open create level modal
     await page.click('#btnOpenCreateLevel');
-    await page.waitForSelector('#levelFormModal', { state: 'visible' });
+    await page.waitForSelector('#levelFormModal[data-initialized="true"]', { state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.id === 'levelCode');
 
     // 2. Test held pending lock with held code
     await page.fill('#levelCode', 'held');
@@ -433,7 +467,8 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
 
     // 3. Test code conflict (409 DUPLICATE_LEVEL_CODE)
     await page.click('#btnOpenCreateLevel');
-    await page.waitForSelector('#levelFormModal', { state: 'visible' });
+    await page.waitForSelector('#levelFormModal[data-initialized="true"]', { state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.id === 'levelCode');
 
     await page.fill('#levelCode', 'dupcode');
     await page.fill('#levelPosition', '5');
@@ -526,7 +561,7 @@ describe('S2-04: Frameworks & Levels Isolated Component State & Interaction Suit
 
     // 2. Reopen edit modal: verify authoritative server data shows cleared vi label
     await page.click('#btn-edit-level-aaaa1111-1111-4111-8111-111111111111');
-    await page.waitForSelector('#levelFormModal', { state: 'visible' });
+    await page.waitForSelector('#levelFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.querySelector('#levelLabelEn')?.value === 'Breakthrough Updated');
 
     const reopenedValues = await page.evaluate(() => ({

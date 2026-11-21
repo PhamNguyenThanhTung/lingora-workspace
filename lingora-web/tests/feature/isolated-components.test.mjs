@@ -360,6 +360,23 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     await context.close();
   });
 
+  test('HomeView: 404 Not Found renders "Không tìm thấy nội dung" with link to /home', async () => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    await page.goto(`${TEST_URL}?state=home-404`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#errorBox', { state: 'visible' });
+
+    const title = await page.textContent('.alert-title');
+    assert.match(title, /Không tìm thấy nội dung/);
+
+    const backBtnVisible = await page.isVisible('#backToHomeBtn');
+    assert.equal(backBtnVisible, true);
+    assert.equal(await page.locator('#backToHomeBtn').getAttribute('href'), '/home');
+
+    await context.close();
+  });
+
   test('HomeView: clicking Logout invokes logout API and navigates to /login', async () => {
     const context = await browser.newContext();
     const page = await context.newPage();
