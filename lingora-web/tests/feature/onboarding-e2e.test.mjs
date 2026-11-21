@@ -46,6 +46,7 @@ const ADMIN_ID = '11111111-0000-4000-8000-000000000001';
 const TEACHER_ID = '22222222-0000-4000-8000-000000000001';
 const LEARNER_DEF_ID = '33333333-0000-4000-8000-000000000003';
 const LEARNER_SR_ID = '44444444-0000-4000-8000-000000000004';
+const LEARNER_XDEV_ID = '55555555-0000-4000-8000-000000000005';
 
 async function getFreePort() {
   return new Promise((resolve, reject) => {
@@ -138,10 +139,15 @@ async function run() {
       [`token-${TEACHER_ID}`, { id: TEACHER_ID, email: 'teacher@lingora.test', email_confirmed_at: '2026-01-01T00:00:00Z', app_metadata: { role: 'TEACHER' } }],
       [`token-${LEARNER_DEF_ID}`, { id: LEARNER_DEF_ID, email: 'learner.default@lingora.test', email_confirmed_at: '2026-01-01T00:00:00Z', app_metadata: { role: 'LEARNER' } }],
       [`token-${LEARNER_SR_ID}`, { id: LEARNER_SR_ID, email: 'learner.selfreport@lingora.test', email_confirmed_at: '2026-01-01T00:00:00Z', app_metadata: { role: 'LEARNER' } }],
+      [`token-${LEARNER_XDEV_ID}`, { id: LEARNER_XDEV_ID, email: 'learner.xdevice@lingora.test', email_confirmed_at: '2026-01-01T00:00:00Z', app_metadata: { role: 'LEARNER' } }],
     ]);
 
     const pendingSignups = new Map();
     const confirmed = new Set();
+    const tokenMap = new Map();
+    const mailbox = new Map();
+    const resendEmails = [];
+    let verifyOtpCount = 0;
     let learnerOrigin;
     providerServer = http.createServer(async (req, res) => {
       const url = new URL(req.url, 'http://127.0.0.1');
@@ -152,10 +158,45 @@ async function run() {
         for await (const chunk of req) raw += chunk;
         const { email, code_challenge: challenge } = JSON.parse(raw);
         const user = userForEmail(email);
-        if (!user || !challenge || pendingSignups.has(email)) return res.writeHead(400).end('{}');
-        pendingSignups.set(email, challenge);
+        if (!user || pendingSignups.has(email)) return res.writeHead(400).end('{}');
+        pendingSignups.set(email, challenge || 'no-challenge');
         await pgClient.query('INSERT INTO auth.users (id, email) VALUES ($1, $2)', [user.id, email]);
+        const tokenHash = 'token_hash_' + user.id;
+        tokenMap.set(tokenHash, { user, spent: false });
+        mailbox.set(email, `${learnerOrigin}/auth/confirm?token_hash=${tokenHash}&type=email`);
         return res.end(JSON.stringify({ ...user, email_confirmed_at: null, identities: [{ id: user.id }] }));
+      }
+      if (req.method === 'POST' && url.pathname === '/auth/v1/verify') {
+        verifyOtpCount++;
+        let raw = '';
+        for await (const chunk of req) raw += chunk;
+        const { token_hash, type } = JSON.parse(raw);
+        const entry = tokenMap.get(token_hash);
+        if (!entry || entry.spent) {
+          return res.writeHead(403).end(JSON.stringify({ code: 403, error_code: 'otp_expired', msg: 'Token has expired or is invalid' }));
+        }
+        entry.spent = true;
+        confirmed.add(entry.user.email);
+        return res.end(JSON.stringify({
+          access_token: 'token-' + entry.user.id,
+          refresh_token: 'refresh-' + entry.user.id,
+          expires_in: 3600,
+          token_type: 'bearer',
+          user: entry.user,
+        }));
+      }
+      if (req.method === 'POST' && url.pathname === '/auth/v1/resend') {
+        let raw = '';
+        for await (const chunk of req) raw += chunk;
+        const { email, type } = JSON.parse(raw);
+        resendEmails.push(email);
+        const user = userForEmail(email);
+        if (user) {
+          const newToken = 'token_hash_resend_' + Date.now();
+          tokenMap.set(newToken, { user, spent: false });
+          mailbox.set(email, `${learnerOrigin}/auth/confirm?token_hash=${newToken}&type=email`);
+        }
+        return res.end('{}');
       }
       if (url.pathname === '/auth/v1/verify' && pendingSignups.has(url.searchParams.get('email'))) {
         const code = url.searchParams.get('email');
@@ -559,6 +600,119 @@ async function run() {
 
     await defContext.close();
     await srContext.close();
+
+    // -------------------------------------------------------------
+    // SCENARIO 4: S12 Cross-Device Confirmation (Items 13-16)
+    // -------------------------------------------------------------
+    console.log('\n--- Scenario 4: S12 Cross-Device Confirmation (Items 13-16) ---');
+    const xEmail = 'learner.xdevice@lingora.test';
+    const xPassword = 'SyntheticPassword123!';
+
+    // 13. Browser context A registers
+    const contextA = await browser.newContext();
+    const pageA = await contextA.newPage();
+    await pageA.goto(learnerOrigin + '/register');
+    await pageA.locator('input[type=email]').fill(xEmail);
+    await pageA.locator('input[type=password]').fill(xPassword);
+    await pageA.locator('#registerDisplayName').fill('Cross Device Learner');
+    await pageA.locator('#registerSubmitBtn').click();
+    await pageA.locator('#registerSuccess').waitFor();
+    const confirmationLink = mailbox.get(xEmail);
+    assert.ok(confirmationLink, 'Mailbox must receive confirmation link');
+    assert.match(confirmationLink, /token_hash=/);
+    assert.match(confirmationLink, /type=email/);
+    console.log('✔ Registration in context A received D1 link in mailbox');
+
+    // 14. Anti-prefetch check: GET fetch before user click must not consume verifyOtp
+    const verifyBefore = verifyOtpCount;
+    const prefetchRes = await fetch(confirmationLink, { redirect: 'manual' });
+    assert.equal(prefetchRes.status, 303);
+    assert.equal(verifyOtpCount, verifyBefore, 'GET prefetch must not consume verifyOtp');
+    console.log('✔ Anti-prefetch verified: 0 verify requests on GET');
+
+    // 13. Open confirmation link in clean context B (no cookies from A)
+    const contextB = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const cookiesB = await contextB.cookies();
+    assert.equal(cookiesB.length, 0, 'Context B must have 0 cookies from A');
+    const pageB = await contextB.newPage();
+    await pageB.goto(confirmationLink);
+    await pageB.waitForURL('**/auth/verify?*');
+    const verifyBtn = pageB.locator('#verifySubmitBtn');
+    await verifyBtn.waitFor({ state: 'visible' });
+    console.log('✔ Context B arrived at /auth/verify');
+
+    // User clicks confirm button -> POST /auth/confirm -> provider verifyOtp called -> /login?confirmed=1
+    await verifyBtn.click();
+    await pageB.waitForURL('**/login?confirmed=1');
+    assert.equal(verifyOtpCount, verifyBefore + 1, 'verifyOtp called once on form submit');
+    console.log('✔ Verify form submit completed, redirected to /login?confirmed=1');
+
+    // Log in on B -> bootstraps Account -> /home
+    await pageB.locator('#loginEmail').fill(xEmail);
+    await pageB.locator('#loginPassword').fill(xPassword);
+    await pageB.locator('#loginSubmitBtn').click();
+    await pageB.waitForURL('**/home');
+    await pageB.locator('#startOnboardingBtn').waitFor({ state: 'visible' });
+    console.log('✔ Context B logged in successfully and reached Home');
+
+    // Context A also logs in successfully
+    await pageA.goto(learnerOrigin + '/login');
+    await pageA.locator('#loginEmail').fill(xEmail);
+    await pageA.locator('#loginPassword').fill(xPassword);
+    await pageA.locator('#loginSubmitBtn').click();
+    await pageA.waitForURL('**/home');
+    console.log('✔ Context A also logged in successfully and reached Home');
+
+    // Log out on pageB before replaying spent link
+    await pageB.locator('#logoutBtn').click();
+    await pageB.waitForURL('**/login');
+
+    // 15. Replay spent link -> /login?error=confirmation_failed with resend block
+    await pageB.goto(confirmationLink);
+    await pageB.waitForURL('**/auth/verify?*');
+    await pageB.locator('#verifySubmitBtn').click();
+    await pageB.waitForURL('**/login?error=confirmation_failed');
+    await pageB.locator('#resendEmail').waitFor({ state: 'visible' });
+    console.log('✔ Replay spent link redirected to /login?error=confirmation_failed with resend form');
+
+    // Resend confirmation email
+    const resendBefore = resendEmails.length;
+    await pageB.locator('#resendEmail').fill(xEmail);
+    await pageB.locator('#resendSubmitBtn').click();
+    await pageB.locator('#resendAlert').waitFor({ state: 'visible' });
+    assert.equal(resendEmails.length, resendBefore + 1, 'Provider received resend POST');
+    const newConfirmationLink = mailbox.get(xEmail);
+    assert.notEqual(newConfirmationLink, confirmationLink, 'Mailbox received new confirmation link');
+    console.log('✔ Resend form triggered new confirmation link generation');
+
+    // Verify new confirmation link works
+    const newContext = await browser.newContext();
+    const newPage = await newContext.newPage();
+    await newPage.goto(newConfirmationLink);
+    await newPage.waitForURL('**/auth/verify?*');
+    await newPage.locator('#verifySubmitBtn').click();
+    await newPage.waitForURL('**/login?confirmed=1');
+    console.log('✔ New confirmation link verified and redirected to /login?confirmed=1');
+    await newContext.close();
+
+    // 16. Layout on 360px and 390px does not overflow horizontally
+    for (const w of [360, 390]) {
+      const mobContext = await browser.newContext({ viewport: { width: w, height: 800 } });
+      const mobPage = await mobContext.newPage();
+      await mobPage.goto(newConfirmationLink);
+      await mobPage.waitForURL('**/auth/verify?*');
+      const swVerify = await mobPage.evaluate(() => document.documentElement.scrollWidth);
+      assert.ok(swVerify <= w, `Verify scrollWidth ${swVerify} <= ${w}`);
+
+      await mobPage.goto(learnerOrigin + '/login?error=confirmation_failed');
+      const swLogin = await mobPage.evaluate(() => document.documentElement.scrollWidth);
+      assert.ok(swLogin <= w, `Login scrollWidth ${swLogin} <= ${w}`);
+      await mobContext.close();
+    }
+    console.log('✔ Responsive 360px and 390px layout verified without horizontal overflow');
+
+    await contextA.close();
+    await contextB.close();
 
     console.log('\n=============================================================');
     console.log('🎉 SPRINT 3 CORE E2E ACCEPTANCE: ALL SCENARIOS PASSED! 🎉');

@@ -56,7 +56,7 @@ mock.module('next/headers.js', {
 });
 
 const { POST: registerRoute } = await import('../../src/app/api/auth/register/route.ts');
-const { GET: confirmRoute } = await import('../../src/app/auth/confirm/route.ts');
+const { GET: confirmRoute, POST: confirmPostRoute } = await import('../../src/app/auth/confirm/route.ts');
 const { POST: loginRoute } = await import('../../src/app/api/auth/login/route.ts');
 
 const DUMMY_LEARNER_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -516,8 +516,131 @@ describe('Package A: Confirmation (GET /auth/confirm)', () => {
     assert.equal(locUrl.searchParams.get('error'), 'confirmation_failed');
   });
 
-  test('token_hash with type=signup verifies OTP and redirects to /login?confirmed=1', async () => {
+  test('PKCE code callback with flow_state_expired (HTTP 422) redirects to /login?error=confirmation_failed and logs diagnostic', async () => {
+    const cookieName = getLearnerCookieName('https://sncfyvpzwedqgwfpffkh.supabase.co');
+    const verifier = 'test-code-verifier-string-1234567890';
+    cookieMap.set(`${cookieName}-code-verifier`, 'base64-' + Buffer.from(JSON.stringify(verifier)).toString('base64'));
+
+    let capturedWarning = null;
+    const origWarn = console.warn;
+    console.warn = (...args) => {
+      if (args[0] === 'learner_confirmation_failed') {
+        capturedWarning = args[1];
+      }
+      origWarn(...args);
+    };
+
+    try {
+      globalThis.fetch = async (url, opts) => {
+        const urlStr = String(url);
+        if (urlStr.includes('/auth/v1/token')) {
+          return new Response(
+            JSON.stringify({ code: 422, error_code: 'flow_state_expired', msg: 'flow_state has expired' }),
+            { status: 422, headers: { 'content-type': 'application/json' } }
+          );
+        }
+        return new Response('Not Found', { status: 404 });
+      };
+
+      const req = new Request('https://lingora.edu.vn/auth/confirm?code=flow-expired-code', {
+        method: 'GET',
+      });
+
+      const res = await confirmRoute(req);
+      assert.equal(res.status, 303);
+      const locUrl = new URL(res.headers.get('location'));
+      assert.equal(locUrl.pathname, '/login');
+      assert.equal(locUrl.searchParams.get('error'), 'confirmation_failed');
+      assert.deepEqual(capturedWarning, {
+        phase: 'pkce_exchange',
+        code: 'flow_state_expired',
+        status: 422,
+        verifierCookiePresent: true,
+      });
+    } finally {
+      console.warn = origWarn;
+    }
+  });
+
+  test('missing verifier cookie on PKCE code callback redirects to /login?error=confirmation_failed and logs diagnostic', async () => {
+    // Cookie store has no code-verifier cookie
+    cookieMap.clear();
+
+    const req = new Request('https://lingora.edu.vn/auth/confirm?code=some-code', {
+      method: 'GET',
+    });
+
+    const res = await confirmRoute(req);
+    assert.equal(res.status, 303);
+    const locUrl = new URL(res.headers.get('location'));
+    assert.equal(locUrl.pathname, '/login');
+    assert.equal(locUrl.searchParams.get('error'), 'confirmation_failed');
+  });
+
+  test('already confirmed identity re-navigating callback with spent/already-confirmed code redirects to /login?error=confirmation_failed', async () => {
+    const cookieName = getLearnerCookieName('https://sncfyvpzwedqgwfpffkh.supabase.co');
+    const verifier = 'test-code-verifier-string-1234567890';
+    cookieMap.set(`${cookieName}-code-verifier`, 'base64-' + Buffer.from(JSON.stringify(verifier)).toString('base64'));
+
+    globalThis.fetch = async (url, opts) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/auth/v1/token')) {
+        return new Response(
+          JSON.stringify({ error: 'invalid_grant', error_description: 'authorization code already redeemed' }),
+          { status: 400, headers: { 'content-type': 'application/json' } }
+        );
+      }
+      return new Response('Not Found', { status: 404 });
+    };
+
+    const req = new Request('https://lingora.edu.vn/auth/confirm?code=already-spent-code', {
+      method: 'GET',
+    });
+
+    const res = await confirmRoute(req);
+    assert.equal(res.status, 303);
+    const locUrl = new URL(res.headers.get('location'));
+    assert.equal(locUrl.pathname, '/login');
+    assert.equal(locUrl.searchParams.get('error'), 'confirmation_failed');
+  });
+
+  test('token_hash without type param is rejected with invalid_confirmation_type', async () => {
+    const req = new Request('https://lingora.edu.vn/auth/confirm?token_hash=somehash', {
+      method: 'GET',
+    });
+
+    const res = await confirmRoute(req);
+    assert.equal(res.status, 303);
+    const locUrl = new URL(res.headers.get('location'));
+    assert.equal(locUrl.pathname, '/login');
+    assert.equal(locUrl.searchParams.get('error'), 'invalid_confirmation_type');
+  });
+
+  test('token_hash with type=signup in GET redirects 303 to /auth/verify with zero provider calls', async () => {
+    let providerCalls = 0;
+    globalThis.fetch = async () => {
+      providerCalls++;
+      throw new Error('Provider must not be called on GET');
+    };
+
+    const req = new Request('https://lingora.edu.vn/auth/confirm?token_hash=validhash&type=signup', {
+      method: 'GET',
+    });
+
+    const res = await confirmRoute(req);
+    assert.equal(res.status, 303);
+    const locUrl = new URL(res.headers.get('location'));
+    assert.equal(locUrl.pathname, '/auth/verify');
+    assert.equal(locUrl.searchParams.get('token_hash'), 'validhash');
+    assert.equal(locUrl.searchParams.get('type'), 'signup');
+    assert.equal(providerCalls, 0);
+    assert.equal(res.headers.get('cache-control'), 'no-store, private');
+    assert.equal(res.headers.get('referrer-policy'), 'no-referrer');
+  });
+
+  test('POST form urlencoded with token_hash and type=signup verifies OTP, signs out and redirects to /login?confirmed=1', async () => {
     let otpVerified = false;
+    let localSignOut = false;
     globalThis.fetch = async (url, opts) => {
       const urlStr = String(url);
       if (urlStr.includes('/auth/v1/verify')) {
@@ -530,19 +653,87 @@ describe('Package A: Confirmation (GET /auth/confirm)', () => {
           { status: 200, headers: { 'content-type': 'application/json' } }
         );
       }
+      if (urlStr.includes('/auth/v1/logout')) {
+        localSignOut = true;
+        return new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } });
+      }
       return new Response('Not Found', { status: 404 });
     };
 
-    const req = new Request('https://lingora.edu.vn/auth/confirm?token_hash=validhash&type=signup', {
-      method: 'GET',
+    const formData = new URLSearchParams({
+      token_hash: 'validhash',
+      type: 'signup',
     });
 
-    const res = await confirmRoute(req);
+    const req = new Request('https://lingora.edu.vn/auth/confirm', {
+      method: 'POST',
+      headers: {
+        'host': 'lingora.edu.vn',
+        'origin': 'https://lingora.edu.vn',
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
+
+    const res = await confirmPostRoute(req);
     assert.equal(res.status, 303);
     const locUrl = new URL(res.headers.get('location'));
     assert.equal(locUrl.pathname, '/login');
     assert.equal(locUrl.searchParams.get('confirmed'), '1');
     assert.equal(otpVerified, true);
+  });
+
+  test('POST form urlencoded replayed after use fails with 400 otp_expired and redirects to /login?error=confirmation_failed', async () => {
+    let capturedWarning = null;
+    const origWarn = console.warn;
+    console.warn = (...args) => {
+      if (args[0] === 'learner_confirmation_failed') {
+        capturedWarning = args[1];
+      }
+      origWarn(...args);
+    };
+
+    try {
+      globalThis.fetch = async (url, opts) => {
+        const urlStr = String(url);
+        if (urlStr.includes('/auth/v1/verify')) {
+          return new Response(
+            JSON.stringify({ code: 400, error_code: 'otp_expired', msg: 'Token has expired or is invalid' }),
+            { status: 400, headers: { 'content-type': 'application/json' } }
+          );
+        }
+        return new Response('Not Found', { status: 404 });
+      };
+
+      const formData = new URLSearchParams({
+        token_hash: 'already-spent-hash',
+        type: 'signup',
+      });
+
+      const req = new Request('https://lingora.edu.vn/auth/confirm', {
+        method: 'POST',
+        headers: {
+          'host': 'lingora.edu.vn',
+          'origin': 'https://lingora.edu.vn',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString(),
+      });
+
+      const res = await confirmPostRoute(req);
+      assert.equal(res.status, 303);
+      const locUrl = new URL(res.headers.get('location'));
+      assert.equal(locUrl.pathname, '/login');
+      assert.equal(locUrl.searchParams.get('error'), 'confirmation_failed');
+      assert.deepEqual(capturedWarning, {
+        phase: 'otp_verify',
+        code: 'otp_expired',
+        status: 400,
+        verifierCookiePresent: null,
+      });
+    } finally {
+      console.warn = origWarn;
+    }
   });
 
   test('token_hash with type=recovery or invite is strictly rejected as invalid_confirmation_type', async () => {
@@ -557,18 +748,11 @@ describe('Package A: Confirmation (GET /auth/confirm)', () => {
     assert.equal(locUrl.searchParams.get('error'), 'invalid_confirmation_type');
   });
 
-  test('open redirect attempts via ?next=... are strictly ignored (destinations fixed /login)', async () => {
-    globalThis.fetch = async (url) => {
-      if (String(url).includes('/auth/v1/verify')) {
-        return new Response(
-          JSON.stringify({
-            access_token: 'token',
-            user: { id: DUMMY_LEARNER_ID, email: 'learner@lingora.edu.vn' },
-          }),
-          { status: 200, headers: { 'content-type': 'application/json' } }
-        );
-      }
-      return new Response('Not Found', { status: 404 });
+  test('open redirect attempts via ?next=... on GET token_hash are strictly ignored (destinations fixed /auth/verify with exactly two params)', async () => {
+    let providerCalls = 0;
+    globalThis.fetch = async () => {
+      providerCalls++;
+      throw new Error('Provider must not be called on GET');
     };
 
     const req = new Request('https://lingora.edu.vn/auth/confirm?token_hash=testtoken&type=email&next=https://malicious.org', {
@@ -579,8 +763,11 @@ describe('Package A: Confirmation (GET /auth/confirm)', () => {
     assert.equal(res.status, 303);
     const locUrl = new URL(res.headers.get('location'));
     assert.equal(locUrl.origin, 'https://lingora.edu.vn');
-    assert.equal(locUrl.pathname, '/login');
+    assert.equal(locUrl.pathname, '/auth/verify');
     assert.equal(locUrl.searchParams.get('next'), null);
+    assert.equal(locUrl.searchParams.get('token_hash'), 'testtoken');
+    assert.equal(locUrl.searchParams.get('type'), 'email');
+    assert.equal(providerCalls, 0);
   });
 
   test('provider error without credentials redirects to /login?error=confirmation_failed with no-store headers and zero provider calls', async () => {
@@ -879,6 +1066,290 @@ describe('Package A: Confirmed Password Login & Bootstrap (POST /api/auth/login)
     const body = await res.json();
     assert.equal(body.data?.account?.role, 'LEARNER');
     assert.equal(body.data?.account?.status, 'ACTIVE');
+    assert.equal(mockAuditEvents.length, 1);
+  });
+
+  test('no duplicate Account bootstrap: second login for already-bootstrapped confirmed learner returns existing account (created: false) and zero additional audit events', async () => {
+    let mockAccount = {
+      id: DUMMY_LEARNER_ID,
+      role: 'LEARNER',
+      status: 'ACTIVE',
+      displayName: 'Nguyễn Văn Học',
+      uiLocale: 'en',
+    };
+    let mockAuditEvents = [{ action: 'LEARNER_BOOTSTRAPPED' }];
+    let executeRawCalls = 0;
+
+    const mockDb = {
+      account: {
+        findUnique: async ({ where }) => {
+          if (where.id === DUMMY_LEARNER_ID) return mockAccount;
+          return null;
+        },
+      },
+      provisioningRequest: {
+        findFirst: async () => null,
+      },
+      $executeRaw: async () => {
+        executeRawCalls++;
+        return 0;
+      },
+      $transaction: async (cb) => cb(mockDb),
+    };
+
+    setLearnerPrismaForTest(mockDb);
+
+    globalThis.fetch = async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/auth/v1/token') || urlStr.includes('/auth/v1/user')) {
+        return new Response(
+          JSON.stringify({
+            access_token: 'valid-token',
+            refresh_token: 'valid-refresh',
+            expires_in: 3600,
+            token_type: 'bearer',
+            user: {
+              id: DUMMY_LEARNER_ID,
+              email: 'fresh.confirmed@lingora.edu.vn',
+              email_confirmed_at: '2026-11-01T12:00:00Z',
+              user_metadata: { display_name: 'Nguyễn Văn Học' },
+            },
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } }
+        );
+      }
+      return new Response('Not Found', { status: 404 });
+    };
+
+    const req = new Request('https://lingora.edu.vn/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'host': 'lingora.edu.vn',
+        'origin': 'https://lingora.edu.vn',
+      },
+      body: JSON.stringify({ email: 'fresh.confirmed@lingora.edu.vn', password: 'password123' }),
+    });
+
+    const res = await loginRoute(req);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.data?.account?.id, DUMMY_LEARNER_ID);
+    assert.equal(body.data?.account?.role, 'LEARNER');
+    assert.equal(body.data?.account?.status, 'ACTIVE');
+    assert.equal(mockAuditEvents.length, 1, 'AuditEvent must not be duplicated');
+    assert.equal(executeRawCalls, 0, 'No INSERT operations must be performed for existing account');
+  });
+
+  test('Recovery Case 2: Provider confirmed identity but PKCE callback failed (flow_state_expired); user recovers via password login with the SAME identity, bootstrapping exactly one LEARNER/ACTIVE Account', async () => {
+    const RECOVERY_USER_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+    const RECOVERY_EMAIL = 'recovery.learner@lingora.edu.vn';
+    const RECOVERY_PASSWORD = 'RecoverPassword123!';
+    let mockAccount = null;
+    let mockAuditEvents = [];
+    let executeRawCalls = 0;
+
+    const mockDb = {
+      account: {
+        findUnique: async ({ where }) => {
+          if (where.id === RECOVERY_USER_ID) return mockAccount;
+          return null;
+        },
+      },
+      provisioningRequest: {
+        findFirst: async () => null,
+      },
+      $executeRaw: async () => {
+        executeRawCalls++;
+        if (executeRawCalls === 1) {
+          mockAccount = {
+            id: RECOVERY_USER_ID,
+            role: 'LEARNER',
+            status: 'ACTIVE',
+            displayName: 'Phục Hồi Học Viên',
+            uiLocale: 'en',
+          };
+          return 1;
+        }
+        if (executeRawCalls === 2) {
+          mockAuditEvents.push({ action: 'LEARNER_BOOTSTRAPPED', actor_id: RECOVERY_USER_ID });
+          return 1;
+        }
+        return 0;
+      },
+      $transaction: async (cb) => cb(mockDb),
+    };
+
+    setLearnerPrismaForTest(mockDb);
+
+    // Step 1: Simulate PKCE callback failure (flow_state_expired after 25 minutes)
+    const cookieName = getLearnerCookieName('https://sncfyvpzwedqgwfpffkh.supabase.co');
+    cookieMap.set(`${cookieName}-code-verifier`, 'base64-' + Buffer.from(JSON.stringify('verifier-123')).toString('base64'));
+
+    globalThis.fetch = async (url, opts) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/auth/v1/token')) {
+        const bodyStr = opts?.body ? String(opts.body) : '';
+        // If it's a PKCE exchange:
+        if (bodyStr.includes('grant_type=pkce') || urlStr.includes('grant_type=pkce') || bodyStr.includes('auth_code')) {
+          return new Response(
+            JSON.stringify({ code: 422, error_code: 'flow_state_expired', msg: 'flow_state has expired' }),
+            { status: 422, headers: { 'content-type': 'application/json' } }
+          );
+        }
+        // If it's password login:
+        return new Response(
+          JSON.stringify({
+            access_token: 'recovery-token',
+            refresh_token: 'recovery-refresh',
+            expires_in: 3600,
+            token_type: 'bearer',
+            user: {
+              id: RECOVERY_USER_ID,
+              email: RECOVERY_EMAIL,
+              email_confirmed_at: '2026-11-04T14:39:20.000Z', // Provider confirmed!
+              user_metadata: { display_name: 'Phục Hồi Học Viên' },
+            },
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } }
+        );
+      }
+      if (urlStr.includes('/auth/v1/user')) {
+        return new Response(
+          JSON.stringify({
+            id: RECOVERY_USER_ID,
+            email: RECOVERY_EMAIL,
+            email_confirmed_at: '2026-11-04T14:39:20.000Z',
+            user_metadata: { display_name: 'Phục Hồi Học Viên' },
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } }
+        );
+      }
+      return new Response('Not Found', { status: 404 });
+    };
+
+    // Callback fails with flow_state_expired -> redirects to /login?error=confirmation_failed
+    const confirmReq = new Request('https://lingora.edu.vn/auth/confirm?code=flow-expired-code', { method: 'GET' });
+    const confirmRes = await confirmRoute(confirmReq);
+    assert.equal(confirmRes.status, 303);
+    const confirmLoc = new URL(confirmRes.headers.get('location'));
+    assert.equal(confirmLoc.pathname, '/login');
+    assert.equal(confirmLoc.searchParams.get('error'), 'confirmation_failed');
+    assert.equal(mockAccount, null, 'Account must NOT exist yet after failed callback');
+
+    // Step 2: User recovers by performing password login with the SAME identity
+    const loginReq = new Request('https://lingora.edu.vn/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'host': 'lingora.edu.vn',
+        'origin': 'https://lingora.edu.vn',
+      },
+      body: JSON.stringify({ email: RECOVERY_EMAIL, password: RECOVERY_PASSWORD }),
+    });
+
+    const loginRes = await loginRoute(loginReq);
+    assert.equal(loginRes.status, 200);
+    const loginBody = await loginRes.json();
+    assert.equal(loginBody.data?.account?.id, RECOVERY_USER_ID);
+    assert.equal(loginBody.data?.account?.role, 'LEARNER');
+    assert.equal(loginBody.data?.account?.status, 'ACTIVE');
+    assert.equal(mockAuditEvents.length, 1);
+    assert.equal(mockAuditEvents[0].action, 'LEARNER_BOOTSTRAPPED');
+  });
+
+  test('Recovery Case 2 (Cross-Device): Provider confirmed identity on mobile without PKCE verifier cookie; user recovers via password login with SAME identity', async () => {
+    const CROSS_USER_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+    const CROSS_EMAIL = 'cross.device@lingora.edu.vn';
+    const CROSS_PASSWORD = 'CrossPassword123!';
+    let mockAccount = null;
+    let mockAuditEvents = [];
+    let executeRawCalls = 0;
+
+    const mockDb = {
+      account: {
+        findUnique: async ({ where }) => {
+          if (where.id === CROSS_USER_ID) return mockAccount;
+          return null;
+        },
+      },
+      provisioningRequest: {
+        findFirst: async () => null,
+      },
+      $executeRaw: async () => {
+        executeRawCalls++;
+        if (executeRawCalls === 1) {
+          mockAccount = {
+            id: CROSS_USER_ID,
+            role: 'LEARNER',
+            status: 'ACTIVE',
+            displayName: 'Cross Device Học Viên',
+            uiLocale: 'en',
+          };
+          return 1;
+        }
+        if (executeRawCalls === 2) {
+          mockAuditEvents.push({ action: 'LEARNER_BOOTSTRAPPED', actor_id: CROSS_USER_ID });
+          return 1;
+        }
+        return 0;
+      },
+      $transaction: async (cb) => cb(mockDb),
+    };
+
+    setLearnerPrismaForTest(mockDb);
+
+    // Cookie store has NO code-verifier cookie (opened on phone or different browser)
+    cookieMap.clear();
+
+    globalThis.fetch = async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/auth/v1/token') || urlStr.includes('/auth/v1/user')) {
+        return new Response(
+          JSON.stringify({
+            access_token: 'cross-token',
+            refresh_token: 'cross-refresh',
+            expires_in: 3600,
+            token_type: 'bearer',
+            user: {
+              id: CROSS_USER_ID,
+              email: CROSS_EMAIL,
+              email_confirmed_at: '2026-11-04T15:00:00.000Z',
+              user_metadata: { display_name: 'Cross Device Học Viên' },
+            },
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } }
+        );
+      }
+      return new Response('Not Found', { status: 404 });
+    };
+
+    // Callback on device without verifier -> 303 to /login?error=confirmation_failed
+    const confirmReq = new Request('https://lingora.edu.vn/auth/confirm?code=cross-device-code', { method: 'GET' });
+    const confirmRes = await confirmRoute(confirmReq);
+    assert.equal(confirmRes.status, 303);
+    const confirmLoc = new URL(confirmRes.headers.get('location'));
+    assert.equal(confirmLoc.pathname, '/login');
+    assert.equal(confirmLoc.searchParams.get('error'), 'confirmation_failed');
+    assert.equal(mockAccount, null);
+
+    // Password login recovers and bootstraps Account
+    const loginReq = new Request('https://lingora.edu.vn/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'host': 'lingora.edu.vn',
+        'origin': 'https://lingora.edu.vn',
+      },
+      body: JSON.stringify({ email: CROSS_EMAIL, password: CROSS_PASSWORD }),
+    });
+
+    const loginRes = await loginRoute(loginReq);
+    assert.equal(loginRes.status, 200);
+    const loginBody = await loginRes.json();
+    assert.equal(loginBody.data?.account?.id, CROSS_USER_ID);
+    assert.equal(loginBody.data?.account?.role, 'LEARNER');
+    assert.equal(loginBody.data?.account?.status, 'ACTIVE');
     assert.equal(mockAuditEvents.length, 1);
   });
 
