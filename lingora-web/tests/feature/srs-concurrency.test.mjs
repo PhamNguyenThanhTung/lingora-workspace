@@ -391,7 +391,7 @@ test('Real PostgreSQL: REMEMBERED caps stage 5 at stage 5 and schedules +30 days
   assert.ok(updatedCard.dueAt > minExpectedDue);
 });
 
-test('Real PostgreSQL: Strict timezone validation (invalid timezone fails 503 SERVICE_UNAVAILABLE)', async () => {
+test('Real PostgreSQL: Strict timezone validation (invalid timezone fails 400 INVALID_TIMEZONE)', async () => {
   const pastDue = new Date(Date.now() - 3600 * 1000);
   await db.srsCard.create({
     data: {
@@ -422,8 +422,8 @@ test('Real PostgreSQL: Strict timezone validation (invalid timezone fails 503 SE
     },
     (err) => {
       assert.ok(err instanceof SrsServiceError);
-      assert.equal(err.status, 503);
-      assert.equal(err.code, 'SERVICE_UNAVAILABLE');
+      assert.equal(err.status, 400);
+      assert.equal(err.code, 'INVALID_TIMEZONE');
       return true;
     }
   );

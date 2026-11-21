@@ -38,6 +38,51 @@ beforeEach(async () => {
   setLearnerPrismaForTest(db);
 });
 
+test('Session timezone validation rejects before creating sessions or memory states', async () => {
+  for (const timezone of ['Invalid/Timezone']) {
+    await db.account.update({ where: { id: f.learnerA }, data: { timezone } });
+    const before = await db.srsReviewSession.count({ where: { learnerId: f.learnerA } });
+    await assert.rejects(
+      () => createReviewSession(f.learnerA, {}, db),
+      error => error instanceof SrsServiceError && error.status === 400 && error.code === 'INVALID_TIMEZONE',
+    );
+    assert.equal(await db.srsReviewSession.count({ where: { learnerId: f.learnerA } }), before);
+  }
+});
+
+for (const timezone of ['UTC', 'Asia/Bangkok', ' UTC ', ' Asia/Bangkok ']) {
+  test(`Session review persists the account local date for ${JSON.stringify(timezone)}`, async () => {
+    await db.account.update({ where: { id: f.learnerA }, data: { timezone } });
+    const card = await db.srsCard.create({ data: {
+      learnerId: f.learnerA, vocabularyId: f.vocabId, stage: 1,
+      dueAt: new Date(Date.now() - 3600000), enrollmentSource: 'OPTIONAL_CHOICE',
+      sourceLessonVocabularyId: f.vocabLinkId,
+    } });
+    const session = await createReviewSession(f.learnerA, { limit: 1 }, db);
+    await revealSessionCurrentItem(f.learnerA, session.sessionId, { cardId: card.id }, db);
+    const input = { operationKey: randomUUID(), cardId: card.id, rating: 'REMEMBERED' };
+    await db.account.update({ where: { id: f.learnerA }, data: { timezone: 'Invalid/Timezone' } });
+    await assert.rejects(
+      () => submitSessionReview(f.learnerA, session.sessionId, input, db),
+      error => error instanceof SrsServiceError && error.status === 400 && error.code === 'INVALID_TIMEZONE',
+    );
+    assert.deepEqual(await db.srsCard.findUnique({ where: { id: card.id } }), card);
+    assert.equal(await db.srsReviewOperation.count({ where: { learnerId: f.learnerA } }), 0);
+    assert.equal(await db.srsMemoryState.count({ where: { cardId: card.id } }), 0);
+    assert.equal(await db.xpEvent.count({ where: { learnerId: f.learnerA } }), 0);
+    await db.account.update({ where: { id: f.learnerA }, data: { timezone } });
+    const result = await submitSessionReview(f.learnerA, session.sessionId, input, db);
+    assert.equal(result.status, 'COMPLETED');
+    const operation = await db.srsReviewOperation.findFirstOrThrow({ where: { learnerId: f.learnerA, operationKey: input.operationKey } });
+    const localDate = new Intl.DateTimeFormat('en-CA', {
+      timeZone: timezone.trim(), year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(operation.reviewedAt);
+    assert.equal(operation.qualifyingLocalDate.toISOString().slice(0, 10), localDate);
+    assert.equal(operation.nextStage, 2);
+    assert.equal(operation.nextDueAt - operation.reviewedAt, 3 * 86400000);
+  });
+}
+
 test('Real PostgreSQL S5-02: SrsMemoryState tracks skill MEANING, count, lapse, dueAt, version upon review', async () => {
   const pastDue = new Date(Date.now() - 3600 * 1000);
   const card = await db.srsCard.create({

@@ -2,6 +2,7 @@ import 'server-only';
 import crypto from 'node:crypto';
 import type { Prisma, PrismaClient } from '../../../../lingora-admin/generated/product-client/index.js';
 import { ACHIEVEMENTS, DAILY_QUESTS } from './metadata.ts';
+import { normalizeStoredTimezone } from '../context/timezone.ts';
 import type {
   QuestDto,
   AchievementDto,
@@ -29,8 +30,14 @@ export function questSourceId(learnerId: string, localDateStr: string, questId: 
 }
 
 export function computeQualifyingLocalDate(now: Date, timezone: string): { localDate: Date; localDateStr: string } {
+  const norm = normalizeStoredTimezone(timezone);
+  if (!norm.ok) {
+    // Fail closed: never fall back to the host timezone for qualifying dates.
+    throw new RangeError('Invalid or missing learner timezone');
+  }
+  const tz = norm.timezone;
   const localDateStr = new Intl.DateTimeFormat('en-CA', {
-    timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit',
+    timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
   }).format(now);
   return { localDate: new Date(localDateStr + 'T00:00:00.000Z'), localDateStr };
 }

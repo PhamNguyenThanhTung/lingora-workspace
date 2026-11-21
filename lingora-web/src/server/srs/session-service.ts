@@ -6,6 +6,7 @@ import { SrsServiceError } from './dto.ts';
 import { calculatePolicyBSchedule } from './scheduler.ts';
 import { evaluateAndAwardSrsGamification } from '../gamification/service.ts';
 import { getDbTime } from './service.ts';
+import { normalizeStoredTimezone } from '../context/timezone.ts';
 import { z } from 'zod';
 import { gradeStrokeAttempt, validateTemplateStrokes, type CandidateStrokeInput } from '@lingora/lesson-content';
 import {
@@ -247,20 +248,17 @@ function toWritingFrontPromptCardDto(
 }
 
 function computeQualifyingLocalDate(now: Date, timezone: string): Date {
-  if (!timezone || typeof timezone !== 'string') {
-    throw new SrsServiceError(503, 'SERVICE_UNAVAILABLE', 'Múi giờ tài khoản không hợp lệ.');
+  const norm = normalizeStoredTimezone(timezone);
+  if (!norm.ok) {
+    throw new SrsServiceError(400, 'INVALID_TIMEZONE', `Múi giờ '${timezone}' không hợp lệ hoặc không được hỗ trợ.`);
   }
-  try {
-    const localDateString = new Intl.DateTimeFormat('en-CA', {
-      timeZone: timezone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(now);
-    return new Date(`${localDateString}T00:00:00.000Z`);
-  } catch {
-    throw new SrsServiceError(503, 'SERVICE_UNAVAILABLE', `Múi giờ '${timezone}' không hợp lệ hoặc không được hỗ trợ.`);
-  }
+  const localDateString = new Intl.DateTimeFormat('en-CA', {
+    timeZone: norm.timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
+  return new Date(`${localDateString}T00:00:00.000Z`);
 }
 
 function isValidUuid(id: string): boolean {
@@ -442,10 +440,14 @@ export async function createReviewSession(
   // 1. Verify active learner
   const account = await db.account.findUnique({
     where: { id: verifiedUserId },
-    select: { id: true, role: true, status: true },
+    select: { id: true, role: true, status: true, timezone: true },
   });
   if (!account || account.role !== 'LEARNER' || account.status !== 'ACTIVE') {
     throw new SrsServiceError(403, 'ACCOUNT_INACTIVE', 'Tài khoản học viên không hoạt động.');
+  }
+
+  if (!normalizeStoredTimezone(account.timezone).ok) {
+    throw new SrsServiceError(400, 'INVALID_TIMEZONE', 'Múi giờ của tài khoản không hợp lệ.');
   }
 
   // 2. If contextId provided, verify ownership and get course
@@ -692,7 +694,11 @@ async function withLockedSession<T>(
     if (!session) {
       throw new SrsServiceError(404, 'SESSION_NOT_FOUND', 'Phiên ôn tập không tồn tại.');
     }
-    return work(tx, session, account.timezone);
+    const tzResult = normalizeStoredTimezone(account.timezone);
+    if (!tzResult.ok) {
+      throw new SrsServiceError(400, 'INVALID_TIMEZONE', 'Múi giờ của tài khoản không hợp lệ.');
+    }
+    return work(tx, session, tzResult.timezone);
   });
 
   // Domain conflicts that change session state must commit before returning the error.

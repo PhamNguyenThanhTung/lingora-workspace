@@ -196,6 +196,19 @@ function HarnessRoot() {
           }}
         />
       );
+    case 'home-404':
+      return (
+        <HomeView
+          errorState={{
+            ok: false,
+            status: 404,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Lộ trình học không tồn tại.',
+            },
+          }}
+        />
+      );
     default:
       return <div>Trạng thái không xác định: {state}</div>;
   }
