@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ResendConfirmationForm } from '../_components/ResendConfirmationForm.tsx';
 
 export function LoginForm() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export function LoginForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [showResend, setShowResend] = useState(false);
 
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -22,11 +24,17 @@ export function LoginForm() {
       if (params.get('confirmed') === '1' || params.get('confirmed') === 'true') {
         setInfoMessage('Xác thực email thành công! Vui lòng đăng nhập bằng mật khẩu của bạn.');
       } else if (params.get('error') === 'confirmation_failed') {
-        setErrorMessage('Liên kết xác thực không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.');
+        setErrorMessage(
+          'Liên kết xác thực không hợp lệ hoặc đã hết hạn. Nếu bạn đã xác nhận trước đó, hãy đăng nhập — thử đăng nhập bằng email và mật khẩu bên dưới. Nếu chưa, hãy gửi lại email xác nhận bên dưới.'
+        );
+        setShowResend(true);
       } else if (params.get('error') === 'invalid_confirmation_type') {
-        setErrorMessage('Loại liên kết xác thực không hợp lệ.');
+        setErrorMessage('Loại liên kết xác thực không hợp lệ. Vui lòng sử dụng đúng liên kết đăng ký.');
       } else if (params.get('error') === 'missing_confirmation_token') {
-        setErrorMessage('Thiếu mã xác thực trong liên kết.');
+        setErrorMessage('Thiếu mã xác thực trong liên kết. Vui lòng kiểm tra lại hộp thư của bạn.');
+        setShowResend(true);
+      } else if (params.get('error') === 'service_unavailable') {
+        setErrorMessage('Dịch vụ xác thực tạm thời không khả dụng. Vui lòng thử lại sau.');
       }
     }
   }, []);
@@ -70,10 +78,20 @@ export function LoginForm() {
       if (!response.ok) {
         setIsPending(false);
         setPassword('');
+        const resMsg = resJson?.error?.message;
         setErrorMessage(
-          resJson?.error?.message ||
+          resMsg ||
             'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.'
         );
+        if (
+          response.status === 403 &&
+          (resJson?.error?.code === 'FORBIDDEN' ||
+            (typeof resMsg === 'string' &&
+              (resMsg.toLowerCase().includes('xác thực email') ||
+                resMsg.toLowerCase().includes('chưa xác thực'))))
+        ) {
+          setShowResend(true);
+        }
         setTimeout(() => {
           passwordInputRef.current?.focus();
         }, 50);
@@ -188,6 +206,15 @@ export function LoginForm() {
             </div>
           </div>
         </form>
+
+        {showResend && (
+          <div id="loginResendSection" style={{ marginTop: '20px', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
+            <p style={{ fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '8px' }}>
+              Gửi lại email xác nhận
+            </p>
+            <ResendConfirmationForm initialEmail={email} />
+          </div>
+        )}
       </div>
     </main>
   );

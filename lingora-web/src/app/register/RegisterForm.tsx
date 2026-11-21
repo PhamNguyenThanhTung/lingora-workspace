@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { ResendConfirmationForm } from '../_components/ResendConfirmationForm.tsx';
 
 export function RegisterForm() {
   const [email, setEmail] = useState('');
@@ -124,6 +125,15 @@ export function RegisterForm() {
             <p style={{ marginTop: '8px', fontSize: '14px', lineHeight: '1.5' }}>
               Sau khi xác thực email thông qua liên kết được gửi, bạn có thể đăng nhập bằng mật khẩu vừa tạo.
             </p>
+            <p style={{ marginTop: '6px', fontSize: '13px', color: '#047857', lineHeight: '1.4' }}>
+              Bạn có thể mở liên kết xác thực trên bất kỳ thiết bị nào. Sau khi bấm xác nhận, hãy thử đăng nhập bằng email và mật khẩu vừa tạo. Liên kết có thời hạn; nếu đã hết hạn, hãy gửi lại bên dưới.
+            </p>
+            <div id="registerResendSection" style={{ marginTop: '16px', borderTop: '1px solid #a7f3d0', paddingTop: '12px' }}>
+              <p style={{ fontSize: '13px', color: '#065f46', marginBottom: '8px' }}>
+                Không nhận được email? Gửi lại:
+              </p>
+              <ResendConfirmationForm initialEmail={email} />
+            </div>
             <div style={{ marginTop: '16px' }}>
               <Link
                 href="/login"

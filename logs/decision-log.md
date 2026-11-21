@@ -545,3 +545,28 @@ Use a maintained scheduler implementation with a pinned model/package version, p
 
 ### Status
 ACCEPTED — EXPLICIT PO PRODUCT DECISION; S6-09.2 IMPLEMENTATION AUTHORIZED; DEPLOYMENT/LIVE MIGRATION NOT AUTHORIZED
+
+## ADR-046 — Cross-device learner email confirmation via token_hash
+
+### Date
+2026-11-21
+
+### Category
+auth / learner-onboarding / Slice 12
+
+### Approval Evidence
+On 2026-11-21 the owner asked in chat for a full spec that makes the confirmation link "mở được trên thiết bị khác" and asked for it to be delegated to Anti. Design D1–D8 is recorded in `plans/2026-11-21-slice-12-cross-device-confirmation.md`. Changing the Supabase email template, deploying, and making a public attempt each need separate owner action.
+
+### Context
+The confirmation email uses the PKCE `?code=` link. The code exchange needs the `*-code-verifier` cookie from the browser that registered, so the link fails on another device. The public attempt also hit `flow_state_expired` after about 25 minutes. `@supabase/auth-js` `verifyOtp({ token_hash })` posts to `/auth/v1/verify` and does not read PKCE storage.
+
+### Decision
+1. The confirm-signup template links to `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email`.
+2. `GET /auth/confirm?token_hash` never consumes the token. It validates the token and type, then redirects with 303 to `/auth/verify`. That page needs an explicit click, which sends a form `POST /auth/confirm` that calls `verifyOtp`. This protects the link from mail scanners and prefetch.
+3. After a successful verify, the local session is signed out and the user goes to `/login?confirmed=1`. The password-login contract is unchanged, and no session is left on the device that opened the link.
+4. `type` accepts only `email` or `signup`. `token_hash` must match `^[A-Za-z0-9_-]{1,512}$`. Every redirect target is fixed and same-origin.
+5. `POST /api/auth/resend-confirmation` returns the same generic 200 for every account state, except 429 for rate limits and 503 for provider outages.
+6. The legacy `?code=` branch is unchanged for links already sent.
+
+### Status
+ACCEPTED (local, synthetic provider). Template change, deployment, and public P0-B acceptance are pending owner action.

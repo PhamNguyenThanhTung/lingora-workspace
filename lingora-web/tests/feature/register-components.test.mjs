@@ -103,6 +103,8 @@ describe('Package A: Dedicated Registration UI & Component Tests', () => {
     await page.waitForSelector('#registerSuccess', { state: 'visible' });
     const successText = await page.textContent('#registerSuccess');
     assert.match(successText, /kiểm tra hộp thư/i);
+    assert.match(successText, /trên bất kỳ thiết bị nào/i, 'Must tell user the link works on any device');
+    assert.match(successText, /thử đăng nhập bằng email và mật khẩu/i, 'Must guide user to login fallback for cross-device');
 
     const loginLink = await page.$('#loginLink');
     assert.ok(loginLink);
@@ -197,6 +199,7 @@ describe('Package A: Dedicated Registration UI & Component Tests', () => {
     await page.waitForSelector('#loginAlert', { state: 'visible' });
     const text = await page.textContent('#loginAlert');
     assert.match(text, /liên kết xác thực không hợp lệ hoặc đã hết hạn/i);
+    assert.match(text, /thử đăng nhập bằng email và mật khẩu/i, 'Must provide clear recovery direction on confirmation_failed');
 
     await context.close();
   });
