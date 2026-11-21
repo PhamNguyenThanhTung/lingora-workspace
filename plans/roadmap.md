@@ -134,6 +134,39 @@ Owner separately authorized one instrumented attempt at c279720, Learner/Staff R
 
 Scoped cleanup and independent read-only reconciliation PASS: all six owned Auth groups0, owned app/audit rows0, full curriculum/other Accounts/provider-flow/seven-group S11 baseline unchanged, private scratch absent, residue0. Two separately authorized real registrations/navigations total; zero resends. Both budgets spent. **STOP; current human action NONE; Slice12 NOT ACCEPTED; Slice13 NOT STARTED.** No third attempt, SMTP/provider/env mutation or speculative auth redesign is authorized.
 
+## Sprint 3 — Onboarding & Learning Plan (TESTED / ACCEPTED local)
+
+- Onboarding wizard: chọn ngôn ngữ, mục tiêu học, thời gian hàng ngày, sở thích, chọn điểm xuất phát (DEFAULT vs SELF_REPORT).
+- Khởi tạo nguyên tử `LearningContext` và `LearningPlan` trong PostgreSQL; idempotency và giới hạn 2 context ACTIVE đồng thời.
+- Đã nghiệm thu local trên PostgreSQL và Chromium.
+
+## Sprint 4 — Home, Learning Path & Gamification (TESTED / ACCEPTED local)
+
+- Home view: hiển thị Continue Learning CTA ("Bắt đầu học" / "Tiếp tục học"), Learning Path theo Unit/Lesson, ngữ cảnh hiện tại.
+- Gamification: XP (`XpEvent`), Streak (tính toán động từ lịch sử hoạt động), Quest và Thành tựu (`LearnerAchievement`).
+- Đã nghiệm thu local trên PostgreSQL và Chromium.
+
+## Sprint 5 — SRS v2 Flashcards (Policy B) (TESTED / ACCEPTED local)
+
+- Tách bộ nhớ SRS v2 qua `SrsMemoryState`, phân biệt theo `skill` (mặc định `'MEANING'`).
+- Thuật toán MEANING: Policy B (`POLICY_B`), khoảng cách `[1, 3, 7, 14, 30]` ngày, 5 stage, đánh giá `REMEMBERED` / `FORGOTTEN`.
+- Phiên ôn tập `SrsReviewSession` với giới hạn số thẻ, khóa hàng và idempotency qua `SrsReviewOperation`.
+- Local PostgreSQL và E2E suite PASS (`4bbdc23`); production rollout pending.
+
+## Sprint 6 — Script Learning Engine & Writing SRS (IMPLEMENTED / TESTED behind Feature Flag)
+
+- Mô hình chữ viết tay (Handwriting): `WritingCharacter`, `CharacterStrokeData`, `VocabularyCharacter`, `WritingSession`, `WritingAttempt`.
+- Động cơ chấm nét chữ (Stroke Grader): deterministic, chấm điểm dựa trên tọa độ chuẩn hóa `[0, 1]`, hướng nét, thứ tự nét, số nét; phân 3 hạng (EXCELLENT, FAIR, POOR).
+- Thuật toán WRITING SRS: FSRS-5 qua thư viện `ts-fsrs` (version `'FSRS_6_TS_FSRS_5_4_2'`), desired retention 0.9, 4 mức đánh giá do học viên tự chọn (`AGAIN`, `HARD`, `GOOD`, `EASY`). Điểm chấm nét chỉ dùng để phản hồi (feedback), không tự động gán rating.
+- Rollout: Writing SRS hiện được kích hoạt qua Feature Flag kết hợp Allowlist: `WRITING_SRS_ENABLED=true` và `WRITING_SRS_LEARNER_IDS` (danh sách ID học viên được phép). Chưa rollout toàn bộ (production rollout pending acceptance).
+- Input: Handwriting/stroke drawing qua SVG/pointer/touch canvas; không hỗ trợ keyboard spelling.
+
+## Assessment Learner Runtime (NOT STARTED)
+
+- Admin authoring foundation đã hoàn tất ở Slice 8 (`AssessmentBlueprint`, `AssessmentVersion`, `AssessmentVersionItem`).
+- Learner runtime (placement test, assessment attempt, runtime scoring, recommendedLevel, level-up / progression): **NOT STARTED**.
+
+
 ### S12-XDEVICE — cross-device confirmation (2026-11-21, TESTED local)
 
 [Spec](2026-11-21-slice-12-cross-device-confirmation.md) and [ADR-046](../logs/decision-log.md). Anti implemented it; root reviewed and re-ran the gates. Links of the form `token_hash` open a click-to-confirm page (`/auth/verify`, POST, no consumption on GET). A resend endpoint was added. The legacy `?code=` link is unchanged. Results: typecheck, build, components, onboarding integration 62/62, onboarding E2E 4/4 (including the cross-device scenario with two separate contexts), and Chromium confirmation all PASS. Feature 397/398; the one failure is the known timezone test from another lane. Negative controls A–E were all KILLED and restored byte-exact. **Remaining:** the owner changes the Supabase template, then deploy and run a public attempt (laptop signup, confirm on phone). Slice 12 is still NOT PUBLIC ACCEPTED.
