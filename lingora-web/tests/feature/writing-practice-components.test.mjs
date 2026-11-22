@@ -480,15 +480,15 @@ describe('S6-07: Writing Practice UI (Màn luyện viết)', () => {
       // Comparison canvas & legend
       const comparisonCanvas = page.locator('#comparison-canvas');
       await comparisonCanvas.waitFor({ state: 'visible' });
-      const greenTemplatePixels = await comparisonCanvas.evaluate((canvas) => {
+      const amberTemplatePixels = await comparisonCanvas.evaluate((canvas) => {
         const pixels = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
         let count = 0;
         for (let i = 0; i < pixels.length; i += 4) {
-          if (pixels[i + 1] > pixels[i] * 1.15 && pixels[i + 1] > pixels[i + 2] * 1.1) count++;
+          if (pixels[i + 3] > 0 && pixels[i] > 200 && pixels[i + 1] > 120 && pixels[i + 2] < 120) count++;
         }
         return count;
       });
-      assert.ok(greenTemplatePixels > 0, 'Comparison canvas must draw the pinned template in green');
+      assert.ok(amberTemplatePixels > 0, 'Comparison canvas must draw the pinned template in amber, distinct from the blue learner stroke');
 
       const legendBlue = page.getByText('Nét bạn vẽ');
       await legendBlue.waitFor({ state: 'visible' });
