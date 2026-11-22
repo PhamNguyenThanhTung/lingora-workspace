@@ -106,7 +106,7 @@ test('P5 SRS UI: Empty due list -> click Start -> renders done box and return ho
     await page.locator('#startReviewBtn').click();
     await page.locator('#srsDoneBox').waitFor({ state: 'visible' });
     const doneText = await page.locator('#srsDoneBox').textContent();
-    assert.match(doneText, /không có từ vựng nào đến hạn ôn tập/);
+    assert.match(doneText, /Chưa có từ nào đến hạn/);
 
     // Return to home
     await page.locator('#doneBackHomeBtn').click();

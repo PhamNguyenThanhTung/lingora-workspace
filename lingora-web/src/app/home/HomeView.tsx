@@ -66,7 +66,12 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   const homeData = data as Partial<HomeDto> | undefined;
   const totalXp = homeData?.totalXp ?? 0;
   const streak = homeData?.streak ?? { currentStreak: 0, longestStreak: 0, activeDays: [], todayCompleted: false };
-  const quests = homeData?.quests ?? [];
+  const reviewDueForQuests = homeData?.reviewDue ?? 0;
+  // A brand-new learner has nothing due for review until the day after their first lesson, so the
+  // review quest cannot be progressed yet. Hide it until it is reachable (or already progressed/claimed).
+  const quests = (homeData?.quests ?? []).filter(
+    (q) => !(q.id === 'REVIEW_10' && reviewDueForQuests === 0 && q.progress === 0 && !q.isClaimed),
+  );
   const dailyProgress = homeData?.dailyProgress ?? { dailyGoalMinutes: 10, completedLessonsToday: 0, reviewsCompletedToday: 0 };
   const recentAchievement = homeData?.recentAchievement ?? null;
   const reviewDue = homeData?.reviewDue ?? 0;
