@@ -54,6 +54,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const [finalizeReward, setFinalizeReward] = useState<{
     lessonXp: number;
     questXp: number;
+    gems: number;
     earnedAchievements: Array<{ code: string; title: string; description: string }>;
     newlyEnrolledCount: number;
     firstTryAccuracy: number;
@@ -127,6 +128,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
         setFinalizeReward({
           lessonXp: Number(result.data.lessonXp || 0),
           questXp: Number(result.data.questXp || 0),
+          gems: Number(result.data.gems || 0),
           earnedAchievements: Array.isArray(result.data.earnedAchievements) ? result.data.earnedAchievements : [],
           newlyEnrolledCount: Number(result.data.newlyEnrolledCount || 0),
           firstTryAccuracy: Number(result.data.firstTryAccuracy || 0),
@@ -649,6 +651,14 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                     </div>
                   )}
                 </div>
+                {finalizeReward.gems > 0 && (
+                  <div className="celebrate__tile" style={{ animationDelay: '320ms' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Kim cương</div>
+                    <div id="celebrationGems" style={{ fontSize: '20px', fontWeight: 800, color: '#0ea5e9', marginTop: '4px' }}>
+                      💎 +{finalizeReward.gems}
+                    </div>
+                  </div>
+                )}
                 <div className="celebrate__tile" style={{ animationDelay: '390ms' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Chính xác lần 1</div>
                   <div id="celebrationAccuracy" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>

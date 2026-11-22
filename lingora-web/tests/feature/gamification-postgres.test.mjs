@@ -13,7 +13,7 @@ import {
 import { respondSrsReview, createSrsToken } from '../../src/server/srs/index.ts';
 import {
   getLearnerStreak,
-  getTotalXp,
+  getTotalXp, getTotalGems,
   getDailyQuests,
   computeQualifyingLocalDate,
 } from '../../src/server/gamification/service.ts';
@@ -72,6 +72,7 @@ describe('Real PostgreSQL: Sprint 4 Gamification, XP, and Achievements', () => {
     assert.equal(finRes.lessonXp, 30);
     assert.equal(finRes.questXp, 10); // LESSON_1 completed
     assert.equal(finRes.streak, 1);
+    assert.equal(finRes.gems, 15); // 5 lesson + 5 daily quest + 5 perfect first-try
     assert.equal(finRes.firstTryAccuracy, 100);
     assert.equal(finRes.newlyEnrolledCount, 1);
 
@@ -84,6 +85,9 @@ describe('Real PostgreSQL: Sprint 4 Gamification, XP, and Achievements', () => {
     assert.equal(xpRows.length, 2); // 30 XP lesson + 10 XP daily quest
     const totalXp = await getTotalXp(db, f.learnerA);
     assert.equal(totalXp, 40);
+    const gemRows = await db.gemEvent.findMany({ where: { learnerId: f.learnerA } });
+    assert.equal(gemRows.length, 3);
+    assert.equal(await getTotalGems(db, f.learnerA), 15);
 
     const achRows = await db.learnerAchievement.findMany({ where: { learnerId: f.learnerA } });
     assert.equal(achRows.length, 2);
@@ -103,6 +107,8 @@ describe('Real PostgreSQL: Sprint 4 Gamification, XP, and Achievements', () => {
     assert.equal(replayRes.lessonXp, 30);
     assert.equal(replayRes.questXp, 10);
     assert.equal(replayRes.streak, 1);
+    assert.equal(replayRes.gems, 15, 'Replay returns the original gem receipt');
+    assert.equal(await getTotalGems(db, f.learnerA), 15, 'No duplicate gems on replay');
 
     const xpRowsAfter = await db.xpEvent.findMany({ where: { learnerId: f.learnerA } });
     assert.equal(xpRowsAfter.length, 2, 'No duplicate XP events on replay');
@@ -138,6 +144,8 @@ describe('Real PostgreSQL: Sprint 4 Gamification, XP, and Achievements', () => {
     );
 
     assert.equal(redoFin.lessonXp, 0, 'Redo must yield 0 lesson XP');
+    assert.equal(redoFin.gems, 0, 'Redo must yield 0 gems');
+    assert.equal(await getTotalGems(db, f.learnerA), 15, 'Redo must not add gems');
     assert.equal(redoFin.newlyEnrolledCount, 0, 'No new cards enrolled on redo');
     const earnedCodes = redoFin.earnedAchievements.map(a => a.code);
     assert.ok(!earnedCodes.includes('FIRST_LESSON'), 'FIRST_LESSON must not be re-awarded');

@@ -257,6 +257,7 @@ export interface PracticeRewardsDto {
   newlyEnrolledCount: number;
   firstTryAccuracy: number;
   streak: number;
+  gems: number;
 }
 
 export interface PracticeFinalizeResultDto extends PracticeRewardsDto {

@@ -65,6 +65,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
 
   const homeData = data as Partial<HomeDto> | undefined;
   const totalXp = homeData?.totalXp ?? 0;
+  const totalGems = homeData?.totalGems ?? 0;
   const streak = homeData?.streak ?? { currentStreak: 0, longestStreak: 0, activeDays: [], todayCompleted: false };
   const reviewDueForQuests = homeData?.reviewDue ?? 0;
   // A brand-new learner has nothing due for review until the day after their first lesson, so the
@@ -909,6 +910,13 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                       <div>
                         <strong id="totalXpBadge" style={{ fontSize: '1rem', display: 'block' }}>{totalXp} XP</strong>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Tổng điểm</span>
+                      </div>
+                    </div>
+                    <div id="totalGemsDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="home-stats__icon">💎</span>
+                      <div>
+                        <strong id="totalGemsBadge" style={{ fontSize: '1rem', display: 'block' }}>{totalGems}</strong>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Kim cương</span>
                       </div>
                     </div>
                   </div>

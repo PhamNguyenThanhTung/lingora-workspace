@@ -270,6 +270,35 @@ export async function getRecentAchievement(
   };
 }
 
+export const GEM_REWARDS = { LESSON_COMPLETION: 5, DAILY_QUEST: 5, PERFECT_PRACTICE: 5 } as const;
+
+export async function getTotalGems(db: Db, learnerId: string): Promise<number> {
+  const rows = await db.$queryRaw<Array<{ total: number | bigint | null }>>`
+    SELECT COALESCE(SUM(gems), 0)::int AS total
+    FROM app.gem_events
+    WHERE learner_id = ${learnerId}::uuid
+  `;
+  return Number(rows[0]?.total ?? 0);
+}
+
+/** Idempotent gem award: returns the gems newly granted (0 when already granted). */
+async function awardGems(
+  tx: Db,
+  learnerId: string,
+  eventType: keyof typeof GEM_REWARDS,
+  sourceId: string,
+  localDateStr: string,
+  at: Date
+): Promise<number> {
+  const gems = GEM_REWARDS[eventType];
+  const affected = await tx.$executeRaw`
+    INSERT INTO app.gem_events (learner_id, event_type, source_id, gems, local_date, created_at)
+    VALUES (${learnerId}::uuid, ${eventType}, ${sourceId}::uuid, ${gems}, ${localDateStr}::date, ${at})
+    ON CONFLICT (learner_id, event_type, source_id) DO NOTHING
+  `;
+  return affected > 0 ? gems : 0;
+}
+
 export async function getGamificationOverview(
   db: Db,
   learnerId: string,
@@ -279,8 +308,9 @@ export async function getGamificationOverview(
 ): Promise<GamificationOverviewDto> {
   const { localDate, localDateStr } = computeQualifyingLocalDate(now, timezone);
 
-  const [totalXp, streak, dailyProgress, quests, recentAchievement] = await Promise.all([
+  const [totalXp, totalGems, streak, dailyProgress, quests, recentAchievement] = await Promise.all([
     getTotalXp(db, learnerId),
+    getTotalGems(db, learnerId),
     getLearnerStreak(db, learnerId, timezone, now),
     getDailyProgress(db, learnerId, localDate, dailyGoalMinutes, localDateStr),
     getDailyQuests(db, learnerId, localDate, localDateStr),
@@ -289,6 +319,7 @@ export async function getGamificationOverview(
 
   return {
     totalXp,
+    totalGems,
     streak,
     dailyProgress,
     quests,
@@ -339,6 +370,7 @@ export interface FinalizeGamificationResult {
   newlyEnrolledCount: number;
   firstTryAccuracy: number;
   streak: number;
+  gems: number;
 }
 
 export async function evaluateAndAwardFinalizeGamification(
@@ -360,6 +392,7 @@ export async function evaluateAndAwardFinalizeGamification(
 
   let lessonXp = 0;
   let questXp = 0;
+  let gems = 0;
   const earnedAchievements: AchievementDto[] = [];
 
   // 1. Award Lesson Completion XP (+30 for first completion in context)
@@ -376,7 +409,10 @@ export async function evaluateAndAwardFinalizeGamification(
         ${completedAt}
       ) ON CONFLICT (learner_id, event_type, source_id) DO NOTHING
     `;
-    if (rowsAffected > 0) lessonXp = 30;
+    if (rowsAffected > 0) {
+      lessonXp = 30;
+      gems += await awardGems(tx, learnerId, 'LESSON_COMPLETION', completionId, localDateStr, completedAt);
+    }
   }
 
   // 2. Check and Award Daily Quest: LESSON_1 (+10 XP)
@@ -403,7 +439,10 @@ export async function evaluateAndAwardFinalizeGamification(
         ${completedAt}
       ) ON CONFLICT (learner_id, event_type, source_id) DO NOTHING
     `;
-    if (rowsAffected > 0) questXp += 10;
+    if (rowsAffected > 0) {
+      questXp += 10;
+      gems += await awardGems(tx, learnerId, 'DAILY_QUEST', questSource, localDateStr, completedAt);
+    }
   }
 
   // 3. Compute Streak
@@ -440,6 +479,7 @@ export async function evaluateAndAwardFinalizeGamification(
   if (nCore > 0 && kFirstWrong === 0) {
     const ach = await tryAwardAchievement(tx, learnerId, 'PERFECT_PRACTICE', completionId, completedAt);
     if (ach) earnedAchievements.push(ach);
+    if (isFirstCompletion) gems += await awardGems(tx, learnerId, 'PERFECT_PRACTICE', completionId, localDateStr, completedAt);
   }
 
   // STREAK_7 & STREAK_30
@@ -459,6 +499,7 @@ export async function evaluateAndAwardFinalizeGamification(
     newlyEnrolledCount,
     firstTryAccuracy,
     streak,
+    gems,
   };
 }
 

@@ -283,6 +283,7 @@ async function loadPracticeRewards(db: Db, attemptId: string, operationKey: stri
     newlyEnrolledCount: Number(data.newlyEnrolledCount ?? 0),
     firstTryAccuracy: Number(data.firstTryAccuracy ?? 0),
     streak: Number(data.streak ?? 0),
+    gems: Number(data.gems ?? 0),
   };
 }
 
@@ -792,6 +793,7 @@ export async function finalizePracticeAttempt(
         newlyEnrolledCount: sr?.newlyEnrolledCount ?? 0,
         firstTryAccuracy: sr?.firstTryAccuracy ?? Math.round(100 * (attempt.nCore - (attempt.kFirstWrong ?? 0)) / attempt.nCore),
         streak: sr?.streak ?? 0,
+        gems: sr?.gems ?? 0,
       };
     }
 
@@ -1002,6 +1004,7 @@ export async function finalizePracticeAttempt(
           newlyEnrolledCount: gamificationResult.newlyEnrolledCount,
           firstTryAccuracy: gamificationResult.firstTryAccuracy,
           streak: gamificationResult.streak,
+          gems: gamificationResult.gems,
         } as unknown as Prisma.InputJsonValue,
         committedAt: completedAt,
       },
@@ -1018,6 +1021,7 @@ export async function finalizePracticeAttempt(
       newlyEnrolledCount: gamificationResult.newlyEnrolledCount,
       firstTryAccuracy: gamificationResult.firstTryAccuracy,
       streak: gamificationResult.streak,
+      gems: gamificationResult.gems,
     };
   }, { isolationLevel: 'ReadCommitted', timeout: 15000 });
 }
