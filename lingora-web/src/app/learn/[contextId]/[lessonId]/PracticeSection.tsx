@@ -14,6 +14,26 @@ interface PracticeSectionProps {
 type PracticePrompt = { prompt: string; options?: Array<{id: string; text: string}>; tokens?: Array<{id: string; text: string}>; sentence?: string; sourceSentence?: string; targetPattern?: string; audioUrl?: string };
 type Command = { kind: 'start' | 'response' | 'finalize'; path: string; body: Record<string, unknown> };
 
+/**
+ * Deterministic shuffle (seeded by attempt + exercise id) so options/tokens are not
+ * shown in answer order, yet stay stable across re-renders and reloads. Grading is
+ * by id on the server, so display order never affects correctness.
+ */
+function seededShuffle<T>(items: T[], seed: string): T[] {
+  if (items.length < 2) return items;
+  const original = items.slice();
+  for (let salt = 0; salt < 8; salt++) {
+    let h = 2166136261;
+    const key = `${seed}:${salt}`;
+    for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619); }
+    const next = () => { h += 0x6d2b79f5; let t = Math.imul(h ^ (h >>> 15), 1 | h); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const out = items.slice();
+    for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(next() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+    if (out.some((x, i) => x !== original[i])) return out;
+  }
+  return original.reverse();
+}
+
 export function PracticeSection({ contextId, lessonId, revisionId, exercises, initialAttempt = null }: PracticeSectionProps) {
   const router = useRouter();
   const [attempt, setAttempt] = useState<PracticeAttemptDto | null>(initialAttempt);
@@ -43,6 +63,9 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const prefix = `/api/learner/contexts/${contextId}/lessons/${lessonId}/attempts`;
   const coreExercises = exercises.filter(ex => ex.isCore);
   const prompt = attempt?.nextExercise?.promptData as PracticePrompt | undefined;
+  const shuffleSeed = `${attempt?.id ?? ''}:${attempt?.nextExercise?.id ?? ''}`;
+  const shuffledOptions = seededShuffle(prompt?.options ?? [], shuffleSeed);
+  const shuffledTokens = seededShuffle(prompt?.tokens ?? [], shuffleSeed);
 
   async function execute(candidate: Command) {
     if (busy.current || isStale || accessError != null) return;
@@ -303,7 +326,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
               {/* MCQ */}
               {attempt.nextExercise.type === 'MCQ' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {(prompt?.options || []).map((opt) => (
+                  {shuffledOptions.map((opt) => (
                     <label
                       key={opt.id}
                       htmlFor={`practice-${attempt.id}-${attempt.nextExercise?.id}-${opt.id}`}
@@ -364,7 +387,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                   )}
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {(prompt?.options || []).map((opt) => (
+                    {shuffledOptions.map((opt) => (
                       <label
                         key={opt.id}
                         htmlFor={`practice-${attempt.id}-${attempt.nextExercise?.id}-${opt.id}`}
@@ -526,7 +549,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
 
                   {/* Available Tokens to click */}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {(prompt?.tokens || []).map((t) => {
+                    {shuffledTokens.map((t) => {
                       const isSelected = reorderTokens.includes(t.id);
                       return (
                         <button

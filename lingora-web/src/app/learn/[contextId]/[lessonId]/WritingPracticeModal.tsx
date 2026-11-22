@@ -580,9 +580,9 @@ export function WritingPracticeModal({
     ctx.stroke();
     ctx.restore();
 
-    // 2. Official template strokes (dashed green)
+    // 2. Official template strokes (dashed amber, distinct from the learner's blue strokes)
     ctx.save();
-    ctx.strokeStyle = '#2563eb';
+    ctx.strokeStyle = '#F59E0B';
     ctx.lineWidth = 6;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -1399,7 +1399,7 @@ export function WritingPracticeModal({
                     style={{
                       width: '12px',
                       height: '12px',
-                      border: '2px dashed #2563eb',
+                      border: '2px dashed #F59E0B',
                       borderRadius: '2px',
                     }}
                   />

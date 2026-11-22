@@ -742,12 +742,12 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
               ✓
             </div>
             <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>
-              Hoàn thành ôn tập!
+              {progress.total > 0 ? 'Hoàn thành ôn tập!' : 'Chưa có từ nào đến hạn'}
             </h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '24px', lineHeight: 1.5 }}>
               {progress.total > 0
                 ? `Bạn đã hoàn tất ôn tập ${progress.completedCount} từ vựng trong phiên này.`
-                : 'Hiện tại bạn không có từ vựng nào đến hạn ôn tập.'}
+                : 'Từ mới sẽ đến hạn ôn sau khoảng 1 ngày kể từ khi bạn học xong bài. Hãy quay lại sau nhé!'}
             </p>
             <a
               href="/home"
