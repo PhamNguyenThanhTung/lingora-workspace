@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { LearnerExerciseDto, PracticeAttemptDto } from '../../../../server/lessons/dto.ts';
 
@@ -47,6 +47,10 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const [textInput, setTextInput] = useState('');
   const [reorderTokens, setReorderTokens] = useState<string[]>([]);
   const [lastFeedback, setLastFeedback] = useState<{ isCorrect: boolean; message: string } | null>(null);
+  const [feedbackSeq, setFeedbackSeq] = useState(0);
+  const [dismissedSeq, setDismissedSeq] = useState(-1);
+  const [sessionOpen, setSessionOpen] = useState(true);
+  const [confirmExit, setConfirmExit] = useState(false);
   const [finalizeReward, setFinalizeReward] = useState<{
     lessonXp: number;
     questXp: number;
@@ -66,6 +70,16 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const shuffleSeed = `${attempt?.id ?? ''}:${attempt?.nextExercise?.id ?? ''}`;
   const shuffledOptions = seededShuffle(prompt?.options ?? [], shuffleSeed);
   const shuffledTokens = seededShuffle(prompt?.tokens ?? [], shuffleSeed);
+  const answered = attempt?.responses.length ?? 0;
+  const retriesQueued = attempt?.responses.filter((r) => !r.isCorrect && r.responseOrdinal === 1).length ?? 0;
+  const totalSteps = coreExercises.length + retriesQueued;
+  const progressPct = attempt?.isCompleted ? 100 : Math.round(Math.min(1, answered / Math.max(totalSteps, 1)) * 100);
+  // Consecutive correct answers ending at the most recent response.
+  let combo = 0;
+  for (let i = (attempt?.responses.length ?? 0) - 1; i >= 0; i--) {
+    if (attempt!.responses[i].isCorrect) combo++; else break;
+  }
+  const sessionActive = !!attempt && !attempt.isCompleted && sessionOpen;
 
   async function execute(candidate: Command) {
     if (busy.current || isStale || accessError != null) return;
@@ -105,9 +119,10 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
           throw new Error('Phản hồi câu trả lời chưa hợp lệ. Vui lòng thử lại.');
         }
         setLastFeedback({ isCorrect: feedback.isCorrect, message: feedback.formativeFeedback });
+        setFeedbackSeq((n) => n + 1);
       } else setLastFeedback(null);
       if (command.kind === 'finalize' && !dto.isCompleted) throw new Error('Chưa ghi nhận kết quả hoàn thành. Vui lòng thử lại.');
-      if (command.kind === 'start') setFinalizeReward(null);
+      if (command.kind === 'start') { setFinalizeReward(null); setSessionOpen(true); }
       if (command.kind === 'finalize' && result.data) {
         setFinalizeReward({
           lessonXp: Number(result.data.lessonXp || 0),
@@ -163,6 +178,59 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
     void execute({ kind: 'finalize', path: `${prefix}/${attempt.id}/finalize`, body: { operationKey: crypto.randomUUID() } });
   };
 
+  // Keyboard: 1-9 pick an option, Enter submits (unless focus is on a button/link).
+  const kb = useRef({ active: false, type: '', optionIds: [] as string[], inputBlocked: false, blocked: false, hasNext: false });
+  kb.current = {
+    active: sessionActive && !confirmExit,
+    type: attempt?.nextExercise?.type ?? '',
+    optionIds: shuffledOptions.map((o) => o.id),
+    inputBlocked,
+    blocked,
+    hasNext: !!attempt?.nextExercise,
+  };
+  const submitRef = useRef<() => void>(() => {});
+  submitRef.current = () => (kb.current.hasNext ? handleSubmitResponse() : handleFinalizeAttempt());
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const k = kb.current;
+      if (!k.active || e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (/^[1-9]$/.test(e.key) && (k.type === 'MCQ' || k.type === 'LISTENING') && !k.inputBlocked && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+        const id = k.optionIds[Number(e.key) - 1];
+        if (id) setSelectedOptionId(id);
+      } else if (e.key === 'Enter' && !k.blocked && tag !== 'BUTTON' && tag !== 'A') {
+        e.preventDefault();
+        submitRef.current();
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const alertNode = (actionError || isStale) ? (
+    <div
+      id="practiceActionAlert"
+      className={`alert-box ${isStale ? 'is-warning' : 'is-danger'}`}
+      role="alert"
+      style={{ marginBottom: '20px' }}
+    >
+      <p className="alert-message">{actionError || "Nội dung đã được cập nhật. Vui lòng tải lại."}</p>
+      {accessError === 401 && <a href="/login" className="btn btn-primary">Đăng nhập lại</a>}
+      {(isStale || accessError === 403 || uncertain) && (
+        <button
+          type="button"
+          id="reloadPracticeBtn"
+          className="btn btn-primary"
+          style={{ marginTop: '8px' }}
+          onClick={() => (accessError != null ? window.location.reload() : router.refresh())}
+        >
+          Tải lại trang
+        </button>
+      )}
+    </div>
+  ) : null;
+
   if (!coreExercises.length) return <section><h2>Luyện tập</h2><p>Bài học chưa có bài tập cốt lõi để luyện tập.</p></section>;
 
   return (
@@ -208,29 +276,8 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
         )}
       </div>
 
-      {/* Stale / Action Alert */}
-      {(actionError || isStale) && (
-        <div
-          id="practiceActionAlert"
-          className={`alert-box ${isStale ? 'is-warning' : 'is-danger'}`}
-          role="alert"
-          style={{ marginBottom: '20px' }}
-        >
-          <p className="alert-message">{actionError || "Nội dung đã được cập nhật. Vui lòng tải lại."}</p>
-          {accessError === 401 && <a href="/login" className="btn btn-primary">Đăng nhập lại</a>}
-          {(isStale || accessError === 403 || uncertain) && (
-            <button
-              type="button"
-              id="reloadPracticeBtn"
-              className="btn btn-primary"
-              style={{ marginTop: '8px' }}
-              onClick={() => (accessError != null ? window.location.reload() : router.refresh())}
-            >
-              Tải lại trang
-            </button>
-          )}
-        </div>
-      )}
+      {/* Stale / Action Alert (inline only while the full-screen session is closed) */}
+      {!sessionActive && alertNode}
 
       {/* State 1: No attempt started yet */}
       {!attempt && (
@@ -250,162 +297,113 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
         </div>
       )}
 
-      {/* State 2: Active Attempt in Progress */}
-      {attempt && !attempt.isCompleted && (
-        <div id="activePracticeBox">
-          {/* Progress Header */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '16px',
-              paddingBottom: '12px',
-              borderBottom: '1px solid var(--border-subtle)',
-            }}
-          >
-            <span id="queueProgressLabel" style={{ fontWeight: 600 }}>
-              {attempt.nextExercise ? (
-                <>
-                  Câu hỏi {attempt.queuePosition}
-                  {attempt.nextOrdinal === 2 ? ' (Làm lại câu sai)' : ''}
-                </>
-              ) : (
-                'Đã trả lời tất cả các câu hỏi'
-              )}
-            </span>
-            <span style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)' }}>
-              Đã trả lời: {attempt.responses.length}
-            </span>
+      {/* Paused session: attempt in progress but the full-screen session was closed */}
+      {attempt && !attempt.isCompleted && !sessionOpen && (
+        <div id="resumePracticeBox" className="practice-resume-bar">
+          <p style={{ margin: 0, fontWeight: 600 }}>
+            Bạn đang làm dở bài luyện tập ({answered}/{totalSteps} câu).
+          </p>
+          <button type="button" id="resumePracticeBtn" className="btn btn-primary" onClick={() => setSessionOpen(true)}>
+            Tiếp tục luyện tập
+          </button>
+        </div>
+      )}
+
+      {/* State 2: Active Attempt in Progress — full-screen session */}
+      {sessionActive && attempt && (
+        <div className="practice-session" role="dialog" aria-modal="true" aria-label="Phiên luyện tập">
+          <div className="practice-session__header">
+            <button
+              type="button"
+              id="exitPracticeBtn"
+              className="practice-session__close"
+              aria-label="Thoát luyện tập"
+              onClick={() => setConfirmExit(true)}
+            >
+              ✕
+            </button>
+            <div
+              className="practice-progress"
+              role="progressbar"
+              aria-label="Tiến độ luyện tập"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progressPct}
+            >
+              <div className="practice-progress__fill" style={{ width: `${progressPct}%` }} />
+            </div>
+            {combo >= 3 && (
+              <span key={combo} id="comboChip" className="practice-combo" aria-label={`Chuỗi ${combo} câu đúng liên tiếp`}>
+                🔥 x{combo}
+              </span>
+            )}
           </div>
 
-          {/* Formative Feedback from previous response */}
-          {lastFeedback && (
-            <div
-              id="formativeFeedback"
-              className={`alert-box ${lastFeedback.isCorrect ? 'is-success' : 'is-warning'}`}
-              role="alert"
-              style={{
-                marginBottom: '16px',
-                padding: '10px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              <span style={{ fontWeight: 700 }}>
-                {lastFeedback.isCorrect ? '✓' : '✗'}
+          <div id="activePracticeBox" className="practice-session__body">
+            {(actionError || isStale) && alertNode}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+              <span id="queueProgressLabel" style={{ fontWeight: 700 }}>
+                {attempt.nextExercise ? (
+                  <>
+                    Câu hỏi {attempt.queuePosition}
+                    {attempt.nextOrdinal === 2 ? ' (Làm lại câu sai)' : ''}
+                  </>
+                ) : (
+                  'Đã trả lời tất cả các câu hỏi'
+                )}
               </span>
-              <span>{lastFeedback.message}</span>
+              <span style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)' }}>
+                Đã trả lời: {attempt.responses.length}
+              </span>
             </div>
-          )}
 
-          {/* Active Question Input */}
-          {attempt.nextExercise && (
-            <div
-              id="activeExerciseCard"
-              className="exercise-card"
-              data-exercise-id={attempt.nextExercise.id}
-              data-exercise-type={attempt.nextExercise.type}
-              style={{
-                padding: '18px 20px',
-                backgroundColor: 'var(--canvas-bg)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-sm)',
-                marginBottom: '20px',
-              }}
-            >
-              <div style={{ marginBottom: '12px', fontWeight: 600 }}>
-                Bài tập: {attempt.nextExercise.type}
-              </div>
+            {attempt.nextExercise && (
+              <div
+                id="activeExerciseCard"
+                className="exercise-card"
+                data-exercise-id={attempt.nextExercise.id}
+                data-exercise-type={attempt.nextExercise.type}
+              >
+                <div className="practice-type-label">Bài tập: {attempt.nextExercise.type}</div>
+                <p className="practice-question">{prompt?.prompt}</p>
 
-              <p style={{ marginBottom: '16px', fontSize: 'var(--font-size-body)' }}>
-                {prompt?.prompt}
-              </p>
-
-              {/* MCQ */}
-              {attempt.nextExercise.type === 'MCQ' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {shuffledOptions.map((opt) => (
-                    <label
-                      key={opt.id}
-                      htmlFor={`practice-${attempt.id}-${attempt.nextExercise?.id}-${opt.id}`}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        padding: '12px 14px',
-                        border: selectedOptionId === opt.id ? '2px solid var(--primary-color)' : '1px solid var(--border-control)',
-                        borderRadius: 'var(--radius-sm)',
-                        backgroundColor: 'var(--surface-bg)',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        id={`practice-${attempt.id}-${attempt.nextExercise?.id}-${opt.id}`}
-                        name="mcq-option"
-                        value={opt.id}
-                        checked={selectedOptionId === opt.id}
-                        onChange={() => setSelectedOptionId(opt.id)}
-                        disabled={inputBlocked}
-                      />
-                      <span>{opt.text}</span>
-                    </label>
-                  ))}
-                </div>
-              )}
-
-              {/* LISTENING */}
-              {attempt.nextExercise.type === 'LISTENING' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  {prompt?.audioUrl && (
-                    <div>
-                      <audio
-                        controls
-                        aria-label="Âm thanh bài luyện nghe"
-                        src={prompt?.audioUrl}
-                        onError={() =>
-                          setAudioErrors((prev) => ({ ...prev, [attempt.nextExercise!.id]: true }))
-                        }
-                        style={{ width: '100%', maxWidth: '400px' }}
-                      />
-                      {audioErrors[attempt.nextExercise.id] && (
-                        <div
-                          className="audio-error-box"
-                          role="alert"
-                          style={{
-                            marginTop: '6px',
-                            fontSize: 'var(--font-size-sub)',
-                            color: 'var(--danger-red)',
-                          }}
-                        >
-                          Không thể tải âm thanh. Vui lòng kiểm tra lại.
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {shuffledOptions.map((opt) => (
+                {(attempt.nextExercise.type === 'MCQ' || attempt.nextExercise.type === 'LISTENING') && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {attempt.nextExercise.type === 'LISTENING' && prompt?.audioUrl && (
+                      <div>
+                        <audio
+                          controls
+                          aria-label="Âm thanh bài luyện nghe"
+                          src={prompt?.audioUrl}
+                          onError={() =>
+                            setAudioErrors((prev) => ({ ...prev, [attempt.nextExercise!.id]: true }))
+                          }
+                          style={{ width: '100%', maxWidth: '400px' }}
+                        />
+                        {audioErrors[attempt.nextExercise.id] && (
+                          <div
+                            className="audio-error-box"
+                            role="alert"
+                            style={{ marginTop: '6px', fontSize: 'var(--font-size-sub)', color: 'var(--danger-red)' }}
+                          >
+                            Không thể tải âm thanh. Vui lòng kiểm tra lại.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {shuffledOptions.map((opt, index) => (
                       <label
                         key={opt.id}
+                        className="practice-option"
+                        data-selected={selectedOptionId === opt.id}
                         htmlFor={`practice-${attempt.id}-${attempt.nextExercise?.id}-${opt.id}`}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px',
-                          padding: '12px 14px',
-                          border: selectedOptionId === opt.id ? '2px solid var(--primary-color)' : '1px solid var(--border-control)',
-                          borderRadius: 'var(--radius-sm)',
-                          backgroundColor: 'var(--surface-bg)',
-                          cursor: 'pointer',
-                        }}
                       >
+                        <span className="practice-option__key" aria-hidden="true">{index + 1}</span>
                         <input
                           type="radio"
                           id={`practice-${attempt.id}-${attempt.nextExercise?.id}-${opt.id}`}
-                          name="listening-option"
+                          name={attempt.nextExercise?.type === 'LISTENING' ? 'listening-option' : 'mcq-option'}
                           value={opt.id}
                           checked={selectedOptionId === opt.id}
                           onChange={() => setSelectedOptionId(opt.id)}
@@ -415,208 +413,180 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                       </label>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* FILL_BLANK */}
-              {attempt.nextExercise.type === 'FILL_BLANK' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div
-                    style={{
-                      padding: '12px 16px',
-                      backgroundColor: 'var(--surface-bg)',
-                      borderRadius: 'var(--radius-sm)',
-                      border: '1px solid var(--border-subtle)',
-                      fontSize: 'var(--font-size-body)',
-                    }}
-                  >
-                    {(prompt?.sentence || '').replace(
-                      '____',
-                      '[ ____________ ]'
-                    )}
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="fillBlankInput"
-                      style={{ display: 'block', marginBottom: '6px', fontSize: 'var(--font-size-sub)', fontWeight: 600 }}
-                    >
-                      Nhập từ cần điền:
-                    </label>
-                    <input
-                      type="text"
-                      id="fillBlankInput"
-                      className="input-control"
-                      value={textInput}
-                      onChange={(e) => setTextInput(e.target.value)}
-                      placeholder="Nhập từ chính xác..."
-                      disabled={inputBlocked}
-                      maxLength={4000}
-                      style={{ width: '100%', maxWidth: '400px' }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* GRAMMAR */}
-              {attempt.nextExercise.type === 'GRAMMAR' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div
-                    style={{
-                      padding: '12px 16px',
-                      backgroundColor: 'var(--surface-bg)',
-                      borderRadius: 'var(--radius-sm)',
-                      border: '1px solid var(--border-subtle)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '6px',
-                    }}
-                  >
-                    <div>
-                      <span style={{ fontWeight: 600 }}>Câu gốc: </span>
-                      <span>{prompt?.sourceSentence}</span>
+                {attempt.nextExercise.type === 'FILL_BLANK' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className="practice-question" style={{ margin: 0 }}>
+                      {(prompt?.sentence || '').replace('____', '[ ____________ ]')}
                     </div>
                     <div>
-                      <span style={{ fontWeight: 600 }}>Cấu trúc: </span>
-                      <span>{prompt?.targetPattern}</span>
+                      <label htmlFor="fillBlankInput" style={{ display: 'block', marginBottom: '6px', fontSize: 'var(--font-size-sub)', fontWeight: 700 }}>
+                        Nhập từ cần điền:
+                      </label>
+                      <input
+                        type="text"
+                        id="fillBlankInput"
+                        className="practice-text-input"
+                        value={textInput}
+                        onChange={(e) => setTextInput(e.target.value)}
+                        placeholder="Nhập từ chính xác..."
+                        disabled={inputBlocked}
+                        maxLength={4000}
+                        autoFocus
+                        autoComplete="off"
+                        autoCapitalize="off"
+                        spellCheck={false}
+                      />
                     </div>
                   </div>
-                  <div>
-                    <label
-                      htmlFor="grammarInput"
-                      style={{ display: 'block', marginBottom: '6px', fontSize: 'var(--font-size-sub)', fontWeight: 600 }}
-                    >
-                      Nhập câu trả lời:
-                    </label>
-                    <input
-                      type="text"
-                      id="grammarInput"
-                      className="input-control"
-                      value={textInput}
-                      onChange={(e) => setTextInput(e.target.value)}
-                      placeholder="Nhập câu trả lời..."
-                      disabled={inputBlocked}
-                      maxLength={4000}
-                      style={{ width: '100%', maxWidth: '400px' }}
-                    />
-                  </div>
-                </div>
-              )}
+                )}
 
-              {/* REORDER */}
-              {attempt.nextExercise.type === 'REORDER' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  {/* Slots for ordered tokens */}
-                  <div
-                    style={{
-                      minHeight: '48px',
-                      padding: '10px 14px',
-                      backgroundColor: 'var(--surface-bg)',
-                      border: '2px dashed var(--border-control)',
-                      borderRadius: 'var(--radius-sm)',
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '8px',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {reorderTokens.length === 0 ? (
-                      <span style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sub)' }}>
-                        Nhấp vào các từ bên dưới theo thứ tự đúng để sắp xếp câu.
-                      </span>
-                    ) : (
-                      reorderTokens.map((tokenId, idx) => {
-                        const tokenObj = (prompt?.tokens || []).find(
-                          (t) => t.id === tokenId
-                        );
+                {attempt.nextExercise.type === 'GRAMMAR' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ padding: '14px 16px', background: '#fff', border: '2px solid #e5e9f1', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div>
+                        <span style={{ fontWeight: 700 }}>Câu gốc: </span>
+                        <span>{prompt?.sourceSentence}</span>
+                      </div>
+                      <div>
+                        <span style={{ fontWeight: 700 }}>Cấu trúc: </span>
+                        <span>{prompt?.targetPattern}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="grammarInput" style={{ display: 'block', marginBottom: '6px', fontSize: 'var(--font-size-sub)', fontWeight: 700 }}>
+                        Nhập câu trả lời:
+                      </label>
+                      <input
+                        type="text"
+                        id="grammarInput"
+                        className="practice-text-input"
+                        value={textInput}
+                        onChange={(e) => setTextInput(e.target.value)}
+                        placeholder="Nhập câu trả lời..."
+                        disabled={inputBlocked}
+                        maxLength={4000}
+                        autoFocus
+                        autoComplete="off"
+                        autoCapitalize="off"
+                        spellCheck={false}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {attempt.nextExercise.type === 'REORDER' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div className="practice-answer-line">
+                      {reorderTokens.length === 0 ? (
+                        <span style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sub)' }}>
+                          Nhấp vào các từ bên dưới theo thứ tự đúng để sắp xếp câu.
+                        </span>
+                      ) : (
+                        reorderTokens.map((tokenId, idx) => {
+                          const tokenObj = (prompt?.tokens || []).find((t) => t.id === tokenId);
+                          return (
+                            <button
+                              type="button"
+                              key={tokenId}
+                              id={`selectedToken-${idx}`}
+                              className="practice-chip practice-chip--placed"
+                              onClick={() => setReorderTokens(reorderTokens.filter((id) => id !== tokenId))}
+                              disabled={inputBlocked}
+                            >
+                              {tokenObj?.text || tokenId} ✕
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
+                      {shuffledTokens.map((t) => {
+                        const isSelected = reorderTokens.includes(t.id);
                         return (
                           <button
                             type="button"
-                            key={tokenId}
-                            id={`selectedToken-${idx}`}
-                            className="btn btn-secondary"
+                            key={t.id}
+                            id={`tokenBtn-${t.id}`}
+                            className={`practice-chip${isSelected ? ' practice-chip--ghost' : ''}`}
                             onClick={() => {
-                              setReorderTokens(reorderTokens.filter((id) => id !== tokenId));
+                              if (!isSelected) setReorderTokens([...reorderTokens, t.id]);
                             }}
-                            disabled={inputBlocked}
-                            style={{ padding: '6px 12px' }}
+                            disabled={isSelected || inputBlocked}
                           >
-                            {tokenObj?.text || tokenId} ✕
+                            {t.text}
                           </button>
                         );
-                      })
-                    )}
+                      })}
+                    </div>
                   </div>
+                )}
+              </div>
+            )}
 
-                  {/* Available Tokens to click */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {shuffledTokens.map((t) => {
-                      const isSelected = reorderTokens.includes(t.id);
-                      return (
-                        <button
-                          type="button"
-                          key={t.id}
-                          id={`tokenBtn-${t.id}`}
-                          className="btn btn-outline"
-                          onClick={() => {
-                            if (!isSelected) {
-                              setReorderTokens([...reorderTokens, t.id]);
-                            }
-                          }}
-                          disabled={isSelected || inputBlocked}
-                          style={{
-                            opacity: isSelected ? 0.4 : 1,
-                            cursor: isSelected ? 'not-allowed' : 'pointer',
-                          }}
-                        >
-                          {t.text}
-                        </button>
-                      );
-                    })}
-                  </div>
+            {!attempt.nextExercise && (
+              <div
+                id="finalizePromptBox"
+                style={{ textAlign: 'center', padding: '32px 16px' }}
+              >
+                <p style={{ fontSize: '22px', fontWeight: 800 }}>
+                  Bạn đã trả lời tất cả các câu hỏi trong phiên luyện tập.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="practice-session__footer">
+            <div className="practice-session__footer-inner">
+              {confirmExit && (
+                <div className="practice-sheet is-warning" role="alertdialog" aria-label="Xác nhận thoát">
+                  <span className="practice-sheet__msg">Thoát luyện tập? Tiến độ vẫn được lưu, bạn có thể tiếp tục sau.</span>
+                  <button type="button" id="confirmExitBtn" className="practice-sheet__close" onClick={() => { setConfirmExit(false); setSessionOpen(false); }}>
+                    Thoát
+                  </button>
+                  <button type="button" id="cancelExitBtn" className="practice-sheet__close" onClick={() => setConfirmExit(false)}>
+                    Ở lại
+                  </button>
                 </div>
               )}
-
-              {/* Submit Response Button */}
-              <div style={{ marginTop: '20px' }}>
+              {lastFeedback && dismissedSeq !== feedbackSeq && (
+                <div
+                  id="formativeFeedback"
+                  className={`alert-box practice-sheet ${lastFeedback.isCorrect ? 'is-success' : 'is-warning'}`}
+                  role="alert"
+                  style={{ marginTop: 0 }}
+                >
+                  <span className="practice-sheet__icon" aria-hidden="true">{lastFeedback.isCorrect ? '✓' : '✗'}</span>
+                  <span className="practice-sheet__msg">{lastFeedback.message}</span>
+                  <button type="button" className="practice-sheet__close" onClick={() => setDismissedSeq(feedbackSeq)}>
+                    Ẩn
+                  </button>
+                </div>
+              )}
+              {attempt.nextExercise ? (
                 <button
                   type="button"
                   id="submitResponseBtn"
-                  className="btn btn-primary"
+                  className="practice-cta"
                   onClick={handleSubmitResponse}
                   disabled={blocked}
                 >
                   {isActionPending ? 'Đang kiểm tra...' : 'Gửi câu trả lời'}
                 </button>
-              </div>
+              ) : (
+                <button
+                  type="button"
+                  id="finalizePracticeBtn"
+                  className="practice-cta"
+                  onClick={handleFinalizeAttempt}
+                  disabled={blocked}
+                >
+                  {isActionPending ? 'Đang hoàn tất...' : 'Hoàn tất bài luyện tập'}
+                </button>
+              )}
             </div>
-          )}
-
-          {/* If all questions answered, show Finalize button */}
-          {!attempt.nextExercise && (
-            <div
-              id="finalizePromptBox"
-              style={{
-                textAlign: 'center',
-                padding: '24px 16px',
-                backgroundColor: 'var(--canvas-bg)',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border-subtle)',
-              }}
-            >
-              <p style={{ marginBottom: '16px', fontWeight: 600 }}>
-                Bạn đã trả lời tất cả các câu hỏi trong phiên luyện tập.
-              </p>
-              <button
-                type="button"
-                id="finalizePracticeBtn"
-                className="btn btn-primary"
-                onClick={handleFinalizeAttempt}
-                disabled={blocked}
-              >
-                {isActionPending ? 'Đang hoàn tất...' : 'Hoàn tất bài luyện tập'}
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       )}
 

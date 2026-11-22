@@ -456,3 +456,161 @@ html, body {
   display: flex;
   gap: 12px;
 }
+
+/* ===== Practice session (gamified full-screen lesson practice) ===== */
+.practice-session {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas-bg, #f6f8fc);
+  animation: ps-fade-in 160ms ease-out;
+}
+.practice-session__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+.practice-session__close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #59677d);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.practice-session__close:hover { background: var(--primary-subtle, #eef2ff); }
+.practice-progress {
+  flex: 1;
+  height: 16px;
+  border-radius: 999px;
+  background: #e5e9f1;
+  overflow: hidden;
+}
+.practice-progress__fill {
+  height: 100%;
+  min-width: 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4f46e5, #3b82f6);
+  transition: width 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.practice-combo {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #c2410c;
+  font-weight: 800;
+  font-size: 14px;
+  animation: ps-pop 260ms ease-out;
+}
+.practice-session__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 18px 24px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+.practice-session__footer {
+  border-top: 2px solid #e5e9f1;
+  background: var(--surface-bg, #fff);
+  padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+}
+.practice-session__footer-inner { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.practice-cta {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 16px;
+  border: none;
+  border-bottom: 4px solid #3730a3;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 80ms ease, border-bottom-width 80ms ease;
+}
+.practice-cta:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
+.practice-cta:disabled { background: #cbd5e1; border-bottom-color: #94a3b8; color: #fff; cursor: not-allowed; }
+
+.practice-question { font-size: 22px; font-weight: 800; line-height: 1.35; margin: 12px 0 20px; color: #172033; }
+.practice-type-label { font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #4f46e5; margin-top: 8px; }
+
+.practice-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: 12px 16px;
+  border: 2px solid #e5e9f1;
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  background: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 100ms ease, border-color 100ms ease, background 100ms ease;
+}
+.practice-option:hover { background: #f8faff; }
+.practice-option[data-selected='true'] { border-color: #4f46e5; background: #eef2ff; transform: translateY(-2px); }
+.practice-option__key {
+  flex: none; width: 28px; height: 28px; border-radius: 8px; border: 2px solid #cbd5e1;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #8593a7;
+}
+.practice-option[data-selected='true'] .practice-option__key { border-color: #4f46e5; color: #4f46e5; }
+.practice-option { position: relative; }
+.practice-option input[type='radio'] { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+.practice-option:focus-within { outline: 3px solid #93c5fd; outline-offset: 2px; }
+
+.practice-answer-line {
+  min-height: 72px; padding: 12px; border-top: 2px solid #e5e9f1; border-bottom: 2px solid #e5e9f1;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: transparent;
+}
+.practice-chip {
+  min-height: 44px; padding: 8px 16px; border: 2px solid #e5e9f1; border-bottom-width: 4px; border-radius: 14px;
+  background: #fff; font-size: 16px; font-weight: 700; cursor: pointer; color: #172033;
+  animation: ps-pop 180ms ease-out;
+}
+.practice-chip:disabled { cursor: not-allowed; }
+.practice-chip--placed { background: #eef2ff; border-color: #c7d2fe; }
+.practice-chip--ghost { background: #e5e9f1; border-color: #e5e9f1; color: transparent; animation: none; }
+
+.practice-text-input {
+  width: 100%; min-height: 56px; padding: 12px 16px; border: 2px solid #e5e9f1; border-bottom-width: 4px;
+  border-radius: 16px; background: #fff; font-size: 18px; font-weight: 600;
+}
+.practice-text-input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px #c7d2fe; }
+
+.practice-sheet {
+  border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+  animation: ps-slide-up 220ms ease-out; font-weight: 700;
+}
+.practice-sheet.is-success { background: #dbeafe; color: #1e40af; border: 2px solid #93c5fd; }
+.practice-sheet.is-warning { background: #fff1e6; color: #b45309; border: 2px solid #fdba74; animation: ps-slide-up 220ms ease-out, ps-shake 360ms ease-in-out 120ms; }
+.practice-sheet__icon { font-size: 22px; }
+.practice-sheet__msg { flex: 1; }
+.practice-sheet__close { border: none; background: transparent; font-weight: 800; color: inherit; cursor: pointer; text-decoration: underline; }
+
+.practice-resume-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@keyframes ps-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ps-pop { 0% { transform: scale(0.85); opacity: 0; } 70% { transform: scale(1.06); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes ps-slide-up { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes ps-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .practice-session, .practice-combo, .practice-chip, .practice-sheet, .practice-sheet.is-warning { animation: none; }
+  .practice-progress__fill, .practice-cta, .practice-option { transition: none; }
+}
