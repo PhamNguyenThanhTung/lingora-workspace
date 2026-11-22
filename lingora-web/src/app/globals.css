@@ -614,3 +614,28 @@ html, body {
   .practice-session, .practice-combo, .practice-chip, .practice-sheet, .practice-sheet.is-warning { animation: none; }
   .practice-progress__fill, .practice-cta, .practice-option { transition: none; }
 }
+
+/* ===== Practice celebration ===== */
+.celebrate { position: relative; overflow: hidden; }
+.celebrate__confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.celebrate__confetti span {
+  position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; opacity: 0;
+  animation-name: ps-confetti; animation-timing-function: ease-in; animation-fill-mode: forwards;
+}
+.celebrate__badge {
+  display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6); color: #fff; font-size: 38px; font-weight: 800; margin-bottom: 12px;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35); animation: ps-pop 420ms ease-out;
+}
+.celebrate__card { animation: ps-slide-up 360ms ease-out; }
+.celebrate__tile { animation: ps-pop 380ms ease-out both; padding: 12px; background: var(--canvas-bg); border-radius: 14px; border: 2px solid #e5e9f1; }
+.celebrate__achievement { animation: ps-pop 480ms ease-out 700ms both; }
+.practice-cta-link { min-height: 48px; border-radius: 14px; font-weight: 800; }
+@keyframes ps-confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(420px) rotate(540deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .celebrate__confetti { display: none; }
+  .celebrate__badge, .celebrate__card, .celebrate__tile, .celebrate__achievement { animation: none; }
+}

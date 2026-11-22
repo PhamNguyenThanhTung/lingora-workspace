@@ -592,26 +592,25 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
 
       {/* State 3: Finalized Attempt / Results */}
       {attempt?.isCompleted && (
-        <div id="practiceCompletionSummary" style={{ textAlign: 'center', padding: '24px 16px' }}>
+        <div id="practiceCompletionSummary" className="celebrate" style={{ textAlign: 'center', padding: '24px 16px' }}>
+          <div className="celebrate__confetti" aria-hidden="true">
+            {Array.from({ length: 28 }, (_, i) => (
+              <span
+                key={i}
+                style={{
+                  left: `${(i * 37) % 100}%`,
+                  background: ['#4f46e5', '#3b82f6', '#f59e0b', '#f97316', '#93c5fd', '#c7d2fe'][i % 6],
+                  animationDelay: `${(i % 7) * 90}ms`,
+                  animationDuration: `${1400 + (i % 5) * 220}ms`,
+                }}
+              />
+            ))}
+          </div>
           <div style={{ marginBottom: '16px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--primary-subtle)',
-                color: 'var(--primary-color)',
-                fontSize: '24px',
-                fontWeight: 700,
-                marginBottom: '12px',
-              }}
-            >
+            <span className="celebrate__badge">
               ✓
             </span>
-            <h3 style={{ fontSize: 'var(--font-size-title)', fontWeight: 700, marginBottom: '6px' }}>
+            <h3 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '6px' }}>
               Hoàn thành bài luyện tập!
             </h3>
             <p style={{ color: 'var(--text-muted)' }}>
@@ -623,6 +622,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
           {finalizeReward && (
             <div
               id="practiceCelebrationBox"
+              className="celebrate__card"
               style={{
                 maxWidth: '520px',
                 margin: '0 auto 24px auto',
@@ -638,7 +638,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 🎉 Phần thưởng & Thành tích
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px', marginTop: '12px', marginBottom: '16px' }}>
-                <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                <div className="celebrate__tile" style={{ animationDelay: '250ms' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>XP nhận được</div>
                   <div id="celebrationTotalXp" style={{ fontSize: '20px', fontWeight: 800, color: '#f59e0b', marginTop: '4px' }}>
                     +{finalizeReward.lessonXp + finalizeReward.questXp} XP
@@ -649,20 +649,20 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                     </div>
                   )}
                 </div>
-                <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                <div className="celebrate__tile" style={{ animationDelay: '390ms' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Chính xác lần 1</div>
                   <div id="celebrationAccuracy" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
                     {Math.round(finalizeReward.firstTryAccuracy)}%
                   </div>
                 </div>
-                <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                <div className="celebrate__tile" style={{ animationDelay: '530ms' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Chuỗi ngày</div>
                   <div id="celebrationStreak" style={{ fontSize: '20px', fontWeight: 800, color: '#ef4444', marginTop: '4px' }}>
                     🔥 {finalizeReward.streak} ngày
                   </div>
                 </div>
                 {finalizeReward.newlyEnrolledCount > 0 && (
-                  <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <div className="celebrate__tile" style={{ animationDelay: '670ms' }}>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Từ nạp SRS</div>
                     <div id="celebrationWordsEnrolled" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--primary-color)', marginTop: '4px' }}>
                       +{finalizeReward.newlyEnrolledCount} từ
@@ -672,7 +672,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
               </div>
 
               {finalizeReward.earnedAchievements && finalizeReward.earnedAchievements.length > 0 && (
-                <div id="celebrationAchievements" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#eff6ff', borderRadius: 'var(--radius-sm)', border: '1px solid #2563eb' }}>
+                <div id="celebrationAchievements" className="celebrate__achievement" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#eff6ff', borderRadius: 'var(--radius-sm)', border: '1px solid #2563eb' }}>
                   <div style={{ fontWeight: 700, color: '#1D4ED8', marginBottom: '8px', fontSize: '14px' }}>
                     🏆 Huy hiệu mới mở khóa!
                   </div>
@@ -798,7 +798,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
             <a
               href={'/home?contextId=' + encodeURIComponent(contextId)}
               id="celebrationHomeBtn"
-              className="btn btn-primary"
+              className="btn btn-primary practice-cta-link"
               style={{
                 textDecoration: 'none',
                 display: 'inline-flex',
