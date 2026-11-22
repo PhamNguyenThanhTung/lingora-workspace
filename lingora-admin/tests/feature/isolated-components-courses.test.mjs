@@ -9,7 +9,8 @@ const { chromium } = require('playwright');
 
 const TEST_PORT = 3011;
 const TEST_URL = `http://127.0.0.1:${TEST_PORT}`;
-const SCREENSHOT_DIR = '/home/tung/.codex/task-logs/slice-3-final-patch';
+const SCREENSHOT_DIR = (await import('node:path')).join(process.env.LINGORA_TEST_ARTIFACTS_DIR ?? (await import('node:os')).tmpdir(), 'lingora-test-artifacts', 'slice-3-final-patch');
+(await import('node:fs')).mkdirSync(SCREENSHOT_DIR, { recursive: true });
 
 describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', () => {
   let server;
