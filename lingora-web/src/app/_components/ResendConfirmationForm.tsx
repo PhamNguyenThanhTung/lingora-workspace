@@ -104,7 +104,7 @@ export function ResendConfirmationForm({ initialEmail = '' }: ResendConfirmation
           style={
             isError
               ? undefined
-              : { backgroundColor: '#ecfdf5', color: '#065f46', borderColor: '#a7f3d0' }
+              : { backgroundColor: '#eff6ff', color: '#1e40af', borderColor: '#bfdbfe' }
           }
         >
           {message}

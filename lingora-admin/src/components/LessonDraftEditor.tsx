@@ -1649,9 +1649,9 @@ export function LessonDraftEditor({
           role="status"
           id="publishedNoticeBanner"
           style={{
-            background: '#f0fdf4',
-            border: '1px solid #86efac',
-            color: '#15803d',
+            background: '#eff6ff',
+            border: '1px solid #93c5fd',
+            color: '#1d4ed8',
             padding: '16px',
             borderRadius: '8px',
             marginBottom: '20px',
@@ -1704,9 +1704,9 @@ export function LessonDraftEditor({
           role="status"
           id="approvedNotice"
           style={{
-            background: '#f0fdf4',
-            border: '1px solid #86efac',
-            color: '#166534',
+            background: '#eff6ff',
+            border: '1px solid #93c5fd',
+            color: '#1E40AF',
             padding: '16px',
             borderRadius: '8px',
             marginBottom: '20px',
@@ -1747,9 +1747,9 @@ export function LessonDraftEditor({
           role="status"
           id="draftSaveSuccess"
           style={{
-            background: '#f0fdf4',
-            border: '1px solid #86efac',
-            color: '#15803d',
+            background: '#eff6ff',
+            border: '1px solid #93c5fd',
+            color: '#1d4ed8',
             padding: '12px 16px',
             borderRadius: '8px',
             marginBottom: '20px',
@@ -2233,7 +2233,7 @@ export function LessonDraftEditor({
             <span style={{ fontSize: '13px', color: '#64748b' }}>Được lưu thành bản sửa đổi riêng và chỉ đưa vào phiên bản sau khi bản bài học nguồn được nộp.</span>
           </div>
           {assessmentLoadError && <div role="alert" className="form-error-banner">{assessmentLoadError}</div>}
-          {assessmentSavedMessage && <div role="status" style={{ background: '#ecfdf5', border: '1px solid #86efac', color: '#166534', padding: '10px 12px', borderRadius: '6px', marginBottom: '14px' }}>{assessmentSavedMessage}</div>}
+          {assessmentSavedMessage && <div role="status" style={{ background: '#eff6ff', border: '1px solid #93c5fd', color: '#1E40AF', padding: '10px 12px', borderRadius: '6px', marginBottom: '14px' }}>{assessmentSavedMessage}</div>}
           {assessmentBlueprints.length === 0 ? (
             <p id="assessmentBlueprintUnavailable" style={{ color: '#64748b' }}>Khóa học này chưa có khung đánh giá. Quản trị viên cần tạo Blueprint trước.</p>
           ) : assessmentItems.length === 0 ? (
@@ -3228,7 +3228,7 @@ export function LessonDraftEditor({
                   )}
 
                   {selectedVocabOption && (
-                    <div style={{ marginTop: '12px', padding: '8px 12px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', fontSize: '13px' }}>
+                    <div style={{ marginTop: '12px', padding: '8px 12px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', fontSize: '13px' }}>
                       Đã chọn: <strong>{selectedVocabOption.canonicalForm}</strong> ({selectedVocabOption.senseKey})
                     </div>
                   )}

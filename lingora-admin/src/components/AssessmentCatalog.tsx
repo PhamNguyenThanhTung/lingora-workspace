@@ -340,7 +340,7 @@ export function AssessmentCatalog() {
     <main className="page-container" id="assessmentCatalog">
       <header className="page-header"><h1>Đánh giá</h1><p>Quản lý Blueprint, kiểm tra bài tập đã nộp và ghép phiên bản cố định.</p></header>
       {error && <div role="alert" className="form-error-banner">{error} <button type="button" className="btn btn-secondary" disabled={loading} onClick={() => void loadCatalog()}>Tải lại danh mục</button></div>}
-      {notice && <div role="status" style={{ background: '#ecfdf5', color: '#166534', padding: '10px 12px', borderRadius: 6, marginBottom: 16 }}>{notice}</div>}
+      {notice && <div role="status" style={{ background: '#eff6ff', color: '#1E40AF', padding: '10px 12px', borderRadius: 6, marginBottom: 16 }}>{notice}</div>}
 
       <section className="form-section" aria-labelledby="blueprintHeading">
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>

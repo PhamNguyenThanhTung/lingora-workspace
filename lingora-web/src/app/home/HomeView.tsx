@@ -744,8 +744,8 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 style={{
                   marginBottom: '12px',
                   padding: '16px 20px',
-                  backgroundColor: 'var(--primary-bg-subtle, #ecfdf5)',
-                  border: '1px solid var(--primary-green, #10b981)',
+                  backgroundColor: 'var(--primary-bg-subtle, #eff6ff)',
+                  border: '1px solid var(--primary-color, #2563eb)',
                   borderRadius: '8px',
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -969,7 +969,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                                 style={{
                                   width: `${Math.round((q.progress / q.target) * 100)}%`,
                                   height: '100%',
-                                  backgroundColor: q.isCompleted ? 'var(--primary-green, #10b981)' : '#3b82f6',
+                                  backgroundColor: q.isCompleted ? 'var(--primary-color, #2563eb)' : '#3b82f6',
                                 }}
                               />
                             </div>
@@ -1037,10 +1037,10 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                           padding: '12px 14px',
                           borderRadius: '6px',
                           border: node.state === 'CURRENT'
-                            ? '2px solid var(--primary-green, #10b981)'
+                            ? '2px solid var(--primary-color, #2563eb)'
                             : '1px solid var(--border-subtle, #e2e8f0)',
                           backgroundColor: node.state === 'CURRENT'
-                            ? 'var(--primary-bg-subtle, #f0fdf4)'
+                            ? 'var(--primary-bg-subtle, #eff6ff)'
                             : node.state === 'LOCKED' || node.state === 'COMING_SOON'
                             ? 'var(--subtle-bg, #f8fafc)'
                             : 'var(--surface-bg, #ffffff)',
@@ -1059,7 +1059,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                               fontSize: '0.8rem',
                               fontWeight: 700,
                               backgroundColor: node.state === 'COMPLETED'
-                                ? 'var(--primary-green, #10b981)'
+                                ? 'var(--primary-color, #2563eb)'
                                 : node.state === 'CURRENT'
                                 ? '#3b82f6'
                                 : '#94a3b8',
@@ -1106,7 +1106,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           {node.score != null && (
-                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary-green, #10b981)' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary-color, #2563eb)' }}>
                               {node.score}%
                             </span>
                           )}

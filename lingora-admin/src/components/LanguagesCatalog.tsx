@@ -342,8 +342,8 @@ export function LanguagesCatalog({
             id="draftRecoveryBanner"
             style={{
               padding: '14px 18px',
-              backgroundColor: '#EBF3EE',
-              border: '1px solid #CBD5CE',
+              backgroundColor: '#EEF2FF',
+              border: '1px solid #CBD5E1',
               borderRadius: 'var(--radius-md)',
               marginBottom: '20px',
               display: 'flex',

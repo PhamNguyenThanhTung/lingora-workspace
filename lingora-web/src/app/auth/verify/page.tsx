@@ -57,7 +57,7 @@ export default async function VerifyPage(props: VerifyPageProps) {
             href="/login"
             id="toLoginLink"
             className="login-link"
-            style={{ color: 'var(--primary-green, #10b981)', textDecoration: 'underline', fontWeight: 500 }}
+            style={{ color: 'var(--primary-color, #2563eb)', textDecoration: 'underline', fontWeight: 500 }}
           >
             ← Quay lại trang Đăng nhập
           </Link>

@@ -17,10 +17,10 @@
   --landing-primary-subtle: #EEF2FF;
   --landing-primary-border: #C7D2FE;
   --landing-border: #E5E9F1;
-  --landing-success: #16A34A;
-  --landing-success-text: #166534;
-  --landing-success-subtle: #DCFCE7;
-  --landing-success-border: #BBF7D0;
+  --landing-success: #2563EB;
+  --landing-success-text: #1E40AF;
+  --landing-success-subtle: #DBEAFE;
+  --landing-success-border: #BFDBFE;
   --landing-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
   --landing-shadow-md: 0 4px 12px -2px rgba(16, 24, 40, 0.06), 0 2px 6px -1px rgba(16, 24, 40, 0.03);
   --landing-shadow-lg: 0 12px 28px -4px rgba(79, 70, 229, 0.08), 0 4px 10px -2px rgba(16, 24, 40, 0.04);

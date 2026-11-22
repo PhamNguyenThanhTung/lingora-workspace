@@ -478,7 +478,7 @@ export function LessonsCatalog({
                             <span
                               className="status-badge status-active"
                               id={`lesson-required-badge-${l.id}`}
-                              style={{ background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: '4px', fontSize: '12px' }}
+                              style={{ background: '#dbeafe', color: '#1E40AF', padding: '2px 8px', borderRadius: '4px', fontSize: '12px' }}
                             >
                               Bắt buộc
                             </span>
@@ -551,7 +551,7 @@ export function LessonsCatalog({
                                 id={`btn-activate-lesson-${l.id}`}
                                 disabled={activatingId === l.id}
                                 onClick={() => handleActivate(l)}
-                                style={{ color: '#16a34a', fontWeight: 500 }}
+                                style={{ color: '#2563eb', fontWeight: 500 }}
                               >
                                 {activatingId === l.id ? 'Đang mở...' : 'Mở cho học viên'}
                               </button>

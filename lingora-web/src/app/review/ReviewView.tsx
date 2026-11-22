@@ -373,7 +373,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
             id="backHomeHeaderBtn"
             style={{
               textDecoration: 'none',
-              color: 'var(--primary-green)',
+              color: 'var(--primary-color)',
               fontWeight: 700,
               fontSize: '20px',
               whiteSpace: 'nowrap',
@@ -729,8 +729,8 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                 width: '56px',
                 height: '56px',
                 borderRadius: '50%',
-                backgroundColor: 'var(--primary-subtle, #ecfdf5)',
-                color: 'var(--primary-green, #10b981)',
+                backgroundColor: 'var(--primary-subtle, #eff6ff)',
+                color: 'var(--primary-color, #2563eb)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',

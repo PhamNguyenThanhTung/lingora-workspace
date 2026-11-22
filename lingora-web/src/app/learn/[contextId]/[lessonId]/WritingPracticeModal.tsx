@@ -582,7 +582,7 @@ export function WritingPracticeModal({
 
     // 2. Official template strokes (dashed green)
     ctx.save();
-    ctx.strokeStyle = '#16a34a';
+    ctx.strokeStyle = '#2563eb';
     ctx.lineWidth = 6;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -1303,7 +1303,7 @@ export function WritingPracticeModal({
                   borderRadius: '8px',
                   backgroundColor:
                     attemptResult.band === 'EXCELLENT'
-                      ? '#dcfce7'
+                      ? '#dbeafe'
                       : attemptResult.band === 'FAIR'
                       ? '#fef3c7'
                       : '#fee2e2',
@@ -1328,7 +1328,7 @@ export function WritingPracticeModal({
                     borderRadius: '6px',
                     backgroundColor:
                       attemptResult.band === 'EXCELLENT'
-                        ? '#166534'
+                        ? '#1E40AF'
                         : attemptResult.band === 'FAIR'
                         ? '#92400e'
                         : '#991b1b',
@@ -1399,7 +1399,7 @@ export function WritingPracticeModal({
                     style={{
                       width: '12px',
                       height: '12px',
-                      border: '2px dashed #16a34a',
+                      border: '2px dashed #2563eb',
                       borderRadius: '2px',
                     }}
                   />
@@ -1419,8 +1419,8 @@ export function WritingPracticeModal({
                   style={{
                     marginTop: '14px',
                     padding: '8px 16px',
-                    backgroundColor: '#dcfce7',
-                    color: '#166534',
+                    backgroundColor: '#dbeafe',
+                    color: '#1E40AF',
                     borderRadius: '6px',
                     fontSize: '13px',
                     fontWeight: 600,
