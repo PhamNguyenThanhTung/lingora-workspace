@@ -891,6 +891,23 @@ function renderVocabularySection(
   );
 }
 
+
+/** Deterministic display shuffle (seeded by exercise id) so the read-only preview never shows answer order. */
+function previewShuffle<T>(items: T[], seed: string): T[] {
+  if (items.length < 2) return items;
+  const original = items.slice();
+  for (let salt = 0; salt < 8; salt++) {
+    let h = 2166136261;
+    const key = `${seed}:${salt}`;
+    for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619); }
+    const next = () => { h += 0x6d2b79f5; let t = Math.imul(h ^ (h >>> 15), 1 | h); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const out = items.slice();
+    for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(next() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+    if (out.some((x, i) => x !== original[i])) return out;
+  }
+  return original.reverse();
+}
+
 function renderExercisesSection(
   exercises: PublicExerciseDto[],
   audioErrors: Record<string, boolean>,
@@ -976,7 +993,7 @@ function renderExercisesSection(
             ? h(
                 'div',
                 { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
-                (Array.isArray(promptData.options) ? promptData.options : []).map((opt: any) =>
+                previewShuffle(Array.isArray(promptData.options) ? promptData.options : [], ex.id).map((opt: any) =>
                   h(
                     'div',
                     {
@@ -1031,7 +1048,7 @@ function renderExercisesSection(
             ? h(
                 'div',
                 { style: { display: 'flex', flexWrap: 'wrap', gap: '8px' } },
-                (Array.isArray(promptData.tokens) ? promptData.tokens : []).map((t: any) =>
+                previewShuffle(Array.isArray(promptData.tokens) ? promptData.tokens : [], ex.id).map((t: any) =>
                   h(
                     'span',
                     {

@@ -573,3 +573,31 @@ test('T06: LessonContent renderer - Readonly Exercises preview across all 5 type
   assert.ok(!html.includes('submit'));
   assert.ok(!html.includes('Nộp bài'));
 });
+
+test('T06b: read-only exercise preview does not show REORDER tokens or MCQ options in answer order', () => {
+  const words = ['Nice', 'to', 'meet', 'you.'];
+  const exercises = [
+    {
+      id: 'ex-reorder-shuffle', itemId: 'it', itemRevisionId: 'ir', position: 1, isCore: true,
+      type: 'REORDER', schemaVersion: 1,
+      promptData: { prompt: 'Sắp xếp:', tokens: words.map((text, i) => ({ id: `t${i}`, text })) },
+    },
+    {
+      id: 'ex-mcq-shuffle', itemId: 'it2', itemRevisionId: 'ir2', position: 2, isCore: true,
+      type: 'MCQ', schemaVersion: 1,
+      promptData: { prompt: 'Chọn:', options: ['Good morning', 'Good night', 'Goodbye'].map((text, i) => ({ id: `o${i}`, text })) },
+    },
+  ];
+  const presentation = { contentSchemaVersion: 1, blocks: [], vocabulary: [], exercises };
+  const html = renderToStaticMarkup(h(LessonContent, { presentation }));
+  const html2 = renderToStaticMarkup(h(LessonContent, { presentation }));
+  assert.equal(html, html2, 'display order must be deterministic across renders');
+
+  const orderOf = (labels) => labels.map((l) => html.indexOf(`>${l}<`));
+  const reorderPositions = orderOf(words);
+  assert.ok(reorderPositions.every((p) => p >= 0), 'all tokens still rendered');
+  assert.notDeepEqual(reorderPositions, [...reorderPositions].sort((a, b) => a - b), 'tokens must not appear in answer order');
+  const mcqPositions = orderOf(['Good morning', 'Good night', 'Goodbye']);
+  assert.ok(mcqPositions.every((p) => p >= 0), 'all options still rendered');
+  assert.notDeepEqual(mcqPositions, [...mcqPositions].sort((a, b) => a - b), 'options must not appear in authored order');
+});
