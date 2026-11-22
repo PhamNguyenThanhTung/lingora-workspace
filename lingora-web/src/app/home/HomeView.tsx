@@ -893,25 +893,19 @@ export function HomeView({ data, errorState }: HomeViewProps) {
             ) : (totalXp > 0 || streak.currentStreak > 0 || quests.length > 0 || dailyProgress.dailyGoalMinutes > 0) ? (
               <div
                 id="gamificationOverview"
-                style={{
-                  marginBottom: '20px',
-                  padding: '16px',
-                  backgroundColor: 'var(--surface-bg, #ffffff)',
-                  border: '1px solid var(--border-color, #e2e8f0)',
-                  borderRadius: '8px',
-                }}
+                className="home-stats"
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '14px' }}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div id="currentStreakDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontSize: '1.4rem' }}>🔥</span>
+                      <span className="home-stats__icon">🔥</span>
                       <div>
                         <strong id="streakBadge" style={{ fontSize: '1rem', display: 'block' }}>{streak.currentStreak} ngày</strong>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Kỷ lục: {streak.longestStreak} ngày</span>
                       </div>
                     </div>
                     <div id="totalXpDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontSize: '1.4rem' }}>⚡</span>
+                      <span className="home-stats__icon">⚡</span>
                       <div>
                         <strong id="totalXpBadge" style={{ fontSize: '1rem', display: 'block' }}>{totalXp} XP</strong>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Tổng điểm</span>
@@ -954,13 +948,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                         <div
                           key={q.id}
                           id={`quest-${q.id}`}
-                          className="quest-item"
-                          style={{
-                            padding: '10px',
-                            borderRadius: '6px',
-                            border: '1px solid var(--border-subtle, #e2e8f0)',
-                            backgroundColor: q.isCompleted ? 'var(--subtle-bg, #f8fafc)' : 'var(--surface-bg, #fff)',
-                          }}
+                          className={`quest-item home-quest${q.isCompleted ? ' is-done' : ''}`}
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                             <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{q.title}</span>
@@ -969,13 +957,10 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                             </span>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ flex: 1, height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                            <div className="home-quest__bar">
                               <div
-                                style={{
-                                  width: `${Math.round((q.progress / q.target) * 100)}%`,
-                                  height: '100%',
-                                  backgroundColor: q.isCompleted ? 'var(--primary-color, #2563eb)' : '#3b82f6',
-                                }}
+                                className="home-quest__fill"
+                                style={{ width: `${Math.round((q.progress / q.target) * 100)}%` }}
                               />
                             </div>
                             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -1012,131 +997,66 @@ export function HomeView({ data, errorState }: HomeViewProps) {
               </div>
             ) : null}
 
-            {/* Learning Path (Vertical) */}
+            {/* Learning Path (zig-zag map) */}
             {pathNodes.length > 0 && (
-              <section
-                id="learningPathSection"
-                style={{
-                  marginBottom: '28px',
-                  padding: '18px',
-                  backgroundColor: 'var(--surface-bg, #ffffff)',
-                  border: '1px solid var(--border-color, #e2e8f0)',
-                  borderRadius: '8px',
-                }}
-              >
-                <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '14px' }}>
-                  Lộ trình bài học
-                </h2>
-                <div id="learningPathList" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <section id="learningPathSection" className="path-map">
+                <h2 className="path-map__title">Lộ trình bài học</h2>
+                <div id="learningPathList" className="path-map__list">
                   {pathNodes.map((node, index) => {
                     const isNavigable = node.state === 'COMPLETED' || node.state === 'CURRENT' || node.state === 'AVAILABLE';
+                    const isLocked = node.state === 'LOCKED' || node.state === 'COMING_SOON';
+                    const showBanner = index === 0 || pathNodes[index - 1].unitTitle !== node.unitTitle;
+                    const unitNodes = pathNodes.filter((n) => n.unitTitle === node.unitTitle);
+                    const unitDone = unitNodes.filter((n) => n.state === 'COMPLETED').length;
+                    const offset = [0, 28, 44, 28, 0, -28, -44, -28][index % 8];
+                    const stateLabel =
+                      node.state === 'COMPLETED' ? 'Đã hoàn thành'
+                      : node.state === 'CURRENT' ? 'Đang học'
+                      : node.state === 'AVAILABLE' ? 'Chưa bắt đầu'
+                      : node.state === 'LOCKED' ? 'Đang khóa'
+                      : 'Sắp ra mắt';
+                    const medallion = (
+                      <span className={`path-medallion path-medallion--${node.state.toLowerCase()}`} aria-hidden="true">
+                        {node.state === 'COMPLETED' ? '✓' : isLocked ? '🔒' : node.state === 'CURRENT' ? '★' : index + 1}
+                      </span>
+                    );
                     return (
-                      <div
-                        key={node.lessonId || index}
-                        id={`pathNode-${node.lessonId}`}
-                        data-state={node.state}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '12px 14px',
-                          borderRadius: '6px',
-                          border: node.state === 'CURRENT'
-                            ? '2px solid var(--primary-color, #2563eb)'
-                            : '1px solid var(--border-subtle, #e2e8f0)',
-                          backgroundColor: node.state === 'CURRENT'
-                            ? 'var(--primary-bg-subtle, #eff6ff)'
-                            : node.state === 'LOCKED' || node.state === 'COMING_SOON'
-                            ? 'var(--subtle-bg, #f8fafc)'
-                            : 'var(--surface-bg, #ffffff)',
-                          opacity: node.state === 'LOCKED' || node.state === 'COMING_SOON' ? 0.75 : 1,
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <span
-                            style={{
-                              width: '28px',
-                              height: '28px',
-                              borderRadius: '50%',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '0.8rem',
-                              fontWeight: 700,
-                              backgroundColor: node.state === 'COMPLETED'
-                                ? 'var(--primary-color, #2563eb)'
-                                : node.state === 'CURRENT'
-                                ? '#3b82f6'
-                                : '#94a3b8',
-                              color: '#ffffff',
-                            }}
-                          >
-                            {node.state === 'COMPLETED' ? '✓' : index + 1}
-                          </span>
-                          <div>
-                            {isNavigable ? (
-                              <a
-                                href={node.href}
-                                id={`pathLink-${node.lessonId}`}
-                                className="path-node-link"
-                                style={{
-                                  textDecoration: 'none',
-                                  color: 'inherit',
-                                  fontWeight: 600,
-                                  fontSize: '0.95rem',
-                                  display: 'block',
-                                }}
-                              >
-                                {node.title}
-                              </a>
-                            ) : (
-                              <span
-                                id={`pathDisabled-${node.lessonId}`}
-                                style={{
-                                  fontWeight: 600,
-                                  fontSize: '0.95rem',
-                                  color: 'var(--text-muted, #64748b)',
-                                  display: 'block',
-                                  cursor: 'not-allowed',
-                                }}
-                              >
-                                {node.title}
-                              </span>
-                            )}
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                              {node.unitTitle}
-                            </span>
+                      <React.Fragment key={node.lessonId || index}>
+                        {showBanner && (
+                          <div className="path-chapter">
+                            <span className="path-chapter__name">{node.unitTitle}</span>
+                            <span className="path-chapter__progress">{unitDone}/{unitNodes.length}</span>
                           </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {node.score != null && (
-                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary-color, #2563eb)' }}>
-                              {node.score}%
+                        )}
+                        <div
+                          id={`pathNode-${node.lessonId}`}
+                          data-state={node.state}
+                          className={`path-node path-node--${node.state.toLowerCase()}`}
+                          style={{ transform: `translateX(${offset}px)` }}
+                        >
+                          {isNavigable ? (
+                            <a href={node.href} id={`pathLink-${node.lessonId}`} className="path-node-link path-node__link">
+                              {medallion}
+                              <span className="path-node__text">
+                                <span className="path-node__title">{node.title}</span>
+                              </span>
+                            </a>
+                          ) : (
+                            <span id={`pathDisabled-${node.lessonId}`} className="path-node__link path-node__link--disabled">
+                              {medallion}
+                              <span className="path-node__text">
+                                <span className="path-node__title">{node.title}</span>
+                              </span>
                             </span>
                           )}
-                          <span
-                            className={`badge ${
-                              node.state === 'COMPLETED'
-                                ? 'badge-active'
-                                : node.state === 'CURRENT'
-                                ? 'badge-active'
-                                : 'badge-paused'
-                            }`}
-                            style={{ fontSize: '0.75rem' }}
-                          >
-                            {node.state === 'COMPLETED'
-                              ? 'Đã hoàn thành'
-                              : node.state === 'CURRENT'
-                              ? 'Đang học'
-                              : node.state === 'AVAILABLE'
-                              ? 'Chưa bắt đầu'
-                              : node.state === 'LOCKED'
-                              ? 'Đang khóa'
-                              : 'Sắp ra mắt'}
+                          <span className="path-node__meta">
+                            {node.score != null && <span className="path-node__score">{node.score}%</span>}
+                            <span className={`badge ${node.state === 'COMPLETED' || node.state === 'CURRENT' ? 'badge-active' : 'badge-paused'}`}>
+                              {stateLabel}
+                            </span>
                           </span>
                         </div>
-                      </div>
+                      </React.Fragment>
                     );
                   })}
                 </div>
