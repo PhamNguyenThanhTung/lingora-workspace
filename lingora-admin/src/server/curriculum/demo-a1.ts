@@ -322,7 +322,7 @@ export const DEMO_UNITS_SPEC = [
     levelId: DEMO_COURSE_SPEC.defaultStartLevelId,
     code: 'ENG-A1-U01',
     position: 1,
-    names: { vi: 'Bài 1: Bắt đầu giao tiếp', en: 'Unit 1: Getting Started' },
+    names: { vi: 'Bắt đầu giao tiếp', en: 'Unit 1: Getting Started' },
     teacherKey: 'teacherA' as const,
   },
   {
@@ -331,7 +331,7 @@ export const DEMO_UNITS_SPEC = [
     levelId: DEMO_COURSE_SPEC.defaultStartLevelId,
     code: 'ENG-A1-U02',
     position: 2,
-    names: { vi: 'Bài 2: Cuộc sống hằng ngày', en: 'Unit 2: Daily Life' },
+    names: { vi: 'Cuộc sống hằng ngày', en: 'Unit 2: Daily Life' },
     teacherKey: 'teacherA' as const,
   },
   {
@@ -340,7 +340,7 @@ export const DEMO_UNITS_SPEC = [
     levelId: DEMO_COURSE_SPEC.defaultStartLevelId,
     code: 'ENG-A1-U03',
     position: 3,
-    names: { vi: 'Bài 3: Giao tiếp thực tế', en: 'Unit 3: Everyday Situations' },
+    names: { vi: 'Giao tiếp thực tế', en: 'Unit 3: Everyday Situations' },
     teacherKey: 'teacherB' as const,
   },
 ];
@@ -484,7 +484,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit1Id,
     position: 1,
     teacherKey: 'teacherA' as const,
-    title: { vi: 'Bài 1: Hello! Tôi là...', en: 'Lesson 1: Hello! My name is...' },
+    title: { vi: 'Hello! Tôi là...', en: 'Lesson 1: Hello! My name is...' },
     blocks: [
       headingBlock('l1-b1', 1, 2, 'Chào hỏi và giới thiệu bản thân'),
       textBlock('l1-b2', 2, [
@@ -776,7 +776,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit1Id,
     position: 2,
     teacherKey: 'teacherA' as const,
-    title: { vi: 'Bài 2: Bạn đến từ đâu?', en: 'Lesson 2: Where are you from?' },
+    title: { vi: 'Bạn đến từ đâu?', en: 'Lesson 2: Where are you from?' },
     blocks: [
       headingBlock('l2-b1', 1, 2, 'Hỏi và nói về quê quán, quốc tịch'),
       textBlock('l2-b2', 2, [
@@ -1067,7 +1067,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit1Id,
     position: 3,
     teacherKey: 'teacherA' as const,
-    title: { vi: 'Bài 3: Tuổi và số điện thoại', en: 'Lesson 3: Age and Phone Numbers' },
+    title: { vi: 'Tuổi và số điện thoại', en: 'Lesson 3: Age and Phone Numbers' },
     blocks: [
       headingBlock('l3-b1', 1, 2, 'Học đếm số, hỏi tuổi và trao đổi số điện thoại'),
       textBlock('l3-b2', 2, [
@@ -1351,7 +1351,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit2Id,
     position: 1,
     teacherKey: 'teacherA' as const,
-    title: { vi: 'Bài 4: Một ngày của tôi', en: 'Lesson 4: My Daily Routine' },
+    title: { vi: 'Một ngày của tôi', en: 'Lesson 4: My Daily Routine' },
     blocks: [
       headingBlock('l4-b1', 1, 2, 'Mô tả các hoạt động thường ngày'),
       textBlock('l4-b2', 2, [
@@ -1632,7 +1632,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit2Id,
     position: 2,
     teacherKey: 'teacherA' as const,
-    title: { vi: 'Bài 5: Mấy giờ rồi?', en: 'Lesson 5: What Time Is It?' },
+    title: { vi: 'Mấy giờ rồi?', en: 'Lesson 5: What Time Is It?' },
     blocks: [
       headingBlock('l5-b1', 1, 2, 'Hỏi và nói về thời gian trong ngày'),
       textBlock('l5-b2', 2, [
@@ -1914,7 +1914,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit2Id,
     position: 3,
     teacherKey: 'teacherA' as const,
-    title: { vi: 'Bài 6: Gia đình tôi', en: 'Lesson 6: My Family' },
+    title: { vi: 'Gia đình tôi', en: 'Lesson 6: My Family' },
     blocks: [
       headingBlock('l6-b1', 1, 2, 'Giới thiệu các thành viên trong gia đình'),
       textBlock('l6-b2', 2, [
@@ -2202,7 +2202,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit3Id,
     position: 1,
     teacherKey: 'teacherB' as const,
-    title: { vi: 'Bài 7: Gọi món', en: 'Lesson 7: Ordering Food' },
+    title: { vi: 'Gọi món', en: 'Lesson 7: Ordering Food' },
     blocks: [
       headingBlock('l7-b1', 1, 2, 'Gọi món và đồ uống tại nhà hàng'),
       textBlock('l7-b2', 2, [
@@ -2506,7 +2506,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit3Id,
     position: 2,
     teacherKey: 'teacherB' as const,
-    title: { vi: 'Bài 8: Hỏi đường', en: 'Lesson 8: Asking for Directions' },
+    title: { vi: 'Hỏi đường', en: 'Lesson 8: Asking for Directions' },
     blocks: [
       headingBlock('l8-b1', 1, 2, 'Hỏi và chỉ đường trong thành phố'),
       textBlock('l8-b2', 2, [
@@ -2784,7 +2784,7 @@ export const DEMO_LESSONS_DATA = [
     unitId: DEMO_A1_CONSTANTS.unit3Id,
     position: 3,
     teacherKey: 'teacherB' as const,
-    title: { vi: 'Bài 9: Một ngày ở Hà Nội', en: 'Lesson 9: A Day in Hanoi' },
+    title: { vi: 'Một ngày ở Hà Nội', en: 'Lesson 9: A Day in Hanoi' },
     // Revision 1 blocks (before admin review comment)
     initialBlocks: [
       headingBlock('l9-b1', 1, 2, 'Một ngày trải nghiệm tại thủ đô Hà Nội'),
