@@ -608,6 +608,8 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   // Error / Denial States (403, 409, 503)
   if (errorState) {
     const isForbidden = errorState.status === 403;
+    const isNotFound = errorState.status === 404;
+    const isBadRequest = errorState.status === 400;
     const isServiceUnavailable = errorState.status === 503;
     const isInconsistent = errorState.status === 409;
 
@@ -625,6 +627,10 @@ export function HomeView({ data, errorState }: HomeViewProps) {
             <h1 className={`alert-title ${isForbidden ? 'danger' : 'warning'}`}>
               {isForbidden
                 ? 'Truy cập bị từ chối'
+                : isNotFound
+                ? 'Không tìm thấy nội dung'
+                : isBadRequest
+                ? 'Yêu cầu không hợp lệ'
                 : isInconsistent
                 ? 'Dữ liệu không nhất quán'
                 : 'Dịch vụ tạm thời không khả dụng'}
@@ -641,6 +647,16 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 >
                   {isRetrying ? 'Đang thử lại...' : 'Thử lại'}
                 </button>
+              )}
+              {(isNotFound || isBadRequest) && (
+                <a
+                  href="/home"
+                  id="backToHomeBtn"
+                  className="btn btn-primary"
+                  style={{ textDecoration: 'none' }}
+                >
+                  Về trang chủ
+                </a>
               )}
               <button
                 type="button"
@@ -847,7 +863,29 @@ export function HomeView({ data, errorState }: HomeViewProps) {
             )}
 
             {/* Gamification & Quests Overview */}
-            {(totalXp > 0 || streak.currentStreak > 0 || quests.length > 0 || dailyProgress.dailyGoalMinutes > 0) && (
+            {homeData?.gamificationStatus === 'UNAVAILABLE' ? (
+              <div
+                id="gamificationUnavailableAlert"
+                role="status"
+                style={{
+                  marginBottom: '20px',
+                  padding: '14px 16px',
+                  backgroundColor: 'var(--surface-bg, #ffffff)',
+                  border: '1px solid #ecc94b',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+                  <span>
+                    <strong>Tiến độ học tập: </strong>
+                    {homeData.gamificationMessage || 'Dữ liệu chuỗi ngày học và nhiệm vụ tạm thời không khả dụng do múi giờ tài khoản không hợp lệ.'}
+                  </span>
+                </div>
+              </div>
+            ) : (totalXp > 0 || streak.currentStreak > 0 || quests.length > 0 || dailyProgress.dailyGoalMinutes > 0) ? (
               <div
                 id="gamificationOverview"
                 style={{
@@ -967,7 +1005,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                   </div>
                 )}
               </div>
-            )}
+            ) : null}
 
             {/* Learning Path (Vertical) */}
             {pathNodes.length > 0 && (

@@ -1037,7 +1037,7 @@ export function fixtureDb(state) {
     $queryRaw: async (strings, ...values) => {
       const sql = strings.join('');
       if (sql.includes('clock_timestamp')) {
-        const now = new Date();
+        const now = state.now ?? new Date();
         return [{ ts: now, completed_at: now, qualifying_date: now }];
       }
       if (sql.includes('app.accounts') && (sql.includes('FOR UPDATE') || sql.includes('FOR NO KEY UPDATE'))) {

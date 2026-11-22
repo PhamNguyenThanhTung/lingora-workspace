@@ -393,13 +393,14 @@ async function run() {
 
       // Click Khôi phục: verify form modal opens with recovered fields
       await page.click('#draftRecoverBtn');
-      await page.waitForSelector('#languageFormModal', { state: 'visible' });
+      await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
+      await page.waitForFunction(() => document.querySelector('#langCodeInput')?.value === 'es');
       const recoveredCode = await page.inputValue('#langCodeInput');
       const recoveredVi = await page.inputValue('#langViInput');
       assert.equal(recoveredCode, 'es', 'Recovered draft must pre-populate code');
       assert.equal(recoveredVi, 'Tiếng Tây Ban Nha', 'Recovered draft must pre-populate Vietnamese name');
       await page.keyboard.press('Escape');
-      await page.waitForTimeout(100);
+      await page.waitForSelector('#languageFormModal', { state: 'hidden' });
 
       // --- Slice 2 Frameworks & Levels Components ---
       // 17. Frameworks Populated

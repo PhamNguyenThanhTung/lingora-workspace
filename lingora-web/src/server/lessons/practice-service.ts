@@ -33,6 +33,7 @@ import {
   evaluateAndAwardFinalizeGamification,
   computeQualifyingLocalDate,
 } from '../gamification/service.ts';
+import { normalizeStoredTimezone } from '../context/timezone.ts';
 
 type Db = PrismaClient | Prisma.TransactionClient;
 
@@ -430,10 +431,15 @@ export async function startPracticeAttempt(
     await tx.$queryRaw`SELECT id::text FROM app.accounts WHERE id = ${verifiedUserId}::uuid FOR NO KEY UPDATE`;
     const account = await tx.account.findUnique({
       where: { id: verifiedUserId },
-      select: { id: true, status: true, role: true },
+      select: { id: true, status: true, role: true, timezone: true },
     });
     if (!account || account.role !== 'LEARNER' || account.status !== 'ACTIVE') {
       return fail(403, 'ACCOUNT_INACTIVE', 'Tài khoản học viên không hoạt động.');
+    }
+
+    const tzResult = normalizeStoredTimezone(account.timezone);
+    if (!tzResult.ok) {
+      return fail(400, 'INVALID_TIMEZONE', 'Múi giờ của tài khoản không hợp lệ. Vui lòng cấu hình múi giờ hợp lệ trước khi bắt đầu luyện tập.');
     }
 
     // Candidate lookup
@@ -535,10 +541,15 @@ export async function submitPracticeResponse(
     await tx.$queryRaw`SELECT id::text FROM app.accounts WHERE id = ${verifiedUserId}::uuid FOR NO KEY UPDATE`;
     const account = await tx.account.findUnique({
       where: { id: verifiedUserId },
-      select: { id: true, status: true, role: true },
+      select: { id: true, status: true, role: true, timezone: true },
     });
     if (!account || account.role !== 'LEARNER' || account.status !== 'ACTIVE') {
       return fail(403, 'ACCOUNT_INACTIVE', 'Tài khoản học viên không hoạt động.');
+    }
+
+    const tzResult = normalizeStoredTimezone(account.timezone);
+    if (!tzResult.ok) {
+      return fail(400, 'INVALID_TIMEZONE', 'Múi giờ của tài khoản không hợp lệ. Vui lòng cấu hình múi giờ hợp lệ trước khi bắt đầu luyện tập.');
     }
 
     const candidate = await tx.learningContext.findFirst({
@@ -715,6 +726,12 @@ export async function finalizePracticeAttempt(
       return fail(403, 'ACCOUNT_INACTIVE', 'Tài khoản học viên không hoạt động.');
     }
 
+    const tzResult = normalizeStoredTimezone(account.timezone);
+    if (!tzResult.ok) {
+      return fail(400, 'INVALID_TIMEZONE', 'Múi giờ của tài khoản không hợp lệ. Vui lòng cấu hình múi giờ hợp lệ trước khi hoàn tất bài học.');
+    }
+    const normalizedTimezone = tzResult.timezone;
+
     const candidate = await tx.learningContext.findFirst({
       where: { id: contextId, learnerId: verifiedUserId },
       select: { id: true, courseId: true },
@@ -842,7 +859,7 @@ export async function finalizePracticeAttempt(
     if (!(completedAt instanceof Date) || !Number.isFinite(completedAt.valueOf())) {
       throw new Error('Database completion clock unavailable');
     }
-    const { localDate: qualifyingLocalDate } = computeQualifyingLocalDate(completedAt, account.timezone);
+    const { localDate: qualifyingLocalDate } = computeQualifyingLocalDate(completedAt, normalizedTimezone);
 
     // Atomically update LessonAttempt
     const updatedAttempt = await tx.lessonAttempt.update({
@@ -854,7 +871,7 @@ export async function finalizePracticeAttempt(
         responseCount: expectedTotal,
         completionOperationKey: input.operationKey,
         qualifyingLocalDate,
-        timezoneAtCompletion: account.timezone,
+        timezoneAtCompletion: normalizedTimezone,
         rowVersion: { increment: 1 },
       },
       include: {
@@ -957,7 +974,7 @@ export async function finalizePracticeAttempt(
       isFirstCompletion,
       qualifyingLocalDate,
       completedAt,
-      timezone: account.timezone,
+      timezone: normalizedTimezone,
       nCore,
       kFirstWrong,
       newlyEnrolledCount,

@@ -17,6 +17,7 @@ import {
 } from './token.ts';
 import { calculatePolicyBSchedule } from './scheduler.ts';
 import { evaluateAndAwardSrsGamification } from '../gamification/service.ts';
+import { normalizeStoredTimezone } from '../context/timezone.ts';
 
 type Db = PrismaClient | Prisma.TransactionClient;
 
@@ -60,20 +61,17 @@ function toPromptCardDto(card: {
 }
 
 function computeQualifyingLocalDate(now: Date, timezone: string): Date {
-  if (!timezone || typeof timezone !== 'string') {
-    throw new SrsServiceError(503, 'SERVICE_UNAVAILABLE', 'Múi giờ tài khoản không hợp lệ.');
+  const norm = normalizeStoredTimezone(timezone);
+  if (!norm.ok) {
+    throw new SrsServiceError(400, 'INVALID_TIMEZONE', `Múi giờ '${timezone}' không hợp lệ hoặc không được hỗ trợ.`);
   }
-  try {
-    const localDateString = new Intl.DateTimeFormat('en-CA', {
-      timeZone: timezone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(now);
-    return new Date(`${localDateString}T00:00:00.000Z`);
-  } catch {
-    throw new SrsServiceError(503, 'SERVICE_UNAVAILABLE', `Múi giờ '${timezone}' không hợp lệ hoặc không được hỗ trợ.`);
-  }
+  const localDateString = new Intl.DateTimeFormat('en-CA', {
+    timeZone: norm.timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
+  return new Date(`${localDateString}T00:00:00.000Z`);
 }
 
 export async function startSrsReview(
