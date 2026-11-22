@@ -49,20 +49,20 @@
   line-height: 1.7;
   font-size: var(--font-size-body, 16px);
   margin: 0 0 14px 0;
-  color: var(--text-main, #1a241e);
+  color: var(--text-main, #172033);
 }
 
 .lingora-block-list {
   margin: 0 0 14px 0;
   padding-left: 24px;
   line-height: 1.7;
-  color: var(--text-main, #1a241e);
+  color: var(--text-main, #172033);
 }
 
 .lingora-block-example {
   padding: 14px 18px;
   border-radius: var(--radius-md, 8px);
-  border-left: 4px solid var(--primary-green, #10b981);
+  border-left: 4px solid var(--primary-color, #2563eb);
   background-color: var(--surface-bg, #ffffff);
   border-top: 1px solid var(--border-subtle, #e2e8f0);
   border-right: 1px solid var(--border-subtle, #e2e8f0);
@@ -92,8 +92,8 @@
 }
 
 .lingora-callout-tip {
-  border-left: 4px solid #10b981;
-  background-color: #ecfdf5;
+  border-left: 4px solid #2563eb;
+  background-color: #eff6ff;
 }
 
 .lingora-callout-warning,

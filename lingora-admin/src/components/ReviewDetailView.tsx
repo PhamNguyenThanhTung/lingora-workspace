@@ -434,9 +434,9 @@ export function ReviewDetailView({
           role="status"
           id="reviewActionSuccess"
           style={{
-            background: '#f0fdf4',
-            border: '1px solid #86efac',
-            color: '#15803d',
+            background: '#eff6ff',
+            border: '1px solid #93c5fd',
+            color: '#1d4ed8',
             padding: '12px 16px',
             borderRadius: '8px',
             marginBottom: '20px',
@@ -573,8 +573,8 @@ export function ReviewDetailView({
                                 <span
                                   id={`review-character-badge-pin-${charBlock.blockKey}`}
                                   style={{
-                                    background: '#dcfce7',
-                                    color: '#15803d',
+                                    background: '#dbeafe',
+                                    color: '#1d4ed8',
                                     fontSize: '11px',
                                     padding: '2px 6px',
                                     borderRadius: '4px',
@@ -929,9 +929,9 @@ export function ReviewDetailView({
                             r.action === 'SUBMIT'
                               ? '#eff6ff'
                               : r.action === 'APPROVE'
-                              ? '#f0fdf4'
+                              ? '#eff6ff'
                               : r.action === 'PUBLISH'
-                              ? '#ecfdf5'
+                              ? '#eff6ff'
                               : r.action === 'REQUEST_CHANGES'
                               ? '#fffbeb'
                               : '#f1f5f9',
@@ -939,9 +939,9 @@ export function ReviewDetailView({
                             r.action === 'SUBMIT'
                               ? '#1d4ed8'
                               : r.action === 'APPROVE'
-                              ? '#166534'
+                              ? '#1E40AF'
                               : r.action === 'PUBLISH'
-                              ? '#065f46'
+                              ? '#1e40af'
                               : r.action === 'REQUEST_CHANGES'
                               ? '#b45309'
                               : '#475569',
@@ -1032,11 +1032,11 @@ export function ReviewDetailView({
           <div>
             <div
               style={{
-                background: '#f0fdf4',
-                border: '1px solid #bbf7d0',
+                background: '#eff6ff',
+                border: '1px solid #bfdbfe',
                 padding: '12px 16px',
                 borderRadius: '6px',
-                color: '#166534',
+                color: '#1E40AF',
                 marginBottom: '16px',
                 fontSize: '14px',
               }}
@@ -1050,7 +1050,7 @@ export function ReviewDetailView({
                 id="btnPublish"
                 onClick={handlePublish}
                 disabled={isPending || isReloading}
-                style={{ background: '#16a34a', borderColor: '#15803d' }}
+                style={{ background: '#2563eb', borderColor: '#1d4ed8' }}
               >
                 {isPending ? 'Đang xuất bản...' : 'Xuất bản và mở cho học viên'}
               </button>
@@ -1076,11 +1076,11 @@ export function ReviewDetailView({
         {detail.revision.status === 'PUBLISHED' && (
           <div
             style={{
-              background: '#ecfdf5',
-              border: '1px solid #a7f3d0',
+              background: '#eff6ff',
+              border: '1px solid #bfdbfe',
               padding: '12px 16px',
               borderRadius: '6px',
-              color: '#065f46',
+              color: '#1e40af',
               fontSize: '14px',
             }}
           >
@@ -1088,7 +1088,7 @@ export function ReviewDetailView({
               Bản sửa đổi này <strong>đã được xuất bản</strong> và đang là phiên bản chính thức của bài học.
             </div>
             {detail.lesson.availability !== 'AVAILABLE' && (
-              <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #a7f3d0', paddingTop: '10px' }}>
+              <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #bfdbfe', paddingTop: '10px' }}>
                 <span>Bài học đang ở trạng thái {detail.lesson.availability}. Bạn có thể mở bài học cho học viên ngay bây giờ.</span>
                 <button
                   type="button"
@@ -1096,7 +1096,7 @@ export function ReviewDetailView({
                   id="btnActivateLesson"
                   onClick={handleActivateLesson}
                   disabled={isPending || isReloading}
-                  style={{ background: '#16a34a', borderColor: '#15803d', padding: '6px 14px', fontSize: '13px' }}
+                  style={{ background: '#2563eb', borderColor: '#1d4ed8', padding: '6px 14px', fontSize: '13px' }}
                 >
                   {isPending ? 'Đang mở...' : 'Mở cho học viên'}
                 </button>

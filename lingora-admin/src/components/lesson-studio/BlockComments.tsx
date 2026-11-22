@@ -203,7 +203,7 @@ export function BlockComments({
             <div className={styles.commentBody}>{comment.body}</div>
 
             {comment.status === 'RESOLVED' && comment.resolvedBy && (
-              <div style={{ fontSize: '11px', color: '#15803d', marginTop: '6px' }}>
+              <div style={{ fontSize: '11px', color: '#1d4ed8', marginTop: '6px' }}>
                 ✓ Đã xử lý bởi <strong>{comment.resolvedBy.displayName || 'Giáo viên'}</strong>
                 {comment.resolvedAt && (
                   <span> lúc {new Date(comment.resolvedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</span>

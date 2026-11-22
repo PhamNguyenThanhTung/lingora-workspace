@@ -502,8 +502,8 @@ function CharacterBlockEditor({ block, onChange, disabled, lessonId }: Character
                     <span
                       id={`character-badge-strokes-${blockKey}`}
                       style={{
-                        background: '#dcfce7',
-                        color: '#15803d',
+                        background: '#dbeafe',
+                        color: '#1d4ed8',
                         fontSize: '11px',
                         padding: '2px 6px',
                         borderRadius: '4px',
@@ -672,7 +672,7 @@ function CharacterBlockEditor({ block, onChange, disabled, lessonId }: Character
                         {opt.meaning}
                       </div>
                     )}
-                    <div style={{ fontSize: '11px', color: opt.hasStrokes ? '#15803d' : '#b45309' }}>
+                    <div style={{ fontSize: '11px', color: opt.hasStrokes ? '#1d4ed8' : '#b45309' }}>
                       {opt.hasStrokes ? '✓ Có nét' : '⚠ Thiếu nét'}
                     </div>
                   </div>

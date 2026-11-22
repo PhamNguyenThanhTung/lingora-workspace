@@ -325,10 +325,10 @@ export const studioCss = `
 
 .blockTypeBadgeHeading { background: #fee2e2; color: #991b1b; }
 .blockTypeBadgeText { background: #e0e7ff; color: #3730a3; }
-.blockTypeBadgeExample { background: #dcfce7; color: #166534; }
+.blockTypeBadgeExample { background: #dbeafe; color: #1E40AF; }
 .blockTypeBadgeDialogue { background: #fef3c7; color: #92400e; }
 .blockTypeBadgeCallout { background: #ede9fe; color: #5b21b6; }
-.blockTypeBadgeMedia { background: #ccfbf1; color: #115e59; }
+.blockTypeBadgeMedia { background: #dbeafe; color: #115e59; }
 .blockTypeBadgeGrammar { background: #fae8ff; color: #86198f; }
 .blockTypeBadgeDivider { background: #f1f5f9; color: #64748b; }
 .blockTypeBadgeVocabulary { background: #fef9c3; color: #854d0e; }
@@ -478,8 +478,8 @@ export const studioCss = `
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  background: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .previewDeviceToggle {
@@ -651,9 +651,9 @@ export const studioCss = `
   border-radius: 4px;
   font-size: 11px;
   font-weight: 600;
-  background: #dcfce7;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
 }
 
 .commentBody {
@@ -682,14 +682,14 @@ export const studioCss = `
 }
 
 .commentActionBtnSuccess {
-  border-color: #86efac;
-  color: #15803d;
-  background: #f0fdf4;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+  background: #eff6ff;
 }
 
 .commentActionBtnSuccess:hover:not(:disabled) {
-  background: #dcfce7;
-  border-color: #4ade80;
+  background: #dbeafe;
+  border-color: #60a5fa;
 }
 `;
 

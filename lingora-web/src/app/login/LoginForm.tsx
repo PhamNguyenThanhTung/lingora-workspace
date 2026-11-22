@@ -127,7 +127,7 @@ export function LoginForm() {
         )}
 
         {infoMessage && (
-          <div id="loginInfoAlert" className="login-alert is-success" role="status" style={{ backgroundColor: '#ecfdf5', color: '#065f46', borderColor: '#a7f3d0' }}>
+          <div id="loginInfoAlert" className="login-alert is-success" role="status" style={{ backgroundColor: '#eff6ff', color: '#1e40af', borderColor: '#bfdbfe' }}>
             {infoMessage}
           </div>
         )}
@@ -190,7 +190,7 @@ export function LoginForm() {
                 href="/register"
                 id="toRegisterLink"
                 className="login-link"
-                style={{ color: 'var(--primary-green, #10b981)', textDecoration: 'underline', fontWeight: 500 }}
+                style={{ color: 'var(--primary-color, #2563eb)', textDecoration: 'underline', fontWeight: 500 }}
               >
                 Đăng ký ngay
               </Link>

@@ -288,8 +288,8 @@ export function LessonAssignModal({
                     <span
                       className="status-badge status-active"
                       style={{
-                        background: '#dcfce7',
-                        color: '#166534',
+                        background: '#dbeafe',
+                        color: '#1E40AF',
                         padding: '2px 8px',
                         borderRadius: '4px',
                         fontSize: '12px',

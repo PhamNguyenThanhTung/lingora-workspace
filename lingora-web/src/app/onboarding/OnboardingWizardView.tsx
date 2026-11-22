@@ -544,8 +544,8 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                           id={`langStatusOwned-${lang.code}`}
                           style={{
                             fontSize: '0.75rem',
-                            color: '#15803d',
-                            background: '#dcfce7',
+                            color: '#1d4ed8',
+                            background: '#dbeafe',
                             padding: '2px 6px',
                             borderRadius: '4px',
                             marginTop: '6px',
@@ -1041,16 +1041,16 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
       {/* STEP 7: Màn hình kết quả */}
       {step === 7 && completeResult && (
         <section id="stepResult">
-          <div style={{ textAlign: 'center', padding: '32px 16px', background: '#f0fdf4', borderRadius: '12px', border: '1px solid #bbf7d0', marginBottom: '24px' }}>
+          <div style={{ textAlign: 'center', padding: '32px 16px', background: '#eff6ff', borderRadius: '12px', border: '1px solid #bfdbfe', marginBottom: '24px' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🎉</div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#166534', marginBottom: '6px' }}>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1E40AF', marginBottom: '6px' }}>
               Chào mừng bạn đến với lộ trình học!
             </h2>
-            <p style={{ color: '#15803d', fontSize: '0.95rem', margin: '0 0 16px' }}>
+            <p style={{ color: '#1d4ed8', fontSize: '0.95rem', margin: '0 0 16px' }}>
               Lộ trình cá nhân hóa đã được kích hoạt thành công.
             </p>
 
-            <div style={{ display: 'inline-block', textAlign: 'left', background: '#fff', padding: '16px 20px', borderRadius: '8px', border: '1px solid #dcfce7', marginBottom: '20px', minWidth: '280px' }}>
+            <div style={{ display: 'inline-block', textAlign: 'left', background: '#fff', padding: '16px 20px', borderRadius: '8px', border: '1px solid #dbeafe', marginBottom: '20px', minWidth: '280px' }}>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Điểm bắt đầu:</div>
               <div style={{ fontWeight: 600, fontSize: '1.05rem', color: 'var(--primary, #2563eb)', marginBottom: '8px' }}>
                 {completeResult.plan.startLevel.code} - {getLocalized(completeResult.plan.startLevel.label)}

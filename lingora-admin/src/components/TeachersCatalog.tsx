@@ -197,9 +197,9 @@ export function TeachersCatalog({
             marginBottom: '20px',
             padding: '12px 16px',
             borderRadius: '6px',
-            backgroundColor: '#ECFDF5',
-            border: '1px solid #6EE7B7',
-            color: '#065F46',
+            backgroundColor: '#EFF6FF',
+            border: '1px solid #93C5FD',
+            color: '#1E40AF',
           }}
         >
           {mutationStatus}
@@ -321,8 +321,8 @@ export function TeachersCatalog({
                             borderRadius: '4px',
                             fontSize: '12px',
                             fontWeight: 500,
-                            backgroundColor: '#D1FAE5',
-                            color: '#065F46',
+                            backgroundColor: '#DBEAFE',
+                            color: '#1E40AF',
                           }}
                         >
                           Đang hoạt động

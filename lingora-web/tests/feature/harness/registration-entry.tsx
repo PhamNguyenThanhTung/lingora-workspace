@@ -52,7 +52,7 @@ function App() {
             </>
           )}
           <div className="login-footer" style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px' }}>
-            <a href="/login" id="toLoginLink" className="login-link" style={{ color: 'var(--primary-green, #10b981)', textDecoration: 'underline', fontWeight: 500 }}>
+            <a href="/login" id="toLoginLink" className="login-link" style={{ color: 'var(--primary-color, #2563eb)', textDecoration: 'underline', fontWeight: 500 }}>
               ← Quay lại trang Đăng nhập
             </a>
           </div>

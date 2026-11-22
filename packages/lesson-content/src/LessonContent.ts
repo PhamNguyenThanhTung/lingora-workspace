@@ -163,7 +163,7 @@ function renderExampleBlock(block: { content: ExampleContent }, key: string): Re
         padding: '14px 18px',
         margin: '12px 0',
         backgroundColor: 'var(--surface-bg, #ffffff)',
-        borderLeft: '4px solid var(--primary-green, #10b981)',
+        borderLeft: '4px solid var(--primary-color, #2563eb)',
         borderTop: '1px solid var(--border-subtle, #e2e8f0)',
         borderRight: '1px solid var(--border-subtle, #e2e8f0)',
         borderBottom: '1px solid var(--border-subtle, #e2e8f0)',
@@ -178,7 +178,7 @@ function renderExampleBlock(block: { content: ExampleContent }, key: string): Re
           fontWeight: 600,
           fontSize: 'var(--font-size-body, 16px)',
           marginBottom: block.content?.translation ? '6px' : '0',
-          color: 'var(--text-main, #1a241e)',
+          color: 'var(--text-main, #172033)',
         },
       },
       block.content?.text || ''
@@ -189,7 +189,7 @@ function renderExampleBlock(block: { content: ExampleContent }, key: string): Re
           {
             className: 'lingora-example-translation',
             style: {
-              color: 'var(--text-muted, #4a5b50)',
+              color: 'var(--text-muted, #59677d)',
               fontSize: 'var(--font-size-sub, 14px)',
               fontStyle: 'italic',
             },
@@ -244,7 +244,7 @@ function renderDialogueBlock(block: { content: DialogueContent }, key: string): 
             'span',
             {
               className: 'lingora-dialogue-text',
-              style: { fontSize: 'var(--font-size-body, 16px)', color: 'var(--text-main, #1a241e)' },
+              style: { fontSize: 'var(--font-size-body, 16px)', color: 'var(--text-main, #172033)' },
             },
             line.text
           )
@@ -256,7 +256,7 @@ function renderDialogueBlock(block: { content: DialogueContent }, key: string): 
                 className: 'lingora-dialogue-translation',
                 style: {
                   marginLeft: '90px',
-                  color: 'var(--text-muted, #4a5b50)',
+                  color: 'var(--text-muted, #59677d)',
                   fontSize: 'var(--font-size-sub, 14px)',
                   fontStyle: 'italic',
                 },
@@ -276,8 +276,8 @@ function renderCalloutBlock(block: { content: CalloutContent }, key: string): Re
   let icon = 'ℹ️';
 
   if (rawTone === 'tip') {
-    borderColor = '#10b981';
-    bgColor = '#ecfdf5';
+    borderColor = '#2563eb';
+    bgColor = '#eff6ff';
     icon = '💡';
   } else if (rawTone === 'warning' || rawTone === 'caution') {
     borderColor = '#f59e0b';
@@ -379,7 +379,7 @@ function renderMediaBlock(
             style: {
               marginTop: '8px',
               fontSize: 'var(--font-size-sub, 14px)',
-              color: 'var(--text-muted, #4a5b50)',
+              color: 'var(--text-muted, #59677d)',
               fontStyle: 'italic',
             },
           },
@@ -438,7 +438,7 @@ function renderGrammarBlock(block: { content: GrammarContent }, key: string): Re
           fontSize: 'var(--font-size-body, 16px)',
           lineHeight: 1.6,
           marginBottom: '14px',
-          color: 'var(--text-main, #1a241e)',
+          color: 'var(--text-main, #172033)',
         },
       },
       block.content?.explanation || ''
@@ -459,18 +459,18 @@ function renderGrammarBlock(block: { content: GrammarContent }, key: string): Re
             h(
               'div',
               { key: `ex-${exIdx}`, style: { fontSize: 'var(--font-size-sub, 14px)' } },
-              h('div', { style: { fontWeight: 600, color: 'var(--text-main, #1a241e)' } }, `• ${ex.text}`),
+              h('div', { style: { fontWeight: 600, color: 'var(--text-main, #172033)' } }, `• ${ex.text}`),
               ex.translation
                 ? h(
                     'div',
-                    { style: { color: 'var(--text-muted, #4a5b50)', fontStyle: 'italic', marginLeft: '14px' } },
+                    { style: { color: 'var(--text-muted, #59677d)', fontStyle: 'italic', marginLeft: '14px' } },
                     ex.translation
                   )
                 : null,
               ex.explanation
                 ? h(
                     'div',
-                    { style: { color: 'var(--text-muted, #4a5b50)', marginLeft: '14px', fontSize: '13px' } },
+                    { style: { color: 'var(--text-muted, #59677d)', marginLeft: '14px', fontSize: '13px' } },
                     `(${ex.explanation})`
                   )
                 : null
@@ -605,8 +605,8 @@ function renderCharacterBlock(
                   fontSize: '12px',
                   padding: '2px 8px',
                   borderRadius: '4px',
-                  background: '#dcfce7',
-                  color: '#166534',
+                  background: '#dbeafe',
+                  color: '#1E40AF',
                 },
               },
               'Hoạt ảnh nét'
@@ -790,7 +790,7 @@ function renderVocabularySection(
                 style: {
                   fontSize: '18px',
                   fontWeight: 700,
-                  color: 'var(--primary-green, #10b981)',
+                  color: 'var(--primary-color, #2563eb)',
                 },
               },
               snap.canonicalForm || ''
@@ -801,7 +801,7 @@ function renderVocabularySection(
                   {
                     style: {
                       fontSize: 'var(--font-size-sub, 14px)',
-                      color: 'var(--text-muted, #4a5b50)',
+                      color: 'var(--text-muted, #59677d)',
                     },
                   },
                   `/${snap.phonetic}/`
@@ -847,7 +847,7 @@ function renderVocabularySection(
                     style: {
                       fontSize: 'var(--font-size-ref, 12px)',
                       fontStyle: 'italic',
-                      color: 'var(--text-muted, #4a5b50)',
+                      color: 'var(--text-muted, #59677d)',
                     },
                   },
                   `(${snap.partOfSpeech})`
@@ -864,7 +864,7 @@ function renderVocabularySection(
             meaningEn && meaningEn !== meaningVi
               ? h(
                   'div',
-                  { style: { color: 'var(--text-muted, #4a5b50)', fontSize: 'var(--font-size-sub, 14px)' } },
+                  { style: { color: 'var(--text-muted, #59677d)', fontSize: 'var(--font-size-sub, 14px)' } },
                   meaningEn
                 )
               : null
@@ -878,7 +878,7 @@ function renderVocabularySection(
                     paddingTop: '6px',
                     borderTop: '1px dashed var(--border-subtle, #e2e8f0)',
                     fontSize: 'var(--font-size-sub, 14px)',
-                    color: 'var(--text-muted, #4a5b50)',
+                    color: 'var(--text-muted, #59677d)',
                     fontStyle: 'italic',
                   },
                 },
@@ -960,7 +960,7 @@ function renderExercisesSection(
                   fontSize: 'var(--font-size-ref, 12px)',
                   padding: '2px 8px',
                   borderRadius: '4px',
-                  backgroundColor: 'var(--canvas-bg, #fbfbf9)',
+                  backgroundColor: 'var(--canvas-bg, #f6f8fc)',
                   border: '1px solid var(--border-subtle, #e2e8f0)',
                 },
               },
@@ -988,7 +988,7 @@ function renderExercisesSection(
                         padding: '10px 14px',
                         border: '1px solid var(--border-subtle, #e2e8f0)',
                         borderRadius: 'var(--radius-sm, 6px)',
-                        backgroundColor: 'var(--canvas-bg, #fbfbf9)',
+                        backgroundColor: 'var(--canvas-bg, #f6f8fc)',
                       },
                     },
                     h('input', {
@@ -1014,7 +1014,7 @@ function renderExercisesSection(
                 {
                   style: {
                     padding: '12px 16px',
-                    backgroundColor: 'var(--canvas-bg, #fbfbf9)',
+                    backgroundColor: 'var(--canvas-bg, #f6f8fc)',
                     borderRadius: 'var(--radius-sm, 6px)',
                     border: '1px solid var(--border-subtle, #e2e8f0)',
                     fontSize: 'var(--font-size-body, 16px)',
@@ -1038,7 +1038,7 @@ function renderExercisesSection(
                       key: t.id,
                       style: {
                         padding: '6px 12px',
-                        backgroundColor: 'var(--canvas-bg, #fbfbf9)',
+                        backgroundColor: 'var(--canvas-bg, #f6f8fc)',
                         border: '1px solid var(--border-control, #cbd5e1)',
                         borderRadius: 'var(--radius-sm, 6px)',
                         fontWeight: 500,
@@ -1098,7 +1098,7 @@ function renderExercisesSection(
                           padding: '10px 14px',
                           border: '1px solid var(--border-subtle, #e2e8f0)',
                           borderRadius: 'var(--radius-sm, 6px)',
-                          backgroundColor: 'var(--canvas-bg, #fbfbf9)',
+                          backgroundColor: 'var(--canvas-bg, #f6f8fc)',
                         },
                       },
                       h('input', {
@@ -1129,7 +1129,7 @@ function renderExercisesSection(
                       {
                         style: {
                           padding: '10px 14px',
-                          backgroundColor: 'var(--canvas-bg, #fbfbf9)',
+                          backgroundColor: 'var(--canvas-bg, #f6f8fc)',
                           borderRadius: 'var(--radius-sm, 6px)',
                           border: '1px solid var(--border-subtle, #e2e8f0)',
                         },
@@ -1144,7 +1144,7 @@ function renderExercisesSection(
                       {
                         style: {
                           padding: '10px 14px',
-                          backgroundColor: 'var(--canvas-bg, #fbfbf9)',
+                          backgroundColor: 'var(--canvas-bg, #f6f8fc)',
                           borderRadius: 'var(--radius-sm, 6px)',
                           border: '1px solid var(--border-subtle, #e2e8f0)',
                         },

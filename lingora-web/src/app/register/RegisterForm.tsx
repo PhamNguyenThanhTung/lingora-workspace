@@ -112,12 +112,12 @@ export function RegisterForm() {
             className="login-alert is-success"
             role="status"
             style={{
-              backgroundColor: '#ecfdf5',
-              color: '#065f46',
-              borderColor: '#a7f3d0',
+              backgroundColor: '#eff6ff',
+              color: '#1e40af',
+              borderColor: '#bfdbfe',
               padding: '16px',
               borderRadius: '8px',
-              border: '1px solid #a7f3d0',
+              border: '1px solid #bfdbfe',
               marginTop: '16px',
             }}
           >
@@ -125,11 +125,11 @@ export function RegisterForm() {
             <p style={{ marginTop: '8px', fontSize: '14px', lineHeight: '1.5' }}>
               Sau khi xác thực email thông qua liên kết được gửi, bạn có thể đăng nhập bằng mật khẩu vừa tạo.
             </p>
-            <p style={{ marginTop: '6px', fontSize: '13px', color: '#047857', lineHeight: '1.4' }}>
+            <p style={{ marginTop: '6px', fontSize: '13px', color: '#1D4ED8', lineHeight: '1.4' }}>
               Bạn có thể mở liên kết xác thực trên bất kỳ thiết bị nào. Sau khi bấm xác nhận, hãy thử đăng nhập bằng email và mật khẩu vừa tạo. Liên kết có thời hạn; nếu đã hết hạn, hãy gửi lại bên dưới.
             </p>
-            <div id="registerResendSection" style={{ marginTop: '16px', borderTop: '1px solid #a7f3d0', paddingTop: '12px' }}>
-              <p style={{ fontSize: '13px', color: '#065f46', marginBottom: '8px' }}>
+            <div id="registerResendSection" style={{ marginTop: '16px', borderTop: '1px solid #bfdbfe', paddingTop: '12px' }}>
+              <p style={{ fontSize: '13px', color: '#1e40af', marginBottom: '8px' }}>
                 Không nhận được email? Gửi lại:
               </p>
               <ResendConfirmationForm initialEmail={email} />
@@ -223,7 +223,7 @@ export function RegisterForm() {
                   href="/login"
                   id="toLoginLink"
                   className="login-link"
-                  style={{ color: 'var(--primary-green, #10b981)', textDecoration: 'underline', fontWeight: 500 }}
+                  style={{ color: 'var(--primary-color, #2563eb)', textDecoration: 'underline', fontWeight: 500 }}
                 >
                   Đăng nhập
                 </Link>

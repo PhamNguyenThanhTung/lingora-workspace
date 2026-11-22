@@ -312,7 +312,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                         alignItems: 'center',
                         gap: '12px',
                         padding: '12px 14px',
-                        border: selectedOptionId === opt.id ? '2px solid var(--primary-green)' : '1px solid var(--border-control)',
+                        border: selectedOptionId === opt.id ? '2px solid var(--primary-color)' : '1px solid var(--border-control)',
                         borderRadius: 'var(--radius-sm)',
                         backgroundColor: 'var(--surface-bg)',
                         cursor: 'pointer',
@@ -373,7 +373,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                           alignItems: 'center',
                           gap: '12px',
                           padding: '12px 14px',
-                          border: selectedOptionId === opt.id ? '2px solid var(--primary-green)' : '1px solid var(--border-control)',
+                          border: selectedOptionId === opt.id ? '2px solid var(--primary-color)' : '1px solid var(--border-control)',
                           borderRadius: 'var(--radius-sm)',
                           backgroundColor: 'var(--surface-bg)',
                           cursor: 'pointer',
@@ -609,8 +609,8 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 width: '48px',
                 height: '48px',
                 borderRadius: '50%',
-                backgroundColor: 'var(--surface-badge-green)',
-                color: 'var(--primary-green)',
+                backgroundColor: 'var(--primary-subtle)',
+                color: 'var(--primary-color)',
                 fontSize: '24px',
                 fontWeight: 700,
                 marginBottom: '12px',
@@ -641,7 +641,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 textAlign: 'center',
               }}
             >
-              <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, color: 'var(--primary-green)', marginBottom: '8px' }}>
+              <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, color: 'var(--primary-color)', marginBottom: '8px' }}>
                 🎉 Phần thưởng & Thành tích
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px', marginTop: '12px', marginBottom: '16px' }}>
@@ -671,7 +671,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 {finalizeReward.newlyEnrolledCount > 0 && (
                   <div style={{ padding: '12px', backgroundColor: 'var(--canvas-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Từ nạp SRS</div>
-                    <div id="celebrationWordsEnrolled" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--primary-green)', marginTop: '4px' }}>
+                    <div id="celebrationWordsEnrolled" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--primary-color)', marginTop: '4px' }}>
                       +{finalizeReward.newlyEnrolledCount} từ
                     </div>
                   </div>
@@ -679,8 +679,8 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
               </div>
 
               {finalizeReward.earnedAchievements && finalizeReward.earnedAchievements.length > 0 && (
-                <div id="celebrationAchievements" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#ecfdf5', borderRadius: 'var(--radius-sm)', border: '1px solid #10b981' }}>
-                  <div style={{ fontWeight: 700, color: '#047857', marginBottom: '8px', fontSize: '14px' }}>
+                <div id="celebrationAchievements" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#eff6ff', borderRadius: 'var(--radius-sm)', border: '1px solid #2563eb' }}>
+                  <div style={{ fontWeight: 700, color: '#1D4ED8', marginBottom: '8px', fontSize: '14px' }}>
                     🏆 Huy hiệu mới mở khóa!
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -714,7 +714,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
               <div style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)', marginBottom: '4px' }}>
                 Điểm số đạt được
               </div>
-              <div id="practiceCompletionScore" style={{ fontSize: '28px', fontWeight: 700, color: 'var(--primary-green)' }}>
+              <div id="practiceCompletionScore" style={{ fontSize: '28px', fontWeight: 700, color: 'var(--primary-color)' }}>
                 {attempt.score.contributionUnits} / {attempt.score.maxUnits} ({attempt.score.percentage}%)
               </div>
             </div>
@@ -743,7 +743,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                   style={{
                     padding: '16px',
                     borderRadius: 'var(--radius-sm)',
-                    border: `1px solid ${entry.isCorrect ? 'var(--primary-green, #10b981)' : 'var(--danger-red, #ef4444)'}`,
+                    border: `1px solid ${entry.isCorrect ? 'var(--primary-color, #2563eb)' : 'var(--danger-red, #ef4444)'}`,
                     backgroundColor: 'var(--canvas-bg)',
                   }}
                 >
@@ -754,7 +754,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                     <span
                       className={`badge review-correctness ${entry.isCorrect ? 'badge-active' : 'badge-paused'}`}
                       style={{
-                        color: entry.isCorrect ? 'var(--primary-green)' : 'var(--danger-red)',
+                        color: entry.isCorrect ? 'var(--primary-color)' : 'var(--danger-red)',
                         fontWeight: 600,
                       }}
                     >
@@ -775,7 +775,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
 
                   <div style={{ fontSize: 'var(--font-size-sub)', marginBottom: '6px' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Đáp án đúng: </span>
-                    <span className="review-correct-answer" style={{ fontWeight: 600, color: 'var(--primary-green)' }}>
+                    <span className="review-correct-answer" style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
                       {entry.correctAnswer}
                     </span>
                   </div>
@@ -790,7 +790,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                         borderRadius: 'var(--radius-sm)',
                         fontSize: 'var(--font-size-sub)',
                         color: 'var(--text-body)',
-                        borderLeft: '3px solid var(--primary-green)',
+                        borderLeft: '3px solid var(--primary-color)',
                       }}
                     >
                       <strong>Giải thích:</strong> {entry.explanation}

@@ -684,13 +684,13 @@ export function AuditEventsCatalog({
 
                 const outcomeBg =
                   evt.outcome === 'SUCCESS'
-                    ? '#ECFDF5'
+                    ? '#EFF6FF'
                     : evt.outcome === 'DENIED' || evt.outcome === 'FAILURE'
                     ? '#FEF2F2'
                     : '#F3F4F6';
                 const outcomeColor =
                   evt.outcome === 'SUCCESS'
-                    ? '#065F46'
+                    ? '#1E40AF'
                     : evt.outcome === 'DENIED' || evt.outcome === 'FAILURE'
                     ? '#991B1B'
                     : '#374151';
