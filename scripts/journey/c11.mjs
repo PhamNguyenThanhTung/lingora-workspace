@@ -1,0 +1,11 @@
+import { open, stack, shot, text } from './lib.mjs';
+const CTX = '3ad5be92-f608-4fd1-a4c8-24d59f87c9cf';
+const l = await open('learner', { mobile: true }); const p = l.page;
+await p.goto(`${stack.web}/learn/${CTX}/${stack.authoringLessonId}`); await p.waitForLoadState('networkidle'); await p.waitForTimeout(1200);
+const dump = async (label) => { const t = (await text(p)).split('\n').filter(Boolean); const i = t.indexOf('Đang làm bài'); console.log(label, t.slice(i < 0 ? 4 : i).join(' | ').slice(0, 1200)); console.log('  btns', await p.$$eval('button:not([disabled])', (e) => e.map((x) => `${x.id}:${x.textContent.trim().slice(0,22)}`).join(', '))); };
+await p.locator('input[name=mcq-option][value=opt_2][id^=practice-]').click(); await p.click('#submitResponseBtn'); await p.waitForSelector('#formativeFeedback'); await p.waitForTimeout(400);
+await p.fill('#fillBlankInput', 'Family'); await p.click('#submitResponseBtn'); await p.waitForTimeout(1200);
+await dump('AFTER LAST:'); await shot(p, 'C6-L4-after-last', 'mobile');
+await p.waitForSelector('#finalizePracticeBtn:not([disabled])', { timeout: 10000 }).catch(() => console.log('no finalize btn'));
+const retry = await p.$$eval('button', (e) => e.map((x) => `${x.id}:${x.textContent.trim().slice(0,30)}`)); console.log(retry);
+await l.browser.close();

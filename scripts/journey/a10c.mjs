@@ -1,0 +1,14 @@
+import { open, stack, shot, text } from './lib.mjs';
+const { browser, page, errors } = await open('teacher');
+await page.goto(`${stack.admin}/my-lessons/${stack.authoringLessonId}`); await page.waitForLoadState('networkidle');
+const st = async (l) => console.log(l, await page.$$eval('#btnSaveDraft,#btnSubmitForReview', (e) => e.map((x) => `${x.id}:${x.disabled}`)));
+await st('initial');
+console.log('titles', await page.inputValue('#inputDraftTitleVi'), '|', await page.inputValue('#inputDraftTitleEn'));
+const cs = await page.$('#inputDraftChangeSummary'); console.log('changeSummary field', !!cs);
+await page.waitForTimeout(3000); await st('after3s');
+await page.click('#btnSubmitForReview'); await page.waitForTimeout(2500);
+console.log('alerts', await page.locator('[role=alert],[role=status],.alert').allInnerTexts());
+await st('after click');
+console.log((await text(page)).match(/Trạng thái[^\n]*/g));
+await shot(page, 'A10-after-submit', 'desktop');
+console.log('errors', errors); await browser.close();

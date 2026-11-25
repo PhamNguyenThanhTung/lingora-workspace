@@ -1,0 +1,20 @@
+import { open, stack, shot, text } from './lib.mjs';
+const rid = '1a3cd295-8c78-43d5-83ee-cd95f68d9cd5';
+const a = await open('admin');
+await a.page.goto(`${stack.admin}/review/${rid}`); await a.page.waitForLoadState('networkidle');
+// request changes with empty comment first
+await a.page.click('#btnRequestChanges'); await a.page.waitForTimeout(1200);
+console.log('empty-comment alerts:', await a.page.locator('[role=alert],[role=status],.alert,.error').allInnerTexts());
+await shot(a.page, 'B3-request-changes-empty', 'desktop');
+await a.page.fill('#inputReviewComment', 'Bài tập 3 (sắp xếp) nên thêm dấu chấm cuối câu; bổ sung 1 ví dụ cho từ sister.');
+await a.page.click('#btnRequestChanges'); await a.page.waitForTimeout(2500);
+console.log('after request:', await a.page.locator('[role=alert],[role=status],.alert').allInnerTexts(), a.page.url());
+console.log((await text(a.page)).match(/Trạng thái[^\n]*/g));
+await shot(a.page, 'B3-after-request-changes', 'desktop');
+console.log('admin errors', a.errors); await a.browser.close();
+const t = await open('teacher');
+await t.page.goto(`${stack.admin}/my-lessons/${stack.authoringLessonId}`); await t.page.waitForLoadState('networkidle');
+const tx = await text(t.page); console.log(tx.match(/Trạng thái[^\n]*/g), 'feedback visible:', /nên thêm dấu chấm/.test(tx));
+console.log('buttons', await t.page.$$eval('#btnSaveDraft,#btnSubmitForReview', (e) => e.map((x) => `${x.id}:${x.disabled}`)));
+await shot(t.page, 'B3-teacher-sees-feedback', 'desktop');
+console.log('teacher errors', t.errors); await t.browser.close();

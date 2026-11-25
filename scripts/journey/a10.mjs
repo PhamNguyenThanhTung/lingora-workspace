@@ -1,0 +1,12 @@
+import { open, stack, shot, text } from './lib.mjs';
+const { browser, page, errors } = await open('teacher');
+await page.goto(`${stack.admin}/my-lessons/${stack.authoringLessonId}`); await page.waitForLoadState('networkidle');
+await page.fill('#inputDraftChangeSummary', 'Bài mới: Gia đình của bạn');
+await page.click('#btnSubmitForReview'); await page.waitForTimeout(2000);
+console.log('alerts/status:', await page.locator('[role=alert],[role=status]').allInnerTexts());
+console.log((await text(page)).match(/(Trạng thái|Phiên bản|Bản sửa đổi)[^\n]*/g));
+await shot(page, 'A10-after-submit', 'desktop');
+console.log('buttons disabled?', await page.$$eval('#btnSaveDraft,#btnSubmitForReview,#inputDraftTitleVi', (e) => e.map((x) => `${x.id}:${x.disabled}`)));
+await page.goto(`${stack.admin}/my-lessons`); await page.waitForLoadState('networkidle');
+console.log((await text(page)).match(/#4[^\n]*/g));
+console.log('errors', errors); await browser.close();

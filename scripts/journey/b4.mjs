@@ -1,0 +1,18 @@
+import { open, stack, shot, text } from './lib.mjs';
+const t = await open('teacher');
+await t.page.goto(`${stack.admin}/my-lessons/${stack.authoringLessonId}`); await t.page.waitForLoadState('networkidle');
+await t.page.waitForTimeout(500);
+await t.page.click('#btnSubmitForReview'); await t.page.waitForTimeout(2500);
+console.log('submit', await t.page.locator('[role=alert],[role=status],.alert').allInnerTexts());
+console.log((await text(t.page)).match(/(Trạng thái|Bản sửa đổi)[^\n]*/g));
+await shot(t.page, 'B4-resubmitted', 'desktop');
+console.log('t errors', t.errors); await t.browser.close();
+const a = await open('admin');
+await a.page.goto(`${stack.admin}/review`); await a.page.waitForLoadState('networkidle');
+const href = await a.page.$$eval('a[href^="/review/"]', (e) => e.map((x) => x.getAttribute('href'))); console.log(href);
+await a.page.goto(`${stack.admin}${href[0]}`); await a.page.waitForLoadState('networkidle');
+await a.page.click('#btnApprove'); await a.page.waitForTimeout(3000);
+console.log('approve', await a.page.locator('[role=alert],[role=status],.alert').allInnerTexts(), a.page.url());
+console.log((await text(a.page)).match(/Trạng thái[^\n]*/g));
+await shot(a.page, 'B4-approved', 'desktop');
+console.log('a errors', a.errors); await a.browser.close();

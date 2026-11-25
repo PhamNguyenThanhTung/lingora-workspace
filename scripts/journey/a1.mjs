@@ -1,0 +1,12 @@
+import { open, stack, shot, text } from './lib.mjs';
+const { browser, page, errors } = await open('teacher');
+await page.goto(`${stack.admin}/my-lessons`); await page.waitForLoadState('networkidle');
+console.log('--- /my-lessons\n' + (await text(page)).slice(0, 1500));
+await shot(page, 'A1', 'desktop');
+const links = await page.$$eval('a', (as) => as.map((a) => a.getAttribute('href')));
+console.log('links', links);
+await page.goto(`${stack.admin}/my-lessons/${stack.authoringLessonId}`); await page.waitForLoadState('networkidle');
+console.log('--- lesson editor\n' + (await text(page)).slice(0, 2500));
+await shot(page, 'A2', 'desktop');
+console.log('errors', errors);
+await browser.close();

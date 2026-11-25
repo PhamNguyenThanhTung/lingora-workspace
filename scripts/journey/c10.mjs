@@ -1,0 +1,12 @@
+import { open, stack, shot, text } from './lib.mjs';
+const CTX = '3ad5be92-f608-4fd1-a4c8-24d59f87c9cf';
+const l = await open('learner', { mobile: true }); const p = l.page;
+await p.goto(`${stack.web}/learn/${CTX}/${stack.authoringLessonId}`); await p.waitForLoadState('networkidle'); await p.waitForTimeout(1200);
+const dump = async (label) => { const t = (await text(p)).split('\n').filter(Boolean); const i = t.indexOf('Đang làm bài'); console.log(label, t.slice(i < 0 ? 4 : i).join(' | ').slice(0, 800)); console.log('  btns', await p.$$eval('button:not([disabled])', (e) => e.map((x) => `${x.id}:${x.textContent.trim().slice(0,22)}`).join(', '))); };
+for (const w of ['I', 'have', 'one', 'sister']) await p.locator(`button[id^=tokenBtn-]:text-is("${w}")`).click();
+await shot(p, 'C5-L4-ex3-tokens', 'mobile');
+await p.click('#submitResponseBtn'); await p.waitForSelector('#formativeFeedback'); await p.waitForTimeout(400); await dump('AFTER REORDER OK:');
+await p.locator('input[type=text], textarea').first().fill('I have one brother'); await p.click('#submitResponseBtn'); await p.waitForSelector('#formativeFeedback'); await p.waitForTimeout(400); await dump('AFTER GRAMMAR OK:');
+await p.locator('input[type=radio]:not([disabled])').first().click({ force: true }).catch(()=>{});
+await dump('EX5:'); await shot(p, 'C5-L4-ex5', 'mobile');
+await l.browser.close();

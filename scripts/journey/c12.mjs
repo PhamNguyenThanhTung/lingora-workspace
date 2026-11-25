@@ -1,0 +1,16 @@
+import { open, stack, shot, text } from './lib.mjs';
+const CTX = '3ad5be92-f608-4fd1-a4c8-24d59f87c9cf';
+const l = await open('learner', { mobile: true }); const p = l.page;
+await p.goto(`${stack.web}/learn/${CTX}/${stack.authoringLessonId}`); await p.waitForLoadState('networkidle'); await p.waitForTimeout(1200);
+await p.locator('input[name=mcq-option][value=opt_2][id^=practice-]').click(); await p.click('#submitResponseBtn'); await p.waitForSelector('#formativeFeedback'); await p.waitForTimeout(600);
+const t = (await text(p)).split('\n').filter(Boolean); console.log('NEXT:', t.slice(t.indexOf('Đang làm bài')).join(' | ').slice(0, 500));
+await p.fill('#fillBlankInput', 'father'); await p.click('#submitResponseBtn'); await p.waitForTimeout(1500);
+await shot(p, 'C6-L4-ready-to-finish', 'mobile');
+console.log('btns', await p.$$eval('button', (e) => e.map((x) => `${x.id}:${x.textContent.trim().slice(0,22)}:${x.disabled}`).join(', ')));
+await p.waitForSelector('#finalizePracticeBtn:not([disabled])', { timeout: 15000 });
+await p.click('#finalizePracticeBtn'); await p.waitForSelector('#practiceCelebrationBox', { timeout: 15000 });
+await p.waitForTimeout(800); await shot(p, 'C7-L4-celebration', 'mobile');
+console.log('RESULT:', (await p.locator('#practiceCelebrationBox').innerText()).replace(/\n+/g, ' | '));
+console.log('btns', await p.$$eval('#practiceCelebrationBox button, #practiceCelebrationBox a', (e) => e.map((x) => `${x.id}:${x.textContent.trim().slice(0,30)}`).join(', ')));
+console.log('whole page tail:', (await text(p)).split('\n').filter(Boolean).slice(-25).join(' | ').slice(0, 1500));
+console.log('errors', l.errors); await l.browser.close();
