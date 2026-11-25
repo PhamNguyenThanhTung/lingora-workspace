@@ -1,5 +1,6 @@
 import { verifyLearnerIdentity, type CookieAdapter } from '../auth/index.ts';
 import { getLearnerPrisma } from '../db/index.ts';
+import { describeDbError } from '../db/safe-error.ts';
 import type {
   LearnerDto,
   LearningContextSummaryDto,
@@ -111,7 +112,8 @@ export async function loadLearnerContext(
         },
       },
     });
-  } catch {
+  } catch (error) {
+    console.error('learner.context_load_failed', describeDbError(error));
     return {
       ok: false,
       status: 503,
