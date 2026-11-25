@@ -30,7 +30,7 @@ export const SAMPLE_A1_CONSTANTS = {
   lesson3Id: '00000000-0000-0000-0000-000000000052',
 };
 
-const SAMPLE_LESSONS_DATA = [
+export const SAMPLE_A1_LESSONS = [
   {
     id: SAMPLE_A1_CONSTANTS.lesson1Id,
     position: 1,
@@ -66,11 +66,11 @@ const SAMPLE_LESSONS_DATA = [
         position: 2,
         isCore: true,
         create: {
-          canonicalForm: 'Morning',
-          senseKey: 'time-of-day',
-          phonetic: 'ˈmɔː.nɪŋ',
-          partOfSpeech: 'noun',
-          meaningLabels: { vi: 'Buổi sáng', en: 'The early part of the day' },
+          canonicalForm: 'Good morning',
+          senseKey: 'greeting-morning',
+          phonetic: 'ɡʊd ˈmɔː.nɪŋ',
+          partOfSpeech: 'phrase',
+          meaningLabels: { vi: 'Chào buổi sáng', en: 'Greeting used in the morning' },
           example: 'Good morning, how are you?',
         },
       },
@@ -84,6 +84,42 @@ const SAMPLE_LESSONS_DATA = [
           partOfSpeech: 'interjection',
           meaningLabels: { vi: 'Tạm biệt', en: 'Farewell' },
           example: 'Goodbye, see you tomorrow.',
+        },
+      },
+      {
+        position: 4,
+        isCore: true,
+        create: {
+          canonicalForm: 'Good evening',
+          senseKey: 'greeting-evening',
+          phonetic: 'ɡʊd ˈiːv.nɪŋ',
+          partOfSpeech: 'phrase',
+          meaningLabels: { vi: 'Chào buổi tối', en: 'Greeting used in the evening' },
+          example: 'Good evening, Mr. Brown.',
+        },
+      },
+      {
+        position: 5,
+        isCore: true,
+        create: {
+          canonicalForm: 'Nice to meet you',
+          senseKey: 'first-meeting',
+          phonetic: 'naɪs tə miːt juː',
+          partOfSpeech: 'phrase',
+          meaningLabels: { vi: 'Rất vui được gặp bạn', en: 'Polite phrase when meeting someone for the first time' },
+          example: 'Nice to meet you, I am Alex.',
+        },
+      },
+      {
+        position: 6,
+        isCore: true,
+        create: {
+          canonicalForm: 'How are you',
+          senseKey: 'ask-wellbeing',
+          phonetic: 'haʊ ɑː juː',
+          partOfSpeech: 'phrase',
+          meaningLabels: { vi: 'Bạn có khỏe không?', en: 'Question asking about someone’s health or mood' },
+          example: 'Hi Anna, how are you?',
         },
       },
     ],
@@ -133,6 +169,53 @@ const SAMPLE_LESSONS_DATA = [
         gradingData: { correctOrder: ['t1', 't2', 't3'] },
         feedbackData: {
           explanation: "'How are you?' là câu hỏi 'Bạn có khỏe không?' theo đúng trật tự từ trong tiếng Anh.",
+        },
+      },
+      {
+        position: 4,
+        isCore: true,
+        type: 'MCQ' as const,
+        promptData: {
+          prompt: 'Bạn gặp một người bạn vào buổi tối. Câu chào nào phù hợp nhất?',
+          options: [
+            { id: 'opt-1b-1', text: 'Good evening' },
+            { id: 'opt-1b-2', text: 'Good morning' },
+            { id: 'opt-1b-3', text: 'See you later' },
+          ],
+        },
+        gradingData: { correctOptionId: 'opt-1b-1' },
+        feedbackData: {
+          explanation: "'Good evening' là lời chào buổi tối; 'Good morning' dùng buổi sáng, còn 'See you later' là lời tạm biệt.",
+        },
+      },
+      {
+        position: 5,
+        isCore: true,
+        type: 'FILL_BLANK' as const,
+        promptData: {
+          prompt: 'Điền từ còn thiếu vào lời chào buổi chiều:',
+          sentence: 'Good ____!',
+        },
+        gradingData: { acceptedAnswers: ['afternoon'], caseSensitive: false },
+        feedbackData: {
+          explanation: "'Good afternoon' là lời chào buổi chiều.",
+        },
+      },
+      {
+        position: 6,
+        isCore: true,
+        type: 'REORDER' as const,
+        promptData: {
+          prompt: 'Sắp xếp các từ thành lời tạm biệt:',
+          tokens: [
+            { id: 't1b-1', text: 'See' },
+            { id: 't1b-2', text: 'you' },
+            { id: 't1b-3', text: 'later.' },
+          ],
+        },
+        gradingData: { correctOrder: ['t1b-1', 't1b-2', 't1b-3'] },
+        feedbackData: {
+          explanation: "'See you later.' nghĩa là 'Hẹn gặp lại', dùng khi tạm biệt.",
         },
       },
     ],
@@ -190,6 +273,30 @@ const SAMPLE_LESSONS_DATA = [
           partOfSpeech: 'noun',
           meaningLabels: { vi: 'Quốc gia, đất nước', en: 'A nation with its own government' },
           example: 'Vietnam is a beautiful country.',
+        },
+      },
+      {
+        position: 4,
+        isCore: true,
+        create: {
+          canonicalForm: 'Engineer',
+          senseKey: 'occupation-engineer',
+          phonetic: 'ˌen.dʒɪˈnɪər',
+          partOfSpeech: 'noun',
+          meaningLabels: { vi: 'Kỹ sư', en: 'A person who designs or builds machines or structures' },
+          example: 'My father is an engineer.',
+        },
+      },
+      {
+        position: 5,
+        isCore: true,
+        create: {
+          canonicalForm: 'From',
+          senseKey: 'origin',
+          phonetic: 'frɒm',
+          partOfSpeech: 'preposition',
+          meaningLabels: { vi: 'Từ, đến từ', en: 'Used to say where someone comes from' },
+          example: 'I am from Vietnam.',
         },
       },
     ],
@@ -253,6 +360,58 @@ const SAMPLE_LESSONS_DATA = [
           explanation: "'My name is Alex.' là cấu trúc chuẩn để giới thiệu tên mình.",
         },
       },
+      {
+        position: 4,
+        isCore: true,
+        type: 'FILL_BLANK' as const,
+        promptData: {
+          prompt: 'Ôn bài 1: điền từ còn thiếu vào đoạn làm quen:',
+          sentence: 'Nice to meet you. My name ____ Alex.',
+        },
+        gradingData: { acceptedAnswers: ['is'], caseSensitive: false },
+        feedbackData: {
+          explanation: "Sau 'Nice to meet you' (bài 1), ta giới thiệu tên bằng 'My name is Alex.'",
+        },
+      },
+      {
+        position: 5,
+        isCore: true,
+        type: 'MCQ' as const,
+        promptData: {
+          prompt: 'Câu nào dùng đúng mạo từ trước nghề nghiệp bắt đầu bằng nguyên âm?',
+          options: [
+            { id: 'opt-2b-1', text: 'I am an engineer.' },
+            { id: 'opt-2b-2', text: 'I am a engineer.' },
+            { id: 'opt-2b-3', text: 'I am engineer.' },
+          ],
+        },
+        gradingData: { correctOptionId: 'opt-2b-1' },
+        feedbackData: {
+          explanation: "'engineer' bắt đầu bằng nguyên âm /e/ nên dùng mạo từ 'an': 'I am an engineer.'",
+        },
+      },
+      {
+        position: 6,
+        isCore: true,
+        type: 'GRAMMAR' as const,
+        promptData: {
+          prompt: 'Viết câu hoàn chỉnh giới thiệu nghề nghiệp của bạn theo cấu trúc:',
+          sourceSentence: 'engineer (kỹ sư)',
+          targetPattern: 'Subject + To Be + a/an + Job',
+        },
+        gradingData: {
+          acceptedAnswers: [
+            'I am an engineer.',
+            "I'm an engineer.",
+            'I am an engineer',
+            "I'm an engineer",
+          ],
+          caseSensitive: false,
+        },
+        feedbackData: {
+          explanation: "Cấu trúc 'Subject + To Be + a/an + Job' với 'engineer' (nguyên âm) cần 'an': 'I am an engineer.'",
+        },
+      },
     ],
   },
   {
@@ -310,6 +469,42 @@ const SAMPLE_LESSONS_DATA = [
           example: 'They work from Monday to Friday.',
         },
       },
+      {
+        position: 4,
+        isCore: true,
+        create: {
+          canonicalForm: 'Wake up',
+          senseKey: 'stop-sleeping',
+          phonetic: 'weɪk ʌp',
+          partOfSpeech: 'phrasal verb',
+          meaningLabels: { vi: 'Thức dậy', en: 'To stop sleeping' },
+          example: 'She wakes up at six.',
+        },
+      },
+      {
+        position: 5,
+        isCore: true,
+        create: {
+          canonicalForm: 'Go',
+          senseKey: 'move-to-place',
+          phonetic: 'ɡəʊ',
+          partOfSpeech: 'verb',
+          meaningLabels: { vi: 'Đi', en: 'To move or travel to a place' },
+          example: 'He goes to school by bus.',
+        },
+      },
+      {
+        position: 6,
+        isCore: true,
+        create: {
+          canonicalForm: 'School',
+          senseKey: 'place-of-study',
+          phonetic: 'skuːl',
+          partOfSpeech: 'noun',
+          meaningLabels: { vi: 'Trường học', en: 'A place where children go to learn' },
+          example: 'She goes to school every day.',
+        },
+      },
     ],
     exercises: [
       {
@@ -361,6 +556,58 @@ const SAMPLE_LESSONS_DATA = [
           explanation: "'She wakes up at six.' dùng thì hiện tại đơn cho thói quen; chủ ngữ 'She' là ngôi thứ ba số ít nên động từ 'wake' thêm 's' thành 'wakes'.",
         },
       },
+      {
+        position: 4,
+        isCore: true,
+        type: 'FILL_BLANK' as const,
+        promptData: {
+          prompt: 'Chia động từ cho ngôi thứ ba số ít (chú ý động từ kết thúc bằng -o):',
+          sentence: 'She ____ (go) to school every day.',
+        },
+        gradingData: { acceptedAnswers: ['goes'], caseSensitive: false },
+        feedbackData: {
+          explanation: "Động từ 'go' kết thúc bằng -o nên thêm '-es' thành 'goes' với chủ ngữ 'She'.",
+        },
+      },
+      {
+        position: 5,
+        isCore: true,
+        type: 'MCQ' as const,
+        promptData: {
+          prompt: 'Ôn bài 2: Alex là kỹ sư. Câu nào đúng?',
+          options: [
+            { id: 'opt-3b-1', text: 'He is an engineer.' },
+            { id: 'opt-3b-2', text: 'He is a engineer.' },
+            { id: 'opt-3b-3', text: 'He are an engineer.' },
+          ],
+        },
+        gradingData: { correctOptionId: 'opt-3b-1' },
+        feedbackData: {
+          explanation: "Dùng 'is' với 'He' và mạo từ 'an' trước 'engineer' (bài 2): 'He is an engineer.'",
+        },
+      },
+      {
+        position: 6,
+        isCore: true,
+        type: 'GRAMMAR' as const,
+        promptData: {
+          prompt: "Viết lại câu cho chủ ngữ 'He' (thì hiện tại đơn):",
+          sourceSentence: 'I wake up at 6 AM.',
+          targetPattern: 'He + động từ ngôi thứ ba số ít + ...',
+        },
+        gradingData: {
+          acceptedAnswers: [
+            'He wakes up at 6 AM.',
+            'He wakes up at 6 AM',
+            'He wakes up at six.',
+            'He wakes up at six',
+          ],
+          caseSensitive: false,
+        },
+        feedbackData: {
+          explanation: "Với 'He', động từ 'wake' thêm 's' thành 'wakes': 'He wakes up at 6 AM.'",
+        },
+      },
     ],
   },
 ];
@@ -407,7 +654,7 @@ export async function provisionSampleA1Curriculum(
   }
 
   // 2. Preflight global vocabulary identities for all proposed sample words across all slots (R2)
-  for (const sampleLesson of SAMPLE_LESSONS_DATA) {
+  for (const sampleLesson of SAMPLE_A1_LESSONS) {
     for (const v of sampleLesson.vocabulary) {
       const normalizedForm = v.create.canonicalForm.trim().toLowerCase();
       const senseKey = v.create.senseKey?.trim() || '';
@@ -492,18 +739,18 @@ export async function provisionSampleA1Curriculum(
   }
 
   type SlotPlan =
-    | { type: 'CREATE_FULL'; sampleLesson: (typeof SAMPLE_LESSONS_DATA)[0] }
-    | { type: 'RESUME_CANONICAL_SKELETON'; lesson: (typeof existingLessons)[0]; sampleLesson: (typeof SAMPLE_LESSONS_DATA)[0] }
-    | { type: 'RESUME_ASSIGNED'; lesson: (typeof existingLessons)[0]; sampleLesson: (typeof SAMPLE_LESSONS_DATA)[0] }
-    | { type: 'RESUME_DRAFT'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; sampleLesson: (typeof SAMPLE_LESSONS_DATA)[0] }
-    | { type: 'RESUME_IN_REVIEW'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; submissionId: string; sampleLesson: (typeof SAMPLE_LESSONS_DATA)[0] }
-    | { type: 'RESUME_APPROVED'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; submissionId: string; sampleLesson: (typeof SAMPLE_LESSONS_DATA)[0] }
-    | { type: 'RESUME_ACTIVATE'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; sampleLesson: (typeof SAMPLE_LESSONS_DATA)[0] }
-    | { type: 'NOOP_COMPLETED'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; sampleLesson: (typeof SAMPLE_LESSONS_DATA)[0] };
+    | { type: 'CREATE_FULL'; sampleLesson: (typeof SAMPLE_A1_LESSONS)[0] }
+    | { type: 'RESUME_CANONICAL_SKELETON'; lesson: (typeof existingLessons)[0]; sampleLesson: (typeof SAMPLE_A1_LESSONS)[0] }
+    | { type: 'RESUME_ASSIGNED'; lesson: (typeof existingLessons)[0]; sampleLesson: (typeof SAMPLE_A1_LESSONS)[0] }
+    | { type: 'RESUME_DRAFT'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; sampleLesson: (typeof SAMPLE_A1_LESSONS)[0] }
+    | { type: 'RESUME_IN_REVIEW'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; submissionId: string; sampleLesson: (typeof SAMPLE_A1_LESSONS)[0] }
+    | { type: 'RESUME_APPROVED'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; submissionId: string; sampleLesson: (typeof SAMPLE_A1_LESSONS)[0] }
+    | { type: 'RESUME_ACTIVATE'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; sampleLesson: (typeof SAMPLE_A1_LESSONS)[0] }
+    | { type: 'NOOP_COMPLETED'; lesson: (typeof existingLessons)[0]; revision: (typeof existingLessons)[0]['revisions'][0]; sampleLesson: (typeof SAMPLE_A1_LESSONS)[0] };
 
   const plans: SlotPlan[] = [];
 
-  for (const sampleLesson of SAMPLE_LESSONS_DATA) {
+  for (const sampleLesson of SAMPLE_A1_LESSONS) {
     const pos = sampleLesson.position;
     const existing = existingLessons.find((l) => l.position === pos);
 
@@ -817,7 +1064,7 @@ export async function provisionSampleA1Curriculum(
   // 4. Idempotency short-circuit: all 3 lessons are already completed matching trio
   if (plans.every((p) => p.type === 'NOOP_COMPLETED')) {
     const sorted = existingLessons
-      .filter((l) => SAMPLE_LESSONS_DATA.some((s) => s.position === l.position))
+      .filter((l) => SAMPLE_A1_LESSONS.some((s) => s.position === l.position))
       .sort((a, b) => a.position - b.position);
     return {
       alreadyProvisioned: true,

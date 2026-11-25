@@ -360,7 +360,7 @@ describe('P2: Real PostgreSQL Sample Curriculum Persistence & Invariant Proof (R
   });
 
   test('(e) global later-vocabulary conflict preflights and fails closed before lesson writes', async () => {
-    // Pre-insert conflicting global concept for word 'Morning' in course language
+    // Pre-insert conflicting global concept for word 'Work' in course language
     const langRes = await prisma.course.findUniqueOrThrow({
       where: { id: SAMPLE_A1_CONSTANTS.courseId },
       select: { languageId: true },
@@ -369,9 +369,9 @@ describe('P2: Real PostgreSQL Sample Curriculum Persistence & Invariant Proof (R
     await prisma.vocabularyConcept.create({
       data: {
         languageId: langRes.languageId,
-        canonicalForm: 'Morning',
-        normalizedForm: 'morning',
-        senseKey: 'time-of-day',
+        canonicalForm: 'Work',
+        normalizedForm: 'work',
+        senseKey: 'labor',
         meaningLabels: { vi: 'Nghĩa xung đột thực tế', en: 'Conflicting meaning' },
         createdBy: adminId,
       },
@@ -385,7 +385,7 @@ describe('P2: Real PostgreSQL Sample Curriculum Persistence & Invariant Proof (R
       },
       (err) => {
         assert.match(err.message, /SAMPLE_CURRICULUM_CONFLICT/);
-        assert.match(err.message, /Conflicting global vocabulary concept for word 'Morning'/);
+        assert.match(err.message, /Conflicting global vocabulary concept for word 'Work'/);
         return true;
       }
     );
@@ -396,7 +396,7 @@ describe('P2: Real PostgreSQL Sample Curriculum Persistence & Invariant Proof (R
 
     // Clean up
     await prisma.vocabularyConcept.deleteMany({
-      where: { languageId: langRes.languageId, normalizedForm: 'morning' },
+      where: { languageId: langRes.languageId, normalizedForm: 'work' },
     });
   });
 

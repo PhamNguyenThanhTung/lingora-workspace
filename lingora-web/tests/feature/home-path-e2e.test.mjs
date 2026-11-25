@@ -302,6 +302,25 @@ async function run() {
     await page.click('#submitResponseBtn');
     await page.waitForSelector('#formativeFeedback', { timeout: 10000 });
 
+    // Answer Exercise 4 (MCQ - opt-1b-1 is correct)
+    await page.locator('input[value="opt-1b-1"]').click();
+    await page.click('#submitResponseBtn');
+    await page.waitForSelector('#formativeFeedback', { timeout: 10000 });
+
+    // Answer Exercise 5 (FILL_BLANK - "afternoon")
+    await page.waitForSelector('#fillBlankInput', { timeout: 10000 });
+    await page.fill('#fillBlankInput', 'afternoon');
+    await page.click('#submitResponseBtn');
+    await page.waitForSelector('#formativeFeedback', { timeout: 10000 });
+
+    // Answer Exercise 6 (REORDER - See, you, later.)
+    await page.waitForSelector('#tokenBtn-t1b-1', { timeout: 10000 });
+    await page.click('#tokenBtn-t1b-1');
+    await page.click('#tokenBtn-t1b-2');
+    await page.click('#tokenBtn-t1b-3');
+    await page.click('#submitResponseBtn');
+    await page.waitForSelector('#formativeFeedback', { timeout: 10000 });
+
     // Finalize practice attempt
     await page.waitForSelector('#finalizePracticeBtn:not([disabled])', { timeout: 15000 });
     const finalizePromise = page.waitForResponse(res => res.url().includes('/finalize') && res.request().method() === 'POST');
