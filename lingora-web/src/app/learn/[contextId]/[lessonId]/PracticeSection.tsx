@@ -655,7 +655,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                   <div className="celebrate__tile" style={{ animationDelay: '320ms' }}>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Kim cương</div>
                     <div id="celebrationGems" style={{ fontSize: '20px', fontWeight: 800, color: '#0ea5e9', marginTop: '4px' }}>
-                      💎 +{finalizeReward.gems}
+                      <span aria-hidden="true">💎</span> +{finalizeReward.gems}
                     </div>
                   </div>
                 )}

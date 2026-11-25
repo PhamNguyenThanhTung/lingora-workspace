@@ -899,21 +899,21 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '14px' }}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div id="currentStreakDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="home-stats__icon">🔥</span>
+                      <span className="home-stats__icon" aria-hidden="true">🔥</span>
                       <div>
                         <strong id="streakBadge" style={{ fontSize: '1rem', display: 'block' }}>{streak.currentStreak} ngày</strong>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Kỷ lục: {streak.longestStreak} ngày</span>
                       </div>
                     </div>
                     <div id="totalXpDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="home-stats__icon">⚡</span>
+                      <span className="home-stats__icon" aria-hidden="true">⚡</span>
                       <div>
                         <strong id="totalXpBadge" style={{ fontSize: '1rem', display: 'block' }}>{totalXp} XP</strong>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Tổng điểm</span>
                       </div>
                     </div>
                     <div id="totalGemsDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="home-stats__icon">💎</span>
+                      <span className="home-stats__icon" aria-hidden="true">💎</span>
                       <div>
                         <strong id="totalGemsBadge" style={{ fontSize: '1rem', display: 'block' }}>{totalGems}</strong>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Kim cương</span>
