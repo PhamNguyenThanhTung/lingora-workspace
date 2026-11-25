@@ -82,6 +82,20 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   }
   const sessionActive = !!attempt && !attempt.isCompleted && sessionOpen;
 
+  // F4: the session is a full-screen overlay; stop the lesson page behind it from scrolling.
+  useEffect(() => {
+    if (!sessionActive) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previous; };
+  }, [sessionActive]);
+
+  // F3: once the learner starts answering the next question, the previous result banner is stale.
+  const hasDraftAnswer = selectedOptionId !== '' || textInput !== '' || reorderTokens.length > 0;
+  useEffect(() => {
+    if (hasDraftAnswer && lastFeedback) setDismissedSeq(feedbackSeq);
+  }, [hasDraftAnswer, lastFeedback, feedbackSeq]);
+
   async function execute(candidate: Command) {
     if (busy.current || isStale || accessError != null) return;
     const command = pending.current ?? candidate;
@@ -561,6 +575,9 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 >
                   <span className="practice-sheet__icon" aria-hidden="true">{lastFeedback.isCorrect ? '✓' : '✗'}</span>
                   <span className="practice-sheet__msg">
+                    <span id="feedbackPrevLabel" style={{ display: 'block', fontSize: 12, fontWeight: 600, opacity: 0.75, marginBottom: 2 }}>
+                      Kết quả câu vừa rồi
+                    </span>
                     {lastFeedback.message}
                     {!lastFeedback.isCorrect && lastFeedback.correctAnswer && (
                       <span id="feedbackCorrectAnswer" style={{ display: 'block', fontWeight: 400, marginTop: 4 }}>
