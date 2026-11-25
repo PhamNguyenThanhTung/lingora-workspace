@@ -630,4 +630,82 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       assert.equal(calledExactEndpoint, true, 'Mutant F killed: Save draft MUST call exact PATCH URL');
     });
   });
+
+  // =========================================================================
+  // 6. F5: Legacy (paragraph) mode exposes a learner preview of staged,
+  //    unsaved content and never leaks grading answers.
+  // =========================================================================
+
+  test('F5: legacy paragraph editor previews staged unsaved content with the learner renderer and hides grading answers', { timeout: 20000 }, async () => {
+    await withPage('page-teacher-draft-wire', async (page) => {
+      await page.route('**/api/**', (route) =>
+        fulfill(route, 500, { error: { message: 'Preview must not call the server' } })
+      );
+
+      // Legacy mode is the default: Lesson Studio is not mounted.
+      assert.equal(await page.locator('#lessonStudioLayout').count(), 0);
+      assert.equal(await page.locator('#legacyPreviewPanel').count(), 0);
+
+      // Stage content that was never saved.
+      await page.locator('#inputDraftTitleVi').fill('Tiêu đề nháp chưa lưu');
+      await page.locator('#inputParagraph-0').fill('Đoạn văn nháp chưa lưu của giáo viên');
+      await page.locator('#btnAddParagraph').click();
+      await page.locator('#inputParagraph-1').fill('Đoạn văn thứ hai chưa lưu');
+
+      // Stage a FILL_BLANK exercise whose accepted answer is a unique sentinel.
+      await page.locator('#btnAddExercise').click();
+      await page.locator('#exerciseModal').waitFor({ state: 'visible' });
+      await page.locator('#selectExerciseType').selectOption('FILL_BLANK');
+      await page.locator('#inputExercisePrompt').fill('Điền từ còn thiếu vào chỗ trống');
+      await page.locator('#inputFillBlankSentence').fill('Tôi ____ đến trường.');
+      await page.locator('#inputFillBlankAnswers').fill('SENTINELANSWERLEAK');
+      await page.locator('#inputExerciseExplanation').fill('SENTINELEXPLANATIONLEAK');
+      await page.locator('#btnSaveExerciseModal').click();
+      await page.locator('#exerciseModal').waitFor({ state: 'hidden' });
+
+      // Open the preview.
+      await page.locator('#btnTogglePreview').click();
+      const panel = page.locator('#legacyPreviewPanel');
+      await panel.waitFor({ state: 'visible' });
+      assert.equal(await page.locator('#btnTogglePreview').getAttribute('aria-expanded'), 'true');
+
+      const panelText = await panel.innerText();
+      assert.match(panelText, /Tiêu đề nháp chưa lưu/);
+      assert.match(panelText, /Đoạn văn nháp chưa lưu của giáo viên/);
+      assert.match(panelText, /Đoạn văn thứ hai chưa lưu/);
+      assert.match(panelText, /Điền từ còn thiếu vào chỗ trống/);
+
+      // The learner renderer is reused, so the learner markup is present.
+      assert.equal(await panel.locator('.lingora-lesson-content').count(), 1);
+      assert.equal(await panel.locator('#contentBlocksSection').count(), 1);
+
+      // No grading answers or author-only feedback may reach the preview DOM.
+      const panelHtml = await panel.innerHTML();
+      for (const secret of [
+        'SENTINELANSWERLEAK',
+        'SENTINELEXPLANATIONLEAK',
+        'gradingData',
+        'acceptedAnswers',
+        'correctOptionId',
+        'caseSensitive',
+      ]) {
+        assert.equal(
+          panelHtml.includes(secret),
+          false,
+          `Preview must not expose grading payload "${secret}"`
+        );
+      }
+
+      // Live updates: editing a paragraph re-renders the preview.
+      await page.locator('#inputParagraph-1').fill('Đoạn văn đã chỉnh sửa trực tiếp');
+      await page.waitForFunction(() =>
+        document.querySelector('#legacyPreviewPanel')?.innerText.includes('Đoạn văn đã chỉnh sửa trực tiếp')
+      );
+
+      // Toggling closes it again.
+      await page.locator('#btnTogglePreview').click();
+      await panel.waitFor({ state: 'detached' });
+      assert.equal(await page.locator('#btnTogglePreview').getAttribute('aria-expanded'), 'false');
+    });
+  });
 });
