@@ -46,7 +46,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const [selectedOptionId, setSelectedOptionId] = useState('');
   const [textInput, setTextInput] = useState('');
   const [reorderTokens, setReorderTokens] = useState<string[]>([]);
-  const [lastFeedback, setLastFeedback] = useState<{ isCorrect: boolean; message: string } | null>(null);
+  const [lastFeedback, setLastFeedback] = useState<{ isCorrect: boolean; message: string; correctAnswer?: string | null; explanation?: string | null } | null>(null);
   const [feedbackSeq, setFeedbackSeq] = useState(0);
   const [dismissedSeq, setDismissedSeq] = useState(-1);
   const [sessionOpen, setSessionOpen] = useState(true);
@@ -119,7 +119,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
             typeof feedback.isCorrect !== 'boolean' || typeof feedback.formativeFeedback !== 'string') {
           throw new Error('Phản hồi câu trả lời chưa hợp lệ. Vui lòng thử lại.');
         }
-        setLastFeedback({ isCorrect: feedback.isCorrect, message: feedback.formativeFeedback });
+        setLastFeedback({ isCorrect: feedback.isCorrect, message: feedback.formativeFeedback, correctAnswer: feedback.correctAnswer, explanation: feedback.explanation });
         setFeedbackSeq((n) => n + 1);
       } else setLastFeedback(null);
       if (command.kind === 'finalize' && !dto.isCompleted) throw new Error('Chưa ghi nhận kết quả hoàn thành. Vui lòng thử lại.');
@@ -560,7 +560,19 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                   style={{ marginTop: 0 }}
                 >
                   <span className="practice-sheet__icon" aria-hidden="true">{lastFeedback.isCorrect ? '✓' : '✗'}</span>
-                  <span className="practice-sheet__msg">{lastFeedback.message}</span>
+                  <span className="practice-sheet__msg">
+                    {lastFeedback.message}
+                    {!lastFeedback.isCorrect && lastFeedback.correctAnswer && (
+                      <span id="feedbackCorrectAnswer" style={{ display: 'block', fontWeight: 400, marginTop: 4 }}>
+                        Đáp án đúng: <strong>{lastFeedback.correctAnswer}</strong>
+                      </span>
+                    )}
+                    {!lastFeedback.isCorrect && lastFeedback.explanation && (
+                      <span id="feedbackExplanation" style={{ display: 'block', fontWeight: 400, marginTop: 4 }}>
+                        {lastFeedback.explanation}
+                      </span>
+                    )}
+                  </span>
                   <button type="button" className="practice-sheet__close" onClick={() => setDismissedSeq(feedbackSeq)}>
                     Ẩn
                   </button>

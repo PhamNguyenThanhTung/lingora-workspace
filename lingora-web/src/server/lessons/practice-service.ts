@@ -200,6 +200,18 @@ function formatCorrectAnswerText(type: string, promptData: any, gradingData: any
   return '';
 }
 
+/** Đáp án đúng + giải thích, chỉ dùng cho câu học viên đã trả lời sai (request đầu và replay dùng chung). */
+function wrongAnswerHints(exercise: ExerciseWithSecret | undefined) {
+  const secret = exercise?.itemRevision.gradingSecret;
+  if (!exercise || !secret) return { correctAnswer: null, explanation: null };
+  const raw = (secret.feedbackData as any)?.explanation;
+  return {
+    correctAnswer:
+      formatCorrectAnswerText(exercise.itemRevision.type, exercise.itemRevision.promptData, secret.gradingData) || null,
+    explanation: typeof raw === 'string' && raw.trim() ? raw.trim() : null,
+  };
+}
+
 export function buildPracticeReviewEntries(
   coreExercises: ExerciseWithSecret[],
   responses: Array<{
@@ -613,6 +625,10 @@ export async function submitPracticeResponse(
         input: existingOp.input,
         formativeFeedback: existingOp.isCorrect ? 'Chính xác!' : 'Chưa chính xác.',
       };
+      if (!existingOp.isCorrect) {
+        const exercises = await loadRevisionCoreExercises(tx, attempt.lessonRevisionId);
+        Object.assign(responseDto, wrongAnswerHints(exercises.find((e: any) => e.id === existingOp.lessonExerciseId)));
+      }
       return { response: responseDto, attempt: attemptDto };
     }
 
@@ -692,6 +708,9 @@ export async function submitPracticeResponse(
       input: createdResponse.input,
       formativeFeedback: gradeResult.formativeFeedback,
     };
+    if (!gradeResult.isCorrect) {
+      Object.assign(responseDto, wrongAnswerHints(queue.nextExercise));
+    }
 
     return { response: responseDto, attempt: updatedAttemptDto };
   }, { isolationLevel: 'ReadCommitted', timeout: 15000 });

@@ -194,6 +194,9 @@ export interface PracticeResponseDto {
   respondedAt: string;
   input: unknown;
   formativeFeedback: string;
+  /** Chỉ có khi trả lời sai: đáp án đúng và giải thích để học viên hiểu ngay. */
+  correctAnswer?: string | null;
+  explanation?: string | null;
 }
 
 export interface PracticeReviewEntryDto {
