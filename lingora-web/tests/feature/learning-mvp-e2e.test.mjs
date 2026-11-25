@@ -776,6 +776,8 @@ async function run() {
     await page.locator('input[value="opt-1-2"]').click();
     await page.click('#submitResponseBtn');
     await page.waitForSelector('#formativeFeedback.alert-box.is-warning', { timeout: 10000 });
+    assert.ok((await page.locator('#feedbackCorrectAnswer').innerText()).includes('Đáp án đúng'), 'Wrong answer must reveal the correct answer immediately');
+    assert.ok(await page.locator('#feedbackExplanation').count() === 1, 'Wrong answer must show the authored explanation immediately');
     console.log('✔ Submitted Exercise 1 with intentional wrong answer, formative feedback displayed');
 
     // Exercise 2 (Pass 1): FILL_BLANK ("meet")

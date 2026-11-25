@@ -160,6 +160,11 @@ export function ReviewDetailView({
 
   const handleRequestChanges = async () => {
     if (isPendingRef.current) return;
+    if (!comment.trim()) {
+      setSuccessMessage(null);
+      setErrorMessage('Vui lòng nhập nhận xét để giáo viên biết cần chỉnh sửa gì.');
+      return;
+    }
     isPendingRef.current = true;
     setIsPending(true);
     setErrorMessage(null);

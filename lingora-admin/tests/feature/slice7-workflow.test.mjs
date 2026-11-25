@@ -214,6 +214,14 @@ describe('S7-WORKFLOW: exact revision submit, review and publication', () => {
     assert.equal(fixture.state.revisions.get(revision.id).status, 'IN_REVIEW');
     assert.equal(fixture.state.revisionReviews.size, 1);
 
+    const noComment = await requestChangesReview(adminId, firstSubmissionId, {
+      expectedRevisionRowVersion: revision.rowVersion.toString(),
+      comment: '   ',
+    }, fixture.db);
+    assert.equal(noComment.status, 400);
+    assert.equal(noComment.error.code, 'VALIDATION_ERROR');
+    assert.equal(fixture.state.revisions.get(revision.id).status, 'IN_REVIEW');
+
     const requested = await requestChangesReview(adminId, firstSubmissionId, {
       expectedRevisionRowVersion: revision.rowVersion.toString(),
       comment: 'Please clarify the example.',
@@ -404,7 +412,7 @@ describe('S7-WORKFLOW: exact revision submit, review and publication', () => {
     const submittedRevision = fixture.state.revisions.get(draft.highestRevision.id);
     const expectedRevisionRowVersion = submittedRevision.rowVersion.toString();
     const [changes, approval] = await Promise.all([
-      requestChangesReview(adminId, submitted.data.submissionId, { expectedRevisionRowVersion }, fixture.db),
+      requestChangesReview(adminId, submitted.data.submissionId, { expectedRevisionRowVersion, comment: 'Cần chỉnh sửa.' }, fixture.db),
       approveReview(adminId, submitted.data.submissionId, { expectedRevisionRowVersion }, fixture.db),
     ]);
     assert.deepEqual([changes.status, approval.status].sort(), [200, 409]);

@@ -377,6 +377,48 @@ describe('Slice 11: Practice Attempt Lifecycle & Routes', () => {
     assert.equal(resForeign.status, 404);
   });
 
+  test('F2: wrong answer returns correct answer + explanation; replay returns the same hints without a second write; unanswered exercises stay secret', async () => {
+    const attemptId = randomUUID();
+    state.attempts.push({
+      id: attemptId, contextId, lessonId: lesson1Id, lessonRevisionId: revision1Id, nCore: 5,
+      startedAt: new Date(), completedAt: null, kFirstWrong: null, contributionUnits: null, responseCount: null, rowVersion: 1n,
+    });
+    const url = `http://localhost:3000/api/learner/contexts/${contextId}/lessons/${lesson1Id}/attempts/${attemptId}/responses`;
+    const params = { params: Promise.resolve({ contextId, lessonId: lesson1Id, attemptId }) };
+    const post = (body) => responsesRoute.POST(new Request(url, { method: 'POST', headers: authHeaders(), body: JSON.stringify(body) }), params);
+    const op = randomUUID();
+    const wrong = { operationKey: op, lessonExerciseId: 'ex-mcq-1', input: { optionId: 'opt-2' } };
+
+    const first = await (await post(wrong)).json();
+    assert.equal(first.data.response.isCorrect, false);
+    assert.equal(first.data.response.contributionUnits, 0);
+    assert.ok(first.data.response.correctAnswer, 'wrong answer must carry the correct answer');
+    assert.equal(first.data.response.explanation, 'Hello là lời chào thông dụng.');
+    assert.equal(state.responses.length, 1);
+
+    const replay = await (await post(wrong)).json();
+    assert.equal(replay.data.response.id, first.data.response.id);
+    assert.equal(replay.data.response.contributionUnits, 0);
+    assert.equal(replay.data.response.correctAnswer, first.data.response.correctAnswer);
+    assert.equal(replay.data.response.explanation, first.data.response.explanation);
+    assert.equal(state.responses.length, 1, 'replay must not write a second response');
+
+    // Unanswered next exercise (FILL_BLANK accepted answers) must not leak anywhere in either payload.
+    for (const body of [first, replay]) {
+      const text = JSON.stringify(body);
+      for (const secret of ['meet', 'see', 'acceptedAnswers', 'correctOptionId']) {
+        assert.ok(!text.includes(secret), `payload leaked ${secret}`);
+      }
+      assert.equal(body.data.attempt.nextExercise.id, 'ex-fill-2');
+    }
+
+    // A correct answer carries no hints.
+    const ok = await (await post({ operationKey: randomUUID(), lessonExerciseId: 'ex-fill-2', input: { text: 'meet' } })).json();
+    assert.equal(ok.data.response.isCorrect, true);
+    assert.equal(ok.data.response.correctAnswer, undefined);
+    assert.equal(ok.data.response.explanation, undefined);
+  });
+
   test('Full Queue Progression: N core first responses, K retries, units, and deterministic replay', async () => {
     const attemptId = randomUUID();
     // Start attempt

@@ -283,6 +283,7 @@ test('production Admin review handles 401 and 403 without false success', async 
         return fulfill(route, 404, {});
       });
       const button = action === 'approve' ? '#btnApprove' : action === 'request-changes' ? '#btnRequestChanges' : '#btnPublish';
+      if (action === 'request-changes') await page.locator('#inputReviewComment').fill('Cần sửa.');
       await page.locator(button).click();
       if (status === 401) {
         await page.waitForURL('**/login');
