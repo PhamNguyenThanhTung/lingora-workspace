@@ -46,7 +46,7 @@ const SAMPLE_LESSONS_DATA = [
       },
       {
         type: 'paragraph',
-        text: "Khi tạm biệt, chúng ta thường dùng 'Goodbye' hoặc 'See you later'. Khi gặp ai đó lần đầu tiên, câu chào lịch sự thường là 'Nice to meet you'.",
+        text: "Khi tạm biệt, chúng ta thường dùng 'Goodbye' hoặc 'See you later'. Khi gặp ai đó lần đầu tiên, câu chào lịch sự thường là 'Nice to meet you'. Để hỏi thăm sức khỏe, chúng ta hỏi 'How are you?' (Bạn có khỏe không?).",
       },
     ],
     vocabulary: [
@@ -113,7 +113,7 @@ const SAMPLE_LESSONS_DATA = [
           prompt: 'Điền từ còn thiếu vào câu chào lịch sự khi lần đầu gặp mặt:',
           sentence: 'Nice to ____ you.',
         },
-        gradingData: { acceptedAnswers: ['meet', 'see'], caseSensitive: false },
+        gradingData: { acceptedAnswers: ['meet'], caseSensitive: false },
         feedbackData: {
           explanation: "'Nice to meet you' có nghĩa là 'Rất vui được gặp bạn', là mẫu câu chuẩn mực khi làm quen.",
         },
@@ -226,6 +226,8 @@ const SAMPLE_LESSONS_DATA = [
             "I'm from Vietnam.",
             'I am from Vietnam',
             "I'm from Vietnam",
+            'I come from Vietnam.',
+            'I come from Vietnam',
           ],
           caseSensitive: false,
         },
@@ -268,7 +270,7 @@ const SAMPLE_LESSONS_DATA = [
       },
       {
         type: 'paragraph',
-        text: "Khi chủ ngữ là ngôi thứ ba số ít (he, she, it), động từ thường thêm '-s' hoặc '-es'. Ví dụ: 'He wakes up at 6 AM' nhưng 'I wake up at 6 AM'.",
+        text: "Khi chủ ngữ là ngôi thứ ba số ít (he, she, it), động từ thường thêm '-s' hoặc '-es'. Ví dụ: 'He wakes up at 6 AM' nhưng 'I wake up at 6 AM'. Động từ kết thúc bằng -o, -s, -sh, -ch, -x thì thêm '-es': 'go' → 'She goes to school.'",
       },
     ],
     vocabulary: [
@@ -347,16 +349,16 @@ const SAMPLE_LESSONS_DATA = [
         promptData: {
           prompt: 'Sắp xếp các từ thành câu mô tả thói quen:',
           tokens: [
-            { id: 't3-1', text: 'I' },
-            { id: 't3-2', text: 'read' },
-            { id: 't3-3', text: 'books' },
-            { id: 't3-4', text: 'every' },
-            { id: 't3-5', text: 'night.' },
+            { id: 't3-1', text: 'She' },
+            { id: 't3-2', text: 'wakes' },
+            { id: 't3-3', text: 'up' },
+            { id: 't3-4', text: 'at' },
+            { id: 't3-5', text: 'six.' },
           ],
         },
         gradingData: { correctOrder: ['t3-1', 't3-2', 't3-3', 't3-4', 't3-5'] },
         feedbackData: {
-          explanation: "'I read books every night.' biểu đạt hành động lặp đi lặp lại hàng đêm.",
+          explanation: "'She wakes up at six.' dùng thì hiện tại đơn cho thói quen; chủ ngữ 'She' là ngôi thứ ba số ít nên động từ 'wake' thêm 's' thành 'wakes'.",
         },
       },
     ],
