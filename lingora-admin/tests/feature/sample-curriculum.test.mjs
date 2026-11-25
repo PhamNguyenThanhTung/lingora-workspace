@@ -696,7 +696,7 @@ describe('P6: Sample Curriculum Provisioning & Content Invariants', () => {
       contentBlocks: [
         { type: 'paragraph', text: 'Chào hỏi là bước đầu tiên và quan trọng nhất khi giao tiếp bằng tiếng Anh. Trong tiếng Anh, có nhiều cách chào hỏi khác nhau tùy theo mức độ thân mật và thời gian trong ngày.' },
         { type: 'paragraph', text: "Các lời chào phổ biến nhất bao gồm: 'Hello' (thông dụng nhất), 'Hi' (thân mật), 'Good morning' (chào buổi sáng), 'Good afternoon' (chào buổi chiều), và 'Good evening' (chào buổi tối)." },
-        { type: 'paragraph', text: "Khi tạm biệt, chúng ta thường dùng 'Goodbye' hoặc 'See you later'. Khi gặp ai đó lần đầu tiên, câu chào lịch sự thường là 'Nice to meet you'." },
+        { type: 'paragraph', text: "Khi tạm biệt, chúng ta thường dùng 'Goodbye' hoặc 'See you later'. Khi gặp ai đó lần đầu tiên, câu chào lịch sự thường là 'Nice to meet you'. Để hỏi thăm sức khỏe, chúng ta hỏi 'How are you?' (Bạn có khỏe không?)." },
       ],
       changeSummary: 'Provisioned sample A1 curriculum content',
       expectedRowVersion: fixture.state.lessons.get(l1Id).rowVersion.toString(),
@@ -710,7 +710,7 @@ describe('P6: Sample Curriculum Provisioning & Content Invariants', () => {
         {
           position: 2, isCore: true, type: 'FILL_BLANK',
           promptData: { prompt: 'Điền từ còn thiếu vào câu chào lịch sự khi lần đầu gặp mặt:', sentence: 'Nice to ____ you.' },
-          gradingData: { acceptedAnswers: ['meet', 'see'], caseSensitive: false },
+          gradingData: { acceptedAnswers: ['meet'], caseSensitive: false },
           feedbackData: { explanation: "'Nice to meet you' có nghĩa là 'Rất vui được gặp bạn', là mẫu câu chuẩn mực khi làm quen." },
         },
         {
