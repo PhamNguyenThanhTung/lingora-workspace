@@ -233,6 +233,8 @@ async function run() {
     const initialXpText = await page.textContent('#totalXpBadge');
     assert.match(initialXpText, /0\s*XP/, 'Initial XP must be 0');
 
+    assert.equal((await page.textContent('#totalGemsBadge')).trim(), '0', 'Initial gems must be 0');
+
     const initialStreakText = await page.textContent('#streakBadge');
     assert.match(initialStreakText, /0/, 'Initial streak must be 0');
 
@@ -316,6 +318,9 @@ async function run() {
     const celebrationXpText = await page.textContent('#celebrationTotalXp');
     assert.match(celebrationXpText, /\+40\s*XP/, 'Celebration must show +40 XP (+30 lesson + 10 quest)');
 
+    const celebrationGemsText = await page.textContent('#celebrationGems');
+    assert.match(celebrationGemsText, /\+15/, 'Celebration must show +15 gems (5 lesson + 5 quest + 5 perfect first try)');
+
     const celebrationStreakText = await page.textContent('#celebrationStreak');
     assert.match(celebrationStreakText, /1\s*ngày/, 'Celebration must show 1 day streak');
 
@@ -348,6 +353,9 @@ async function run() {
     // Verify updated Total XP = 40
     const updatedXpText = await page.textContent('#totalXpBadge');
     assert.match(updatedXpText, /40\s*XP/, 'Updated total XP must be 40');
+
+    // Verify updated gems = 15
+    assert.equal((await page.textContent('#totalGemsBadge')).trim(), '15', 'Updated total gems must be 15');
 
     // Verify updated Streak = 1
     const updatedStreakText = await page.textContent('#streakBadge');

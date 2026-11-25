@@ -6,7 +6,7 @@ import { ContextServiceError, isValidUuid } from './dto.ts';
 import { loadLearnerContext, type LoadLearnerContextOptions } from './loader.ts';
 import { buildLearningPath } from './path-service.ts';
 import { getContextPlanSummary } from './onboarding-service.ts';
-import { getGamificationOverview, getTotalXp, getRecentAchievement } from '../gamification/service.ts';
+import { getGamificationOverview, getTotalXp, getTotalGems, getRecentAchievement } from '../gamification/service.ts';
 import type { GamificationOverviewDto } from '../gamification/dto.ts';
 import { getDbTime } from '../srs/service.ts';
 import type { HomeDto, GamificationStatus } from './home-dto.ts';
@@ -105,12 +105,14 @@ export async function loadLearnerHome(
         prisma, learner.id, timezone, dbNow, planSummary?.preferences?.dailyGoalMinutes ?? 10,
       );
     } else {
-      const [totalXp, recentAchievement] = await Promise.all([
+      const [totalXp, totalGems, recentAchievement] = await Promise.all([
         getTotalXp(prisma, learner.id),
+        getTotalGems(prisma, learner.id),
         getRecentAchievement(prisma, learner.id),
       ]);
       gamification = {
         totalXp,
+        totalGems,
         recentAchievement,
         streak: {
           currentStreak: 0,

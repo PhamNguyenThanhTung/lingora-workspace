@@ -32,6 +32,7 @@ export interface DailyProgressDto {
 
 export interface GamificationOverviewDto {
   totalXp: number;
+  totalGems: number;
   streak: StreakDto;
   dailyProgress: DailyProgressDto;
   quests: QuestDto[];

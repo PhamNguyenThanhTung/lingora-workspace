@@ -40,6 +40,7 @@ export interface HomeDto {
   dailyProgress: DailyProgressDto;
   streak: StreakDto;
   totalXp: number;
+  totalGems?: number;
   quests: QuestDto[];
   recentAchievement: AchievementDto | null;
 }

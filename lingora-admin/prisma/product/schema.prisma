@@ -63,6 +63,7 @@ model Account {
   auditEvents          AuditEvent[]          @relation("AuditActor")
   provisioningRequests ProvisioningRequest[] @relation("ProvisioningRequestedBy")
   xpEvents             XpEvent[]             @relation("LearnerXpEvents")
+  gemEvents            GemEvent[]            @relation("LearnerGemEvents")
   achievements         LearnerAchievement[]  @relation("LearnerAchievements")
   writingSessions      WritingSession[]      @relation("WritingSessionLearner")
   writingAttempts      WritingAttempt[]      @relation("WritingAttemptLearner")
@@ -1105,6 +1106,23 @@ model XpEvent {
   @@unique([learnerId, eventType, sourceId], map: "xp_events_learner_event_source_key")
   @@index([learnerId, localDate], map: "xp_events_learner_local_date_idx")
   @@map("xp_events")
+  @@schema("app")
+}
+
+model GemEvent {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  learnerId String   @map("learner_id") @db.Uuid
+  eventType String   @map("event_type") @db.Text
+  sourceId  String   @map("source_id") @db.Uuid
+  gems      Int
+  localDate DateTime @map("local_date") @db.Date
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  learner   Account  @relation("LearnerGemEvents", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict)
+
+  @@unique([learnerId, eventType, sourceId], map: "gem_events_learner_event_source_key")
+  @@index([learnerId, createdAt], map: "gem_events_learner_created_at_idx")
+  @@map("gem_events")
   @@schema("app")
 }
 
