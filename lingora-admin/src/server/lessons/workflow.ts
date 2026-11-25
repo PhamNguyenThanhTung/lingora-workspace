@@ -1063,6 +1063,16 @@ export async function requestChangesReview(
   }
 
   const { expectedRevisionRowVersion, comment } = parseResult.data;
+  if (!comment || comment.trim().length === 0) {
+    return {
+      status: 400,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Vui lòng nhập nhận xét để giáo viên biết cần chỉnh sửa gì.',
+        fields: { comment: 'Vui lòng nhập nhận xét để giáo viên biết cần chỉnh sửa gì.' },
+      },
+    };
+  }
   const prisma = prismaClient || getProductPrisma();
 
   try {
