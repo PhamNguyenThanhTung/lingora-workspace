@@ -46,7 +46,7 @@ Không có mojibake (`Ã`, `â€`, `�`) ở bất kỳ bề mặt nào; khôn
 | G15 | Bài học (C4/C8) | Học viên | Breadcrumb lặp tiền tố chương: "Chương 1: Chương 1: Chào hỏi và tự giới thiệu" (tái diễn F10 vòng 1, lần này ở cấp chương, cả hai ngôn ngữ) | P2 | C8-lesson-desktop-ja | Mở |
 | G16 | Từ vựng (A4) | Giáo viên | `normalizedForm` lưu y nguyên dạng canonical (giữ dấu phụ, nháy cong, kana/kanji): `je m’appelle`, `à bientôt`, `学生` → hai cách gõ của cùng một từ tạo hai khái niệm khác nhau mà không có cảnh báo trùng; `senseKey` vẫn phải tự đặt bằng tay | P2 | A5-editor-filled-desktop-fr | Mở |
 | G17 | Onboarding (C1) | Học viên | Danh sách ngôn ngữ chỉ có tên + mã thô ("Tiếng Pháp / Mã: FR") — không cờ/ảnh, không cho biết khung trình độ hay số bài có sẵn; bước 5 "Tôi biết trình độ" chỉ liệt kê đúng trình độ mặc định của khóa (A1 / N5), chưa phải bài kiểm tra xếp trình độ | P3 | C1-onboarding-lang-mobile-ja, C1-onboarding-selfreport-mobile-ja | Mở |
-| G18 | Luyện tập (C5) / Duyệt (B2) | Học viên + Admin | Tái diễn với fr/ja các ghi nhận vòng 1 chưa sửa: nội dung đọc + toàn bộ bài tập "Chỉ đọc" vẫn trải dài quanh câu đang làm (F4), và trang duyệt vẫn hiển thị JSON chấm điểm thô kèm ID `opt_…`/`tok_…` (F13) | P3 | C5-ex1-REORDER-mobile-fr, B2-review-detail-desktop-fr | Mở |
+| G18 | Luyện tập (C5) | Học viên | Ảnh fullPage cho thấy nội dung đọc + bài tập "Chỉ đọc" trải dài quanh câu đang làm (giống F4 vòng 1). Đã đối chiếu: phiên luyện tập là lớp phủ toàn màn hình, ảnh fullPage gây hiểu nhầm (F4 đã sửa ở PR #14). Trang duyệt (B2) đã hiện "Đáp án đúng" dạng chữ, JSON thô được gập lại (F13 đã sửa ở PR #15) | P3 | C5-ex1-REORDER-mobile-fr, B2-review-detail-desktop-fr | Không phải lỗi |
 
 ### Bảng dò chuẩn hóa chuỗi (nguồn G1–G4)
 
