@@ -18,6 +18,7 @@ mock.module('server-only', { exports: {} });
 const {
   provisionSampleA1Curriculum,
   SAMPLE_A1_CONSTANTS,
+  SAMPLE_A1_LESSONS,
 } = await import('../../src/server/curriculum/sample-a1.ts');
 
 const {
@@ -515,7 +516,7 @@ describe('P6: Sample Curriculum Provisioning & Content Invariants', () => {
 
     const grammarExs = [...fixture.state.lessonExercises.values()].filter(e => {
       const itemRev = fixture.state.itemRevisions.get(e.itemRevisionId);
-      return itemRev?.type === 'GRAMMAR';
+      return itemRev?.type === 'GRAMMAR' && itemRev.promptData.sourceSentence === 'Vietnam (quê hương)';
     });
     assert.equal(grammarExs.length, 1);
 
@@ -691,40 +692,14 @@ describe('P6: Sample Curriculum Provisioning & Content Invariants', () => {
     const l1 = fixture.state.lessons.get(l1Id);
     await assignLesson(adminId, SAMPLE_A1_CONSTANTS.courseId, SAMPLE_A1_CONSTANTS.unitId, l1Id, { teacherId, expectedRowVersion: l1.rowVersion.toString() }, fixture.db);
 
+    const sampleL1 = SAMPLE_A1_LESSONS[0];
     const draftRes = await saveTeacherLessonDraft(teacherId, l1Id, {
-      title: { vi: 'Bài 1: Chào hỏi cơ bản', en: 'Lesson 1: Basic Greetings' },
-      contentBlocks: [
-        { type: 'paragraph', text: 'Chào hỏi là bước đầu tiên và quan trọng nhất khi giao tiếp bằng tiếng Anh. Trong tiếng Anh, có nhiều cách chào hỏi khác nhau tùy theo mức độ thân mật và thời gian trong ngày.' },
-        { type: 'paragraph', text: "Các lời chào phổ biến nhất bao gồm: 'Hello' (thông dụng nhất), 'Hi' (thân mật), 'Good morning' (chào buổi sáng), 'Good afternoon' (chào buổi chiều), và 'Good evening' (chào buổi tối)." },
-        { type: 'paragraph', text: "Khi tạm biệt, chúng ta thường dùng 'Goodbye' hoặc 'See you later'. Khi gặp ai đó lần đầu tiên, câu chào lịch sự thường là 'Nice to meet you'. Để hỏi thăm sức khỏe, chúng ta hỏi 'How are you?' (Bạn có khỏe không?)." },
-      ],
+      title: sampleL1.title,
+      contentBlocks: sampleL1.contentBlocks,
       changeSummary: 'Provisioned sample A1 curriculum content',
       expectedRowVersion: fixture.state.lessons.get(l1Id).rowVersion.toString(),
-      exercises: [
-        {
-          position: 1, isCore: true, type: 'MCQ',
-          promptData: { prompt: 'Từ nào sau đây dùng để chào một người vào buổi sáng?', options: [{ id: 'opt-1-1', text: 'Good morning' }, { id: 'opt-1-2', text: 'Good night' }, { id: 'opt-1-3', text: 'Goodbye' }] },
-          gradingData: { correctOptionId: 'opt-1-1' },
-          feedbackData: { explanation: "'Good morning' có nghĩa là chào buổi sáng, được dùng từ lúc thức dậy đến khoảng 12 giờ trưa." },
-        },
-        {
-          position: 2, isCore: true, type: 'FILL_BLANK',
-          promptData: { prompt: 'Điền từ còn thiếu vào câu chào lịch sự khi lần đầu gặp mặt:', sentence: 'Nice to ____ you.' },
-          gradingData: { acceptedAnswers: ['meet'], caseSensitive: false },
-          feedbackData: { explanation: "'Nice to meet you' có nghĩa là 'Rất vui được gặp bạn', là mẫu câu chuẩn mực khi làm quen." },
-        },
-        {
-          position: 3, isCore: true, type: 'REORDER',
-          promptData: { prompt: 'Sắp xếp các từ sau thành câu hỏi thăm sức khỏe thông dụng:', tokens: [{ id: 't1', text: 'How' }, { id: 't2', text: 'are' }, { id: 't3', text: 'you?' }] },
-          gradingData: { correctOrder: ['t1', 't2', 't3'] },
-          feedbackData: { explanation: "'How are you?' là câu hỏi 'Bạn có khỏe không?' theo đúng trật tự từ trong tiếng Anh." },
-        },
-      ],
-      vocabulary: [
-        { position: 1, isCore: true, create: { canonicalForm: 'Hello', senseKey: 'greeting', phonetic: 'həˈləʊ', partOfSpeech: 'interjection', meaningLabels: { vi: 'Xin chào', en: 'Greeting' }, example: 'Hello, my name is John.' } },
-        { position: 2, isCore: true, create: { canonicalForm: 'Morning', senseKey: 'time-of-day', phonetic: 'ˈmɔː.nɪŋ', partOfSpeech: 'noun', meaningLabels: { vi: 'Buổi sáng', en: 'The early part of the day' }, example: 'Good morning, how are you?' } },
-        { position: 3, isCore: true, create: { canonicalForm: 'Goodbye', senseKey: 'farewell', phonetic: 'ɡʊdˈbaɪ', partOfSpeech: 'interjection', meaningLabels: { vi: 'Tạm biệt', en: 'Farewell' }, example: 'Goodbye, see you tomorrow.' } },
-      ],
+      exercises: sampleL1.exercises,
+      vocabulary: sampleL1.vocabulary,
     }, fixture.db);
 
     const initialDraftRevId = draftRes.data.data.highestRevision.id;

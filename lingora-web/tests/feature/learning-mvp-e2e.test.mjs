@@ -5,7 +5,7 @@
  * and production Next.js servers with loopback synthetic Supabase auth:
  * 1. Admin/Staff authoring workflow publication & activation verification.
  * 2. Learner context selection & recovery (P2).
- * 3. Learner completes Lesson 1 (MCQ, FILL_BLANK, REORDER) and finalizes (P3).
+ * 3. Learner completes Lesson 1 (6 exercises) and finalizes (P3).
  * 4. Completed-only feedback with authored Vietnamese explanations (P3).
  * 5. Unlock progression: Lesson 2 becomes unlocked after Lesson 1 completion.
  * 6. Database assertions: completion status, response count, SRS card enrollment.
@@ -792,6 +792,23 @@ async function run() {
     await page.click('#submitResponseBtn');
     console.log('✔ Submitted Exercise 3 (REORDER)');
 
+    // Answer Exercise 4 (MCQ - opt-1b-1 is correct)
+    await page.locator('input[value="opt-1b-1"]').click();
+    await page.click('#submitResponseBtn');
+
+    // Answer Exercise 5 (FILL_BLANK - "afternoon")
+    await page.waitForSelector('#fillBlankInput', { timeout: 10000 });
+    await page.fill('#fillBlankInput', 'afternoon');
+    await page.click('#submitResponseBtn');
+
+    // Answer Exercise 6 (REORDER - See, you, later.)
+    await page.waitForSelector('#tokenBtn-t1b-1', { timeout: 10000 });
+    await page.click('#tokenBtn-t1b-1');
+    await page.click('#tokenBtn-t1b-2');
+    await page.click('#tokenBtn-t1b-3');
+    await page.click('#submitResponseBtn');
+    console.log('✔ Submitted Exercises 4–6 (MCQ, FILL_BLANK, REORDER)');
+
     // Exercise 1 (Pass 2 Retry): Re-enters queue for formative second attempt
     const retryLabel = page.locator('#queueProgressLabel').filter({ hasText: 'Làm lại câu sai' });
     await retryLabel.waitFor({ timeout: 10000 });
@@ -809,7 +826,7 @@ async function run() {
     // Step 5.4: Verify Completed-Only Feedback & Authored Vietnamese Explanations (P3)
     await page.waitForSelector('#practiceFeedbackReview', { timeout: 10000 });
     const reviewCards = await page.$$('.review-entry-card');
-    assert.equal(reviewCards.length, 3, 'Must render exactly 3 review cards for the 3 answered exercises');
+    assert.equal(reviewCards.length, 6, 'Must render exactly 6 review cards for the 6 answered exercises');
 
     // Check authored explanations are displayed in the review cards
     const reviewHtml = await page.innerHTML('#practiceFeedbackReview');
@@ -859,7 +876,7 @@ async function run() {
       SELECT count(*) as count FROM app.lesson_responses
       WHERE attempt_id = '${attemptDbRes.rows[0].id}';
     `);
-    assert.equal(Number(responsesDbRes.rows[0].count), 4, 'DB responses count must be 4 (including retry response)');
+    assert.equal(Number(responsesDbRes.rows[0].count), 7, 'DB responses count must be 7 (including retry response)');
 
     const srsCardsDbRes = await pgClient.query(`
       SELECT c.id, v.canonical_form, c.stage, c.enrollment_source
@@ -868,10 +885,10 @@ async function run() {
       WHERE c.learner_id = '${LEARNER1_ID}'
       ORDER BY v.canonical_form ASC;
     `);
-    assert.equal(srsCardsDbRes.rows.length, 3, 'Exactly 3 vocabulary items must be enrolled as SRS cards');
+    assert.equal(srsCardsDbRes.rows.length, 6, 'Exactly 6 vocabulary items must be enrolled as SRS cards');
     assert.equal(srsCardsDbRes.rows[0].stage, 1, 'Initial stage must be 1');
     assert.equal(srsCardsDbRes.rows[0].enrollment_source, 'CORE_COMPLETION');
-    console.log('✔ DB Assertions PASS: practice completed, responses=4 (with formative retry), enrolled srs_cards=3');
+    console.log('✔ DB Assertions PASS: practice completed, responses=7 (with formative retry), enrolled srs_cards=6');
 
     // Step 5.6: Progression - Lesson 2 Unlocked in Catalogue & Navigate to Lesson 2
     await page.goto(`http://127.0.0.1:${webPort}/learn/${CONTEXT1_ID}`);
@@ -922,17 +939,13 @@ async function run() {
     console.log('✔ Captured 07-srs-review-revealed-desktop.png: Answer revealed with explanation');
     await page.click('#rateRememberedBtn');
 
-    // Card 2: Reveal & Rate REMEMBERED
-    await page.waitForSelector('.srs-canonical-form', { timeout: 10000 });
-    await page.click('#revealAnswerBtn');
-    await page.waitForSelector('#srsAnswerSection', { timeout: 10000 });
-    await page.click('#rateRememberedBtn');
-
-    // Card 3: Reveal & Rate REMEMBERED
-    await page.waitForSelector('.srs-canonical-form', { timeout: 10000 });
-    await page.click('#revealAnswerBtn');
-    await page.waitForSelector('#srsAnswerSection', { timeout: 10000 });
-    await page.click('#rateRememberedBtn');
+    // Cards 2-6: Reveal & Rate REMEMBERED
+    for (let card = 2; card <= 6; card++) {
+      await page.waitForSelector('.srs-canonical-form', { timeout: 10000 });
+      await page.click('#revealAnswerBtn');
+      await page.waitForSelector('#srsAnswerSection', { timeout: 10000 });
+      await page.click('#rateRememberedBtn');
+    }
 
     // Review session complete
     await page.waitForSelector('#srsDoneBox', { timeout: 10000 });
@@ -966,8 +979,8 @@ async function run() {
       SELECT count(*) as count FROM app.srs_review_operations
       WHERE learner_id = '${LEARNER1_ID}';
     `);
-    assert.equal(Number(reviewOpsDbRes.rows[0].count), 3, 'Exactly 3 review operations must be persisted in DB');
-    console.log('✔ DB Assertions PASS: all cards at stage 2, scheduled in future, operations=3');
+    assert.equal(Number(reviewOpsDbRes.rows[0].count), 6, 'Exactly 6 review operations must be persisted in DB');
+    console.log('✔ DB Assertions PASS: all cards at stage 2, scheduled in future, operations=6');
 
     // Step 5.8: Mobile Viewport Screenshots (390x844) & Long Display Name Verification (R8)
     console.log('\n--- Capturing Mobile Viewport Evidence & Long Display Name ---');
