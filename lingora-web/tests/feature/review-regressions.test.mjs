@@ -62,19 +62,24 @@ test('actual staff catalogue, teachers, courses, review, assessment and Teacher 
     assert.equal(denied.status,403);assert.equal((await denied.json()).error.code,'FORBIDDEN');
   }finally{setProductPrismaForTest(null);}
 });
-test('DB lookup failures log only a safe category and keep the public503 response',async()=>{
+test('DB lookup failures log only allowlisted labels and keep the public503 response',async()=>{
+  const named=(name,message,extra={})=>Object.assign(new Error(message),{name},extra);
   const cases=[
-    [Object.assign(new Error('private connection detail'),{code:'P1001'}),'P1001'],
-    [new Error('Prisma Client could not locate the Query Engine; private deployment path'),'ENGINE_NOT_FOUND'],
-    [new Error('private connection detail'),'UNAVAILABLE'],
+    [Object.assign(new Error('private connection detail'),{code:'P1001'}),{category:'P1001',errorName:'Error',reason:'OTHER'}],
+    [new Error('Prisma Client could not locate the Query Engine; private deployment path'),{category:'ENGINE_NOT_FOUND',errorName:'Error',reason:'ENGINE_NOT_FOUND'}],
+    [new Error('private connection detail'),{category:'UNAVAILABLE',errorName:'Error',reason:'OTHER'}],
+    [named('PrismaClientUnknownRequestError','FATAL: MaxClientsInSessionMode: max clients reached postgres://u:private@host'),{category:'UNAVAILABLE',errorName:'PrismaClientUnknownRequestError',reason:'POOL_MAX_CLIENTS'}],
+    [named('PrismaClientValidationError','Invalid `prisma.account.findUnique()` invocation private'),{category:'UNAVAILABLE',errorName:'PrismaClientValidationError',reason:'CLIENT_VALIDATION'}],
+    [named('PrismaClientUnknownRequestError','prepared statement "s0" already exists private'),{category:'UNAVAILABLE',errorName:'PrismaClientUnknownRequestError',reason:'PREPARED_STATEMENT'}],
+    [named('weird name with spaces/private','private detail'),{category:'UNAVAILABLE',errorName:'Unknown',reason:'OTHER'}],
   ];
   const logged=mock.method(console,'error',()=>{});
   try{
-    for(const [error,category] of cases){
+    for(const [error,expected] of cases){
       const db=fixtureDb(state);db.account.findUnique=async()=>{throw error;};
       const result=await verifyLearnerIdentity({authClient:{auth:{getUser:async()=>({data:{user:confirmedUser()},error:null})}},prisma:db});
       assert.equal(result.status,503);assert.equal(result.error.code,'SERVICE_UNAVAILABLE');
-      assert.deepEqual(logged.mock.calls.at(-1)?.arguments,['learner.account_lookup_failed',{category}]);
+      assert.deepEqual(logged.mock.calls.at(-1)?.arguments,['learner.account_lookup_failed',expected]);
       assert.ok(!JSON.stringify(logged.mock.calls.at(-1)?.arguments).includes('private'));
     }
   }finally{logged.mock.restore();}

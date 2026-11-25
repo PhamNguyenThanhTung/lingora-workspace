@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { getLearnerPrisma } from '../db/index.ts';
+import { describeDbError } from '../db/safe-error.ts';
 import { getSupabaseEnv, getLearnerCookieName } from './env.ts';
 import {
   registerSchema,
@@ -278,12 +279,8 @@ export async function verifyLearnerIdentity(
         },
       });
     } catch (error) {
-      // Prisma messages can contain connection details; log only a fixed category/code.
-      const details = error as { code?: unknown; errorCode?: unknown; message?: unknown } | null;
-      const candidate = details?.code || details?.errorCode;
-      const code = typeof candidate === 'string' && /^P\d{4}$/.test(candidate) ? candidate : null;
-      const engineMissing = typeof details?.message === 'string' && details.message.includes('could not locate the Query Engine');
-      console.error('learner.account_lookup_failed', { category: engineMissing ? 'ENGINE_NOT_FOUND' : code || 'UNAVAILABLE' });
+      // Prisma messages can contain connection details; log only allowlisted labels (see describeDbError).
+      console.error('learner.account_lookup_failed', describeDbError(error));
       return {
         ok: false,
         status: 503,
