@@ -782,7 +782,10 @@ async function run() {
 
     // Exercise 2 (Pass 1): FILL_BLANK ("meet")
     await page.waitForSelector('#fillBlankInput', { timeout: 10000 });
+    // F3: the previous answer's banner is labelled and disappears once the learner starts the next answer
+    assert.match(await page.textContent('#formativeFeedback'), /Kết quả câu vừa rồi/);
     await page.fill('#fillBlankInput', 'meet');
+    await page.waitForSelector('#formativeFeedback', { state: 'detached', timeout: 5000 });
     await page.click('#submitResponseBtn');
     console.log('✔ Submitted Exercise 2 (FILL_BLANK)');
 
