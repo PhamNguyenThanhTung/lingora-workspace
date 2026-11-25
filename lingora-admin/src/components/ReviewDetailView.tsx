@@ -1,5 +1,6 @@
 'use client';
 
+import { exerciseTypeLabel } from '@lingora/lesson-content/LessonContent';
 import React, { useState, useRef, useEffect } from 'react';
 import type { ReviewDetailDto, AdminCharacterBlock } from '@/server/lessons/workflow';
 import type { ReviewCommentDto } from '@/server/lessons/comments';
@@ -15,6 +16,24 @@ export interface ReviewDetailViewProps {
     status: string;
     displayName: string | null;
   };
+}
+
+/** F13: show the correct answer as text instead of raw grading JSON and option IDs. */
+function describeCorrectAnswer(ex: any): string {
+  const g = ex.gradingData ?? {};
+  const p = ex.promptData ?? {};
+  if (typeof g.correctOptionId === 'string') {
+    const opt = (p.options ?? []).find((o: any) => o.id === g.correctOptionId);
+    return opt?.text ?? '—';
+  }
+  if (Array.isArray(g.acceptedAnswers)) {
+    return g.acceptedAnswers.join('  |  ') + (g.caseSensitive ? '  (phân biệt hoa/thường)' : '');
+  }
+  if (Array.isArray(g.correctOrder)) {
+    const byId = new Map<string, string>((p.tokens ?? []).map((t: any) => [t.id, t.text]));
+    return g.correctOrder.map((id: string) => byId.get(id) ?? id).join(' ');
+  }
+  return '—';
 }
 
 export function ReviewDetailView({
@@ -736,7 +755,7 @@ export function ReviewDetailView({
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '10px' }}>
                   <span style={{ fontWeight: 600, fontSize: '14px' }}>#{ex.position}</span>
                   <span className="badge" style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '12px' }}>
-                    {ex.type}
+                    {exerciseTypeLabel(ex.type)} <span style={{ opacity: 0.6, fontWeight: 400 }}>({ex.type})</span>
                   </span>
                   <span
                     className="badge"
@@ -766,7 +785,7 @@ export function ReviewDetailView({
                     <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
                       {ex.promptData.options.map((opt: any) => (
                         <li key={opt.id} style={{ margin: '2px 0' }}>
-                          {opt.id}: {opt.text}
+                          {opt.text}{ex.gradingData?.correctOptionId === opt.id ? ' ✓' : ''}
                         </li>
                       ))}
                     </ul>
@@ -796,10 +815,16 @@ export function ReviewDetailView({
                 )}
 
                 <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '4px', fontSize: '13px' }}>
-                  <div style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>ĐÁP ÁN (DỮ LIỆU CHẤM ĐIỂM):</div>
-                  <pre style={{ margin: '4px 0 0', fontSize: '12px', color: '#0f172a', whiteSpace: 'pre-wrap' }}>
-                    {JSON.stringify(ex.gradingData, null, 2)}
-                  </pre>
+                  <div style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>ĐÁP ÁN ĐÚNG:</div>
+                  <div id={`exerciseAnswer-${idx}`} style={{ margin: '4px 0 0', fontSize: '14px', color: '#0f172a' }}>
+                    {describeCorrectAnswer(ex)}
+                  </div>
+                  <details style={{ marginTop: '6px' }}>
+                    <summary style={{ cursor: 'pointer', fontSize: '12px', color: '#64748b' }}>Dữ liệu chấm điểm thô</summary>
+                    <pre style={{ margin: '4px 0 0', fontSize: '12px', color: '#0f172a', whiteSpace: 'pre-wrap' }}>
+                      {JSON.stringify(ex.gradingData, null, 2)}
+                    </pre>
+                  </details>
                 </div>
 
                 {ex.feedbackData?.explanation && (

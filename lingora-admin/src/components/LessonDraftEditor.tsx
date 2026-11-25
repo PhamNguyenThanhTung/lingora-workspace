@@ -1,5 +1,6 @@
 'use client';
 
+import { exerciseTypeLabel } from '@lingora/lesson-content/LessonContent';
 import React, { useState, useRef, useEffect } from 'react';
 import { SessionLostModal } from './SessionLostModal';
 import { AccessDeniedView } from './AccessDeniedView';
@@ -319,7 +320,7 @@ export function LessonDraftEditor({
     { id: 'opt_1', text: '' },
     { id: 'opt_2', text: '' },
   ]);
-  const [mcqCorrectId, setMcqCorrectId] = useState('opt_1');
+  const [mcqCorrectId, setMcqCorrectId] = useState('');
   // FILL_BLANK state
   const [fbSentence, setFbSentence] = useState('');
   const [fbAnswers, setFbAnswers] = useState('');
@@ -913,7 +914,7 @@ export function LessonDraftEditor({
       { id: 'opt_1', text: '' },
       { id: 'opt_2', text: '' },
     ]);
-    setMcqCorrectId('opt_1');
+    setMcqCorrectId('');
     setExerciseModalError(null);
     setExerciseModalOpen(true);
   };
@@ -970,7 +971,7 @@ export function LessonDraftEditor({
     setExPrompt('');
     setExExplanation('');
     setMcqOptions([{ id: 'opt_1', text: '' }, { id: 'opt_2', text: '' }]);
-    setMcqCorrectId('opt_1');
+    setMcqCorrectId('');
     setExerciseModalError(null);
     setExerciseModalOpen(true);
   };
@@ -1025,7 +1026,7 @@ export function LessonDraftEditor({
         { id: 'opt_1', text: '' },
         { id: 'opt_2', text: '' },
       ]);
-      setMcqCorrectId('opt_1');
+      setMcqCorrectId('');
     } else if (newType === 'FILL_BLANK') {
       setFbSentence('');
       setFbAnswers('');
@@ -2175,7 +2176,7 @@ export function LessonDraftEditor({
                       </td>
                       <td id={`exerciseType-${idx}`}>
                         <span className="badge" style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '12px' }}>
-                          {ex.type}
+                          {exerciseTypeLabel(ex.type)} <span style={{ opacity: 0.6, fontWeight: 400 }}>({ex.type})</span>
                         </span>
                       </td>
                       <td id={`exerciseCore-${idx}`}>
@@ -2449,7 +2450,7 @@ export function LessonDraftEditor({
               </button>
               {isDirty && (
                 <span id="dirtySubmitHint" style={{ fontSize: '12px', color: '#b45309' }}>
-                  Vui lòng lưu bản nháp trước khi nộp duyệt.
+                  Vui lòng lưu bản nháp trước khi nộp duyệt{changeSummary.trim().length > 0 ? ' (kể cả khi bạn chỉ vừa nhập ô "Tóm tắt thay đổi")' : ''}.
                 </span>
               )}
             </div>
@@ -2776,7 +2777,7 @@ export function LessonDraftEditor({
               {exType === 'REORDER' && (
                 <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '6px', marginBottom: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 600 }}>Thành phần sắp xếp theo đúng thứ tự:</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600 }}>Nhập các từ/cụm từ theo ĐÚNG thứ tự đáp án (học viên sẽ thấy chúng bị xáo trộn):</span>
                     <button
                       type="button"
                       className="btn btn-secondary"
@@ -2826,11 +2827,14 @@ export function LessonDraftEditor({
               )}
 
               {exType === 'REORDER' && (
-                <div className="form-group">
+                <details className="form-group" style={{ marginBottom: '16px' }}>
+                  <summary style={{ cursor: 'pointer', fontSize: '13px' }}>
+                    Nâng cao: chỉ định thứ tự đáp án bằng mã (mặc định lấy đúng thứ tự bạn nhập ở trên)
+                  </summary>
                   <label htmlFor="inputReorderCorrectOrder">Thứ tự đáp án (mỗi mã token một dòng; bỏ trống để dùng thứ tự nhập)</label>
                   <p>{roTokens.map(t => `${t.id}: ${t.text}`).join(' · ')}</p>
                   <textarea id="inputReorderCorrectOrder" className="form-input" rows={3} value={roCorrectOrder} onChange={e => setRoCorrectOrder(e.target.value)} />
-                </div>
+                </details>
               )}
 
               {exType === 'LISTENING' && (
