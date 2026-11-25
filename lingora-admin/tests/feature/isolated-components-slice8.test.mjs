@@ -175,6 +175,7 @@ test('Teacher production assessment form reuses exercise fields and posts the ex
     await page.locator('#inputExercisePrompt').fill('Choose the correct greeting.');
     await page.locator('#inputMcqOptionText-0').fill('Hello');
     await page.locator('#inputMcqOptionText-1').fill('Goodbye');
+    await page.locator('#radioMcqCorrectOption-0').check();
     await page.locator('#btnSaveExerciseModal').click();
     await page.getByText('Đã lưu bản sửa đổi bài tập #1.').waitFor();
     await page.getByText('Choose the correct greeting.').waitFor();

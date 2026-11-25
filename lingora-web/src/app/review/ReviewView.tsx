@@ -653,7 +653,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
                       marginBottom: '6px',
                     }}
                   >
-                    /{revealedCard.phonetic}/
+                    /{revealedCard.phonetic.replace(/^\/+|\/+$/g, '')}/
                   </div>
                 )}
 

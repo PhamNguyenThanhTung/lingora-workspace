@@ -2849,7 +2849,7 @@ export async function saveTeacherLessonDraft(
               if (!isMatch) {
                 throw new ControlledDraftError(409, {
                   code: 'VOCABULARY_IDENTITY_CONFLICT',
-                  message: `Từ vựng "${existingCanonical}" với nghĩa "${sense}" đã tồn tại nhưng có thông tin khác. Vui lòng chọn từ vựng có sẵn hoặc chọn nghĩa (senseKey) khác.`,
+                  message: `Từ "${existingCanonical}" (nét nghĩa "${sense}") đã có trong kho từ vựng với thông tin khác (nghĩa, phiên âm, loại từ hoặc ví dụ). Hãy chọn từ có sẵn trong danh sách, hoặc đổi ô "Nét nghĩa" để tạo từ mới.`,
                 });
               }
               resolvedConceptIdPerIndex[i] = existing.id.toLowerCase();

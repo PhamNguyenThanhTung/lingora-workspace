@@ -162,7 +162,7 @@ test('production Admin review page calls pinned approve and publish endpoints an
     const detail = await page.evaluate(() => window.__PAGE_PROPS__.initialDetail);
     assert.deepEqual(detail.exercises.map(ex => ex.type), ['FILL_BLANK', 'REORDER', 'GRAMMAR', 'MCQ', 'LISTENING']);
     await page.getByText('I ____ coffee every morning.').waitFor();
-    await page.getByText('is reading').waitFor();
+    await page.getByText('is reading', { exact: true }).waitFor();
     await page.getByText('She go to school.').waitFor();
     await page.getByText('She goes to school.', { exact: false }).first().waitFor();
     await page.getByText('What is the opposite of hot?').waitFor();

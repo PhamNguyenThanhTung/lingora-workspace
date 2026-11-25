@@ -544,26 +544,26 @@ test('T06: LessonContent renderer - Readonly Exercises preview across all 5 type
   assert.ok(html.includes('Bài tập đọc hiểu (5)'));
 
   // MCQ
-  assert.ok(html.includes('Bài tập 1: MCQ'));
+  assert.ok(html.includes('Bài tập 1: Trắc nghiệm'));
   assert.ok(html.includes('happy'));
   assert.ok(html.includes('Joyful'));
   assert.ok(html.includes('type="radio" disabled=""'));
 
   // FILL_BLANK
-  assert.ok(html.includes('Bài tập 2: FILL_BLANK'));
+  assert.ok(html.includes('Bài tập 2: Điền từ'));
   assert.ok(html.includes('She [ ____________ ] to school every morning.'));
 
   // REORDER
-  assert.ok(html.includes('Bài tập 3: REORDER'));
+  assert.ok(html.includes('Bài tập 3: Sắp xếp từ'));
   assert.ok(html.includes('English'));
   assert.ok(html.includes('fun'));
 
   // LISTENING
-  assert.ok(html.includes('Bài tập 4: LISTENING'));
+  assert.ok(html.includes('Bài tập 4: Nghe và chọn'));
   assert.ok(html.includes('https://cdn.lingora.edu.vn/audio/test.mp3'));
 
   // GRAMMAR
-  assert.ok(html.includes('Bài tập 5: GRAMMAR'));
+  assert.ok(html.includes('Bài tập 5: Viết câu'));
   assert.ok(html.includes('The teacher praised the student.'));
   assert.ok(html.includes('S + was/were + V3/ed + by O'));
 

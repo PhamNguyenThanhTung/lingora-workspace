@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { exerciseTypeLabel } from '@lingora/lesson-content/LessonContent';
 import type { LearnerExerciseDto, PracticeAttemptDto } from '../../../../server/lessons/dto.ts';
 
 interface PracticeSectionProps {
@@ -381,7 +382,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 data-exercise-id={attempt.nextExercise.id}
                 data-exercise-type={attempt.nextExercise.type}
               >
-                <div className="practice-type-label">Bài tập: {attempt.nextExercise.type}</div>
+                <div className="practice-type-label">Bài tập: {exerciseTypeLabel(attempt.nextExercise.type)}</div>
                 <p className="practice-question">{prompt?.prompt}</p>
 
                 {(attempt.nextExercise.type === 'MCQ' || attempt.nextExercise.type === 'LISTENING') && (
@@ -781,7 +782,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <span style={{ fontWeight: 600, fontSize: 'var(--font-size-sub)' }}>
-                      Câu {index + 1} ({entry.type})
+                      Câu {index + 1} ({exerciseTypeLabel(entry.type)})
                     </span>
                     <span
                       className={`badge review-correctness ${entry.isCorrect ? 'badge-active' : 'badge-paused'}`}

@@ -525,11 +525,11 @@ export const SAMPLE_A1_LESSONS = [
         isCore: true,
         type: 'MCQ' as const,
         promptData: {
-          prompt: "Cụm từ nào có nghĩa là 'ăn bữa sáng'?",
+          prompt: "Cụm từ nào là cách nói tự nhiên của 'ăn bữa sáng'?",
           options: [
             { id: 'opt-3-1', text: 'have breakfast' },
-            { id: 'opt-3-2', text: 'make breakfast' },
-            { id: 'opt-3-3', text: 'sleep breakfast' },
+            { id: 'opt-3-2', text: 'do breakfast' },
+            { id: 'opt-3-3', text: 'take a breakfast' },
           ],
         },
         gradingData: { correctOptionId: 'opt-3-1' },

@@ -21,6 +21,11 @@ function getLocalizedText(obj: unknown, locale = 'vi'): string {
   return record[locale] || record['vi'] || record['en'] || Object.values(record)[0] || '';
 }
 
+// F10: teachers often type "Bài 4: ..." into the title; the catalogue already numbers lessons.
+function stripLessonPrefix(title: string | null | undefined): string {
+  return (title ?? '').replace(/^\s*Bài\s*\d+\s*[:.\-–]\s*/i, '').trim();
+}
+
 export function CatalogueView({ data, errorState }: CatalogueViewProps) {
   const router = useRouter();
   const [isRetrying, startRetry] = useTransition();
@@ -192,7 +197,7 @@ export function CatalogueView({ data, errorState }: CatalogueViewProps) {
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <span style={{ fontWeight: 600 }}>
-                                Bài {lesson.position}: {lessonTitle || 'Bài học'}
+                                Bài {lesson.position}: {stripLessonPrefix(lessonTitle) || 'Bài học'}
                               </span>
                               {lesson.isRequired ? (
                                 <span style={{ fontSize: 'var(--font-size-ref)', color: 'var(--text-muted)' }}>

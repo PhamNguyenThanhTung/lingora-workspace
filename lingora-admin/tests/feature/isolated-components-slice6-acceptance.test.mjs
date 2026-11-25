@@ -36,7 +36,7 @@ test('REORDER edit preserves a nontrivial saved correctOrder and allows explicit
  await page.locator('#btnEditExercise-0').click();await page.locator('#inputExercisePrompt').fill('Edited prompt');await page.locator('#btnSaveExerciseModal').click();
  await page.locator('#btnSaveDraft').click();await page.locator('#draftSaveSuccess').waitFor();
  assert.deepEqual(calls.at(-1).body.exercises[0].gradingData.correctOrder,['b','a']);
- await page.locator('#btnEditExercise-0').click();await page.locator('#inputReorderCorrectOrder').fill('a\nb');await page.locator('#btnSaveExerciseModal').click();
+ await page.locator('#btnEditExercise-0').click();await page.locator('details:has(#inputReorderCorrectOrder) > summary').click();await page.locator('#inputReorderCorrectOrder').fill('a\nb');await page.locator('#btnSaveExerciseModal').click();
  await page.locator('#btnSaveDraft').click();await page.locator('#draftSaveSuccess').waitFor();assert.deepEqual(calls.at(-1).body.exercises[0].gradingData.correctOrder,['a','b']);
 }));
 for(const type of ['FILL_BLANK','GRAMMAR'])test(`${type} edit preserves commas inside accepted answers`,async()=>withSeed(

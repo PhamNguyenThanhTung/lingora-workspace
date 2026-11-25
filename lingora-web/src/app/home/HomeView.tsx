@@ -703,6 +703,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
     : selectedContext?.status === 'ACTIVE' && homeData?.pathStatus === 'PAUSED'
     ? 'READY'
     : homeData?.pathStatus;
+  const allPublishedDone = pathStatus === 'READY' && publishedPathCount > 0 && completedPathCount === publishedPathCount;
 
   const activeCount = contexts.filter((c) => c.status === 'ACTIVE').length;
 
@@ -798,13 +799,14 @@ export function HomeView({ data, errorState }: HomeViewProps) {
               >
                 <div>
                   <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 4px' }}>
-                    {pathStatus === 'PAUSED' ? 'Lộ trình đang tạm dừng'
+                    {allPublishedDone ? '🎉 Bạn đã học hết các bài hiện có'
+                      : pathStatus === 'PAUSED' ? 'Lộ trình đang tạm dừng'
                       : pathStatus === 'NO_WORKING_LEVEL' ? 'Chọn trình độ để bắt đầu'
                       : pathStatus === 'COURSE_INACTIVE' ? 'Khóa học hiện chưa mở'
                       : 'Chưa có bài học tiếp theo'}
                   </h2>
                   <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                    {homeData?.pathMessage || (pathStatus === 'PAUSED'
+                    {allPublishedDone ? 'Chúc mừng! Hãy ôn lại từ vựng hoặc làm lại bài để củng cố; bài mới sẽ xuất hiện ở đây khi được phát hành.' : homeData?.pathMessage || (pathStatus === 'PAUSED'
                       ? 'Tiếp tục lộ trình khi bạn sẵn sàng.'
                       : pathStatus === 'NO_WORKING_LEVEL'
                       ? 'Chọn trình độ bắt đầu để xem bài học phù hợp.'

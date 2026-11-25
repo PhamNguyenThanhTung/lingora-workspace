@@ -804,7 +804,7 @@ function renderVocabularySection(
                       color: 'var(--text-muted, #59677d)',
                     },
                   },
-                  `/${snap.phonetic}/`
+                  `/${snap.phonetic.replace(/^\/+|\/+$/g, '')}/`
                 )
               : null
           ),
@@ -968,7 +968,7 @@ function renderExercisesSection(
                 marginBottom: '10px',
               },
             },
-            h('span', { style: { fontWeight: 600 } }, `Bài tập ${ex.position}: ${ex.type}`),
+            h('span', { style: { fontWeight: 600 } }, `Bài tập ${ex.position}: ${exerciseTypeLabel(ex.type)}`),
             h(
               'span',
               {
@@ -1294,4 +1294,17 @@ export function LessonContent(props: LessonContentProps): React.ReactElement {
       ? renderExercisesSection(exercises, audioErrors, handleAudioError)
       : null
   );
+}
+
+const EXERCISE_TYPE_LABELS: Record<string, string> = {
+  MCQ: 'Trắc nghiệm',
+  LISTENING: 'Nghe và chọn',
+  FILL_BLANK: 'Điền từ',
+  GRAMMAR: 'Viết câu',
+  REORDER: 'Sắp xếp từ',
+};
+
+/** Human-readable Vietnamese label for an exercise type code (unknown codes are returned as-is). */
+export function exerciseTypeLabel(type: string): string {
+  return EXERCISE_TYPE_LABELS[type] ?? type;
 }

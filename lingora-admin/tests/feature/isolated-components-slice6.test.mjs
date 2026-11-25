@@ -456,6 +456,7 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       await page.locator('#inputExercisePrompt').fill('Exercise to be removed');
       await page.locator('#inputMcqOptionText-0').fill('A');
       await page.locator('#inputMcqOptionText-1').fill('B');
+      await page.locator('#radioMcqCorrectOption-0').check();
       await page.locator('#btnSaveExerciseModal').click();
       await page.locator('#exerciseModal').waitFor({ state: 'hidden' });
       assert.equal(await page.locator('[id^="exerciseRow-"]').count(), 1);
@@ -554,6 +555,7 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       await page.locator('#inputExercisePrompt').fill('Client prompt that caused conflict');
       await page.locator('#inputMcqOptionText-0').fill('A');
       await page.locator('#inputMcqOptionText-1').fill('B');
+      await page.locator('#radioMcqCorrectOption-0').check();
       await page.locator('#btnSaveExerciseModal').click();
       await page.locator('#exerciseModal').waitFor({ state: 'hidden' });
 
@@ -616,6 +618,7 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       await page.locator('#inputExercisePrompt').fill('Mutant F check prompt');
       await page.locator('#inputMcqOptionText-0').fill('A');
       await page.locator('#inputMcqOptionText-1').fill('B');
+      await page.locator('#radioMcqCorrectOption-0').check();
       await page.locator('#btnSaveExerciseModal').click();
       await page.locator('#exerciseModal').waitFor({ state: 'hidden' });
 
