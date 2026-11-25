@@ -34,15 +34,22 @@ export function computeInputHash(val: unknown): string {
 // =============================================================================
 
 /**
- * D1 — APPROVED:
- * Normalize both response and accepted answers with Unicode NFC, trim both ends,
- * then JavaScript toLowerCase() only when caseSensitive=false;
- * preserve punctuation, accents and internal whitespace;
- * exact equality against any accepted answer.
+ * D1 — normalization (amended after content review D1):
+ * Unicode NFC, trim, collapse every run of whitespace to a single space,
+ * drop sentence-final punctuation at the very end (. ! ? … and CJK 。！？),
+ * then JavaScript toLowerCase() only when caseSensitive=false.
+ * Accents, leading punctuation (e.g. Spanish ¿ ¡) and inner punctuation are preserved;
+ * comparison stays exact equality against any accepted answer.
+ * The same function is applied to the learner input and to every accepted answer.
  */
 export function normalizePracticeText(text: string, caseSensitive: boolean): string {
-  const nfcTrimmed = text.normalize('NFC').trim();
-  return caseSensitive ? nfcTrimmed : nfcTrimmed.toLowerCase();
+  const cleaned = text
+    .normalize('NFC')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/(?:[.!?\u2026\u3002\uFF01\uFF1F]\s*)+$/u, '')
+    .trimEnd();
+  return caseSensitive ? cleaned : cleaned.toLowerCase();
 }
 
 // =============================================================================
