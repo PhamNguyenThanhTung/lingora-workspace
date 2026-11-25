@@ -83,7 +83,7 @@ test('text graders honor the complete approved D1 contract for both FILL_BLANK a
   const sensitive={acceptedAnswers:['Café.','Another  answer'],caseSensitive:true};
   const grade=(text,secret=sensitive)=>gradePracticeExercise(type,{},secret,{text}).isCorrect;
   assert.equal(grade('  Cafe\u0301.  '),true);assert.equal(grade('café.'),false);assert.equal(grade('café.',{...sensitive,caseSensitive:false}),true);
-  assert.equal(grade('Cafe.'),false);assert.equal(grade('Café'),false);assert.equal(grade('Another  answer'),true);assert.equal(grade('Another answer'),false);
+  assert.equal(grade('Cafe.'),false);assert.equal(grade('Café'),true,'trailing sentence punctuation is ignored');assert.equal(grade('Another  answer'),true);assert.equal(grade('Another answer'),true,'inner whitespace runs collapse');assert.equal(grade('Anotheranswer'),false);
   assert.equal(grade('Ａ',{acceptedAnswers:['A'],caseSensitive:false}),false,'NFC must not become NFKC');
  }
 });

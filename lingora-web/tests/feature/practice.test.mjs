@@ -105,10 +105,20 @@ describe('Slice 11: Grader & Decision D1 Normalization', () => {
     );
   });
 
-  test('D1: outer whitespace is trimmed, internal whitespace is preserved', () => {
+  test('D1: outer whitespace is trimmed and inner whitespace runs collapse to one space', () => {
     assert.equal(normalizePracticeText('  bonjour   ', false), 'bonjour');
-    assert.equal(normalizePracticeText('  un   deux  ', false), 'un   deux'); // internal whitespace preserved
-    assert.notEqual(normalizePracticeText('un   deux', false), normalizePracticeText('un deux', false));
+    assert.equal(normalizePracticeText('  un   deux  ', false), 'un deux');
+    assert.equal(normalizePracticeText('un\t deux', false), 'un deux');
+    assert.notEqual(normalizePracticeText('undeux', false), normalizePracticeText('un deux', false));
+  });
+
+  test('D1: trailing sentence punctuation is ignored, inner/leading punctuation and wrong words are not', () => {
+    assert.equal(normalizePracticeText('I have one brother.', false), normalizePracticeText('I have one brother', false));
+    assert.equal(normalizePracticeText('I have one brother . ', false), 'i have one brother');
+    assert.equal(normalizePracticeText('Hello!!', false), 'hello');
+    assert.equal(normalizePracticeText('私は学生です。', true), '私は学生です');
+    assert.notEqual(normalizePracticeText("I'm fine", false), normalizePracticeText('Im fine', false));
+    assert.notEqual(normalizePracticeText('I have one sister.', false), normalizePracticeText('I have one brother', false));
   });
 
   test('D1: case sensitivity mode respected', () => {
@@ -117,9 +127,10 @@ describe('Slice 11: Grader & Decision D1 Normalization', () => {
     assert.notEqual(normalizePracticeText('Hello', true), normalizePracticeText('hello', true));
   });
 
-  test('D1: punctuation and accents are preserved', () => {
-    assert.equal(normalizePracticeText('¿Cómo estás?', false), '¿cómo estás?');
+  test('D1: accents and leading punctuation are preserved', () => {
+    assert.equal(normalizePracticeText('¿Cómo estás?', false), '¿cómo estás');
     assert.notEqual(normalizePracticeText('¿Cómo estás?', false), normalizePracticeText('Como estas', false));
+    assert.notEqual(normalizePracticeText('¿Cómo estás?', false), normalizePracticeText('Cómo estás', false));
   });
 
   test('Grader: MCQ grading and validation', () => {
