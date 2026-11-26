@@ -40,7 +40,7 @@ Không có lỗi console, không tràn ngang trên mobile. **Không có lỗi P0
 
 ## Chưa làm (vòng sau)
 
-- Vòng 2 (production): chờ tài khoản giáo viên. Vòng 3 (Pháp, Nhật, local): đang chạy, báo cáo riêng.
+- Vòng 2 (production): xong 2026-11-26, xem [2026-11-journey-round2-production.md](2026-11-journey-round2-production.md) (H1–H14, không có P0). Vòng 3 (Pháp, Nhật, local): xem [2026-11-journey-round3-fr-ja.md](2026-11-journey-round3-fr-ja.md).
 
 
 ## Phần D — Chất lượng chương tiếng Anh A1 (Bài 1–3 mẫu + Bài 4 do giáo viên soạn)
