@@ -313,6 +313,7 @@ function matches(row, where = {}) {
     const value = row?.[key];
     if (expected && typeof expected === 'object') {
       if ('in' in expected) return expected.in.includes(value);
+      if ('notIn' in expected) return !expected.notIn.includes(value);
       if ('not' in expected) return value !== expected.not;
       if ('lte' in expected) return value <= expected.lte;
       if ('is' in expected) return matches(value, expected.is);
@@ -386,6 +387,21 @@ export function fixtureDb(state) {
   state.commandReceipts ||= [];
   state.writingSessions ||= [];
   state.writingAttempts ||= [];
+
+  // Every concept in these fixtures belongs to the fixture language unless it says otherwise,
+  // so per-language SRS filters (vocabulary.languageId) can be exercised against the double.
+  const findConcept = (id) => {
+    const concept = (state.vocabularyConcepts || []).find(v => v.id === id);
+    if (!concept) return null;
+    return concept.languageId ? concept : { ...concept, languageId };
+  };
+  const withVocabulary = (rows) => rows.map(r => (r.vocabulary ? r : { ...r, vocabulary: findConcept(r.vocabularyId) }));
+  const withLessonRevision = (rows) => rows.map(r => (r.lessonRevision ? r : {
+    ...r,
+    lessonRevision: (state.lessons || [])
+      .map(l => l.activeRevision)
+      .find(rev => rev && rev.id === r.lessonRevisionId) || null,
+  }));
 
   const many = (rows, args) => ordered(rows.filter(r => matches(r, args?.where)), args?.orderBy).map(r => projected(r, args));
   const first = (rows, args) => many(rows, args)[0] || null;
@@ -529,16 +545,16 @@ export function fixtureDb(state) {
       findMany: async args => many(state.exercises, args),
     },
     lessonVocabularyLink: {
-      findUnique: async args => first(state.vocabulary || [], args),
-      findFirst: async args => first(state.vocabulary || [], args),
-      findMany: async args => many(state.vocabulary || [], args),
+      findUnique: async args => first(withLessonRevision(state.vocabulary || []), args),
+      findFirst: async args => first(withLessonRevision(state.vocabulary || []), args),
+      findMany: async args => many(withLessonRevision(state.vocabulary || []), args),
     },
     vocabularyCharacter: {
       findFirst: async args => {
         const rows = (state.vocabularyCharacters || []).map(vc => ({
           ...vc,
           character: (state.characters || []).find(c => c.id === vc.characterId) || null,
-          vocabulary: (state.vocabularyConcepts || []).find(v => v.id === vc.vocabularyId) || null,
+          vocabulary: findConcept(vc.vocabularyId) || null,
         }));
         return first(rows, args);
       },
@@ -546,7 +562,7 @@ export function fixtureDb(state) {
         const rows = (state.vocabularyCharacters || []).map(vc => ({
           ...vc,
           character: (state.characters || []).find(c => c.id === vc.characterId) || null,
-          vocabulary: (state.vocabularyConcepts || []).find(v => v.id === vc.vocabularyId) || null,
+          vocabulary: findConcept(vc.vocabularyId) || null,
         }));
         return many(rows, args);
       },
@@ -728,14 +744,14 @@ export function fixtureDb(state) {
         const where = args.where.learnerId_vocabularyId || args.where.id_learnerId || args.where;
         const row = first(state.srsCards, { ...args, where });
         if (row && args?.include?.vocabulary && !row.vocabulary) {
-          row.vocabulary = (state.vocabularyConcepts || []).find(v => v.id === row.vocabularyId) || null;
+          row.vocabulary = findConcept(row.vocabularyId) || null;
         }
         return row;
       },
       findFirst: async args => {
         const rows = state.srsCards.map(c => {
           if (!c.vocabulary) {
-            c.vocabulary = (state.vocabularyConcepts || []).find(v => v.id === c.vocabularyId) || null;
+            c.vocabulary = findConcept(c.vocabularyId) || null;
           }
           return c;
         });
@@ -744,13 +760,13 @@ export function fixtureDb(state) {
       findMany: async args => {
         const rows = state.srsCards.map(c => {
           if (!c.vocabulary) {
-            c.vocabulary = (state.vocabularyConcepts || []).find(v => v.id === c.vocabularyId) || null;
+            c.vocabulary = findConcept(c.vocabularyId) || null;
           }
           return c;
         });
         return many(rows, args);
       },
-      count: async args => state.srsCards.filter(r => matches(r, args?.where)).length,
+      count: async args => withVocabulary(state.srsCards).filter(r => matches(r, args?.where)).length,
       update: async ({ where, data }) => {
         const target = state.srsCards.find(r => r.id === where.id);
         if (!target) throw new Error('Card not found for update');
@@ -771,7 +787,7 @@ export function fixtureDb(state) {
           createdAt: new Date(),
           updatedAt: new Date(),
           rowVersion: 1n,
-          vocabulary: (state.vocabularyConcepts || []).find(v => v.id === data.vocabularyId) || null,
+          vocabulary: findConcept(data.vocabularyId) || null,
         };
         state.srsCards.push(row);
         return row;

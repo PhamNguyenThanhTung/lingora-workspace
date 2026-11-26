@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { CandidateStrokeInput } from '@lingora/lesson-content';
 import type { SrsFrontPromptCardDto, SrsRevealedCardDto } from '../../server/srs/session-service.ts';
+import type { ReviewContextOptionDto } from '../../server/srs/review-options.ts';
 import { WritingSrsAttempt } from './WritingSrsAttempt.tsx';
 
 interface ReviewViewProps {
@@ -10,6 +11,9 @@ interface ReviewViewProps {
     id: string;
     email?: string;
   };
+  /** Active learning contexts (one per language); a session is always scoped to one of them. */
+  contexts?: ReviewContextOptionDto[];
+  preselectedContextId?: string | null;
   authError?: string;
 }
 
@@ -47,7 +51,7 @@ class ReviewRequestError extends Error {}
 
 const SESSION_STORAGE_KEY = 'lingora_srs_session_id';
 
-export function ReviewView({ learner, authError }: ReviewViewProps) {
+export function ReviewView({ learner, contexts = [], preselectedContextId = null, authError }: ReviewViewProps) {
   const [state, setState] = useState<ReviewState>('initial');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [card, setCard] = useState<SrsFrontPromptCardDto | null>(null);
@@ -61,6 +65,13 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
   const [pendingWritingAttempt, setPendingWritingAttempt] = useState<PendingWritingAttempt | null>(null);
   const [canRetry, setCanRetry] = useState(false);
   const [authErrorMessage, setAuthErrorMessage] = useState<string | null>(authError || null);
+  const [selectedContextId, setSelectedContextId] = useState<string | null>(() => {
+    if (preselectedContextId) return preselectedContextId;
+    if (contexts.length === 0) return null;
+    return (contexts.find(option => option.dueCount > 0) ?? contexts[0]).contextId;
+  });
+  const selectedContext = contexts.find(option => option.contextId === selectedContextId) ?? null;
+  const [sessionLanguageName, setSessionLanguageName] = useState<string | null>(null);
 
   const busyRef = useRef(false);
   const retryRef = useRef<(() => void) | null>(null);
@@ -160,10 +171,11 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
   function handleStartReview() {
     void runAction(async () => {
       setIsSessionExpired(false);
+      setSessionLanguageName(selectedContext?.languageName ?? null);
       const response = await fetch('/api/srs/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 20 }),
+        body: JSON.stringify({ limit: 20, ...(selectedContextId ? { contextId: selectedContextId } : {}) }),
       });
       const result = await response.json();
       if (!response.ok) {
@@ -475,7 +487,40 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
             </h1>
             <p style={{ color: 'var(--text-muted)', marginBottom: '24px', lineHeight: 1.5 }}>
               Hệ thống sẽ chọn các từ vựng đã đến hạn ôn tập theo phương pháp lặp lại ngắt quãng (SRS) để giúp bạn ghi nhớ bền vững.
+              {contexts.length > 0 && ' Mỗi phiên ôn tập chỉ gồm từ vựng của một ngôn ngữ.'}
             </p>
+
+            {/* Several active languages: pick which one to review before starting */}
+            {contexts.length > 1 && (
+              <div id="reviewLanguagePicker" style={{ marginBottom: '20px', textAlign: 'left' }}>
+                <label
+                  htmlFor="reviewLanguageSelect"
+                  style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '6px' }}
+                >
+                  Chọn ngôn ngữ cần ôn
+                </label>
+                <select
+                  id="reviewLanguageSelect"
+                  value={selectedContextId ?? ''}
+                  onChange={event => setSelectedContextId(event.target.value || null)}
+                  disabled={isSubmitting}
+                  style={{ width: '100%', padding: '10px', fontSize: '15px' }}
+                >
+                  {contexts.map(option => (
+                    <option key={option.contextId} value={option.contextId}>
+                      {option.languageName} — {option.dueCount} từ đến hạn
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {contexts.length === 1 && (
+              <p id="reviewLanguageSingle" style={{ marginBottom: '20px', fontWeight: 600 }}>
+                {contexts[0].languageName} — {contexts[0].dueCount} từ đến hạn
+              </p>
+            )}
+
             <button
               type="button"
               id="startReviewBtn"
@@ -517,6 +562,14 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
             >
               <span id="sessionCounter">
                 Đã ôn: {progress.completedCount} / {progress.total} từ
+                {sessionLanguageName && (
+                  <>
+                    {' · '}
+                    <span id="sessionLanguageLabel" style={{ fontWeight: 600 }}>
+                      {sessionLanguageName}
+                    </span>
+                  </>
+                )}
               </span>
               <button
                 type="button"
@@ -747,7 +800,7 @@ export function ReviewView({ learner, authError }: ReviewViewProps) {
             <p style={{ color: 'var(--text-muted)', marginBottom: '24px', lineHeight: 1.5 }}>
               {progress.total > 0
                 ? `Bạn đã hoàn tất ôn tập ${progress.completedCount} từ vựng trong phiên này.`
-                : 'Hiện tại bạn không có từ vựng nào đến hạn ôn tập. Từ mới sẽ đến hạn sau khoảng 1 ngày kể từ khi bạn học xong bài — hãy quay lại sau nhé!'}
+                : 'Hiện tại bạn không có từ vựng nào đến hạn ôn tập cho ngôn ngữ này. Hãy học một bài mới — từ vựng cốt lõi sẽ đến hạn ôn ngay trong ngày!'}
             </p>
             <a
               href="/home"

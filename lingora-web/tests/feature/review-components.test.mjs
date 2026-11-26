@@ -92,7 +92,8 @@ test('P5 SRS UI: Home header navigation exposes "Ôn từ vựng" button linking
     const text = await navBtn.textContent();
     assert.match(text, /Ôn từ vựng/);
     await navBtn.click();
-    await page.waitForURL(`${origin}/review`);
+    // G11: the home link carries the selected context so /review opens on the same language.
+    await page.waitForURL(url => url.pathname === '/review');
     await page.locator('#srsInitialBox').waitFor({ state: 'visible' });
   });
 });

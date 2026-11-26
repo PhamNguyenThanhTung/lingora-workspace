@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { exerciseTypeLabel } from '@lingora/lesson-content/LessonContent';
 import type { LearnerExerciseDto, PracticeAttemptDto } from '../../../../server/lessons/dto.ts';
+import { WarmUpStep, WARM_UP_LIMIT, type WarmUpSessionDto } from './WarmUpStep.tsx';
 
 interface PracticeSectionProps {
   contextId: string;
@@ -52,6 +53,8 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const [dismissedSeq, setDismissedSeq] = useState(-1);
   const [sessionOpen, setSessionOpen] = useState(true);
   const [confirmExit, setConfirmExit] = useState(false);
+  const [warmUpSession, setWarmUpSession] = useState<WarmUpSessionDto | null>(null);
+  const [warmUpOffered, setWarmUpOffered] = useState(!!initialAttempt);
   const [finalizeReward, setFinalizeReward] = useState<{
     lessonXp: number;
     questXp: number;
@@ -85,11 +88,11 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
 
   // F4: the session is a full-screen overlay; stop the lesson page behind it from scrolling.
   useEffect(() => {
-    if (!sessionActive) return;
+    if (!sessionActive && !warmUpSession) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = previous; };
-  }, [sessionActive]);
+  }, [sessionActive, warmUpSession]);
 
   // F3: once the learner starts answering the next question, the previous result banner is stale.
   const hasDraftAnswer = selectedOptionId !== '' || textInput !== '' || reorderTokens.length > 0;
@@ -169,6 +172,37 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
 
   const handleStartAttempt = () => execute({ kind: 'start', path: prefix,
     body: { attemptId: crypto.randomUUID(), expectedPublishedRevisionId: revisionId } });
+
+  /**
+   * "Ôn nhanh": before the exercises, offer up to 3 due SRS cards of this context's language.
+   * The SRS session is independent of the lesson attempt, so it never touches score/XP/accuracy.
+   * No due cards, a writing card, or any SRS error -> start the lesson as usual.
+   */
+  async function handleStartPractice() {
+    if (blocked) return;
+    if (warmUpOffered) { void handleStartAttempt(); return; }
+    setWarmUpOffered(true);
+    setIsActionPending(true);
+    try {
+      const response = await fetch('/api/srs/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: WARM_UP_LIMIT, contextId, excludeLessonId: lessonId }),
+      });
+      if (response.ok) {
+        const session = (await response.json())?.data as WarmUpSessionDto | undefined;
+        if (session?.status === 'ACTIVE' && session.currentItem && !('skill' in session.currentItem)) {
+          setWarmUpSession(session);
+          return;
+        }
+      }
+    } catch {
+      // SRS unavailable: the lesson must proceed normally, without an error.
+    } finally {
+      setIsActionPending(false);
+    }
+    void handleStartAttempt();
+  }
 
   const handleSubmitResponse = () => {
     if (!attempt?.nextExercise || blocked) return;
@@ -296,6 +330,17 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
       {/* Stale / Action Alert (inline only while the full-screen session is closed) */}
       {!sessionActive && alertNode}
 
+      {/* "Ôn nhanh" warm-up shown before the exercises; skippable and outside lesson scoring */}
+      {warmUpSession && !attempt && (
+        <WarmUpStep
+          session={warmUpSession}
+          onFinish={() => {
+            setWarmUpSession(null);
+            void handleStartAttempt();
+          }}
+        />
+      )}
+
       {/* State 1: No attempt started yet */}
       {!attempt && (
         <div id="unstartedPracticeBox" style={{ textAlign: 'center', padding: '24px 16px' }}>
@@ -306,7 +351,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
             type="button"
             id="startPracticeBtn"
             className="btn btn-primary"
-            onClick={handleStartAttempt}
+            onClick={() => void handleStartPractice()}
             disabled={blocked}
           >
             {isActionPending ? 'Đang khởi tạo...' : 'Bắt đầu luyện tập'}
