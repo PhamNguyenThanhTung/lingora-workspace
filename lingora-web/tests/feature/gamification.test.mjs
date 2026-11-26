@@ -23,6 +23,7 @@ import {
   getLearnerStreak,
   getTotalXp,
   getDailyQuests,
+  getDailyProgress,
   getGamificationOverview,
   computeQualifyingLocalDate,
   questSourceId,
@@ -353,6 +354,26 @@ describe('Sprint 4: S4-02 & S4-03 Gamification, XP, and Achievements', () => {
     assert.ok(streak.activeDays.includes('2026-11-13'));
     assert.ok(streak.activeDays.includes('2026-11-12'));
     assert.ok(streak.activeDays.includes('2026-11-11'));
+  });
+
+  test('H13: daily progress counts distinct lessons completed today, not attempts', async () => {
+    const tz = 'Asia/Ho_Chi_Minh';
+    const now = new Date('2026-11-13T12:00:00Z');
+    const { localDate } = computeQualifyingLocalDate(now, tz);
+
+    // Lesson 1 completed twice today ("Luyện tập lại" creates another attempt) and lesson 2 once.
+    for (const lessonId of [lesson1Id, lesson1Id, lesson2Id]) {
+      state.attempts.push({
+        id: randomUUID(),
+        contextId,
+        lessonId,
+        completedAt: now,
+        qualifyingLocalDate: localDate,
+      });
+    }
+
+    const progress = await getDailyProgress(db, learnerId, localDate, 10);
+    assert.equal(progress.completedLessonsToday, 2);
   });
 
   test('gamification overview: returns quests with correct progress and claim status', async () => {

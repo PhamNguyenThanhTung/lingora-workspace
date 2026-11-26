@@ -15,6 +15,7 @@ import type {
   LearnerVocabularyDto,
   ReadingState,
 } from '../../../../server/lessons/dto.ts';
+import { numberedTitle } from '../../../../shared/lesson-title.ts';
 
 interface LessonPlayerViewProps {
   data?: LearnerLessonDetailDto;
@@ -209,7 +210,7 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
         <nav aria-label="Breadcrumb" style={{ marginBottom: '16px' }}>
           <span style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)' }}>
             <a href={`/learn/${data.contextId}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-              Chương {unit.position}: {unitTitle}
+              {numberedTitle('Chương', unit.position, unitTitle)}
             </a>{' '}
             / {lessonTitle}
           </span>

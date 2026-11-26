@@ -304,3 +304,79 @@ test('actual player pending/network failure → usable content → actual retry;
     assert.ok(server.fixture.consumptions[0].completedAt);
   });
 });
+
+// H1/H2/H11: an optional lesson between two required ones, with a teacher-typed "Bài 4:" title.
+const optionalLessonId = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+const optionalRevisionId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+
+function optionalLessonFixture() {
+  const unit = unitRow();
+  return {
+    id: optionalLessonId,
+    unitId: unit.id,
+    position: 2,
+    isRequired: false,
+    availability: 'AVAILABLE',
+    activeRevisionId: optionalRevisionId,
+    activeRevision: {
+      id: optionalRevisionId,
+      lessonId: optionalLessonId,
+      revisionNo: 1,
+      status: 'PUBLISHED',
+      title: { vi: 'Bài 4: Một ngày của tôi', en: 'Lesson 4: My day' },
+      contentBlocks: [{ type: 'paragraph', text: 'Bài học mở rộng, không bắt buộc.' }],
+      topicIds: [],
+      skillIds: [],
+      purposeTags: ['optional'],
+    },
+    unit,
+  };
+}
+
+test('Optional lesson stays open, completion beats the reading state, and no numbering is duplicated', async () => {
+  const required2 = lesson2Row();
+  required2.position = 3;
+  Object.assign(server.fixture, {
+    lessons: [lessonRow(), optionalLessonFixture(), required2],
+    completions: [{ id: 'comp-1', contextId, lessonId: lesson1Id, completedAt: new Date() }],
+  });
+
+  await withLearner(async (page) => {
+    // Home path: unit banner and lesson titles are numbered exactly once, optional node is open.
+    await page.locator('#learningPathSection').waitFor({ state: 'visible' });
+    const banner = await page.locator('.path-chapter__name').first().textContent();
+    assert.equal(banner.trim(), 'Chương 1: Chào hỏi');
+    // Required-only progress (SCR-L-06): 1 of the 2 required lessons is done.
+    assert.match((await page.locator('#pathProgressSummary').innerText()).trim(), /^1\/2 bài đã hoàn thành$/);
+    const optionalNode = page.locator(`#pathNode-${optionalLessonId}`);
+    assert.equal(await optionalNode.getAttribute('data-state'), 'CURRENT');
+    assert.match(await optionalNode.textContent(), /Bài 4: Một ngày của tôi/);
+    assert.doesNotMatch(await optionalNode.textContent(), /Bài 2: Bài 4/);
+    assert.match(await optionalNode.textContent(), /Tùy chọn/);
+    // The optional lesson keeps its slot: between required lesson 1 and required lesson 3.
+    assert.deepEqual(
+      await page.locator('.path-node').evaluateAll(nodes => nodes.map(n => n.id)),
+      [`pathNode-${lesson1Id}`, `pathNode-${optionalLessonId}`, `pathNode-${lesson2Id}`]
+    );
+
+    // Catalogue: same titles, "Đã hoàn thành" instead of a reading state, optional not locked.
+    await page.goto(`${origin}/learn/${contextId}`);
+    await page.locator('#catalogueView').waitFor({ state: 'visible' });
+    assert.equal((await page.locator('.unit-heading').first().textContent()).trim(), 'Chương 1: Chào hỏi');
+    const completedCard = await page.locator(`[data-lesson-id="${lesson1Id}"]`).textContent();
+    assert.match(completedCard, /Đã hoàn thành/);
+    assert.doesNotMatch(completedCard, /Chưa đọc/);
+    const optionalCard = await page.locator(`[data-lesson-id="${optionalLessonId}"]`).textContent();
+    assert.match(optionalCard, /Bài 4: Một ngày của tôi/);
+    assert.match(optionalCard, /\(Tùy chọn\)/);
+    assert.doesNotMatch(optionalCard, /Đã khóa/);
+    assert.equal(await page.locator(`#lessonLink-${optionalLessonId}`).isVisible(), true);
+
+    // Breadcrumb: the unit prefix is not repeated.
+    await page.goto(`${origin}/learn/${contextId}/${optionalLessonId}`);
+    await page.locator('#lessonPlayerView').waitFor({ state: 'visible' });
+    const breadcrumb = await page.locator('nav[aria-label="Breadcrumb"]').textContent();
+    assert.match(breadcrumb, /Chương 1: Chào hỏi/);
+    assert.doesNotMatch(breadcrumb, /Chương 1: Chương 1/);
+  });
+});

@@ -72,7 +72,9 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const prefix = `/api/learner/contexts/${contextId}/lessons/${lessonId}/attempts`;
   const coreExercises = exercises.filter(ex => ex.isCore);
   const prompt = attempt?.nextExercise?.promptData as PracticePrompt | undefined;
-  const shuffleSeed = `${attempt?.id ?? ''}:${attempt?.nextExercise?.id ?? ''}`;
+  // The retry of a first-wrong item must not repeat the first attempt's option order, so the
+  // response ordinal is part of the seed (grading stays by optionId/tokenId on the server).
+  const shuffleSeed = `${attempt?.id ?? ''}:${attempt?.nextExercise?.id ?? ''}:${attempt?.nextOrdinal ?? 1}`;
   const shuffledOptions = seededShuffle(prompt?.options ?? [], shuffleSeed);
   const shuffledTokens = seededShuffle(prompt?.tokens ?? [], shuffleSeed);
   const answered = attempt?.responses.length ?? 0;
@@ -744,6 +746,9 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                   <div id="celebrationAccuracy" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
                     {Math.round(finalizeReward.firstTryAccuracy)}%
                   </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                    chỉ tính lần trả lời đầu
+                  </div>
                 </div>
                 <div className="celebrate__tile" style={{ animationDelay: '530ms' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Chuỗi ngày</div>
@@ -797,8 +802,13 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
               <div style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)', marginBottom: '4px' }}>
                 Điểm số đạt được
               </div>
+              {/* H10: one number the learner can read. The raw contribution units (ADR-036 scoring)
+                  doubled as "5 / 8" next to a different percentage and only confused people. */}
               <div id="practiceCompletionScore" style={{ fontSize: '28px', fontWeight: 700, color: 'var(--primary-color)' }}>
-                {attempt.score.contributionUnits} / {attempt.score.maxUnits} ({attempt.score.percentage}%)
+                Điểm {attempt.score.percentage}%
+              </div>
+              <div id="practiceScoreExplanation" style={{ fontSize: 'var(--font-size-ref)', color: 'var(--text-muted)', marginTop: '4px', maxWidth: '320px' }}>
+                tính cả lượt làm lại câu sai (đúng ngay: 1 điểm, đúng khi làm lại: 0,5 điểm)
               </div>
             </div>
           )}
@@ -818,7 +828,16 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
               <h4 style={{ fontSize: 'var(--font-size-heading)', fontWeight: 600, marginBottom: '8px' }}>
                 Chi tiết câu trả lời và giải thích
               </h4>
-              {attempt.reviewEntries.map((entry, index) => (
+              {attempt.reviewEntries.map((entry, index) => {
+                // H10: make the retry visible — "Sai lần 1 (...) → Đúng khi làm lại (...)".
+                const attempts = entry.userResponses ?? [];
+                const firstAttempt = attempts.find(r => r.ordinal === 1) ?? attempts[0];
+                const retryAttempt = attempts.find(r => r.ordinal > 1);
+                const correctedOnRetry = !!firstAttempt && !firstAttempt.isCorrect && !!retryAttempt?.isCorrect;
+                const correctnessLabel = entry.isCorrect
+                  ? correctedOnRetry ? 'Đúng khi làm lại' : 'Đúng'
+                  : 'Sai';
+                return (
                 <div
                   key={entry.lessonExerciseId || index}
                   className="review-entry-card"
@@ -841,7 +860,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                         fontWeight: 600,
                       }}
                     >
-                      {entry.isCorrect ? 'Đúng' : 'Sai'}
+                      {correctnessLabel}
                     </span>
                   </div>
 
@@ -855,6 +874,14 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                       {entry.userResponse || '(Chưa có câu trả lời)'}
                     </span>
                   </div>
+
+                  {firstAttempt && retryAttempt && (
+                    <div className="review-retry-trail" style={{ fontSize: 'var(--font-size-sub)', marginBottom: '6px', color: 'var(--text-muted)' }}>
+                      {firstAttempt.isCorrect ? 'Đúng lần 1' : 'Sai lần 1'} ({firstAttempt.text || 'không trả lời'})
+                      {' → '}
+                      {retryAttempt.isCorrect ? 'Đúng khi làm lại' : 'Vẫn sai khi làm lại'} ({retryAttempt.text || 'không trả lời'})
+                    </div>
+                  )}
 
                   <div style={{ fontSize: 'var(--font-size-sub)', marginBottom: '6px' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Đáp án đúng: </span>
@@ -880,7 +907,8 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
 

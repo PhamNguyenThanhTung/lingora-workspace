@@ -10,6 +10,7 @@ import type {
 import type { LoadLearnerContextResult } from '../../server/context/loader.ts';
 import type { HomeDto } from '../../server/context/home-dto.ts';
 import type { LoadLearnerHomeResult } from '../../server/context/home-loader.ts';
+import { numberedTitle } from '../../shared/lesson-title.ts';
 
 interface HomeViewProps {
   data?: (LearnerContextEnvelope['data'] & Partial<HomeDto>) | HomeDto;
@@ -694,8 +695,10 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   const selectedWorkingLevel = selectedContext?.workingLevel
     ? `${selectedContext.workingLevel.code} - ${getLocalizedText(selectedContext.workingLevel.label, uiLocale)}`
     : 'Chưa chọn trình độ bắt đầu';
-  const publishedPathCount = pathNodes.filter((node) => node.state !== 'COMING_SOON').length;
-  const completedPathCount = pathNodes.filter((node) => node.state === 'COMPLETED').length;
+  // SCR-L-06: progress is eligible required-lesson progress; optional lessons stay out of it.
+  const requiredPathNodes = pathNodes.filter((node) => node.isRequired && node.state !== 'COMING_SOON');
+  const publishedPathCount = requiredPathNodes.length;
+  const completedPathCount = requiredPathNodes.filter((node) => node.state === 'COMPLETED').length;
   const pathStatus = selectedContext && !selectedContext.course.isActive
     ? 'COURSE_INACTIVE'
     : selectedContext?.status === 'PAUSED'
@@ -1018,9 +1021,16 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                     const isNavigable = node.state === 'COMPLETED' || node.state === 'CURRENT' || node.state === 'AVAILABLE';
                     const isLocked = node.state === 'LOCKED' || node.state === 'COMING_SOON';
                     const showBanner = index === 0 || pathNodes[index - 1].unitTitle !== node.unitTitle;
-                    const unitNodes = pathNodes.filter((n) => n.unitTitle === node.unitTitle);
+                    // SCR-L-06: the unit counter tracks eligible required-lesson progress, so
+                    // optional lessons (always open, never gating) are not part of "x/y".
+                    const unitNodes = pathNodes.filter((n) => n.unitTitle === node.unitTitle && n.isRequired);
                     const unitDone = unitNodes.filter((n) => n.state === 'COMPLETED').length;
+                    const unitOptional = pathNodes.filter((n) => n.unitTitle === node.unitTitle && !n.isRequired).length;
                     const offset = [0, 28, 44, 28, 0, -28, -44, -28][index % 8];
+                    // G15: teacher titles already carry "Bài N:" most of the time; only number the rest.
+                    const nodeTitle = node.state === 'COMING_SOON'
+                      ? node.title
+                      : numberedTitle('Bài', node.position, node.title);
                     const stateLabel =
                       node.state === 'COMPLETED' ? 'Đã hoàn thành'
                       : node.state === 'CURRENT' ? 'Đang học'
@@ -1036,8 +1046,11 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                       <React.Fragment key={node.lessonId || index}>
                         {showBanner && (
                           <div className="path-chapter">
-                            <span className="path-chapter__name">{node.unitTitle}</span>
-                            <span className="path-chapter__progress">{unitDone}/{unitNodes.length}</span>
+                            <span className="path-chapter__name">{numberedTitle('Chương', node.unitPosition, node.unitTitle)}</span>
+                            <span className="path-chapter__progress">
+                              {unitDone}/{unitNodes.length}
+                              {unitOptional > 0 && <span style={{ color: 'var(--text-muted)' }}> (+{unitOptional} tùy chọn)</span>}
+                            </span>
                           </div>
                         )}
                         <div
@@ -1050,19 +1063,22 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                             <a href={node.href} id={`pathLink-${node.lessonId}`} className="path-node-link path-node__link">
                               {medallion}
                               <span className="path-node__text">
-                                <span className="path-node__title">{node.title}</span>
+                                <span className="path-node__title">{nodeTitle}</span>
                               </span>
                             </a>
                           ) : (
                             <span id={`pathDisabled-${node.lessonId}`} className="path-node__link path-node__link--disabled">
                               {medallion}
                               <span className="path-node__text">
-                                <span className="path-node__title">{node.title}</span>
+                                <span className="path-node__title">{nodeTitle}</span>
                               </span>
                             </span>
                           )}
                           <span className="path-node__meta">
                             {node.score != null && <span className="path-node__score">{node.score}%</span>}
+                            {!node.isRequired && node.state !== 'COMING_SOON' && (
+                              <span className="badge badge-default path-node__optional">Tùy chọn</span>
+                            )}
                             <span className={`badge ${node.state === 'COMPLETED' || node.state === 'CURRENT' ? 'badge-active' : 'badge-paused'}`}>
                               {stateLabel}
                             </span>

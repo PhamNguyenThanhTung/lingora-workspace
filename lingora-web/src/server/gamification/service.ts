@@ -227,9 +227,11 @@ export async function getDailyProgress(
   localDateStr?: string
 ): Promise<DailyProgressDto> {
   const dateStr = localDateStr || localDate.toISOString().slice(0, 10);
+  // H13: "N bài học" on the home goal line is distinct lessons completed today. Redoing a lesson
+  // ("Luyện tập lại") creates another attempt but is not another completed lesson (ADR-036).
   const rows = await db.$queryRaw<Array<{ lesson_count: number; review_count: number }>>`
     SELECT
-      (SELECT COUNT(*)::int
+      (SELECT COUNT(DISTINCT la.lesson_id)::int
        FROM app.lesson_attempts la
        JOIN app.learning_contexts lc ON lc.id = la.context_id
        WHERE lc.learner_id = ${learnerId}::uuid
