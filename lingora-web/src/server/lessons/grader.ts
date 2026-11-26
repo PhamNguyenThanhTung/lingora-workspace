@@ -34,22 +34,85 @@ export function computeInputHash(val: unknown): string {
 // =============================================================================
 
 /**
- * D1 — normalization (amended after content review D1):
- * Unicode NFC, trim, collapse every run of whitespace to a single space,
- * drop sentence-final punctuation at the very end (. ! ? … and CJK 。！？),
- * then JavaScript toLowerCase() only when caseSensitive=false.
- * Accents, leading punctuation (e.g. Spanish ¿ ¡) and inner punctuation are preserved;
- * comparison stays exact equality against any accepted answer.
- * The same function is applied to the learner input and to every accepted answer.
+ * D1 — chuẩn hóa dung thứ (sửa sau nghiệm thu vòng 3, ghi nhận G1–G4).
+ * Các khác biệt sau được coi là BẰNG NHAU, không cần ghi chú:
+ *  - NFKC: katakana nửa chiều rộng (`ｺｰﾋｰ` == `コーヒー`), chữ/số toàn chiều rộng == ASCII,
+ *    dấu cách toàn chiều rộng U+3000 và mọi loại khoảng trắng Unicode == dấu cách thường.
+ *  - Nháy đơn cong `’ ‘ ʼ ′` == nháy thẳng `'`; nháy đôi cong `“ ” „ ″` và `« »` == `"`,
+ *    kèm bỏ khoảng trắng sát dấu nháy đôi (kiểu Pháp `« oui »`).
+ *  - Khoảng trắng kiểu Pháp trước `? ! : ;` bị bỏ (`Comment allez-vous ?` == `Comment allez-vous?`).
+ *  - Tiếng Nhật/Trung viết liền: khoảng trắng giữa hai ký tự CJK/kana bị bỏ
+ *    (`わたしは　田中です。` == `わたしは田中です。`).
+ *  - Mọi run khoảng trắng còn lại thu về một dấu cách, trim hai đầu.
+ *  - Dấu câu cuối câu bị bỏ (. ! ? … 。！？); toLowerCase() chỉ khi caseSensitive=false.
+ * KHÔNG dung thứ: hiragana vs katakana (`こーひー` ≠ `コーヒー`) là lỗi chính tả thật.
+ * Dấu phụ Latin thiếu (`cafe` vs `café`) xử lý riêng ở `stripLatinDiacritics`: vẫn ĐÚNG nhưng kèm ghi chú.
+ * Hàm này áp dụng y hệt cho câu trả lời của học viên và cho từng đáp án được chấp nhận.
  */
 export function normalizePracticeText(text: string, caseSensitive: boolean): string {
   const cleaned = text
-    .normalize('NFC')
-    .replace(/\s+/g, ' ')
+    .normalize('NFKC')
+    // nháy đơn cong -> nháy thẳng; nháy đôi cong và « » -> nháy đôi thẳng
+    .replace(/[\u2018\u2019\u201B\u02BC\u2032]/gu, "'")
+    .replace(/[\u201C\u201D\u201E\u201F\u2033\u00AB\u00BB]/gu, '"')
+    // bỏ khoảng trắng sát dấu nháy đôi (kiểu Pháp « oui ») và trước dấu câu kiểu Pháp
+    .replace(/\s*"\s*/gu, '"')
+    .replace(/\s+([?!:;])/gu, '$1')
+    .replace(/\s+/gu, ' ')
     .trim()
+    // tiếng Nhật/Trung viết liền: bỏ khoảng trắng giữa hai ký tự CJK/kana
+    .replace(
+      /(?<=[\p{scx=Han}\p{scx=Hiragana}\p{scx=Katakana}\u3000-\u303F])\s+(?=[\p{scx=Han}\p{scx=Hiragana}\p{scx=Katakana}\u3000-\u303F])/gu,
+      ''
+    )
     .replace(/(?:[.!?\u2026\u3002\uFF01\uFF1F]\s*)+$/u, '')
     .trimEnd();
   return caseSensitive ? cleaned : cleaned.toLowerCase();
+}
+
+/**
+ * Bỏ dấu phụ CHỈ trên chữ Latin (NFD rồi xóa mark đứng ngay sau một chữ Latin).
+ * Giữ nguyên dakuten/handakuten tiếng Nhật (`が` không bị hạ thành `か`).
+ * Dùng để chấp nhận câu trả lời thiếu dấu (Pháp `cafe`, Việt `pho`) nhưng kèm ghi chú.
+ */
+export function stripLatinDiacritics(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/(\p{Script=Latin})\p{M}+/gu, '$1')
+    .normalize('NFC');
+}
+
+/**
+ * Nguồn duy nhất để chấm câu trả lời dạng chữ (FILL_BLANK, GRAMMAR).
+ * - Khớp sau chuẩn hóa -> đúng, không ghi chú.
+ * - Chỉ khớp sau khi bỏ dấu phụ Latin -> vẫn đúng, kèm `accentHint` là đáp án gần nhất.
+ */
+function gradeTextAnswer(
+  text: string,
+  acceptedAnswers: string[],
+  caseSensitive: boolean
+): { isCorrect: boolean; formativeFeedback: string; accentHint?: string } {
+  const normalizedInput = normalizePracticeText(text, caseSensitive);
+  const answers = (acceptedAnswers || []).map(ans => ({
+    raw: ans,
+    normalized: normalizePracticeText(ans, caseSensitive),
+  }));
+
+  if (answers.some(ans => ans.normalized === normalizedInput)) {
+    return { isCorrect: true, formativeFeedback: 'Chính xác!' };
+  }
+
+  const strippedInput = stripLatinDiacritics(normalizedInput);
+  const nearMiss = answers.find(ans => stripLatinDiacritics(ans.normalized) === strippedInput);
+  if (nearMiss) {
+    return {
+      isCorrect: true,
+      formativeFeedback: `Đúng rồi! Chú ý dấu: ${nearMiss.raw}`,
+      accentHint: nearMiss.raw,
+    };
+  }
+
+  return { isCorrect: false, formativeFeedback: 'Chưa chính xác.' };
 }
 
 // =============================================================================
@@ -109,6 +172,8 @@ export interface GradedResult {
   isCorrect: boolean;
   formativeFeedback: string;
   validatedInput: unknown;
+  /** Chỉ có khi đúng nhưng thiếu dấu phụ: đáp án chuẩn để học viên đối chiếu. */
+  accentHint?: string;
 }
 
 export function gradePracticeExercise(
@@ -195,18 +260,13 @@ export function gradePracticeExercise(
         throw new LessonServiceError(400, 'VALIDATION_ERROR', 'Định dạng câu trả lời điền từ không hợp lệ.');
       }
       const grading = gradingData as { acceptedAnswers: string[]; caseSensitive: boolean };
-      const caseSensitive = Boolean(grading.caseSensitive);
-      const normalizedInput = normalizePracticeText(parsedInput.data.text, caseSensitive);
+      const graded = gradeTextAnswer(
+        parsedInput.data.text,
+        grading.acceptedAnswers,
+        Boolean(grading.caseSensitive)
+      );
 
-      const isCorrect = (grading.acceptedAnswers || []).some(ans => {
-        return normalizePracticeText(ans, caseSensitive) === normalizedInput;
-      });
-
-      return {
-        isCorrect,
-        formativeFeedback: isCorrect ? 'Chính xác!' : 'Chưa chính xác.',
-        validatedInput: parsedInput.data,
-      };
+      return { ...graded, validatedInput: parsedInput.data };
     }
 
     case 'GRAMMAR': {
@@ -215,18 +275,13 @@ export function gradePracticeExercise(
         throw new LessonServiceError(400, 'VALIDATION_ERROR', 'Định dạng câu trả lời ngữ pháp không hợp lệ.');
       }
       const grading = gradingData as { acceptedAnswers: string[]; caseSensitive: boolean };
-      const caseSensitive = Boolean(grading.caseSensitive);
-      const normalizedInput = normalizePracticeText(parsedInput.data.text, caseSensitive);
+      const graded = gradeTextAnswer(
+        parsedInput.data.text,
+        grading.acceptedAnswers,
+        Boolean(grading.caseSensitive)
+      );
 
-      const isCorrect = (grading.acceptedAnswers || []).some(ans => {
-        return normalizePracticeText(ans, caseSensitive) === normalizedInput;
-      });
-
-      return {
-        isCorrect,
-        formativeFeedback: isCorrect ? 'Chính xác!' : 'Chưa chính xác.',
-        validatedInput: parsedInput.data,
-      };
+      return { ...graded, validatedInput: parsedInput.data };
     }
 
     default:

@@ -79,12 +79,17 @@ test('new current publication page does not resume a stale unfinished X attempt'
 });
 
 test('text graders honor the complete approved D1 contract for both FILL_BLANK and GRAMMAR',()=>{
+ // D1 sửa sau nghiệm thu vòng 3 (G1–G4): chuẩn hóa NFKC + dung thứ dấu phụ Latin (đúng kèm ghi chú).
  for(const type of ['FILL_BLANK','GRAMMAR']){
   const sensitive={acceptedAnswers:['Café.','Another  answer'],caseSensitive:true};
-  const grade=(text,secret=sensitive)=>gradePracticeExercise(type,{},secret,{text}).isCorrect;
-  assert.equal(grade('  Cafe\u0301.  '),true);assert.equal(grade('café.'),false);assert.equal(grade('café.',{...sensitive,caseSensitive:false}),true);
-  assert.equal(grade('Cafe.'),false);assert.equal(grade('Café'),true,'trailing sentence punctuation is ignored');assert.equal(grade('Another  answer'),true);assert.equal(grade('Another answer'),true,'inner whitespace runs collapse');assert.equal(grade('Anotheranswer'),false);
-  assert.equal(grade('Ａ',{acceptedAnswers:['A'],caseSensitive:false}),false,'NFC must not become NFKC');
+  const result=(text,secret=sensitive)=>gradePracticeExercise(type,{},secret,{text});
+  const grade=(text,secret=sensitive)=>result(text,secret).isCorrect;
+  assert.equal(grade('  Cafe\u0301.  '),true);assert.equal(grade('café.'),false,'caseSensitive vẫn phân biệt hoa/thường');assert.equal(grade('café.',{...sensitive,caseSensitive:false}),true);
+  assert.equal(grade('Café'),true,'trailing sentence punctuation is ignored');assert.equal(grade('Another  answer'),true);assert.equal(grade('Another answer'),true,'inner whitespace runs collapse');assert.equal(grade('Anotheranswer'),false);
+  const missingAccent=result('Cafe.');
+  assert.equal(missingAccent.isCorrect,true,'thiếu dấu phụ Latin vẫn đúng');
+  assert.equal(missingAccent.accentHint,'Café.','kèm ghi chú đáp án chuẩn');
+  assert.equal(grade('Ａ',{acceptedAnswers:['A'],caseSensitive:false}),true,'NFKC gộp chữ Latin toàn chiều rộng với ASCII');
  }
 });
 test('missing or non-object response input is a validation error before hashing or writes',async()=>{

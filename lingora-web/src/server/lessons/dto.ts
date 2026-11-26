@@ -197,6 +197,8 @@ export interface PracticeResponseDto {
   /** Chỉ có khi trả lời sai: đáp án đúng và giải thích để học viên hiểu ngay. */
   correctAnswer?: string | null;
   explanation?: string | null;
+  /** Chỉ có khi đúng nhưng thiếu dấu phụ: đáp án chuẩn để học viên đối chiếu. */
+  accentHint?: string | null;
 }
 
 export interface PracticeReviewEntryDto {

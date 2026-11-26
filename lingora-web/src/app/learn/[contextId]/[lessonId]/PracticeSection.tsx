@@ -47,7 +47,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
   const [selectedOptionId, setSelectedOptionId] = useState('');
   const [textInput, setTextInput] = useState('');
   const [reorderTokens, setReorderTokens] = useState<string[]>([]);
-  const [lastFeedback, setLastFeedback] = useState<{ isCorrect: boolean; message: string; correctAnswer?: string | null; explanation?: string | null } | null>(null);
+  const [lastFeedback, setLastFeedback] = useState<{ isCorrect: boolean; message: string; correctAnswer?: string | null; explanation?: string | null; accentHint?: string | null } | null>(null);
   const [feedbackSeq, setFeedbackSeq] = useState(0);
   const [dismissedSeq, setDismissedSeq] = useState(-1);
   const [sessionOpen, setSessionOpen] = useState(true);
@@ -134,7 +134,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
             typeof feedback.isCorrect !== 'boolean' || typeof feedback.formativeFeedback !== 'string') {
           throw new Error('Phản hồi câu trả lời chưa hợp lệ. Vui lòng thử lại.');
         }
-        setLastFeedback({ isCorrect: feedback.isCorrect, message: feedback.formativeFeedback, correctAnswer: feedback.correctAnswer, explanation: feedback.explanation });
+        setLastFeedback({ isCorrect: feedback.isCorrect, message: feedback.formativeFeedback, correctAnswer: feedback.correctAnswer, explanation: feedback.explanation, accentHint: typeof feedback.accentHint === 'string' ? feedback.accentHint : null });
         setFeedbackSeq((n) => n + 1);
       } else setLastFeedback(null);
       if (command.kind === 'finalize' && !dto.isCompleted) throw new Error('Chưa ghi nhận kết quả hoàn thành. Vui lòng thử lại.');
@@ -579,7 +579,12 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                     <span id="feedbackPrevLabel" style={{ display: 'block', fontSize: 12, fontWeight: 600, opacity: 0.75, marginBottom: 2 }}>
                       Kết quả câu vừa rồi
                     </span>
-                    {lastFeedback.message}
+                    {lastFeedback.isCorrect && lastFeedback.accentHint ? 'Đúng rồi!' : lastFeedback.message}
+                    {lastFeedback.isCorrect && lastFeedback.accentHint && (
+                      <span id="feedbackAccentHint" style={{ display: 'block', fontWeight: 400, marginTop: 4, opacity: 0.85 }}>
+                        Chú ý dấu: <strong>{lastFeedback.accentHint}</strong>
+                      </span>
+                    )}
                     {!lastFeedback.isCorrect && lastFeedback.correctAnswer && (
                       <span id="feedbackCorrectAnswer" style={{ display: 'block', fontWeight: 400, marginTop: 4 }}>
                         Đáp án đúng: <strong>{lastFeedback.correctAnswer}</strong>
