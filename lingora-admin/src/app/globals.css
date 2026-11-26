@@ -917,6 +917,17 @@ html, body {
 .dashboard-audit-link > span:nth-child(2) { flex: 1; min-width: 0; }
 .dashboard-footnote { color: var(--text-muted); font-size: 10px; margin: 28px 0 4px; text-align: center; }
 
+/* Lesson draft editor: keep cards and their contents inside the viewport. */
+.form-section { min-width: 0; max-width: 100%; }
+.form-section .form-input, .form-section textarea, .form-section select { max-width: 100%; }
+
+/* Teacher-side preview of the legacy paragraph editor (F5). Flattens the
+   Studio preview column, which is a sticky side rail inside Lesson Studio. */
+.legacy-preview-panel { display: block; margin-top: 16px; min-width: 0; max-width: 100%; }
+.legacy-preview-panel .previewColumn { position: static; max-height: none; width: 100%; min-width: 0; }
+.legacy-preview-panel .previewHeader { flex-wrap: wrap; gap: 8px; }
+.legacy-preview-panel .previewViewportWrapper { overflow-x: auto; }
+
 /* Responsive workspace and dialogs */
 @media (max-width: 1120px) {
   :root { --content-padding: 24px; }

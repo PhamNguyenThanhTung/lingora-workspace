@@ -1,7 +1,7 @@
 'use client';
 
 import { exerciseTypeLabel } from '@lingora/lesson-content/LessonContent';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { SessionLostModal } from './SessionLostModal';
 import { AccessDeniedView } from './AccessDeniedView';
 import { getWorkflowStatusLabel } from '@/server/lessons/workflow-status';
@@ -20,8 +20,9 @@ import {
   type LessonBlock,
 } from '@lingora/lesson-content';
 import type { ReviewCommentDto } from '@/server/lessons/comments';
-import { StudioLayout } from './lesson-studio';
+import { StudioLayout, StudioPreview } from './lesson-studio';
 import { generateBlockKey } from './lesson-studio/block-operations';
+import { studioCss } from './lesson-studio/studio-styles';
 
 function isValidAudioReferenceUrl(rawUrl: string): boolean {
   if (typeof rawUrl !== 'string') return false;
@@ -131,6 +132,8 @@ export function LessonDraftEditor({
     (initialLesson.currentDraft as any)?.contentSchemaVersion === 1;
 
   const [useV1Studio, setUseV1Studio] = useState<boolean>(initialIsV1);
+  // F5: bản xem trước cho chế độ soạn thảo cũ (danh sách đoạn văn)
+  const [legacyPreviewOpen, setLegacyPreviewOpen] = useState(false);
   const [blocks, setBlocks] = useState<any[]>(() => {
     if (initialV1Blocks.length > 0) {
       return initialV1Blocks;
@@ -418,6 +421,27 @@ export function LessonDraftEditor({
       return next;
     });
   };
+
+  // F5: chuyển các đoạn văn đang soạn (chưa lưu) thành khối TEXT để dùng chung
+  // bộ render phía học viên (LessonContent) với Lesson Studio.
+  const legacyPreviewBlocks: LessonBlock[] = useMemo(
+    () =>
+      paragraphs.map((p, idx) => ({
+        blockKey: `legacy-preview-${idx + 1}`,
+        type: 'TEXT' as const,
+        position: idx + 1,
+        schemaVersion: 1,
+        content: {
+          nodes: [
+            {
+              type: 'paragraph' as const,
+              runs: [{ text: p.text }],
+            },
+          ],
+        },
+      })),
+    [paragraphs]
+  );
 
   const authFailed = (res: Response) => {
     if (res.status === 401) { setSessionLost(true); return true; }
@@ -1955,7 +1979,22 @@ export function LessonDraftEditor({
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', minWidth: 0, maxWidth: '100%' }}>
+              {!useV1Studio && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  id="btnTogglePreview"
+                  onClick={() => setLegacyPreviewOpen((open) => !open)}
+                  aria-expanded={legacyPreviewOpen}
+                  aria-controls="legacyPreviewPanel"
+                  style={{ fontSize: '13px', padding: '6px 12px' }}
+                  title="Xem nội dung bản nháp hiện tại theo giao diện học viên"
+                >
+                  {legacyPreviewOpen ? 'Ẩn xem trước' : 'Xem trước'}
+                </button>
+              )}
+
               {!useV1Studio && (
                 <button
                   type="button"
@@ -2094,6 +2133,23 @@ export function LessonDraftEditor({
                   ))}
                 </div>
               )}
+
+              {/* F5: Xem trước nội dung đang soạn (chưa lưu) bằng bộ render của học viên */}
+              {legacyPreviewOpen && (
+                <section
+                  id="legacyPreviewPanel"
+                  className="legacy-preview-panel"
+                  aria-label="Xem trước nội dung học viên"
+                >
+                  <style dangerouslySetInnerHTML={{ __html: studioCss }} />
+                  <StudioPreview
+                    blocks={legacyPreviewBlocks}
+                    vocabulary={vocabulary}
+                    exercises={exercises}
+                    title={{ vi: titleVi, en: titleEn }}
+                  />
+                </section>
+              )}
             </>
           )}
         </div>
@@ -2110,8 +2166,8 @@ export function LessonDraftEditor({
             marginBottom: '20px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px', minWidth: 0 }}>
+            <div style={{ minWidth: 0 }}>
               <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#0f172a' }}>
                 3. Bài tập (Exercises)
               </h2>
@@ -2135,7 +2191,7 @@ export function LessonDraftEditor({
               id="btnAddAssessmentItem"
               onClick={handleOpenAddAssessmentItem}
               disabled={!editorActuallyEditable || assessmentBlueprints.length === 0}
-              style={{ fontSize: '13px', padding: '6px 12px', marginLeft: '8px' }}
+              style={{ fontSize: '13px', padding: '6px 12px' }}
             >
               + Bài tập đánh giá
             </button>
@@ -2275,8 +2331,8 @@ export function LessonDraftEditor({
             marginBottom: '20px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px', minWidth: 0 }}>
+            <div style={{ minWidth: 0 }}>
               <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#0f172a' }}>
                 4. Từ vựng (Vocabulary)
               </h2>
