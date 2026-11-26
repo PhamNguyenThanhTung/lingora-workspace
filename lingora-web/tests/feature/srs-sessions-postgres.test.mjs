@@ -1625,3 +1625,254 @@ test('Real PostgreSQL: new WRITING attempts must match the published character o
     else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
   }
 });
+
+// ---------------------------------------------------------------------------
+// G11 (per-language sessions), G12 (same-day first review) and the "Ôn nhanh"
+// in-lesson warm-up (limit + excludeLessonId).
+// ---------------------------------------------------------------------------
+
+/** Units are unique per (course, level, position), so each holder lesson gets its own slot. */
+let holderPosition = 100;
+
+/** Minimal DRAFT lesson in an existing course, usable as a vocabulary-link holder. */
+async function createDraftLesson(courseId, code) {
+  const unit = await db.unit.create({
+    data: { courseId, levelId: f.level, code, position: holderPosition++, names: { vi: code } },
+  });
+  const lesson = await db.lesson.create({
+    data: { unitId: unit.id, position: 1, availability: 'PLANNED' },
+  });
+  const assignment = await db.contentAssignment.create({
+    data: { createdBy: f.admin, currentTeacherId: f.teacher, lessonId: lesson.id },
+  });
+  const episode = await db.assignmentHistory.create({
+    data: {
+      assignmentId: assignment.id,
+      sequenceNo: 1,
+      eventType: 'ASSIGNED',
+      nextTeacherId: f.teacher,
+      scopeGeneration: 1n,
+      changedBy: f.admin,
+      scopeSnapshot: { unit: code },
+    },
+  });
+  const revision = await db.lessonRevision.create({
+    data: {
+      lessonId: lesson.id,
+      revisionNo: 1,
+      assignmentId: assignment.id,
+      creationAssignmentEpisodeId: episode.id,
+      status: 'DRAFT',
+      title: { vi: code },
+      contentBlocks: [],
+      createdBy: f.teacher,
+      lastEditedBy: f.teacher,
+    },
+  });
+  return { lessonId: lesson.id, revisionId: revision.id, nextPosition: 1 };
+}
+
+/** A second language with its own course and a DRAFT lesson to hold vocabulary links. */
+async function createSecondLanguage() {
+  const language = await db.language.create({
+    data: {
+      code: 'lang-b-' + randomUUID().slice(0, 8),
+      names: { vi: 'Tiếng Pháp (test)', en: 'French (test)' },
+      isLearnable: true,
+      isUiLocale: false,
+    },
+  });
+  const course = await db.course.create({
+    data: {
+      languageId: language.id,
+      frameworkId: f.framework,
+      names: { vi: 'Khóa học B' },
+      isActive: true,
+      defaultStartLevelId: f.level,
+    },
+  });
+  const holder = await createDraftLesson(course.id, 'UB-' + randomUUID().slice(0, 6));
+  return { language, course, holder };
+}
+
+/**
+ * A due card whose vocabulary belongs to `languageId` and whose provenance link lives on
+ * `holder` (satisfying srs_cards_source_shape_check).
+ */
+async function createDueCard(learnerId, languageId, holder, canonicalForm, extra = {}) {
+  const concept = await db.vocabularyConcept.create({
+    data: {
+      languageId,
+      canonicalForm,
+      normalizedForm: canonicalForm.toLowerCase(),
+      senseKey: 'sense-' + randomUUID().slice(0, 8),
+      meaningLabels: { vi: 'Nghĩa của ' + canonicalForm },
+      createdBy: f.teacher,
+    },
+  });
+  const link = await db.lessonVocabularyLink.create({
+    data: {
+      lessonRevisionId: holder.revisionId,
+      vocabularyId: concept.id,
+      position: holder.nextPosition++,
+      isCore: true,
+      displaySnapshot: {},
+    },
+  });
+  const card = await db.srsCard.create({
+    data: {
+      learnerId,
+      vocabularyId: concept.id,
+      stage: 1,
+      dueAt: new Date(Date.now() - 3600 * 1000),
+      enrollmentSource: 'OPTIONAL_CHOICE',
+      sourceLessonVocabularyId: link.id,
+      ...extra,
+    },
+  });
+  return { concept, link, card };
+}
+
+test('G11: a context session only contains cards of that context language, whatever the card source', async () => {
+  const b = await createSecondLanguage();
+  const ctxB = await db.learningContext.create({
+    data: {
+      learnerId: f.learnerA,
+      languageId: b.language.id,
+      courseId: b.course.id,
+      status: 'ACTIVE',
+    },
+  });
+
+  const pastDue = new Date(Date.now() - 3600 * 1000);
+  // Card 1: language A, provenance in course A (the regular case).
+  const cardA1 = await db.srsCard.create({
+    data: {
+      learnerId: f.learnerA,
+      vocabularyId: f.vocabId,
+      stage: 1,
+      dueAt: pastDue,
+      enrollmentSource: 'OPTIONAL_CHOICE',
+      sourceLessonVocabularyId: f.vocabLinkId,
+    },
+  });
+  // Card 2: language A word, but its provenance link sits on a lesson of course B.
+  // The old course-based filter leaked it into the language-B session; the language
+  // filter keeps it in the language-A session where it belongs.
+  const cardA2 = await createDueCard(f.learnerA, f.lang, b.holder, 'Crossover');
+  // Card 3: a genuine language-B word.
+  const cardB1 = await createDueCard(f.learnerA, b.language.id, b.holder, 'Bonjour');
+
+  const sessionA = await createReviewSession(f.learnerA, { contextId: f.ctxA, limit: 50 }, db);
+  assert.equal(sessionA.progress.total, 2);
+
+  const sessionB = await createReviewSession(f.learnerA, { contextId: ctxB.id, limit: 50 }, db);
+  assert.equal(sessionB.progress.total, 1);
+  assert.equal(sessionB.currentItem.cardId, cardB1.card.id);
+
+  // The queue order is not asserted, only its composition.
+  const itemsOf = async (sessionId) => {
+    const session = await db.srsReviewSession.findUniqueOrThrow({ where: { id: sessionId } });
+    return new Set(session.cardIds.map((entry) => (typeof entry === 'string' ? entry : entry.cardId)));
+  };
+  const queueA = await itemsOf(sessionA.sessionId);
+  assert.ok(queueA.has(cardA1.id));
+  assert.ok(queueA.has(cardA2.card.id));
+  assert.ok(!queueA.has(cardB1.card.id));
+
+  // Backward compatibility: no contextId still means the whole account.
+  const sessionAll = await createReviewSession(f.learnerA, { limit: 50 }, db);
+  assert.equal(sessionAll.progress.total, 3);
+});
+
+test('G11: context ownership is still enforced (403 for a foreign context, 404 for an unknown one)', async () => {
+  await db.srsCard.create({
+    data: {
+      learnerId: f.learnerA,
+      vocabularyId: f.vocabId,
+      stage: 1,
+      dueAt: new Date(Date.now() - 3600 * 1000),
+      enrollmentSource: 'OPTIONAL_CHOICE',
+      sourceLessonVocabularyId: f.vocabLinkId,
+    },
+  });
+
+  await assert.rejects(
+    () => createReviewSession(f.learnerA, { contextId: f.ctxB }, db),
+    (error) => error instanceof SrsServiceError && error.status === 403 && error.code === 'FORBIDDEN',
+  );
+  await assert.rejects(
+    () => createReviewSession(f.learnerA, { contextId: randomUUID() }, db),
+    (error) => error instanceof SrsServiceError && error.status === 404 && error.code === 'NOT_FOUND',
+  );
+  // No session row is created for a rejected context.
+  assert.equal(await db.srsReviewSession.count({ where: { learnerId: f.learnerA } }), 0);
+});
+
+test('Ôn nhanh: a warm-up session is capped at 3 cards and skips words this lesson introduces', async () => {
+  const holder = await createDraftLesson(f.course, 'UA2-' + randomUUID().slice(0, 6));
+
+  // One due card on the word the current lesson (f.lesson) introduces.
+  const lessonWordCard = await db.srsCard.create({
+    data: {
+      learnerId: f.learnerA,
+      vocabularyId: f.vocabId,
+      stage: 1,
+      dueAt: new Date(Date.now() - 3600 * 1000),
+      enrollmentSource: 'OPTIONAL_CHOICE',
+      sourceLessonVocabularyId: f.vocabLinkId,
+    },
+  });
+  // Four older due cards from another lesson of the same language.
+  const older = [];
+  for (const form of ['Older1', 'Older2', 'Older3', 'Older4']) {
+    older.push(await createDueCard(f.learnerA, f.lang, holder, form));
+  }
+
+  // Without the exclusion the lesson word is part of the queue.
+  const full = await createReviewSession(f.learnerA, { contextId: f.ctxA, limit: 50 }, db);
+  assert.equal(full.progress.total, 5);
+
+  const warmUp = await createReviewSession(
+    f.learnerA,
+    { contextId: f.ctxA, limit: 3, excludeLessonId: f.lesson },
+    db,
+  );
+  assert.equal(warmUp.progress.total, 3);
+  const row = await db.srsReviewSession.findUniqueOrThrow({ where: { id: warmUp.sessionId } });
+  const queue = row.cardIds.map((entry) => (typeof entry === 'string' ? entry : entry.cardId));
+  assert.equal(queue.length, 3);
+  assert.ok(!queue.includes(lessonWordCard.id), 'the word introduced by this lesson must not be drilled');
+  const olderIds = new Set(older.map((o) => o.card.id));
+  for (const cardId of queue) assert.ok(olderIds.has(cardId));
+});
+
+test('Ôn nhanh: reviewing a warm-up card schedules it by Policy B and leaves no lesson attempt behind', async () => {
+  const holder = await createDraftLesson(f.course, 'UA3-' + randomUUID().slice(0, 6));
+  const { card } = await createDueCard(f.learnerA, f.lang, holder, 'Warmup1');
+
+  const session = await createReviewSession(
+    f.learnerA,
+    { contextId: f.ctxA, limit: 3, excludeLessonId: f.lesson },
+    db,
+  );
+  assert.equal(session.progress.total, 1);
+  assert.equal(session.currentItem.cardId, card.id);
+
+  await revealSessionCurrentItem(f.learnerA, session.sessionId, { cardId: card.id }, db);
+  const result = await submitSessionReview(
+    f.learnerA,
+    session.sessionId,
+    { operationKey: randomUUID(), cardId: card.id, rating: 'REMEMBERED' },
+    db,
+  );
+  assert.equal(result.status, 'COMPLETED');
+
+  const updated = await db.srsCard.findUniqueOrThrow({ where: { id: card.id } });
+  assert.equal(updated.stage, 2);
+  const operation = await db.srsReviewOperation.findFirstOrThrow({ where: { cardId: card.id } });
+  assert.equal(operation.nextDueAt - operation.reviewedAt, 3 * 86400000);
+
+  // The warm-up never touches the lesson: no attempt, so no score, XP or accuracy impact.
+  assert.equal(await db.lessonAttempt.count({ where: { contextId: f.ctxA } }), 0);
+});

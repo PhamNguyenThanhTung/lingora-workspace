@@ -922,7 +922,8 @@ async function run() {
     await page.goto(`http://127.0.0.1:${webPort}/home`);
     await page.waitForSelector('#reviewNavBtn');
     await page.click('#reviewNavBtn');
-    await page.waitForURL('**/review');
+    // G11: the home link carries the selected context, so match the path and ignore the query.
+    await page.waitForURL(url => url.pathname === '/review');
     await page.waitForSelector('#startReviewBtn');
 
     // Start SRS review

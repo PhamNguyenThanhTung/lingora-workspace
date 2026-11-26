@@ -806,6 +806,11 @@ describe('Slice 11: Practice Attempt Lifecycle & Routes', () => {
     assert.equal(state.srsCards[0].stage, 1);
     assert.equal(state.srsCards[0].enrollmentSource, 'CORE_COMPLETION');
     assert.equal(state.srsCards[0].sourceAttemptId, attemptId);
+    // b2) G12: a new card is due immediately, so the first review can happen the same day
+    assert.equal(
+      state.srsCards[0].dueAt.toISOString(),
+      state.attempts.find(a => a.id === attemptId).completedAt.toISOString(),
+    );
     // c) Command receipt recorded
     assert.equal(state.commandReceipts.length, 1);
     assert.equal(state.commandReceipts[0].command, 'COMPLETE_LESSON');

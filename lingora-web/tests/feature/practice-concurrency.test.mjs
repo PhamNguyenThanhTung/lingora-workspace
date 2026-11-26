@@ -121,7 +121,7 @@ test('Real PostgreSQL: Practice attempt lifecycle, atomic D2 core enrollment & c
   // Trigger check: trg_lesson_completion_timestamp verified completed_at matched attempt.completed_at
   assert.equal(completion.completedAt.toISOString(), completedAttempt.completedAt.toISOString());
 
-  // c) D2: Core vocabulary enrolled into app.srs_cards at stage 1, due +1 day
+  // c) D2: Core vocabulary enrolled into app.srs_cards at stage 1, due immediately (G12)
   const srsCards = await db.srsCard.findMany({
     where: { learnerId: f.learnerA, vocabularyId: f.vocabId },
   });
@@ -131,8 +131,7 @@ test('Real PostgreSQL: Practice attempt lifecycle, atomic D2 core enrollment & c
   assert.equal(card.enrollmentSource, 'CORE_COMPLETION');
   assert.equal(card.sourceAttemptId, attemptId);
   assert.equal(card.sourceLessonVocabularyId, f.vocabLinkId);
-  const expectedDue = new Date(completedAttempt.completedAt.getTime() + 24 * 60 * 60 * 1000);
-  assert.equal(card.dueAt.toISOString(), expectedDue.toISOString());
+  assert.equal(card.dueAt.toISOString(), completedAttempt.completedAt.toISOString());
 
   // d) Command receipt recorded
   const receipt = await db.commandReceipt.findUnique({

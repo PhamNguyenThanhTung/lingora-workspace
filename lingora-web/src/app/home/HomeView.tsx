@@ -68,14 +68,16 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   const totalGems = homeData?.totalGems ?? 0;
   const streak = homeData?.streak ?? { currentStreak: 0, longestStreak: 0, activeDays: [], todayCompleted: false };
   const reviewDueForQuests = homeData?.reviewDue ?? 0;
-  // A brand-new learner has nothing due for review until the day after their first lesson, so the
-  // review quest cannot be progressed yet. Hide it until it is reachable (or already progressed/claimed).
+  // A brand-new learner has nothing due for review before their first lesson, so the review quest
+  // cannot be progressed yet. Hide it until it is reachable (or already progressed/claimed).
   const quests = (homeData?.quests ?? []).filter(
     (q) => !(q.id === 'REVIEW_10' && reviewDueForQuests === 0 && q.progress === 0 && !q.isClaimed),
   );
   const dailyProgress = homeData?.dailyProgress ?? { dailyGoalMinutes: 10, completedLessonsToday: 0, reviewsCompletedToday: 0 };
   const recentAchievement = homeData?.recentAchievement ?? null;
   const reviewDue = homeData?.reviewDue ?? 0;
+  // G11: review sessions are per language, so carry the selected context to /review.
+  const reviewHref = homeData?.selectedContextId ? `/review?contextId=${homeData.selectedContextId}` : '/review';
 
   // Authoritative contexts state
   const [contexts, setContexts] = useState<LearningContextSummaryDto[]>(data?.contexts || []);
@@ -583,7 +585,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
         </div>
         <div className="user-nav" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <a
-            href="/review"
+            href={reviewHref}
             id="reviewNavBtn"
             className="btn btn-outline"
             style={{ textDecoration: 'none', padding: '6px 14px', fontSize: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}
@@ -836,7 +838,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                     Chọn trình độ bắt đầu
                   </button>
                 ) : reviewDue > 0 ? (
-                  <a href="/review" className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                  <a href={reviewHref} className="btn btn-primary" style={{ textDecoration: 'none' }}>
                     Ôn tập {reviewDue} nội dung đến hạn
                   </a>
                 ) : pathStatus === 'EMPTY_CURRICULUM' && selectedContext ? (

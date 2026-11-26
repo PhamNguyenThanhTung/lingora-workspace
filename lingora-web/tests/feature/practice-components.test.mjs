@@ -1,5 +1,6 @@
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import { chromium } from 'playwright';
 import { startIsolatedServer } from './harness/isolated-server.mjs';
 import {
@@ -301,4 +302,124 @@ test('mismatched successful DTO never becomes false UI success and exact command
   await page.locator('#startPracticeBtn').click();await page.locator('#practiceActionAlert').waitFor();assert.equal(await page.locator('#activeExerciseCard').count(),0);
   await page.locator('#startPracticeBtn').click();await page.locator('#activeExerciseCard').waitFor();assert.equal(server.fixture.attempts.length,1);
  });
+});
+
+// "Ôn nhanh" in-lesson warm-up: due SRS cards reviewed before the lesson exercises start.
+const warmUpConcept = (suffix) => ({
+  id: `vocab-concept-${suffix}`,
+  canonicalForm: `Word${suffix}`,
+  senseKey: `sense-${suffix}`,
+  phonetic: `wɜːd${suffix}`,
+  partOfSpeech: 'noun',
+  meaningLabels: { vi: `Nghĩa ${suffix}` },
+  example: `Example ${suffix}.`,
+});
+
+const warmUpCard = (vocabularyId, minutesOverdue) => ({
+  // The SRS routes validate cardId as a UUID, so fixture cards use real UUIDs.
+  id: randomUUID(),
+  learnerId: server.fixture.account.id,
+  vocabularyId,
+  stage: 1,
+  dueAt: new Date(Date.now() - minutesOverdue * 60_000),
+  lastReviewedAt: null,
+  enrollmentSource: 'CORE_COMPLETION',
+  sourceAttemptId: null,
+  sourceLessonVocabularyId: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  rowVersion: 1n,
+});
+
+function seedWarmUpDueCards() {
+  // These collections are not part of the shared beforeEach reset.
+  server.fixture.srsReviewSessions = [];
+  server.fixture.srsReviewOperations = [];
+  server.fixture.srsMemoryStates = [];
+  server.fixture.xpEvents = [];
+  server.fixture.vocabularyConcepts = [
+    ...server.fixture.vocabularyConcepts ?? [],
+    warmUpConcept('w1'),
+    warmUpConcept('w2'),
+    warmUpConcept('w3'),
+    warmUpConcept('w4'),
+  ];
+  server.fixture.srsCards = [
+    // Most overdue first: the word this very lesson introduces must still be skipped.
+    warmUpCard('vocab-concept-1', 500),
+    warmUpCard('vocab-concept-w1', 400),
+    warmUpCard('vocab-concept-w2', 300),
+    warmUpCard('vocab-concept-w3', 200),
+    warmUpCard('vocab-concept-w4', 100),
+  ];
+}
+
+test('Ôn nhanh UI: warm-up reviews at most 3 due cards, skips this lesson words, then starts the lesson', async () => {
+  seedWarmUpDueCards();
+  await withLearner(async (page) => {
+    await page.goto(`${origin}/learn/${contextId}/${lesson1Id}`);
+    await page.locator('#startPracticeBtn').click();
+
+    await page.locator('#warmUpBox').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#warmUpBox').textContent(), /không tính vào điểm bài học/);
+    assert.match(await page.locator('#warmUpCounter').textContent(), /Từ 1 \/ 3/);
+    // The lesson exercises stay hidden behind the warm-up.
+    assert.equal(await page.locator('#activeExerciseCard').count(), 0);
+    assert.equal(server.fixture.attempts.length, 0);
+
+    const seen = [];
+    for (let i = 0; i < 3; i += 1) {
+      await page.locator('#warmUpRevealBtn').waitFor({ state: 'visible' });
+      seen.push((await page.locator('.srs-canonical-form').textContent()).trim());
+      await page.locator('#warmUpRevealBtn').click();
+      await page.locator('#warmUpAnswer').waitFor({ state: 'visible' });
+      await page.locator('#warmUpRememberedBtn').click();
+    }
+
+    // After the third rating the warm-up is over and the lesson attempt starts by itself.
+    await page.locator('#activeExerciseCard').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#warmUpBox').count(), 0);
+
+    assert.deepEqual(seen, ['Wordw1', 'Wordw2', 'Wordw3']);
+    assert.ok(!seen.includes('Hello'), 'the word introduced by this lesson is excluded');
+    assert.equal(server.fixture.srsReviewOperations.length, 3);
+    // The warm-up is outside the lesson attempt: one attempt, no responses, no score impact.
+    assert.equal(server.fixture.attempts.length, 1);
+    assert.equal(server.fixture.responses.length, 0);
+    assert.ok(server.fixture.attempts[0].score == null, 'the attempt is not scored by the warm-up');
+    assert.ok(server.fixture.attempts[0].accuracy == null, 'the attempt accuracy is untouched');
+    assert.equal(
+      server.fixture.xpEvents.filter((event) => event.attemptId).length,
+      0,
+      'warm-up XP never attaches to the lesson attempt',
+    );
+  });
+});
+
+test('Ôn nhanh UI: the warm-up is skippable without rating anything', async () => {
+  seedWarmUpDueCards();
+  await withLearner(async (page) => {
+    await page.goto(`${origin}/learn/${contextId}/${lesson1Id}`);
+    await page.locator('#startPracticeBtn').click();
+    await page.locator('#warmUpSkipBtn').waitFor({ state: 'visible' });
+    await page.locator('#warmUpSkipBtn').click();
+
+    await page.locator('#activeExerciseCard').waitFor({ state: 'visible' });
+    assert.equal(server.fixture.attempts.length, 1);
+    assert.equal(server.fixture.srsReviewOperations.length, 0, 'skipping rates nothing');
+  });
+});
+
+test('Ôn nhanh UI: a failing SRS call never blocks or breaks the lesson', async () => {
+  seedWarmUpDueCards();
+  await withLearner(async (page) => {
+    await page.goto(`${origin}/learn/${contextId}/${lesson1Id}`);
+    await page.route('**/api/srs/sessions', (route) =>
+      route.fulfill({ status: 503, json: { error: { code: 'DB_UNAVAILABLE', message: 'down' } } }));
+    await page.locator('#startPracticeBtn').click();
+    await page.locator('#activeExerciseCard').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#warmUpBox').count(), 0);
+    assert.equal(await page.locator('#practiceActionAlert').count(), 0, 'no error is shown to the learner');
+    assert.equal(server.fixture.attempts.length, 1);
+  });
 });

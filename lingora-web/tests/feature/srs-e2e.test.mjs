@@ -367,7 +367,8 @@ async function run() {
     // Step 2: Click #reviewNavBtn -> Navigate to /review
     console.log('Clicking #reviewNavBtn to enter /review...');
     await page.click('#reviewNavBtn');
-    await page.waitForURL(`${webOrigin}/review`);
+    // G11: the home link carries the selected context, so match the path and ignore the query.
+    await page.waitForURL(url => url.pathname === '/review');
     await page.waitForSelector('#srsInitialBox', { timeout: 10000 });
 
     // Step 3: Click #startReviewBtn -> Start Review Session
@@ -597,7 +598,7 @@ async function run() {
 
     // Click into review
     await mobilePage.click('#reviewNavBtn');
-    await mobilePage.waitForURL(`${webOrigin}/review`);
+    await mobilePage.waitForURL(url => url.pathname === '/review');
     await mobilePage.waitForSelector('#startReviewBtn', { timeout: 10000 });
     await mobilePage.click('#startReviewBtn');
 

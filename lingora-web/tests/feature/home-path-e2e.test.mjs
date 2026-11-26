@@ -410,6 +410,12 @@ async function run() {
 
     // -------------------------------------------------------------
     // Age one owned card to exercise the real SRS write and Home aggregate.
+    // G12: newly enrolled cards are due immediately, so park them in the future first and
+    // keep exactly one due card for this single-review assertion.
+    await pgClient.query(
+      "UPDATE app.srs_cards SET due_at = clock_timestamp() + interval '1 day' WHERE learner_id = $1",
+      [LEARNER_ID],
+    );
     const due = await pgClient.query(
       "UPDATE app.srs_cards SET due_at = clock_timestamp() - interval '1 minute' WHERE id = (SELECT id FROM app.srs_cards WHERE learner_id = $1 ORDER BY id LIMIT 1) RETURNING id",
       [LEARNER_ID],

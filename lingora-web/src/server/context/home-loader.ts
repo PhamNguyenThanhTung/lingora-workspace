@@ -88,10 +88,19 @@ export async function loadLearnerHome(
     }
 
     const selected = selectedContextId;
+    // G11: the review entry point is per-language, so the due badge only counts cards of the
+    // selected context's language (no cross-language totals the review session cannot deliver).
+    const selectedLanguageId = contexts.find(context => context.id === selected)?.targetLanguage?.id ?? null;
     const [planSummary, pathResult, reviewDue] = await Promise.all([
       selected ? getContextPlanSummary(selected, learner.id, prisma) : null,
       selected ? buildLearningPath(prisma, selected, learner.id) : null,
-      prisma.srsCard.count({ where: { learnerId: learner.id, dueAt: { lte: dbNow } } }),
+      prisma.srsCard.count({
+        where: {
+          learnerId: learner.id,
+          dueAt: { lte: dbNow },
+          ...(selectedLanguageId ? { vocabulary: { languageId: selectedLanguageId } } : {}),
+        },
+      }),
     ]);
 
     const tzResult = normalizeStoredTimezone(account.timezone);

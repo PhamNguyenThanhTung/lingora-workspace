@@ -7,6 +7,7 @@ import { calculatePolicyBSchedule } from './scheduler.ts';
 import { evaluateAndAwardSrsGamification } from '../gamification/service.ts';
 import { getDbTime } from './service.ts';
 import { normalizeStoredTimezone } from '../context/timezone.ts';
+import { UUID_REGEX } from '../lessons/dto.ts';
 import { z } from 'zod';
 import { gradeStrokeAttempt, validateTemplateStrokes, type CandidateStrokeInput } from '@lingora/lesson-content';
 import {
@@ -21,6 +22,10 @@ export const createSessionSchema = z
   .object({
     limit: z.number().int().min(1).max(50).optional().default(20),
     contextId: z.string().uuid('Mã lộ trình phải là UUID hợp lệ.').optional(),
+    // "Ôn nhanh" warm-up: skip words that this very lesson introduces for the first time.
+    // Lesson ids come from seeded content and are not always version-4 UUIDs, so this uses
+    // the same permissive UUID shape the lesson APIs accept.
+    excludeLessonId: z.string().regex(UUID_REGEX, 'Mã bài học phải là UUID hợp lệ.').optional(),
   })
   .strict();
 export type CreateSessionInput = z.infer<typeof createSessionSchema>;
@@ -450,12 +455,13 @@ export async function createReviewSession(
     throw new SrsServiceError(400, 'INVALID_TIMEZONE', 'Múi giờ của tài khoản không hợp lệ.');
   }
 
-  // 2. If contextId provided, verify ownership and get course
+  // 2. If contextId provided, verify ownership and scope the queue to that context's language.
+  // G11: one review session must never mix languages (e.g. French cards inside a Japanese session).
   let contextFilter: Prisma.SrsCardWhereInput | undefined;
   if (input.contextId) {
     const context = await db.learningContext.findFirst({
       where: { id: input.contextId, learnerId: verifiedUserId },
-      select: { id: true, courseId: true, learnerId: true },
+      select: { id: true, languageId: true, learnerId: true },
     });
     if (!context) {
       const anyContext = await db.learningContext.findUnique({
@@ -467,12 +473,19 @@ export async function createReviewSession(
       }
       throw new SrsServiceError(404, 'NOT_FOUND', 'Lộ trình học không tồn tại.');
     }
-    contextFilter = {
-      OR: [
-        { sourceAttempt: { contextId: context.id } },
-        { sourceLessonVocabulary: { lessonRevision: { lesson: { unit: { courseId: context.courseId } } } } },
-      ],
-    };
+    contextFilter = { vocabulary: { languageId: context.languageId } };
+  }
+
+  // 2b. "Ôn nhanh" warm-up: never drill words the current lesson introduces for the first time.
+  if (input.excludeLessonId) {
+    const introducedLinks = await db.lessonVocabularyLink.findMany({
+      where: { lessonRevision: { lessonId: input.excludeLessonId } },
+      select: { vocabularyId: true },
+    });
+    const introducedIds = [...new Set(introducedLinks.map(link => link.vocabularyId))];
+    if (introducedIds.length > 0) {
+      contextFilter = { ...(contextFilter ?? {}), vocabularyId: { notIn: introducedIds } };
+    }
   }
 
   // 3. Query DB clock

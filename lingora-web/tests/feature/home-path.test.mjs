@@ -169,11 +169,11 @@ describe('Sprint 4: S4-01 Home and Learning Path', () => {
   });
 
   test('loadLearnerHome: loads full HomeDto including selectedContextId, path, reviewDue, streak, totalXp, quests', async () => {
-    // Add 1 due SRS card
+    // Add 1 due SRS card for the selected context's language (reviewDue is per-language, G11)
     state.srsCards.push({
       id: 'card-1',
       learnerId,
-      vocabularyId: 'vocab-1',
+      vocabularyId: 'vocab-concept-1',
       dueAt: new Date(Date.now() - 10000), // overdue
       stage: 1,
       rowVersion: 1n,

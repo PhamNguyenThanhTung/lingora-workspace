@@ -935,7 +935,9 @@ export async function finalizePracticeAttempt(
       },
     });
 
-    const dueAt = new Date(completedAt.getTime() + 24 * 60 * 60 * 1000); // stage 1, due after 1 day
+    // G12: stage 1 cards are due immediately so the learner can do a first review the same day
+    // they finish the lesson. The normal Policy B schedule (3/7/14/30 days) starts from that review.
+    const dueAt = new Date(completedAt.getTime());
 
     let newlyEnrolledCount = 0;
     for (const link of coreVocabLinks) {
