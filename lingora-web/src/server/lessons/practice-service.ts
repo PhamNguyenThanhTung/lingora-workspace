@@ -707,6 +707,7 @@ export async function submitPracticeResponse(
       respondedAt: createdResponse.respondedAt.toISOString(),
       input: createdResponse.input,
       formativeFeedback: gradeResult.formativeFeedback,
+      accentHint: gradeResult.accentHint ?? null,
     };
     if (!gradeResult.isCorrect) {
       Object.assign(responseDto, wrongAnswerHints(queue.nextExercise));

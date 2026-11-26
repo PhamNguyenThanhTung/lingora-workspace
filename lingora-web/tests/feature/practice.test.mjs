@@ -207,6 +207,154 @@ describe('Slice 11: Grader & Decision D1 Normalization', () => {
   });
 });
 
+// Chấm điểm dung thứ (lenient) — nghiệm thu vòng 3, ghi nhận G1–G4.
+describe('Chấm điểm dung thứ: tương đương Unicode & thiếu dấu phụ', () => {
+  const fill = (answers, input, caseSensitive = false) =>
+    gradePracticeExercise('FILL_BLANK', {}, { acceptedAnswers: answers, caseSensitive }, { text: input });
+  const grammar = (answers, input, caseSensitive = false) =>
+    gradePracticeExercise('GRAMMAR', {}, { acceptedAnswers: answers, caseSensitive }, { text: input });
+
+  test('G2: nháy đơn cong và nháy thẳng tương đương, không ghi chú', () => {
+    assert.equal(normalizePracticeText('je m\u2019appelle Paul', false), normalizePracticeText("je m'appelle Paul", false));
+    assert.equal(normalizePracticeText('l\u02BCeau', false), normalizePracticeText("l'eau", false));
+    const r = fill(['je m\u2019appelle Paul'], "je m'appelle Paul");
+    assert.equal(r.isCorrect, true);
+    assert.equal(r.formativeFeedback, 'Chính xác!');
+    assert.equal(r.accentHint, undefined);
+  });
+
+  test('G2: guillemets « » tương đương nháy đôi thẳng, khoảng trắng bên trong không tính', () => {
+    assert.equal(
+      normalizePracticeText('il dit « oui »', false),
+      normalizePracticeText('il dit "oui"', false)
+    );
+    assert.equal(
+      normalizePracticeText('il dit \u201Coui\u201D', false),
+      normalizePracticeText('il dit "oui"', false)
+    );
+    assert.equal(grammar(['il dit « oui »'], 'il dit "oui"').isCorrect, true);
+  });
+
+  test('Khoảng trắng kiểu Pháp trước ? ! : ; không tính', () => {
+    assert.equal(
+      normalizePracticeText('Comment allez-vous ?', false),
+      normalizePracticeText('Comment allez-vous?', false)
+    );
+    assert.equal(
+      normalizePracticeText('Attention : le train !', false),
+      normalizePracticeText('Attention: le train!', false)
+    );
+    assert.equal(grammar(['Comment allez-vous ?'], 'Comment allez-vous?').isCorrect, true);
+  });
+
+  test('G3: khoảng trắng U+3000 giữa ký tự CJK không tính', () => {
+    assert.equal(
+      normalizePracticeText('わたしは\u3000田中です。', true),
+      normalizePracticeText('わたしは田中です。', true)
+    );
+    assert.equal(normalizePracticeText('わたしは 田中 です', true), 'わたしは田中です');
+    const r = grammar(['わたしは田中です。'], 'わたしは\u3000田中です。', true);
+    assert.equal(r.isCorrect, true);
+    assert.equal(r.formativeFeedback, 'Chính xác!');
+    // Khoảng trắng giữa hai từ Latin vẫn tính
+    assert.notEqual(normalizePracticeText('undeux', false), normalizePracticeText('un deux', false));
+  });
+
+  test('G4: NFKC gộp katakana nửa chiều rộng và chữ/số toàn chiều rộng', () => {
+    assert.equal(normalizePracticeText('ｺｰﾋｰ', true), 'コーヒー');
+    assert.equal(normalizePracticeText('ｶﾞｸｾｲ', true), 'ガクセイ');
+    assert.equal(normalizePracticeText('ＡＢＣ１２３', true), 'ABC123');
+    assert.equal(fill(['コーヒー'], 'ｺｰﾋｰ', true).isCorrect, true);
+  });
+
+  test('G4: hiragana KHÁC katakana (lỗi chính tả thật)', () => {
+    assert.notEqual(normalizePracticeText('こーひー', true), normalizePracticeText('コーヒー', true));
+    assert.equal(fill(['コーヒー'], 'こーひー', true).isCorrect, false);
+    assert.equal(fill(['コーヒー'], 'こーひー', true).formativeFeedback, 'Chưa chính xác.');
+  });
+
+  test('Dakuten/handakuten tiếng Nhật KHÔNG bị bỏ như dấu phụ Latin', () => {
+    assert.equal(fill(['がくせい'], 'かくせい', true).isCorrect, false);
+    assert.equal(fill(['コップ'], 'コツプ', true).isCorrect, false);
+  });
+
+  test('G1: tiếng Pháp thiếu dấu phụ -> ĐÚNG kèm ghi chú đáp án chuẩn', () => {
+    const r = fill(['café'], 'cafe');
+    assert.equal(r.isCorrect, true);
+    assert.equal(r.accentHint, 'café');
+    assert.equal(r.formativeFeedback, 'Đúng rồi! Chú ý dấu: café');
+
+    const r2 = grammar(['Ça va'], 'ca va');
+    assert.equal(r2.isCorrect, true);
+    assert.equal(r2.accentHint, 'Ça va');
+
+    const r3 = grammar(['Il est très âgé'], 'Il est tres age');
+    assert.equal(r3.isCorrect, true);
+    assert.equal(r3.accentHint, 'Il est très âgé');
+  });
+
+  test('G1: viết đủ dấu thì KHÔNG có ghi chú', () => {
+    const r = fill(['café'], 'Café');
+    assert.equal(r.isCorrect, true);
+    assert.equal(r.formativeFeedback, 'Chính xác!');
+    assert.equal(r.accentHint, undefined);
+  });
+
+  test('Tiếng Việt thiếu dấu thanh -> ĐÚNG kèm ghi chú (Latin có dấu)', () => {
+    const r = fill(['phở bò'], 'pho bo');
+    assert.equal(r.isCorrect, true);
+    assert.equal(r.accentHint, 'phở bò');
+    assert.equal(r.formativeFeedback, 'Đúng rồi! Chú ý dấu: phở bò');
+    assert.equal(fill(['phở bò'], 'phở bò').formativeFeedback, 'Chính xác!');
+  });
+
+  test('Đáp án sai thật vẫn SAI', () => {
+    assert.equal(fill(['café'], 'thé').isCorrect, false);
+    assert.equal(fill(['café'], 'cafes').isCorrect, false);
+    assert.equal(grammar(['je m\u2019appelle Paul'], 'je m\u2019appelle Marie').isCorrect, false);
+    assert.equal(grammar(['わたしは田中です。'], 'わたしは山田です。', true).isCorrect, false);
+    assert.equal(fill(['café'], 'thé').formativeFeedback, 'Chưa chính xác.');
+  });
+
+  test('caseSensitive của giáo viên vẫn được tôn trọng', () => {
+    assert.equal(fill(['Paris'], 'paris', true).isCorrect, false);
+    assert.equal(fill(['Paris'], 'paris', false).isCorrect, true);
+    // Thiếu dấu + sai hoa/thường khi caseSensitive=true vẫn SAI
+    assert.equal(fill(['Café'], 'cafe', true).isCorrect, false);
+    // Thiếu dấu nhưng đúng hoa/thường -> ĐÚNG kèm ghi chú
+    const r = fill(['Café'], 'Cafe', true);
+    assert.equal(r.isCorrect, true);
+    assert.equal(r.accentHint, 'Café');
+  });
+
+  test('Nhiều đáp án: ghi chú trỏ đúng đáp án gần nhất', () => {
+    const r = fill(['thé', 'café'], 'cafe');
+    assert.equal(r.isCorrect, true);
+    assert.equal(r.accentHint, 'café');
+  });
+
+  test('MCQ/LISTENING/REORDER không dùng chuẩn hóa chữ, không có accentHint', () => {
+    const mcq = gradePracticeExercise(
+      'MCQ',
+      { options: [{ id: 'opt-1' }, { id: 'opt-2' }] },
+      { correctOptionId: 'opt-1' },
+      { optionId: 'opt-1' }
+    );
+    assert.equal(mcq.isCorrect, true);
+    assert.equal(mcq.accentHint, undefined);
+
+    const reorder = gradePracticeExercise(
+      'REORDER',
+      { tokens: [{ id: 't1' }, { id: 't2' }] },
+      { correctOrder: ['t1', 't2'] },
+      { tokenIds: ['t1', 't2'] }
+    );
+    assert.equal(reorder.isCorrect, true);
+    assert.equal(reorder.accentHint, undefined);
+  });
+});
+
+
 describe('Slice 11: Practice Attempt Lifecycle & Routes', () => {
   beforeEach(() => {
     setupEnv();
