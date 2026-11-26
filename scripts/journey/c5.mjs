@@ -1,0 +1,11 @@
+import { open, stack, shot, text } from './lib.mjs';
+const l = await open('learner', { mobile: true }); const p = l.page;
+await p.goto(`${stack.web}/home`); await p.waitForLoadState('networkidle'); await p.waitForTimeout(1500);
+console.log((await text(p)).split('\n').filter(Boolean).join(' | ').slice(0, 1500));
+await shot(p, 'C2-home', 'mobile');
+const course = (await p.$$eval('a', (e) => e.map((x) => x.getAttribute('href')))).find((h) => /^\/learn\/[^/]+$/.test(h || ''));
+console.log('course link', course);
+await p.goto(`${stack.web}${course}`); await p.waitForLoadState('networkidle'); await p.waitForTimeout(1500);
+console.log((await text(p)).split('\n').filter(Boolean).join(' | ').slice(0, 2000));
+console.log(await p.$$eval('a', (e) => e.map((x) => `${x.getAttribute('href')}:${x.textContent.trim().slice(0,40)}`)));
+await shot(p, 'C3-course-path', 'mobile'); console.log('errors', l.errors); await l.browser.close();
