@@ -356,7 +356,10 @@ export function LessonDraftEditor({
   const [vocabIsCore, setVocabIsCore] = useState(true);
   // Search tab
   const [vocabSearchQuery, setVocabSearchQuery] = useState('');
+  const [submitConfirmOpen, setSubmitConfirmOpen] = useState(false);
   const [vocabSearchResults, setVocabSearchResults] = useState<VocabularyOptionDto[]>([]);
+  // Last query that completed a search, so the modal can show a "no results" state.
+  const [vocabSearchedQuery, setVocabSearchedQuery] = useState<string | null>(null);
   const [isSearchingVocab, setIsSearchingVocab] = useState(false);
   const vocabSearchGeneration = useRef(0);
   const searchingVocabRef = useRef(false);
@@ -822,6 +825,20 @@ export function LessonDraftEditor({
     }
   };
 
+  // H8: ask for confirmation first — submitting locks the editor until review ends.
+  const handleRequestSubmitForReview = () => {
+    if (previewOnly || isPendingRef.current) return;
+    if (isDirty) {
+      setGeneralError('Vui lòng lưu bản nháp trước khi nộp duyệt.');
+      return;
+    }
+    if (!highestRev) {
+      setGeneralError('Chưa có bản sửa đổi nào để nộp duyệt.');
+      return;
+    }
+    setSubmitConfirmOpen(true);
+  };
+
   const handleSubmitForReview = async () => {
     if (previewOnly || isPendingRef.current) return;
     if (isDirty) {
@@ -833,6 +850,7 @@ export function LessonDraftEditor({
       return;
     }
 
+    setSubmitConfirmOpen(false);
     isPendingRef.current = true;
     setIsPending(true);
     setGeneralError(null);
@@ -1298,6 +1316,7 @@ export function LessonDraftEditor({
     setVocabIsCore(true);
     setVocabSearchQuery('');
     setVocabSearchResults([]);
+    setVocabSearchedQuery(null);
     setSelectedVocabId(null);
     setSelectedVocabOption(null);
     setVocabCanonicalForm('');
@@ -1317,6 +1336,7 @@ export function LessonDraftEditor({
     const generation = ++vocabSearchGeneration.current;
     searchingVocabRef.current = true;
     setSelectedVocabId(null); setSelectedVocabOption(null); setVocabSearchResults([]);
+    setVocabSearchedQuery(null);
     setIsSearchingVocab(true);
     setVocabModalError(null);
     try {
@@ -1330,7 +1350,10 @@ export function LessonDraftEditor({
         return;
       }
       const data = await res.json();
-      if (generation === vocabSearchGeneration.current) setVocabSearchResults(Array.isArray(data.data) ? data.data : []);
+      if (generation === vocabSearchGeneration.current) {
+        setVocabSearchResults(Array.isArray(data.data) ? data.data : []);
+        setVocabSearchedQuery(q);
+      }
     } catch {
       setVocabModalError('Lỗi kết nối khi tìm kiếm từ vựng.');
     } finally {
@@ -1603,9 +1626,6 @@ export function LessonDraftEditor({
           <span className="badge" style={{ background: '#f1f5f9', color: '#334155', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }}>
             Đơn vị: {lesson.unitContext.code}
           </span>
-          <span className="badge" style={{ background: '#fef3c7', color: '#92400e', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }} id="badgeLessonToken">
-            Phiên bản: #{lesson.rowVersion}
-          </span>
           {highestRev && (
             <span className="badge" style={{ background: '#f3e8ff', color: '#6b21a8', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }} id="badgeRevisionNo">
               Bản sửa đổi: #{highestRev.revisionNo}
@@ -1619,8 +1639,11 @@ export function LessonDraftEditor({
         <h1 className="page-title" id="draftEditorTitle" style={{ fontSize: '24px' }}>
           Soạn thảo nội dung — Bài học #{lesson.position}
         </h1>
-        <p className="page-description" style={{ margin: 0 }}>
-          {unitName}. Soạn các đoạn văn, bài tập và từ vựng, sau đó lưu bản nháp nguyên khối.
+        <p className="page-description" style={{ margin: 0 }} id="draftEditorContextLine">
+          Chương: {unitName} · Khóa: {courseName}
+        </p>
+        <p className="page-description" style={{ margin: '4px 0 0' }}>
+          Soạn các đoạn văn, bài tập và từ vựng, sau đó lưu bản nháp nguyên khối.
         </p>
         {previewOnly && (
           <p role="note" className="page-description" style={{ marginTop: '8px' }}>
@@ -2498,7 +2521,7 @@ export function LessonDraftEditor({
                 type="button"
                 className="btn btn-primary"
                 id="btnSubmitForReview"
-                onClick={handleSubmitForReview}
+                onClick={handleRequestSubmitForReview}
                 disabled={isPending || isReloading || isStaleConflict || sessionLost || !editorActuallyEditable || isDirty}
                 style={{ minWidth: '160px' }}
               >
@@ -3287,6 +3310,28 @@ export function LessonDraftEditor({
                     </div>
                   )}
 
+                  {!isSearchingVocab && vocabSearchedQuery && vocabSearchResults.length === 0 && (
+                    <div
+                      id="vocabSearchEmptyState"
+                      role="status"
+                      style={{ marginTop: '4px', padding: '10px 12px', background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '6px', fontSize: '13px', color: '#92400e' }}
+                    >
+                      <div>Không tìm thấy từ &ldquo;{vocabSearchedQuery}&rdquo;.</div>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        id="btnCreateVocabFromSearch"
+                        style={{ marginTop: '8px', fontSize: '12px', padding: '4px 8px' }}
+                        onClick={() => {
+                          setVocabCanonicalForm(vocabSearchedQuery);
+                          setVocabTab('create');
+                        }}
+                      >
+                        Tạo từ vựng mới &ldquo;{vocabSearchedQuery}&rdquo;
+                      </button>
+                    </div>
+                  )}
+
                   {selectedVocabOption && (
                     <div style={{ marginTop: '12px', padding: '8px 12px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', fontSize: '13px' }}>
                       Đã chọn: <strong>{selectedVocabOption.canonicalForm}</strong> ({selectedVocabOption.senseKey})
@@ -3423,6 +3468,82 @@ export function LessonDraftEditor({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Submit-for-review confirmation (H8) */}
+      {submitConfirmOpen && (
+        <div
+          id="submitConfirmBackdrop"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1100,
+            padding: '16px',
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isPendingRef.current) setSubmitConfirmOpen(false);
+          }}
+        >
+          <div
+            id="submitConfirmModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="submitConfirmTitle"
+            aria-describedby="submitConfirmBody"
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && !isPendingRef.current) {
+                e.stopPropagation();
+                setSubmitConfirmOpen(false);
+              }
+            }}
+            style={{
+              background: '#ffffff',
+              borderRadius: '8px',
+              maxWidth: '460px',
+              width: '100%',
+              padding: '24px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <h2 id="submitConfirmTitle" style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px', color: '#0f172a' }}>
+              Nộp bài học để kiểm duyệt?
+            </h2>
+            <div id="submitConfirmBody" style={{ fontSize: '14px', color: '#334155', lineHeight: 1.5 }}>
+              <p style={{ margin: 0 }}>
+                Sau khi nộp, bản sửa đổi <strong>#{highestRev?.revisionNo}</strong> sẽ bị khóa và bạn
+                không thể chỉnh sửa cho đến khi Quản trị viên phê duyệt hoặc yêu cầu chỉnh sửa.
+              </p>
+              <p style={{ margin: '8px 0 0' }}>
+                Hãy kiểm tra lại nội dung trước khi tiếp tục.
+              </p>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                id="btnCancelSubmitConfirm"
+                autoFocus
+                onClick={() => setSubmitConfirmOpen(false)}
+                disabled={isPending}
+              >
+                Quay lại chỉnh sửa
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                id="btnConfirmSubmitForReview"
+                onClick={handleSubmitForReview}
+                disabled={isPending}
+              >
+                {isPending ? 'Đang xử lý...' : 'Xác nhận nộp duyệt'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -4,6 +4,7 @@ import { exerciseTypeLabel } from '@lingora/lesson-content/LessonContent';
 import React, { useState, useRef, useEffect } from 'react';
 import type { ReviewDetailDto, AdminCharacterBlock } from '@/server/lessons/workflow';
 import type { ReviewCommentDto } from '@/server/lessons/comments';
+import { getAccountRoleLabel } from '@/server/lessons/workflow-status';
 import { LessonContent } from '@lingora/lesson-content/LessonContent';
 import { BlockComments } from './lesson-studio/BlockComments';
 
@@ -419,9 +420,6 @@ export function ReviewDetailView({
           </span>
           <span className="badge" style={{ background: '#e2e8f0', color: '#1e293b', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }} id="badgeRevisionStatus">
             Trạng thái: {detail.revision.statusLabel}
-          </span>
-          <span className="badge" style={{ background: '#fef3c7', color: '#92400e', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }}>
-            Phiên bản: #{detail.revision.rowVersion}
           </span>
         </div>
 
@@ -982,7 +980,7 @@ export function ReviewDetailView({
                       </span>
                     </td>
                     <td>
-                      <div style={{ fontSize: '13px', fontWeight: 500 }}>{r.actor.displayName || 'Người dùng'}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 500 }}>{r.actor.displayName || getAccountRoleLabel(r.actor.role)}</div>
                       <div style={{ fontSize: '11px', color: '#94a3b8' }}>ID: {r.actor.id.slice(0, 8)}...</div>
                     </td>
                     <td style={{ fontSize: '12px', color: '#64748b' }}>

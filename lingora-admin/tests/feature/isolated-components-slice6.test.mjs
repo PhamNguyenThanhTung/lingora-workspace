@@ -354,7 +354,10 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       assert.equal(interceptedSave.body.vocabulary[1].create.canonicalForm, 'resilient');
 
       // Assert UI reconciled from server DTO
-      assert.equal(await page.locator('#badgeLessonToken').innerText(), 'Phiên bản: #2');
+      // H3: the optimistic-concurrency row version is no longer shown to users, only carried on the form.
+      assert.equal(await page.locator('#lessonDraftForm').getAttribute('data-row-version'), '2');
+      assert.equal(await page.locator('#badgeLessonToken').count(), 0);
+      assert.match(await page.locator('#badgeRevisionNo').innerText(), /Bản sửa đổi: #2/);
       assert.equal(await page.locator('#inputDraftTitleVi').inputValue(), 'Bài học #1 đã cập nhật');
       assert.equal(await page.locator('#inputDraftChangeSummary').inputValue(), ''); // cleared on success
       assert.match(await page.locator('#row-revision-2').innerText(), /Nguyễn Thị Lan.*Thêm bài tập và từ vựng/s);
@@ -377,6 +380,40 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
   // =========================================================================
   // 2. Exercise Type Switch: Clears Old Type-Specific Fields & Errors
   // =========================================================================
+
+  test('H5: Enter runs the vocabulary search and an empty result offers the create tab prefilled', { timeout: 15000 }, async () => {
+    await withPage('page-teacher-draft-wire', async (page) => {
+      let searchCount = 0;
+      let lastQuery = null;
+      await page.route('**/api/**', async (route) => {
+        const url = new URL(route.request().url());
+        if (url.pathname.includes('/vocabulary-options')) {
+          searchCount++;
+          lastQuery = url.searchParams.get('q');
+          return fulfill(route, 200, { data: [] });
+        }
+        return fulfill(route, 200, { data: [] });
+      });
+
+      await page.locator('#btnAddVocabulary').click();
+      await page.locator('#vocabModal').waitFor({ state: 'visible' });
+
+      // Enter inside the search box must search without submitting the vocabulary form.
+      await page.locator('#inputVocabSearch').fill('zzzqqq');
+      await page.locator('#inputVocabSearch').press('Enter');
+      await page.locator('#vocabSearchEmptyState').waitFor({ state: 'visible' });
+      assert.equal(searchCount, 1, 'Enter must trigger exactly one search');
+      assert.equal(lastQuery, 'zzzqqq');
+      assert.equal(await page.locator('#vocabModal').isVisible(), true, 'Enter must not submit the outer form');
+      assert.equal(await page.locator('#errorVocabModal').count(), 0);
+      assert.match(await page.locator('#vocabSearchEmptyState').innerText(), /Không tìm thấy từ .zzzqqq./);
+
+      // The empty state switches to the create tab with the searched word prefilled.
+      await page.locator('#btnCreateVocabFromSearch').click();
+      assert.equal(await page.locator('#inputVocabCanonical').inputValue(), 'zzzqqq');
+      assert.equal(await page.locator('#vocabSearchEmptyState').count(), 0);
+    });
+  });
 
   test('Exercise modal switching type resets payload and errors cleanly so old fields do not submit', { timeout: 15000 }, async () => {
     await withPage('page-teacher-draft-wire', async (page) => {
@@ -574,7 +611,7 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       await page.waitForFunction(() => document.querySelector('#inputDraftTitleVi')?.value === 'SERVER CONCURRENT TITLE');
 
       // Verify token and exercise list replaced authoritatively
-      assert.match(await page.locator('#badgeLessonToken').innerText(), /10/);
+      assert.equal(await page.locator('#lessonDraftForm').getAttribute('data-row-version'), '10');
       assert.match(await page.locator('#exercisePrompt-0').innerText(), /Authoritative server prompt/);
 
       // Now save succeeds with expectedRowVersion: 10

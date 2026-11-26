@@ -739,6 +739,11 @@ export function lessonsFixture() {
         changed(ir, data);
         return structuredClone(ir);
       },
+      updateMany: async ({ where, data }) => {
+        const rows = [...state.itemRevisions.values()].filter(r => matches(r, where));
+        rows.forEach(r => changed(r, data));
+        return { count: rows.length };
+      },
     },
     itemGradingSecret: {
       findUnique: async ({ where }) => {

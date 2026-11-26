@@ -74,6 +74,8 @@ test('production Teacher page submits the persisted revision through its actual 
     });
 
     await page.locator('#btnSubmitForReview').click();
+    await page.locator('#submitConfirmModal').waitFor();
+    await page.locator('#btnConfirmSubmitForReview').click();
     await page.waitForFunction(() => document.querySelector('#btnSubmitForReview')?.disabled);
     assert.equal(captured.path, path);
     assert.equal(captured.method, 'POST');
@@ -110,12 +112,16 @@ test('production Teacher submit failure keeps the lesson usable for a valid retr
 
     const titleBefore = await page.locator('#inputDraftTitleVi').inputValue();
     await page.locator('#btnSubmitForReview').click();
+    await page.locator('#submitConfirmModal').waitFor();
+    await page.locator('#btnConfirmSubmitForReview').click();
     await page.locator('#draftSaveError').waitFor();
     assert.equal(await page.locator('#reviewActionSuccess').count(), 0);
     assert.equal(await page.locator('#inputDraftTitleVi').inputValue(), titleBefore);
     assert.equal(await page.locator('#btnSubmitForReview').isDisabled(), false);
 
     await page.locator('#btnSubmitForReview').click();
+    await page.locator('#submitConfirmModal').waitFor();
+    await page.locator('#btnConfirmSubmitForReview').click();
     await page.locator('#inReviewNotice').waitFor();
     assert.equal(attempts, 2);
   });
@@ -139,6 +145,8 @@ test('production Teacher page exposes stale reload and handles 401/403 without f
         return fulfill(route, 404, {});
       });
       await page.locator('#btnSubmitForReview').click();
+    await page.locator('#submitConfirmModal').waitFor();
+    await page.locator('#btnConfirmSubmitForReview').click();
       if (status === 401) {
         await page.locator('#sessionLostModal').waitFor();
         assert.equal(await page.locator('#reviewActionSuccess').count(), 0);
@@ -159,6 +167,9 @@ test('production Teacher page exposes stale reload and handles 401/403 without f
 test('production Admin review page calls pinned approve and publish endpoints and reconciles each DTO', async () => {
   await withPage('page-review-detail-wire', async (page) => {
     await page.locator('#reviewActionsPanel').waitFor();
+    // H3: the review header shows the revision number, never the concurrency row version.
+    assert.match(await page.locator('#badgeRevisionNo').innerText(), /Bản sửa đổi: #\d+/);
+    assert.equal((await page.locator('.review-header').innerText()).includes('Phiên bản'), false);
     const detail = await page.evaluate(() => window.__PAGE_PROPS__.initialDetail);
     assert.deepEqual(detail.exercises.map(ex => ex.type), ['FILL_BLANK', 'REORDER', 'GRAMMAR', 'MCQ', 'LISTENING']);
     await page.getByText('I ____ coffee every morning.').waitFor();

@@ -74,7 +74,7 @@ test('Production Teacher callback sends exact whitelist and renders authoritativ
   assert.equal(await page.locator('#inputDraftTitleEn').inputValue(), '');
   assert.equal(await page.locator('#inputParagraph-0').inputValue(), 'SERVER BODY');
   assert.match(await page.locator('#row-revision-7').innerText(), /SERVER AUTHOR.*SERVER SUMMARY/s);
-  assert.match(await page.locator('#badgeLessonToken').innerText(), /42/);
+  assert.equal(await page.locator('#lessonDraftForm').getAttribute('data-row-version'), '42');
   await page.screenshot({ path: `${logs}/codex-teacher-page.png`, fullPage: true });
   await page.setViewportSize({ width: 1100, height: 800 });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
@@ -118,7 +118,7 @@ test('Teacher stale recovery loads latest body and token explicitly before allow
   await page.locator('#btnReloadLessonToken').click();
   await page.waitForFunction(() => document.querySelector('#inputDraftTitleVi')?.value === 'SERVER TITLE');
   assert.equal(await page.locator('#inputParagraph-0').inputValue(), 'SERVER BODY');
-  await page.locator('#btnSaveDraft').click(); await page.waitForFunction(() => document.querySelector('#badgeLessonToken')?.textContent?.includes('11'));
+  await page.locator('#btnSaveDraft').click(); await page.waitForFunction(() => document.querySelector('#lessonDraftForm')?.dataset.rowVersion === '11');
   assert.equal(saved.expectedRowVersion, '10'); assert.equal(saved.title.vi, 'SERVER TITLE');
 }));
 

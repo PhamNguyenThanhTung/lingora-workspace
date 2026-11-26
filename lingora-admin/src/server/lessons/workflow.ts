@@ -32,8 +32,18 @@ import { revisionChildRelations, unsupportedChildren } from './snapshot.ts';
 // Status Labels
 // =============================================================================
 
-import { WORKFLOW_STATUS_LABELS, getWorkflowStatusLabel } from './workflow-status.ts';
-export { WORKFLOW_STATUS_LABELS, getWorkflowStatusLabel };
+import {
+  WORKFLOW_STATUS_LABELS,
+  getWorkflowStatusLabel,
+  getAccountRoleLabel,
+  resolveActorDisplayName,
+} from './workflow-status.ts';
+export {
+  WORKFLOW_STATUS_LABELS,
+  getWorkflowStatusLabel,
+  getAccountRoleLabel,
+  resolveActorDisplayName,
+};
 
 function hasSupportedV1Blocks(rawBlocks: unknown): boolean {
   if (!Array.isArray(rawBlocks)) return false;
@@ -157,6 +167,7 @@ export interface ReviewHistoryEventDto {
   actor: {
     id: string;
     displayName: string | null;
+    role: string | null;
   };
   occurredAt: string;
   comment: string | null;
@@ -499,11 +510,13 @@ export async function submitTeacherLesson(
         await validatePersistedRevisionCharacterBlocks(tx, courseLanguageId, highestRev.blocks);
       }
 
-      // 8. Freeze exact referenced ItemRevisions
+      // 8. Freeze exact referenced ItemRevisions (single statement: one round trip
+      // instead of one per exercise — H7 save/submit latency).
       const now = new Date();
-      for (const ex of exercises) {
-        await tx.itemRevision.update({
-          where: { id: ex.itemRevisionId },
+      const frozenItemRevisionIds = [...new Set(exercises.map((ex: any) => ex.itemRevisionId))];
+      if (frozenItemRevisionIds.length > 0) {
+        await tx.itemRevision.updateMany({
+          where: { id: { in: frozenItemRevisionIds } },
           data: { frozenAt: now },
         });
       }
@@ -831,7 +844,7 @@ export async function getReviewDetail(
         lessonRevisionId: rev.id,
       },
       include: {
-        actor: { select: { id: true, displayName: true } },
+        actor: { select: { id: true, displayName: true, role: true } },
       },
       orderBy: {
         occurredAt: 'asc',
@@ -844,7 +857,9 @@ export async function getReviewDetail(
       actionLabel: getWorkflowStatusLabel(rh.action),
       actor: {
         id: rh.actorId,
-        displayName: rh.actor?.displayName || null,
+        // Admin accounts can have no display_name; fall back to the role label.
+        displayName: resolveActorDisplayName(rh.actor),
+        role: rh.actor?.role || null,
       },
       occurredAt: (rh.occurredAt instanceof Date ? rh.occurredAt : new Date(rh.occurredAt)).toISOString(),
       comment: rh.comment || null,

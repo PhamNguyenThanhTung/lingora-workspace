@@ -53,6 +53,11 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
     const isViFocused = await page.evaluate(() => document.activeElement?.id === 'inputCourseNameVi');
     assert.equal(isViFocused, true, 'Vi input must be focused on open');
 
+    // G14: only learnable languages are offered ("Tiếng Việt" has is_learnable = false)
+    const languageOptions = await page.$$eval('#selectCourseLanguage option', (opts) => opts.map((o) => o.textContent.trim()));
+    assert.equal(languageOptions.some((label) => label.includes('(vi)')), false, 'Non-learnable language must not be selectable');
+    assert.equal(languageOptions.some((label) => label.includes('(en)')), true);
+
     // Select language & framework
     await page.selectOption('#selectCourseLanguage', '22222222-2222-4222-8222-222222222222');
     await page.selectOption('#selectCourseFramework', '11111111-1111-4111-8111-111111111111');
