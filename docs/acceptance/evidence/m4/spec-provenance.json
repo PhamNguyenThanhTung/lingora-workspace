@@ -1,0 +1,8 @@
+{
+  "source": "lingora-workspace/plans/2026-11-27-mvp-acceptance-and-gamified-ui-spec.md",
+  "state": "untracked at source checkout 463af8b",
+  "sha256": "198064ea80b7612d5e7d9b7ca1b1b93b0441c7108bd4c16ed405ebcba0b832b3",
+  "copiedVerbatim": false,
+  "normalization": "Remove surplus blank lines at EOF only; specification content unchanged",
+  "copiedSha256": "26348bc78c3b889b2eac1783c1443050c69236ce0d0d457262de73edccaefc2d"
+}

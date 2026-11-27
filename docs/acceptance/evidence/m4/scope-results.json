@@ -1,0 +1,104 @@
+[
+  {
+    "name": "integration-lessons",
+    "command": "npm run test:integration:lessons",
+    "exit": 0,
+    "seconds": 4.52
+  },
+  {
+    "name": "integration-practice",
+    "command": "npm run test:integration:practice",
+    "exit": 0,
+    "seconds": 5.57
+  },
+  {
+    "name": "integration-gamification",
+    "command": "npm run test:integration:gamification",
+    "exit": 0,
+    "seconds": 3.72
+  },
+  {
+    "name": "integration-onboarding",
+    "command": "npm run test:integration:onboarding",
+    "exit": 0,
+    "seconds": 9.43
+  },
+  {
+    "name": "integration-srs",
+    "command": "npm run test:integration:srs",
+    "exit": 0,
+    "seconds": 6.28
+  },
+  {
+    "name": "integration-studio",
+    "command": "npm run test:integration:studio",
+    "exit": 0,
+    "seconds": 3.87
+  },
+  {
+    "name": "integration-character-options",
+    "command": "npm run test:integration:character-options",
+    "exit": 0,
+    "seconds": 3.57
+  },
+  {
+    "name": "integration-sample",
+    "command": "npm run test:integration:sample",
+    "exit": 0,
+    "seconds": 4.72
+  },
+  {
+    "name": "integration-demo",
+    "command": "npm run test:integration:demo",
+    "exit": 0,
+    "seconds": 7.68
+  },
+  {
+    "name": "integration-japanese",
+    "command": "npm run test:integration:japanese",
+    "exit": 0,
+    "seconds": 5.37
+  },
+  {
+    "name": "integration-chinese",
+    "command": "npm run test:integration:chinese",
+    "exit": 0,
+    "seconds": 4.12
+  },
+  {
+    "name": "e2e-onboarding",
+    "command": "npm run test:e2e:onboarding",
+    "exit": 0,
+    "seconds": 10.94
+  },
+  {
+    "name": "e2e-srs",
+    "command": "npm run test:e2e:srs",
+    "exit": 0,
+    "seconds": 6.63
+  },
+  {
+    "name": "e2e-learning",
+    "command": "npm run test:e2e:learning",
+    "exit": 0,
+    "seconds": 12.79
+  },
+  {
+    "name": "e2e-gamification",
+    "command": "npm run test:e2e:gamification",
+    "exit": 0,
+    "seconds": 9.64
+  },
+  {
+    "name": "e2e-character-studio",
+    "command": "npm run test:e2e:character-studio",
+    "exit": 0,
+    "seconds": 15.45
+  },
+  {
+    "name": "browser-confirmation",
+    "command": "npm run test:browser:confirmation -w lingora-web",
+    "exit": 0,
+    "seconds": 12.55
+  }
+]

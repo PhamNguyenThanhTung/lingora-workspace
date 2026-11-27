@@ -1,0 +1,18 @@
+
+> lingora-workspace@1.0.0 db:product:generate
+> npm run db:product:generate -w lingora-admin
+
+
+> lingora-admin@1.0.0 db:product:generate
+> DATABASE_URL="${DATABASE_URL:-postgresql://[REDACTED]@127.0.0.1:5432/placeholder?schema=app}" DIRECT_URL="${DIRECT_URL:-postgresql://[REDACTED]@127.0.0.1:5432/placeholder?schema=app}" prisma generate --schema prisma/product/schema.prisma
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Prisma schema loaded from prisma/product/schema.prisma
+
+✔ Generated Prisma Client (v6.19.3) to ./generated/product-client in 282ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate

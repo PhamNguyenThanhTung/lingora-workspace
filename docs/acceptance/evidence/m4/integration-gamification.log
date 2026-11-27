@@ -1,0 +1,25 @@
+
+> lingora-workspace@1.0.0 test:integration:gamification
+> node scripts/local-test-db.mjs npm run test:integration:gamification -w lingora-web
+
+
+> lingora-web@1.0.0 test:integration:gamification
+> node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/gamification-postgres.test.mjs
+
+(node:200677) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Real PostgreSQL: Sprint 4 Gamification, XP, and Achievements
+  ✔ Real PostgreSQL: First completion awards +30 XP, daily quest +10 XP, achievements & safe replay (106.485735ms)
+  ✔ Real PostgreSQL: Redo attempt awards 0 lesson XP, no duplicate FIRST_LESSON, and maintains streak (56.679243ms)
+  ✔ Real PostgreSQL: Paused context retains SRS card and review awards +1 XP and updates streak (19.166685ms)
+  ✔ Real PostgreSQL: Midnight boundary calculation across timezones (Asia/Ho_Chi_Minh and America/New_York) (0.612229ms)
+  ✔ Real PostgreSQL: Transaction rollback on fault prevents partial gamification or completion writes (51.104967ms)
+✔ Real PostgreSQL: Sprint 4 Gamification, XP, and Achievements (398.936755ms)
+ℹ tests 5
+ℹ suites 1
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 611.592624

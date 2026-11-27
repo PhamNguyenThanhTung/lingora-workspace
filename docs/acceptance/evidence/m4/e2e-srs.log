@@ -1,0 +1,70 @@
+
+> lingora-workspace@1.0.0 test:e2e:srs
+> node scripts/local-test-db.mjs npm run test:e2e:srs -w lingora-web
+
+
+> lingora-web@1.0.0 test:e2e:srs
+> node --experimental-strip-types tests/feature/srs-e2e.test.mjs
+
+=== Sprint 5 SRS v2 & Flashcards E2E Acceptance ===
+✔ Synthetic Auth Provider listening on http://127.0.0.1:39567
+[seed] Seeding canonical configuration with semantic mismatch detection...
+[seed] Language verified: en (00000000-0000-0000-0000-000000000001)
+[seed] Language verified: vi (00000000-0000-0000-0000-000000000002)
+[seed] Framework verified: CEFR v2020 (00000000-0000-0000-0000-000000000010)
+[seed] Level verified: A1 pos 1 (00000000-0000-0000-0000-000000000021)
+[seed] Level verified: A2 pos 2 (00000000-0000-0000-0000-000000000022)
+[seed] Level verified: B1 pos 3 (00000000-0000-0000-0000-000000000023)
+[seed] Level verified: B2 pos 4 (00000000-0000-0000-0000-000000000024)
+[seed] DEV Course created: 00000000-0000-0000-0000-000000000030
+[seed] DEV Unit verified: DEV-UNIT-01 (00000000-0000-0000-0000-000000000040)
+[seed] DEV Planned Lesson verified: pos 1 (00000000-0000-0000-0000-000000000050)
+[seed] Seeding completed successfully (all semantic records verified idempotent).
+✔ Base canonical seed applied
+✔ Synthetic actors seeded in PostgreSQL
+✔ Sample curriculum ready
+✔ Found vocabulary links: Hello (3cbbbefe-05ad-4a4f-949c-8349cd70c513), Name (2edf285a-5162-469f-bb82-141ce10688c9)
+✔ Pre-seeded 2 overdue SRS cards for Learner 1 and 1 isolated card for Learner 2
+Starting lingora-web on port 43805...
+✔ lingora-web ready at http://127.0.0.1:43805
+
+--- Desktop Viewport (1280x800) SRS Flow ---
+Navigating to /home...
+Home CTA button text: "Ôn từ vựng (2)"
+✔ Captured 01-home-initial-due-desktop.png: Initial Home with 2 due cards
+Clicking #reviewNavBtn to enter /review...
+Clicking #startReviewBtn to begin review session...
+Card 1 Front: Canonical form is "Hello" (cardId: 25f4c9cb-b4a1-4b38-9804-9447f42bfa10)
+✔ Captured 02-srs-card-front-desktop.png: Card front before flip
+Clicking #revealAnswerBtn to reveal answer...
+Revealed meaning: {"en":"Greeting","vi":"Xin chào"}
+Active element id after reveal: "rateRememberedBtn"
+✔ Captured 03-srs-card-revealed-desktop.png: Card back revealed with meaning & rating buttons
+Focusing #rateForgottenBtn and pressing Enter to rate FORGOTTEN...
+Session counter after Card 1: "Đã ôn: 1 / 2 từ · Tiếng Anh"
+Testing session persistence across page reload...
+Pressing Space to reveal Card 2...
+Simulating committed response loss on Card 2 rating submission...
+Simulating network drop for review opKey: 4835c8d7-5501-4e8b-820c-6c36c74a119a after server commit...
+Server committed rating with status: 200
+Retry button appeared with text: "Thử lại gửi kết quả"
+Clicking #retryReviewBtn to test idempotent retry...
+Done box message: "✓Hoàn thành ôn tập!Bạn đã hoàn tất ôn tập 2 từ vựng trong phiên này.Về trang chủ"
+✔ Captured 04-srs-session-done-desktop.png: Review session completed screen
+Clicking #doneBackHomeBtn to return to /home...
+Updated Home CTA button text: "Ôn từ vựng"
+Updated Total XP: "2 XP"
+✔ Captured 05-home-after-review-desktop.png: Home after review with 0 due and +2 XP
+
+--- Mobile Viewport (390x844) SRS Flow ---
+✔ Captured 06-srs-review-mobile-390px.png: Mobile 390px revealed flashcard
+
+--- Verifying Multi-Learner Isolation ---
+✔ Multi-learner isolation verified: Learner 2 untouched
+
+--- Verifying PostgreSQL State (Policy B, SrsMemoryState, Operations) ---
+✔ Total XP in DB: 3 XP (3 events)
+
+=============================================================
+🎉 SPRINT 5 SRS V2 & FLASHCARDS E2E ACCEPTANCE: PASSED! 🎉
+=============================================================

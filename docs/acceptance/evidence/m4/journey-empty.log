@@ -1,0 +1,22 @@
+EMPTY_FR Lingora
+Ôn từ vựng
+Về trang chủ
+✓
+Chưa có từ nào đến hạn
+
+Hiện tại bạn không có từ vựng nào đến hạn ôn tập cho ngôn ngữ này. Hãy học một bài mới — từ vựng cốt lõi sẽ đến hạn ôn ngay trong ngày!
+
+Về trang chủ
+UI_METRIC empty 375 overflow false smallTargets 0 axe []
+UI_METRIC empty 768 overflow false smallTargets 0 axe []
+UI_METRIC empty 1440 overflow false smallTargets 0 axe []
+FOCUS empty {
+  id: 'doneBackHomeBtn',
+  tag: 'A',
+  text: 'Về trang chủ',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'rgb(58, 47, 191) 0px 4px 0px 0px',
+  visible: true
+}
+REDUCED empty { matches: true, animations: [] }
+LAYOUT_ZOOM_200 empty { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }

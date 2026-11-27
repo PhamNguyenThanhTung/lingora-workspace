@@ -1,0 +1,4 @@
+J12_PAUSED_CONTEXT 403 {"error":{"code":"CONTEXT_INACTIVE","message":"Lộ trình học đang tạm dừng."}}
+J12_FOREIGN_CONTEXT 404 {"error":{"code":"NOT_FOUND","message":"Lộ trình học không tồn tại."}}
+J12_DISABLED_LEARNER 403 {"error":{"code":"ACCOUNT_INACTIVE","message":"Tài khoản đang chờ duyệt hoặc đã bị vô hiệu hóa."}}
+J12_STALE_PUBLISH 409 {"error":{"code":"REVISION_CONFLICT","message":"Chỉ có thể xuất bản bản sửa đổi đã được phê duyệt (APPROVED). Trạng thái hiện tại: PUBLISHED."}}

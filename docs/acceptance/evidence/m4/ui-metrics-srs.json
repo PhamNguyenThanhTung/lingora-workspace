@@ -1,0 +1,119 @@
+[
+  {
+    "screen": "srs-before-reveal",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/review",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "srs-before-reveal",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/review",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "srs-before-reveal",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/review",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "srs-after-reveal",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/review",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "srs-after-reveal",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/review",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "srs-after-reveal",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/review",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "error-network",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/review",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "error-network",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/review",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "error-network",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/review",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  }
+]

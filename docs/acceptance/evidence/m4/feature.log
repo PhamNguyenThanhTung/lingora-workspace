@@ -1,0 +1,1676 @@
+
+> lingora-workspace@1.0.0 test:feature
+> npm run test:feature -w lingora-admin && npm run test:feature -w lingora-web && npm run test:feature -w @lingora/lesson-content
+
+
+> lingora-admin@1.0.0 test:feature
+> node --experimental-strip-types --experimental-test-module-mocks tests/feature/auth.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/languages-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/frameworks-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/courses-units-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/teachers-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/lessons-crud.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/slice6-content.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/slice6-acceptance.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/slice7-workflow.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/slice8-assessments.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/slice8-routes.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/slice11-successor-copy.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/audit-service.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/audit-routes.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/audit-page-wiring.test.mjs && node --experimental-strip-types --experimental-test-module-mocks tests/feature/sample-curriculum.test.mjs && node --experimental-strip-types tests/feature/characters-catalogue.test.mjs && node --experimental-strip-types tests/feature/characters-strokes.test.mjs && node --experimental-strip-types tests/feature/characters-vocabulary.test.mjs
+
+(node:191310) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S1-02 / STAB-1 R1, R9: Authentication Matrix & Guard Verification
+  ✔ missing identity: no cookies or session returns 401 UNAUTHENTICATED (1.028482ms)
+  ✔ invalid auth token returns 401 UNAUTHENTICATED (4.010707ms)
+  ✔ expired auth token returns 401 UNAUTHENTICATED (0.966627ms)
+  ✔ verified identity with missing Account in DB returns 403 FORBIDDEN (3.344946ms)
+  ✔ Account status PENDING returns 403 ACCOUNT_INACTIVE (0.903057ms)
+  ✔ Account status DISABLED returns 403 ACCOUNT_INACTIVE (0.913947ms)
+  ✔ Account role TEACHER is forbidden for languages but allowed for holding (1.380263ms)
+  ✔ Account role LEARNER is forbidden for staff routes (0.820372ms)
+  ✔ Account role ADMIN and status ACTIVE succeeds with user and account DTO (0.779164ms)
+  ✔ provider network failure or 503 returns 503 SERVICE_UNAVAILABLE (1.524214ms)
+  ✔ database connection failure returns 503 SERVICE_UNAVAILABLE (0.710415ms)
+✔ S1-02 / STAB-1 R1, R9: Authentication Matrix & Guard Verification (17.513343ms)
+▶ S1-02 / STAB-1 R1, R9: SDK Adapter Interaction & Proxy Refresh
+  ✔ S-R9a: Real installed SSR SDK invokes setAll on signInWithPassword and captures SDK headers (1.433123ms)
+  ✔ S-R9a: Real installed SSR SDK invokes setAll on signOut to delete auth cookies (2.226143ms)
+  ✔ S-R1a / FINAL-1 C1: proxy refreshes expired session via real SSR SDK, propagates refreshed cookies downstream and to response, kills mutations (5.827131ms)
+  ✔ S-R1a / FINAL-1 C1: proxy preserves multi-chunk session cookies and SDK headers through real installed SDK boundary (2.544552ms)
+✔ S1-02 / STAB-1 R1, R9: SDK Adapter Interaction & Proxy Refresh (12.194486ms)
+▶ S1-02 / STAB-1 R1, R9: Actual Route Handlers (/api/auth/login and logout)
+  ✔ POST /api/auth/login rejects foreign Origin with 403 FORBIDDEN_ORIGIN and private headers (0.523965ms)
+  ✔ POST /api/auth/login rejects non-json Content-Type with 415 and private headers (0.338386ms)
+  ✔ POST /api/auth/login rejects malformed json with 400 MALFORMED_JSON (0.319992ms)
+  ✔ POST /api/auth/login rejects invalid email/password format with 400 VALIDATION_ERROR (1.689164ms)
+  ✔ S-R9a: POST /api/auth/login valid credentials returns 200 and collects SDK headers/cookies (1.120165ms)
+  ✔ S-R9a: POST /api/auth/login invalid credentials returns 401 with no-store headers (0.780537ms)
+  ✔ S-R9a: POST /api/auth/login account-denial alternatives (DISABLED, LEARNER, MISSING) sign out and preserve headers (1.830551ms)
+  ✔ POST /api/auth/logout rejects foreign Origin with 403 and private headers (0.319681ms)
+  ✔ S-R9a: POST /api/auth/logout with active session deletes cookies and returns 200 with no-store (0.756882ms)
+✔ S1-02 / STAB-1 R1, R9: Actual Route Handlers (/api/auth/login and logout) (7.990156ms)
+▶ S1-02 / STAB-1 R9: Real Protected Handler Auth Matrix & Write Spies
+  ✔ Protected route GET /api/languages: auth matrix and zero write check (1.075801ms)
+  ✔ Protected route POST /api/languages: write spy asserts zero writes on denied requests (0.59592ms)
+  ✔ Protected route PATCH /api/languages/[id]: write spy asserts zero writes on unauthenticated request (0.405872ms)
+  ✔ Protected route DELETE /api/languages/[id]: write spy asserts zero writes on unauthenticated request (0.320052ms)
+✔ S1-02 / STAB-1 R9: Real Protected Handler Auth Matrix & Write Spies (2.52757ms)
+▶ S1-02: Same-Origin Enforcement
+  ✔ accepts matching scheme, hostname, and port (0.180329ms)
+  ✔ accepts matching HTTPS production domain (0.153158ms)
+  ✔ rejects mismatched port (0.125516ms)
+  ✔ rejects null origin (0.10639ms)
+  ✔ rejects missing origin on mutation endpoint (0.108864ms)
+✔ S1-02: Same-Origin Enforcement (0.80369ms)
+ℹ tests 33
+ℹ suites 5
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 53.592756
+(node:191318) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S1-03: Zod Validation & Language CRUD Handlers
+  ✔ isValidUuid accepts standard UUID v4 and rejects malformed strings (0.731365ms)
+  ▶ createLanguageSchema validation (including R10 strict names)
+    ✔ accepts valid 2-char code (e.g. vi, en, ja, fr) (1.604385ms)
+    ✔ accepts valid hyphenated codes (e.g. zh-cn, es-419) (0.172684ms)
+    ✔ rejects single char code (<2 total length) (0.21819ms)
+    ✔ rejects code longer than 10 characters (>10 total length) (0.142808ms)
+    ✔ rejects uppercase letters in code (0.110057ms)
+    ✔ rejects special characters or trailing hyphen in code (0.147087ms)
+    ✔ trims whitespace and enforces names.vi required 1-100 characters (0.126468ms)
+    ✔ rejects empty or whitespace-only names.vi (0.211137ms)
+    ✔ R10: rejects arbitrary/unknown keys inside nested names object (0.169459ms)
+    ✔ R10: rejects null for names.en (contracted as optional string, not nullable) (0.108454ms)
+    ✔ R10: rejects non-string types for names.en (number, boolean, object) (0.109806ms)
+    ✔ R10: accepts omitted or string names.en (0.076293ms)
+  ✔ createLanguageSchema validation (including R10 strict names) (3.650611ms)
+  ▶ updateLanguageSchema validation (Code Immutability)
+    ✔ strictly forbids code mutation in update payload (0.565502ms)
+    ✔ accepts valid updates to names and flags (0.082575ms)
+    ✔ R10: rejects arbitrary keys inside nested names on update (0.081723ms)
+  ✔ updateLanguageSchema validation (Code Immutability) (0.855458ms)
+  ▶ R3: Prisma Error Mapping (503 Availability vs 409/404)
+    ✔ P2002 unique constraint returns 409 DUPLICATE_CODE (0.168427ms)
+    ✔ P2003 foreign key restriction returns 409 LANGUAGE_IN_USE (0.068228ms)
+    ✔ P2025 record not found returns 404 NOT_FOUND (0.05324ms)
+    ✔ P1000 Authentication failed returns 503 SERVICE_UNAVAILABLE (0.049423ms)
+    ✔ P1001 Cannot reach DB server returns 503 SERVICE_UNAVAILABLE (0.057618ms)
+    ✔ P1002 Database server timeout returns 503 SERVICE_UNAVAILABLE (0.061726ms)
+    ✔ P2024 Connection pool timeout returns 503 SERVICE_UNAVAILABLE (0.06392ms)
+  ✔ R3: Prisma Error Mapping (503 Availability vs 409/404) (0.687322ms)
+  ▶ R9: CRUD Handlers & Denied-Write Nonexecution
+    ✔ createLanguage invokes prisma.language.create on valid input (0.268224ms)
+    ✔ createLanguage rejects invalid input before touching database (0.34023ms)
+    ✔ updateLanguage performs update and ignores/rejects code changes (0.235602ms)
+    ✔ deleteLanguage invokes prisma.language.delete on valid UUID (0.134443ms)
+    ✔ deleteLanguage returns 409 when foreign key blocks delete (P2003) (0.131727ms)
+  ✔ R9: CRUD Handlers & Denied-Write Nonexecution (1.265208ms)
+  ▶ STAB-1 R9: HTTP Route Handlers Matrix (/api/languages & [id])
+    ✔ GET /api/languages returns 200 list and Cache-Control: no-store, private (18.904487ms)
+    ✔ GET /api/languages rejects non-admin with 403 FORBIDDEN (3.270275ms)
+    ✔ POST /api/languages succeeds with 201 and authoritative record (1.326563ms)
+    ✔ POST /api/languages handles duplicate code with 409 DUPLICATE_CODE (1.233077ms)
+    ✔ POST /api/languages rejects foreign Origin with 403 FORBIDDEN_ORIGIN without writing (0.365116ms)
+    ✔ PATCH /api/languages/[id] rejects immutable code field with 400 IMMUTABLE_FIELD (1.024666ms)
+    ✔ PATCH /api/languages/[id] merges locale keys preserving existing keys and removing cleared en (0.858824ms)
+    ✔ PATCH note: update conflict on unique key is inapplicable due to immutable code (0.079539ms)
+    ✔ PATCH /api/languages/[id] returns 404 NOT_FOUND for non-existent record (0.722899ms)
+    ✔ DELETE /api/languages/[id] returns 204 on success (0.700216ms)
+    ✔ DELETE /api/languages/[id] returns 409 LANGUAGE_IN_USE when foreign key blocks delete (P2003) (0.850619ms)
+    ✔ DELETE /api/languages/[id] returns 404 NOT_FOUND when record is absent (0.953752ms)
+    ✔ DELETE /api/languages/[id] returns 400 INVALID_ID on malformed UUID (0.279535ms)
+  ✔ STAB-1 R9: HTTP Route Handlers Matrix (/api/languages & [id]) (30.978668ms)
+✔ S1-03: Zod Validation & Language CRUD Handlers (39.130738ms)
+ℹ tests 41
+ℹ suites 6
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 45.74612
+(node:191326) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S2-01 / S2-02: Framework & Level Domain Grounded Validation & Error Mapping
+  ✔ isValidUuid accepts standard UUID v4 and rejects invalid formats (0.614815ms)
+  ✔ isValidUuid accepts canonical CEFR, deterministic child levels, nil, max, non-version1-5 and rejects malformed strings (U1) (0.135375ms)
+  ▶ createFrameworkSchema & updateFrameworkSchema validation (S2-01)
+    ✔ accepts valid code, version and optional names object (1.550845ms)
+    ✔ accepts empty names object or omitted locale strings (0.155603ms)
+    ✔ trims whitespace on code and version (0.182333ms)
+    ✔ rejects empty or whitespace-only code or version (0.22931ms)
+    ✔ rejects arbitrary unknown fields at root and inside names (0.210005ms)
+    ✔ updateFrameworkSchema allows modifying code and version (0.533933ms)
+  ✔ createFrameworkSchema & updateFrameworkSchema validation (S2-01) (3.19812ms)
+  ▶ createLevelSchema & updateLevelSchema validation (S2-02)
+    ✔ accepts valid Level payload with positive int32 position (0.640363ms)
+    ✔ accepts position up to PostgreSQL int32 maximum (2147483647) (0.147327ms)
+    ✔ strictly rejects string position (no string coercion) (0.193002ms)
+    ✔ rejects zero, negative, and float position (0.13302ms)
+    ✔ rejects position exceeding int32 maximum (> 2147483647) (0.09029ms)
+    ✔ allows non-contiguous positions (e.g. 10, 20, 50) (0.163708ms)
+    ✔ rejects missing or empty code (0.096812ms)
+    ✔ rejects arbitrary unknown fields in level payload (0.072386ms)
+  ✔ createLevelSchema & updateLevelSchema validation (S2-02) (1.804211ms)
+  ▶ Prisma Error Mapping (S2-01 & S2-02)
+    ✔ Framework P2002 maps to 409 DUPLICATE_CODE_VERSION with fields (0.224261ms)
+    ✔ Framework P2003 maps to 409 FRAMEWORK_IN_USE (0.066505ms)
+    ✔ Level P2002 structured target [framework_id, code] with realistic message containing position: 2 gives precedence to target and returns DUPLICATE_LEVEL_CODE (0.164429ms)
+    ✔ Level P2002 structured target [framework_id, position] with realistic message containing code: "A1" gives precedence to target and returns DUPLICATE_LEVEL_POSITION (0.072466ms)
+    ✔ Level P2002 string constraint name in message returns accurate field without target (0.061676ms)
+    ✔ Level P2002 unrecognized target falls back to generic DUPLICATE_LEVEL without field association (0.074661ms)
+    ✔ Level P2003 on delete maps to 409 LEVEL_IN_USE (0.052428ms)
+    ✔ Level P2003 on create (parent deleted in race) maps to 404 NOT_FOUND (0.051246ms)
+    ✔ Prisma DB connection outage codes map to 503 SERVICE_UNAVAILABLE (0.089709ms)
+  ✔ Prisma Error Mapping (S2-01 & S2-02) (1.083536ms)
+✔ S2-01 / S2-02: Framework & Level Domain Grounded Validation & Error Mapping (7.622013ms)
+▶ S2-01 / S2-02: Framework & Level Service Operations with Doubles
+  ✔ listFrameworks computes accurate levelCount from _count (0.293241ms)
+  ✔ createFramework creates record and returns DTO with levelCount 0 (0.189146ms)
+  ✔ updateFramework preserves existing unedited translations and removes cleared ones (0.249889ms)
+  ✔ deleteFramework returns 204 on success, 404 when absent, 409 when in use (0.141536ms)
+  ✔ listLevels returns 404 when parent framework does not exist (0.107311ms)
+  ✔ createLevel enforces parent frameworkId strictly from URL (0.238718ms)
+  ✔ updateLevel rejects mismatched level / parent framework with 404 and zero update (0.609946ms)
+  ✔ updateLevel atomic selector strictly asserts id and frameworkId in updateMany where clause and clears edited locale (0.210756ms)
+  ✔ valid existing child under WRONG existing parent cannot be updated or deleted and returns 404 (0.237496ms)
+  ✔ listLevels orders by position asc with stable secondary code asc and filters by parent (0.602743ms)
+  ✔ code and version pair rules: same code different version allowed, same pair conflicts (0.226035ms)
+  ✔ per-parent level code and position scope: allowed across parents, conflicts within same parent (0.26076ms)
+  ✔ P2025 record not found maps cleanly to 404 NOT_FOUND (0.080541ms)
+  ✔ canonical CEFR parent framework ID and deterministic child level IDs operate correctly across all Framework and Level service helpers (U1) (0.766651ms)
+✔ S2-01 / S2-02: Framework & Level Service Operations with Doubles (4.604283ms)
+▶ S2-03: HTTP Route Handlers Auth Matrix, Guard Verification & Write Spies
+  ✔ GET /api/frameworks returns 401 when no session cookie is present (18.057315ms)
+  ✔ GET /api/frameworks returns 403 when user is TEACHER (4.472685ms)
+  ✔ GET /api/frameworks returns 403 when admin status is DISABLED (0.972378ms)
+  ✔ GET /api/frameworks returns 200 with framework list for active ADMIN (1.154119ms)
+  ✔ POST /api/frameworks rejects foreign Origin with 403 and zero writes (0.59054ms)
+  ✔ POST /api/frameworks rejects non-JSON Content-Type with 415 and zero writes (1.138219ms)
+  ✔ POST /api/frameworks creates framework for active ADMIN (1.198403ms)
+  ✔ PATCH /api/frameworks/[frameworkId] allows updating code and version (1.208742ms)
+  ✔ DELETE /api/frameworks/[frameworkId] returns 204 on success (0.974903ms)
+  ✔ GET /api/frameworks/[frameworkId]/levels returns 200 with levels for active ADMIN (1.286998ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels creates level with position (1.092904ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels propagates refreshed session headers from auth client to response (0.798761ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 401 when no session cookie is present with zero catalogue reads/writes (0.260479ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 401 on invalid/expired session with zero catalogue reads/writes (0.928956ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 403 on missing Account record with zero catalogue reads/writes (0.605708ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 403 when user is ACTIVE TEACHER with zero catalogue reads/writes (R6 mutant guard) (0.636927ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 403 when user is ACTIVE LEARNER with zero catalogue reads/writes (0.589237ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 403 when admin is PENDING with zero catalogue reads/writes (0.510459ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 403 when admin is DISABLED with zero catalogue reads/writes (0.506051ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 503 on provider outage with zero catalogue reads/writes (0.648168ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 503 on Account DB outage with zero catalogue reads/writes (0.729561ms)
+  ✔ POST /api/frameworks/[frameworkId]/levels returns 404 when parent framework does not exist with zero writes (0.713951ms)
+  ✔ GET /api/frameworks/[frameworkId]/levels returns 404 when parent framework does not exist (0.597242ms)
+  ✔ PATCH /api/frameworks/[frameworkId]/levels/[levelId] returns 404 on mismatched id (0.795325ms)
+  ✔ DELETE /api/frameworks/[frameworkId]/levels/[levelId] returns 204 on success (0.770528ms)
+  ✔ GET /api/frameworks returns 503 when Supabase provider has an outage (0.551427ms)
+  ✔ POST /api/frameworks returns 400 on malformed JSON body with zero writes (0.822957ms)
+  ✔ PATCH /api/frameworks/[frameworkId] returns 400 on malformed UUID route param with zero writes (0.258476ms)
+  ✔ PATCH /api/frameworks/[frameworkId]/levels/[levelId] returns 400 on malformed UUID param (0.242937ms)
+  ✔ PATCH /api/frameworks/[frameworkId] returns 404 on disappeared target with zero writes (0.716497ms)
+  ✔ DELETE /api/frameworks/[frameworkId] returns 404 on disappeared target with zero writes (0.666232ms)
+  ✔ DELETE /api/frameworks/[frameworkId]/levels/[levelId] returns 404 on disappeared target with zero writes (0.690448ms)
+  ✔ canonical CEFR parent framework ID and child level ID succeed across all HTTP route handlers with zero errors (U1) (3.890601ms)
+✔ S2-03: HTTP Route Handlers Auth Matrix, Guard Verification & Write Spies (50.081327ms)
+▶ S2-03 / S2-04: Actual Production Page Wiring, Error Boundaries & Outage vs 404 (R3/Gate 1/Gate 2)
+  ✔ frameworks/[frameworkId] page renders ServiceUnavailableView on DB 503 outage instead of notFound() (R3/Gate 2) (34.234326ms)
+  ✔ frameworks/[frameworkId] page calls notFound() when framework is genuinely 404 absent (Gate 2) (17.310822ms)
+  ✔ frameworks/[frameworkId] page calls notFound() on invalid UUID format (17.970491ms)
+  ✔ frameworks/[frameworkId] page on unauthenticated/unauthorized access renders denial with zero framework queries (20.200933ms)
+  ✔ frameworks/[frameworkId] page actual execution wires parent framework, levels, and account to LevelsCatalog inside AppShell (Gate 1) (16.663565ms)
+  ✔ frameworks page actual execution wires frameworks list and account to FrameworksCatalog inside AppShell (Gate 1) (16.594516ms)
+  ✔ frameworks page handles unauthenticated and teacher holding boundaries (17.530234ms)
+  ✔ frameworks/[frameworkId] page actual execution with canonical CEFR framework ID renders correct parent and levels (Acceptance 1) (16.466505ms)
+  ✔ Production catalogue renders canonical CEFR and its actual generated href leads to production detail success, rejecting malformed IDs with zero DB access (Acceptance 1) (30.464362ms)
+✔ S2-03 / S2-04: Actual Production Page Wiring, Error Boundaries & Outage vs 404 (R3/Gate 1/Gate 2) (188.527777ms)
+ℹ tests 81
+ℹ suites 7
+ℹ pass 81
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 260.150286
+(node:191353) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S3-01 / S3-02: Course & Unit Domain Grounded Validation & Error Mapping
+  ✔ isValidUuid accepts canonical seed Course30, Unit40, Framework10, Level21 and standard UUIDs (0.596551ms)
+  ▶ createCourseSchema & updateCourseSchema validation
+    ✔ accepts valid full-form Course payload (1.70799ms)
+    ✔ accepts optional locale strings, blank names (0.134262ms)
+    ✔ trims names and rejects unknown / internal fields (id, curriculumGeneration, rowVersion, configs) (0.299583ms)
+    ✔ rejects malformed relation UUIDs before DB access (0.235012ms)
+    ✔ allows duplicate Course names (no unique natural key) (0.161263ms)
+  ✔ createCourseSchema & updateCourseSchema validation (2.846208ms)
+  ▶ createUnitSchema & updateUnitSchema validation
+    ✔ accepts valid full-form Unit payload with positive integer position (0.782731ms)
+    ✔ rejects non-positive, decimal or string-coerced position (0.21777ms)
+    ✔ trims code, rejects blank or empty code (0.203613ms)
+    ✔ rejects unknown or internal fields on Unit payload (id, courseId, rowVersion) (0.211177ms)
+    ✔ allows duplicate Unit codes (code uniqueness is NOT enforced) (0.121529ms)
+  ✔ createUnitSchema & updateUnitSchema validation (1.779043ms)
+  ▶ DTO serialization & Error mapping
+    ✔ toCourseDto serializes BigInt as number and includes authoritative relations and unitCount (0.406053ms)
+    ✔ toUnitDto serializes Unit with level labels and position (0.186109ms)
+    ✔ handleCoursePrismaError maps scope freeze, deactivation guard and P2003 in-use properly (0.175099ms)
+    ✔ handleUnitPrismaError maps triple uniqueness P2002 to position & levelId fields and P2003 in-use (0.17014ms)
+  ✔ DTO serialization & Error mapping (1.071734ms)
+✔ S3-01 / S3-02: Course & Unit Domain Grounded Validation & Error Mapping (7.110593ms)
+▶ S3-03: Courses CRUD Service & Transaction Mechanics
+  ✔ createCourse enforces Framework-Level consistency (defaultStartLevel must belong to Course framework) (0.44164ms)
+  ✔ G14: createCourse rejects a language with is_learnable = false (400, Vietnamese message) (0.238137ms)
+  ✔ G14: updateCourse rejects switching to a non-learnable language but allows editing a course already on one (1.4475ms)
+  ✔ createCourse allows duplicate course name and relations (no natural uniqueness) (0.305975ms)
+  ✔ updateCourse locks course with $queryRaw FOR UPDATE, increments curriculumGeneration and rowVersion, merges locale (0.733749ms)
+  ✔ updateCourse blocks deactivation (409 DEACTIVATION_BLOCKED) when AVAILABLE lessons exist (0.21313ms)
+  ✔ updateCourse blocks changing languageId or frameworkId (409 SCOPE_FROZEN) when referenced by units (0.211849ms)
+  ✔ deleteCourse locks course, rejects deletion (409 COURSE_IN_USE) when units reference course, returns 204 on free delete (0.351331ms)
+✔ S3-03: Courses CRUD Service & Transaction Mechanics (4.214951ms)
+▶ S3-04: Units CRUD Service, Triple Uniqueness & Child Ownership Seams
+  ✔ createUnit enforces Unit level framework matches parent Course framework (0.498908ms)
+  ✔ createUnit enforces triple uniqueness (courseId, levelId, position) with 409 mapped to level/position fields (0.282411ms)
+  ✔ createUnit allows same position in different levels of the same course and advances Course generation (3.163365ms)
+  ✔ updateUnit & deleteUnit use atomic selector id + courseId and return 404 for foreign child (B child ownership) (1.19192ms)
+  ✔ listUnits sorts by Level.position asc, Unit.position asc, Unit.id asc (0.256823ms)
+✔ S3-04: Units CRUD Service, Triple Uniqueness & Child Ownership Seams (5.572963ms)
+▶ S3-05: Real Mutation ADMIN Guard, Auth Matrix & Zero Write Spies (C kill)
+  ✔ POST /api/courses mutation rejects unauthenticated, teacher and inactive accounts with zero writes (C kill) (18.233396ms)
+  ✔ PATCH & DELETE Unit mutation endpoints reject foreign Origin, unauthenticated, and non-admins with zero writes (0.684988ms)
+✔ S3-05: Real Mutation ADMIN Guard, Auth Matrix & Zero Write Spies (C kill) (19.01309ms)
+▶ S3-06: Production Page Wiring, Generated Href Extraction & Canonical Seed Exercise (A kill)
+  ✔ Render real CoursesPage -> extract actual generated href -> invoke real CourseDetailPage -> assert parent/child reconciliation (A kill) (49.484596ms)
+  ✔ C regression: CourseDetailPage faithfully passes initialLevelsError and empty frameworkLevels props on service lookup failure (22.044508ms)
+  ✔ CourseDetailPage renders ServiceUnavailableView on DB 503 outage instead of notFound() (19.106075ms)
+  ✔ CourseDetailPage calls notFound() on genuinely absent course and malformed UUID (22.085275ms)
+  ✔ CoursesPage redirects Teacher to /holding and unauthenticated user to /login (21.290151ms)
+✔ S3-06: Production Page Wiring, Generated Href Extraction & Canonical Seed Exercise (A kill) (134.635218ms)
+▶ S3-07: Acceptance Matrix - Active Admin Positives, UUID Casing, Rollback, Relations & Merges
+  ✔ Active Admin positive routes: GET/POST courses, GET/PATCH/DELETE course, GET/POST units, PATCH/DELETE unit (9.101634ms)
+  ✔ Denial check: unauthenticated, teacher, and inactive admin trigger zero catalogue reads on GET routes (3.434083ms)
+  ✔ Route ID 400 validation rejects malformed UUIDs before database operations (2.35173ms)
+  ✔ Missing parent Course returns 404 in routes and service functions (2.401403ms)
+  ✔ R6: Case-insensitive UUIDs accepted in createCourse and createUnit without 400 INVALID_RELATION (0.896104ms)
+  ✔ Unit update merges locale names: preserves other locale and removes blanked locale (0.480674ms)
+  ✔ Unit with lessons blocks DELETE (409 UNIT_IN_USE) and PATCH level change (409 SCOPE_FROZEN) (0.425549ms)
+  ✔ Unit transaction atomicity: failure updating parent Course counter rolls back transaction (0.346742ms)
+✔ S3-07: Acceptance Matrix - Active Admin Positives, UUID Casing, Rollback, Relations & Merges (20.414154ms)
+ℹ tests 43
+ℹ suites 9
+ℹ pass 43
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 196.036419
+(node:191382) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S4-TEACHERS: Validation & Canonical UUID Rules
+  ✔ isValidUuid accepts standard UUIDs regardless of version/variant, and rejects invalid strings (0.568678ms)
+  ✔ normalizeUuid lowercases hex characters (0.104947ms)
+  ✔ createTeacherSchema trims email and rejects extra/override fields (Mutant B kill) (1.381426ms)
+  ✔ updateTeacherStatusSchema enforces non-blank reason when disabling and rejects extra fields (0.465886ms)
+  ✔ activation respects provider 72-byte UTF-8 password boundary before external effects (0.486805ms)
+  ✔ activateTeacherSchema validates password length >= 8 and rejects extra fields (0.156895ms)
+✔ S4-TEACHERS: Validation & Canonical UUID Rules (4.023451ms)
+▶ S4-TEACHERS: Environment Configuration & Origin Verification
+  ✔ getAppOrigin strictly enforces HTTPS except on localhost/127.0.0.1 HTTP (0.344808ms)
+✔ S4-TEACHERS: Environment Configuration & Origin Verification (0.474552ms)
+▶ S4-TEACHERS: Admin Auth Guard & Zero Writes Matrix (Mutant A kill)
+  ✔ GET /api/teachers rejects unauthenticated, teacher, and inactive accounts with zero writes (Mutant A kill) (24.846113ms)
+  ✔ POST /api/teachers and PATCH /api/teachers/[id] reject foreign origin and non-admins with zero writes (1.072725ms)
+✔ S4-TEACHERS: Admin Auth Guard & Zero Writes Matrix (Mutant A kill) (26.096934ms)
+▶ S4-TEACHERS: Teacher List & DTO Serialization
+  ✔ listTeachers uses parameterized LEFT JOIN selecting only TEACHER accounts and maps null emails explicitly (0.504899ms)
+✔ S4-TEACHERS: Teacher List & DTO Serialization (0.566064ms)
+▶ S4-TEACHERS: Stateful provisioning, ownership and recovery
+  ✔ provisions one real matching PENDING identity, normalized email, immutable role and READY audit (1.433835ms)
+  ✔ existing unconfirmed Auth-only user is never adopted, invited or deleted (0.555654ms)
+  ✔ create failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.665551ms)
+  ✔ createTimeout failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.481625ms)
+  ✔ track failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.305924ms)
+  ✔ accountCreate failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.281639ms)
+  ✔ invite failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.365477ms)
+  ✔ inviteMismatch failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.249118ms)
+  ✔ ready failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.315283ms)
+  ✔ zeroReady failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.280658ms)
+  ✔ audit failure cannot report success; owned Auth/Account cleaned and ledger retries deterministically (0.29805ms)
+  ✔ deleteAuth cleanup failure reports recovery required and preserves ownership evidence (0.295195ms)
+  ✔ accountDelete cleanup failure reports recovery required and preserves ownership evidence (0.269055ms)
+  ✔ ledgerFailureWrite cleanup failure reports recovery required and preserves ownership evidence (0.211277ms)
+  ✔ inspect cleanup failure reports recovery required and preserves ownership evidence (0.188234ms)
+  ✔ in-flight request is not taken over; failed CAS is a conflict with zero external mutation (0.20743ms)
+  ✔ ownership mismatch never changes or deletes an unrelated identity (0.248537ms)
+  ✔ activated or non-Teacher leftovers cannot be compensated or converted (0.24523ms)
+  ✔ app-only owned plan is rejected rather than silently recreating Auth (0.226987ms)
+  ✔ concurrent normalized-email creates produce one owned identity and one conflict (0.286809ms)
+  ✔ retry cannot race an in-flight compensation deleting the planned identity (0.390484ms)
+  ✔ missing configuration is unavailable before any business/provider write (0.096782ms)
+✔ S4-TEACHERS: Stateful provisioning, ownership and recovery (8.36505ms)
+▶ S4-TEACHERS: Status Transition & Row Version / Audit Mechanics (Mutant C kill)
+  ✔ updateTeacherStatus rejects transition from PENDING with 409 INVALID_TRANSITION (0.322195ms)
+  ✔ updateTeacherStatus is idempotent: requesting same active/disabled status returns 200 without version bump or audit (0.134062ms)
+  ✔ updateTeacherStatus ACTIVE -> DISABLED updates status, increments row_version, and inserts AuditEvent (Mutant C kill) (0.176412ms)
+  ✔ updateTeacherStatus DISABLED -> ACTIVE preserves activatedAt timestamp (0.138701ms)
+  ✔ updateTeacherStatus rejects orphan account without Auth identity (0.105899ms)
+✔ S4-TEACHERS: Status Transition & Row Version / Audit Mechanics (Mutant C kill) (0.984991ms)
+▶ S4-TEACHERS: Staff Identity Enforcement Across Disable/Enable Lifecycle
+  ✔ real verifyStaffIdentity rejects same valid Teacher session after disable and allows after enable (1.992574ms)
+✔ S4-TEACHERS: Staff Identity Enforcement Across Disable/Enable Lifecycle (2.045595ms)
+▶ S4-TEACHERS: First-Use Teacher Password Activation
+  ✔ verifyTeacherActivationEligibility approves eligible PENDING Teacher with READY request (0.200146ms)
+  ✔ verifyTeacherActivationEligibility rejects already ACTIVE account with 409 ALREADY_ACTIVE (0.091091ms)
+  ✔ activateTeacherAccount sets password via user client and transitions Account to ACTIVE with audit (0.270739ms)
+✔ S4-TEACHERS: First-Use Teacher Password Activation (0.650633ms)
+▶ S4-TEACHERS: Production Page Wiring & Redirection Rules
+  ✔ TeachersPage redirects unauthenticated to /login and Teacher to /holding (25.07848ms)
+  ✔ TeachersPage active Admin renders AppShell with TeachersCatalog (12.365539ms)
+✔ S4-TEACHERS: Production Page Wiring & Redirection Rules (37.690822ms)
+▶ S4-TEACHERS: Independent lifecycle, activation races and route contracts
+  ✔ two simultaneous first-use requests change password once, never after ACTIVE (0.859576ms)
+  ✔ activation ADMIN rejects before user-scoped password call (0.41515ms)
+  ✔ activation LEARNER rejects before user-scoped password call (0.229942ms)
+  ✔ activation DISABLED rejects before user-scoped password call (0.208371ms)
+  ✔ activation ACTIVE rejects before user-scoped password call (0.203913ms)
+  ✔ activation UNCONFIRMED rejects before user-scoped password call (0.195708ms)
+  ✔ activation UNREADY rejects before user-scoped password call (0.199755ms)
+  ✔ activation WRONG_LEDGER_ROLE rejects before user-scoped password call (0.228339ms)
+  ✔ activation MISSING rejects before user-scoped password call (0.243678ms)
+  ✔ activation password failure leaves PENDING, no successful audit or raw provider leak (0.290747ms)
+  ✔ activation passwordThrow failure leaves PENDING, no successful audit or raw provider leak (1.730191ms)
+  ✔ activation audit failure leaves PENDING, no successful audit or raw provider leak (0.209374ms)
+  ✔ activation zeroActivation failure leaves PENDING, no successful audit or raw provider leak (0.240011ms)
+  ✔ persisted disable/re-enable gates the same valid session through real staff verification (0.558931ms)
+  ✔ status audit rejects and rolls back the persisted transition (0.25555ms)
+  ✔ status zeroStatus rejects and rolls back the persisted transition (0.210506ms)
+  ✔ arbitrary IDs cannot mutate Admin, Learner, self, missing or pending targets (0.286849ms)
+  ✔ list query excludes non-Teachers and exposes only allowed DTO fields (0.230283ms)
+  ✔ all management methods reject unauthenticated/Teacher/inactive Admin before business or provider effects (5.632706ms)
+  ✔ valid Admin API creates pending Teacher and strictly rejects all identity/role/status overrides (3.196578ms)
+  ✔ activation API verifies fresh Auth identity and never accepts target/role overrides (2.302446ms)
+✔ S4-TEACHERS: Independent lifecycle, activation races and route contracts (19.292996ms)
+ℹ tests 64
+ℹ suites 10
+ℹ pass 64
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 106.33834
+(node:191410) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S5-06: Independent acceptance boundaries
+  ✔ CAS tokens are canonical positive int64 strings on all writes (7.2475ms)
+  ✔ unassigned Teacher draft write is opaque404 even with token 1 (3.798198ms)
+  ✔ unassigned Teacher draft write is opaque404 even with token 2 (0.690768ms)
+  ✔ unassigned Teacher draft write is opaque404 even with token 999 (0.635425ms)
+  ✔ failed accounts lock fails closed without fallback writes (0.736073ms)
+  ✔ failed lessons lock fails closed without fallback writes (1.303579ms)
+  ✔ failed content_assignments lock fails closed without fallback writes (0.478309ms)
+  ✔ an absent locked Account cannot be replaced by an unlocked mock read (0.457009ms)
+  ✔ draft inserts use unambiguous nullable JSON and preserve server metadata (2.539031ms)
+  ✔ a post-insert failure rolls back revision and aggregate (0.703933ms)
+  ✔ reassignment failure after assignment write rolls back all rows (0.537651ms)
+  ✔ missing current assignment history is rejected without inventing a repair episode (0.39379ms)
+  ✔ same-token concurrent saves have one winner and preserve revision advance (0.687422ms)
+  ✔ same-token assignment race has one winner and one new episode (0.526369ms)
+  ✔ inconsistent DRAFT approvedBy workflow fact is read-only (0.630354ms)
+  ✔ inconsistent DRAFT approvedAt workflow fact is read-only (0.660702ms)
+  ✔ inconsistent DRAFT publishedBy workflow fact is read-only (0.646735ms)
+  ✔ inconsistent DRAFT publishedAt workflow fact is read-only (0.557197ms)
+  ✔ inconsistent DRAFT endedAt workflow fact is read-only (0.598515ms)
+  ✔ disable actor after auth but before transaction denies the request (21.222483ms)
+  ✔ disable target after auth but before transaction denies the request (1.659088ms)
+  ✔ all Admin handlers deny anonymous without business effects (1.756811ms)
+  ✔ all Admin handlers deny 11111111-1111-4111-8111-111111111111 without business effects (7.861303ms)
+  ✔ all Admin handlers deny 33333333-3333-4333-8333-333333333333 without business effects (3.388407ms)
+  ✔ all Teacher handlers reject PENDING session (1.828015ms)
+  ✔ all Teacher handlers reject DISABLED session (1.692581ms)
+  ✔ all nested mutations enforce Unit/Lesson and Course/Unit scope (0.818789ms)
+  ✔ Teacher detail service503 renders the production retry view, not404 (38.222361ms)
+  ✔ mutation locks are parameterized, ordered Accounts then Lesson then Assignment (0.808479ms)
+  ✔ draft raw request is capped before JSON parsing or business effects (4.505377ms)
+  ✔ malformed IDs, missing Lesson and server-owned input overrides cause no writes (1.940457ms)
+  ✔ production route integration denies an unassigned Teacher read/write without leaking the Lesson (3.005818ms)
+  ✔ draft save rejects missing assignment episode without writes or repair (0.549132ms)
+  ✔ draft save rejects generation assignment episode without writes or repair (0.455326ms)
+  ✔ draft save rejects teacher assignment episode without writes or repair (0.424297ms)
+  ✔ published revision remains intact as the source of a new successor draft (0.942111ms)
+✔ S5-06: Independent acceptance boundaries (117.30541ms)
+▶ S5-01: Lesson & Draft Validation Schemas & CAS Token Contract
+  ✔ isValidUuid accepts canonical UUIDs and rejects invalid strings (0.105368ms)
+  ✔ createLessonSchema validates positive int position and boolean isRequired (0.479752ms)
+  ✔ updateLessonSchema requires strict position, isRequired and expectedRowVersion string (0.42563ms)
+  ✔ assignLessonSchema requires valid teacherId and expectedRowVersion string (0.134833ms)
+  ✔ saveTeacherDraftSchema validates title, contentBlocks and changeSummary constraints (0.650673ms)
+✔ S5-01: Lesson & Draft Validation Schemas & CAS Token Contract (2.12867ms)
+▶ S5-02: Admin Lesson CRUD & Hierarchy Enforcement
+  ✔ listLessons returns scoped lessons ordered by position and validates parent hierarchy (0.417404ms)
+  ✔ createLesson creates planned lesson skeleton, enforces unique position, and rolls back on failure (0.678245ms)
+  ✔ updateLesson updates position/isRequired, checks CAS rowVersion, and prevents duplicate position (0.588927ms)
+✔ S5-02: Admin Lesson CRUD & Hierarchy Enforcement (1.884161ms)
+▶ S5-03: Lesson Assignment, Reassignment & Concurrency Mechanics
+  ✔ initial assignment atomically creates ContentAssignment, AssignmentHistory sequence 1, and bumps version (0.531178ms)
+  ✔ same-teacher assignment is authoritative no-op: no version increment, no duplicate history episode (0.43606ms)
+  ✔ reassignment atomically updates teacher, increments generation & sequence, and records old/new teachers (0.459233ms)
+  ✔ assignment rejects target tampering (DISABLED, PENDING, ADMIN, LEARNER, missing) (0.294393ms)
+  ✔ getTeacherOptions only lists ACTIVE Teachers (0.282441ms)
+  ✔ disabled assigned teacher remains faithfully represented in Lesson DTO (0.344358ms)
+  ✔ failure during assignment rolls back assignment, history and Lesson version bump (0.301456ms)
+✔ S5-03: Lesson Assignment, Reassignment & Concurrency Mechanics (3.063207ms)
+▶ S5-04: Teacher Workstream (List, Detail & Successor Draft Saves)
+  ✔ listTeacherAssignedLessons only returns lessons assigned to caller teacher (0.716135ms)
+  ✔ getTeacherLessonDetail returns 404 for unrelated lesson, never disclosing details (0.487356ms)
+  ✔ first draft save creates revision 1, priorRevisionId null, and leaves activeRevisionId unchanged (1.144632ms)
+  ✔ second draft save appends revision 2, priorRevisionId points to rev 1, old revision untouched (1.098605ms)
+  ✔ title merge preserves existing server locales (e.g. fr) while updating vi/en (0.758154ms)
+  ✔ unsupported title or blocks rejects save with 409 UNSUPPORTED_DRAFT_CONTENT (0.779886ms)
+  ✔ revision-attached associations reject save with 409 UNSUPPORTED_DRAFT_CONTENT (0.692201ms)
+  ✔ PUBLISHED highest revision permits a new draft successor without mutating the published revision (0.68655ms)
+  ✔ highest DRAFT with submission provenance rejects save with 409 DRAFT_NOT_EDITABLE (0.654921ms)
+  ✔ save after reassignment binds new revision to new episode and teacher (1.275527ms)
+  ✔ CAS token mismatch on draft save returns 409 STALE_LESSON (0.830471ms)
+  ✔ failure during revision save rolls back all revision writes and version bump (0.573046ms)
+✔ S5-04: Teacher Workstream (List, Detail & Successor Draft Saves) (10.549936ms)
+▶ S5-05: Actual Route Handlers & Auth Role Guard Matrix
+  ✔ POST /api/courses/.../lessons enforces same-origin, json content-type and creates lesson (1.593064ms)
+  ✔ Admin is strictly forbidden on Teacher endpoints (403 FORBIDDEN) (1.661824ms)
+  ✔ Disabled Teacher session is rejected with 403 ACCOUNT_INACTIVE (0.82472ms)
+  ✔ Teacher successfully invokes GET /api/teacher/lessons and PATCH draft (4.940795ms)
+✔ S5-05: Actual Route Handlers & Auth Role Guard Matrix (9.351825ms)
+ℹ tests 67
+ℹ suites 6
+ℹ pass 67
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 150.775039
+(node:191437) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S6-CONTENT: Exercises, Vocabulary & Revision Integrity Suite
+  ✔ Audio Reference URL strictly requires HTTPS, public DNS with dot, no query/hash/port/ip/localhost (2.156322ms)
+  ✔ Canonical JSON and deterministic fingerprint computation (0.65964ms)
+  ✔ Vocabulary normalization collapses whitespace, normalizes NFC, lowercases (0.343215ms)
+  ✔ MCQ: happy path creates ItemIdentity, ItemRevision, ItemGradingSecret, LessonExercise (8.244653ms)
+  ✔ MCQ: invalid payload rejects when correctOptionId not in options or duplicate option IDs (0.978799ms)
+  ✔ FILL_BLANK: happy path and invalid blank marker (1.74509ms)
+  ✔ REORDER: happy path and invalid permutation (1.596119ms)
+  ✔ LISTENING: happy path and invalid audioUrl inputs (1.866418ms)
+  ✔ GRAMMAR: happy path and invalid bounds (1.294473ms)
+  ✔ Duplicate exercise position within request returns 409 DUPLICATE_EXERCISE_POSITION (0.385404ms)
+  ✔ Duplicate vocabulary position returns 409 DUPLICATE_VOCABULARY_POSITION (1.122109ms)
+  ✔ Vocabulary create creates global concept; exact identical recreate reuses concept without duplication (2.874712ms)
+  ✔ Vocabulary create with differing display metadata returns 409 VOCABULARY_IDENTITY_CONFLICT (0.578478ms)
+  ✔ Attaching concept of foreign language returns 409 VOCABULARY_LANGUAGE_MISMATCH (0.48396ms)
+  ✔ Vocabulary options endpoint returns target-language scoped senses only (0.892147ms)
+  ✔ Persistence Integrity: Revision 1 has Exercise A and Vocab A; Revision 2 edits/adds/removes to B; Revision 1 remains completely intact (3.51197ms)
+  ✔ Omitted collections clone predecessor children unchanged (1.942501ms)
+  ✔ Explicit empty array removes all children from successor (0.735342ms)
+  ✔ Transaction rollback on injected error leaves zero partial rows or version bumps (0.52167ms)
+  ✔ Unassigned Teacher B receives opaque 404 LESSON_NOT_FOUND (0.326463ms)
+  ✔ Disabled Teacher is rejected with 403 ACCOUNT_INACTIVE (0.217499ms)
+  ✔ CAS expectedRowVersion mismatch returns 409 STALE_LESSON (0.199395ms)
+  ✔ expectedRevisionId mismatch returns 409 REVISION_CONFLICT (0.236384ms)
+  ✔ Referencing sourceExerciseId or sourceLinkId not in predecessor revision returns 404 RELATION_NOT_FOUND (0.434987ms)
+  ✔ Admin Lesson detail DTO does not leak grading secrets or private answers (0.785776ms)
+  ✔ Actual Route Handlers enforce auth, origin, and return appropriate DTOs (22.051792ms)
+  ✔ Mutant A Kill: Unassigned Teacher cannot bypass ownership check (returns 404 opaque) (0.424428ms)
+  ✔ Mutant B Kill: Inactive Teacher inside transaction cannot bypass ACTIVE guard (returns 403 ACCOUNT_INACTIVE) (0.257905ms)
+  ✔ Mutant C Kill: Weaken type-specific validator rejects invalid payload (MCQ wrong correctOptionId returns 400) (0.384853ms)
+  ✔ Mutant D Kill: In-place update or omission of successor copy fails; old revision & records remain untouched (0.926971ms)
+  ✔ Mutant E Kill: Remove source revision membership gate fails; foreign source ID rejected with 404 (0.350529ms)
+  ✔ Mutant G Kill: Remove course language check fails; mismatched vocabulary language rejected with 409 (0.374554ms)
+  ✔ Actual Teacher B child routes deny list/detail/lookup/save and inactive status with zero persistence effects (7.067432ms)
+  ✔ LNG-05: candidate normalization handles NFC, whitespace, curly quotes and Latin diacritics without merging Japanese kana/kanji (0.459814ms)
+  ✔ LNG-05: getTeacherVocabularyOptions matches same-language quote/diacritic candidates and isolates other languages (0.925139ms)
+  ✔ LNG-05: homograph with distinct senseKey creates cleanly and concurrent P2002 surfaces VOCABULARY_IDENTITY_CONFLICT (3.120393ms)
+  ✔ LNG-02: toTeacherLessonDetailDto threads normalized languageCode to courseContext and presentation (0.546667ms)
+✔ S6-CONTENT: Exercises, Vocabulary & Revision Integrity Suite (72.782339ms)
+ℹ tests 37
+ℹ suites 1
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 78.58847
+✔ Unsupported invalid type-specific payload: detail read-only and omitted save rejects with no changes (13.694506ms)
+✔ Unsupported invalid type-specific payload: detail read-only and empty save rejects with no changes (1.605377ms)
+✔ Unsupported item-owned media bindings: detail read-only and omitted save rejects with no changes (1.437462ms)
+✔ Unsupported item-owned media bindings: detail read-only and empty save rejects with no changes (1.231254ms)
+✔ Unsupported orphan authored item: detail read-only and omitted save rejects with no changes (1.386856ms)
+✔ Unsupported orphan authored item: detail read-only and empty save rejects with no changes (1.164939ms)
+✔ Unsupported foreign authoring revision: detail read-only and omitted save rejects with no changes (1.048551ms)
+✔ Unsupported foreign authoring revision: detail read-only and empty save rejects with no changes (0.907605ms)
+✔ Unsupported invalid display snapshot: detail read-only and omitted save rejects with no changes (1.18102ms)
+✔ Unsupported invalid display snapshot: detail read-only and empty save rejects with no changes (1.188444ms)
+✔ Unsupported foreign vocabulary language: detail read-only and omitted save rejects with no changes (0.967167ms)
+✔ Unsupported foreign vocabulary language: detail read-only and empty save rejects with no changes (0.901373ms)
+✔ Unsupported foreign snapshot language: detail read-only and omitted save rejects with no changes (0.837223ms)
+✔ Unsupported foreign snapshot language: detail read-only and empty save rejects with no changes (1.655121ms)
+✔ Unsupported item assessment binding: detail read-only and omitted save rejects with no changes (0.742455ms)
+✔ Unsupported item assessment binding: detail read-only and empty save rejects with no changes (0.653708ms)
+✔ Created revision relation counts reflect persisted child rows and assigned list stays editable (0.5907ms)
+✔ Canonical UUID values accepted by existing domain stay accepted for new child selectors (0.089939ms)
+✔ Vocabulary identity appearing with conflicting metadata before persistence rejects and rolls back (0.426772ms)
+✔ Retained vocabulary snapshot remains exact when global meaning changes; old identities and rows unchanged (1.110818ms)
+✔ Child save for unassigned Teacher is opaque with current and guessed tokens and changes nothing (0.877629ms)
+✔ Single-line answer contract rejects embedded newline instead of allowing lossy editor round trips (1.10142ms)
+✔ Invalid shared vocabulary labels cannot be silently filtered into a new snapshot (0.599496ms)
+✔ New vocabulary snapshot retains the actual sense, including non-default senses (0.590129ms)
+✔ Foreign Lesson source membership cannot be substituted for an owned current exercise (1.206487ms)
+✔ Distinct vocabulary identity tuples containing underscores remain distinct in one atomic save (0.432422ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43.516871
+(node:191452) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S7-WORKFLOW: exact revision submit, review and publication
+  ✔ API submit pins the saved revision, rejects a duplicate and keeps disabled submitter attribution (38.718163ms)
+  ✔ H9: review history names an admin without display_name by role instead of "Người dùng" (2.790514ms)
+  ✔ request changes keeps the old snapshot; successor copies frozen items and publish stays isolated (11.236466ms)
+  ✔ unassigned teacher and invalid publish transition are rejected without writes (1.027852ms)
+  ✔ disabled Teacher and structurally incomplete revision cannot be submitted (1.550764ms)
+  ✔ concurrent request-changes and approve append one winning transition only (1.681981ms)
+  ✔ P1: publishReview with makeAvailable=true validates parent course, core exercises, and sets AVAILABLE (2.340438ms)
+  ✔ P1: activateLesson service enforces hierarchy, course activity, published revision, CAS and idempotency (3.755588ms)
+  ✔ P1: POST /api/courses/.../activate route enforces origin, json, auth, and executes activation (7.553014ms)
+  ✔ LNG-02: getReviewDetail threads course languageCode to lesson and revision presentation (1.385634ms)
+✔ S7-WORKFLOW: exact revision submit, review and publication (73.365165ms)
+ℹ tests 10
+ℹ suites 1
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 79.686925
+✔ Slice 8 purpose values match the Blueprint database check (0.964433ms)
+✔ Blueprint v1 accepts a valid typed flat composition (2.783591ms)
+✔ Blueprint v1 requires all three JSON objects to use their strict key sets (0.175761ms)
+✔ Blueprint composition rejects empty/duplicate/unknown exercise types (0.304923ms)
+✔ Blueprint minimum type counts must be non-negative integers on allowed types and sum within itemCount (0.423816ms)
+✔ Blueprint request rejects unknown top-level fields and malformed UUIDs (0.233829ms)
+✔ Admin service derives Blueprint scope and rejects non-Admin mutation (0.855318ms)
+✔ Blueprint creation rejects a Level owned by a different Framework (0.267613ms)
+✔ Blueprint update uses rowVersion CAS and advances semantic generation (1.290034ms)
+✔ Teacher assessment item write pins the authenticated teacher, current episode, draft and blueprint generation (3.672612ms)
+✔ Teacher item edits create an immutable successor revision on the same ASSESSMENT identity (0.598705ms)
+✔ Lesson snapshot accepts separate ASSESSMENT children while keeping PRACTICE exercise pairing exact (0.4681ms)
+✔ Assembly freezes and retrieves the exact selected ItemRevision through its persisted version relation (1.749537ms)
+✔ Assembly allows serial database round trips beyond the default transaction timeout (0.591702ms)
+✔ Assembly rejects PRACTICE origin and leaves the version table untouched (0.317617ms)
+✔ Assembly enforces minimum type composition and leaves revisions unfrozen on failure (0.344658ms)
+✔ Assembly rejects a mismatched source Teacher review actor before inserting a version (0.211087ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 24.615339
+(node:191472) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Blueprint route requires an active Admin identity and returns no-store DTO responses (23.215649ms)
+✔ Teacher route rejects Admin and unauthenticated sessions instead of widening the role boundary (1.271229ms)
+✔ Blueprint mutation validates origin and JSON before any authenticated write (1.944705ms)
+✔ Blueprint creation route returns one production DTO envelope (3.841679ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34.543287
+(node:191481) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 11: Narrow Staff Snapshot Successor-Copy Guard & Regressions
+  ✔ Staff successor-copy: PUBLISHED revision X with attempts allows successor draft Y creation (16.782509ms)
+✔ Slice 11: Narrow Staff Snapshot Successor-Copy Guard & Regressions (17.521518ms)
+ℹ tests 1
+ℹ suites 1
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22.805869
+(node:191488) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Audit Service: Parameter Validation and Date Handling
+  ✔ both from and to omitted defaults to server-fixed 7 days span (1.036327ms)
+  ✔ rejects when only from is provided (0.277962ms)
+  ✔ rejects when only to is provided (0.099978ms)
+  ✔ accepts valid canonical UTC ISO millisecond bounds within 31 days (0.165561ms)
+  ✔ rejects from >= to (0.142267ms)
+  ✔ rejects span exceeding 31 days (0.112571ms)
+  ✔ rejects malformed date strings (missing Z, non-UTC, invalid calendar) (0.171993ms)
+  ✔ accepts known action codes and OTHER; rejects unknown action strings (0.194245ms)
+  ✔ accepts known outcomes; rejects unknown outcome strings (0.188955ms)
+  ✔ rejects supplied empty strings for bounds, action, outcome and cursor (0.222678ms)
+  ✔ computeDefaultAuditBounds returns valid canonical 7-day UTC bounds (0.11178ms)
+✔ Audit Service: Parameter Validation and Date Handling (3.730069ms)
+▶ Audit Service: Cursor Encoding, Decoding and Keyset Validation
+  ✔ roundtrip cursor encoding and decoding succeeds with identical payload (0.783382ms)
+  ✔ cursor decoding rejects oversized string (> 1024 characters) (0.083547ms)
+  ✔ cursor decoding rejects non-canonical base64url or corrupt encoding (0.161253ms)
+  ✔ cursor decoding rejects malformed JSON (0.127329ms)
+  ✔ cursor decoding rejects missing or extra keys (0.158869ms)
+  ✔ cursor decoding rejects invalid version (0.113804ms)
+  ✔ cursor decoding rejects invalid UUID (0.141035ms)
+  ✔ cursor decoding rejects invalid microsecond timestamp (0.157095ms)
+  ✔ cursor decoding rejects timestamp outside from/to range (0.166493ms)
+  ✔ cursor request requires explicit from and to matching embedded bounds (0.275898ms)
+✔ Audit Service: Cursor Encoding, Decoding and Keyset Validation (3.710724ms)
+▶ Audit Service: Mock Query Execution & Projection Redaction
+  ✔ returns 50 rows and nextCursor when 51 rows fetched from DB (0.543301ms)
+  ✔ redacts unknown stored action, targetType, actorKind and outcome to OTHER (0.125135ms)
+  ✔ generates OTHER action predicate when action=OTHER is requested (0.099647ms)
+  ✔ maps database connectivity error to 503 SERVICE_UNAVAILABLE (0.149821ms)
+  ✔ maps generic unexpected error to 500 INTERNAL_SERVER_ERROR (0.113063ms)
+  ✔ wraps actual getProductPrisma acquisition failure without a supplied client (0.132089ms)
+✔ Audit Service: Mock Query Execution & Projection Redaction (1.310132ms)
+ℹ tests 27
+ℹ suites 3
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13.588978
+(node:191495) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Audit Route Integration: GET /api/audit-events
+  ✔ anonymous request is denied 401 with no-store and ZERO audit reads (15.656383ms)
+  ✔ Teacher session is denied 403 with no-store and ZERO audit reads (4.157663ms)
+  ✔ Learner session is denied 403 with no-store and ZERO audit reads (1.252845ms)
+  ✔ Disabled Admin session is denied 403 with no-store and ZERO audit reads (1.002414ms)
+  ✔ Active Admin: rejects unknown query parameter with 400 VALIDATION_ERROR and zero audit reads (1.077675ms)
+  ✔ Active Admin: rejects duplicate query parameter with 400 VALIDATION_ERROR and zero audit reads (0.976565ms)
+  ✔ Active Admin: rejects malformed date parameters with 400 VALIDATION_ERROR (1.483848ms)
+  ✔ Active Admin: valid query succeeds with 200, DTO response and private no-store headers (1.538291ms)
+  ✔ Active Admin: returns 503 when audit database read fails with connectivity error (3.191718ms)
+  ✔ Active Admin: rejects supplied empty parameters (?from=&to=, ?action=, ?outcome=, ?cursor=) with 400 VALIDATION_ERROR and zero audit reads (3.180297ms)
+  ✔ Active Admin: overrides conflicting SDK cache header with no-store private and preserves SDK refresh cookies (1.955705ms)
+  ✔ Auth provider outage returns 503 SERVICE_UNAVAILABLE with no-store headers and zero audit reads (0.807948ms)
+  ✔ Account database outage during auth verification returns 503 with no-store and zero audit reads (0.619244ms)
+  ✔ Route is strictly read-only and exports only GET and dynamic (0.185508ms)
+✔ Audit Route Integration: GET /api/audit-events (38.36031ms)
+ℹ tests 14
+ℹ suites 1
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43.182954
+(node:191505) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Audit Events Page Wiring: /audit-events/page.tsx
+  ✔ anonymous visitor is redirected to /login before any audit read (40.790557ms)
+  ✔ Teacher role renders AccessDeniedView with zero audit reads (26.320094ms)
+  ✔ Learner role renders AccessDeniedView with zero audit reads (11.447393ms)
+  ✔ Disabled Admin renders AccessDeniedView with zero audit reads (7.929081ms)
+  ✔ Active Admin renders AppShell and AuditEventsCatalog with initial DTO and effective bounds (8.812582ms)
+  ✔ Active Admin: when initial audit query fails with 500, supplies valid default bounds and initialError to catalog (8.091756ms)
+✔ Audit Events Page Wiring: /audit-events/page.tsx (105.137864ms)
+ℹ tests 6
+ℹ suites 1
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 108.562771
+(node:191532) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ P6: Opt-in Useful Sample Curriculum CLI Guards (R1)
+  ✔ missing --confirm-owned-loopback flag fails closed with exit code 1 (70.771851ms)
+  ✔ missing SLICE11_TEST_DATABASE_OWNED marker fails closed with exit code 1 (57.09585ms)
+  ✔ missing explicit SLICE11_TEST_DATABASE_URL fails closed with exit code 1 (57.226686ms)
+  ✔ generic DATABASE_URL without explicit SLICE11_TEST_DATABASE_URL fails closed (53.2801ms)
+  ✔ malformed database URL fails closed with exit code 1 (54.052641ms)
+  ✔ wrong protocol (e.g. http:// or mysql://) fails closed with exit code 1 (55.246384ms)
+  ✔ non-loopback hostname fails closed with exit code 1 (54.401727ms)
+  ✔ hostname containing localhost but not loopback (attacker domain) fails closed (53.71709ms)
+  ✔ non-exact database pathname (e.g. /production or /slice10_test) fails closed with exit code 1 (51.183058ms)
+  ✔ owned port A versus sample override port B fails closed with exit code 1 (55.135115ms)
+  ✔ owned port A versus runtime generic DATABASE_URL port B fails closed with exit code 1 (52.745023ms)
+  ✔ valid explicit loopback URL and owned marker pass guard validation with exit code 0 (55.064333ms)
+✔ P6: Opt-in Useful Sample Curriculum CLI Guards (R1) (671.982031ms)
+▶ P6: Sample Curriculum Provisioning & Content Invariants
+  ✔ provisions 3 ordered lessons through authoring/publication workflow (36.825305ms)
+  ✔ idempotent second provision returns alreadyProvisioned: true without duplicate writes (15.243006ms)
+  ✔ R2: fails early with SAMPLE_CURRICULUM_CONFLICT when unrelated published lessons exist at positions 1..3 (0.640614ms)
+  ✔ R2: fails early when unrelated DRAFT/PLANNED lesson exists at position 1 without creating successor or publishing (0.333076ms)
+  ✔ R2: conflict at position 3 fails before modifying positions 1 or 2 (0.33002ms)
+  ✔ R2: requires active staff accounts (fails upfront if teacher is disabled) (0.197912ms)
+  ✔ R7: Lesson 3 Ex 1 accepts only "wakes" and rejects "wakes up" (12.591623ms)
+  ✔ R7: Lesson 2 Ex 2 GRAMMAR provides sentence transformation exercise without answering in prompt (14.006443ms)
+  ✔ R2: fails early with SAMPLE_CURRICULUM_CONFLICT when rows have exact sample titles but altered paragraph content (11.237308ms)
+  ✔ R2: fails early when one locale of title is altered while the other matches (8.704258ms)
+  ✔ R2: fails early when exercise prompt, grading, or explanation is altered (9.40786ms)
+  ✔ R2: fails early when vocabulary concept or displaySnapshot is altered (8.663522ms)
+  ✔ R2: fails early when extra successor revision exists on a slot (10.597065ms)
+  ✔ R2: preflights and rejects global conflicting vocabulary concept before any writes (0.283232ms)
+  ✔ R2: resumes authored checkpoint (exact DRAFT) without calling saveTeacherLessonDraft (9.685422ms)
+  ✔ R2: activates PUBLISHED+PLANNED lesson with no new revision (13.321555ms)
+✔ P6: Sample Curriculum Provisioning & Content Invariants (152.863645ms)
+ℹ tests 28
+ℹ suites 2
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 838.029253
+▶ S6-01: Character Validator & Unicode / NFC Rules
+  ✔ validateAndNormalizeGlyph normalizes decomposed NFD characters into single NFC grapheme (0.562617ms)
+  ✔ validateAndNormalizeGlyph preserves valid Variation Selectors (IVS) attached to base character (0.497374ms)
+  ✔ validateAndNormalizeGlyph rejects standalone variation selector without base glyph (0.209393ms)
+  ✔ validateAndNormalizeGlyph enforces exactly one grapheme cluster (0.148278ms)
+  ✔ NFC is used strictly without NFKC collapsing distinct characters (0.113554ms)
+  ✔ scriptType validation accepts only the 5 approved spec scripts (3.773422ms)
+  ✔ strokeCount validation enforces positive integer with upper bound 128 (0.388881ms)
+✔ S6-01: Character Validator & Unicode / NFC Rules (6.576519ms)
+▶ S6-01: Hanzi Form Metadata Matching Script
+  ✔ metadata is optional and defaults to empty object (0.238879ms)
+  ✔ dual-system Hanzi character with SIMPLIFIED and TRADITIONAL is accepted on Hanzi scripts (0.951277ms)
+  ✔ HANZI_SIMPLIFIED rejects hanziSystems containing only TRADITIONAL (0.493437ms)
+  ✔ HANZI_TRADITIONAL rejects hanziSystems containing only SIMPLIFIED (0.165831ms)
+  ✔ Kana scripts (HIRAGANA, KATAKANA) reject Hanzi metadata (hanziSystems, variants) (0.192992ms)
+  ✔ variant glyphs in metadata must be valid single graphemes in NFC (0.168356ms)
+  ✔ strict metadata schema rejects unrecognized fields (0.098655ms)
+✔ S6-01: Hanzi Form Metadata Matching Script (2.553519ms)
+▶ S6-01: Language-Scoped Catalogue Lookup Unit Logic
+  ✔ getCharacterById retrieves character when languageId matches (0.176572ms)
+  ✔ getCharacterById returns null when character exists but under different language (cross-scope) (0.072186ms)
+  ✔ getCharacterByGlyph retrieves language-specific character for shared glyph (0.137478ms)
+  ✔ listCharacters scopes results strictly to requested language (0.139442ms)
+✔ S6-01: Language-Scoped Catalogue Lookup Unit Logic (0.640123ms)
+ℹ tests 18
+ℹ suites 3
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18.969249
+▶ S6-02: Normalized Stroke Points & Coordinate Bounds
+  ✔ valid normalized coordinates within [0, 1] are accepted (3.282639ms)
+  ✔ non-finite coordinates (NaN, Infinity, -Infinity) are rejected (2.737906ms)
+  ✔ out-of-bounds coordinates (<0 or >1) are rejected (0.447461ms)
+  ✔ stroke with fewer than 2 points is rejected (0.28745ms)
+  ✔ stroke with more than 256 points is rejected (0.282271ms)
+  ✔ total points across all strokes exceeding 4096 is rejected (9.501365ms)
+✔ S6-02: Normalized Stroke Points & Coordinate Bounds (17.514104ms)
+▶ S6-02: Non-Moving / Degenerate Stroke & Start/End Consistency
+  ✔ non-moving stroke (all points identical / zero path length) is rejected (0.223159ms)
+  ✔ start coordinate not matching first point is rejected (0.172614ms)
+  ✔ end coordinate not matching last point is rejected (0.152898ms)
+  ✔ start and end matching points within floating tolerance are accepted (0.146446ms)
+✔ S6-02: Non-Moving / Degenerate Stroke & Start/End Consistency (0.927914ms)
+▶ S6-02: Consecutive Stroke Indices & Catalogue Stroke Count Matching
+  ✔ indices must start at 1 and be strictly consecutive (0.27179ms)
+  ✔ strokes count must strictly match catalogue strokeCount when provided (0.134633ms)
+✔ S6-02: Consecutive Stroke Indices & Catalogue Stroke Count Matching (0.490772ms)
+▶ S6-02: SVG Path Strict Geometric Format & Sanitization
+  ✔ SVG path generated by buildSvgPath contains only M and L commands (0.107042ms)
+  ✔ custom SVG path must only contain M and L commands matching regex (0.345119ms)
+  ✔ disallowed SVG commands (C, Q, S, A, Z), HTML, or scripts in path are rejected (0.20771ms)
+  ✔ regression: syntactically valid M/L path pointing elsewhere is rejected as discrepancy (0.124754ms)
+  ✔ supplied path with mismatched number of points is rejected (0.099467ms)
+  ✔ stroke with points collapsing to zero length after precision rounding is rejected (0.093105ms)
+✔ S6-02: SVG Path Strict Geometric Format & Sanitization (1.119634ms)
+▶ S6-02: Provenance, Source, License & Payload Size Limits
+  ✔ empty source or empty license is rejected (0.148739ms)
+  ✔ provenance requires author and attribution with strict schema (0.599126ms)
+  ✔ payload exceeding 256 KiB byte limit is rejected (0.7025ms)
+✔ S6-02: Provenance, Source, License & Payload Size Limits (1.541878ms)
+▶ S6-02: Self-Authored Japanese & Chinese Fixtures Validation
+  ✔ all self-authored fixtures in SELF_AUTHORED_FIXTURES pass validation (0.938073ms)
+  ✔ areStrokesEqual correctly detects identical vs differing stroke datasets (0.225894ms)
+✔ S6-02: Self-Authored Japanese & Chinese Fixtures Validation (1.248437ms)
+ℹ tests 23
+ℹ suites 6
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32.009936
+▶ S6-03: Grapheme Segmentation (Intl.Segmenter)
+  ✔ segments Japanese text into discrete graphemes (0.918967ms)
+  ✔ segments Chinese text into discrete graphemes (0.105788ms)
+  ✔ segments text with repeated glyphs into distinct occurrences (0.092124ms)
+  ✔ handles mixed scripts and punctuation with 1-based indexing positions (0.09032ms)
+  ✔ preserves Unicode variation sequences as single graphemes (0.11735ms)
+  ✔ returns empty array for empty or non-string input (0.083187ms)
+  ✔ grapheme segmentation functions identically without depending on valid BCP-47 locale tags (0.109806ms)
+✔ S6-03: Grapheme Segmentation (Intl.Segmenter) (2.33603ms)
+▶ S6-03: Vocabulary-to-Catalogue Character Mapping Algorithm
+  ✔ exact 日本語 order: maps all three characters at positions 1, 2, 3 (0.295476ms)
+  ✔ repeated glyph: maps to distinct positions 1 and 2 with the same characterId (0.174468ms)
+  ✔ missing character gap: omits uncatalogued characters while preserving 1-based positions of remaining glyphs (0.147797ms)
+  ✔ omits trailing uncatalogued characters (e.g. okurigana like 食べる when る is not in catalogue) (0.106871ms)
+  ✔ returns empty array when no characters match the catalogue (0.078297ms)
+  ✔ normalizes decomposed Unicode glyphs with NFC before matching catalogue (0.084719ms)
+✔ S6-03: Vocabulary-to-Catalogue Character Mapping Algorithm (1.135464ms)
+▶ S6-03: VocabularyCharacter Input Validation Schema
+  ✔ accepts valid vocabulary character link input (1.331513ms)
+  ✔ rejects position < 1 (0.197721ms)
+  ✔ rejects non-integer position (0.093275ms)
+  ✔ rejects invalid UUIDs for vocabularyId and characterId (0.092764ms)
+  ✔ rejects extra unrecognized fields (strict parse) (0.109426ms)
+✔ S6-03: VocabularyCharacter Input Validation Schema (1.959803ms)
+ℹ tests 18
+ℹ suites 3
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14.809802
+
+> lingora-web@1.0.0 test:feature
+> node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth.test.mjs tests/feature/context.test.mjs tests/feature/login-flow.test.mjs tests/feature/review-regressions.test.mjs tests/feature/session-transport.test.mjs tests/feature/prisma-runtime.test.mjs tests/feature/lessons.test.mjs tests/feature/optional-lesson-gating.test.mjs tests/feature/lesson-title.test.mjs tests/feature/lesson-review-regressions.test.mjs tests/feature/practice.test.mjs tests/feature/practice-review-regressions.test.mjs tests/feature/auth-registration.test.mjs tests/feature/confirmation-transport.test.mjs tests/feature/confirmation-cross-device.test.mjs tests/feature/srs.test.mjs tests/feature/srs-scheduler-policy-b.test.mjs tests/feature/srs-writing-scheduler.test.mjs tests/feature/srs-sessions-routes.test.mjs tests/feature/onboarding-recommendation.test.mjs tests/feature/home-path.test.mjs tests/feature/home-timezone-semantics.test.mjs tests/feature/gamification.test.mjs tests/feature/character-learner.test.mjs tests/feature/character-strokes-route.test.mjs tests/feature/writing-sessions-route.test.mjs tests/feature/writing-attempts-route.test.mjs
+
+(node:191668) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Package A: Registration (POST /api/auth/register)
+  ✔ rejects foreign origin with 403 FORBIDDEN_ORIGIN (44.349737ms)
+  ✔ rejects non-json content-type with 415 UNSUPPORTED_MEDIA_TYPE (1.152205ms)
+  ✔ rejects malformed JSON with 400 MALFORMED_JSON (11.761914ms)
+  ✔ rejects invalid email or short password (< 8 chars) with 400 VALIDATION_ERROR (20.780362ms)
+  ✔ rejects extra fields with 400 VALIDATION_ERROR (strict schema) (4.005318ms)
+  ✔ successful registration dispatches provider signUp and returns safe instructions without credentials/session (32.874621ms)
+  ✔ duplicate email signup returns safe generic confirmation response without leaking identity (7.480157ms)
+  ✔ Review finding 8: signup new vs duplicate safe success returns strictly IDENTICAL status and body envelope (9.901388ms)
+  ✔ Review finding 8: provider errors use fixed safe messages and never forward injected private diagnostic error text (4.56535ms)
+  ✔ Review finding 8: allowlisted provider error codes return fixed safe messages and omit raw provider message text (3.551094ms)
+learner_confirmation_failed {
+  phase: 'pkce_exchange',
+  code: 'unknown',
+  status: 400,
+  verifierCookiePresent: true
+}
+learner_confirmation_failed {
+  phase: 'pkce_exchange',
+  code: 'flow_state_expired',
+  status: 422,
+  verifierCookiePresent: true
+}
+learner_confirmation_failed {
+  phase: 'pkce_exchange',
+  code: 'pkce_code_verifier_not_found',
+  status: 400,
+  verifierCookiePresent: false
+}
+learner_confirmation_failed {
+  phase: 'pkce_exchange',
+  code: 'unknown',
+  status: 400,
+  verifierCookiePresent: true
+}
+learner_confirmation_failed {
+  phase: 'otp_verify',
+  code: 'otp_expired',
+  status: 400,
+  verifierCookiePresent: null
+}
+learner_confirmation_failed {
+  phase: 'pkce_exchange',
+  code: 'flow_state_expired',
+  status: 422,
+  verifierCookiePresent: true
+}
+learner_confirmation_failed {
+  phase: 'pkce_exchange',
+  code: 'pkce_code_verifier_not_found',
+  status: 400,
+  verifierCookiePresent: false
+}
+learner.bootstrap_lookup_failed { category: 'UNAVAILABLE' }
+learner.bootstrap_prisma_nontransactional { category: 'UNAVAILABLE' }
+learner.bootstrap_tx_failed { category: 'UNAVAILABLE' }
+  ✔ provider 503 / network error returns 503 SERVICE_UNAVAILABLE (3.075239ms)
+✔ Package A: Registration (POST /api/auth/register) (146.58173ms)
+▶ Package A: Confirmation (GET /auth/confirm)
+  ✔ missing code and token_hash redirects to /login?error=missing_confirmation_token (1.371888ms)
+  ✔ valid PKCE code exchanges code for session and redirects to /login?confirmed=1 (3.266769ms)
+  ✔ expired / invalid PKCE code redirects to /login?error=confirmation_failed (2.421371ms)
+  ✔ PKCE code callback with flow_state_expired (HTTP 422) redirects to /login?error=confirmation_failed and logs diagnostic (2.940326ms)
+  ✔ missing verifier cookie on PKCE code callback redirects to /login?error=confirmation_failed and logs diagnostic (1.59062ms)
+  ✔ already confirmed identity re-navigating callback with spent/already-confirmed code redirects to /login?error=confirmation_failed (1.591792ms)
+  ✔ token_hash without type param is rejected with invalid_confirmation_type (0.442221ms)
+  ✔ token_hash with type=signup in GET redirects 303 to /auth/verify with zero provider calls (0.778613ms)
+  ✔ POST form urlencoded with token_hash and type=signup verifies OTP, signs out and redirects to /login?confirmed=1 (5.419295ms)
+  ✔ POST form urlencoded replayed after use fails with 400 otp_expired and redirects to /login?error=confirmation_failed (2.86808ms)
+  ✔ token_hash with type=recovery or invite is strictly rejected as invalid_confirmation_type (0.522903ms)
+  ✔ open redirect attempts via ?next=... on GET token_hash are strictly ignored (destinations fixed /auth/verify with exactly two params) (0.564982ms)
+  ✔ provider error without credentials redirects to /login?error=confirmation_failed with no-store headers and zero provider calls (0.576193ms)
+  ✔ conflicting error plus PKCE code rejects before code consumption with zero provider calls (0.513165ms)
+  ✔ conflicting error_code plus token hash rejects before token consumption with zero provider calls (1.08012ms)
+  ✔ unknown error and error_code values redirect to fixed /login?error=confirmation_failed without leaking codes (1.197581ms)
+  ✔ empty error and error_code values redirect to fixed /login?error=confirmation_failed (1.906603ms)
+  ✔ safe fixed destination and no-store headers despite hostile description and open-redirect next (0.612311ms)
+✔ Package A: Confirmation (GET /auth/confirm) (40.095571ms)
+▶ Package A: Confirmed Password Login & Bootstrap (POST /api/auth/login)
+  ✔ unconfirmed user is rejected on password login with 403 FORBIDDEN (6.55005ms)
+  ✔ fresh confirmed user with missing account triggers bootstrap and succeeds with 200 and LEARNER ACTIVE DTO (5.115253ms)
+  ✔ no duplicate Account bootstrap: second login for already-bootstrapped confirmed learner returns existing account (created: false) and zero additional audit events (2.941829ms)
+  ✔ Recovery Case 2: Provider confirmed identity but PKCE callback failed (flow_state_expired); user recovers via password login with the SAME identity, bootstrapping exactly one LEARNER/ACTIVE Account (3.813506ms)
+  ✔ Recovery Case 2 (Cross-Device): Provider confirmed identity on mobile without PKCE verifier cookie; user recovers via password login with SAME identity (5.025003ms)
+  ✔ staff app_metadata marker rejects bootstrap and signs out local session with 403 (3.381765ms)
+  ✔ matching private ProvisioningRequest rejects bootstrap and signs out local session with 403 (3.05436ms)
+  ✔ existing DISABLED account is unchanged by bootstrap and denied as ACCOUNT_INACTIVE (5.885501ms)
+  ✔ database failure during bootstrap rolls back, signs out session, and returns 503 SERVICE_UNAVAILABLE (3.824928ms)
+  ✔ bootstrap fails closed with 503 when Prisma lacks $transaction capability (0.634452ms)
+  ✔ bootstrap fails closed with 503 when transaction context lacks required methods (1.443954ms)
+✔ Package A: Confirmed Password Login & Bootstrap (POST /api/auth/login) (42.664569ms)
+▶ Package A: Subprocess Negative Tests for PostgreSQL Safety Guards
+  ✔ auth-bootstrap-postgres.test.mjs fails before client connect if SLICE11_TEST_DATABASE_URL is missing (319.168463ms)
+  ✔ auth-bootstrap-postgres.test.mjs fails before client connect if only DATABASE_URL is set (NEVER fallback) (268.383944ms)
+  ✔ auth-bootstrap-postgres.test.mjs fails before client connect if SLICE11_TEST_DATABASE_OWNED !== 1 (164.010334ms)
+  ✔ auth-bootstrap-postgres.test.mjs fails before client connect if host is non-loopback (160.417021ms)
+✔ Package A: Subprocess Negative Tests for PostgreSQL Safety Guards (912.360547ms)
+learner.account_lookup_failed {
+  category: 'UNAVAILABLE',
+  errorName: 'Error',
+  reason: 'CONNECTION_CLOSED'
+}
+(node:191669) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 9: Learner Authentication Matrix & Guard Verification
+  ✔ missing identity: no cookies or session returns 401 UNAUTHENTICATED (2.403988ms)
+  ✔ invalid auth token returns 401 UNAUTHENTICATED (1.144081ms)
+  ✔ expired auth token returns 401 UNAUTHENTICATED (1.673315ms)
+  ✔ verified identity with missing Account in DB returns 403 FORBIDDEN (1.307958ms)
+  ✔ Account status PENDING returns 403 ACCOUNT_INACTIVE (1.393759ms)
+  ✔ Mutation B Control: Account status DISABLED returns 403 ACCOUNT_INACTIVE (0.463822ms)
+  ✔ Mutation A Control: Admin account is strictly forbidden on learner route (0.433965ms)
+  ✔ Mutation A Control: Teacher account is strictly forbidden on learner route (0.40937ms)
+  ✔ Unconfirmed email identity returns 403 FORBIDDEN with safe confirmation message (0.735593ms)
+  ✔ ACTIVE confirmed Learner succeeds with user and account DTO (4.133739ms)
+  ✔ provider network failure or 503 returns 503 SERVICE_UNAVAILABLE (0.440789ms)
+  ✔ database connection failure returns 503 SERVICE_UNAVAILABLE (13.449255ms)
+  ✔ Mutation F Control: Learner is strictly rejected by actual staff guard verifyStaffIdentity (0.692762ms)
+✔ Slice 9: Learner Authentication Matrix & Guard Verification (31.738255ms)
+▶ Slice 9: SDK Cookie Adapter & Proxy Refresh
+  ✔ Dedicated cookie namespace uses learner-specific cookie name (0.459363ms)
+✔ Slice 9: SDK Cookie Adapter & Proxy Refresh (0.672223ms)
+▶ Slice 9: Actual Route Handlers (/api/auth/login and logout)
+  ✔ POST /api/auth/login rejects foreign Origin with 403 FORBIDDEN_ORIGIN (21.688569ms)
+  ✔ POST /api/auth/login rejects non-json Content-Type with 415 (5.836569ms)
+  ✔ POST /api/auth/login rejects malformed JSON with 400 MALFORMED_JSON (18.438812ms)
+  ✔ POST /api/auth/login rejects invalid email/password format with 400 VALIDATION_ERROR (9.046502ms)
+  ✔ POST /api/auth/login invalid credentials returns 401 with no-store headers (11.12097ms)
+  ✔ POST /api/auth/login account denial (Admin, Teacher, Disabled, Unconfirmed) signs out session (10.531722ms)
+  ✔ POST /api/auth/login valid credentials returns 200 with learner DTO (5.670968ms)
+  ✔ POST /api/auth/logout rejects foreign Origin with 403 (0.6434ms)
+  ✔ POST /api/auth/logout with active session deletes learner cookies and returns 200 (5.465792ms)
+✔ Slice 9: Actual Route Handlers (/api/auth/login and logout) (89.204672ms)
+▶ Slice 9: Same-Origin Enforcement
+  ✔ accepts matching scheme, hostname, and port (0.499689ms)
+  ✔ accepts matching HTTPS production domain (0.190188ms)
+  ✔ rejects mismatched port (0.150493ms)
+  ✔ rejects null origin (0.272963ms)
+  ✔ rejects missing origin on mutation endpoint (0.264568ms)
+✔ Slice 9: Same-Origin Enforcement (1.626317ms)
+(node:191675) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S6-04b3: Learner View CHARACTER Snapshot & Gating
+  ✔ 200: Learner loads published lesson with CHARACTER blocks projected through allowlist (76.185354ms)
+  ✔ 409: Direct access to locked lesson returns LESSON_LOCKED and hides draft/active revision (12.997947ms)
+  ✔ Draft Isolation: Teacher creating a newer draft revision does not leak to Learner (8.623897ms)
+  ✔ 200: Learner in Chinese context receives Hanzi character blocks (5.790031ms)
+  ✔ Resilience: Malformed CHARACTER block falls back to UNSUPPORTED; legacy V0 adapts smoothly (7.996307ms)
+  ✔ UI Rendering: LessonContent renders CHARACTER block card with semantic attributes and badges (13.702761ms)
+✔ S6-04b3: Learner View CHARACTER Snapshot & Gating (127.206789ms)
+(node:191676) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S6-04b4: Learner Read Character Stroke Template (GET /api/characters/:characterId)
+  ✔ 1. 200 OK: Returns character detail with stroke template when showStrokeAnimation and guidedWriting are true (87.209663ms)
+  ✔ 2. 200 OK: Static display omits stroke paths and hides unflagged fields (11.906626ms)
+  ✔ 3. 400 Bad Request: Missing both selectors or providing both selectors (12.657807ms)
+  ✔ 4. 400 Bad Request: Unknown query parameter rejected (2.959792ms)
+  ✔ 5. 400 Bad Request: Invalid UUID format (3.864132ms)
+  ✔ 6. 401 Unauthorized: Unauthenticated request rejected (1.883148ms)
+  ✔ 7. 404 Not Found: Learner context does not belong to user or does not exist (3.147174ms)
+  ✔ 8. 409 Conflict: Lesson locked due to unfinished prerequisite (2.503595ms)
+  ✔ 9. 404 Not Found: blockKey does not exist or does not match characterId or wrong block type (9.348128ms)
+  ✔ 10. 409 Conflict: expectedPublishedRevisionId mismatch (stale revision) (5.405289ms)
+  ✔ 11. Course language boundary: Stroke data for another language is not delivered (3.573105ms)
+  ✔ 12. S6-04b5: 200 OK: Read character via lessonVocabularyLinkId pinned in displaySnapshot (2.069299ms)
+  ✔ 13. S6-04b5: 200 OK: Read second character of multi-character word (本 in 日本) (2.338755ms)
+  ✔ 14. S6-04b5: 200 OK: Read repeated character from the revision snapshot (人人) (1.809941ms)
+  ✔ 15. S6-04b5: Pinned mapping immunity to catalogue change after publication (2.113652ms)
+  ✔ 16. S6-04b5: 404 Not Found: Legacy vocabulary without character mappings (3.319829ms)
+  ✔ 17. S6-04b5: 404 Not Found: CharacterId does not belong to vocabulary item (2.367389ms)
+  ✔ 18. S6-04b5: 404 Not Found: Vocabulary link does not belong to this lesson (2.005228ms)
+✔ S6-04b4: Learner Read Character Stroke Template (GET /api/characters/:characterId) (163.55618ms)
+learner_confirmation_failed {
+  phase: 'otp_verify',
+  code: 'otp_expired',
+  status: 400,
+  verifierCookiePresent: null
+}
+learner_confirmation_failed {
+  phase: 'otp_verify',
+  code: 'unknown',
+  status: null,
+  verifierCookiePresent: null
+}
+(node:191682) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S12-XDEVICE 5.1 - 5.4: GET /auth/confirm Specification
+  ✔ 1. GET ?token_hash=[REDACTED] returns 303 to /auth/verify, 0 provider requests, no-store and no-referrer (5.626133ms)
+  ✔ 2a. GET with invalid types (recovery, invite, magiclink, missing) -> invalid_confirmation_type, 0 provider requests (3.169477ms)
+  ✔ 2b. GET with malformed token_hash (slash, spaces, length 513) -> missing_confirmation_token, 0 provider requests (3.137977ms)
+  ✔ 3. GET ?token_hash&next=https://evil -> destination strictly /auth/verify with only token_hash and type (1.994699ms)
+✔ S12-XDEVICE 5.1 - 5.4: GET /auth/confirm Specification (15.597622ms)
+▶ S12-XDEVICE 5.5 - 5.8: POST /auth/confirm Specification
+  ✔ 5. Valid POST form urlencoded same-origin: verifyOtp called once, signOut called, redirects to /login?confirmed=1, session cookie cleared (16.869694ms)
+  ✔ 6. POST replay (provider returns otp_expired) -> confirmation_failed, log contains code: otp_expired and no token (5.511999ms)
+  ✔ 7. POST invalid origin, missing origin, wrong content-type, invalid type, invalid token -> 0 provider calls (3.117388ms)
+  ✔ 8. POST provider network error -> service_unavailable; signOut error after verify -> still confirmed=1 (7.756697ms)
+  ✔ 9. Cross-device unit test: All above tests pass when cookies of device A are completely absent (0 verifier, 0 session) (3.428403ms)
+✔ S12-XDEVICE 5.5 - 5.8: POST /auth/confirm Specification (37.58279ms)
+learner_resend_confirmation_failed { code: 'unknown', status: 400 }
+learner_resend_confirmation_failed { code: 'unknown', status: 422 }
+▶ S12-XDEVICE 5.10: Resend Confirmation (POST /api/auth/resend-confirmation)
+  ✔ 10a. Success, user not found, and user already confirmed all return IDENTICAL 200 status and body (58.981133ms)
+  ✔ 10b. 429 rate limit and 503 provider error mapped correctly (10.176564ms)
+  ✔ 10c. 403 foreign origin, 415 media type, 400 malformed JSON or extra fields (2.581511ms)
+  ✔ 10d. emailRedirectTo strictly matches ${origin}/auth/confirm (3.406873ms)
+learner_resend_confirmation_failed { code: 'unexpected_error', status: 400 }
+  ✔ 10e. Never logs email on failure (3.994046ms)
+✔ S12-XDEVICE 5.10: Resend Confirmation (POST /api/auth/resend-confirmation) (79.883414ms)
+(node:191688) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real SDK signup → proxy → callback keeps original verifier and establishes session (68.675742ms)
+✔ server-only production env keys keep verifier through proxy and callback (44.541116ms)
+✔ missing callback verifier produces fixed diagnostic without contacting token endpoint (11.271462ms)
+✔ SDK failure diagnostic allowlists bad_code_verifier (7.214347ms)
+✔ SDK failure diagnostic allowlists PRIVATE_UNKNOWN_CODE_123 (6.623457ms)
+✔ client initialization failure is logged without private error and has private no-store redirect (1.086011ms)
+learner.context_load_failed { category: 'UNAVAILABLE', errorName: 'Error', reason: 'OTHER' }
+(node:191691) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 9: Learner Context Cases & Data Consistency
+  ✔ A/B fixtures: returns valid shaped summary with correct relations (3.515857ms)
+  ✔ Mutation C Control: Strict ownership check - cannot return contexts of another learner (1.589367ms)
+  ✔ Mutation E Control: Zero contexts is successful 200 with contexts: [] (2.326441ms)
+  ✔ Context with null levels returns valid summary with selectedStartLevel: null and workingLevel: null (2.025456ms)
+  ✔ Multiple languages returned without asserting a single current choice (1.031248ms)
+  ✔ Inconsistent join: course.languageId !== context.languageId fails closed as 409 CONTEXT_INCONSISTENT (0.604235ms)
+  ✔ Inconsistent join: level frameworkId !== course.frameworkId fails closed as 409 CONTEXT_INCONSISTENT (0.7396ms)
+  ✔ No private fields leaked in context DTO (0.857902ms)
+  ✔ Context failure then successful retry (20.304528ms)
+✔ Slice 9: Learner Context Cases & Data Consistency (46.141003ms)
+▶ Slice 9: GET /api/learner/context Route Handler
+  ✔ rejects unsupported query selector parameters with 400 (53.471849ms)
+  ✔ rejects other query parameters with 400 (0.971796ms)
+  ✔ GET /api/learner/context returns 200 with Cache-Control no-store private (11.554985ms)
+✔ Slice 9: GET /api/learner/context Route Handler (66.390036ms)
+▶ Slice 12: GET /api/learner/context/options Route & Service
+  ✔ returns 200 with learnable languages, active courses, eligible levels and defaultLevelId (3.166831ms)
+  ✔ honest empty coming-soon when course has no published content (5.801643ms)
+  ✔ rejects unauthenticated or non-learner account with 403 (1.926871ms)
+✔ Slice 12: GET /api/learner/context/options Route & Service (11.164822ms)
+▶ Slice 12: POST /api/learner/context Route & Service
+  ✔ strict schema validation rejects extra keys with 400 (6.642183ms)
+  ✔ creates context with DEFAULT startSource resolving lowest published level (3.803307ms)
+  ✔ creates context with SELF_REPORT startSource storing selfReport provenance (2.524674ms)
+  ✔ dedup: exact same contextId and same selection replays persisted row (4.054158ms)
+  ✔ capacity: rejects creating 3rd active context with 409 (2.992975ms)
+  ✔ single-language uniqueness: rejects second context for same language with 409 (1.650541ms)
+  ✔ POST /api/learner/context: rejects foreign origin with 403 FORBIDDEN_ORIGIN and zero writes (0.678024ms)
+  ✔ POST /api/learner/context: rejects same-site sibling origin with 403 (0.674237ms)
+  ✔ POST /api/learner/context: rejects missing or null origin with 403 (0.636476ms)
+  ✔ POST /api/learner/context: rejects non-JSON content-type with 415 (0.54771ms)
+  ✔ POST /api/learner/context: accepts seeded all-zero version/variant IDs (2.353993ms)
+  ✔ POST /api/learner/context: uppercase UUID create and exact uppercase replay succeed without 409 (3.411822ms)
+✔ Slice 12: POST /api/learner/context Route & Service (30.758104ms)
+▶ Slice 12: PATCH /api/learner/contexts/[contextId] Lifecycle & CAS
+  ✔ transitions ACTIVE -> PAUSED incrementing rowVersion from 1 to 2 (2.865525ms)
+  ✔ transitions PAUSED -> ACTIVE incrementing rowVersion from 2 to 3 (1.712228ms)
+  ✔ no-op when context is already desired status with expected version (1.482867ms)
+  ✔ replays already applied transition when version is exactly expected + 1 and status matches (1.628902ms)
+  ✔ rejects stale rowVersion with 409 (2.031057ms)
+  ✔ foreign contextId returns 404 (1.55904ms)
+  ✔ pause remains possible when course becomes inactive (2.284654ms)
+  ✔ resume fails with 403 when course is inactive (1.672714ms)
+  ✔ PATCH: rejects foreign origin with 403 FORBIDDEN_ORIGIN (0.823898ms)
+  ✔ PATCH: rejects same-site sibling origin with 403 (0.603674ms)
+  ✔ PATCH: rejects missing or null origin with 403 (1.811845ms)
+  ✔ PATCH: rejects non-JSON content-type with 415 (0.536869ms)
+  ✔ PATCH: fails closed on invalid DB clock with 503 without host time fallback (1.656282ms)
+  ✔ PATCH: canonicalizes uppercase path contextId and succeeds (2.144029ms)
+✔ Slice 12: PATCH /api/learner/contexts/[contextId] Lifecycle & CAS (23.725938ms)
+▶ Slice 12: PostgreSQL Concurrency Suite Environment Guards (Finding 7)
+  ✔ context-concurrency test fails immediately when SLICE11_TEST_DATABASE_OWNED is missing or not 1 (426.716978ms)
+  ✔ context-concurrency test fails immediately when SLICE11_TEST_DATABASE_URL is not loopback (293.01326ms)
+  ✔ context-concurrency test fails immediately when only DATABASE_URL is set without SLICE11_TEST_DATABASE_URL (193.799957ms)
+✔ Slice 12: PostgreSQL Concurrency Suite Environment Guards (Finding 7) (913.79374ms)
+▶ P2: Safe initial-level selection and recovery (startLearningContext & route)
+  ✔ P2: createLearningContext with startSource=DEFAULT returns 409 COURSE_NO_AVAILABLE_LESSONS when course has no lessons (1.328246ms)
+  ✔ P2: POST /api/contexts/[id]/start route validates Origin, Content-Type, UUID and auth (2.158256ms)
+  ✔ P2: startLearningContext service rejects foreign context, inactive status, configured level, history and stale CAS (0.756812ms)
+  ✔ P2: startLearningContext with SELF_REPORT sets specified level and supports single replay (0.748897ms)
+✔ P2: Safe initial-level selection and recovery (startLearningContext & route) (5.151841ms)
+(node:191695) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Sprint 4: S4-02 & S4-03 Gamification, XP, and Achievements
+  ✔ finalizePracticeAttempt: awards +30 XP for first completion, completes LESSON_1 quest (+10 XP), awards FIRST_LESSON and PERFECT_PRACTICE (41.905212ms)
+  ✔ finalizePracticeAttempt: replay with same operationKey is idempotent and returns identical rewards without double-awarding (34.604051ms)
+  ✔ finalizePracticeAttempt: redo of already completed lesson yields 0 lessonXp and does not re-award FIRST_LESSON (2.979479ms)
+  ✔ respondSrsReview: SCHEDULE awards +1 XP, and reaches REVIEW_10 quest after 10 reviews (18.082963ms)
+  ✔ streak calculation across consecutive calendar days in local timezone (2.337994ms)
+  ✔ H13: daily progress counts distinct lessons completed today, not attempts (1.665399ms)
+  ✔ gamification overview: returns quests with correct progress and claim status (2.514515ms)
+  ✔ achievements: LESSONS_10 awarded upon 10th lesson completion (3.259635ms)
+  ✔ achievements: STREAK_7 awarded upon reaching 7-day streak (4.7784ms)
+  ✔ achievements: WORDS_100 awarded upon reviewing 100 distinct vocabulary cards (17.235712ms)
+✔ Sprint 4: S4-02 & S4-03 Gamification, XP, and Achievements (131.850106ms)
+(node:191707) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Sprint 4: S4-01 Home and Learning Path
+  ✔ buildLearningPath: returns path nodes with COMPLETED, CURRENT, AVAILABLE, LOCKED, and COMING_SOON states (5.903975ms)
+  ✔ buildLearningPath: open in-progress attempt is selected as CTA and CURRENT (1.137137ms)
+  ✔ buildLearningPath: returns clear status when context is PAUSED (0.794674ms)
+  ✔ buildLearningPath: returns clear status when course is inactive (0.833496ms)
+  ✔ buildLearningPath: returns clear status when context has no working level (0.986063ms)
+  ✔ loadLearnerHome: loads full HomeDto including selectedContextId, path, reviewDue, streak, totalXp, quests (24.949828ms)
+  ✔ loadLearnerHome: returns 404 when requested contextId does not belong to learner (0.841271ms)
+  ✔ loadLearnerHome: missing or invalid timezone marks gamification UNAVAILABLE without failing learning path or inventing UTC (5.5126ms)
+  ✔ loadLearnerHome: missing account returns 403 FORBIDDEN and is not treated as a timezone error (1.115096ms)
+  ✔ loadLearnerHome: returns 200 with empty contexts when learner has no contexts (1.985852ms)
+  ✔ loadLearnerHome: returns 200 with NO_WORKING_LEVEL when context has no working level (2.610866ms)
+  ✔ loadLearnerHome: returns 200 with PAUSED when context is paused (1.860407ms)
+  ✔ loadLearnerHome: returns 200 with COURSE_INACTIVE when course is inactive (3.231252ms)
+  ✔ loadLearnerHome: returns 200 with EMPTY_CURRICULUM when course has no published lessons (1.864904ms)
+  ✔ loadLearnerHome: propagates ContextServiceError 409 as status 409, not 503 (0.492706ms)
+  ✔ GET /api/learner/home: route guard rejects unknown query parameters with 400 (5.439483ms)
+  ✔ GET /api/learner/contexts/:contextId/path: route guard rejects extra query params with 400 (1.109976ms)
+  ✔ GET /api/learner/contexts/:contextId/path: returns 400 for malformed uuid (0.674106ms)
+✔ Sprint 4: S4-01 Home and Learning Path (64.15191ms)
+(node:191713) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Home Timezone Semantics, Midnight Boundary & Cross-System Consistency
+  ▶ Timezone Validation & Normalization Helper
+    ✔ isValidTimezone correctly distinguishes valid IANA zones from invalid strings and missing values (22.098048ms)
+    ✔ Gamification rejects invalid or missing timezone without using the host timezone (1.226495ms)
+    ✔ normalizeStoredTimezone normalizes valid IANA zones and trims whitespace (2.067966ms)
+    ✔ normalizeStoredTimezone preserves caller IANA link aliases verbatim across ICU versions (3.93763ms)
+    ✔ computeQualifyingLocalDate computes exact midnight boundaries across DST transitions (America/New_York) (2.561113ms)
+  ✔ Timezone Validation & Normalization Helper (33.618649ms)
+  ▶ MIDNIGHT TEST: Semantic divergence between UTC and Asia/Bangkok at 18:00Z
+    ✔ Midnight boundary produces distinct local date, streak, daily progress and Home summary (11.760672ms)
+  ✔ MIDNIGHT TEST: Semantic divergence between UTC and Asia/Bangkok at 18:00Z (12.068871ms)
+  ▶ CONSISTENCY TEST: Cross-system alignment (Home, Practice, SRS, Gamification)
+    ✔ Valid timezone Asia/Bangkok yields identical qualifying local date across all 4 systems (17.812254ms)
+    ✔ Whitespace timezone " Asia/Bangkok " is correctly normalized and aligned across all systems (8.671115ms)
+    ✔ Invalid timezone is rejected with typed INVALID_TIMEZONE (400) by all systems; Home does not invent UTC (3.853101ms)
+  ✔ CONSISTENCY TEST: Cross-system alignment (Home, Practice, SRS, Gamification) (30.955675ms)
+  ▶ Missing Account & Error Mapping Contracts
+    ✔ Missing account in DB returns 403 FORBIDDEN and is not treated as timezone error (0.770498ms)
+    ✔ Inactive account in DB returns 403 ACCOUNT_INACTIVE (0.443303ms)
+    ✔ Context not found returns 404 NOT_FOUND (1.935827ms)
+    ✔ Malformed contextId returns 400 VALIDATION_ERROR (0.533833ms)
+  ✔ Missing Account & Error Mapping Contracts (4.025946ms)
+✔ Home Timezone Semantics, Midnight Boundary & Cross-System Consistency (81.71141ms)
+(node:191720) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reading GET rejects cross-Course lesson (6.064187ms)
+✔ reading GET cannot bypass null working-Level (1.180849ms)
+✔ reading GET rejects inconsistent language/framework (0.924447ms)
+✔ mutation rejects inconsistent working framework (16.405741ms)
+✔ catalogue and detail gate ignore preceding unpublished lesson (3.399218ms)
+✔ required lock errors propagate without production fallback (1.9793ms)
+✔ clock failure propagates without application-clock fallback (1.52183ms)
+✔ context ownership rechecked after parent locks (5.13513ms)
+✔ context status rechecked after parent locks (4.719519ms)
+✔ completion clock follows specific consumption row lock (3.148367ms)
+✔ newer draft and latest mutable child records cannot replace exact published snapshots (19.423723ms)
+✔ safe SELECTs and public JSON allowlists omit grading and unknown snapshot fields (1.873651ms)
+✔ server state for completed X remains immutable when Y publishes; stale no-op also conflicts (4.655329ms)
+✔ account disabled after outer identity verification is denied inside mutation transaction (0.498657ms)
+✔ earlier Level review and optional predecessor never create a consumption unlock (1.168016ms)
+(node:191726) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ H2/G15: one numbering rule for lesson and unit titles
+  ✔ keeps a teacher-typed prefix instead of adding a second one (4.744456ms)
+  ✔ recognises the prefix case-insensitively and in English (0.408127ms)
+  ✔ adds the system prefix when the title carries no numbering (1.717788ms)
+  ✔ a number inside the title is not a numbering prefix (0.232657ms)
+  ✔ falls back to the label and position when there is no title (0.225184ms)
+✔ H2/G15: one numbering rule for lesson and unit titles (9.250945ms)
+▶ LEA-02: French and Japanese/Chinese numbering prefixes are kept as typed
+  ✔ does not add a second prefix to Leçon/Chapitre/第N課 (1.611679ms)
+  ✔ a French/Japanese title without numbering still gets the system prefix (0.356941ms)
+✔ LEA-02: French and Japanese/Chinese numbering prefixes are kept as typed (2.688934ms)
+(node:191751) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 10: Learner Lesson Catalogue, Detail & Consumption
+  ✔ 401: Unauthenticated request is rejected on all lesson endpoints (73.387487ms)
+  ✔ 403: Inactive account or non-learner role is rejected (18.059619ms)
+  ✔ 403: Paused context is rejected (3.74096ms)
+  ✔ 404: Inaccessible contextId or lessonId returns 404 (4.859994ms)
+  ✔ 409: Inconsistent course language or framework join fails closed (5.78979ms)
+  ✔ 200: Null workingLevel is valid non-actionable state with empty units (2.647957ms)
+  ✔ 200: Catalogue returns ordered units, lessons, badges and lock states (3.511048ms)
+  ✔ Canonical Gating: LessonConsumption does NOT unlock sequential lesson; only LessonCompletion unlocks (10.382912ms)
+  ✔ Safe Projections: Detail DTO contains exact promptData and displaySnapshot; never leaks grading secrets (10.845562ms)
+  ✔ POST consumption: rejects foreign origin with 403 (1.378511ms)
+  ✔ POST consumption: rejects non-JSON content-type with 415 (0.670791ms)
+  ✔ POST consumption: rejects malformed JSON with 400 (0.786188ms)
+  ✔ POST consumption: rejects unexpected body fields with 400 (1.646615ms)
+  ✔ POST consumption: complete when NOT started returns 409 CONSUMPTION_NOT_STARTED (3.84713ms)
+  ✔ POST consumption: start creates IN_PROGRESS version 1; duplicate start is idempotent (5.15634ms)
+  ✔ POST consumption: complete transitions to COMPLETED version 2; duplicate complete is idempotent (10.52548ms)
+  ✔ Republish X -> Y: Stale expectedPublishedRevisionId returns 409 PUBLICATION_CHANGED before any write (2.021168ms)
+  ✔ Mutation A Control: Must use exact activeRevisionId pointer, not latest revision (2.563748ms)
+  ✔ Mutation B Control: Context ownership check rejects accessing other learner context (1.52691ms)
+  ✔ Mutation C Control: Consumption ownership check prevents mutating consumption of other context (1.797848ms)
+  ✔ Mutation D Control: ACTIVE status guard prevents access when context is paused or course inactive (2.757402ms)
+  ✔ Mutation E Control: Lesson availability guard rejects PLANNED or unavailable lesson (1.778442ms)
+  ✔ Mutation G Control: Child snapshot isolation excludes assessment items and preserves promptData (6.067212ms)
+✔ Slice 10: Learner Lesson Catalogue, Detail & Consumption (179.307862ms)
+(node:191753) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 9: Production Login → Session → Context Flow
+  ✔ Complete flow: Production login establishes SSR cookies → context route returns identity & owned context → logout invalidates session (85.697521ms)
+✔ Slice 9: Production Login → Session → Context Flow (87.010047ms)
+(node:191754) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S3-01: Recommendation Foundation & Preview
+  ▶ Preferences Normalization
+    ✔ normalizes purpose to uppercase or null when invalid (2.613943ms)
+    ✔ normalizes daily goal to 5, 10, 15, 20 with default 10 (1.193703ms)
+    ✔ deduplicates, filters against allowlist, caps at 5, and canonicalizes interest order (2.322945ms)
+    ✔ preserves unrelated keys on merge (1.325231ms)
+    ✔ snapshot parser handles malformed or legacy json safely (3.350576ms)
+  ✔ Preferences Normalization (18.010888ms)
+  ▶ Curriculum Eligibility & Next Lesson Rules
+    ✔ isEligiblePublishedLesson correctly checks status, availability, and lesson match (0.85651ms)
+    ✔ DEFAULT chooses lowest eligible level with published content (2.068528ms)
+    ✔ DEFAULT honors an explicit course instead of switching to a purpose match (1.031668ms)
+    ✔ DEFAULT skips level completely when all lessons in level are draft (0.789093ms)
+    ✔ SELF_REPORT rejects wrong framework with LEVEL_INVALID (1.158898ms)
+    ✔ SELF_REPORT rejects level without published eligible lessons with LEVEL_NOT_ELIGIBLE (0.589378ms)
+    ✔ Purpose matching between multiple courses emits PURPOSE_MATCH only when it decided the winner (17.530555ms)
+    ✔ Language with no eligible curriculum returns null / NO_ELIGIBLE_CURRICULUM (3.48021ms)
+    ✔ Next lesson enforces required completion before unlocking subsequent lessons (0.57466ms)
+  ✔ Curriculum Eligibility & Next Lesson Rules (28.984049ms)
+  ▶ Route: POST /api/learner/onboarding/preview
+    ✔ rejects foreign origin with 403 FORBIDDEN_ORIGIN (37.937566ms)
+    ✔ rejects non-json content-type with 415 UNSUPPORTED_MEDIA_TYPE (1.231855ms)
+    ✔ rejects invalid payload with 400 VALIDATION_ERROR (29.256692ms)
+    ✔ successful preview returns 200 with READY, course, startLevel, nextLesson, and sets no-store (7.428982ms)
+    ✔ preview for empty language returns 200 with NO_ELIGIBLE_CURRICULUM (3.500378ms)
+  ✔ Route: POST /api/learner/onboarding/preview (79.821909ms)
+✔ S3-01: Recommendation Foundation & Preview (127.670631ms)
+(node:191774) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ H1: OPTIONAL lessons are always open and never gate required lessons
+  ✔ catalogue: the optional lesson is unlocked in its own unit slot while required gating still applies (6.513019ms)
+  ✔ lesson detail: the optional lesson opens while a preceding required lesson is still locked (3.243646ms)
+  ✔ required gating ignores optional lessons: completing the required lesson unlocks the next required one (1.840669ms)
+  ✔ H11: catalogue reports lesson completion separately from the reading state (1.108753ms)
+  ✔ home path: the optional lesson is AVAILABLE and ordered inside its unit (1.648668ms)
+✔ H1: OPTIONAL lessons are always open and never gate required lessons (16.423995ms)
+(node:191801) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ A serialized attempt and feedback strip all private grading fields and canaries (39.081096ms)
+✔ B grader uses exact pinned ItemRevision even when a newer draft has opposite key (6.657131ms)
+✔ C own context does not authorize a foreign context attempt for read submit or finalize (4.847009ms)
+✔ D ASSESSMENT membership and blueprint-pinned items cannot enter Practice queue (2.308769ms)
+✔ E client correctness/score and unknown answer fields are rejected; valid wrong input stays wrong (4.697247ms)
+✔ F finalized attempt accepts exact committed replay but no new response or finalize mutation (27.63818ms)
+✔ H reading completion never supplies LessonCompletion to the real sequential gate (2.901212ms)
+✔ I stale unfinished redo fails response and finalize409 while committed X replays (21.504484ms)
+✔ latest player attempt resumes an unfinished current revision redo after an older completion (10.632952ms)
+✔ new current publication page does not resume a stale unfinished X attempt (1.420299ms)
+✔ text graders honor the complete approved D1 contract for both FILL_BLANK and GRAMMAR (1.847622ms)
+✔ missing or non-object response input is a validation error before hashing or writes (1.460634ms)
+✔ C read cannot authorize through another learner's real context (1.120405ms)
+✔ C submit cannot authorize through another learner's real context (1.464202ms)
+✔ C finalize cannot authorize through another learner's real context (4.840827ms)
+✔ unsupported private grading schema fails closed before persisting any response (1.515067ms)
+✔ LNG: review entries join REORDER tokens by the context language and lead GRAMMAR with the prompt (G10) (15.496883ms)
+(node:191803) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 11: Grader & Decision D1 Normalization
+  ✔ D1: Unicode NFC normalization compares composed and decomposed characters equally (3.115555ms)
+  ✔ D1: outer whitespace is trimmed and inner whitespace runs collapse to one space (0.290536ms)
+  ✔ D1: trailing sentence punctuation is ignored, inner/leading punctuation and wrong words are not (1.151143ms)
+  ✔ D1: case sensitivity mode respected (0.226516ms)
+  ✔ D1: accents and leading punctuation are preserved (0.249408ms)
+  ✔ Grader: MCQ grading and validation (3.672893ms)
+  ✔ Grader: LISTENING deterministic choice grading and transcript secrecy (0.721165ms)
+  ✔ Grader: REORDER permutation validation and exact position comparison (1.669076ms)
+  ✔ Grader: FILL_BLANK & GRAMMAR multiple alternatives and blank rejection (1.555473ms)
+✔ Slice 11: Grader & Decision D1 Normalization (14.817416ms)
+▶ Chấm điểm dung thứ: tương đương Unicode & thiếu dấu phụ
+  ✔ G2: nháy đơn cong và nháy thẳng tương đương, không ghi chú (0.943062ms)
+  ✔ G2: guillemets « » tương đương nháy đôi thẳng, khoảng trắng bên trong không tính (0.629483ms)
+  ✔ Khoảng trắng kiểu Pháp trước ? ! : ; không tính (0.177774ms)
+  ✔ G3: khoảng trắng U+3000 giữa ký tự CJK không tính (0.571794ms)
+  ✔ G4: NFKC gộp katakana nửa chiều rộng và chữ/số toàn chiều rộng (0.184727ms)
+  ✔ G4: hiragana KHÁC katakana (lỗi chính tả thật) (0.486414ms)
+  ✔ Dakuten/handakuten tiếng Nhật KHÔNG bị bỏ như dấu phụ Latin (0.165201ms)
+  ✔ G1: tiếng Pháp thiếu dấu phụ -> ĐÚNG kèm ghi chú đáp án chuẩn (0.247465ms)
+  ✔ G1: viết đủ dấu thì KHÔNG có ghi chú (0.162315ms)
+  ✔ Tiếng Việt thiếu dấu thanh -> ĐÚNG kèm ghi chú (Latin có dấu) (0.168747ms)
+  ✔ Đáp án sai thật vẫn SAI (0.210505ms)
+  ✔ caseSensitive của giáo viên vẫn được tôn trọng (0.15402ms)
+  ✔ Nhiều đáp án: ghi chú trỏ đúng đáp án gần nhất (0.123111ms)
+  ✔ MCQ/LISTENING/REORDER không dùng chuẩn hóa chữ, không có accentHint (0.451899ms)
+✔ Chấm điểm dung thứ: tương đương Unicode & thiếu dấu phụ (5.594714ms)
+▶ Slice 11: Practice Attempt Lifecycle & Routes
+  ✔ POST /attempts: valid start returns safe PracticeAttemptDto and pins exact revision (60.970241ms)
+  ✔ POST /attempts: same UUID + same scope is committed replay; conflicting scope fails 409 (11.133594ms)
+  ✔ POST /attempts: stale pointer expectedPublishedRevisionId returns 409 PUBLICATION_CHANGED (3.870653ms)
+  ✔ POST /attempts: authorization & role checks (Admin, Teacher, Disabled, Unauthenticated) (7.708527ms)
+  ✔ GET /attempts/[attemptId]: owner returns safe DTO with no-store; cross-learner returns 404 (4.692469ms)
+  ✔ F2: wrong answer returns correct answer + explanation; replay returns the same hints without a second write; unanswered exercises stay secret (11.347325ms)
+  ✔ Full Queue Progression: N core first responses, K retries, units, and deterministic replay (33.122888ms)
+  ✔ D3: Stale attempt after publication X -> Y rejects new writes but allows committed replays (7.60927ms)
+  ✔ D2: Existing SRS cards remain completely unchanged upon core enrollment (no-reset) (4.40037ms)
+  ▶ P3: Bounded Post-Completion Review & Explanation
+    ✔ in-flight attempt has reviewEntries === null and exposes zero answers or explanations (4.887505ms)
+    ✔ finalized attempt contains plain-text review entries and explanations for all 5 exercise types (18.218508ms)
+  ✔ P3: Bounded Post-Completion Review & Explanation (23.344211ms)
+✔ Slice 11: Practice Attempt Lifecycle & Routes (168.990363ms)
+(node:191810) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ build copies only schema and native runtime assets: libquery_engine-rhel-openssl-3.0.x.so.node (3.499236ms)
+✔ build copies only schema and native runtime assets: libquery_engine-darwin-arm64.dylib.node (1.635603ms)
+✔ build fails before copying an incomplete generated runtime (1.055142ms)
+✔ Next traces learner runtime assets and the shared generated client outside the app (0.260259ms)
+(node:191816) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ review: wrong-role login revokes only its new local session (57.578497ms)
+✔ review: logout uses provider local scope and clears only exact learner namespace (16.078286ms)
+✔ review: provider email_not_confirmed maps to safe confirmation403 (3.479299ms)
+✔ review: generic or phone confirmation cannot substitute for email confirmation (1.304341ms)
+✔ review: mismatched joined language ID fails409 (0.991894ms)
+✔ review: mismatched joined course ID fails409 (0.609014ms)
+✔ review: mismatched joined framework ID fails409 (0.731895ms)
+✔ actual staff catalogue, teachers, courses, review, assessment and Teacher lesson handlers reject verified Learner (251.340954ms)
+✔ DB lookup failures log only allowlisted labels and keep the public503 response (2.155661ms)
+learner.account_lookup_failed { category: 'UNAVAILABLE', errorName: 'Error', reason: 'OTHER' }
+(node:191836) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real SDK login produces chunked HttpOnly Secure host-only cookies and preserved SDK headers (19.005737ms)
+✔ real expired-session refresh propagates new chunk cookies downstream and across alternate redirect response (12.755822ms)
+✔ public root route / and query variations bypass proxy auth initialization without refresh (1.36232ms)
+✔ actual context response200 preserves refreshed SDK cookies/headers (5.490568ms)
+✔ actual context response403 preserves refreshed SDK cookies/headers (3.952538ms)
+✔ actual context response503 preserves refreshed SDK cookies/headers (6.259363ms)
+(node:191838) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S5-01: Policy B Scheduler Contract & Fixtures
+  ✔ Policy B intervals lock [1, 3, 7, 14, 30] days (1.918045ms)
+  ✔ Stage 1 to 5 progression on REMEMBERED (0.510529ms)
+  ✔ FORGOTTEN resets all stages (1..5) to stage 1 and +1 day interval (0.29279ms)
+  ✔ Reinforcement preserves prior stage and dueAt without advancing schedule (0.260038ms)
+  ✔ Strict input validation rejects out-of-range stage and invalid rating/date (0.668156ms)
+✔ S5-01: Policy B Scheduler Contract & Fixtures (5.522969ms)
+(node:191845) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S5-03: SRS Sessions API Route Handlers
+  ✔ POST /api/srs/sessions rejects foreign origin with 403 (33.607498ms)
+  ✔ POST /api/srs/sessions creates session with due cards and returns current item (33.525434ms)
+  ✔ GET /api/srs/sessions/:sessionId returns session progress and item (4.098602ms)
+  ✔ POST /api/srs/sessions/:sessionId/reviews submits rating and records review (6.155438ms)
+  ✔ POST /api/srs/sessions/:sessionId/writing-attempts rejects cross-origin and malformed stroke input (6.651029ms)
+  ✔ POST /api/srs/sessions/:sessionId/complete seals session (3.991632ms)
+✔ S5-03: SRS Sessions API Route Handlers (89.872378ms)
+(node:191858) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ WRITING FSRS initializes separately and stores four explicit ratings (3.851869ms)
+✔ WRITING FSRS round-trips the state needed for another review deterministically (3.488606ms)
+✔ WRITING FSRS rejects invalid persisted state and rating values (0.759988ms)
+(node:191866) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ P4: SRS Token Helper & Security
+  ✔ secret missing or < 32 bytes throws 503 SERVICE_UNAVAILABLE (3.582602ms)
+  ✔ valid creation and verification returns exact payload (2.694002ms)
+  ✔ tampered payload or signature fails with 400 INVALID_TOKEN (4.414967ms)
+  ✔ expired token fails with 409 SESSION_EXPIRED (0.800724ms)
+  ✔ mismatched learnerId fails with 403 FORBIDDEN (0.823498ms)
+✔ P4: SRS Token Helper & Security (13.83008ms)
+▶ P4: SRS Route Guards & Invariants
+  ✔ rejects foreign origin with 403 FORBIDDEN_ORIGIN (28.661384ms)
+  ✔ rejects non-json content-type with 415 UNSUPPORTED_MEDIA_TYPE (1.152946ms)
+  ✔ rejects extra fields with 400 VALIDATION_ERROR (strict schema) (11.624456ms)
+  ✔ rejects teacher or disabled account with 403 (7.064126ms)
+✔ P4: SRS Route Guards & Invariants (49.215811ms)
+▶ P4: SRS Start & Prompt Secrecy
+  ✔ empty due list returns done: true and null card/token (4.360795ms)
+  ✔ future card (dueAt > now) is not returned (4.128999ms)
+  ✔ due card returns safe prompt card and signed token without leaking stage/due schedule (2.558728ms)
+✔ P4: SRS Start & Prompt Secrecy (11.367463ms)
+▶ P4: SRS Respond & Policy Progression
+  ✔ REMEMBERED follows stages 1->2->3->4->5->5 intervals [1,3,7,14,30] (31.356949ms)
+  ✔ FORGOTTEN resets any stage (1..5) to stage 1 and +1 day (9.4555ms)
+  ✔ idempotency: duplicate same operationKey returns previous outcome without double schedule (3.009335ms)
+  ✔ conflict: same operationKey with different payload fails with 409 OPERATION_CONFLICT (2.795524ms)
+  ✔ CAS: stale token rowVersion fails with 409 STALE_OPERATION (1.051086ms)
+  ✔ card not due fails with 409 CARD_NOT_DUE (1.248646ms)
+  ✔ multi-card progression: rates first card, receives next card in session, rates second card, receives done (5.80031ms)
+✔ P4: SRS Respond & Policy Progression (55.215066ms)
+▶ P3: Strict SRS Contract & Fault Boundaries (R4)
+  ✔ missing $queryRaw method fails closed with 503 SERVICE_UNAVAILABLE (1.333526ms)
+  ✔ clock query rejects fails closed with 503 SERVICE_UNAVAILABLE (0.855468ms)
+  ✔ empty, malformed, or invalid-Date clock result fails closed with 503 SERVICE_UNAVAILABLE (4.565289ms)
+  ✔ account lock fails closed with 503 SERVICE_UNAVAILABLE before card lock or replay lookup (0.511001ms)
+  ✔ card lock fails closed with 503 SERVICE_UNAVAILABLE before CAS or history writes (0.554061ms)
+  ✔ invalid or empty timezone fails closed with 400 INVALID_TIMEZONE (0.905922ms)
+  ✔ query execution order enforces Account Lock -> Card Lock -> Validation -> Replay -> CAS -> DB Clock (1.235943ms)
+✔ P3: Strict SRS Contract & Fault Boundaries (R4) (10.394254ms)
+(node:191879) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S6-06b: Submit Writing Attempt and Complete Session
+  ✔ 1. 201 Created: Submit valid candidate strokes evaluates via grader and generates receipt (56.806075ms)
+  ✔ 2. 200 OK: Idempotent replay of attempt with identical operationKey and strokes (6.797855ms)
+  ✔ 3. 409 Conflict: Same operationKey with different strokes rejected with OPERATION_CONFLICT (4.928452ms)
+  ✔ 4. 400 Bad Request: Missing or invalid strokes structure (2.159208ms)
+  ✔ 4a. 400 Bad Request: Coordinates outside the normalized drawing area are rejected (0.885595ms)
+  ✔ 4b. 400 Bad Request: Per-stroke and total point limits are enforced (14.961527ms)
+  ✔ 4c. 413 Payload Too Large: Request body is capped at 256 KiB (1.811284ms)
+  ✔ 5. 404 Not Found: Session does not exist or not owned (4.158184ms)
+  ✔ 6. 409 Conflict: Submitting new attempt on completed session rejected (2.191018ms)
+  ✔ 7. 200 OK: Complete active session transitions status to COMPLETED (4.167521ms)
+  ✔ 7a. 409 Conflict: A session cannot complete before its first attempt (1.877228ms)
+  ✔ 8. 200 OK: Complete already completed session is idempotent (1.474902ms)
+  ✔ 9. 200 OK: Replay of committed attempt is allowed after session is completed (3.696848ms)
+  ✔ 10. 403 Forbidden: Foreign origin rejected (0.347002ms)
+  ✔ 11. 201 Created: Submit via /characters/:characterId/attempts with strokePoints and requestId (2.116989ms)
+  ✔ 12. 400 Bad Request: Character ID mismatch in character-specific route (0.734841ms)
+  ✔ 12a. 409 Conflict: Route and body character must match the owned writing session (1.358292ms)
+  ✔ 12d. 400 Bad Request: Character-specific route requires body characterId (0.581062ms)
+  ✔ 12e. 400 Bad Request: Attempt request rejects simultaneous requestId and operationKey (0.643961ms)
+  ✔ 12b. 413 Payload Too Large: Character-specific route shares the canonical body limit (1.641205ms)
+  ✔ 12c. Degenerate pointer geometry is rejected and is not a completed attempt (1.730191ms)
+  ✔ 13. 201 Created: Submit via /attempts with strokePoints and requestId (1.880003ms)
+  ✔ 14. 409 Conflict: Reusing an attempt key on a different session is rejected (2.824668ms)
+✔ S6-06b: Submit Writing Attempt and Complete Session (122.624007ms)
+(node:191887) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S6-06a: Start Writing Practice Session (POST /api/writing/sessions)
+  ✔ 1. 201 Created: Start writing session with blockKey selector (43.479381ms)
+  ✔ 1a. 201 Created: Documented requestId start resolves the character from its block (4.116606ms)
+  ✔ 2. 201 Created: Start writing session with lessonVocabularyLinkId selector (3.574097ms)
+  ✔ 3. 200 OK: Idempotent replay with same operationKey and identical payload (5.526256ms)
+  ✔ 4. 409 Conflict: Same operationKey with different payload rejected (3.936208ms)
+  ✔ 5. 400 Bad Request: Missing both selectors or providing both (2.063207ms)
+  ✔ 6. 400 Bad Request: Extra fields rejected by strict schema (1.325811ms)
+  ✔ 6a. 413 Payload Too Large: Start request is bounded before JSON parsing (1.180339ms)
+  ✔ 6b. 400 Bad Request: blockKey length is bounded and trimmed (1.225624ms)
+  ✔ 6c. 400 Bad Request: Start requires the published revision pin (1.369444ms)
+  ✔ 7. 403 Forbidden: Foreign origin rejected (0.82961ms)
+  ✔ 8. 415 Unsupported Media Type: Non-JSON content type rejected (0.672203ms)
+  ✔ 9. 400 Bad Request: Malformed JSON syntax rejected (0.70257ms)
+  ✔ 10. 401 Unauthorized: Unauthenticated request rejected (0.709894ms)
+  ✔ 11. 409 Conflict: Lesson locked due to unfinished prerequisite (1.932191ms)
+  ✔ 12. 409 Conflict: Stale revision check with expectedPublishedRevisionId (1.869232ms)
+  ✔ 13. 409 Conflict: Static character block has guidedWriting and showStrokeAnimation false (4.497913ms)
+  ✔ 13a. 409 Conflict: Animation-only blocks cannot start graded writing (2.028842ms)
+  ✔ 14. 409 Conflict: Character without stroke data cannot start writing session (1.870075ms)
+  ✔ 15. Legacy vocabulary revision ignores mappings added after publication (1.798771ms)
+  ✔ 16. 409 Conflict: Start replay key is scoped to its original selector (2.594897ms)
+  ✔ 17. 404 Not Found: Start replay still authenticates the requested context (2.727286ms)
+✔ S6-06a: Start Writing Practice Session (POST /api/writing/sessions) (92.964398ms)
+ℹ tests 430
+ℹ suites 49
+ℹ pass 430
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1656.619119
+
+> @lingora/lesson-content@1.0.0 test:feature
+> npm run test
+
+
+> @lingora/lesson-content@1.0.0 test
+> node --experimental-strip-types --test tests/schema.test.mjs tests/legacy.test.mjs tests/renderer.test.mjs tests/character.test.mjs tests/grader.test.mjs
+
+▶ S6-04a1: Author Input Schema (Strict Client Submission Boundary)
+  ✔ accepts valid author input with characterId and four boolean flags (3.289161ms)
+  ✔ accepts all permutations of the four boolean flags (0.62786ms)
+  ✔ validates complete block container with validateCharacterBlockAuthorInput (0.94699ms)
+  ✔ rejects non-UUID characterId (0.775788ms)
+  ✔ rejects missing characterId (0.215024ms)
+  ✔ rejects missing any of the four boolean flags (0.375716ms)
+  ✔ rejects non-boolean values for flags (string, number, null, object) (0.55342ms)
+  ✔ STRICT: rejects snapshot field in author input content (0.450376ms)
+  ✔ STRICT: rejects raw stroke geometry in author input content (strokes, points, path) (0.426491ms)
+  ✔ STRICT: rejects snapshot or geometry fields on root block container (0.437212ms)
+  ✔ rejects invalid block container properties (position <= 0, invalid blockKey, schemaVersion != 1) (0.303481ms)
+✔ S6-04a1: Author Input Schema (Strict Client Submission Boundary) (9.848588ms)
+▶ S6-04a1: Authoritative Character Metadata Snapshot Schema
+  ✔ accepts valid full snapshot with metadata and single pinned strokeVersion (1.332764ms)
+  ✔ accepts minimal required snapshot (glyph, scriptType, strokeCount) (0.195728ms)
+  ✔ accepts all 5 approved spec scriptTypes (0.200988ms)
+  ✔ rejects unapproved scriptTypes (0.187763ms)
+  ✔ enforces strokeCount bounds (1..128) (0.314842ms)
+  ✔ enforces strokeVersion must be positive integer when provided in snapshot (0.356761ms)
+  ✔ STRICT: snapshot rejects raw stroke geometry fields (strokes, points, path) (0.325793ms)
+✔ S6-04a1: Authoritative Character Metadata Snapshot Schema (3.1714ms)
+▶ S6-04a1: Persisted Canonical Block Schema (Server-Resolved)
+  ✔ accepts valid persisted block with single pinned snapshot.strokeVersion when animation or guided is true (1.220463ms)
+  ✔ accepts valid no-animation/no-guided block with null or omitted strokeVersion pin (0.177113ms)
+  ✔ NEGATIVE: rejects showStrokeAnimation=true when no version is pinned (omitted) (0.333738ms)
+  ✔ NEGATIVE: rejects showStrokeAnimation=true when strokeVersion is null (0.192021ms)
+  ✔ NEGATIVE: rejects guidedWriting=true when no version is pinned (omitted) (0.169488ms)
+  ✔ NEGATIVE: rejects guidedWriting=true when strokeVersion is null (0.180699ms)
+  ✔ NEGATIVE: rejects legacy extra outer content.strokeVersion (strictly requires single pinned version inside snapshot) (0.2393ms)
+  ✔ rejects persisted block missing snapshot (0.236735ms)
+  ✔ STRICT: rejects persisted content with raw stroke geometry (0.202911ms)
+✔ S6-04a1: Persisted Canonical Block Schema (Server-Resolved) (3.247654ms)
+▶ S6-04a1: Isolation & Invariants (Live Writer and Legacy Reader Resilience)
+  ✔ validateLessonBlocks (generic live writer parser) REJECTS CHARACTER blocks in S6-04a1 (0.87274ms)
+  ✔ parsePersistedLessonContent safely converts MALFORMED persisted CHARACTER block to UNSUPPORTED placeholder without throwing (0.321655ms)
+  ✔ parsePersistedLessonContent projects valid persisted CHARACTER block to PublicCharacterBlock with strict allowlist and flag compliance (0.249829ms)
+  ✔ toLegacyParagraphProjection safely skips CHARACTER / UNSUPPORTED blocks without crashing (0.234982ms)
+  ✔ LessonContent component renders CHARACTER card with glyph, badges, and details (6.368819ms)
+  ✔ LessonContent exposes animation-only characters without enabling guided writing (1.023895ms)
+  ✔ LessonContent component safely renders UNSUPPORTED fallback placeholder for corrupt block (0.363183ms)
+✔ S6-04a1: Isolation & Invariants (Live Writer and Legacy Reader Resilience) (9.687607ms)
+▶ S6-05: Stroke Grader Deterministic Module
+  ✔ EXCELLENT: Perfect match yields score >= 95 and passed = true (2.530265ms)
+  ✔ EXCELLENT: Natural handwriting variation with minor tremor scores in EXCELLENT band (>= 75) (0.623271ms)
+  ✔ FAIR: Moderate trajectory offset without inversion scores in FAIR band (50..74) (0.600449ms)
+  ✔ POOR: Missing strokes penalizes heavily and drops score < 50 (0.313389ms)
+  ✔ POOR: Drawing only 2 of 4 strokes on "日" drops score < 50 (3.270416ms)
+  ✔ POOR: Extra strokes penalizes score into POOR band (< 50) (0.411844ms)
+  ✔ POOR: Inverted stroke direction (drawn backwards) drops score < 50 (0.29286ms)
+  ✔ POOR: Inverted stroke order (vertical drawn before horizontal) drops score < 50 (0.321955ms)
+  ✔ POOR: Coordinates with NaN, Infinity, out of bounds, or empty stroke drop to 0 (0.287841ms)
+  ✔ POOR: Non-primitive JSON coordinates and template indices return errors without throwing (0.290265ms)
+  ✔ Determinism: 100 consecutive invocations produce identical results (12.79177ms)
+  ✔ Regression S6-05: Template [[0.1,0.2],[0.9,0.8]] and candidate [[0.55,0.05],[0.75,0.2]] score 100 (0.156234ms)
+  ✔ EXCELLENT: Multi-stroke character scaled and translated scores >= 95 and passed = true (0.213932ms)
+  ✔ FAIR/POOR: Penalizes stroke with wrong relative position in multi-stroke character (0.286499ms)
+  ✔ POOR: Coordinate validation strictly rejects x > 1 (x=1.04) and tuples with length != 2 ([x,y,z]) (0.167555ms)
+  ✔ POOR: Rejects stationary stroke (static dot with no movement) with POOR error (0.11711ms)
+  ✔ EXCELLENT: Accepts valid closed-loop stroke where start and end points coincide if trajectory moves (0.178685ms)
+  ✔ EXCELLENT: Closed-loop direction is invariant to extra collinear pointer samples (0.178395ms)
+  ✔ POOR: Template validation rejects missing points or non-continuous indices without throwing TypeError (0.167494ms)
+  ✔ POOR: Hostile JSON objects in coordinates and template indices return errors without throwing (0.156804ms)
+✔ S6-05: Stroke Grader Deterministic Module (25.188557ms)
+▶ T01: Legacy Paragraph Adapter & Projection
+  ✔ adaptLegacyParagraphs creates deterministic keys and preserves exact text (0.750891ms)
+  ✔ adaptLegacyParagraphs handles empty, null, or undefined gracefully (0.630866ms)
+  ✔ round-trip fidelity: toLegacyParagraphProjection on adapted paragraphs reproduces original texts (0.425219ms)
+  ✔ toLegacyParagraphProjection projects rich blocks into readable paragraph representations (0.291798ms)
+✔ T01: Legacy Paragraph Adapter & Projection (3.176479ms)
+▶ T01: parsePersistedLessonContent & Version Invariants
+  ✔ V0 legacy lesson parses legacy paragraphs with contentSchemaVersion = 0 (0.305794ms)
+  ✔ V1 zero-block lesson NEVER falls back to legacy contentBlocks (0.133221ms)
+  ✔ parses persisted block rows directly with proper sorting (3.685426ms)
+  ✔ unsupported persisted blocks are replaced with safe placeholder without crashing (0.530978ms)
+✔ T01: parsePersistedLessonContent & Version Invariants (5.121616ms)
+▶ T01: toLessonPresentationDto Public Boundary
+  ✔ creates structured presentation DTO and strips grading data / secrets even inside promptData (1.252894ms)
+✔ T01: toLessonPresentationDto Public Boundary (1.493186ms)
+✔ T06: LessonContent renderer - Null, undefined, and empty presentation resilience (7.804987ms)
+▶ T06: LessonContent renderer - All 9 Canonical Block Types
+  ✔ HEADING: renders h2, h3, h4 with correct level and typography classes (0.790084ms)
+  ✔ TEXT: renders rich text nodes with bold, italic, underline, safe link and lists (1.254347ms)
+  ✔ EXAMPLE: renders example sentence with translation (0.519286ms)
+  ✔ DIALOGUE: renders turns with speaker, text, and translation (0.603464ms)
+  ✔ CALLOUT: renders tone styling (info, tip, warning, caution, important) and body (0.719753ms)
+  ✔ MEDIA: renders audio player and caption (0.577305ms)
+  ✔ DIVIDER: renders hr line (0.457339ms)
+  ✔ GRAMMAR: renders title, explanation, and examples (0.639883ms)
+  ✔ VOCABULARY block: renders vocabulary directly at block position (1.083255ms)
+✔ T06: LessonContent renderer - All 9 Canonical Block Types (7.766145ms)
+✔ T06: LessonContent renderer - UNSUPPORTED block safe placeholder (0.297319ms)
+✔ T06: LessonContent renderer - Auto vocabulary at end when no VOCABULARY block (0.402236ms)
+✔ T06: LessonContent renderer - Readonly Exercises preview across all 5 types (1.620486ms)
+✔ T06b: read-only exercise preview does not show REORDER tokens or MCQ options in answer order (1.850177ms)
+✔ LNG-01: joinTokensByLanguage and formatReorderTokens join tokens per language without changing content (1.191238ms)
+✔ LNG-02: language code normalization, character fallback, and scoped lang DOM attributes (1.427222ms)
+✔ LNG-03: formatPhonetic normalizes en/fr IPA slashes and leaves ja/zh readings unwrapped (0.781308ms)
+▶ T01: Block Union & Schemas (9 Canonical Types)
+  ✔ validates all 9 canonical block types successfully (12.091303ms)
+  ✔ individual block schemas accept their corresponding type (1.137227ms)
+  ✔ rejects unknown block types (0.914669ms)
+  ✔ rejects unsupported schemaVersion (0.325332ms)
+  ✔ strictness: rejects unexpected properties on block container (0.237406ms)
+  ✔ strictness: rejects grading secrets and teacher answers in block content (0.539584ms)
+✔ T01: Block Union & Schemas (9 Canonical Types) (16.758123ms)
+▶ T01: Content-Specific Validations
+  ✔ HEADING: allows level 2, 3, 4; rejects 1, 5, 0 (0.999498ms)
+  ✔ Rich Text URL Safety: rejects javascript, data, vbscript URIs; accepts safe http/https and relative paths (0.278653ms)
+  ✔ MEDIA: audio reference URL validation identical to public publication boundary (0.256753ms)
+  ✔ CALLOUT: accepts standard tones; rejects invalid tone (0.584569ms)
+  ✔ VOCABULARY: accepts selection "lesson", rejects arbitrary selections (0.163487ms)
+  ✔ DIVIDER: must be an empty object (0.123552ms)
+✔ T01: Content-Specific Validations (2.883208ms)
+▶ T01: Collection Validation & Invariants
+  ✔ rejects duplicate blockKey within revision (0.707239ms)
+  ✔ rejects duplicate position within revision (0.339958ms)
+  ✔ rejects negative or zero position (0.329058ms)
+  ✔ rejects non-array input (0.187593ms)
+  ✔ rejects collection exceeding 50 blocks (0.263515ms)
+  ✔ rejects blockKey exceeding 128 chars or containing invalid characters (1.953251ms)
+  ✔ accepts deterministic legacy blockKey format (0.179026ms)
+✔ T01: Collection Validation & Invariants (4.311844ms)
+ℹ tests 100
+ℹ suites 11
+ℹ pass 100
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 232.533069

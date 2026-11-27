@@ -1,0 +1,983 @@
+[
+  {
+    "screen": "home",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/home",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "home",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/home",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "home",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/home",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "catalogue",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557",
+    "width": 375,
+    "scrollWidth": 393,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#817c97",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 3.66,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<span class=\"badge badge-default\">Chưa đọc</span>",
+                    "target": [
+                      ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-default.badge"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 3.66 (foreground color: #817c97, background color: #f6f4ff, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"badge badge-default\">Chưa đọc</span>",
+            "target": [
+              ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-default.badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.66 (foreground color: #817c97, background color: #f6f4ff, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d45862",
+                  "bgColor": "#fcf2ea",
+                  "contrastRatio": 3.54,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<span class=\"badge badge-paused\" style=\"color:var(--danger-red)\">Khóa: <!-- -->Cần hoàn thành bài học trước</span>",
+                    "target": [
+                      ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-paused.badge"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 3.54 (foreground color: #d45862, background color: #fcf2ea, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"badge badge-paused\" style=\"color:var(--danger-red)\">Khóa: <!-- -->Cần hoàn thành bài học trước</span>",
+            "target": [
+              ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-paused.badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.54 (foreground color: #d45862, background color: #fcf2ea, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "screen": "catalogue",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#817c97",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 3.66,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<span class=\"badge badge-default\">Chưa đọc</span>",
+                    "target": [
+                      ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-default.badge"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 3.66 (foreground color: #817c97, background color: #f6f4ff, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"badge badge-default\">Chưa đọc</span>",
+            "target": [
+              ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-default.badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.66 (foreground color: #817c97, background color: #f6f4ff, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d45862",
+                  "bgColor": "#fcf2ea",
+                  "contrastRatio": 3.54,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<span class=\"badge badge-paused\" style=\"color:var(--danger-red)\">Khóa: <!-- -->Cần hoàn thành bài học trước</span>",
+                    "target": [
+                      ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-paused.badge"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 3.54 (foreground color: #d45862, background color: #fcf2ea, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"badge badge-paused\" style=\"color:var(--danger-red)\">Khóa: <!-- -->Cần hoàn thành bài học trước</span>",
+            "target": [
+              ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-paused.badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.54 (foreground color: #d45862, background color: #fcf2ea, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "screen": "catalogue",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#817c97",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 3.66,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<span class=\"badge badge-default\">Chưa đọc</span>",
+                    "target": [
+                      ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-default.badge"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 3.66 (foreground color: #817c97, background color: #f6f4ff, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"badge badge-default\">Chưa đọc</span>",
+            "target": [
+              ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-default.badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.66 (foreground color: #817c97, background color: #f6f4ff, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d45862",
+                  "bgColor": "#fcf2ea",
+                  "contrastRatio": 3.54,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<span class=\"badge badge-paused\" style=\"color:var(--danger-red)\">Khóa: <!-- -->Cần hoàn thành bài học trước</span>",
+                    "target": [
+                      ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-paused.badge"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 3.54 (foreground color: #d45862, background color: #fcf2ea, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"badge badge-paused\" style=\"color:var(--danger-red)\">Khóa: <!-- -->Cần hoàn thành bài học trước</span>",
+            "target": [
+              ".is-locked > .lesson-card__main > .lesson-card__badges > .badge-paused.badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.54 (foreground color: #d45862, background color: #fcf2ea, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "screen": "locked",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "locked",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "locked",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "lesson-reader",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "lesson-reader",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "lesson-reader",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "practice-before",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "practice-before",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "practice-before",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "practice-after-wrong",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#b74966",
+                  "bgColor": "#feecec",
+                  "contrastRatio": 4.43,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div id=\"formativeFeedback\" class=\"alert-box practice-sheet is-warning\" role=\"alert\" style=\"margin-top: 0px;\">",
+                    "target": [
+                      "#formativeFeedback"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.43 (foreground color: #b74966, background color: #feecec, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span id=\"feedbackPrevLabel\" style=\"display: block; font-size: 12px; font-weight: 600; opacity: 0.75; margin-bottom: 2px;\">Kết quả câu vừa rồi</span>",
+            "target": [
+              "#feedbackPrevLabel"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.43 (foreground color: #b74966, background color: #feecec, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "screen": "practice-after-wrong",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#b74966",
+                  "bgColor": "#feecec",
+                  "contrastRatio": 4.43,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div id=\"formativeFeedback\" class=\"alert-box practice-sheet is-warning\" role=\"alert\" style=\"margin-top: 0px;\">",
+                    "target": [
+                      "#formativeFeedback"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.43 (foreground color: #b74966, background color: #feecec, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span id=\"feedbackPrevLabel\" style=\"display: block; font-size: 12px; font-weight: 600; opacity: 0.75; margin-bottom: 2px;\">Kết quả câu vừa rồi</span>",
+            "target": [
+              "#feedbackPrevLabel"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.43 (foreground color: #b74966, background color: #feecec, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "screen": "practice-after-wrong",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#b74966",
+                  "bgColor": "#feecec",
+                  "contrastRatio": 4.43,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div id=\"formativeFeedback\" class=\"alert-box practice-sheet is-warning\" role=\"alert\" style=\"margin-top: 0px;\">",
+                    "target": [
+                      "#formativeFeedback"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.43 (foreground color: #b74966, background color: #feecec, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span id=\"feedbackPrevLabel\" style=\"display: block; font-size: 12px; font-weight: 600; opacity: 0.75; margin-bottom: 2px;\">Kết quả câu vừa rồi</span>",
+            "target": [
+              "#feedbackPrevLabel"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.43 (foreground color: #b74966, background color: #feecec, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "screen": "result",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#f59e0b",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 1.97,
+                  "fontSize": "15.0pt (20px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "3:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"celebrate__tile\" style=\"animation-delay: 250ms;\"><div style=\"font-size: 12px; color: var(--text-muted);\">XP nhận được</div><div id=\"celebrationTotalXp\" style=\"font-size: 20px; font-weight: 800; color: rgb(245, 158, 11); margin-top: 4px;\">+30 XP</div></div>",
+                    "target": [
+                      ".celebrate__tile:nth-child(1)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.97 (foreground color: #f59e0b, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div id=\"celebrationTotalXp\" style=\"font-size: 20px; font-weight: 800; color: rgb(245, 158, 11); margin-top: 4px;\">+30 XP</div>",
+            "target": [
+              "#celebrationTotalXp"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.97 (foreground color: #f59e0b, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#0ea5e9",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 2.54,
+                  "fontSize": "15.0pt (20px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "3:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"celebrate__tile\" style=\"animation-delay: 320ms;\"><div style=\"font-size: 12px; color: var(--text-muted);\">Kim cương</div><div id=\"celebrationGems\" style=\"font-size: 20px; font-weight: 800; color: rgb(14, 165, 233); margin-top: 4px;\"><span aria-hidden=\"true\">💎</span> +5</div></div>",
+                    "target": [
+                      ".celebrate__tile:nth-child(2)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.54 (foreground color: #0ea5e9, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div id=\"celebrationGems\" style=\"font-size: 20px; font-weight: 800; color: rgb(14, 165, 233); margin-top: 4px;\"><span aria-hidden=\"true\">💎</span> +5</div>",
+            "target": [
+              "#celebrationGems"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.54 (foreground color: #0ea5e9, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "screen": "result",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#f59e0b",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 1.97,
+                  "fontSize": "15.0pt (20px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "3:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"celebrate__tile\" style=\"animation-delay: 250ms;\"><div style=\"font-size: 12px; color: var(--text-muted);\">XP nhận được</div><div id=\"celebrationTotalXp\" style=\"font-size: 20px; font-weight: 800; color: rgb(245, 158, 11); margin-top: 4px;\">+30 XP</div></div>",
+                    "target": [
+                      ".celebrate__tile:nth-child(1)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.97 (foreground color: #f59e0b, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div id=\"celebrationTotalXp\" style=\"font-size: 20px; font-weight: 800; color: rgb(245, 158, 11); margin-top: 4px;\">+30 XP</div>",
+            "target": [
+              "#celebrationTotalXp"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.97 (foreground color: #f59e0b, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#0ea5e9",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 2.54,
+                  "fontSize": "15.0pt (20px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "3:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"celebrate__tile\" style=\"animation-delay: 320ms;\"><div style=\"font-size: 12px; color: var(--text-muted);\">Kim cương</div><div id=\"celebrationGems\" style=\"font-size: 20px; font-weight: 800; color: rgb(14, 165, 233); margin-top: 4px;\"><span aria-hidden=\"true\">💎</span> +5</div></div>",
+                    "target": [
+                      ".celebrate__tile:nth-child(2)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.54 (foreground color: #0ea5e9, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div id=\"celebrationGems\" style=\"font-size: 20px; font-weight: 800; color: rgb(14, 165, 233); margin-top: 4px;\"><span aria-hidden=\"true\">💎</span> +5</div>",
+            "target": [
+              "#celebrationGems"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.54 (foreground color: #0ea5e9, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "screen": "result",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/learn/54abdbce-9dac-47dc-833d-f3cc22e6c557/99bb9d8f-eaf4-4261-913a-362ef26d1780",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#f59e0b",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 1.97,
+                  "fontSize": "15.0pt (20px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "3:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"celebrate__tile\" style=\"animation-delay: 250ms;\"><div style=\"font-size: 12px; color: var(--text-muted);\">XP nhận được</div><div id=\"celebrationTotalXp\" style=\"font-size: 20px; font-weight: 800; color: rgb(245, 158, 11); margin-top: 4px;\">+30 XP</div></div>",
+                    "target": [
+                      ".celebrate__tile:nth-child(1)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.97 (foreground color: #f59e0b, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div id=\"celebrationTotalXp\" style=\"font-size: 20px; font-weight: 800; color: rgb(245, 158, 11); margin-top: 4px;\">+30 XP</div>",
+            "target": [
+              "#celebrationTotalXp"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.97 (foreground color: #f59e0b, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#0ea5e9",
+                  "bgColor": "#f6f4ff",
+                  "contrastRatio": 2.54,
+                  "fontSize": "15.0pt (20px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "3:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"celebrate__tile\" style=\"animation-delay: 320ms;\"><div style=\"font-size: 12px; color: var(--text-muted);\">Kim cương</div><div id=\"celebrationGems\" style=\"font-size: 20px; font-weight: 800; color: rgb(14, 165, 233); margin-top: 4px;\"><span aria-hidden=\"true\">💎</span> +5</div></div>",
+                    "target": [
+                      ".celebrate__tile:nth-child(2)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.54 (foreground color: #0ea5e9, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div id=\"celebrationGems\" style=\"font-size: 20px; font-weight: 800; color: rgb(14, 165, 233); margin-top: 4px;\"><span aria-hidden=\"true\">💎</span> +5</div>",
+            "target": [
+              "#celebrationGems"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.54 (foreground color: #0ea5e9, background color: #f6f4ff, font size: 15.0pt (20px), font weight: bold). Expected contrast ratio of 3:1"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+
+> lingora-workspace@1.0.0 typecheck
+> npm run typecheck -w lingora-admin && npm run typecheck -w lingora-web && npm run typecheck -w @lingora/lesson-content
+
+
+> lingora-admin@1.0.0 typecheck
+> tsc --noEmit
+
+
+> lingora-web@1.0.0 typecheck
+> tsc --noEmit
+
+
+> @lingora/lesson-content@1.0.0 typecheck
+> tsc --noEmit

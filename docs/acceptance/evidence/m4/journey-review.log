@@ -1,0 +1,145 @@
+REVIEW_AUDIO 1
+EMPTY_COMMENT L
+Lingora
+ADMIN
+Trung tâm quản trị
+KHÔNG GIAN LÀM VIỆC
+Tổng quan
+QUẢN LÝ NỘI DUNG
+Quản lý ngôn ngữ
+Khung năng lực
+Khóa học
+Đánh giá
+Kiểm duyệt
+QUẢN TRỊ HỆ THỐNG
+Giáo viên
+Nhật ký hoạt động
+Lingora Workspace
+Nền tảng học ngoại ngữ
+Quản trị
+Kiểm duyệt
+Chi tiết bài nộp
+QV
+Quản trị viên
+Quản trị viên
+Đến nội dung chính
+← Quay lại hàng đợi kiểm duyệt
+Khóa học: [DEV] Chương trình tiếng Anh chuẩn
+Đơn vị: DEV-UNIT-01
+Bản sửa đổi: #3
+Trạng thái: Đang chờ duyệt
+Kiểm duyệt: Bài học #4 — Bài 4: Gia đình của bạn – chỉnh sửa
+Người nộp: Cô Lan (Giáo viên)
+Thời gian nộp: 10:14:50 27/11/2026
+Thế hệ phân công: #1 (1)
+Vui lòng nhập nhận xét để giáo viên biết cần chỉnh sửa gì.
+💬 Yêu cầu chỉnh sửa / Nhận xét (0)
++ Viết nhận xét
+1. Nội dung bài học (1 đoạn văn)
+ĐOẠN #1
+Sau khi biết cách giới thiệu bản thân, bạn sẽ muốn nói về gia đình. Trong bài này ta học các từ chỉ thành viên gia đình và cấu trúc "I have + số lượng + danh từ".
+2. Danh sách bài tập (5 bài tập)
+#1
+Trắc nghiệm (MCQ)
+Cốt lõi
+CÂU HỎI / PROMPT:
+Trong hội thoại, Anna có mấy người anh/chị/em?
+CÁC LỰA CHỌN:
+Không có
+Hai người: một anh/em trai và một chị/em gái ✓
+Ba người
+ĐÁP ÁN ĐÚNG:
+Hai người: một anh/em trai và một chị/em gái
+Dữ liệu chấm điểm thô
+Giải thích đáp án: Anna nói: 'I have one brother and one sister' — một anh/em trai và một chị/em gái.
+💬 Yêu cầu chỉnh sửa / Nhận xét (0)
++ Viết nhận xét
+#2
+Điền từ (FILL_BLANK)
+Cốt lõi
+CÂU HỎI / PROMPT:
+Điền từ còn thiếu: Bố của Anna là bác sĩ.
+Câu cần điền: My ____ is a doctor.
+ĐÁP ÁN ĐÚNG:
+father
+Dữ liệu chấm điểm thô
+Giải thích đáp án: 'father' nghĩa là bố; Anna nói 'my father is a doctor'.
+💬 Yêu cầu chỉnh sửa / Nhận xét (0)
++ Viết nhận xét
+#3
+Sắp xếp từ (REORDER)
+Cốt lõi
+CÂU HỎI / PROMPT:
+Sắp xếp các từ thành câu: Tôi có một người em gái.
+Các cụm từ cần sắp xếp:
+I
+have
+one
+sister
+ĐÁP ÁN ĐÚNG:
+I have one sister
+Dữ liệu chấm điểm thô
+Giải thích đáp án: Cấu trúc: I have + số lượng + danh từ.
+💬 Yêu cầu chỉnh sửa / Nhận xét (0)
++ Viết nhận xét
+#4
+Viết câu (GRAMMAR)
+Cốt lõi
+CÂU HỎI / PROMPT:
+Viết câu: Tôi có một người anh/em trai (theo mẫu I have ...).
+Câu gốc: one brother
+Mẫu ngữ pháp: I have + one + noun
+ĐÁP ÁN ĐÚNG:
+I have one brother
+Dữ liệu chấm điểm thô
+Giải thích đáp án: Dùng 'I have' + số lượng + danh từ.
+💬 Yêu cầu chỉnh sửa / Nhận xét (0)
++ Viết nhận xét
+#5
+Nghe và chọn (LISTENING)
+Cốt lõi
+CÂU HỎI / PROMPT:
+Nghe âm thanh và chọn chủ đề.
+https://acceptance.lingora.test/routine.mp3
+CÁC LỰA CHỌN:
+Daily routine ✓
+Family
+Directions
+ĐÁP ÁN ĐÚNG:
+Daily routine
+Dữ liệu chấm điểm thô
+Giải thích đáp án: Âm thanh mô tả sinh hoạt hàng ngày.
+💬 Yêu cầu chỉnh sửa / Nhận xét (0)
++ Viết nhận xét
+3. Danh sách từ vựng (2 từ vựng)
+Vị trí	Phân loại	Từ / Thuật ngữ	Ý nghĩa	Ví dụ
+#1	Cốt lõi
+family
+/ˈfæməli/
+noun
+vi: gia đình
+en: a group of related people
+	I love my family.
+#2	Cốt lõi
+mother
+/ˈmʌðər/
+noun
+vi: mẹ
+en: a female parent
+	My mother is a teacher.
+4. Lịch sử kiểm duyệt & xử lý (1 sự kiện)
+Hành động	Người thực hiện	Thời gian (UTC+7)	Ghi chú / Nhận xét
+Nộp duyệt
+Cô Lan (Giáo viên)
+ID: aaaaaaaa...
+	10:14:50 27/11/2026	Không có ghi chú
+Hành động kiểm duyệt
+Ghi chú / Ý kiến phản hồi (tùy chọn)
+Yêu cầu chỉnh sửa
+Phê duyệt bản nộp
+ACTION #btnRequestChanges 200 {"data":{"submissionId":"6312b879-413c-40cb-b414-3d8d00c6722e","assignmentEpisode":{"id":"2a67a227-b49d-4145-b12e-3fae4e9b4a9d","sequenceNo":1,"scopeGeneration":"1","teacherName":"Cô Lan (Giáo viên)","scopeSnapshot":{}},"lesson":{"id":"99bb9d8f-eaf4-4261-913a-362ef26d1780","position":4,"unitId":"00000000-0000-0000-0000-000000000040","unitCode":"DEV-UNIT-01","unitName":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"},"courseId":"00000000-0000-0000-0000-000000000030","courseName":{"en":"[DEV] English Core Curriculum","vi":"[DEV] Chương trình tiếng Anh chuẩn"},"languageId":"0000000
+ACTION #btnSaveDraft 200 {"data":{"id":"99bb9d8f-eaf4-4261-913a-362ef26d1780","unitId":"00000000-0000-0000-0000-000000000040","position":4,"isRequired":true,"availability":"PLANNED","rowVersion":"6","courseContext":{"id":"00000000-0000-0000-0000-000000000030","names":{"en":"[DEV] English Core Curriculum","vi":"[DEV] Chương trình tiếng Anh chuẩn"},"languageCode":"en","languageId":"00000000-0000-0000-0000-000000000001"},"unitContext":{"id":"00000000-0000-0000-0000-000000000040","code":"DEV-UNIT-01","names":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"}},"assignment":{"id":"a9162ed0-8c5d-42cd-b142-d8a98e
+ACTION #btnConfirmSubmitForReview 200 {"data":{"id":"99bb9d8f-eaf4-4261-913a-362ef26d1780","unitId":"00000000-0000-0000-0000-000000000040","position":4,"isRequired":true,"availability":"PLANNED","rowVersion":"7","courseContext":{"id":"00000000-0000-0000-0000-000000000030","names":{"en":"[DEV] English Core Curriculum","vi":"[DEV] Chương trình tiếng Anh chuẩn"},"languageCode":"en","languageId":"00000000-0000-0000-0000-000000000001"},"unitContext":{"id":"00000000-0000-0000-0000-000000000040","code":"DEV-UNIT-01","names":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"}},"assignment":{"id":"a9162ed0-8c5d-42cd-b142-d8a98e
+ACTION #btnApprove 200 {"data":{"submissionId":"c85b6ae4-bb0c-4f98-bb24-b08aff52bad1","assignmentEpisode":{"id":"2a67a227-b49d-4145-b12e-3fae4e9b4a9d","sequenceNo":1,"scopeGeneration":"1","teacherName":"Cô Lan (Giáo viên)","scopeSnapshot":{}},"lesson":{"id":"99bb9d8f-eaf4-4261-913a-362ef26d1780","position":4,"unitId":"00000000-0000-0000-0000-000000000040","unitCode":"DEV-UNIT-01","unitName":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"},"courseId":"00000000-0000-0000-0000-000000000030","courseName":{"en":"[DEV] English Core Curriculum","vi":"[DEV] Chương trình tiếng Anh chuẩn"},"languageId":"0000000
+ACTION #btnPublish 200 {"data":{"submissionId":"c85b6ae4-bb0c-4f98-bb24-b08aff52bad1","assignmentEpisode":{"id":"2a67a227-b49d-4145-b12e-3fae4e9b4a9d","sequenceNo":1,"scopeGeneration":"1","teacherName":"Cô Lan (Giáo viên)","scopeSnapshot":{}},"lesson":{"id":"99bb9d8f-eaf4-4261-913a-362ef26d1780","position":4,"unitId":"00000000-0000-0000-0000-000000000040","unitCode":"DEV-UNIT-01","unitName":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"},"courseId":"00000000-0000-0000-0000-000000000030","courseName":{"en":"[DEV] English Core Curriculum","vi":"[DEV] Chương trình tiếng Anh chuẩn"},"languageId":"0000000
+J03 return/edit/resubmit and J04 publish PASS

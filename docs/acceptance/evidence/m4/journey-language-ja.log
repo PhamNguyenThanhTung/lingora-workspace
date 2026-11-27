@@ -1,0 +1,171 @@
+HOME_SELECTOR ja Tiếng Anh · A1
+Tiếng Pháp · A1
+Tiếng Nhật · N5
+READER_REGIONS ja [
+  {
+    tag: 'HTML',
+    cls: '',
+    text: 'Lingora LearnerLingoraHọc viên← Danh mục bài họcChương 1: Chương M4 / Chào hỏi M4 jaChào hỏi M4 jaPhiên bản nội dung: #1Chưa đọcTiến độ đọc ',
+    lang: 'vi'
+  }
+]
+LANG_REGIONS ja MCQ [
+  {
+    tag: 'P',
+    id: '',
+    text: 'Buổi sáng người Nhật chào nhau bằng câu nào?',
+    lang: 'vi'
+  },
+  { tag: 'SPAN', id: '', text: '1', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: 'さようなら', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: '2', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: 'こんばんは', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: '3', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: 'おはようございます', lang: 'vi' }
+]
+RESPONSE 9977be55-8902-4f59-84db-9c6a2d90261b MCQ Buổi sáng người Nhật chào nhau bằng câu nào? true
+LANG_REGIONS ja FILL_BLANK [
+  {
+    tag: 'P',
+    id: '',
+    text: 'Điền từ còn thiếu: Tôi là học sinh.',
+    lang: 'vi'
+  },
+  { tag: 'DIV', id: '', text: 'わたしは[ ____________ ]です。', lang: 'vi' },
+  {
+    tag: 'INPUT',
+    id: 'fillBlankInput',
+    text: 'Nhập từ chính xác...',
+    lang: 'vi'
+  }
+]
+RESPONSE 9977be55-8902-4f59-84db-9c6a2d90261b FILL_BLANK Điền từ còn thiếu: Tôi là học sinh. true
+LANG_REGIONS ja REORDER [
+  {
+    tag: 'P',
+    id: '',
+    text: 'Sắp xếp thành câu: Tôi là Tanaka.',
+    lang: 'vi'
+  },
+  { tag: 'BUTTON', id: 'tokenBtn-t1', text: '田中', lang: 'vi' },
+  { tag: 'BUTTON', id: 'tokenBtn-t2', text: 'です', lang: 'vi' },
+  { tag: 'BUTTON', id: 'tokenBtn-t0', text: 'わたしは', lang: 'vi' }
+]
+RESPONSE 9977be55-8902-4f59-84db-9c6a2d90261b REORDER Sắp xếp thành câu: Tôi là Tanaka. true
+LANG_REGIONS ja GRAMMAR [
+  {
+    tag: 'P',
+    id: '',
+    text: 'Viết câu tự giới thiệu: Tôi là Tanaka (theo mẫu わたしは〜です。).',
+    lang: 'vi'
+  },
+  { tag: 'SPAN', id: '', text: 'Câu gốc: ', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: '田中', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: 'Cấu trúc: ', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: 'わたしは〜です。', lang: 'vi' },
+  {
+    tag: 'INPUT',
+    id: 'grammarInput',
+    text: 'Nhập câu trả lời...',
+    lang: 'vi'
+  }
+]
+RESPONSE 9977be55-8902-4f59-84db-9c6a2d90261b GRAMMAR Viết câu tự giới thiệu: Tôi là Tanaka (theo mẫu わたしは〜です。). true
+LANG_REGIONS ja MCQ [
+  { tag: 'P', id: '', text: '「ありがとうございます」nghĩa là gì?', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: '1', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: 'Cảm ơn', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: '2', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: 'Xin chào', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: '3', lang: 'vi' },
+  { tag: 'SPAN', id: '', text: 'Xin lỗi', lang: 'vi' }
+]
+RESPONSE 9977be55-8902-4f59-84db-9c6a2d90261b MCQ 「ありがとうございます」nghĩa là gì? true
+ACTION #finalizePracticeBtn 200 {"data":{"attempt":{"id":"9c4a2817-4de8-4cd7-a9fd-775b08ca92ce","contextId":"f2464fca-506c-48fc-bc9c-2a85dbbd6405","lessonId":"9977be55-8902-4f59-84db-9c6a2d90261b","lessonRevisionId":"6c251f3b-82d1-4943-a7f9-1f9a62c477ab","startedAt":"2026-11-27T03:21:12.530Z","completedAt":"2026-11-27T03:21:14.485Z","nCore":5,"kFirstWrong":0,"contributionUnits":10,"responseCount":5,"score":{"contributionUnits":10,"maxUnits":10,"percentage":100},"isCompleted":true,"isStale":false,"nextExercise":null,"nextOrdinal":null,"queuePosition":null,"exercises":[{"id":"423b256e-306a-43be-a9f0-4e03c2f66d33","itemId":"4b4
+RESULT 9977be55-8902-4f59-84db-9c6a2d90261b Luyện tập bài học
+
+5 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Đã hoàn thành
+✓
+Hoàn thành bài luyện tập!
+
+Kết quả làm bài đã được ghi nhận trên hệ thống.
+
+🎉 PHẦN THƯỞNG & THÀNH TÍCH
+XP nhận được
++30 XP
+Kim cương
+💎 +10
+Chính xác lần 1
+100%
+chỉ tính lần trả lời đầu
+Chuỗi ngày
+🔥 1 ngày
+Từ nạp SRS
++5 từ
+ĐIỂM SỐ ĐẠT ĐƯỢC
+Điểm 100%
+tính cả lượt làm lại câu sai (đúng ngay: 1 điểm, đúng khi làm lại: 0,5 điểm)
+Chi tiết câu trả lời và giải thích
+Câu 1 (Trắc nghiệm)
+Đúng
+
+Buổi sáng người Nhật chào nhau bằng câu nào?
+
+Câu trả lời của bạn: おはようございます
+Đáp án đúng: おはようございます
+Giải thích: おはようございます dùng vào buổi sáng; こんばんは dùng buổi tối.
+Câu 2 (Điền từ)
+Đúng
+
+わたしは____です。
+
+Câu trả lời của bạn: 学生
+Đáp án đúng: 学生 / がくせい
+Giải thích: 学生（がくせい）nghĩa là học sinh/sinh viên. Có thể viết kanji hoặc kana.
+Câu 3 (Sắp xếp từ)
+Đúng
+
+Sắp xếp thành câu: Tôi là Tanaka.
+
+Câu trả lời của bạn: わたしは田中です
+Đáp án đúng: わたしは田中です
+Giải thích: Cấu trúc: 「わたしは」+ tên +「です」. Tiếng Nhật viết liền, không có dấu cách.
+Câu 4 (Viết câu)
+Đúng
+
+Viết câu tự giới thiệu: Tôi là Tanaka (theo mẫu わたしは〜です。).
+
+Câu gốc: 田中
+
+Câu trả lời của bạn: わたしは 田中 です。
+Đáp án đúng: わたしは田中です。
+Giải thích: わたしは田中です。— viết liền, không chèn dấu cách.
+Câu 5 (Trắc nghiệm)
+Đúng
+
+「ありがとうございます」nghĩa là gì?
+
+Câu trả lời của bạn: Cảm ơn
+Đáp án đúng: Cảm ơn
+Giải thích: ありがとうございます = cảm ơn (lịch sự).
+Về lộ trình học tập
+Luyện tập lại
+LANG_RESULT ja [
+  { text: 'おはようございます', lang: 'ja' },
+  { text: 'おはようございます', lang: 'ja' },
+  { text: '学生', lang: 'ja' },
+  { text: '学生 / がくせい', lang: 'ja' },
+  { text: 'わたしは田中です', lang: 'ja' },
+  { text: 'わたしは田中です', lang: 'ja' },
+  { text: 'Câu gốc: 田中', lang: 'ja' },
+  { text: 'わたしは 田中 です。', lang: 'ja' },
+  { text: 'わたしは田中です。', lang: 'ja' },
+  { text: 'Cảm ơn', lang: 'ja' },
+  { text: 'Cảm ơn', lang: 'ja' }
+]
+SRS_REGIONS ja [
+  { cls: 'srs-phonetic', text: 'arigatō gozaimasu', lang: 'ja' },
+  { cls: 'srs-example', text: '“ありがとうございます。”', lang: 'vi' }
+]

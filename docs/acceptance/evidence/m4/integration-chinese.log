@@ -1,0 +1,15 @@
+
+> lingora-workspace@1.0.0 test:integration:chinese
+> node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs lingora-web/tests/feature/chinese-curriculum-postgres.test.mjs
+
+(node:202934) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ S6-08b.1: Chinese curriculum publication, pinyin projection, media, and progression gates (726.075186ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 731.271651

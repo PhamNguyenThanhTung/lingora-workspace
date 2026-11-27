@@ -1,0 +1,21 @@
+REVIEW_AUDIO_STATE {
+  readyState: 4,
+  currentTime: 0.48331,
+  paused: false,
+  error: undefined
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'Chỉnh sửa lại' })[22m
+
+    at audio (/tmp/lingora-accept-driver.mjs:119:142)
+    at async file:///tmp/lingora-accept-driver.mjs:189:375 {
+  log: [ "  - waiting for getByRole('button', { name: 'Chỉnh sửa lại' })" ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.22.3

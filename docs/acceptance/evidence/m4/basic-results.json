@@ -1,0 +1,56 @@
+[
+  {
+    "name": "npm-ci",
+    "command": "npm ci",
+    "exit": 0,
+    "seconds": 7.89
+  },
+  {
+    "name": "generate",
+    "command": "npm run db:product:generate",
+    "exit": 0,
+    "seconds": 1.31
+  },
+  {
+    "name": "prisma-runtime",
+    "command": "node lingora-web/scripts/prepare-prisma-runtime.mjs",
+    "exit": 0,
+    "seconds": 0.04
+  },
+  {
+    "name": "typecheck",
+    "command": "npm run typecheck",
+    "exit": 0,
+    "seconds": 2.47
+  },
+  {
+    "name": "feature",
+    "command": "npm run test:feature",
+    "exit": 0,
+    "seconds": 7.72
+  },
+  {
+    "name": "chromium",
+    "command": "npx playwright install chromium",
+    "exit": 0,
+    "seconds": 0.63
+  },
+  {
+    "name": "components",
+    "command": "npm run test:components",
+    "exit": 0,
+    "seconds": 150.69
+  },
+  {
+    "name": "build",
+    "command": "npm run build",
+    "exit": 0,
+    "seconds": 15.38
+  },
+  {
+    "name": "diff-check",
+    "command": "git diff --check",
+    "exit": 0,
+    "seconds": 0.0
+  }
+]

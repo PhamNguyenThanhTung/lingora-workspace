@@ -1,0 +1,100 @@
+
+> lingora-workspace@1.0.0 test:e2e:character-studio
+> node scripts/local-test-db.mjs node --experimental-strip-types lingora-admin/tests/feature/character-studio-browser.test.mjs
+
+=== S6-04b1: Teacher Studio CHARACTER Real Local Chromium Verification ===
+✔ Synthetic Auth Provider listening on http://127.0.0.1:36677
+[seed] Seeding canonical configuration with semantic mismatch detection...
+[seed] Language verified: en (00000000-0000-0000-0000-000000000001)
+[seed] Language verified: vi (00000000-0000-0000-0000-000000000002)
+[seed] Framework verified: CEFR v2020 (00000000-0000-0000-0000-000000000010)
+[seed] Level verified: A1 pos 1 (00000000-0000-0000-0000-000000000021)
+[seed] Level verified: A2 pos 2 (00000000-0000-0000-0000-000000000022)
+[seed] Level verified: B1 pos 3 (00000000-0000-0000-0000-000000000023)
+[seed] Level verified: B2 pos 4 (00000000-0000-0000-0000-000000000024)
+[seed] DEV Course created: 00000000-0000-0000-0000-000000000030
+[seed] DEV Unit verified: DEV-UNIT-01 (00000000-0000-0000-0000-000000000040)
+[seed] DEV Planned Lesson verified: pos 1 (00000000-0000-0000-0000-000000000050)
+[seed] Seeding completed successfully (all semantic records verified idempotent).
+✔ Database setup completed: Course=c351bb83-2bce-48cc-a1e1-fd05d627602b, Lesson=4466f822-933e-42c6-b925-5720a387b20b, Characters=[Ja:日(b9828ff3-697e-4a5f-babb-5a2628cee609), Ja:木(b554059e-0cfa-444c-af78-2eca0ca9348b), Zh:日(971e38cb-9204-4ce2-81ac-5533170df20e), ExtraJa=25]
+Starting lingora-admin production server on http://127.0.0.1:38671...
+✔ lingora-admin ready at http://127.0.0.1:38671
+
+--- Part 1: API Security & Isolation Checks ---
+✔ Unassigned teacher rejected with 404
+✔ Course language isolation & stroke availability verified without raw geometry leakage
+✔ Pagination API multiple pages, final page, and invalid continuation verified
+
+--- Part 2: Mobile Viewport (390x844) Character Authoring Flow ---
+✔ Added CHARACTER block via Studio toolbar
+✔ Selected Japanese character "日"
+✔ Draft saved successfully: "Đã lưu bản nháp thành công (Bản sửa đổi #1)."
+✔ Reloaded author draft block accurately projected author values and flags
+
+--- Part 3: Desktop Viewport Keyboard Selection & Reordering ---
+✔ Selected second character "木" via keyboard
+✔ Dynamic stroke warning appeared when enabling stroke animation on character without strokes
+✔ Reordered blocks: moved block 2 up to position 1
+✔ Reordered draft saved to server
+✔ Reordered block identity and positions persisted through server save and reload
+✔ Rehydrated unpinned static block does not show false missing strokes warning
+
+--- Part 4: Local Draft Recovery Flow ---
+✔ Detected local backup banner on reload
+✔ Clicked Restore Backup
+✔ Successfully saved recovered draft to server
+✔ Full local recovery and server reconciliation cycle completed
+
+--- Part 5: Corrupt Local Backup Rejection & Fallback ---
+✔ Corrupt local backup rejected and safely fell back to server baseline state with actionable notice
+
+--- Part 6: Teacher Catalogue Picker Pagination & Later-Page Selection Flow ---
+✔ Added new CHARACTER block for pagination test
+✔ Initial catalogue page rendered fixed 20 results
+✔ Signal for next page present when another page exists
+✔ Subsequent page results appended using most recent submitted query
+✔ Signal for next page absent on final page
+✔ Selected later-page character "ス"
+✔ New search reset results to first page and reset continuation
+✔ Draft saved to server with selected character
+✔ Reloaded draft preserved selected character
+
+--- Part 7: Teacher Catalogue Picker Request Invalidation & Race Condition Immunity ---
+✔ Added new CHARACTER block for race condition regression test
+✔ Query A page 1 rendered 20 items with load more visible
+✔ Intercepted and holding Query A page 2 request in-flight
+✔ Query B ("日") resolved and rendered while Query A page 2 was held
+✔ Stale Query A page 2 response was rejected; Query B results and cursor remained intact
+✔ Late error from stale query was ignored and did not corrupt active Query C results
+
+--- Part 8: Admin Review Flow for Submitted CHARACTER Revision ---
+✔ Teacher submitted lesson with CHARACTER blocks: submissionId=388e476a-f45e-4f52-8c07-c7217480e610
+✔ Admin review view accurately projected submitted snapshot with allowlist & display flags
+✔ Block-anchored comment created and displayed on CHARACTER block
+✔ Revision approved by Admin
+✔ Revision published by Admin
+✔ Admin review browser flow completed successfully
+
+--- Part 9: Checkpoint 1 - Admin Creates Lesson Shell, Assigns Teacher A, /my-lessons Visibility & Route Boundaries ---
+✔ Admin created lesson shell position 2: be195207-bb34-4d4b-ab33-cac4e481db6c
+✔ Admin assigned lesson to Teacher A in Chromium UI
+✔ /my-lessons of Teacher A displays assigned lesson
+✔ /my-lessons of Teacher B does NOT display lesson
+✔ Route security: create & assign require Admin, teacher target must be ACTIVE
+
+--- Part 10: Checkpoint 2 - Teacher Studio Authoring, Save, Reload, Submit & Reassignment Security ---
+✔ Teacher A saved initial draft: Revision #1 created
+✔ Reload verified: persisted title & content restored accurately
+✔ Teacher A submitted lesson: status transitioned to IN_REVIEW
+✔ Unassigned teacher URL and save/submit APIs strictly rejected with 404
+✔ Reassignment & stale tab concurrency checks verified
+
+--- Part 11: Checkpoint 3 - Admin Review Requests Changes, Feedback Display, Resubmit, Publish & Attribution ---
+✔ Admin requested changes with feedback comment
+✔ Teacher B sees Admin feedback comment in Studio banner
+✔ Teacher B saved successor draft: Revision #2 created
+✔ Teacher B resubmitted Revision #2 (IN_REVIEW)
+✔ Admin approved and published Revision #2
+✔ Attribution & Assignment History preserved accurately across reassignment
+
+=== ALL S6-04b1, S6-04b1p & S6-04b2 BROWSER & API VERIFICATIONS PASSED ===

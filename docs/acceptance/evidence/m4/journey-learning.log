@@ -1,0 +1,198 @@
+UI_METRIC home 375 overflow false smallTargets 0 axe []
+UI_METRIC home 768 overflow false smallTargets 0 axe []
+UI_METRIC home 1440 overflow false smallTargets 0 axe []
+FOCUS home {
+  id: 'reviewNavBtn',
+  tag: 'A',
+  text: 'Ôn từ vựng',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'rgb(213, 206, 241) 0px 3px 0px 0px',
+  visible: true
+}
+REDUCED home { matches: true, animations: [] }
+LAYOUT_ZOOM_200 home { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+J05 CATALOGUE Lingora
+Học viên
+← Lộ trình học
+Khóa học / Tiếng Anh
+[DEV] Chương trình tiếng Anh chuẩn
+Trình độ: A1 - Mới bắt đầu
+Khung: CEFR (2020)
+Chương 1: [DEV] Bài 1: Nền tảng
+Bài 1: Chào hỏi cơ bản
+(Bắt buộc)
+Chưa đọc
+Mở bài học
+Bài 2: Giới thiệu bản thân
+(Tùy chọn)
+Chưa đọc
+Mở bài học
+Bài 3: Thói quen hàng ngày
+(Bắt buộc)
+Chưa đọc
+Khóa: Cần hoàn thành bài học trước
+Đã khóa
+Bài 99: Gia đình – giữ số Admin
+(Bắt buộc)
+Chưa đọc
+Khóa: Cần hoàn thành bài học trước
+Đã khóa
+UI_METRIC catalogue 375 overflow true smallTargets 0 axe [ 'color-contrast:4' ]
+UI_METRIC catalogue 768 overflow false smallTargets 0 axe [ 'color-contrast:4' ]
+UI_METRIC catalogue 1440 overflow false smallTargets 0 axe [ 'color-contrast:4' ]
+FOCUS catalogue {
+  id: '',
+  tag: 'A',
+  text: 'Lingora',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'none',
+  visible: true
+}
+REDUCED catalogue { matches: true, animations: [] }
+LAYOUT_ZOOM_200 catalogue { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+OPTIONAL_API 200 {"data":{"contextId":"54abdbce-9dac-47dc-833d-f3cc22e6c557","lessonId":"38551064-6711-4ac6-b752-c30a4cab61f7","languageCode":"en","unit":{"id":"00000000-0000-0000-0000-000000000040","position":1,"names":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"}},"revision":{"id":"38685b7d-9ef1-
+OPTIONAL_BEFORE_REQUIRED Lingora
+Học viên
+← Danh mục bài học
+Chương 1: [DEV] Bài 1: Nền tảng / Bài 2: Giới thiệu bản thân
+Bài 2: Giới thiệu bản thân
+Phiên bản nội dung: #1
+Chưa đọc
+Tiến độ đọc nội dung
+
+Ghi nhận việc đọc nội dung, không hoàn thành bài tập hoặc mở khóa bài học tiếp theo.
+
+Mở nội dung
+
+Nội dung bài học chưa được mở.
+
+Vui lòng nhấn nút Mở nội dung ở trên để bắt đầu đọc bài học.
+
+Luyện tập bài học
+
+6 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Bắt đầu luyện tập để củng cố kiến thức và hoàn thành bài học.
+
+Bắt đầu luyện tập
+LOCKED_BEFORE_REQUIRED Lingora
+Học viên
+Bài học chưa mở khóa
+
+Cần hoàn thành bài học trước.
+
+Thử lại
+Về trang chủ
+UI_METRIC locked 375 overflow false smallTargets 0 axe []
+UI_METRIC locked 768 overflow false smallTargets 0 axe []
+UI_METRIC locked 1440 overflow false smallTargets 0 axe []
+RESPONSE 00000000-0000-0000-0000-000000000050 MCQ Từ nào sau đây dùng để chào một người vào buổi sáng? true
+RESPONSE 00000000-0000-0000-0000-000000000050 FILL_BLANK Điền từ còn thiếu vào câu chào lịch sự khi lần đầu gặp mặt: true
+RESPONSE 00000000-0000-0000-0000-000000000050 REORDER Sắp xếp các từ sau thành câu hỏi thăm sức khỏe thông dụng: true
+RESPONSE 00000000-0000-0000-0000-000000000050 MCQ Bạn gặp một người bạn vào buổi tối. Câu chào nào phù hợp nhất? true
+RESPONSE 00000000-0000-0000-0000-000000000050 FILL_BLANK Điền từ còn thiếu vào lời chào buổi chiều: true
+RESPONSE 00000000-0000-0000-0000-000000000050 REORDER Sắp xếp các từ thành lời tạm biệt: true
+ACTION #finalizePracticeBtn 200 {"data":{"attempt":{"id":"198f2ecb-469c-4de1-bddf-fdfea6e148e4","contextId":"54abdbce-9dac-47dc-833d-f3cc22e6c557","lessonId":"00000000-0000-0000-0000-000000000050","lessonRevisionId":"748abde4-6b51-4529-8609-c23caeae8171","startedAt":"2026-11-27T03:16:39.188Z","completedAt":"2026-11-27T03:16:40.965Z","nCore":6,"kFirstWrong":0,"contributionUnits":12,"responseCount":6,"score":{"contributionUnits":12,"maxUnits":12,"percentage":100},"isCompleted":true,"isStale":false,"nextExercise":null,"nextOrdinal":null,"queuePosition":null,"exercises":[{"id":"539c7be9-626f-4977-98f3-667c9fc0a1df","itemId":"3a4
+RESULT 00000000-0000-0000-0000-000000000050 Luyện tập bài học
+
+6 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Đã hoàn thành
+✓
+Hoàn thành bài luyện tập!
+
+Kết quả làm bài đã được ghi nhận trên hệ thống.
+
+🎉 PHẦN THƯỞNG & THÀNH TÍCH
+XP nhận được
++40 XP
+(+30 bài, +10 nhiệm vụ)
+Kim cương
+💎 +15
+Chính xác lần 1
+100%
+chỉ tính lần trả lời đầu
+Chuỗi ngày
+🔥 1 ngày
+Từ nạp SRS
++6 từ
+🏆 Huy hiệu mới mở khóa!
+🎖️
+Bài học đầu tiên
+Hoàn thành bài học đầu tiên.
+🎖️
+Điểm tuyệt đối
+Đúng toàn bộ câu hỏi cốt lõi ở lượt đầu tiên.
+ĐIỂM SỐ ĐẠT ĐƯỢC
+Điểm 100%
+tính cả lượt làm lại câu sai (đúng ngay: 1 điểm, đúng khi làm lại: 0,5 điểm)
+Chi tiết câu trả lời và giải thích
+Câu 1 (Trắc nghiệm)
+Đúng
+
+Từ nào sau đây dùng để chào một người vào buổi sáng?
+
+Câu trả lời của bạn: Good morning
+Đáp án đúng: Good morning
+Giải thích: 'Good morning' có nghĩa là chào buổi sáng, được dùng từ lúc thức dậy đến khoảng 12 giờ trưa.
+Câu 2 (Điền từ)
+Đúng
+
+Nice to ____ you.
+
+Câu trả lời của bạn: meet
+Đáp án đúng: meet
+Giải thích: 'Nice to meet you' có nghĩa là 'Rất vui được gặp bạn', là mẫu câu chuẩn mực khi làm quen.
+Câu 3 (Sắp xếp từ)
+Đúng
+
+Sắp xếp các từ sau thành câu hỏi thăm sức khỏe thông dụng:
+
+Câu trả lời của bạn: How are you?
+Đáp án đúng: How are you?
+Giải thích: 'How are you?' là câu hỏi 'Bạn có khỏe không?' theo đúng trật tự từ trong tiếng Anh.
+Câu 4 (Trắc nghiệm)
+Đúng
+
+Bạn gặp một người bạn vào buổi tối. Câu chào nào phù hợp nhất?
+
+Câu trả lời của bạn: Good evening
+Đáp án đúng: Good evening
+Giải thích: 'Good evening' là lời chào buổi tối; 'Good morning' dùng buổi sáng, còn 'See you later' là lời tạm biệt.
+Câu 5 (Điền từ)
+Đúng
+
+Good ____!
+
+Câu trả lời của bạn: afternoon
+Đáp án đúng: afternoon
+Giải thích: 'Good afternoon' là lời chào buổi chiều.
+Câu 6 (Sắp xếp từ)
+Đúng
+
+Sắp xếp các từ thành lời tạm biệt:
+
+Câu trả lời của bạn: See you later.
+Đáp án đúng: See you later.
+Giải thích: 'See you later.' nghĩa là 'Hẹn gặp lại', dùng khi tạm biệt.
+Về lộ trình học tập
+Luyện tập lại
+WARMUP_OFFERED 115748bc-f0a6-41a8-8092-166b5423d128
+RESPONSE 115748bc-f0a6-41a8-8092-166b5423d128 FILL_BLANK Chia động từ phù hợp cho ngôi thứ ba số ít trong thì hiện tại đơn: false
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: No fixture answer for Cụm từ nào là cách nói tự nhiên của 'ăn bữa sáng'?
+    at playLesson (file:///tmp/lingora-accept-driver.mjs:67:124)
+    at async learning (file:///tmp/lingora-accept-driver.mjs:90:2)
+    at async file:///tmp/lingora-accept-driver.mjs:158:230 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: null,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.3

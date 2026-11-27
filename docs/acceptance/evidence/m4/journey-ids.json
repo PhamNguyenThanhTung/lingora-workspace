@@ -1,0 +1,27 @@
+{
+  "enLesson": "99bb9d8f-eaf4-4261-913a-362ef26d1780",
+  "submission": "c85b6ae4-bb0c-4f98-bb24-b08aff52bad1",
+  "frLesson": "58a1a555-8545-4810-9557-022e87618ccc",
+  "frCourse": "48af010c-1fdb-4206-8729-3fe628c49229",
+  "frLevel": "00000000-0000-0000-0000-000000000021",
+  "jaLesson": "9977be55-8902-4f59-84db-9c6a2d90261b",
+  "jaCourse": "1c648785-8cda-4b46-88fc-0f29066ef577",
+  "jaLevel": "d98cac4f-ba95-4494-a17c-b78cb2dad03e",
+  "enContext": "54abdbce-9dac-47dc-833d-f3cc22e6c557",
+  "frContext": "585a57fd-51ec-4c43-9251-89d3ce275cf8",
+  "jaContext": "f2464fca-506c-48fc-bc9c-2a85dbbd6405",
+  "demoReviews": [
+    {
+      "lessonId": "fa4bd37f-595d-4d06-9cc0-ed1f614f9ebf",
+      "position": 1,
+      "revisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+      "submissionId": "12c7215e-c9e3-4c10-acb2-1e890adaa353"
+    },
+    {
+      "lessonId": "dc0736b4-b5dd-4d62-9f4c-74f8a3d09c3c",
+      "position": 2,
+      "revisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+      "submissionId": "2375c042-0246-4fc4-b282-3dea79c7aa39"
+    }
+  ]
+}

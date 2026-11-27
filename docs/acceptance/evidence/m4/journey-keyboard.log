@@ -1,0 +1,23 @@
+H8_MODAL_TAB 0 { id: 'btnConfirmSubmitForReview', tag: 'BUTTON', inModal: true }
+H8_MODAL_TAB 1 { id: '', tag: 'BODY', inModal: false }
+H8_MODAL_TAB 2 { id: '', tag: 'A', inModal: false }
+H8_MODAL_TAB 3 { id: '', tag: 'BUTTON', inModal: false }
+H8_MODAL_TAB 4 { id: 'navTeacherLessons', tag: 'A', inModal: false }
+H8_ESCAPE_RESTORE { id: 'navTeacherLessons', tag: 'A' }
+PRACTICE_MODAL_TAB 0 { id: 'exitPracticeBtn', tag: 'BUTTON', inModal: true }
+PRACTICE_MODAL_TAB 1 {
+  id: 'practice-bb467e98-aee6-4405-a2ba-9bffa11f2e65-145939a0-ce5b-489a-b4d1-5036965486b5-opt_1795749240703',
+  tag: 'INPUT',
+  inModal: true
+}
+PRACTICE_MODAL_TAB 2 { id: 'submitResponseBtn', tag: 'BUTTON', inModal: true }
+PRACTICE_MODAL_TAB 3 { id: '', tag: 'BODY', inModal: false }
+PRACTICE_MODAL_TAB 4 { id: '', tag: 'A', inModal: false }
+PRACTICE_MODAL_TAB 5 { id: 'backToCatalogueBtn', tag: 'A', inModal: false }
+PRACTICE_MODAL_TAB 6 { id: '', tag: 'A', inModal: false }
+PRACTICE_MODAL_TAB 7 { id: '', tag: 'AUDIO', inModal: false }
+PRACTICE_MODAL_TAB 8 { id: '', tag: 'AUDIO', inModal: false }
+PRACTICE_MODAL_TAB 9 { id: '', tag: 'AUDIO', inModal: false }
+PRACTICE_MODAL_TAB 10 { id: '', tag: 'AUDIO', inModal: false }
+PRACTICE_MODAL_TAB 11 { id: '', tag: 'AUDIO', inModal: false }
+PRACTICE_MODAL_TAB 12 { id: '', tag: 'AUDIO', inModal: false }

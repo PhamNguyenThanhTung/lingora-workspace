@@ -1,0 +1,7 @@
+
+> lingora-web@1.0.0 test:browser:confirmation
+> node tests/feature/confirmation-browser.mjs
+
+Building production Next with synthetic loopback provider
+Production build PASS; starting local callback test
+{"status":"PASS","productionBuild":true,"missingVerifierFailsWithoutTokenPost":true,"realBrowserSignupProxyCallback":true,"originalStorageStateRestored":true,"codeVerifierMatched":true,"pkceTokenPosts":1,"crossDeviceTokenVerify":true,"antiPrefetchZeroVerify":true,"tokenReplayFailed":true,"callbackStatus":303,"confirmed":true,"secureHttpOnlySessionCookie":true,"externalProviderCalls":0}

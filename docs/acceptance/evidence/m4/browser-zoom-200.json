@@ -1,0 +1,65 @@
+[
+  {
+    "screen": "home",
+    "browserZoom": 2,
+    "width": 720,
+    "height": 450,
+    "dpr": 2.000000074233867,
+    "scrollWidth": 712,
+    "clipped": []
+  },
+  {
+    "screen": "catalogue",
+    "browserZoom": 2,
+    "width": 720,
+    "height": 450,
+    "dpr": 2.000000074233867,
+    "scrollWidth": 720,
+    "clipped": []
+  },
+  {
+    "screen": "lesson-reader",
+    "browserZoom": 2,
+    "width": 720,
+    "height": 450,
+    "dpr": 2.000000074233867,
+    "scrollWidth": 712,
+    "clipped": []
+  },
+  {
+    "screen": "result",
+    "browserZoom": 2,
+    "width": 720,
+    "height": 450,
+    "dpr": 2.000000074233867,
+    "scrollWidth": 712,
+    "clipped": []
+  },
+  {
+    "screen": "practice-before",
+    "browserZoom": 2,
+    "width": 720,
+    "height": 450,
+    "dpr": 2.000000074233867,
+    "scrollWidth": 720,
+    "clipped": []
+  },
+  {
+    "screen": "srs-before-reveal",
+    "browserZoom": 2,
+    "width": 720,
+    "height": 450,
+    "dpr": 2.000000074233867,
+    "scrollWidth": 712,
+    "clipped": []
+  },
+  {
+    "screen": "srs-after-reveal",
+    "browserZoom": 2,
+    "width": 720,
+    "height": 450,
+    "dpr": 2.000000074233867,
+    "scrollWidth": 712,
+    "clipped": []
+  }
+]

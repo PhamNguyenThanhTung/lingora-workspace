@@ -1,0 +1,20 @@
+
+> lingora-workspace@1.0.0 test:integration:japanese
+> node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs lingora-web/tests/feature/japanese-curriculum-postgres.test.mjs
+
+(node:202585) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S6-08a.1: Japanese Curriculum Fixture & Progression Gating (PostgreSQL)
+  ✔ (1) Published Japanese stage order is strictly sequential: Hiragana -> Katakana -> Basic Vocabulary -> Kanji Components -> Kanji -> Words with Kanji (505.27899ms)
+  ✔ (2) Learner Home/onboarding/course readiness reports PLANNED while required curriculum is incomplete (469.939768ms)
+  ✔ (3) Completing a core lesson unlocks exactly the next lesson (progression gating) (617.918453ms)
+  ✔ (4) Detail API returns safe errors for locked, PLANNED and missing lesson IDs (506.144708ms)
+✔ S6-08a.1: Japanese Curriculum Fixture & Progression Gating (PostgreSQL) (2148.088784ms)
+ℹ tests 4
+ℹ suites 1
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2153.153212

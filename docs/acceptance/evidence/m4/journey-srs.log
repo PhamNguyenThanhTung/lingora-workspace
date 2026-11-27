@@ -1,0 +1,66 @@
+SRS_LANGUAGES Tiếng Anh — 14 từ đến hạn
+Tiếng Pháp — 0 từ đến hạn
+UI_METRIC srs-before-reveal 375 overflow false smallTargets 0 axe []
+UI_METRIC srs-before-reveal 768 overflow false smallTargets 0 axe []
+UI_METRIC srs-before-reveal 1440 overflow false smallTargets 0 axe []
+FOCUS srs-before-reveal {
+  id: 'completeReviewBtn',
+  tag: 'BUTTON',
+  text: 'Kết thúc phiên',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'rgb(213, 206, 241) 0px 4px 0px 0px',
+  visible: true
+}
+REDUCED srs-before-reveal { matches: true, animations: [] }
+LAYOUT_ZOOM_200 srs-before-reveal { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+UI_METRIC srs-after-reveal 375 overflow false smallTargets 0 axe []
+UI_METRIC srs-after-reveal 768 overflow false smallTargets 0 axe []
+UI_METRIC srs-after-reveal 1440 overflow false smallTargets 0 axe []
+FOCUS srs-after-reveal {
+  id: '',
+  tag: 'BODY',
+  text: '@media (prefers-reduced-motion: reduce) {\n              * {\n',
+  outline: 'rgb(27, 22, 54) none 3px',
+  shadow: 'none',
+  visible: false
+}
+REDUCED srs-after-reveal { matches: true, animations: [] }
+LAYOUT_ZOOM_200 srs-after-reveal { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+SRS_REVEALED Đã ôn: 0 / 14 từ · Tiếng Anh
+Kết thúc phiên
+How are you
+Ý NGHĨA
+Bạn có khỏe không?
+/haʊ ɑː juː/
+phrase
+“Hi Anna, how are you?”
+Chưa nhớ
+Đã nhớ
+UI_METRIC error-network 375 overflow false smallTargets 0 axe []
+UI_METRIC error-network 768 overflow false smallTargets 0 axe []
+UI_METRIC error-network 1440 overflow false smallTargets 0 axe []
+SRS_OFFLINE Lỗi kết nối mạng khi gửi đánh giá. Vui lòng nhấn "Thử lại gửi kết quả".
+
+Thử lại gửi kết quả
+SRS_RETRY Lingora
+Ôn từ vựng
+Về trang chủ
+Đã ôn: 1 / 14 từ · Tiếng Anh
+Kết thúc phiên
+Good evening
+Lật thẻ (Xem nghĩa)
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.selectOption: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('#reviewLanguageSelect')[22m
+
+    at srs (/tmp/lingora-accept-driver.mjs:104:42)
+    at async file:///tmp/lingora-accept-driver.mjs:177:267 {
+  log: [ "  - waiting for locator('#reviewLanguageSelect')" ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.22.3

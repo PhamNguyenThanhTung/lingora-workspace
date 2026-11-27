@@ -1,0 +1,336 @@
+UI_METRIC home 375 overflow false smallTargets 0 axe []
+UI_METRIC home 768 overflow false smallTargets 0 axe []
+UI_METRIC home 1440 overflow false smallTargets 0 axe []
+FOCUS home {
+  id: 'reviewNavBtn',
+  tag: 'A',
+  text: 'Ôn từ vựng (6)',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'rgb(213, 206, 241) 0px 3px 0px 0px',
+  visible: true
+}
+REDUCED home { matches: true, animations: [] }
+LAYOUT_ZOOM_200 home { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+J05 CATALOGUE Lingora
+Học viên
+← Lộ trình học
+Khóa học / Tiếng Anh
+[DEV] Chương trình tiếng Anh chuẩn
+Trình độ: A1 - Mới bắt đầu
+Khung: CEFR (2020)
+Chương 1: [DEV] Bài 1: Nền tảng
+Bài 1: Chào hỏi cơ bản
+(Bắt buộc)
+Đã hoàn thành
+Mở bài học
+Bài 2: Giới thiệu bản thân
+(Tùy chọn)
+Chưa đọc
+Mở bài học
+Bài 3: Thói quen hàng ngày
+(Bắt buộc)
+Đang đọc
+Mở bài học
+Bài 99: Gia đình – giữ số Admin
+(Bắt buộc)
+Chưa đọc
+Khóa: Cần hoàn thành bài học trước
+Đã khóa
+UI_METRIC catalogue 375 overflow true smallTargets 0 axe [ 'color-contrast:2' ]
+UI_METRIC catalogue 768 overflow false smallTargets 0 axe [ 'color-contrast:2' ]
+UI_METRIC catalogue 1440 overflow false smallTargets 0 axe [ 'color-contrast:2' ]
+FOCUS catalogue {
+  id: '',
+  tag: 'A',
+  text: 'Lingora',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'none',
+  visible: true
+}
+REDUCED catalogue { matches: true, animations: [] }
+LAYOUT_ZOOM_200 catalogue { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+OPTIONAL_API 200 {"data":{"contextId":"54abdbce-9dac-47dc-833d-f3cc22e6c557","lessonId":"38551064-6711-4ac6-b752-c30a4cab61f7","languageCode":"en","unit":{"id":"00000000-0000-0000-0000-000000000040","position":1,"names":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"}},"revision":{"id":"38685b7d-9ef1-
+OPTIONAL_BEFORE_REQUIRED Lingora
+Học viên
+← Danh mục bài học
+Chương 1: [DEV] Bài 1: Nền tảng / Bài 2: Giới thiệu bản thân
+Bài 2: Giới thiệu bản thân
+Phiên bản nội dung: #1
+Chưa đọc
+Tiến độ đọc nội dung
+
+Ghi nhận việc đọc nội dung, không hoàn thành bài tập hoặc mở khóa bài học tiếp theo.
+
+Mở nội dung
+
+Nội dung bài học chưa được mở.
+
+Vui lòng nhấn nút Mở nội dung ở trên để bắt đầu đọc bài học.
+
+Luyện tập bài học
+
+6 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Bắt đầu luyện tập để củng cố kiến thức và hoàn thành bài học.
+
+Bắt đầu luyện tập
+LOCKED_BEFORE_REQUIRED Lingora
+Học viên
+← Danh mục bài học
+Chương 1: [DEV] Bài 1: Nền tảng / Bài 3: Thói quen hàng ngày
+Bài 3: Thói quen hàng ngày
+Phiên bản nội dung: #1
+Đang đọc
+Tiến độ đọc nội dung
+
+Ghi nhận việc đọc nội dung, không hoàn thành bài tập hoặc mở khóa bài học tiếp theo.
+
+Hoàn thành đọc nội dung
+Bài đọc
+
+Để mô tả các hoạt động diễn ra thường xuyên mỗi ngày, chúng ta sử dụng thì hiện tại đơn (Present Simple).
+
+Các hoạt động phổ biến gồm có: 'wake up' (thức dậy), 'have breakfast' (ăn sáng), 'go to school/work' (đi học/đi làm), và 'go to sleep' (đi ngủ).
+
+Khi chủ ngữ là ngôi thứ ba số ít (he, she, it), động từ thường thêm '-s' hoặc '-es'. Ví dụ: 'He wakes up at 6 AM' nhưng 'I wake up at 6 AM'. Động từ kết thúc bằng -o, -s, -sh, -ch, -x thì thêm '-es': 'go' → 'She goes to school.'
+
+Từ vựng bài học (6)
+Breakfast
+/ˈbrek.fəst/
+(noun)
+Bữa ăn sáng
+The first meal of the day
+“I have breakfast at 7 o’clock.”
+Sleep
+/sliːp/
+(verb)
+Ngủ
+To rest in sleep
+“Children need to sleep eight hours a day.”
+Work
+/wɜːk/
+(verb)
+Làm việc
+To perform work
+“They work from Monday to Friday.”
+Wake up
+/weɪk ʌp/
+(phrasal verb)
+Thức dậy
+To stop sleeping
+“She wakes up at six.”
+Go
+/ɡəʊ/
+(verb)
+Đi
+To move or travel to a place
+“He goes to school by bus.”
+School
+/skuːl/
+(noun)
+Trường học
+A place where children go to learn
+“She goes to school every day.”
+Bài tập đọc hiểu (6)
+Bài tập 1: Điền từ
+Chỉ đọc
+
+Chia động từ phù hợp cho ngôi thứ ba số ít trong thì hiện tại đơn:
+
+She [ ____________ ] (wake) up early every morning.
+Bài tập 2: Trắc nghiệm
+Chỉ đọc
+
+Cụm từ nào là cách nói tự nhiên của 'ăn bữa sáng'?
+
+take a breakfast
+do breakfast
+have breakfast
+Bài tập 3: Sắp xếp từ
+Chỉ đọc
+
+Sắp xếp các từ thành câu mô tả thói quen:
+
+She
+up
+wakes
+six.
+at
+Bài tập 4: Điền từ
+Chỉ đọc
+
+Chia động từ cho ngôi thứ ba số ít (chú ý động từ kết thúc bằng -o):
+
+She [ ____________ ] (go) to school every day.
+Bài tập 5: Trắc nghiệm
+Chỉ đọc
+
+Ôn bài 2: Alex là kỹ sư. Câu nào đúng?
+
+He is an engineer.
+He are an engineer.
+He is a engineer.
+Bài tập 6: Viết câu
+Chỉ đọc
+
+Viết lại câu cho chủ ngữ 'He' (thì hiện tại đơn):
+
+Câu gốc: I wake up at 6 AM.
+Cấu trúc mẫu: He + động từ ngôi thứ ba số ít + ...
+Luyện tập bài học
+
+6 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Đang làm bài
+✕
+Câu hỏi 2
+Đã trả lời: 1
+BÀI TẬP: TRẮC NGHIỆM
+
+Cụm từ nào là cách nói tự nhiên của 'ăn bữa sáng'?
+
+1
+have breakfast
+2
+take a breakfast
+3
+do breakfast
+GỬI CÂU TRẢ LỜI
+UI_METRIC locked 375 overflow false smallTargets 0 axe []
+UI_METRIC locked 768 overflow false smallTargets 0 axe []
+UI_METRIC locked 1440 overflow false smallTargets 0 axe []
+ALREADY_COMPLETED 00000000-0000-0000-0000-000000000050
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.click: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('#completeReadingBtn')[22m
+[2m    - locator resolved to <button type="button" id="completeReadingBtn" class="btn btn-primary">Hoàn thành đọc nội dung</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is visible, enabled and stable[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+[2m    - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events[22m
+[2m  2 × retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <div class="practice-session__header">…</div> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events[22m
+[2m  4 × retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <div class="practice-session__header">…</div> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <div class="practice-session__header">…</div> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events[22m
+[2m  2 × retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events[22m
+[2m  - retrying click action[22m
+[2m    - waiting 500ms[22m
+
+    at playLesson (/tmp/lingora-accept-driver.mjs:52:64)
+    at async learning (/tmp/lingora-accept-driver.mjs:91:2)
+    at async file:///tmp/lingora-accept-driver.mjs:159:230 {
+  log: [
+    "  - waiting for locator('#completeReadingBtn')",
+    '    - locator resolved to <button type="button" id="completeReadingBtn" class="btn btn-primary">Hoàn thành đọc nội dung</button>',
+    '  - attempting click action',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events',
+    '    - retrying click action',
+    '    - waiting 20ms',
+    '    - waiting for element to be visible, enabled and stable',
+    '    - element is visible, enabled and stable',
+    '    - scrolling into view if needed',
+    '    - done scrolling',
+    '    - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events',
+    '  2 × retrying click action',
+    '      - waiting 100ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <div class="practice-session__header">…</div> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events',
+    '  4 × retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <div class="practice-session__header">…</div> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <div class="practice-session__header">…</div> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events',
+    '  2 × retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <label data-selected="false" class="practice-option" for="practice-6d83fc50-77d0-472b-863b-768715b55238-8e5b8fb4-064e-429a-816f-b62fa7670343-opt-3-3">…</label> from <section id="practiceSection" class="lesson-section">…</section> subtree intercepts pointer events',
+    '  - retrying click action',
+    '    - waiting 500ms'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.22.3

@@ -1,0 +1,80 @@
+
+> lingora-workspace@1.0.0 test:integration:studio
+> node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks --import ./lingora-web/tests/feature/harness/server-only.mjs lingora-admin/tests/feature/studio-postgres.test.mjs
+
+(node:201586) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[seed] Seeding canonical configuration with semantic mismatch detection...
+[seed] Language verified: en (00000000-0000-0000-0000-000000000001)
+[seed] Language verified: vi (00000000-0000-0000-0000-000000000002)
+[seed] Framework verified: CEFR v2020 (00000000-0000-0000-0000-000000000010)
+[seed] Level verified: A1 pos 1 (00000000-0000-0000-0000-000000000021)
+[seed] Level verified: A2 pos 2 (00000000-0000-0000-0000-000000000022)
+[seed] Level verified: B1 pos 3 (00000000-0000-0000-0000-000000000023)
+[seed] Level verified: B2 pos 4 (00000000-0000-0000-0000-000000000024)
+[seed] DEV Course created: 00000000-0000-0000-0000-000000000030
+[seed] DEV Unit verified: DEV-UNIT-01 (00000000-0000-0000-0000-000000000040)
+[seed] DEV Planned Lesson verified: pos 1 (00000000-0000-0000-0000-000000000050)
+[seed] Seeding completed successfully (all semantic records verified idempotent).
+▶ T02: PostgreSQL DDL & Constraints on lesson_revisions.content_schema_version
+  ✔ accepts content_schema_version = 0 and 1, rejects invalid values (7.089209ms)
+✔ T02: PostgreSQL DDL & Constraints on lesson_revisions.content_schema_version (92.701448ms)
+▶ T02: PostgreSQL DDL & Constraints on app.lesson_content_blocks
+  ✔ inserts all 9 valid canonical block types (5.664588ms)
+  ✔ rejects invalid block type not in enum (0.37209ms)
+  ✔ rejects position <= 0 via CHECK constraint (0.462379ms)
+  ✔ enforces UNIQUE (lesson_revision_id, block_key) (0.449042ms)
+  ✔ enforces UNIQUE (lesson_revision_id, position) (0.833587ms)
+  ✔ rejects block_key exceeding 128 characters (0.454142ms)
+  ✔ enforces foreign key to app.lesson_revisions (0.472218ms)
+✔ T02: PostgreSQL DDL & Constraints on app.lesson_content_blocks (12.763507ms)
+▶ T02: PostgreSQL DDL & Constraints on app.revision_review_comments
+  ✔ inserts valid revision-wide comment (both block_key and item_revision_id null) (1.576794ms)
+  ✔ inserts valid block-anchored comment (0.638339ms)
+  ✔ inserts valid item-anchored comment (0.700612ms)
+  ✔ rejects comment having BOTH block_key AND item_revision_id (0.319976ms)
+  ✔ enforces status metadata invariant (OPEN must have null resolvedAt/resolvedBy) (0.372931ms)
+  ✔ enforces status metadata invariant (RESOLVED must have non-null resolvedAt/resolvedBy) (0.293443ms)
+  ✔ inserts valid RESOLVED comment with complete resolution metadata (0.625322ms)
+  ✔ rejects item_revision_id belonging to a DIFFERENT lesson revision (3.1751ms)
+✔ T02: PostgreSQL DDL & Constraints on app.revision_review_comments (14.014172ms)
+▶ T02: Security Boundaries & Permissions on new tables
+  ✔ RLS is ENABLED and FORCED on lesson_content_blocks (0.652036ms)
+  ✔ RLS is ENABLED and FORCED on revision_review_comments (0.264005ms)
+✔ T02: Security Boundaries & Permissions on new tables (1.120988ms)
+▶ T03: Real DB Legacy Adapter & Read Parity Integration
+  ✔ V0 legacy revision with content_schema_version = 0 reads as adapted canonical blocks (31.505755ms)
+  ✔ V1 zero-block revision does NOT fall back to legacy contentBlocks (10.801046ms)
+  ✔ V1 revision with canonical block rows reads all blocks in position order (16.991068ms)
+  ✔ V1 predecessor rejects legacy paragraph save and marks draft uneditable (Finding 1) (19.959548ms)
+  ✔ Submit rejects malformed persisted V1 blocks without mutating workflow state (14.764903ms)
+  ✔ Cross-role Read Parity: Teacher, Admin Review, and Learner receive uniform V1 content (Finding 2) (82.737033ms)
+✔ T03: Real DB Legacy Adapter & Read Parity Integration (177.794263ms)
+▶ T04: Real Snapshot Save with Canonical Block Rows
+  ✔ saves initial V1 draft with canonical blocks on planned lesson (15.591227ms)
+  ✔ saves successor V1 draft with append-only block snapshot and predecessor immutability (16.12122ms)
+  ✔ validates and rejects invalid V1 save requests without modifying DB (4.737625ms)
+  ✔ preserves predecessor exercises and vocabulary snapshots across V1 successor saves (48.24841ms)
+  ✔ clones predecessor blocks when blocks is omitted (undefined) on V1 predecessor (10.447214ms)
+  ✔ saves zero-block V1 revision when blocks is empty array [] (9.943892ms)
+  ✔ rejects legacy paragraph save on V1 predecessor with 409 LEGACY_SAVE_FORBIDDEN_ON_V1 (6.025676ms)
+✔ T04: Real Snapshot Save with Canonical Block Rows (111.976825ms)
+▶ T05: Real Concurrency & Immutability Verification
+  ✔ simultaneous saves on same row_version resolve with one 200 and one 409 STALE_LESSON (14.748361ms)
+  ✔ published immutability: saving successor draft on PUBLISHED lesson does not mutate published evidence (90.23758ms)
+  ✔ concurrent save and reassignment serialize on Lesson.rowVersion (17.726941ms)
+  ✔ rejects pre-reassigned writes and inconsistent scope history (7.63322ms)
+✔ T05: Real Concurrency & Immutability Verification (130.902268ms)
+▶ T06: Teacher Assignment Workflow Packages 1–3 Integration
+  ✔ Checkpoint 1: Admin creates lesson shell & assigns Teacher A; permission boundaries & visibility (33.549286ms)
+  ✔ Checkpoint 2: Teacher A authors, saves V1 draft, reloads, submits; URL & API security for unassigned & reassignment (61.583573ms)
+  ✔ Checkpoint 3: Admin Review requests changes, feedback displayed, resubmit, publish, learner read & attribution (84.730224ms)
+✔ T06: Teacher Assignment Workflow Packages 1–3 Integration (187.377918ms)
+ℹ tests 38
+ℹ suites 8
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 738.810898

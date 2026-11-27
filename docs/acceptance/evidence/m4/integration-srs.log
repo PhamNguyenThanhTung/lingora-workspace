@@ -1,0 +1,61 @@
+
+> lingora-workspace@1.0.0 test:integration:srs
+> node scripts/local-test-db.mjs npm run test:integration:srs -w lingora-web
+
+
+> lingora-web@1.0.0 test:integration:srs
+> node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/srs-concurrency.test.mjs tests/feature/srs-sessions-postgres.test.mjs
+
+(node:201334) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Real PostgreSQL: SRS earliest due selection, DB clock, and prompt card delivery (189.908625ms)
+✔ Real PostgreSQL: Respond rating progresses stage and schedules nextDueAt atomically in DB (85.137872ms)
+✔ Real PostgreSQL: Concurrent submissions on same card yield exactly one success and one STALE_OPERATION (CAS) (74.114774ms)
+✔ Real PostgreSQL: Same-key concurrent requests both succeed with identical recorded outcome and single history row (R3 idempotency) (69.699254ms)
+✔ Real PostgreSQL: Conflicting payload with same operationKey fails with 409 OPERATION_CONFLICT (75.139952ms)
+✔ Real PostgreSQL: Committed replay for disabled learner is rejected with 403 ACCOUNT_INACTIVE (73.652855ms)
+✔ Real PostgreSQL: FORGOTTEN resets stage 5 to stage 1 and schedules +1 day (66.957473ms)
+✔ Real PostgreSQL: REMEMBERED caps stage 5 at stage 5 and schedules +30 days (63.304288ms)
+✔ Real PostgreSQL: Strict timezone validation (invalid timezone fails 400 INVALID_TIMEZONE) (60.196337ms)
+✔ Real PostgreSQL: Injected failure after card update rolls back card stage and rowVersion (68.016478ms)
+✔ Real PostgreSQL Injected-Clock: dueAt boundary (exact clock, 1ms future rejection, overdue acceptance) (61.960305ms)
+✔ Real PostgreSQL Injected-Clock: qualifyingLocalDate midnight boundaries and negative-offset timezone (79.703179ms)
+✔ Real PostgreSQL Injected-Clock: exact stored dates and interval math (nextDueAt minus reviewedAt) (69.383204ms)
+(node:201335) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Session timezone validation rejects before creating sessions or memory states (191.207548ms)
+✔ Session review persists the account local date for "UTC" (99.478137ms)
+✔ Session review persists the account local date for "Asia/Bangkok" (81.509298ms)
+✔ Session review persists the account local date for " UTC " (83.707819ms)
+✔ Session review persists the account local date for " Asia/Bangkok " (79.116379ms)
+✔ Real PostgreSQL S5-02: SrsMemoryState tracks skill MEANING, count, lapse, dueAt, version upon review (70.891976ms)
+✔ Real PostgreSQL S5-03: Session queue order is deterministic and preserves secrecy (no due preview or meaning leak) (66.196028ms)
+✔ Real PostgreSQL S5-03: Two separate learners are strictly isolated (63.695415ms)
+✔ Real PostgreSQL: first-touch completion and rating persist expiry with one connection (106.339982ms)
+✔ Real PostgreSQL: rating checks expiry against the database clock after locking the card (61.486062ms)
+✔ Real PostgreSQL S5-03 / Finding 2: Second tab with different key on same card cannot advance next card (70.203288ms)
+✔ Real PostgreSQL S5-03 / Finding 2: Same-key exact retries return committed outcome across progress changes and terminal state (69.163687ms)
+✔ Real PostgreSQL: replay preserves the original response after a skipped card and later completion (100.472818ms)
+✔ Real PostgreSQL S5-03 / Finding 4: Overlapping sessions safely reconcile cards reviewed elsewhere (70.608039ms)
+✔ Real PostgreSQL S5-03: PostgreSQL failure-injection after card, memory, operation and XP writes rolls back all five (59.531916ms)
+✔ Real PostgreSQL S5-03 / Finding 6: Optional contextId filters due cards and rejects foreign context (76.128024ms)
+✔ Real PostgreSQL S5-03: completeReviewSession revalidates active learner under account lock (53.456136ms)
+✔ Real PostgreSQL S6-09: WRITING SRS enrolls lazily, hides answers, grades each character, and schedules independently (189.012099ms)
+✔ Real PostgreSQL S6-10.2a: Published snapshot eligibility gates WRITING cards and protects prompt secrecy (275.398911ms)
+✔ Real PostgreSQL S6-10.2b: Independent WRITING initialization, due order merging, and limit filtering (198.632692ms)
+✔ Real PostgreSQL S6-10.2c: WRITING attempt request contract, character identity, concurrency, and overlapping sessions (174.725914ms)
+✔ Real PostgreSQL S6-10.2d: Rollout continuity, mid-session toggle, replay, and cross-skill isolation (178.782729ms)
+✔ Real PostgreSQL: a stale WRITING rating cannot mutate the following MEANING entry for the same card (179.410948ms)
+✔ Real PostgreSQL: new WRITING attempts must match the published character order in the session queue (157.144921ms)
+✔ G11: a context session only contains cards of that context language, whatever the card source (80.155478ms)
+✔ G11: context ownership is still enforced (403 for a foreign context, 404 for an unknown one) (57.323796ms)
+✔ Ôn nhanh: a warm-up session is capped at 3 cards and skips words this lesson introduces (79.914079ms)
+✔ Ôn nhanh: reviewing a warm-up card schedules it by Policy B and leaves no lesson attempt behind (91.577109ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3310.832801

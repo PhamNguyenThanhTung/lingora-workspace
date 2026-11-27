@@ -1,0 +1,454 @@
+UI_METRIC home 375 overflow false smallTargets 0 axe []
+UI_METRIC home 768 overflow false smallTargets 0 axe []
+UI_METRIC home 1440 overflow false smallTargets 0 axe []
+FOCUS home {
+  id: 'reviewNavBtn',
+  tag: 'A',
+  text: 'Ôn từ vựng (6)',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'rgb(213, 206, 241) 0px 3px 0px 0px',
+  visible: true
+}
+REDUCED home { matches: true, animations: [] }
+LAYOUT_ZOOM_200 home { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+J05 CATALOGUE Lingora
+Học viên
+← Lộ trình học
+Khóa học / Tiếng Anh
+[DEV] Chương trình tiếng Anh chuẩn
+Trình độ: A1 - Mới bắt đầu
+Khung: CEFR (2020)
+Chương 1: [DEV] Bài 1: Nền tảng
+Bài 1: Chào hỏi cơ bản
+(Bắt buộc)
+Đã hoàn thành
+Mở bài học
+Bài 2: Giới thiệu bản thân
+(Tùy chọn)
+Chưa đọc
+Mở bài học
+Bài 3: Thói quen hàng ngày
+(Bắt buộc)
+Đang đọc
+Mở bài học
+Bài 99: Gia đình – giữ số Admin
+(Bắt buộc)
+Chưa đọc
+Khóa: Cần hoàn thành bài học trước
+Đã khóa
+UI_METRIC catalogue 375 overflow true smallTargets 0 axe [ 'color-contrast:2' ]
+UI_METRIC catalogue 768 overflow false smallTargets 0 axe [ 'color-contrast:2' ]
+UI_METRIC catalogue 1440 overflow false smallTargets 0 axe [ 'color-contrast:2' ]
+FOCUS catalogue {
+  id: '',
+  tag: 'A',
+  text: 'Lingora',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'none',
+  visible: true
+}
+REDUCED catalogue { matches: true, animations: [] }
+LAYOUT_ZOOM_200 catalogue { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+OPTIONAL_API 200 {"data":{"contextId":"54abdbce-9dac-47dc-833d-f3cc22e6c557","lessonId":"38551064-6711-4ac6-b752-c30a4cab61f7","languageCode":"en","unit":{"id":"00000000-0000-0000-0000-000000000040","position":1,"names":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"}},"revision":{"id":"38685b7d-9ef1-
+OPTIONAL_BEFORE_REQUIRED Lingora
+Học viên
+← Danh mục bài học
+Chương 1: [DEV] Bài 1: Nền tảng / Bài 2: Giới thiệu bản thân
+Bài 2: Giới thiệu bản thân
+Phiên bản nội dung: #1
+Chưa đọc
+Tiến độ đọc nội dung
+
+Ghi nhận việc đọc nội dung, không hoàn thành bài tập hoặc mở khóa bài học tiếp theo.
+
+Mở nội dung
+
+Nội dung bài học chưa được mở.
+
+Vui lòng nhấn nút Mở nội dung ở trên để bắt đầu đọc bài học.
+
+Luyện tập bài học
+
+6 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Bắt đầu luyện tập để củng cố kiến thức và hoàn thành bài học.
+
+Bắt đầu luyện tập
+LOCKED_BEFORE_REQUIRED Lingora
+Học viên
+Bài học chưa mở khóa
+
+Cần hoàn thành bài học trước.
+
+Thử lại
+Về trang chủ
+UI_METRIC locked 375 overflow false smallTargets 0 axe []
+UI_METRIC locked 768 overflow false smallTargets 0 axe []
+UI_METRIC locked 1440 overflow false smallTargets 0 axe []
+ALREADY_COMPLETED 00000000-0000-0000-0000-000000000050
+RESPONSE 115748bc-f0a6-41a8-8092-166b5423d128 MCQ Cụm từ nào là cách nói tự nhiên của 'ăn bữa sáng'? true
+RESPONSE 115748bc-f0a6-41a8-8092-166b5423d128 REORDER Sắp xếp các từ thành câu mô tả thói quen: true
+RESPONSE 115748bc-f0a6-41a8-8092-166b5423d128 FILL_BLANK Chia động từ cho ngôi thứ ba số ít (chú ý động từ kết thúc bằng -o): true
+RESPONSE 115748bc-f0a6-41a8-8092-166b5423d128 MCQ Ôn bài 2: Alex là kỹ sư. Câu nào đúng? true
+RESPONSE 115748bc-f0a6-41a8-8092-166b5423d128 GRAMMAR Viết lại câu cho chủ ngữ 'He' (thì hiện tại đơn): true
+RESPONSE 115748bc-f0a6-41a8-8092-166b5423d128 FILL_BLANK Chia động từ phù hợp cho ngôi thứ ba số ít trong thì hiện tại đơn: true
+ACTION #finalizePracticeBtn 200 {"data":{"attempt":{"id":"6d83fc50-77d0-472b-863b-768715b55238","contextId":"54abdbce-9dac-47dc-833d-f3cc22e6c557","lessonId":"115748bc-f0a6-41a8-8092-166b5423d128","lessonRevisionId":"b4c88379-e020-40d2-8d2c-ab16b2dc30af","startedAt":"2026-11-27T03:16:42.385Z","completedAt":"2026-11-27T03:17:45.809Z","nCore":6,"kFirstWrong":1,"contributionUnits":11,"responseCount":7,"score":{"contributionUnits":11,"maxUnits":14,"percentage":79},"isCompleted":true,"isStale":false,"nextExercise":null,"nextOrdinal":null,"queuePosition":null,"exercises":[{"id":"4fb2c6d8-becd-4d21-b923-f2830ef6fdff","itemId":"ef28
+RESULT 115748bc-f0a6-41a8-8092-166b5423d128 Luyện tập bài học
+
+6 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Đã hoàn thành
+✓
+Hoàn thành bài luyện tập!
+
+Kết quả làm bài đã được ghi nhận trên hệ thống.
+
+🎉 PHẦN THƯỞNG & THÀNH TÍCH
+XP nhận được
++30 XP
+Kim cương
+💎 +5
+Chính xác lần 1
+83%
+chỉ tính lần trả lời đầu
+Chuỗi ngày
+🔥 1 ngày
+Từ nạp SRS
++6 từ
+ĐIỂM SỐ ĐẠT ĐƯỢC
+Điểm 79%
+tính cả lượt làm lại câu sai (đúng ngay: 1 điểm, đúng khi làm lại: 0,5 điểm)
+Chi tiết câu trả lời và giải thích
+Câu 1 (Điền từ)
+Đúng khi làm lại
+
+She ____ (wake) up early every morning.
+
+Câu trả lời của bạn: wakes
+Sai lần 1 (father) → Đúng khi làm lại (wakes)
+Đáp án đúng: wakes
+Giải thích: Với chủ ngữ ngôi thứ ba số ít 'She', động từ 'wake' được thêm 's' thành 'wakes' (đi kèm 'up' tạo thành cụm 'wakes up').
+Câu 2 (Trắc nghiệm)
+Đúng
+
+Cụm từ nào là cách nói tự nhiên của 'ăn bữa sáng'?
+
+Câu trả lời của bạn: have breakfast
+Đáp án đúng: have breakfast
+Giải thích: Collocation chuẩn trong tiếng Anh là 'have breakfast'.
+Câu 3 (Sắp xếp từ)
+Đúng
+
+Sắp xếp các từ thành câu mô tả thói quen:
+
+Câu trả lời của bạn: She wakes up at six.
+Đáp án đúng: She wakes up at six.
+Giải thích: 'She wakes up at six.' dùng thì hiện tại đơn cho thói quen; chủ ngữ 'She' là ngôi thứ ba số ít nên động từ 'wake' thêm 's' thành 'wakes'.
+Câu 4 (Điền từ)
+Đúng
+
+She ____ (go) to school every day.
+
+Câu trả lời của bạn: goes
+Đáp án đúng: goes
+Giải thích: Động từ 'go' kết thúc bằng -o nên thêm '-es' thành 'goes' với chủ ngữ 'She'.
+Câu 5 (Trắc nghiệm)
+Đúng
+
+Ôn bài 2: Alex là kỹ sư. Câu nào đúng?
+
+Câu trả lời của bạn: He is an engineer.
+Đáp án đúng: He is an engineer.
+Giải thích: Dùng 'is' với 'He' và mạo từ 'an' trước 'engineer' (bài 2): 'He is an engineer.'
+Câu 6 (Viết câu)
+Đúng
+
+Viết lại câu cho chủ ngữ 'He' (thì hiện tại đơn):
+
+Câu gốc: I wake up at 6 AM.
+
+Câu trả lời của bạn: He wakes up at 6 AM.
+Đáp án đúng: He wakes up at 6 AM. / He wakes up at 6 AM / He wakes up at six. / He wakes up at six
+Giải thích: Với 'He', động từ 'wake' thêm 's' thành 'wakes': 'He wakes up at 6 AM.'
+Về lộ trình học tập
+Luyện tập lại
+UI_METRIC lesson-reader 375 overflow false smallTargets 0 axe []
+UI_METRIC lesson-reader 768 overflow false smallTargets 0 axe []
+UI_METRIC lesson-reader 1440 overflow false smallTargets 0 axe []
+FOCUS lesson-reader {
+  id: 'completeReadingBtn',
+  tag: 'BUTTON',
+  text: 'Hoàn thành đọc nội dung',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'rgb(58, 47, 191) 0px 4px 0px 0px',
+  visible: true
+}
+REDUCED lesson-reader { matches: true, animations: [] }
+LAYOUT_ZOOM_200 lesson-reader { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+WARMUP_OFFERED 99bb9d8f-eaf4-4261-913a-362ef26d1780
+UI_METRIC practice-before 375 overflow false smallTargets 0 axe []
+UI_METRIC practice-before 768 overflow false smallTargets 0 axe []
+UI_METRIC practice-before 1440 overflow false smallTargets 0 axe []
+FOCUS practice {
+  id: 'exitPracticeBtn',
+  tag: 'BUTTON',
+  text: '✕',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'none',
+  visible: true
+}
+REDUCED practice { matches: true, animations: [] }
+LAYOUT_ZOOM_200 practice { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+RESPONSE 99bb9d8f-eaf4-4261-913a-362ef26d1780 MCQ Trong hội thoại, Anna có mấy người anh/chị/em? false
+WRONG_FEEDBACK ✗
+Kết quả câu vừa rồi
+Chưa chính xác.
+Đáp án đúng: Hai người: một anh/em trai và một chị/em gái
+Anna nói: 'I have one brother and one sister' — một anh/em trai và một chị/em gái.
+Ẩn
+UI_METRIC practice-after-wrong 375 overflow false smallTargets 0 axe [ 'color-contrast:1' ]
+UI_METRIC practice-after-wrong 768 overflow false smallTargets 0 axe [ 'color-contrast:1' ]
+UI_METRIC practice-after-wrong 1440 overflow false smallTargets 0 axe [ 'color-contrast:1' ]
+RESPONSE 99bb9d8f-eaf4-4261-913a-362ef26d1780 FILL_BLANK Điền từ còn thiếu: Bố của Anna là bác sĩ. true
+RESPONSE 99bb9d8f-eaf4-4261-913a-362ef26d1780 REORDER Sắp xếp các từ thành câu: Tôi có một người em gái. true
+RESPONSE 99bb9d8f-eaf4-4261-913a-362ef26d1780 GRAMMAR Viết câu: Tôi có một người anh/em trai (theo mẫu I have ...). true
+RESPONSE 99bb9d8f-eaf4-4261-913a-362ef26d1780 LISTENING Nghe âm thanh và chọn chủ đề. true
+RESPONSE 99bb9d8f-eaf4-4261-913a-362ef26d1780 MCQ Trong hội thoại, Anna có mấy người anh/chị/em? true
+ACTION #finalizePracticeBtn 200 {"data":{"attempt":{"id":"0be0da51-a3b4-48ee-862d-bde5a08f9e02","contextId":"54abdbce-9dac-47dc-833d-f3cc22e6c557","lessonId":"99bb9d8f-eaf4-4261-913a-362ef26d1780","lessonRevisionId":"15d4a1c9-6be5-4feb-b057-0247b877776a","startedAt":"2026-11-27T03:17:48.964Z","completedAt":"2026-11-27T03:17:53.190Z","nCore":5,"kFirstWrong":1,"contributionUnits":9,"responseCount":6,"score":{"contributionUnits":9,"maxUnits":12,"percentage":75},"isCompleted":true,"isStale":false,"nextExercise":null,"nextOrdinal":null,"queuePosition":null,"exercises":[{"id":"145939a0-ce5b-489a-b4d1-5036965486b5","itemId":"6bcab7
+RESULT 99bb9d8f-eaf4-4261-913a-362ef26d1780 Luyện tập bài học
+
+5 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Đã hoàn thành
+✓
+Hoàn thành bài luyện tập!
+
+Kết quả làm bài đã được ghi nhận trên hệ thống.
+
+🎉 PHẦN THƯỞNG & THÀNH TÍCH
+XP nhận được
++30 XP
+Kim cương
+💎 +5
+Chính xác lần 1
+80%
+chỉ tính lần trả lời đầu
+Chuỗi ngày
+🔥 1 ngày
+Từ nạp SRS
++2 từ
+ĐIỂM SỐ ĐẠT ĐƯỢC
+Điểm 75%
+tính cả lượt làm lại câu sai (đúng ngay: 1 điểm, đúng khi làm lại: 0,5 điểm)
+Chi tiết câu trả lời và giải thích
+Câu 1 (Trắc nghiệm)
+Đúng khi làm lại
+
+Trong hội thoại, Anna có mấy người anh/chị/em?
+
+Câu trả lời của bạn: Hai người: một anh/em trai và một chị/em gái
+Sai lần 1 (Không có) → Đúng khi làm lại (Hai người: một anh/em trai và một chị/em gái)
+Đáp án đúng: Hai người: một anh/em trai và một chị/em gái
+Giải thích: Anna nói: 'I have one brother and one sister' — một anh/em trai và một chị/em gái.
+Câu 2 (Điền từ)
+Đúng
+
+My ____ is a doctor.
+
+Câu trả lời của bạn: father
+Đáp án đúng: father
+Giải thích: 'father' nghĩa là bố; Anna nói 'my father is a doctor'.
+Câu 3 (Sắp xếp từ)
+Đúng
+
+Sắp xếp các từ thành câu: Tôi có một người em gái.
+
+Câu trả lời của bạn: I have one sister
+Đáp án đúng: I have one sister
+Giải thích: Cấu trúc: I have + số lượng + danh từ.
+Câu 4 (Viết câu)
+Đúng
+
+Viết câu: Tôi có một người anh/em trai (theo mẫu I have ...).
+
+Câu gốc: one brother
+
+Câu trả lời của bạn: I have one brother
+Đáp án đúng: I have one brother
+Giải thích: Dùng 'I have' + số lượng + danh từ.
+Câu 5 (Nghe và chọn)
+Đúng
+
+Nghe âm thanh và chọn chủ đề.
+
+Câu trả lời của bạn: Daily routine
+Đáp án đúng: Daily routine
+Giải thích: Âm thanh mô tả sinh hoạt hàng ngày.
+Về lộ trình học tập
+Luyện tập lại
+UI_METRIC result 375 overflow false smallTargets 0 axe [ 'color-contrast:2' ]
+UI_METRIC result 768 overflow false smallTargets 0 axe [ 'color-contrast:2' ]
+UI_METRIC result 1440 overflow false smallTargets 0 axe [ 'color-contrast:2' ]
+FOCUS result {
+  id: 'celebrationHomeBtn',
+  tag: 'A',
+  text: 'Về lộ trình học tập',
+  outline: 'rgb(169, 155, 255) solid 3px',
+  shadow: 'rgb(58, 47, 191) 0px 4px 0px 0px',
+  visible: true
+}
+REDUCED result { matches: true, animations: [] }
+LAYOUT_ZOOM_200 result { width: 1440, scrollWidth: 1440, bodyWidth: 1440 }
+J07_RELOAD Luyện tập bài học
+
+5 bài tập cốt lõi • Mỗi câu sai được làm lại một lần
+
+Đã hoàn thành
+✓
+Hoàn thành bài luyện tập!
+
+Kết quả làm bài đã được ghi nhận trên hệ thống.
+
+🎉 PHẦN THƯỞNG & THÀNH TÍCH
+XP nhận được
++30 XP
+Kim cương
+💎 +5
+Chính xác lần 1
+80%
+chỉ tính lần trả lời đầu
+Chuỗi ngày
+🔥 1 ngày
+Từ nạp SRS
++2 từ
+ĐIỂM SỐ ĐẠT ĐƯỢC
+Điểm 75%
+tính cả lượt làm lại câu sai (đúng ngay: 1 điểm, đúng khi làm lại: 0,5 điểm)
+Chi tiết câu trả lời và giải thích
+Câu 1 (Trắc nghiệm)
+Đúng khi làm lại
+
+Trong hội thoại, Anna có mấy người anh/chị/em?
+
+Câu trả lời của bạn: Hai người: một anh/em trai và một chị/em gái
+Sai lần 1 (Không có) → Đúng khi làm lại (Hai người: một anh/em trai và một chị/em gái)
+Đáp án đúng: Hai người: một anh/em trai và một chị/em gái
+Giải thích: Anna nói: 'I have one brother and one sister' — một anh/em trai và một chị/em gái.
+Câu 2 (Điền từ)
+Đúng
+
+My ____ is a doctor.
+
+Câu trả lời của bạn: father
+Đáp án đúng: father
+Giải thích: 'father' nghĩa là bố; Anna nói 'my father is a doctor'.
+Câu 3 (Sắp xếp từ)
+Đúng
+
+Sắp xếp các từ thành câu: Tôi có một người em gái.
+
+Câu trả lời của bạn: I have one sister
+Đáp án đúng: I have one sister
+Giải thích: Cấu trúc: I have + số lượng + danh từ.
+Câu 4 (Viết câu)
+Đúng
+
+Viết câu: Tôi có một người anh/em trai (theo mẫu I have ...).
+
+Câu gốc: one brother
+
+Câu trả lời của bạn: I have one brother
+Đáp án đúng: I have one brother
+Giải thích: Dùng 'I have' + số lượng + danh từ.
+Câu 5 (Nghe và chọn)
+Đúng
+
+Nghe âm thanh và chọn chủ đề.
+
+Câu trả lời của bạn: Daily routine
+Đáp án đúng: Daily routine
+Giải thích: Âm thanh mô tả sinh hoạt hàng ngày.
+Về lộ trình học tập
+Luyện tập lại
+J07_HOME Lingora
+Học viên
+Ôn từ vựng (14)
+Học viên Mai
+Đăng xuất
+Chào Học viên Mai! 👋
+
+Tiếng Anh · A1 - Mới bắt đầu
+
+🔥
+1 ngày
+CHUỖI NGÀY
+⚡
+100 XP
+ĐIỂM KN
+💎
+25
+KIM CƯƠNG
+BÀI HỌC TIẾP THEO
+Bài 2: Giới thiệu bản thân
+[DEV] Bài 1: Nền tảng
+Bắt đầu học
+Lộ trình đang xem
+Tiếng Anh · A1
+Tiếng Pháp · A1
+
+3/3 bài đã hoàn thành
+
+⏱️
+Mục tiêu: 10 phút • 3 bài học • 0 từ đã ôn
+
+Kỷ lục chuỗi ngày: 1 ngày
+
+Lịch học 28 ngày
+Nhiệm vụ hôm nay
+✅ Hoàn thành 1 bài học
++10 XP
+1/1
+🎯 Ôn tập 10 từ vựng
++10 XP
+0/10
+🏆
+Thành tựu mới: Bài học đầu tiên - Hoàn thành bài học đầu tiên.
+Lộ trình bài học
+Chương 1: [DEV] Bài 1: Nền tảng
+3/3 (+1 tùy chọn)
+✓
+Bài 1: Chào hỏi cơ bản
+100%
+Đã hoàn thành
+BẮT ĐẦU
+★
+Bài 2: Giới thiệu bản thân
+Tùy chọn
+Đang học
+✓
+Bài 3: Thói quen hàng ngày
+79%
+Đã hoàn thành
+✓
+Bài 99: Gia đình – giữ số Admin
+75%
+Đã hoàn thành
+Bạn đang học tối đa hai ngôn ngữ.
+[DEV] Chương trình tiếng Anh chuẩn
+Tiếng Anh
+Đang học
+Trình độ hiện tại
+A1 - Mới bắt đầu
+Mục tiêu học:
+Cập nhật mục tiêu
+Tạm dừng
+Vào học
+Tiếng Pháp M4
+Tiếng Pháp
+Đang học
+Trình độ hiện tại
+A1 - Mới bắt đầu
+Mục tiêu học:
+Cập nhật mục tiêu
+Tạm dừng
+Vào học
