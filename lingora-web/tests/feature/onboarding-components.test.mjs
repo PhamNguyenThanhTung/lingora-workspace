@@ -54,7 +54,10 @@ describe('Sprint 3: Onboarding Wizard Component & Flow Tests', () => {
 
     // Step 3: Daily Goal
     await page.waitForSelector('#goalOption-15', { state: 'visible' });
-    await page.click('#goalOption-15');
+    const goal = page.getByRole('radio', { name: '10 phút / ngày' });
+    await goal.focus();
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await page.getByRole('radio', { name: '15 phút / ngày' }).isChecked(), true);
     await page.click('#btnStep3Next');
 
     // Step 4: Interests
