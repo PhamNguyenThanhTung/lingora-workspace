@@ -312,4 +312,112 @@ describe('S5-03: SRS Sessions API Route Handlers', () => {
     assert.equal(body.data.status, 'COMPLETED');
     assert.ok(body.data.completedAt);
   });
+
+  test('EXT-03 Ca 1: POST /api/srs/sessions/:sessionId/writing-attempts returns 404 when WRITING_SRS_ENABLED=true and learner is outside allowlist', async () => {
+    const priorEnabled = process.env.WRITING_SRS_ENABLED;
+    const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+    process.env.WRITING_SRS_ENABLED = 'true';
+    process.env.WRITING_SRS_LEARNER_IDS = otherLearnerId;
+
+    try {
+      const cardId = randomUUID();
+      state.srsCards.push({
+        id: cardId,
+        learnerId: state.account.id,
+        vocabularyId: 'vocab-1',
+        stage: 1,
+        dueAt: new Date(Date.now() - 3600 * 1000),
+        lastReviewedAt: null,
+        enrollmentSource: 'CORE_COMPLETION',
+        rowVersion: 1n,
+      });
+
+      const createRes = await sessionsRoute.POST(new Request('http://localhost:3000/api/srs/sessions', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ limit: 10 }),
+      }));
+      assert.equal(createRes.status, 201);
+      const createBody = await createRes.json();
+      assert.equal(createBody.data.currentItem.canonicalForm, 'Hello');
+      assert.equal('skill' in createBody.data.currentItem, false);
+
+      const attemptRes = await sessionWritingAttemptsRoute.POST(
+        new Request(`http://localhost:3000/api/srs/sessions/${createBody.data.sessionId}/writing-attempts`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            cardId,
+            operationKey: randomUUID(),
+            characterNumber: 1,
+            candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+          }),
+        }),
+        { params: Promise.resolve({ sessionId: createBody.data.sessionId }) },
+      );
+      assert.equal(attemptRes.status, 404);
+      const attemptBody = await attemptRes.json();
+      assert.equal(attemptBody.error.code, 'NOT_FOUND');
+    } finally {
+      if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+      else process.env.WRITING_SRS_ENABLED = priorEnabled;
+      if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+      else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+    }
+  });
+
+  test('EXT-03 Ca 2: POST /api/srs/sessions/:sessionId/writing-attempts returns 404 when WRITING_SRS_ENABLED=false even if learner is in allowlist', async () => {
+    const priorEnabled = process.env.WRITING_SRS_ENABLED;
+    const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+    process.env.WRITING_SRS_ENABLED = 'false';
+    process.env.WRITING_SRS_LEARNER_IDS = learnerId;
+
+    try {
+      const cardId = randomUUID();
+      const sessionId = randomUUID();
+      state.srsCards.push({
+        id: cardId,
+        learnerId: state.account.id,
+        vocabularyId: 'vocab-1',
+        stage: 1,
+        dueAt: new Date(Date.now() - 3600 * 1000),
+        lastReviewedAt: null,
+        enrollmentSource: 'CORE_COMPLETION',
+        rowVersion: 1n,
+      });
+      state.srsReviewSessions.push({
+        id: sessionId,
+        learnerId: state.account.id,
+        status: 'ACTIVE',
+        sessionLimit: 20,
+        cardIds: [cardId],
+        currentIndex: 0,
+        completedCount: 0,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        rowVersion: 1n,
+      });
+
+      const attemptRes = await sessionWritingAttemptsRoute.POST(
+        new Request(`http://localhost:3000/api/srs/sessions/${sessionId}/writing-attempts`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            cardId,
+            operationKey: randomUUID(),
+            characterNumber: 1,
+            candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+          }),
+        }),
+        { params: Promise.resolve({ sessionId }) },
+      );
+      assert.equal(attemptRes.status, 404);
+      const attemptBody = await attemptRes.json();
+      assert.equal(attemptBody.error.code, 'NOT_FOUND');
+    } finally {
+      if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+      else process.env.WRITING_SRS_ENABLED = priorEnabled;
+      if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+      else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+    }
+  });
 });
