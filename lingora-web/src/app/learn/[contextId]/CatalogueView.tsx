@@ -181,21 +181,11 @@ export function CatalogueView({ data, errorState }: CatalogueViewProps) {
                       return (
                         <div
                           key={lesson.id}
-                          className="lesson-card"
+                          className={`lesson-card${lesson.isLocked ? ' is-locked' : ''}`}
                           data-lesson-id={lesson.id}
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '14px 18px',
-                            backgroundColor: 'var(--surface-bg)',
-                            border: '1px solid var(--border-subtle)',
-                            borderRadius: 'var(--radius-md)',
-                            opacity: lesson.isLocked ? 0.75 : 1,
-                          }}
                         >
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div className="lesson-card__main">
+                            <div className="lesson-card__title-row">
                               <span style={{ fontWeight: 600 }}>
                                 {numberedTitle('Bài', lesson.position, lessonTitle || 'Bài học')}
                               </span>
@@ -209,7 +199,7 @@ export function CatalogueView({ data, errorState }: CatalogueViewProps) {
                                 </span>
                               )}
                             </div>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <div className="lesson-card__badges">
                               <span className={`badge ${readingBadgeClass}`}>
                                 {readingLabel}
                               </span>
@@ -221,7 +211,7 @@ export function CatalogueView({ data, errorState }: CatalogueViewProps) {
                             </div>
                           </div>
 
-                          <div>
+                          <div className="lesson-card__action">
                             {lesson.isLocked ? (
                               <button
                                 type="button"

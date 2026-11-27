@@ -597,7 +597,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                     alignItems: 'center',
                     gap: '10px',
                     padding: '12px 14px',
-                    borderRadius: '6px',
+                    borderRadius: 'var(--radius-md)',
                     border: isSelected ? '2px solid var(--primary, #2563eb)' : '1px solid var(--border-color, #e2e8f0)',
                     background: isSelected ? 'var(--subtle-bg, #eff6ff)' : '#fff',
                     cursor: 'pointer',
@@ -721,7 +721,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                     alignItems: 'center',
                     gap: '10px',
                     padding: '10px 14px',
-                    borderRadius: '6px',
+                    borderRadius: 'var(--radius-md)',
                     border: isSelected ? '2px solid var(--primary, #2563eb)' : '1px solid var(--border-color, #e2e8f0)',
                     background: isSelected ? 'var(--subtle-bg, #eff6ff)' : '#fff',
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -993,7 +993,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
 
               {/* Reasons */}
               {previewData.reasonCodes && previewData.reasonCodes.length > 0 && (
-                <div style={{ marginBottom: '16px', padding: '12px', background: 'var(--subtle-bg, #f8fafc)', borderRadius: '6px' }}>
+                <div style={{ marginBottom: '16px', padding: '12px', background: 'var(--subtle-bg, #f8fafc)', borderRadius: 'var(--radius-md)' }}>
                   <div style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '6px' }}>Lý do đề xuất:</div>
                   <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                     {previewData.reasonCodes.map((code) => (
@@ -1005,7 +1005,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
 
               {/* Next lesson */}
               {previewData.nextLesson ? (
-                <div style={{ padding: '12px', border: '1px solid #bfdbfe', background: '#eff6ff', borderRadius: '6px' }}>
+                <div style={{ padding: '12px', border: '1px solid #bfdbfe', background: '#eff6ff', borderRadius: 'var(--radius-md)' }}>
                   <div style={{ fontSize: '0.85rem', color: '#1e40af', fontWeight: 600 }}>Bài học sẵn sàng để mở:</div>
                   <div style={{ fontWeight: 600, marginTop: '2px' }}>
                     {getLocalized(previewData.nextLesson.title) || previewData.nextLesson.id}

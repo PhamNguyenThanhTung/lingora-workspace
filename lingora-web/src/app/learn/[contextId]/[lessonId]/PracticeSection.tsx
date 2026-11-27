@@ -406,8 +406,8 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
           <div id="activePracticeBox" className="practice-session__body">
             {(actionError || isStale) && alertNode}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-              <span id="queueProgressLabel" style={{ fontWeight: 700 }}>
+            <div className="practice-queue-row">
+              <span id="queueProgressLabel">
                 {attempt.nextExercise ? (
                   <>
                     Câu hỏi {attempt.queuePosition}
@@ -417,7 +417,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                   'Đã trả lời tất cả các câu hỏi'
                 )}
               </span>
-              <span style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)' }}>
+              <span className="practice-queue-row__count">
                 Đã trả lời: {attempt.responses.length}
               </span>
             </div>
@@ -485,7 +485,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                       {(prompt?.sentence || '').replace('____', '[ ____________ ]')}
                     </div>
                     <div>
-                      <label htmlFor="fillBlankInput" style={{ display: 'block', marginBottom: '6px', fontSize: 'var(--font-size-sub)', fontWeight: 700 }}>
+                      <label htmlFor="fillBlankInput" className="practice-field-label">
                         Nhập từ cần điền:
                       </label>
                       <input
@@ -508,18 +508,18 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
 
                 {attempt.nextExercise.type === 'GRAMMAR' && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ padding: '14px 16px', background: '#fff', border: '2px solid #e5e9f1', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div className="practice-prompt-card">
                       <div>
-                        <span style={{ fontWeight: 700 }}>Câu gốc: </span>
+                        <span style={{ fontWeight: 800 }}>Câu gốc: </span>
                         <span>{prompt?.sourceSentence}</span>
                       </div>
                       <div>
-                        <span style={{ fontWeight: 700 }}>Cấu trúc: </span>
+                        <span style={{ fontWeight: 800 }}>Cấu trúc: </span>
                         <span>{prompt?.targetPattern}</span>
                       </div>
                     </div>
                     <div>
-                      <label htmlFor="grammarInput" style={{ display: 'block', marginBottom: '6px', fontSize: 'var(--font-size-sub)', fontWeight: 700 }}>
+                      <label htmlFor="grammarInput" className="practice-field-label">
                         Nhập câu trả lời:
                       </label>
                       <input
@@ -594,7 +594,8 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 id="finalizePromptBox"
                 style={{ textAlign: 'center', padding: '32px 16px' }}
               >
-                <p style={{ fontSize: '22px', fontWeight: 800 }}>
+                <div className="celebrate__badge" aria-hidden="true">🎯</div>
+                <p style={{ fontSize: '22px', fontWeight: 800, marginTop: '14px' }}>
                   Bạn đã trả lời tất cả các câu hỏi trong phiên luyện tập.
                 </p>
               </div>
@@ -662,7 +663,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                 <button
                   type="button"
                   id="finalizePracticeBtn"
-                  className="practice-cta"
+                  className="practice-cta practice-cta--success"
                   onClick={handleFinalizeAttempt}
                   disabled={blocked}
                 >
@@ -694,7 +695,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
             <span className="celebrate__badge">
               ✓
             </span>
-            <h3 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '6px' }}>
+            <h3 className="celebrate__title">
               Hoàn thành bài luyện tập!
             </h3>
             <p style={{ color: 'var(--text-muted)' }}>
@@ -788,26 +789,14 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
           )}
 
           {attempt.score && (
-            <div
-              id="practiceScoreBox"
-              style={{
-                display: 'inline-block',
-                padding: '16px 24px',
-                backgroundColor: 'var(--canvas-bg)',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-subtle)',
-                marginBottom: '20px',
-              }}
-            >
-              <div style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                Điểm số đạt được
-              </div>
+            <div id="practiceScoreBox" className="score-card">
+              <div className="score-card__label">Điểm số đạt được</div>
               {/* H10: one number the learner can read. The raw contribution units (ADR-036 scoring)
                   doubled as "5 / 8" next to a different percentage and only confused people. */}
-              <div id="practiceCompletionScore" style={{ fontSize: '28px', fontWeight: 700, color: 'var(--primary-color)' }}>
+              <div id="practiceCompletionScore" className="score-card__value">
                 Điểm {attempt.score.percentage}%
               </div>
-              <div id="practiceScoreExplanation" style={{ fontSize: 'var(--font-size-ref)', color: 'var(--text-muted)', marginTop: '4px', maxWidth: '320px' }}>
+              <div id="practiceScoreExplanation" className="score-card__hint">
                 tính cả lượt làm lại câu sai (đúng ngay: 1 điểm, đúng khi làm lại: 0,5 điểm)
               </div>
             </div>

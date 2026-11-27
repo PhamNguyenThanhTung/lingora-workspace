@@ -30,6 +30,12 @@
 
 :root {
   /* ----- Surfaces ----- */
+  /* Aliases for legacy var() names still referenced from components (Onboarding, Home goal editor, Practice). */
+  --primary: var(--primary-color);
+  --border-color: var(--border-strong);
+  --subtle-bg: var(--primary-soft);
+  --text-body: var(--text-main);
+
   --canvas-bg: #F4F2FF;
   --canvas-bg-deep: #E9E5FF;
   --surface-bg: #FFFFFF;
@@ -1203,9 +1209,14 @@ input[type='text'].form-input {
   justify-content: space-between;
   align-items: center;
   gap: 10px;
+  font-weight: 800;
+  color: var(--primary-ink);
+  font-size: var(--font-size-sub);
+}
+
+.practice-queue-row__count {
   font-weight: 700;
   color: var(--text-muted);
-  font-size: var(--font-size-sub);
 }
 
 /* Big tactile answer cards */
@@ -1660,7 +1671,13 @@ input[type='text'].form-input {
   box-shadow: 0 4px 0 var(--border-subtle);
 }
 
-.lesson-card.is-locked { opacity: 0.7; }
+.lesson-card.is-locked { opacity: 0.75; }
+.lesson-card__main { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 auto; }
+.lesson-card__title-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; font-weight: 700; }
+.lesson-card__title-row > span:not(:first-child) { font-size: var(--font-size-ref); font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+.lesson-card__badges { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.lesson-card__action { flex: 0 0 auto; }
+.lesson-card__action .btn { text-decoration: none; white-space: nowrap; }
 
 /* Practice review entries on the result screen */
 .review-entry-card {
@@ -1830,4 +1847,13 @@ input[type='text'].form-input {
   .path-medallion {
     transition: none;
   }
+}
+
+/* Native radios/checkboxes follow the brand colour. */
+input[type='radio'],
+input[type='checkbox'] {
+  accent-color: var(--primary-color);
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
 }
