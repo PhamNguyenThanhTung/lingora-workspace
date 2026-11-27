@@ -707,6 +707,8 @@ async function run() {
     // Step 5.1: Learner Home & Context Recovery (P2)
     console.log('Visiting /home for Learner 1...');
     await page.goto(`http://127.0.0.1:${webPort}/home`);
+    // Plan 1.1: context cards live in the collapsed "Quản lý lộ trình" section.
+    await page.click('#contextManager > summary');
     await page.waitForSelector(`#startLevelBtn-${CONTEXT1_ID}`);
     await page.screenshot({
       path: path.join(evidenceDir, '01-learner-home-desktop.png'),
@@ -918,12 +920,12 @@ async function run() {
     `);
     console.log('✔ Owned cards aged in DB: due_at set to 2 hours ago');
 
-    // Navigate to /review via header navigation "Ôn từ vựng" on /home
+    // Plan 8.2-8.4: the "Ôn từ vựng" entry point is gone from /home; /review is opened by URL
+    // until the page is retired in a later workstream.
     await page.goto(`http://127.0.0.1:${webPort}/home`);
-    await page.waitForSelector('#reviewNavBtn');
-    await page.click('#reviewNavBtn');
-    // G11: the home link carries the selected context, so match the path and ignore the query.
-    await page.waitForURL(url => url.pathname === '/review');
+    await page.waitForSelector('#learnerShell');
+    assert.equal(await page.locator('#reviewNavBtn').count(), 0);
+    await page.goto(`http://127.0.0.1:${webPort}/review`);
     await page.waitForSelector('#startReviewBtn');
 
     // Start SRS review
@@ -1010,7 +1012,7 @@ async function run() {
     });
 
     await mobilePage.goto(`http://127.0.0.1:${webPort}/home`);
-    await mobilePage.waitForSelector(`#enterContextBtn-${CONTEXT1_ID}`);
+    await mobilePage.waitForSelector('#learnerTabBar');
     await mobilePage.screenshot({
       path: path.join(evidenceDir, '09-learner-home-mobile.png'),
       fullPage: true,
@@ -1025,7 +1027,7 @@ async function run() {
     `);
 
     await mobilePage.reload();
-    await mobilePage.waitForSelector(`#enterContextBtn-${CONTEXT1_ID}`);
+    await mobilePage.waitForSelector('#learnerTabBar');
 
     // Assert no horizontal scroll overflow
     const scrollWidth = await mobilePage.evaluate(() => document.documentElement.scrollWidth);
@@ -1036,13 +1038,13 @@ async function run() {
     );
 
     // Assert nav labels inside bounds
-    const headerBox = await mobilePage.locator('header').boundingBox();
+    const headerBox = await mobilePage.locator('#learnerTopBar').boundingBox();
     assert.ok(headerBox && headerBox.width <= 390, 'Header must not overflow 390px viewport');
 
     // Usable keyboard focus
-    await mobilePage.focus('#reviewNavBtn');
-    const focusedId = await mobilePage.evaluate(() => document.activeElement?.id);
-    assert.equal(focusedId, 'reviewNavBtn', 'Keyboard focus must be usable on reviewNavBtn');
+    await mobilePage.focus('#learnerTabBar [data-nav="profile"]');
+    const focusedNav = await mobilePage.evaluate(() => document.activeElement?.getAttribute('data-nav'));
+    assert.equal(focusedNav, 'profile', 'Keyboard focus must be usable on the bottom tab links');
 
     await mobilePage.screenshot({
       path: path.join(evidenceDir, '10-learner-home-mobile-longname.png'),

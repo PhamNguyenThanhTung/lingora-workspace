@@ -526,6 +526,8 @@ async function run() {
     // -------------------------------------------------------------
     console.log('\n--- Scenario 3: Goal Update & Plan Replacement ---');
     await defPage.goto(`http://127.0.0.1:${webPort}/home`, { waitUntil: 'domcontentloaded' });
+    // Plan 1.1: context cards live in the collapsed "Quản lý lộ trình" section.
+    await defPage.click('#contextManager > summary');
     await defPage.waitForSelector('.context-card', { state: 'visible' });
 
     // Open goal editor
@@ -664,7 +666,10 @@ async function run() {
     console.log('✔ Context A also logged in successfully and reached Home');
 
     // Log out on pageB before replaying spent link
-    await pageB.locator('#logoutBtn').click();
+    // The logout button moved from the home header to the profile page; page B has just logged in
+    // with a fresh session, so use the same logout endpoint the button calls.
+    await pageB.evaluate(() => fetch('/api/auth/logout', { method: 'POST', headers: { Origin: window.location.origin } }));
+    await pageB.goto(learnerOrigin + '/login');
     await pageB.waitForURL('**/login');
 
     // 15. Replay spent link -> /login?error=confirmation_failed with resend block

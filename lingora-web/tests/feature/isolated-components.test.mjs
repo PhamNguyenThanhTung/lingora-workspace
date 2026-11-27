@@ -191,13 +191,10 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
 
     await page.goto(`${TEST_URL}?state=home-valid`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#homeView', { state: 'visible' });
-    await page.getByRole('heading', { name: 'Chào Nguyễn Văn Học!' }).waitFor();
+    await page.waitForSelector('#learnerShell', { state: 'visible' });
 
-    // Verify learner identity
-    const learnerName = await page.textContent('#learnerIdentity');
-    assert.match(learnerName, /Nguyễn Văn Học/);
-
-    // Verify context card details
+    // Verify context card details (plan 1.1: cards live in the collapsed "Quản lý lộ trình" section)
+    await page.click('#contextManager > summary');
     await page.waitForSelector('.context-card', { state: 'visible' });
     const courseTitle = await page.textContent('.context-course-name');
     assert.match(courseTitle, /Tiếng Anh Giao Tiếp Cơ Bản/);
@@ -211,38 +208,47 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     assert.match(cardText, /Đang học/);
     assert.equal(await page.locator('#rowVersion-ctx-1').count(), 0);
 
-    // Verify Logout button exists and is usable
-    const logoutVisible = await page.isVisible('#logoutBtn');
-    assert.equal(logoutVisible, true);
+    await context.close();
+  });
+
+  test('ProfileView: shows learner identity and keeps Logout usable (identity and logout moved off /home)', async () => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    await page.goto(`${TEST_URL}?state=profile-valid`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#profileView', { state: 'visible' });
+    assert.match(await page.textContent('#profileName'), /Nguyễn Văn Học/);
+    assert.equal(await page.isVisible('#logoutBtn'), true);
+    assert.equal(await page.isVisible('#streakCalendar'), true);
 
     await context.close();
   });
 
-  test('HomeView R8: narrow mobile 390px viewport preserves header bounding boxes without multi-line button wrapping', async () => {
+  test('HomeView R8: narrow mobile 390px viewport keeps the tab bar single-line, inside the screen, with no horizontal overflow', async () => {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const page = await context.newPage();
 
     await page.goto(`${TEST_URL}?state=home-valid`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#homeView', { state: 'visible' });
 
-    // 1. Verify "Ôn từ vựng" button bounding box is single line (<= 48px height)
-    const reviewBtn = page.locator('#reviewNavBtn');
-    await reviewBtn.waitFor({ state: 'visible' });
-    const reviewBox = await reviewBtn.boundingBox();
-    assert.ok(reviewBox, 'reviewNavBtn bounding box must exist');
-    assert.ok(reviewBox.height <= 48, `reviewNavBtn height must be single-line (<=48px), got ${reviewBox.height}`);
-    assert.ok(reviewBox.x + reviewBox.width <= 390, `reviewNavBtn must fit inside 390px width, got x+w=${reviewBox.x + reviewBox.width}`);
+    // Plan 8.2-8.4: Học · (Luyện viết only for ja/zh) · Nhiệm vụ · Hồ sơ; no review tab or button.
+    const tabs = page.locator('#learnerTabBar a');
+    assert.deepEqual(
+      (await tabs.allTextContents()).map((t) => t.replace(/[^\p{L}\s]/gu, '').trim()),
+      ['Học', 'Nhiệm vụ', 'Hồ sơ']
+    );
+    for (const box of await tabs.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()))) {
+      assert.ok(box.height >= 44 && box.height <= 72, `tab height must be a single touch-sized row, got ${box.height}`);
+      assert.ok(box.x >= 0 && box.x + box.width <= 390, `tab must fit inside 390px width, got x+w=${box.x + box.width}`);
+    }
+    assert.equal(await page.locator('#reviewNavBtn').count(), 0);
 
-    // 2. Verify logout button bounding box
-    const logoutBtn = page.locator('#logoutBtn');
-    const logoutBox = await logoutBtn.boundingBox();
-    assert.ok(logoutBox, 'logoutBtn bounding box must exist');
-    assert.ok(logoutBox.x + logoutBox.width <= 390, `logoutBtn must fit inside 390px width, got x+w=${logoutBox.x + logoutBox.width}`);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    assert.ok(overflow <= 0, `page must not scroll horizontally, overflow=${overflow}`);
 
-    // 3. Verify keyboard focus and clickability
-    await reviewBtn.focus();
-    const isReviewFocused = await page.evaluate(() => document.activeElement?.id === 'reviewNavBtn');
-    assert.equal(isReviewFocused, true, 'reviewNavBtn must be keyboard focusable');
+    // Keyboard focus reaches the tab links.
+    await tabs.first().focus();
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('data-nav')), 'home');
 
     await context.close();
   });
@@ -253,6 +259,7 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
 
     await page.goto(`${TEST_URL}?state=home-null-context`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#homeView', { state: 'visible' });
+    await page.click('#contextManager > summary');
 
     // Verify card shows the learner-friendly missing-level state and recovery action
     const cardText = await page.textContent('.context-card');
@@ -279,7 +286,7 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     await context.close();
   });
 
-  test('HomeView: empty context displays "Bạn chưa có lộ trình học." and keeps Logout usable', async () => {
+  test('HomeView: empty context displays "Bạn chưa có lộ trình học." and keeps the profile entry reachable', async () => {
     const context = await browser.newContext();
     const page = await context.newPage();
 
@@ -291,8 +298,8 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     assert.equal(await page.locator('#startOnboardingBtn').getAttribute('href'), '/onboarding');
     assert.equal(await page.locator('#createContextForm').count(), 0);
 
-    const logoutVisible = await page.isVisible('#logoutBtn');
-    assert.equal(logoutVisible, true);
+    // Logout moved to the profile page; the shell still offers a way there.
+    assert.equal(await page.locator('#learnerTabBar [data-nav="profile"]').count(), 1);
 
     await context.close();
   });
@@ -381,7 +388,7 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     const context = await browser.newContext();
     const page = await context.newPage();
 
-    await page.goto(`${TEST_URL}?state=home-valid`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${TEST_URL}?state=profile-valid`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#logoutBtn', { state: 'visible' });
 
     await page.click('#logoutBtn');
@@ -449,6 +456,7 @@ describe('Slice 9: Isolated Component State & Interaction Tests', () => {
     });
 
     await page.goto(`${TEST_URL}?state=home-valid`, { waitUntil: 'domcontentloaded' });
+    await page.click('#contextManager > summary');
     await page.waitForSelector('#editGoalBtn-ctx-1', { state: 'visible' });
 
     // Open goal editor

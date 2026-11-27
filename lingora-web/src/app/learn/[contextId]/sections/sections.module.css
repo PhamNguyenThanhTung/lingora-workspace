@@ -1,0 +1,102 @@
+.root {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.title {
+  font-size: var(--font-size-title);
+  font-weight: 800;
+}
+.sub {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.list {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.card {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-subtle);
+  background: var(--surface-bg);
+  box-shadow: var(--shadow-sm);
+  min-width: 0;
+}
+.cardCurrent {
+  border-color: var(--primary-color);
+}
+.cardLocked {
+  background: var(--surface-sunken);
+}
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.name {
+  font-size: var(--font-size-heading);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.state {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-ref);
+  font-weight: 800;
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  border: 1px solid var(--border-control);
+}
+.stateDone {
+  background: var(--success-soft);
+  color: var(--success-ink);
+  border-color: #b7e8c9;
+}
+.stateCurrent {
+  background: var(--primary-soft);
+  color: var(--primary-ink);
+  border-color: var(--border-strong);
+}
+.bar {
+  display: block;
+  height: 10px;
+  margin: 12px 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--border-subtle);
+  overflow: hidden;
+}
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--success);
+}
+.meta {
+  color: var(--text-muted);
+  font-size: var(--font-size-sub);
+  font-weight: 600;
+}
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: 12px;
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 var(--press) 0 var(--primary-deep);
+}
+.back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 800;
+  color: var(--primary-ink);
+}

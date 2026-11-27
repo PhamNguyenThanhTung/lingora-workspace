@@ -21,6 +21,19 @@ import {
 
 const appDir = path.resolve(import.meta.dirname, '../../..');
 let cachedBundle;
+let cachedBundleCss = '';
+
+/**
+ * Pages wrap their view in <LearnerShell shell active quests>. The harness serialises the view props
+ * plus the frame props separately and re-wraps on the client.
+ */
+function pageBootstrap(kind, element) {
+  const props = element.props ?? {};
+  if (props.shell && props.active) {
+    return { kind, props: props.children?.props ?? {}, frame: { shell: props.shell, active: props.active, quests: props.quests } };
+  }
+  return { kind, props };
+}
 
 export async function buildHarnessBundle() {
   const result = await build({
@@ -29,6 +42,8 @@ export async function buildHarnessBundle() {
     format: 'esm',
     jsx: 'automatic',
     write: false,
+    outdir: path.join(appDir, '.harness-out'),
+    loader: { '.module.css': 'local-css' },
     define: { 'process.env.NODE_ENV': JSON.stringify('test'), 'process.env': '{}' },
     alias: {
       '@': path.join(appDir, 'src'),
@@ -36,7 +51,8 @@ export async function buildHarnessBundle() {
       'next/link': path.join(import.meta.dirname, 'mock-next-link.tsx'),
     },
   });
-  cachedBundle = result.outputFiles[0].text;
+  cachedBundle = result.outputFiles.find((f) => f.path.endsWith('.js')).text;
+  cachedBundleCss = result.outputFiles.find((f) => f.path.endsWith('.css'))?.text ?? '';
   return cachedBundle;
 }
 
@@ -59,7 +75,7 @@ export async function startIsolatedServer(port = 3019) {
   setLearnerPrismaForTest(fixtureDb(state));
   const css = fs.readFileSync(path.join(appDir, 'src/app/globals.css'), 'utf8');
   const html = (bootstrap) =>
-    `<!doctype html><html lang="vi"><head><meta charset="utf-8"><style>${css}</style></head><body><div id="root"></div>${
+    `<!doctype html><html lang="vi"><head><meta charset="utf-8"><style>${css}</style><link rel="stylesheet" href="/bundle.css"></head><body><div id="root"></div>${
       bootstrap
         ? `<script id="production-page" type="application/json">${JSON.stringify(bootstrap).replaceAll('<', '\\u003c')}</script>`
         : ''
@@ -73,6 +89,11 @@ export async function startIsolatedServer(port = 3019) {
     if (url.pathname === '/bundle.js') {
       res.writeHead(200, { 'Content-Type': 'application/javascript' });
       res.end(cachedBundle);
+      return;
+    }
+    if (url.pathname === '/bundle.css') {
+      res.writeHead(200, { 'Content-Type': 'text/css' });
+      res.end(cachedBundleCss);
       return;
     }
     if (url.pathname === '/fonts/Lato-Regular.ttf') {
@@ -113,12 +134,24 @@ export async function startIsolatedServer(port = 3019) {
 
     await requests.run(store, async () => {
       try {
-        if (url.pathname === '/login' || url.pathname === '/home' || url.pathname === '/review') {
-          const kind = url.pathname === '/login' ? 'login' : url.pathname === '/home' ? 'home' : 'review';
+        const pageKinds = { '/login': 'login', '/home': 'home', '/review': 'review', '/profile': 'profile', '/quests': 'quests' };
+        if (pageKinds[url.pathname]) {
+          const kind = pageKinds[url.pathname];
           const element = await modules[`${kind}Page`].default();
           writeCookies();
           res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-          res.end(html({ kind, props: element.props }));
+          res.end(html(pageBootstrap(kind, element)));
+          return;
+        }
+
+        const sectionsMatch = url.pathname.match(/^\/learn\/([0-9a-f-]{36})\/sections$/);
+        if (sectionsMatch) {
+          const element = await modules.sectionsPage.default({
+            params: Promise.resolve({ contextId: sectionsMatch[1] }),
+          });
+          writeCookies();
+          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(html(pageBootstrap('sections', element)));
           return;
         }
 
@@ -129,7 +162,7 @@ export async function startIsolatedServer(port = 3019) {
           });
           writeCookies();
           res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-          res.end(html({ kind: 'catalogue', props: element.props }));
+          res.end(html(pageBootstrap('catalogue', element)));
           return;
         }
 

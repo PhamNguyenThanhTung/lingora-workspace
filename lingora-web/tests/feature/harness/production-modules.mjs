@@ -27,6 +27,9 @@ export async function compileProductionModules() {
     responsesApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/responses/route.ts',
     finalizeApi: 'src/app/api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/finalize/route.ts',
     reviewPage: 'src/app/review/page.tsx',
+    profilePage: 'src/app/profile/page.tsx',
+    questsPage: 'src/app/quests/page.tsx',
+    sectionsPage: 'src/app/learn/[contextId]/sections/page.tsx',
     reviewStartApi: 'src/app/api/learner/review/start/route.ts',
     reviewRespondApi: 'src/app/api/learner/review/respond/route.ts',
     homeApi: 'src/app/api/learner/home/route.ts',
@@ -49,6 +52,7 @@ export async function compileProductionModules() {
         platform: 'node',
         packages: 'external',
         jsx: 'automatic',
+        loader: { '.module.css': 'local-css' },
         plugins: [
           {
             name: 'test-framework-boundaries',
