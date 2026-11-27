@@ -3,7 +3,16 @@ import assert from 'node:assert/strict';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { LessonContent } from '../src/LessonContent.ts';
-import { toLessonPresentationDto } from '../src/index.ts';
+import {
+  formatPhonetic,
+  formatReorderTokens,
+  getBaseLanguageCode,
+  isNoSpaceLanguage,
+  joinTokensByLanguage,
+  normalizeLanguageCode,
+  resolveContentLang,
+  toLessonPresentationDto,
+} from '../src/index.ts';
 
 const h = React.createElement;
 
@@ -600,4 +609,295 @@ test('T06b: read-only exercise preview does not show REORDER tokens or MCQ optio
   const mcqPositions = orderOf(['Good morning', 'Good night', 'Goodbye']);
   assert.ok(mcqPositions.every((p) => p >= 0), 'all options still rendered');
   assert.notDeepEqual(mcqPositions, [...mcqPositions].sort((a, b) => a - b), 'options must not appear in authored order');
+});
+
+test('LNG-01: joinTokensByLanguage and formatReorderTokens join tokens per language without changing content', () => {
+  // Japanese & Chinese omit renderer spaces at CJK/kana boundaries and before closing punctuation
+  assert.equal(joinTokensByLanguage(['わたしは', '田中', 'です'], 'ja'), 'わたしは田中です');
+  assert.equal(joinTokensByLanguage(['わたしは', '田中', 'です', '。'], 'ja-JP'), 'わたしは田中です。');
+  assert.equal(joinTokensByLanguage(['「', 'おはよう', '」', 'と', '言った', '。'], 'ja'), '「おはよう」と言った。');
+  assert.equal(joinTokensByLanguage(['コーヒー', 'を', 'ください'], 'ja'), 'コーヒーをください');
+  assert.equal(joinTokensByLanguage(['日', '々', 'の', '練習'], 'ja-x-lingora-01'), '日々の練習');
+  assert.equal(joinTokensByLanguage(['我', '是', '学生', '。'], 'zh-Hans'), '我是学生。');
+
+  // Mixed Latin words inside Japanese sentences preserve spaces between Latin words and internal spaces
+  assert.equal(joinTokensByLanguage(['わたしは', 'New', 'York', 'に', '行きます', '。'], 'ja'), 'わたしはNew Yorkに行きます。');
+  assert.equal(joinTokensByLanguage(['わたしは', 'New York', 'に', '住んでいます'], 'ja'), 'わたしはNew Yorkに住んでいます');
+  assert.equal(joinTokensByLanguage(['Mr.', 'Tanaka', 'です'], 'ja'), 'Mr. Tanakaです');
+
+  // English & French preserve word spacing and original casing/punctuation
+  assert.equal(joinTokensByLanguage(['What', 'is', 'your', 'name?'], 'en'), 'What is your name?');
+  assert.equal(joinTokensByLanguage(['Je', 'suis', 'étudiant.'], 'fr'), 'Je suis étudiant.');
+
+  // Repeated tokens, missing tokens, and empty entries
+  assert.equal(
+    formatReorderTokens(
+      ['t1', 't2', 't1'],
+      [
+        { id: 't1', text: 'の' },
+        { id: 't2', text: '本' },
+      ],
+      'ja'
+    ),
+    'の本の'
+  );
+  assert.equal(
+    formatReorderTokens(
+      ['t1', 'missing-token', 't2'],
+      [
+        { id: 't1', text: 'わたしは' },
+        { id: 't2', text: 'です' },
+      ],
+      'ja'
+    ),
+    'わたしはmissing-tokenです'
+  );
+  assert.equal(joinTokensByLanguage(['', null, 'Hello', undefined, 'World', ''], 'en'), 'Hello World');
+  assert.equal(formatReorderTokens([], [], 'ja'), '');
+});
+
+test('LNG-02: language code normalization, character fallback, and scoped lang DOM attributes', () => {
+  assert.equal(normalizeLanguageCode('JA'), 'ja');
+  assert.equal(normalizeLanguageCode(' ja_jp '), 'ja-JP');
+  assert.equal(normalizeLanguageCode('zh_hans_cn'), 'zh-Hans-CN');
+  assert.equal(normalizeLanguageCode('zh-hant'), 'zh-Hant');
+  assert.equal(normalizeLanguageCode('ja-x-lingora-abc123'), 'ja-x-lingora-abc123');
+  assert.equal(normalizeLanguageCode(''), undefined);
+  assert.equal(normalizeLanguageCode('   '), undefined);
+  assert.equal(normalizeLanguageCode(null), undefined);
+  assert.equal(normalizeLanguageCode('invalid lang!'), undefined);
+
+  assert.equal(getBaseLanguageCode('ja-JP'), 'ja');
+  assert.equal(getBaseLanguageCode('zh-Hans'), 'zh');
+  assert.equal(getBaseLanguageCode('fr-FR'), 'fr');
+  assert.equal(isNoSpaceLanguage('ja-JP'), true);
+  assert.equal(isNoSpaceLanguage('zh-Hant'), true);
+  assert.equal(isNoSpaceLanguage('fr'), false);
+  assert.equal(isNoSpaceLanguage('en'), false);
+
+  // Explicit languageCode takes precedence over scriptType so non-ja characters are not forced to ja
+  assert.equal(resolveContentLang({ languageCode: 'zh', scriptType: 'KANJI' }), 'zh');
+  assert.equal(resolveContentLang({ languageCode: null, scriptType: 'HANZI_SIMPLIFIED' }), 'zh-Hans');
+  assert.equal(resolveContentLang({ languageCode: undefined, scriptType: 'HANZI_TRADITIONAL' }), 'zh-Hant');
+  assert.equal(resolveContentLang({ languageCode: undefined, scriptType: 'HIRAGANA' }), 'ja');
+  assert.equal(resolveContentLang({}), undefined);
+
+  const dtoWithLang = toLessonPresentationDto({ blocks: [], languageCode: 'ja_jp' });
+  assert.equal(dtoWithLang.languageCode, 'ja-JP');
+  const dtoWithoutLang = toLessonPresentationDto({ blocks: [] });
+  assert.equal('languageCode' in dtoWithoutLang, false);
+
+  const jaPresentation = {
+    contentSchemaVersion: 1,
+    languageCode: 'ja',
+    blocks: [
+      {
+        blockKey: 'ex-ja',
+        type: 'EXAMPLE',
+        position: 1,
+        schemaVersion: 1,
+        content: { text: '私は学生です。', translation: 'Tôi là học sinh.' },
+      },
+      {
+        blockKey: 'dia-ja',
+        type: 'DIALOGUE',
+        position: 2,
+        schemaVersion: 1,
+        content: { lines: [{ speaker: 'A', text: 'おはようございます。', translation: 'Chào buổi sáng.' }] },
+      },
+      {
+        blockKey: 'char-ja',
+        type: 'CHARACTER',
+        position: 3,
+        schemaVersion: 1,
+        characterId: '10000000-0000-4000-8000-000000000001',
+        glyph: 'い',
+        scriptType: 'HIRAGANA',
+        strokeCount: 2,
+        showMeaning: true,
+        showReading: true,
+        showStrokeAnimation: false,
+        guidedWriting: false,
+        meaning: 'chữ i',
+        primaryReading: 'い',
+      },
+    ],
+    vocabulary: [
+      {
+        id: 'v-ja-1',
+        position: 1,
+        isCore: true,
+        displaySnapshot: {
+          canonicalForm: '学生',
+          phonetic: 'がくせい / gakusei',
+          meaningLabels: { vi: 'học sinh' },
+          example: '私は学生です。',
+        },
+      },
+    ],
+    exercises: [
+      {
+        id: 'ex-ro-ja',
+        itemId: 'it-ja',
+        itemRevisionId: 'ir-ja',
+        position: 1,
+        isCore: true,
+        type: 'REORDER',
+        schemaVersion: 1,
+        promptData: {
+          prompt: 'Sắp xếp thành câu hoàn chỉnh:',
+          tokens: [
+            { id: 't1', text: '私は' },
+            { id: 't2', text: '学生です' },
+          ],
+        },
+      },
+    ],
+  };
+
+  const jaHtml = renderToStaticMarkup(h(LessonContent, { presentation: jaPresentation }));
+  // Root wrapper stays Vietnamese/neutral without lang="ja"
+  assert.ok(jaHtml.startsWith('<div class="lingora-lesson-content"'));
+  assert.ok(!jaHtml.includes('<div class="lingora-lesson-content" lang='));
+  // Foreign text regions receive lang="ja"
+  assert.ok(jaHtml.includes('class="lingora-example-text" lang="ja"'));
+  assert.ok(jaHtml.includes('class="lingora-dialogue-text" lang="ja"'));
+  assert.ok(jaHtml.includes('id="character-glyph-char-ja" class="character-glyph" lang="ja"'));
+  assert.ok(jaHtml.includes('<span lang="ja" style="font-size:18px;font-weight:700'));
+  assert.ok(jaHtml.includes('<span lang="ja" style="padding:6px 12px'));
+
+  // Non-Japanese course keeps its own lang on CHARACTER blocks
+  const zhCharHtml = renderToStaticMarkup(
+    h(LessonContent, {
+      languageCode: 'zh-Hans',
+      presentation: {
+        contentSchemaVersion: 1,
+        blocks: [
+          {
+            blockKey: 'char-zh',
+            type: 'CHARACTER',
+            position: 1,
+            schemaVersion: 1,
+            characterId: '10000000-0000-4000-8000-000000000002',
+            glyph: '日',
+            scriptType: 'KANJI',
+            strokeCount: 4,
+            showMeaning: false,
+            showReading: false,
+            showStrokeAnimation: false,
+            guidedWriting: false,
+          },
+        ],
+        vocabulary: [],
+        exercises: [],
+      },
+    })
+  );
+  assert.ok(zhCharHtml.includes('id="character-glyph-char-zh" class="character-glyph" lang="zh-Hans"'));
+});
+
+test('LNG-03: formatPhonetic normalizes en/fr IPA slashes and leaves ja/zh readings unwrapped', () => {
+  // English & French: single /.../ pair regardless of existing slashes
+  assert.equal(formatPhonetic('/ˈkɒfi/', 'en'), '/ˈkɒfi/');
+  assert.equal(formatPhonetic('ˈkɒfi', 'en'), '/ˈkɒfi/');
+  assert.equal(formatPhonetic('//ˈkɒfi//', 'en'), '/ˈkɒfi/');
+  assert.equal(formatPhonetic('bɔ̃.ʒuʁ', 'fr'), '/bɔ̃.ʒuʁ/');
+  assert.equal(formatPhonetic('/bɔ̃.ʒuʁ/', 'fr'), '/bɔ̃.ʒuʁ/');
+  assert.equal(formatPhonetic('a / b', 'en'), '/a / b/');
+
+  // Japanese & Chinese: plain reading text, internal slashes preserved, never wrapped
+  assert.equal(formatPhonetic('konnichiwa', 'ja'), 'konnichiwa');
+  assert.equal(formatPhonetic('gakusei', 'ja-JP'), 'gakusei');
+  assert.equal(formatPhonetic('がくせい / gakusei', 'ja'), 'がくせい / gakusei');
+  assert.equal(formatPhonetic('nǐ hǎo', 'zh-CN'), 'nǐ hǎo');
+
+  // Empty, null, or slash-only values never produce //
+  assert.equal(formatPhonetic(null, 'en'), null);
+  assert.equal(formatPhonetic('', 'fr'), null);
+  assert.equal(formatPhonetic('   ', 'ja'), null);
+  assert.equal(formatPhonetic('/', 'en'), null);
+  assert.equal(formatPhonetic('//', 'fr'), null);
+
+  // Renderer integration for ja vs fr and empty phonetic
+  const jaVocabHtml = renderToStaticMarkup(
+    h(LessonContent, {
+      languageCode: 'ja',
+      presentation: {
+        contentSchemaVersion: 1,
+        blocks: [],
+        vocabulary: [
+          {
+            id: 'v1',
+            position: 1,
+            isCore: true,
+            displaySnapshot: {
+              canonicalForm: '学生',
+              phonetic: 'がくせい / gakusei',
+              meaningLabels: { vi: 'học sinh' },
+            },
+          },
+          {
+            id: 'v2',
+            position: 2,
+            isCore: true,
+            displaySnapshot: {
+              canonicalForm: '本',
+              phonetic: '',
+              meaningLabels: { vi: 'sách' },
+            },
+          },
+        ],
+        exercises: [],
+      },
+    })
+  );
+  assert.ok(jaVocabHtml.includes('>がくせい / gakusei<'));
+  assert.ok(!jaVocabHtml.includes('/がくせい / gakusei/'));
+  assert.ok(!jaVocabHtml.includes('//'));
+
+  const frVocabHtml = renderToStaticMarkup(
+    h(LessonContent, {
+      languageCode: 'fr',
+      presentation: {
+        contentSchemaVersion: 1,
+        blocks: [],
+        vocabulary: [
+          {
+            id: 'v-fr-1',
+            position: 1,
+            isCore: true,
+            displaySnapshot: {
+              canonicalForm: 'bonjour',
+              phonetic: 'bɔ̃.ʒuʁ',
+              meaningLabels: { vi: 'xin chào' },
+            },
+          },
+          {
+            id: 'v-fr-2',
+            position: 2,
+            isCore: true,
+            displaySnapshot: {
+              canonicalForm: 'café',
+              phonetic: '/ka.fe/',
+              meaningLabels: { vi: 'cà phê' },
+            },
+          },
+          {
+            id: 'v-fr-3',
+            position: 3,
+            isCore: true,
+            displaySnapshot: {
+              canonicalForm: 'merci',
+              phonetic: '//',
+              meaningLabels: { vi: 'cảm ơn' },
+            },
+          },
+        ],
+        exercises: [],
+      },
+    })
+  );
+  assert.ok(frVocabHtml.includes('>/bɔ̃.ʒuʁ/<'));
+  assert.ok(frVocabHtml.includes('>/ka.fe/<'));
+  assert.ok(!frVocabHtml.includes('//'));
 });
