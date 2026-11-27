@@ -14,11 +14,12 @@
     "./legacy": "./src/legacy.ts",
     "./LessonContent": "./src/LessonContent.ts",
     "./grader": "./src/grader.ts",
+    "./speech": "./src/speech.ts",
     "./styles.css": "./src/lesson-content.css",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test tests/schema.test.mjs tests/legacy.test.mjs tests/renderer.test.mjs tests/character.test.mjs tests/grader.test.mjs",
+    "test": "node --experimental-strip-types --test tests/schema.test.mjs tests/legacy.test.mjs tests/renderer.test.mjs tests/character.test.mjs tests/grader.test.mjs tests/feature/speech.test.mjs",
     "test:feature": "npm run test",
     "typecheck": "tsc --noEmit"
   },
