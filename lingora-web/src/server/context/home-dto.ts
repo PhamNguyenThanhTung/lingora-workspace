@@ -6,6 +6,7 @@ export interface PathNodeDto {
   lessonId: string;
   title: string;
   unitTitle: string;
+  unitPosition: number;
   state: 'COMPLETED' | 'CURRENT' | 'AVAILABLE' | 'LOCKED' | 'COMING_SOON';
   score: number | null;
   position: number;

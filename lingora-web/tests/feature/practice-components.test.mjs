@@ -159,7 +159,7 @@ test('Practice UI: Start attempt -> submit responses across 5 exercise types -> 
     // Verification: Completion summary rendered with score
     await page.locator('#practiceCompletionSummary').waitFor({ state: 'visible' });
     const scoreText = await page.locator('#practiceCompletionScore').textContent();
-    assert.match(scoreText, /10 \/ 10 \(100%\)/);
+    assert.match(scoreText, /Điểm 100%/);
 
     // Verification: P3 feedback review rendered with cards, answers, correctness, explanations
     await page.locator('#practiceFeedbackReview').waitFor({ state: 'visible' });
@@ -249,7 +249,9 @@ test('production callbacks retry the exact start, response and finalize after tr
   assert.equal(server.fixture.responses[0].responseOrdinal,1);assert.match(await page.locator('#queueProgressLabel').textContent(),/Làm lại/);
   await page.locator('#activeExerciseCard input[value="opt-1"]').check();await page.locator('#submitResponseBtn').click();await page.locator('#finalizePracticeBtn').waitFor();
   await loseCommitted('/finalize','#finalizePracticeBtn');await page.locator('#practiceCompletionSummary').waitFor();
-  assert.equal(server.fixture.responses.length,2);assert.equal(server.fixture.completions.length,1);assert.equal(server.fixture.commandReceipts.length,1);assert.match(await page.locator('#practiceCompletionScore').textContent(),/1 \/ 4 \(25%\)/);
+  assert.equal(server.fixture.responses.length,2);assert.equal(server.fixture.completions.length,1);assert.equal(server.fixture.commandReceipts.length,1);assert.match(await page.locator('#practiceCompletionScore').textContent(),/Điểm 25%/);
+  // H10: the per-question detail names the first wrong answer and the correct retry.
+  assert.match(await page.locator('.review-entry-card').first().locator('.review-retry-trail').textContent(),/Sai lần 1.*Đúng khi làm lại/);
  });
 });
 

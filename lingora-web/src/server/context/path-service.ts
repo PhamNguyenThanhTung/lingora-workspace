@@ -106,6 +106,7 @@ export async function buildLearningPath(
         lessonId: lesson.id,
         title: comingSoon ? 'Bài học sắp ra mắt' : formatTitle(lesson.activeRevision?.title) || 'Bài học ' + lesson.position,
         unitTitle,
+        unitPosition: unit.position,
         state: comingSoon ? 'COMING_SOON' : completed ? 'COMPLETED' : lesson.isLocked ? 'LOCKED' : 'AVAILABLE',
         score: completed ? scores.get(lesson.id) ?? null : null,
         position: lesson.position,

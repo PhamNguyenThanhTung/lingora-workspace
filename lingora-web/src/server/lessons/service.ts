@@ -52,13 +52,23 @@ export async function loadLessonHierarchy(db: Db, courseId: string, frameworkId:
     orderBy: [{ level: { position: 'asc' } }, { position: 'asc' }, { id: 'asc' }],
   });
   let precedingRequiredCompleted = true;
-  return units.map(unit => {
+  // H1: the learner path is ordered by level position, then unit position, then lesson position,
+  // so an optional lesson keeps its slot inside its own unit instead of drifting to the end.
+  const orderedUnits = units.slice().sort((a, b) =>
+    a.level.position - b.level.position || a.position - b.position || a.id.localeCompare(b.id));
+  return orderedUnits.map(unit => {
     if (unit.courseId !== courseId || unit.level.id !== unit.levelId || unit.level.frameworkId !== frameworkId) fail(409, 'CONTEXT_INCONSISTENT', 'Đơn vị học không nhất quán với lộ trình.');
     const earlier = unit.level.position < workingPosition;
-    const lessons = unit.lessons.filter(lesson => published(lesson) || (includeComingSoon && lesson.availability === 'PLANNED')).map(lesson => {
+    const lessons = unit.lessons
+      .slice()
+      .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+      .filter(lesson => published(lesson) || (includeComingSoon && lesson.availability === 'PLANNED')).map(lesson => {
       if (lesson.unitId !== unit.id) fail(409, 'CONTEXT_INCONSISTENT', 'Bài học không nhất quán với đơn vị học.');
       if (!published(lesson)) return { ...lesson, isLocked: true };
-      const isLocked = unit.level.position > workingPosition || (!earlier && !completed.has(lesson.id) && !precedingRequiredCompleted);
+      // H1 (owner decision): an OPTIONAL lesson is always open inside an unlocked level — sequential
+      // gating never locks it — and it never gates the next required lesson either.
+      const isLocked = unit.level.position > workingPosition ||
+        (lesson.isRequired && !earlier && !completed.has(lesson.id) && !precedingRequiredCompleted);
       if (unit.level.position === workingPosition && lesson.isRequired && !completed.has(lesson.id)) precedingRequiredCompleted = false;
       return { ...lesson, isLocked };
     });
@@ -66,9 +76,10 @@ export async function loadLessonHierarchy(db: Db, courseId: string, frameworkId:
   }).filter(unit => unit.lessons.length > 0);
 }
 async function hierarchy(db: Db, context: Context) {
-  if (!context.workingLevel) return [];
+  if (!context.workingLevel) return { units: [], completed: new Set<string>() };
   const completions = await db.lessonCompletion.findMany({ where: { contextId: context.id }, select: { lessonId: true } });
-  return loadLessonHierarchy(db, context.courseId, context.course.frameworkId, context.workingLevel.position, new Set(completions.map(row => row.lessonId)));
+  const completed = new Set(completions.map(row => row.lessonId));
+  return { units: await loadLessonHierarchy(db, context.courseId, context.course.frameworkId, context.workingLevel.position, completed), completed };
 }
 export async function authorizedLesson(db: Db, context: Context, lessonId: string) {
   if (!context.workingLevelId || !context.workingLevel) return fail(409, 'CONTEXT_NO_WORKING_LEVEL', 'Chưa có trình độ học hiện tại.');
@@ -103,7 +114,7 @@ export async function authorizedLesson(db: Db, context: Context, lessonId: strin
   });
   if (!lesson || !published(lesson) || lesson.unit.courseId !== context.courseId) return fail(404, 'NOT_FOUND', 'Bài học không khả dụng.');
   if (lesson.unit.levelId !== lesson.unit.level.id || lesson.unit.level.frameworkId !== context.course.frameworkId) return fail(409, 'CONTEXT_INCONSISTENT', 'Khung năng lực của bài học không nhất quán.');
-  const entry = (await hierarchy(db, context)).flatMap(u => u.lessons).find(l => l.id === lesson.id);
+  const entry = (await hierarchy(db, context)).units.flatMap(u => u.lessons).find(l => l.id === lesson.id);
   if (!entry) return fail(404, 'NOT_FOUND', 'Bài học không khả dụng trong trình độ hiện tại.');
   if (entry.isLocked) return fail(409, 'LESSON_LOCKED', 'Cần hoàn thành bài học trước.');
   return { ...lesson, activeRevision: lesson.activeRevision! };
@@ -121,10 +132,10 @@ export async function loadLearnerCatalogue(contextId: string, verifiedUserId: st
     context: { id: c.id, courseId: c.courseId, courseTitle: labels(c.course.names), targetLanguage: { id: c.language.id, code: c.language.code, names: labels(c.language.names) }, framework: c.course.framework, workingLevel: c.workingLevel ? { id: c.workingLevel.id, code: c.workingLevel.code, label: labels(c.workingLevel.label), position: c.workingLevel.position } : null }, units: [],
   };
   if (!c.workingLevel) return { ...result, message: 'Chưa có trình độ học hiện tại' };
-  const units = await hierarchy(db, c);
+  const { units, completed } = await hierarchy(db, c);
   const rows = await db.lessonConsumption.findMany({ where: { contextId: c.id }, select: { lessonRevisionId: true, completedAt: true } });
   const reading = new Map(rows.map(r => [r.lessonRevisionId, r.completedAt ? 'COMPLETED' as const : 'IN_PROGRESS' as const]));
-  result.units = units.map(unit => ({ id: unit.id, position: unit.position, names: labels(unit.names), lessons: unit.lessons.map(l => ({ id: l.id, position: l.position, isRequired: l.isRequired, title: labels(l.activeRevision!.title), isLocked: l.isLocked, ...(l.isLocked ? { lockReason: 'Cần hoàn thành bài học trước' } : {}), activeRevisionId: l.isLocked ? null : l.activeRevisionId, readingState: reading.get(l.activeRevisionId!) ?? 'NOT_STARTED' })) }));
+  result.units = units.map(unit => ({ id: unit.id, position: unit.position, names: labels(unit.names), lessons: unit.lessons.map(l => ({ id: l.id, position: l.position, isRequired: l.isRequired, title: labels(l.activeRevision!.title), isLocked: l.isLocked, ...(l.isLocked ? { lockReason: 'Cần hoàn thành bài học trước' } : {}), activeRevisionId: l.isLocked ? null : l.activeRevisionId, readingState: reading.get(l.activeRevisionId!) ?? 'NOT_STARTED', isCompleted: completed.has(l.id) })) }));
   if (result.units.length === 0) {
     result.message = 'Chưa có bài học nào được phát hành trong trình độ này.';
   }

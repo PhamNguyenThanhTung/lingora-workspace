@@ -1123,17 +1123,19 @@ export function fixtureDb(state) {
         const targetLearnerId = values[0];
         const localDate = values[1];
         const dateStr = (localDate instanceof Date ? localDate.toISOString() : String(localDate)).substring(0, 10);
-        let lessonCount = 0;
+        // H13: COUNT(DISTINCT la.lesson_id) — a redone lesson is one completed lesson, not two.
+        const lessonIdsToday = new Set();
         let reviewCount = 0;
         for (const a of state.attempts || []) {
           if (a.completedAt && a.qualifyingLocalDate) {
             const ctx = state.contexts.find(c => c.id === a.contextId);
             if (!ctx || ctx.learnerId === targetLearnerId) {
               const dStr = (a.qualifyingLocalDate instanceof Date ? a.qualifyingLocalDate.toISOString() : String(a.qualifyingLocalDate)).substring(0, 10);
-              if (dStr === dateStr) lessonCount++;
+              if (dStr === dateStr) lessonIdsToday.add(a.lessonId);
             }
           }
         }
+        const lessonCount = lessonIdsToday.size;
         for (const s of state.srsReviewOperations || []) {
           if (s.learnerId === targetLearnerId && s.kind === 'SCHEDULE' && s.qualifyingLocalDate) {
             const dStr = (s.qualifyingLocalDate instanceof Date ? s.qualifyingLocalDate.toISOString() : String(s.qualifyingLocalDate)).substring(0, 10);

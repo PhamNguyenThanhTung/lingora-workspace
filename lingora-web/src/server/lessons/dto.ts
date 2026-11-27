@@ -43,6 +43,8 @@ export interface LearnerLessonSummaryDto {
   lockReason?: string;
   activeRevisionId: string | null;
   readingState: ReadingState;
+  /** H11: a recorded lesson completion (attempt), not the reading state of the content. */
+  isCompleted: boolean;
 }
 
 export interface LearnerUnitSummaryDto {

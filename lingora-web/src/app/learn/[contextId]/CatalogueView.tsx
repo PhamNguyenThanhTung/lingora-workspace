@@ -3,6 +3,7 @@
 import React, { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { LearnerCatalogueDto } from '../../../server/lessons/dto.ts';
+import { numberedTitle } from '../../../shared/lesson-title.ts';
 
 interface CatalogueViewProps {
   data?: LearnerCatalogueDto;
@@ -21,10 +22,6 @@ function getLocalizedText(obj: unknown, locale = 'vi'): string {
   return record[locale] || record['vi'] || record['en'] || Object.values(record)[0] || '';
 }
 
-// F10: teachers often type "Bài 4: ..." into the title; the catalogue already numbers lessons.
-function stripLessonPrefix(title: string | null | undefined): string {
-  return (title ?? '').replace(/^\s*Bài\s*\d+\s*[:.\-–]\s*/i, '').trim();
-}
 
 export function CatalogueView({ data, errorState }: CatalogueViewProps) {
   const router = useRouter();
@@ -158,21 +155,24 @@ export function CatalogueView({ data, errorState }: CatalogueViewProps) {
                       borderBottom: '1px solid var(--border-subtle)',
                     }}
                   >
-                    Chương {unit.position}: {unitTitle || 'Nội dung'}
+                    {numberedTitle('Chương', unit.position, unitTitle || 'Nội dung')}
                   </h2>
 
                   <div className="lesson-grid" style={{ display: 'grid', gap: '12px' }}>
                     {unit.lessons.map((lesson) => {
                       const lessonTitle = getLocalizedText(lesson.title, 'vi');
-                      const readingLabel =
-                        lesson.readingState === 'COMPLETED'
+                      // H11: a completed lesson is "Đã hoàn thành"; the reading state only matters
+                      // while the lesson has not been completed yet.
+                      const readingLabel = lesson.isCompleted
+                        ? 'Đã hoàn thành'
+                        : lesson.readingState === 'COMPLETED'
                           ? 'Đã đọc'
                           : lesson.readingState === 'IN_PROGRESS'
                           ? 'Đang đọc'
                           : 'Chưa đọc';
 
                       const readingBadgeClass =
-                        lesson.readingState === 'COMPLETED'
+                        lesson.isCompleted || lesson.readingState === 'COMPLETED'
                           ? 'badge-active'
                           : lesson.readingState === 'IN_PROGRESS'
                           ? 'badge-paused'
@@ -197,7 +197,7 @@ export function CatalogueView({ data, errorState }: CatalogueViewProps) {
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <span style={{ fontWeight: 600 }}>
-                                Bài {lesson.position}: {stripLessonPrefix(lessonTitle) || 'Bài học'}
+                                {numberedTitle('Bài', lesson.position, lessonTitle || 'Bài học')}
                               </span>
                               {lesson.isRequired ? (
                                 <span style={{ fontSize: 'var(--font-size-ref)', color: 'var(--text-muted)' }}>
