@@ -649,21 +649,20 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
       {/* STEP 3: Thời gian học mỗi ngày */}
       {step === 3 && (
         <section id="stepDailyGoal">
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '8px' }}>
+          <h2 id="dailyGoalHeading" style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '8px' }}>
             Bước 3: Bạn muốn dành bao nhiêu thời gian mỗi ngày?
           </h2>
           <p style={{ color: 'var(--text-muted, #64748b)', marginBottom: '16px' }}>
             Chọn mục tiêu phù hợp để duy trì thói quen học tập đều đặn.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px', marginBottom: '24px' }}>
+          <div role="radiogroup" aria-labelledby="dailyGoalHeading" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px', marginBottom: '24px' }}>
             {ALLOWED_DAILY_GOALS.map((mins) => {
               const isSelected = dailyGoalMinutes === mins;
               return (
-                <div
+                <label
                   key={mins}
                   id={`goalOption-${mins}`}
-                  onClick={() => setDailyGoalMinutes(mins)}
                   style={{
                     padding: '20px 12px',
                     textAlign: 'center',
@@ -673,11 +672,12 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                     cursor: 'pointer',
                   }}
                 >
+                  <input type="radio" name="dailyGoalMinutes" value={mins} checked={isSelected} onChange={() => setDailyGoalMinutes(mins)} />
                   <div style={{ fontSize: '1.5rem', fontWeight: 700, color: isSelected ? 'var(--primary, #2563eb)' : 'inherit' }}>
                     {mins}
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>phút / ngày</div>
-                </div>
+                </label>
               );
             })}
           </div>
