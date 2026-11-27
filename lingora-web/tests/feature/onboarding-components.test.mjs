@@ -221,7 +221,7 @@ describe('Sprint 3: Onboarding Wizard Component & Flow Tests', () => {
     // Go back to Step 3 to verify goal 20 is still active
     await page.locator('button:has-text("Quay lại")').click();
     const goalOptionStyle = await page.getAttribute('#goalOption-20', 'style');
-    assert.match(goalOptionStyle, /2563eb/);
+    assert.match(goalOptionStyle, /2px solid var\(--primary-color\)/);
 
     // Go back to Step 2 to verify CULTURE is still active
     await page.locator('button:has-text("Quay lại")').click();

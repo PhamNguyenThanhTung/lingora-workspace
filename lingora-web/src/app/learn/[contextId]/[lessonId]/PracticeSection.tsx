@@ -247,6 +247,8 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
     function onKey(e: KeyboardEvent) {
       const k = kb.current;
       if (!k.active || e.metaKey || e.ctrlKey || e.altKey) return;
+      // IME composition (Japanese/Chinese input): Enter confirms the candidate, it must not submit.
+      if (e.isComposing || e.keyCode === 229) return;
       const target = e.target as HTMLElement | null;
       const tag = target?.tagName;
       if (/^[1-9]$/.test(e.key) && (k.type === 'MCQ' || k.type === 'LISTENING') && !k.inputBlocked && tag !== 'INPUT' && tag !== 'TEXTAREA') {
@@ -888,7 +890,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                         backgroundColor: 'var(--surface-bg)',
                         borderRadius: 'var(--radius-sm)',
                         fontSize: 'var(--font-size-sub)',
-                        color: 'var(--text-body)',
+                        color: 'var(--text-main)',
                         borderLeft: '3px solid var(--primary-color)',
                       }}
                     >

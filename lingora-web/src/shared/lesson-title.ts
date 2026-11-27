@@ -8,9 +8,17 @@
  * prefix when the title does not already start with a numbering prefix of its own.
  */
 
-/** "Bài 4:", "bài 4 -", "Lesson 2.", "Unit 3 —", "Chương 1:", "Chapter 10:" ... */
-const NUMBER_PREFIX =
-  /^\s*(bài|chương|phần|lesson|unit|chapter|part)\s*\d+\s*(?:[:.)\]\-–—]|$)/i;
+/**
+ * "Bài 4:", "bài 4 -", "Lesson 2.", "Unit 3 —", "Chương 1:", "Chapter 10:", "Leçon 1 :", "Chapitre 2 -" ...
+ * and the Japanese/Chinese counter form "第1課", "第２章", "第三回" (no separator needed).
+ */
+const NUMBER_PREFIX = new RegExp(
+  '^\\s*(?:' +
+    '(?:bài|chương|phần|lesson|unit|chapter|part|leçon|lecon|chapitre|partie|unité|unite)\\s*\\d+\\s*(?:[:.)\\]\\-–—]|$)' +
+    '|第\\s*[0-9０-９一二三四五六七八九十百]+\\s*[課课章回部話话节節]' +
+    ')',
+  'i'
+);
 
 export function hasNumberPrefix(title: string | null | undefined): boolean {
   return NUMBER_PREFIX.test((title ?? '').trim());

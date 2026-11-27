@@ -42,3 +42,19 @@ describe('H2/G15: one numbering rule for lesson and unit titles', () => {
     assert.equal(numberedTitle('Bài', null, 'Chào hỏi'), 'Chào hỏi');
   });
 });
+
+describe('LEA-02: French and Japanese/Chinese numbering prefixes are kept as typed', () => {
+  test('does not add a second prefix to Leçon/Chapitre/第N課', () => {
+    for (const title of ['Leçon 1: Bonjour', 'leçon 2 - Se présenter', 'Chapitre 2 — La famille', 'Partie 3. Les repas', '第1課 あいさつ', '第２章 かぞく', '第三回 たべもの', '第 4 课 问候']) {
+      assert.equal(hasNumberPrefix(title), true, title);
+      assert.equal(numberedTitle('Bài', 9, title), title, title);
+    }
+  });
+
+  test('a French/Japanese title without numbering still gets the system prefix', () => {
+    assert.equal(numberedTitle('Bài', 3, 'Se présenter'), 'Bài 3: Se présenter');
+    assert.equal(numberedTitle('Bài', 3, 'あいさつ'), 'Bài 3: あいさつ');
+    assert.equal(hasNumberPrefix('Leçons du soir'), false);
+    assert.equal(hasNumberPrefix('第一印象'), false);
+  });
+});

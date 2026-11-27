@@ -369,7 +369,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
   return (
     <div id="onboardingWizardView" className="app-container" style={{ maxWidth: '720px', margin: '0 auto', padding: '24px 16px' }}>
       {/* Header */}
-      <header style={{ marginBottom: '24px', borderBottom: '1px solid var(--border-color, #e2e8f0)', paddingBottom: '16px' }}>
+      <header style={{ marginBottom: '24px', borderBottom: '1px solid var(--border-strong)', paddingBottom: '16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0 }}>
             {step === 7 ? 'Lộ trình học tập của bạn' : 'Thiết lập lộ trình học cá nhân'}
@@ -392,7 +392,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                   flex: 1,
                   height: '4px',
                   borderRadius: '2px',
-                  background: s <= step ? 'var(--primary, #2563eb)' : 'var(--border-color, #e2e8f0)',
+                  background: s <= step ? 'var(--primary-color)' : 'var(--border-strong)',
                   transition: 'background 0.2s',
                 }}
               />
@@ -488,9 +488,9 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                       padding: '16px',
                       borderRadius: '8px',
                       border: isSelected
-                        ? '2px solid var(--primary, #2563eb)'
-                        : '1px solid var(--border-color, #e2e8f0)',
-                      background: isSelected ? 'var(--subtle-bg, #eff6ff)' : '#fff',
+                        ? '2px solid var(--primary-color)'
+                        : '1px solid var(--border-strong)',
+                      background: isSelected ? 'var(--primary-soft)' : '#fff',
                       cursor: isAvailable ? 'pointer' : 'not-allowed',
                       opacity: isAvailable ? 1 : 0.6,
                       position: 'relative',
@@ -598,8 +598,8 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                     gap: '10px',
                     padding: '12px 14px',
                     borderRadius: 'var(--radius-md)',
-                    border: isSelected ? '2px solid var(--primary, #2563eb)' : '1px solid var(--border-color, #e2e8f0)',
-                    background: isSelected ? 'var(--subtle-bg, #eff6ff)' : '#fff',
+                    border: isSelected ? '2px solid var(--primary-color)' : '1px solid var(--border-strong)',
+                    background: isSelected ? 'var(--primary-soft)' : '#fff',
                     cursor: 'pointer',
                   }}
                 >
@@ -667,13 +667,13 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                     padding: '20px 12px',
                     textAlign: 'center',
                     borderRadius: '8px',
-                    border: isSelected ? '2px solid var(--primary, #2563eb)' : '1px solid var(--border-color, #e2e8f0)',
-                    background: isSelected ? 'var(--subtle-bg, #eff6ff)' : '#fff',
+                    border: isSelected ? '2px solid var(--primary-color)' : '1px solid var(--border-strong)',
+                    background: isSelected ? 'var(--primary-soft)' : '#fff',
                     cursor: 'pointer',
                   }}
                 >
                   <input type="radio" name="dailyGoalMinutes" value={mins} checked={isSelected} onChange={() => setDailyGoalMinutes(mins)} />
-                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: isSelected ? 'var(--primary, #2563eb)' : 'inherit' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: isSelected ? 'var(--primary-color)' : 'inherit' }}>
                     {mins}
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>phút / ngày</div>
@@ -722,8 +722,8 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                     gap: '10px',
                     padding: '10px 14px',
                     borderRadius: 'var(--radius-md)',
-                    border: isSelected ? '2px solid var(--primary, #2563eb)' : '1px solid var(--border-color, #e2e8f0)',
-                    background: isSelected ? 'var(--subtle-bg, #eff6ff)' : '#fff',
+                    border: isSelected ? '2px solid var(--primary-color)' : '1px solid var(--border-strong)',
+                    background: isSelected ? 'var(--primary-soft)' : '#fff',
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
                     opacity: isDisabled ? 0.6 : 1,
                   }}
@@ -789,8 +789,8 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                 gap: '12px',
                 padding: '16px',
                 borderRadius: '8px',
-                border: startSource === 'DEFAULT' ? '2px solid var(--primary, #2563eb)' : '1px solid var(--border-color, #e2e8f0)',
-                background: startSource === 'DEFAULT' ? 'var(--subtle-bg, #eff6ff)' : '#fff',
+                border: startSource === 'DEFAULT' ? '2px solid var(--primary-color)' : '1px solid var(--border-strong)',
+                background: startSource === 'DEFAULT' ? 'var(--primary-soft)' : '#fff',
                 cursor: 'pointer',
               }}
             >
@@ -820,8 +820,8 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                 gap: '12px',
                 padding: '16px',
                 borderRadius: '8px',
-                border: startSource === 'SELF_REPORT' ? '2px solid var(--primary, #2563eb)' : '1px solid var(--border-color, #e2e8f0)',
-                background: startSource === 'SELF_REPORT' ? 'var(--subtle-bg, #eff6ff)' : '#fff',
+                border: startSource === 'SELF_REPORT' ? '2px solid var(--primary-color)' : '1px solid var(--border-strong)',
+                background: startSource === 'SELF_REPORT' ? 'var(--primary-soft)' : '#fff',
                 cursor: 'pointer',
               }}
             >
@@ -850,7 +850,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
                 </div>
 
                 {startSource === 'SELF_REPORT' && (
-                  <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed var(--border-color, #e2e8f0)' }}>
+                  <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed var(--border-strong)' }}>
                     {candidateCourses.length > 1 && (
                       <div style={{ marginBottom: '12px' }}>
                         <label htmlFor="courseSelect" style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px', fontWeight: 600 }}>
@@ -963,7 +963,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
               </p>
             </div>
           ) : previewData?.status === 'READY' ? (
-            <div id="previewCard" style={{ padding: '20px', borderRadius: '8px', border: '1px solid var(--border-color, #e2e8f0)', background: '#fff', marginBottom: '24px' }}>
+            <div id="previewCard" style={{ padding: '20px', borderRadius: '8px', border: '1px solid var(--border-strong)', background: '#fff', marginBottom: '24px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Khóa học</div>
@@ -972,7 +972,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
 
                 <div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Điểm bắt đầu đề xuất</div>
-                  <div style={{ fontWeight: 600, fontSize: '1.05rem', color: 'var(--primary, #2563eb)' }}>
+                  <div style={{ fontWeight: 600, fontSize: '1.05rem', color: 'var(--primary-color)' }}>
                     {previewData.startLevel?.code} - {getLocalized(previewData.startLevel?.label)}
                   </div>
                 </div>
@@ -993,7 +993,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
 
               {/* Reasons */}
               {previewData.reasonCodes && previewData.reasonCodes.length > 0 && (
-                <div style={{ marginBottom: '16px', padding: '12px', background: 'var(--subtle-bg, #f8fafc)', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ marginBottom: '16px', padding: '12px', background: 'var(--surface-sunken)', borderRadius: 'var(--radius-md)' }}>
                   <div style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '6px' }}>Lý do đề xuất:</div>
                   <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                     {previewData.reasonCodes.map((code) => (
@@ -1052,7 +1052,7 @@ export function OnboardingWizardView({ learner, existingContexts = [] }: Props) 
 
             <div style={{ display: 'inline-block', textAlign: 'left', background: '#fff', padding: '16px 20px', borderRadius: '8px', border: '1px solid #dbeafe', marginBottom: '20px', minWidth: '280px' }}>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Điểm bắt đầu:</div>
-              <div style={{ fontWeight: 600, fontSize: '1.05rem', color: 'var(--primary, #2563eb)', marginBottom: '8px' }}>
+              <div style={{ fontWeight: 600, fontSize: '1.05rem', color: 'var(--primary-color)', marginBottom: '8px' }}>
                 {completeResult.plan.startLevel.code} - {getLocalized(completeResult.plan.startLevel.label)}
               </div>
 

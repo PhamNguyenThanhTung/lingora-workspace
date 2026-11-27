@@ -30,12 +30,6 @@
 
 :root {
   /* ----- Surfaces ----- */
-  /* Aliases for legacy var() names still referenced from components (Onboarding, Home goal editor, Practice). */
-  --primary: var(--primary-color);
-  --border-color: var(--border-strong);
-  --subtle-bg: var(--primary-soft);
-  --text-body: var(--text-main);
-
   --canvas-bg: #F4F2FF;
   --canvas-bg-deep: #E9E5FF;
   --surface-bg: #FFFFFF;

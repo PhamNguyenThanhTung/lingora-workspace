@@ -846,7 +846,15 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                   value={homeData.selectedContextId ?? ''}
                   onChange={event => router.push('/home?contextId=' + encodeURIComponent(event.target.value))}
                 >
-                  {contexts.map(ctx => <option key={ctx.id} value={ctx.id}>{getLocalizedText(ctx.course.names, uiLocale)}</option>)}
+                  {contexts.map(ctx => {
+                    const language = getLocalizedText(ctx.targetLanguage.names, uiLocale) || ctx.targetLanguage.code;
+                    const levelCode = (ctx.workingLevel ?? ctx.selectedStartLevel)?.code;
+                    return (
+                      <option key={ctx.id} value={ctx.id}>
+                        {levelCode ? `${language} · ${levelCode}` : language}
+                      </option>
+                    );
+                  })}
                 </select>
               </label>
             )}
@@ -1122,7 +1130,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                     </div>
 
                     {/* Goal update section for context */}
-                    <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--border-color, #e2e8f0)' }}>
+                    <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--border-strong)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Mục tiêu học:</span>
                         <button
@@ -1138,7 +1146,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                       </div>
 
                       {editingGoalContextId === ctx.id && (
-                        <div id={`goalEditor-${ctx.id}`} style={{ marginTop: '8px', padding: '12px', background: 'var(--subtle-bg, #f8fafc)', borderRadius: '6px' }}>
+                        <div id={`goalEditor-${ctx.id}`} style={{ marginTop: '8px', padding: '12px', background: 'var(--surface-sunken)', borderRadius: '6px' }}>
                           {isLoadingPlan[ctx.id] ? (
                             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
                               Đang tải thông tin mục tiêu...
@@ -1283,9 +1291,9 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                         style={{
                           marginTop: '14px',
                           padding: '14px',
-                          border: '1px solid var(--border-color, #e2e8f0)',
+                          border: '1px solid var(--border-strong)',
                           borderRadius: '6px',
-                          background: 'var(--subtle-bg, #f8fafc)',
+                          background: 'var(--surface-sunken)',
                         }}
                       >
                         <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px' }}>
