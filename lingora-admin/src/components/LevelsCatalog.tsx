@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { FrameworkDto } from '@/server/frameworks';
 import type { LevelDto } from '@/server/levels';
 import { LevelFormModal } from './LevelFormModal';
 import { LevelDeleteModal } from './LevelDeleteModal';
 import { SessionLostModal } from './SessionLostModal';
 import { removeDraft, clearAllDrafts } from './draftStorage';
-import { restoreFocusAfterClose } from './focusRestore';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface LevelsCatalogProps {
   framework: FrameworkDto;
@@ -51,18 +51,9 @@ export function LevelsCatalog({
   const triggerRef = useRef<HTMLElement | null>(null);
   const openCreateBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Background inert when any modal is open
+  // Background inert + safe focus restoration when any modal is open/closed
   const anyModalOpen = isFormModalOpen || isDeleteModalOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   const fetchLevels = async () => {
     setIsLoading(true);
@@ -176,7 +167,7 @@ export function LevelsCatalog({
       deleted ? `Đã xóa cấp độ ${deleted.code} thành công.` : 'Đã xóa cấp độ thành công.'
     );
 
-    restoreFocusAfterClose(() => {
+    scheduleFocusRestore(() => {
       if (nextList.length === 0) {
         return document.getElementById('btnEmptyCreateLevel') || openCreateBtnRef.current;
       }

@@ -13,7 +13,7 @@ import {
   enforceIdentityAndPrune,
   type LanguageDraftData,
 } from './draftStorage';
-import { restoreFocusAfterClose } from './focusRestore';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface LanguagesCatalogProps {
   initialLanguages?: LanguageDto[];
@@ -79,18 +79,9 @@ export function LanguagesCatalog({
     setDraftScanDone(true);
   }, [account.id]);
 
-  // Inert background toggle: sets inert on #appContainer when any modal is open
+  // Inert background toggle + safe focus restoration across close/reopen/unmount
   const anyModalOpen = isFormModalOpen || isDeleteConfirmOpen || isDeleteBlockedOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   // Fetch languages catalogue
   const fetchLanguages = async () => {
@@ -257,13 +248,13 @@ export function LanguagesCatalog({
         return next.sort((a, b) => a.code.localeCompare(b.code));
       });
       showMutationStatus('Đã thêm ngôn ngữ');
-      restoreFocusAfterClose(() => openCreateBtnRef.current);
+      scheduleFocusRestore(() => openCreateBtnRef.current);
     } else {
       setLanguages((prev) =>
         prev.map((l) => (l.id === saved.id ? saved : l))
       );
       showMutationStatus('Đã cập nhật ngôn ngữ');
-      restoreFocusAfterClose(
+      scheduleFocusRestore(
         () => document.getElementById(`btn-edit-${saved.code}`) || openCreateBtnRef.current
       );
     }
@@ -278,7 +269,7 @@ export function LanguagesCatalog({
     showMutationStatus('Đã xóa ngôn ngữ');
 
     // Focus restoration per baseline §5.2
-    restoreFocusAfterClose(() => {
+    scheduleFocusRestore(() => {
       if (nextList.length === 0) {
         return document.getElementById('emptyCreateBtn') || openCreateBtnRef.current;
       }

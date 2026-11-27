@@ -1,8 +1,12 @@
 import { test, describe, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import esbuild from 'esbuild';
 import { startIsolatedServer } from './isolated-server.mjs';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 
@@ -36,7 +40,10 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     // Open delete modal for a row that simulates held request
     await page.click('#btn-delete-vi');
     await page.waitForSelector('#deleteConfirmModal', { state: 'visible' });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() => {
+      const el = document.activeElement;
+      return el?.classList?.contains('btn-secondary') && el?.textContent?.trim() === 'Hủy';
+    });
 
     // Initial focus strictly on Cancel button per SCR-A-LANG-04
     const cancelFocused = await page.evaluate(() => {
@@ -95,7 +102,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     assert.equal(isStillVisibleAfterBackdrop, true, 'Backdrop click must NOT dismiss modal while delete is held pending');
 
     // Wait for held request to finish (server responds)
-    await page.waitForTimeout(650);
+    await page.waitForSelector('#deleteConfirmModal', { state: 'hidden' });
     await context.close();
   });
 
@@ -152,7 +159,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     await page.click('#submitLanguageFormBtn');
 
     await page.waitForSelector('#codeError', { state: 'visible' });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
 
     const activeInputId = await page.evaluate(() => document.activeElement?.id);
     assert.equal(activeInputId, 'langCodeInput', 'Focus must move to errored input field after controls become enabled');
@@ -310,7 +317,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     // 1. LanguageFormModal focus trapping
     await page.click('#openCreateBtn');
     await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
 
     // Initial focus on code input
     const initialFocused = await page.evaluate(() => document.activeElement?.id);
@@ -341,7 +348,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     // 2. DeleteConfirmModal focus trapping
     await page.click('#btn-delete-ja');
     await page.waitForSelector('#deleteConfirmModal', { state: 'visible' });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() => document.activeElement?.closest('#deleteConfirmModal') !== null);
 
     // Focus confirm button and press Tab -> wraps to cancel or close button
     await page.evaluate(() => {
@@ -453,7 +460,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     // Open edit modal for 'vi' row
     await page.click('#btn-edit-vi');
     await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() => document.activeElement?.id === 'langViInput');
 
     // 1. Untouched edit check
     const draftBeforeEdit = await page.evaluate(() =>
@@ -463,7 +470,9 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // 2. Modify field
     await page.fill('#langViInput', 'Tiếng Việt Chỉnh Sửa');
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() =>
+      sessionStorage.getItem('lingora_draft_lang_00000000-0000-4000-8000-000000000001') !== null
+    );
     const draftAfterEdit = await page.evaluate(() =>
       sessionStorage.getItem('lingora_draft_lang_00000000-0000-4000-8000-000000000001')
     );
@@ -473,7 +482,9 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     // 3. Discard with Hủy button: clears draft
     await page.click('#languageFormModal .btn-secondary');
     await page.waitForSelector('#languageFormModal', { state: 'hidden' });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() =>
+      sessionStorage.getItem('lingora_draft_lang_00000000-0000-4000-8000-000000000001') === null
+    );
 
     const draftAfterDiscard = await page.evaluate(() =>
       sessionStorage.getItem('lingora_draft_lang_00000000-0000-4000-8000-000000000001')
@@ -754,6 +765,250 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
       sessionStorage.getItem('lingora_draft_lang_00000000-0000-4000-8000-000000000001')
     );
     assert.equal(draftsAfterLogout, null, 'Logout must purge all drafts from storage');
+
+    await context.close();
+  });
+
+  test('TST-02: Mount draft scan preserves active own draft while pruning other-account drafts', async () => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    await page.goto(`${TEST_URL}?state=populated-table`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('main.page-content[data-draft-scan="done"]');
+
+    await page.evaluate(() => {
+      sessionStorage.setItem('lingora_draft_lang_00000000-0000-4000-8000-000000000001', JSON.stringify({
+        mode: 'create',
+        code: 'ko',
+        vi: 'Tiếng Hàn Nháp Đang Chỉnh',
+        timestamp: Date.now(),
+      }));
+      sessionStorage.setItem('lingora_draft_lang_99999999-9999-4999-8999-999999999999', JSON.stringify({
+        mode: 'create',
+        code: 'de',
+        vi: 'Tiếng Đức Khác Tài Khoản',
+        timestamp: Date.now(),
+      }));
+    });
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('main.page-content[data-draft-scan="done"]');
+    await page.waitForSelector('#draftRecoveryBanner', { state: 'visible' });
+
+    const storageAfterMount = await page.evaluate(() => ({
+      own: sessionStorage.getItem('lingora_draft_lang_00000000-0000-4000-8000-000000000001'),
+      other: sessionStorage.getItem('lingora_draft_lang_99999999-9999-4999-8999-999999999999'),
+    }));
+    assert.ok(storageAfterMount.own?.includes('Tiếng Hàn Nháp Đang Chỉnh'), 'Mount prune must preserve active own draft');
+    assert.equal(storageAfterMount.other, null, 'Mount prune must remove other-account draft');
+
+    await context.close();
+  });
+
+  test('TST-02: Keyboard Escape/Enter focus restoration and rapid close/reopen do not steal focus', async () => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    await page.goto(`${TEST_URL}?state=populated-table`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#openCreateBtn', { state: 'visible' });
+
+    // 1. Keyboard open + Escape restores focus to trigger button
+    await page.focus('#openCreateBtn');
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
+
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#languageFormModal', { state: 'hidden' });
+    await page.waitForFunction(() => document.activeElement?.id === 'openCreateBtn');
+    assert.equal(
+      await page.evaluate(() => document.getElementById('appContainer')?.hasAttribute('inert')),
+      false,
+      '#appContainer must not remain inert after Escape'
+    );
+
+    // 2. Rapid close + immediate reopen must NOT pull focus back to #openCreateBtn
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
+
+    await page.keyboard.press('Escape');
+    await page.click('#openCreateBtn');
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
+
+    // Verify focus stays inside the reopened modal after the 50ms focus-restore window
+    const stayedInReopenedModal = await page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(document.activeElement?.id === 'langCodeInput');
+          }, 150);
+        })
+    );
+    assert.equal(stayedInReopenedModal, true, 'Rapid close/reopen must not steal focus back to trigger');
+
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#languageFormModal', { state: 'hidden' });
+    await page.waitForFunction(() => document.activeElement?.id === 'openCreateBtn');
+
+    // 3. Keyboard delete via Enter restores focus to surviving row action (not body)
+    await page.focus('#btn-delete-ja');
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('#deleteConfirmModal', { state: 'visible' });
+    await page.focus('#confirmDeleteBtn');
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('#deleteConfirmModal', { state: 'hidden' });
+    await page.waitForFunction(
+      () => document.activeElement && document.activeElement !== document.body && !document.activeElement.closest('[inert]')
+    );
+    const activeAfterDelete = await page.evaluate(() => document.activeElement?.id);
+    assert.ok(
+      activeAfterDelete && (activeAfterDelete.startsWith('btn-delete-') || activeAfterDelete.startsWith('btn-edit-') || activeAfterDelete === 'openCreateBtn'),
+      `Keyboard delete must restore focus to surviving row action or create button, got: ${activeAfterDelete}`
+    );
+
+    await context.close();
+  });
+
+  test('TST-02: restoreFocusAfterClose guards inert/disabled/disconnected/open-dialog targets and leaks zero timers or observers', async () => {
+    const bundled = await esbuild.build({
+      entryPoints: [path.resolve(__dirname, '../../src/components/focusRestore.ts')],
+      bundle: true,
+      write: false,
+      format: 'iife',
+      globalName: 'FocusRestoreLib',
+      plugins: [
+        {
+          name: 'stub-react',
+          setup(build) {
+            build.onResolve({ filter: /^react$/ }, () => ({ path: 'react', namespace: 'stub-react' }));
+            build.onLoad({ filter: /.*/, namespace: 'stub-react' }, () => ({
+              contents: 'export const useCallback = (fn) => fn; export const useEffect = () => {}; export const useRef = (v) => ({ current: v });',
+              loader: 'js',
+            }));
+          },
+        },
+      ],
+    });
+    const scriptText = bundled.outputFiles[0].text;
+
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.setContent('<!doctype html><html><body><div id="host"></div></body></html>');
+    await page.addScriptTag({ content: scriptText });
+
+    const results = await page.evaluate(async () => {
+      const { restoreFocusAfterClose } = window.FocusRestoreLib;
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      // Track live MutationObservers to ensure every created observer disconnects
+      let activeObservers = 0;
+      const OrigMO = window.MutationObserver;
+      window.MutationObserver = class TrackedMO extends OrigMO {
+        constructor(cb) {
+          super(cb);
+          this._disconnected = false;
+        }
+        observe(target, opts) {
+          activeObservers += 1;
+          return super.observe(target, opts);
+        }
+        disconnect() {
+          if (!this._disconnected) {
+            this._disconnected = true;
+            activeObservers = Math.max(0, activeObservers - 1);
+          }
+          return super.disconnect();
+        }
+      };
+
+      const host = document.getElementById('host');
+
+      // 1. Cleanup before 50ms cancels timer and never focuses after unmount
+      const btn1 = document.createElement('button');
+      btn1.id = 'btn1';
+      host.appendChild(btn1);
+      const cancel1 = restoreFocusAfterClose(() => btn1);
+      cancel1();
+      await sleep(90);
+      const focusedAfterCancel = document.activeElement?.id;
+
+      // 2. Inert container -> waits via MutationObserver and focuses immediately once inert is removed
+      const container = document.createElement('div');
+      container.setAttribute('inert', '');
+      const btn2 = document.createElement('button');
+      btn2.id = 'btn2';
+      container.appendChild(btn2);
+      host.appendChild(container);
+      restoreFocusAfterClose(() => btn2);
+      await sleep(80);
+      const focusedWhileInert = document.activeElement?.id;
+      container.removeAttribute('inert');
+      await sleep(20);
+      const focusedAfterInertRemoved = document.activeElement?.id;
+
+      // 3. Disconnected target is ignored
+      const btn3 = document.createElement('button');
+      btn3.id = 'btn3';
+      restoreFocusAfterClose(() => btn3);
+      await sleep(80);
+      const focusedDisconnected = document.activeElement?.id;
+
+      // 4. Disabled target is ignored
+      const btn4 = document.createElement('button');
+      btn4.id = 'btn4';
+      btn4.disabled = true;
+      host.appendChild(btn4);
+      restoreFocusAfterClose(() => btn4);
+      await sleep(80);
+      const focusedDisabled = document.activeElement?.id;
+
+      // 5. Open modal dialog blocks background focus stealing
+      const dialog = document.createElement('div');
+      dialog.setAttribute('role', 'dialog');
+      dialog.setAttribute('aria-modal', 'true');
+      const modalInput = document.createElement('input');
+      modalInput.id = 'modalInput';
+      dialog.appendChild(modalInput);
+      host.appendChild(dialog);
+      modalInput.focus();
+      const btn5 = document.createElement('button');
+      btn5.id = 'btn5';
+      host.appendChild(btn5);
+      restoreFocusAfterClose(() => btn5);
+      await sleep(80);
+      const activeWithOpenDialog = document.activeElement?.id;
+      dialog.remove();
+
+      // 6. Cleanup while observer is active disconnects observer cleanly
+      container.setAttribute('inert', '');
+      const cancelObs = restoreFocusAfterClose(() => btn2);
+      await sleep(75);
+      const observersWhileWaiting = activeObservers;
+      cancelObs();
+      const observersAfterCleanup = activeObservers;
+
+      return {
+        focusedAfterCancel,
+        focusedWhileInert,
+        focusedAfterInertRemoved,
+        focusedDisconnected,
+        focusedDisabled,
+        activeWithOpenDialog,
+        observersWhileWaiting,
+        observersAfterCleanup,
+      };
+    });
+
+    assert.notEqual(results.focusedAfterCancel, 'btn1', 'Cancelled restore must not focus after unmount');
+    assert.notEqual(results.focusedWhileInert, 'btn2', 'Must not focus while ancestor is inert');
+    assert.equal(results.focusedAfterInertRemoved, 'btn2', 'Must focus target once inert is removed');
+    assert.notEqual(results.focusedDisconnected, 'btn3', 'Must not focus disconnected target');
+    assert.notEqual(results.focusedDisabled, 'btn4', 'Must not focus disabled target');
+    assert.equal(results.activeWithOpenDialog, 'modalInput', 'Must not steal focus when a dialog is open');
+    assert.equal(results.observersWhileWaiting, 1, 'Observer should be attached while waiting on inert');
+    assert.equal(results.observersAfterCleanup, 0, 'Observer must disconnect on cleanup');
 
     await context.close();
   });

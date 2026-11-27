@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { TeacherDto } from '@/server/teachers';
 import { TeacherCreateModal } from './TeacherCreateModal';
 import { TeacherStatusModal } from './TeacherStatusModal';
 import { SessionLostModal } from './SessionLostModal';
 import { clearAllDrafts, removeDraft } from './draftStorage';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface TeachersCatalogProps {
   initialTeachers?: TeacherDto[];
@@ -38,19 +39,9 @@ export function TeachersCatalog({
   const openCreateBtnRef = useRef<HTMLButtonElement>(null);
   const lastActionBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  // Inert background toggle
+  // Inert background toggle + safe focus restoration
   const anyModalOpen = isCreateModalOpen || isStatusModalOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-    return () => container?.removeAttribute('inert');
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   const handleOpenCreateModal = () => {
     setMutationStatus(null);
@@ -404,10 +395,7 @@ export function TeachersCatalog({
           isOpen={isCreateModalOpen}
           onClose={() => {
             setIsCreateModalOpen(false);
-            setTimeout(() => {
-              if (!document.getElementById('appContainer')?.hasAttribute('inert'))
-                (document.getElementById('btnForbiddenLogout') || openCreateBtnRef.current)?.focus();
-            }, 0);
+            scheduleFocusRestore(() => document.getElementById('btnForbiddenLogout') || openCreateBtnRef.current);
           }}
           onSuccess={handleCreateSuccess}
           onSessionLost={handleSessionLost}
@@ -422,12 +410,13 @@ export function TeachersCatalog({
           action={statusAction}
           onClose={() => {
             setIsStatusModalOpen(false);
-            setTimeout(() => {
-              if (!document.getElementById('appContainer')?.hasAttribute('inert'))
-                (document.getElementById('btnForbiddenLogout') ||
-                  document.getElementById(`btn-enable-${statusTargetTeacher?.id}`) ||
-                  document.getElementById(`btn-disable-${statusTargetTeacher?.id}`) || openCreateBtnRef.current)?.focus();
-            }, 0);
+            scheduleFocusRestore(
+              () =>
+                document.getElementById('btnForbiddenLogout') ||
+                document.getElementById(`btn-enable-${statusTargetTeacher?.id}`) ||
+                document.getElementById(`btn-disable-${statusTargetTeacher?.id}`) ||
+                openCreateBtnRef.current
+            );
           }}
           onSuccess={handleStatusSuccess}
           onSessionLost={handleSessionLost}

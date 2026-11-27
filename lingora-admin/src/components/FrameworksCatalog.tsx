@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { FrameworkDto } from '@/server/frameworks';
 import { FrameworkFormModal } from './FrameworkFormModal';
 import { FrameworkDeleteModal } from './FrameworkDeleteModal';
 import { SessionLostModal } from './SessionLostModal';
 import { removeDraft, clearAllDrafts } from './draftStorage';
-import { restoreFocusAfterClose } from './focusRestore';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface FrameworksCatalogProps {
   initialFrameworks?: FrameworkDto[];
@@ -48,18 +48,9 @@ export function FrameworksCatalog({
   const triggerRef = useRef<HTMLElement | null>(null);
   const openCreateBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Background inert when any modal is open
+  // Background inert + safe focus restoration when any modal is open/closed
   const anyModalOpen = isFormModalOpen || isDeleteModalOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   const fetchFrameworks = async () => {
     setIsLoading(true);
@@ -169,7 +160,7 @@ export function FrameworksCatalog({
         : 'Đã xóa khung năng lực thành công.'
     );
 
-    restoreFocusAfterClose(() => {
+    scheduleFocusRestore(() => {
       if (nextList.length === 0) {
         return document.getElementById('btnEmptyCreateFramework') || openCreateBtnRef.current;
       }
