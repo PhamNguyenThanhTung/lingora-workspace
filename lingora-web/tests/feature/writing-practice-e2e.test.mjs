@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import fs from 'node:fs';
 import http from 'node:http';
 import net from 'node:net';
 import path from 'node:path';
@@ -634,10 +635,15 @@ test('production review flow: published Chinese 人口 writing SRS, attempt secr
 
   const xpBefore = await database.xpEvent.count({ where: { learnerId: srsLearnerId } });
 
-  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   await context.addCookies([learnerCookie(providerOrigin, srsAccessToken)]);
   const page = await context.newPage();
   page.setDefaultTimeout(20000);
+
+  const screenshotDir = process.env.EXT03_SCREENSHOT_DIR;
+  if (screenshotDir) {
+    fs.mkdirSync(screenshotDir, { recursive: true });
+  }
 
   try {
     await page.goto(`${serverOrigin}/review`);
@@ -669,6 +675,12 @@ test('production review flow: published Chinese 人口 writing SRS, attempt secr
     await canvas.waitFor({ state: 'visible' });
     const box = await canvas.boundingBox();
     assert.ok(box);
+    if (screenshotDir) {
+      await page.screenshot({
+        path: path.join(screenshotDir, 'ext03-writing-srs-prompt-desktop.png'),
+        fullPage: true,
+      });
+    }
 
     // Setup network interception: abort the first response to simulate lost-response after server commits
     let interceptedOnce = false;
@@ -772,6 +784,12 @@ test('production review flow: published Chinese 人口 writing SRS, attempt secr
     await page.locator('#rateWritingHARDBtn').waitFor({ state: 'visible' });
     await page.locator('#rateWritingGOODBtn').waitFor({ state: 'visible' });
     await page.locator('#rateWritingEASYBtn').waitFor({ state: 'visible' });
+    if (screenshotDir) {
+      await page.screenshot({
+        path: path.join(screenshotDir, 'ext03-writing-srs-revealed-desktop.png'),
+        fullPage: true,
+      });
+    }
 
     // Click GOOD rating
     await page.locator('#rateWritingGOODBtn').click();
@@ -807,5 +825,139 @@ test('production review flow: published Chinese 人口 writing SRS, attempt secr
     assert.equal(xpAfter - xpBefore, 1);
   } finally {
     await context.close();
+  }
+});
+
+test('EXT-03 E2E: non-allowlisted learner receives 404 on direct writing-attempts POST, and mobile (375x812) renders writing SRS cleanly', async () => {
+  // Ca 1 over real HTTP: learnerId is NOT in WRITING_SRS_LEARNER_IDS
+  const nonAllowlistedCard = await database.srsCard.create({
+    data: {
+      learnerId,
+      vocabularyId: fixture.vocabId,
+      stage: 1,
+      dueAt: new Date(Date.now() - 3600_000),
+      enrollmentSource: 'OPTIONAL_CHOICE',
+      sourceLessonVocabularyId: fixture.vocabLinkId,
+    },
+  });
+
+  const desktopNonAllowlisted = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  await desktopNonAllowlisted.addCookies([learnerCookie(providerOrigin, accessToken)]);
+  const nonAllowlistedPage = await desktopNonAllowlisted.newPage();
+  nonAllowlistedPage.setDefaultTimeout(15000);
+  try {
+    const createSessionRes = await nonAllowlistedPage.request.post(`${serverOrigin}/api/srs/sessions`, {
+      headers: { Origin: serverOrigin },
+      data: { limit: 10 },
+    });
+    assert.equal(createSessionRes.status(), 201, await createSessionRes.text());
+    const createSessionBody = await createSessionRes.json();
+    assert.equal(createSessionBody.data.currentItem.canonicalForm, 'Hello');
+    assert.equal('skill' in createSessionBody.data.currentItem, false);
+    assert.equal(
+      await database.srsMemoryState.count({ where: { cardId: nonAllowlistedCard.id, skill: 'WRITING' } }),
+      0,
+    );
+
+    const directAttemptRes = await nonAllowlistedPage.request.post(
+      `${serverOrigin}/api/srs/sessions/${createSessionBody.data.sessionId}/writing-attempts`,
+      {
+        headers: { Origin: serverOrigin },
+        data: {
+          cardId: nonAllowlistedCard.id,
+          operationKey: randomUUID(),
+          characterNumber: 1,
+          candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+        },
+      },
+    );
+    assert.equal(directAttemptRes.status(), 404, await directAttemptRes.text());
+    const directAttemptBody = await directAttemptRes.json();
+    assert.equal(directAttemptBody.error.code, 'NOT_FOUND');
+  } finally {
+    await desktopNonAllowlisted.close();
+  }
+
+  // Mobile 375x812 viewport check + screenshot for allowlisted srsLearnerId
+  const screenshotDir = process.env.EXT03_SCREENSHOT_DIR;
+  if (screenshotDir) {
+    fs.mkdirSync(screenshotDir, { recursive: true });
+  }
+  const writingState = await database.srsMemoryState.findFirstOrThrow({
+    where: {
+      skill: 'WRITING',
+      card: { learnerId: srsLearnerId },
+    },
+  });
+  await database.srsMemoryState.update({
+    where: { id: writingState.id },
+    data: { dueAt: new Date(Date.now() - 3600_000) },
+  });
+
+  const mobileContext = await browser.newContext({ viewport: { width: 375, height: 812 } });
+  await mobileContext.addCookies([learnerCookie(providerOrigin, srsAccessToken)]);
+  const mobilePage = await mobileContext.newPage();
+  mobilePage.setDefaultTimeout(20000);
+
+  try {
+    await mobilePage.goto(`${serverOrigin}/review`);
+    await mobilePage.locator('#startReviewBtn').waitFor({ state: 'visible' });
+    await mobilePage.locator('#startReviewBtn').click();
+
+    await mobilePage.locator('#srsReviewCard').waitFor({ state: 'visible' });
+    await mobilePage.locator('#srs-writing-canvas').waitFor({ state: 'visible' });
+
+    const promptOverflow = await mobilePage.evaluate(() => ({
+      viewport: window.innerWidth,
+      content: document.documentElement.scrollWidth,
+    }));
+    assert.ok(
+      promptOverflow.content <= promptOverflow.viewport,
+      `Writing SRS prompt overflows mobile 375px: ${JSON.stringify(promptOverflow)}`,
+    );
+    if (screenshotDir) {
+      await mobilePage.screenshot({
+        path: path.join(screenshotDir, 'ext03-writing-srs-prompt-mobile.png'),
+        fullPage: true,
+      });
+    }
+
+    // Draw character 1 (人) and character 2 (口)
+    for (let step = 1; step <= 2; step++) {
+      const box = await mobilePage.locator('#srs-writing-canvas').boundingBox();
+      assert.ok(box);
+      await mobilePage.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.3);
+      await mobilePage.mouse.down();
+      await mobilePage.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.7, { steps: 6 });
+      await mobilePage.mouse.up();
+      await mobilePage.locator('#srs-writing-submit:not([disabled])').waitFor({ state: 'visible' });
+      await mobilePage.locator('#srs-writing-submit').click();
+      if (step === 1) {
+        await mobilePage.locator('text=Ký tự 2/').waitFor({ state: 'visible' });
+      }
+    }
+
+    await mobilePage.locator('#srsAnswerSection').waitFor({ state: 'visible' });
+    await mobilePage.locator('#rateWritingEASYBtn').waitFor({ state: 'visible' });
+
+    const revealedOverflow = await mobilePage.evaluate(() => ({
+      viewport: window.innerWidth,
+      content: document.documentElement.scrollWidth,
+    }));
+    assert.ok(
+      revealedOverflow.content <= revealedOverflow.viewport,
+      `Writing SRS revealed screen overflows mobile 375px: ${JSON.stringify(revealedOverflow)}`,
+    );
+    if (screenshotDir) {
+      await mobilePage.screenshot({
+        path: path.join(screenshotDir, 'ext03-writing-srs-revealed-mobile.png'),
+        fullPage: true,
+      });
+    }
+
+    await mobilePage.locator('#rateWritingEASYBtn').click();
+    await mobilePage.locator('#srsDoneBox').waitFor({ state: 'visible' });
+  } finally {
+    await mobileContext.close();
   }
 });

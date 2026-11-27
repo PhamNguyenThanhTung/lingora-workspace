@@ -47,6 +47,9 @@ export async function loadLearnerHome(
 
   try {
     let selectedContextId: string | null = null;
+    const remembered = (cookieStore || options?.cookieStore)?.get?.('lingora_ctx')?.value;
+    const rememberedContext = contexts.find(context => context.id === remembered && context.status === 'ACTIVE');
+
     if (options?.contextId != null) {
       if (!isValidUuid(options.contextId)) return {
         ok: false, status: 400, error: { code: 'VALIDATION_ERROR', message: 'Mã lộ trình không hợp lệ.' },
@@ -55,6 +58,8 @@ export async function loadLearnerHome(
       if (!contexts.some(context => context.id === selectedContextId)) return {
         ok: false, status: 404, error: { code: 'NOT_FOUND', message: 'Lộ trình học không tồn tại.' },
       };
+    } else if (rememberedContext) {
+      selectedContextId = rememberedContext.id;
     } else {
       const active = contexts.filter(context => context.status === 'ACTIVE');
       const available = active.filter(context => context.course.isActive && context.workingLevel);
@@ -141,6 +146,9 @@ export async function loadLearnerHome(
       gamificationMessage = 'Múi giờ tài khoản không hợp lệ. Dữ liệu chuỗi ngày học và nhiệm vụ hàng ngày tạm thời không khả dụng.';
     }
 
+    if (selectedContextId && options?.responseHeaders instanceof Headers) {
+      options.responseHeaders.append('Set-Cookie', `lingora_ctx=${selectedContextId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`);
+    }
     return {
       ok: true,
       status: 200,
@@ -149,6 +157,8 @@ export async function loadLearnerHome(
         plan: planSummary?.plan ?? null,
         continueLearning: pathResult?.continueLearning ?? null,
         path: pathResult?.path ?? [],
+        sections: pathResult?.sections ?? [],
+        currentLevel: pathResult?.currentLevel ?? null,
         pathStatus: pathResult?.status ?? null,
         pathMessage: pathResult?.message ?? null,
         reviewDue,

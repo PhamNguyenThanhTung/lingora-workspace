@@ -35,6 +35,8 @@ export interface LevelSummaryDto {
 }
 
 export interface LearningContextSummaryDto {
+  levelCode: string | null;
+  requiredProgress: { requiredDone: number; requiredTotal: number };
   id: string;
   status: string;
   rowVersion: string;

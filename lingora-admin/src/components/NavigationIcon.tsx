@@ -3,6 +3,7 @@ import React from 'react';
 const paths = {
   overview: 'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',
   languages: 'M3 5h12 M9 3v2 M5 5c0 6 5 10 10 12 M13 5c0 5-4 10-10 12 M14 21l4-10 4 10 M16 17h4',
+  characters: 'M4 4h16v16H4z M8 9h8 M12 7v9 M8.5 13.5l3.5 3 3.5-3',
   frameworks: 'M12 3 2 8l10 5 10-5-10-5z M2 12l10 5 10-5 M2 16l10 5 10-5',
   courses: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 3H20v19H6.5A2.5 2.5 0 0 1 4 19.5v-14A2.5 2.5 0 0 1 6.5 3z M8 7h8 M8 11h6',
   teachers: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M17 4a4 4 0 0 1 0 7 M22 21v-2a4 4 0 0 0-3-3.87',

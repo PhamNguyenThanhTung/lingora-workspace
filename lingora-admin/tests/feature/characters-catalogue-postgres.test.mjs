@@ -8,6 +8,8 @@ import {
   getCharacterByGlyph,
   listCharacters,
   countCharacters,
+  createAdminCharacter,
+  listCharacterCatalogue,
 } from '../../src/server/characters/index.ts';
 
 export function validateTestDatabaseUrl(env = process.env) {
@@ -424,5 +426,125 @@ describe('S6-01: Real PostgreSQL WritingCharacter Constraints, RLS and Scoped Lo
 
     // Clean up
     await prisma.writingCharacter.delete({ where: { id: created.id } });
+  });
+
+  test('EXT-02: createAdminCharacter and listCharacterCatalogue enforce NFC, 409 duplicate, language/script rules, pagination & hasStrokes', async () => {
+    // 1. NFD -> NFC normalization via createAdminCharacter
+    const nfdRes = await createAdminCharacter(
+      {
+        languageId: jaLang.id,
+        glyph: '\u304B\u3099', // decomposed が
+        scriptType: 'HIRAGANA',
+        strokeCount: 4,
+        primaryReading: 'が',
+        romanization: 'ga',
+      },
+      prisma
+    );
+    assert.equal(nfdRes.status, 201);
+    assert.equal(nfdRes.data?.data.glyph, 'が');
+    assert.equal(nfdRes.data?.data.hasStrokes, false);
+
+    // 2. Duplicate in same language -> 409 CHARACTER_DUPLICATE
+    const dupRes = await createAdminCharacter(
+      {
+        languageId: jaLang.id,
+        glyph: 'が',
+        scriptType: 'HIRAGANA',
+        strokeCount: 4,
+      },
+      prisma
+    );
+    assert.equal(dupRes.status, 409);
+    assert.equal(dupRes.error?.code, 'CHARACTER_DUPLICATE');
+
+    // 3. Language not found or language/script mismatch -> 400
+    const missingLangRes = await createAdminCharacter(
+      {
+        languageId: randomUUID(),
+        glyph: '火',
+        scriptType: 'KANJI',
+        strokeCount: 4,
+      },
+      prisma
+    );
+    assert.equal(missingLangRes.status, 400);
+
+    const mismatchRes = await createAdminCharacter(
+      {
+        languageId: zhLang.id,
+        glyph: 'あ',
+        scriptType: 'HIRAGANA',
+        strokeCount: 3,
+      },
+      prisma
+    );
+    assert.equal(mismatchRes.status, 400);
+
+    // 4. Create additional character with stroke data and verify listCharacterCatalogue pagination + hasStrokes
+    const sunRes = await createAdminCharacter(
+      {
+        languageId: jaLang.id,
+        glyph: '山',
+        scriptType: 'KANJI',
+        strokeCount: 3,
+        meaning: 'núi',
+        primaryReading: 'やま',
+        romanization: 'yama',
+      },
+      prisma
+    );
+    assert.equal(sunRes.status, 201);
+
+    await prisma.characterStrokeData.create({
+      data: {
+        characterId: sunRes.data.data.id,
+        version: 1,
+        strokes: [
+          { index: 1, points: [[0.5, 0.2], [0.5, 0.8]], start: [0.5, 0.2], end: [0.5, 0.8], path: 'M 0.5 0.2 L 0.5 0.8' },
+          { index: 2, points: [[0.2, 0.5], [0.2, 0.8]], start: [0.2, 0.5], end: [0.2, 0.8], path: 'M 0.2 0.5 L 0.2 0.8' },
+          { index: 3, points: [[0.8, 0.5], [0.8, 0.8]], start: [0.8, 0.5], end: [0.8, 0.8], path: 'M 0.8 0.5 L 0.8 0.8' },
+        ],
+        source: 'Lingora Test',
+        license: 'CC0-1.0',
+        provenance: { author: 'test', version: '1.0.0', attribution: 'test' },
+      },
+    });
+
+    const page1 = await listCharacterCatalogue(
+      { languageId: jaLang.id, limit: 1, offset: 0 },
+      prisma
+    );
+    assert.equal(page1.status, 200);
+    assert.equal(page1.data?.total, 2);
+    assert.equal(page1.data?.data.length, 1);
+    assert.equal(page1.data?.data[0].glyph, '山');
+    assert.equal(page1.data?.data[0].hasStrokes, true);
+    assert.equal('strokes' in page1.data.data[0], false);
+
+    const page2 = await listCharacterCatalogue(
+      { languageId: jaLang.id, limit: 1, offset: 1 },
+      prisma
+    );
+    assert.equal(page2.status, 200);
+    assert.equal(page2.data?.data.length, 1);
+    assert.equal(page2.data?.data[0].glyph, 'が');
+    assert.equal(page2.data?.data[0].hasStrokes, false);
+
+    const searchRes = await listCharacterCatalogue(
+      { languageId: jaLang.id, search: 'núi' },
+      prisma
+    );
+    assert.equal(searchRes.status, 200);
+    assert.equal(searchRes.data?.total, 1);
+    assert.equal(searchRes.data?.data[0].glyph, '山');
+
+    // Clean up
+    await prisma.characterStrokeData.deleteMany({
+      where: { characterId: sunRes.data.data.id },
+    });
+    await prisma.writingCharacter.deleteMany({
+      where: { id: { in: [nfdRes.data.data.id, sunRes.data.data.id] } },
+    });
   });
 });
