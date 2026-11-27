@@ -14,6 +14,11 @@ import {
 } from '../../src/server/srs/index.ts';
 import { resolveWritingCharactersForCards } from '../../src/server/srs/session-service.ts';
 import { createPracticeFixture } from './harness/practice-db-fixture.mjs';
+import {
+  submitTeacherLesson,
+  approveReview,
+  publishReview,
+} from '../../../lingora-admin/src/server/lessons/index.ts';
 
 const url = process.env.SLICE11_TEST_DATABASE_URL;
 assert.ok(url, 'Explicit owned loopback DB required (run via scripts/local-test-db.mjs)');
@@ -1875,4 +1880,479 @@ test('Ôn nhanh: reviewing a warm-up card schedules it by Policy B and leaves no
 
   // The warm-up never touches the lesson: no attempt, so no score, XP or accuracy impact.
   assert.equal(await db.lessonAttempt.count({ where: { contextId: f.ctxA } }), 0);
+});
+
+// ---------------------------------------------------------------------------
+// EXT-03: Writing SRS acceptance cases 1–5 (allowlist, flag off, 4 ratings,
+// concurrent double-submit, mid-session allowlist removal).
+// ---------------------------------------------------------------------------
+
+async function withWritingSrsFlags(enabled, learnerIds, fn) {
+  const priorEnabled = process.env.WRITING_SRS_ENABLED;
+  const priorLearners = process.env.WRITING_SRS_LEARNER_IDS;
+  if (enabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+  else process.env.WRITING_SRS_ENABLED = enabled;
+  if (learnerIds === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+  else process.env.WRITING_SRS_LEARNER_IDS = learnerIds;
+
+  try {
+    return await fn();
+  } finally {
+    if (priorEnabled === undefined) delete process.env.WRITING_SRS_ENABLED;
+    else process.env.WRITING_SRS_ENABLED = priorEnabled;
+    if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
+    else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
+  }
+}
+
+async function createPublishedWritingVocabLinks(fixture, labels) {
+  const unit = await db.unit.create({
+    data: {
+      courseId: fixture.course,
+      levelId: fixture.level,
+      code: 'UW-' + randomUUID().slice(0, 6),
+      names: { vi: 'Writing unit' },
+      position: holderPosition++,
+    },
+  });
+  const lesson = await db.lesson.create({
+    data: { unitId: unit.id, position: 1, availability: 'PLANNED' },
+  });
+  const assignment = await db.contentAssignment.create({
+    data: { createdBy: fixture.admin, currentTeacherId: fixture.teacher, lessonId: lesson.id },
+  });
+  const episode = await db.assignmentHistory.create({
+    data: {
+      assignmentId: assignment.id,
+      sequenceNo: 1,
+      eventType: 'ASSIGNED',
+      nextTeacherId: fixture.teacher,
+      scopeGeneration: 1n,
+      changedBy: fixture.admin,
+      scopeSnapshot: { unit: unit.code },
+    },
+  });
+  const revision = await db.lessonRevision.create({
+    data: {
+      lessonId: lesson.id,
+      revisionNo: 1,
+      assignmentId: assignment.id,
+      creationAssignmentEpisodeId: episode.id,
+      status: 'DRAFT',
+      contentSchemaVersion: 0,
+      title: { vi: 'Writing vocab lesson' },
+      contentBlocks: [{ type: 'paragraph', text: 'Writing vocab content' }],
+      createdBy: fixture.teacher,
+      lastEditedBy: fixture.teacher,
+    },
+  });
+  const item = await db.itemIdentity.create({
+    data: { origin: 'PRACTICE', createdBy: fixture.teacher, exactFingerprint: 'ext03-' + randomUUID() },
+  });
+  const itemRev = await db.itemRevision.create({
+    data: {
+      itemId: item.id,
+      revisionNo: 1,
+      type: 'MCQ',
+      promptData: { prompt: 'Q?', options: [{ id: 'a', text: 'A' }, { id: 'b', text: 'B' }] },
+      exactFingerprint: item.exactFingerprint,
+      createdBy: fixture.teacher,
+      creationAssignmentEpisodeId: episode.id,
+      authoringLessonRevisionId: revision.id,
+    },
+  });
+  await db.itemGradingSecret.create({
+    data: { itemRevisionId: itemRev.id, gradingData: { correctOptionId: 'a' } },
+  });
+  await db.lessonExercise.create({
+    data: { lessonRevisionId: revision.id, itemId: item.id, itemRevisionId: itemRev.id, position: 1, isCore: true },
+  });
+
+  const created = [];
+  for (let i = 0; i < labels.length; i++) {
+    const label = labels[i];
+    const concept = await db.vocabularyConcept.create({
+      data: {
+        languageId: fixture.lang,
+        canonicalForm: `Word_${label}_${randomUUID().slice(0, 4)}`,
+        normalizedForm: `word_${label}_${randomUUID().slice(0, 4)}`,
+        senseKey: `sense-${label}-${randomUUID().slice(0, 4)}`,
+        meaningLabels: { vi: `Nghĩa ${label}` },
+        createdBy: fixture.teacher,
+      },
+    });
+    const link = await db.lessonVocabularyLink.create({
+      data: {
+        lessonRevisionId: revision.id,
+        vocabularyId: concept.id,
+        position: i + 1,
+        isCore: true,
+        displaySnapshot: {
+          schemaVersion: 1,
+          languageId: fixture.lang,
+          canonicalForm: concept.canonicalForm,
+          senseKey: concept.senseKey,
+          meaningLabels: concept.meaningLabels,
+          characters: [{
+            characterId: fixture.characterId,
+            position: 1,
+            glyph: '文',
+            scriptType: 'KANJI',
+            meaning: 'văn tự',
+            primaryReading: 'ぶん',
+            romanization: 'bun',
+            strokeCount: 1,
+            strokeVersion: 1,
+          }],
+        },
+      },
+    });
+    created.push({ concept, link });
+  }
+
+  const lessonRow = await db.lesson.findUniqueOrThrow({ where: { id: lesson.id } });
+  const sub = await submitTeacherLesson(fixture.teacher, lesson.id, {
+    revisionId: revision.id,
+    expectedLessonRowVersion: lessonRow.rowVersion.toString(),
+    expectedRevisionRowVersion: '1',
+  }, db);
+  assert.equal(sub.status, 200, JSON.stringify(sub));
+  const revAfterSub = await db.lessonRevision.findUniqueOrThrow({ where: { id: revision.id } });
+  const app = await approveReview(fixture.admin, sub.data.submissionId, {
+    expectedRevisionRowVersion: revAfterSub.rowVersion.toString(),
+  }, db);
+  assert.equal(app.status, 200, JSON.stringify(app));
+  const revAfterApp = await db.lessonRevision.findUniqueOrThrow({ where: { id: revision.id } });
+  const lessonAfterApp = await db.lesson.findUniqueOrThrow({ where: { id: lesson.id } });
+  const pub = await publishReview(fixture.admin, sub.data.submissionId, {
+    expectedRevisionRowVersion: revAfterApp.rowVersion.toString(),
+    expectedLessonRowVersion: lessonAfterApp.rowVersion.toString(),
+    makeAvailable: true,
+  }, db);
+  assert.equal(pub.status, 200, JSON.stringify(pub));
+
+  return created;
+}
+
+test('EXT-03 Ca 1 & Ca 2: Outside allowlist or WRITING_SRS_ENABLED=false excludes WRITING cards and rejects direct attempts with 404', async () => {
+  const fixture = await createPracticeFixture(db, { writingCharacter: true });
+  const card = await db.srsCard.create({
+    data: {
+      learnerId: fixture.learnerA,
+      vocabularyId: fixture.vocabId,
+      stage: 1,
+      dueAt: new Date(Date.now() - 3600_000),
+      enrollmentSource: 'OPTIONAL_CHOICE',
+      sourceLessonVocabularyId: fixture.vocabLinkId,
+    },
+  });
+
+  // Ca 1: WRITING_SRS_ENABLED=true, learnerA NOT in allowlist (only learnerB is)
+  await withWritingSrsFlags('true', fixture.learnerB, async () => {
+    const session = await createReviewSession(fixture.learnerA, {}, db);
+    assert.equal(session.progress.total, 1);
+    assert.equal(session.currentItem.canonicalForm, 'Hello');
+    assert.equal('skill' in session.currentItem, false);
+    assert.equal(await db.srsMemoryState.count({ where: { cardId: card.id, skill: 'WRITING' } }), 0);
+
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: card.id,
+        operationKey: randomUUID(),
+        characterNumber: 1,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, db),
+      err => err instanceof SrsServiceError && err.status === 404 && err.code === 'NOT_FOUND',
+    );
+  });
+
+  // Ca 2: WRITING_SRS_ENABLED=false even when learnerA IS in allowlist (and even if WRITING state is past due)
+  await db.srsMemoryState.create({
+    data: {
+      cardId: card.id,
+      skill: 'WRITING',
+      schedulerVersion: 'FSRS_6_TS_FSRS_5_4_2',
+      state: 1,
+      stability: 1.0,
+      difficulty: 5.0,
+      dueAt: new Date(Date.now() - 7200_000),
+      count: 0,
+      lapse: 0,
+      scheduledDays: 1,
+      learningSteps: 0,
+    },
+  });
+  await withWritingSrsFlags('false', fixture.learnerA, async () => {
+    const session = await createReviewSession(fixture.learnerA, {}, db);
+    assert.equal(session.progress.total, 1);
+    assert.equal(session.currentItem.canonicalForm, 'Hello');
+    assert.equal('skill' in session.currentItem, false);
+
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: card.id,
+        operationKey: randomUUID(),
+        characterNumber: 1,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, db),
+      err => err instanceof SrsServiceError && err.status === 404 && err.code === 'NOT_FOUND',
+    );
+  });
+});
+
+test('EXT-03 Ca 3: Allowlisted learner completes a full WRITING round across all 4 ratings without affecting MEANING schedule', async () => {
+  const fixture = await createPracticeFixture(db, { writingCharacter: true });
+  const ratings = ['AGAIN', 'HARD', 'GOOD', 'EASY'];
+  const extraVocab = await createPublishedWritingVocabLinks(fixture, ratings);
+
+  const futureMeaningDue = new Date(Date.now() + 10 * 86_400_000);
+  const cards = [];
+  for (let i = 0; i < ratings.length; i++) {
+    const c = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: extraVocab[i].concept.id,
+        stage: 3,
+        dueAt: futureMeaningDue,
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: extraVocab[i].link.id,
+      },
+    });
+    cards.push(c);
+  }
+  const meaningMemory = await db.srsMemoryState.create({
+    data: {
+      cardId: cards[0].id,
+      skill: 'MEANING',
+      schedulerVersion: 'POLICY_B',
+      state: 3,
+      dueAt: futureMeaningDue,
+      count: 2,
+      lapse: 0,
+    },
+  });
+
+  await withWritingSrsFlags('true', fixture.learnerA, async () => {
+    // Lazy init WRITING states
+    await createReviewSession(fixture.learnerA, {}, db);
+    const baseDue = Date.now() - 4 * 3600_000;
+    for (let i = 0; i < cards.length; i++) {
+      await db.srsMemoryState.update({
+        where: { cardId_skill: { cardId: cards[i].id, skill: 'WRITING' } },
+        data: { dueAt: new Date(baseDue + i * 60_000) },
+      });
+    }
+
+    const session = await createReviewSession(fixture.learnerA, { limit: 10 }, db);
+    assert.equal(session.progress.total, 4);
+
+    let current = session.currentItem;
+    for (let i = 0; i < ratings.length; i++) {
+      assert.equal(current.skill, 'WRITING');
+      assert.equal(current.cardId, cards[i].id);
+      assert.equal('canonicalForm' in current, false);
+
+      const attemptRes = await submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: current.cardId,
+        operationKey: randomUUID(),
+        characterNumber: 1,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, db);
+      assert.equal(attemptRes.currentItem.writing.revealedCharacters?.length, 1);
+
+      const reviewRes = await submitSessionReview(fixture.learnerA, session.sessionId, {
+        cardId: current.cardId,
+        operationKey: randomUUID(),
+        rating: ratings[i],
+      }, db);
+      assert.equal(reviewRes.recordedRating, ratings[i]);
+      if (i < ratings.length - 1) {
+        assert.equal(reviewRes.status, 'ACTIVE');
+        current = reviewRes.currentItem;
+      } else {
+        assert.equal(reviewRes.status, 'COMPLETED');
+        assert.equal(reviewRes.progress.completedCount, 4);
+      }
+    }
+
+    // Verify WRITING schedules updated and MEANING schedules untouched
+    for (let i = 0; i < cards.length; i++) {
+      const cardAfter = await db.srsCard.findUniqueOrThrow({ where: { id: cards[i].id } });
+      assert.equal(cardAfter.stage, 3);
+      assert.equal(cardAfter.dueAt.getTime(), futureMeaningDue.getTime());
+      assert.equal(cardAfter.lastReviewedAt, null);
+      assert.equal(cardAfter.rowVersion, 1n);
+
+      const writingAfter = await db.srsMemoryState.findUniqueOrThrow({
+        where: { cardId_skill: { cardId: cards[i].id, skill: 'WRITING' } },
+      });
+      assert.equal(writingAfter.schedulerVersion, 'FSRS_6_TS_FSRS_5_4_2');
+      assert.equal(writingAfter.count, 1);
+      assert.ok(writingAfter.stability > 0);
+      assert.ok(writingAfter.difficulty > 0);
+      assert.ok(writingAfter.dueAt >= writingAfter.lastReviewedAt);
+    }
+
+    const meaningMemoryAfter = await db.srsMemoryState.findUniqueOrThrow({ where: { id: meaningMemory.id } });
+    assert.equal(meaningMemoryAfter.dueAt.getTime(), futureMeaningDue.getTime());
+    assert.equal(meaningMemoryAfter.count, 2);
+    assert.equal(meaningMemoryAfter.rowVersion, meaningMemory.rowVersion);
+
+    const ops = await db.srsReviewOperation.findMany({
+      where: { learnerId: fixture.learnerA },
+      orderBy: { createdAt: 'asc' },
+    });
+    assert.equal(ops.length, 4);
+    assert.deepEqual(ops.map(op => op.rating), ratings);
+    assert.deepEqual(ops.map(op => op.schedulerLog?.rating), [1, 2, 3, 4]);
+    assert.ok(ops.every(op => op.skill === 'WRITING'));
+    assert.equal(await db.srsReviewOperation.count({ where: { learnerId: fixture.learnerA, skill: 'MEANING' } }), 0);
+  });
+});
+
+test('EXT-03 Ca 4: Concurrent double-submit of same writing attempt operationKey writes once and returns identical response', async () => {
+  const fixture = await createPracticeFixture(db, { writingCharacter: true, secondWritingCharacter: true });
+  await withWritingSrsFlags('true', fixture.learnerA, async () => {
+    const card = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: fixture.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() + 86_400_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+    await createReviewSession(fixture.learnerA, {}, db);
+    await db.srsMemoryState.update({
+      where: { cardId_skill: { cardId: card.id, skill: 'WRITING' } },
+      data: { dueAt: new Date(Date.now() - 1000) },
+    });
+
+    const session = await createReviewSession(fixture.learnerA, {}, db);
+    const sameKey = randomUUID();
+    const payload = {
+      cardId: card.id,
+      operationKey: sameKey,
+      characterNumber: 1,
+      candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+    };
+
+    const [resA, resB] = await Promise.all([
+      submitSessionWritingAttempt(fixture.learnerA, session.sessionId, payload, db),
+      submitSessionWritingAttempt(fixture.learnerA, session.sessionId, payload, otherDb),
+    ]);
+    assert.deepEqual(resA, resB);
+    assert.equal(resA.currentItem.writing.attemptedCharacters, 1);
+
+    const stored = await db.srsReviewSession.findUniqueOrThrow({ where: { id: session.sessionId } });
+    assert.equal(stored.cardIds[0].attempts.length, 1);
+    assert.equal(stored.cardIds[0].attempts[0].operationKey, sameKey);
+  });
+});
+
+test('EXT-03 Ca 5: Removing learner from WRITING_SRS_LEARNER_IDS mid-session skips WRITING without 500 and preserves MEANING progress', async () => {
+  const fixture = await createPracticeFixture(db, { writingCharacter: true });
+  const extraVocab = await createPublishedWritingVocabLinks(fixture, ['meaning1', 'meaning2']);
+
+  await withWritingSrsFlags('true', `${fixture.learnerA},${fixture.learnerB}`, async () => {
+    const cardMeaning1 = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: extraVocab[0].concept.id,
+        stage: 1,
+        dueAt: new Date(Date.now() - 3 * 3600_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: extraVocab[0].link.id,
+      },
+    });
+    const cardWriting = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: fixture.vocabId,
+        stage: 1,
+        dueAt: new Date(Date.now() + 7 * 86_400_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: fixture.vocabLinkId,
+      },
+    });
+    const cardMeaning2 = await db.srsCard.create({
+      data: {
+        learnerId: fixture.learnerA,
+        vocabularyId: extraVocab[1].concept.id,
+        stage: 1,
+        dueAt: new Date(Date.now() - 1 * 3600_000),
+        enrollmentSource: 'OPTIONAL_CHOICE',
+        sourceLessonVocabularyId: extraVocab[1].link.id,
+      },
+    });
+
+    await createReviewSession(fixture.learnerA, {}, db);
+    await db.srsMemoryState.update({
+      where: { cardId_skill: { cardId: cardWriting.id, skill: 'WRITING' } },
+      data: { dueAt: new Date(Date.now() - 2 * 3600_000) },
+    });
+
+    const session = await createReviewSession(fixture.learnerA, { limit: 10 }, db);
+    assert.equal(session.progress.total, 3);
+    assert.equal(session.currentItem.cardId, cardMeaning1.id);
+
+    // Complete first MEANING card
+    await revealSessionCurrentItem(fixture.learnerA, session.sessionId, { cardId: cardMeaning1.id }, db);
+    const afterMeaning1 = await submitSessionReview(fixture.learnerA, session.sessionId, {
+      cardId: cardMeaning1.id,
+      operationKey: randomUUID(),
+      rating: 'REMEMBERED',
+    }, db);
+    assert.equal(afterMeaning1.status, 'ACTIVE');
+    assert.equal(afterMeaning1.progress.completedCount, 1);
+    assert.equal(afterMeaning1.currentItem.cardId, cardWriting.id);
+    assert.equal(afterMeaning1.currentItem.skill, 'WRITING');
+
+    // Remove learnerA from WRITING_SRS_LEARNER_IDS while keeping WRITING_SRS_ENABLED=true
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerB;
+
+    // 1. Reconcile skips WRITING cleanly to cardMeaning2 without 500 or losing cardMeaning1 progress
+    const reconciled = await getReviewSession(fixture.learnerA, session.sessionId, db);
+    assert.equal(reconciled.status, 'ACTIVE');
+    assert.equal(reconciled.currentItem.cardId, cardMeaning2.id);
+    assert.equal('skill' in reconciled.currentItem, false);
+    assert.equal(reconciled.progress.currentIndex, 2);
+    assert.equal(reconciled.progress.completedCount, 1);
+
+    // 2. Direct writing-attempt on removed learner returns 404 (not 500)
+    await assert.rejects(
+      () => submitSessionWritingAttempt(fixture.learnerA, session.sessionId, {
+        cardId: cardWriting.id,
+        operationKey: randomUUID(),
+        characterNumber: 1,
+        candidateStrokes: [{ points: [[0.1, 0.5], [0.9, 0.5]] }],
+      }, db),
+      err => err instanceof SrsServiceError && err.status === 404 && err.code === 'NOT_FOUND',
+    );
+
+    // 3. Complete remaining MEANING card cleanly
+    await revealSessionCurrentItem(fixture.learnerA, session.sessionId, { cardId: cardMeaning2.id }, db);
+    const finished = await submitSessionReview(fixture.learnerA, session.sessionId, {
+      cardId: cardMeaning2.id,
+      operationKey: randomUUID(),
+      rating: 'REMEMBERED',
+    }, db);
+    assert.equal(finished.status, 'COMPLETED');
+    assert.equal(finished.progress.completedCount, 2);
+
+    assert.equal((await db.srsCard.findUniqueOrThrow({ where: { id: cardMeaning1.id } })).stage, 2);
+    assert.equal((await db.srsCard.findUniqueOrThrow({ where: { id: cardMeaning2.id } })).stage, 2);
+    assert.equal(await db.srsReviewOperation.count({ where: { learnerId: fixture.learnerA, skill: 'MEANING' } }), 2);
+
+    // 4. Trailing WRITING-only session also reconciles cleanly to COMPLETED when removed mid-session
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerA;
+    const trailingSession = await createReviewSession(fixture.learnerA, { limit: 10 }, db);
+    assert.equal(trailingSession.progress.total, 1);
+    assert.equal(trailingSession.currentItem.skill, 'WRITING');
+    process.env.WRITING_SRS_LEARNER_IDS = fixture.learnerB;
+    const completedTrailing = await getReviewSession(fixture.learnerA, trailingSession.sessionId, db);
+    assert.equal(completedTrailing.status, 'COMPLETED');
+    assert.equal(completedTrailing.currentItem, null);
+  });
 });
