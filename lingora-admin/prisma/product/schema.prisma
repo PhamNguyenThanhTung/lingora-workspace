@@ -1210,8 +1210,9 @@ model WritingSession {
   id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   learnerId        String            @map("learner_id") @db.Uuid
   contextId        String            @map("context_id") @db.Uuid
-  lessonId         String            @map("lesson_id") @db.Uuid
-  lessonRevisionId String            @map("lesson_revision_id") @db.Uuid
+  lessonId         String?           @map("lesson_id") @db.Uuid
+  lessonRevisionId String?           @map("lesson_revision_id") @db.Uuid
+  practiceKind     String            @default("LESSON") @map("practice_kind") @db.Text
   characterId      String            @map("character_id") @db.Uuid
   strokeVersion    Int               @map("stroke_version") @db.Integer
   graderVersion    Int               @default(1) @map("grader_version") @db.Integer
@@ -1226,8 +1227,8 @@ model WritingSession {
 
   learner          Account           @relation("WritingSessionLearner", fields: [learnerId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_learner_fkey")
   context          LearningContext   @relation(fields: [contextId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_context_fkey")
-  lesson           Lesson            @relation(fields: [lessonId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_lesson_fkey")
-  lessonRevision   LessonRevision    @relation(fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_revision_fkey")
+  lesson           Lesson?           @relation(fields: [lessonId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_lesson_fkey")
+  lessonRevision   LessonRevision?   @relation(fields: [lessonRevisionId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_revision_fkey")
   character        WritingCharacter  @relation(fields: [characterId], references: [id], onUpdate: NoAction, onDelete: Restrict, map: "writing_sessions_character_fkey")
   attempts         WritingAttempt[]
 
@@ -1235,6 +1236,7 @@ model WritingSession {
   @@unique([id, learnerId, characterId], map: "writing_sessions_id_learner_character_key")
   @@index([learnerId, status], map: "writing_sessions_learner_id_status_idx")
   @@index([contextId, lessonId], map: "writing_sessions_context_id_lesson_id_idx")
+  @@index([learnerId, characterId], map: "writing_sessions_learner_id_character_id_idx")
   @@map("writing_sessions")
   @@schema("app")
 }

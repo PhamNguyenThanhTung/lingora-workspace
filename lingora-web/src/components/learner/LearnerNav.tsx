@@ -11,7 +11,6 @@ interface LearnerNavProps {
 
 const ITEMS: Array<{ key: ShellSection; label: string; icon: string; href: string; writingOnly?: boolean }> = [
   { key: 'home', label: 'Học', icon: '🏠', href: '/home' },
-  // Placeholder link: the /write page is built in a later workstream.
   { key: 'write', label: 'Luyện viết', icon: '✍️', href: '/write', writingOnly: true },
   { key: 'quests', label: 'Nhiệm vụ', icon: '🎯', href: '/quests' },
   { key: 'profile', label: 'Hồ sơ', icon: '👤', href: '/profile' },

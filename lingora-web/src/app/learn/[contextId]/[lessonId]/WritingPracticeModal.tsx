@@ -21,7 +21,8 @@ export interface WritingPracticeCharacter {
 
 export interface WritingPracticeModalProps {
   contextId: string;
-  lessonId: string;
+  /** Omitted for standalone practice ("Luyện viết"), which is not tied to a lesson. */
+  lessonId?: string;
   expectedPublishedRevisionId?: string;
   character: WritingPracticeCharacter;
   initialStrokeData?: {
@@ -133,11 +134,11 @@ export function WritingPracticeModal({
       setIsLoadingStrokes(true);
       setStrokeError(null);
       try {
-        const query = new URLSearchParams({
-          contextId,
-          lessonId,
-        });
-        if (character.blockKey) {
+        const query = new URLSearchParams({ contextId });
+        if (lessonId) query.set('lessonId', lessonId);
+        if (!lessonId) {
+          // standalone practice: no lesson selector
+        } else if (character.blockKey) {
           query.set('blockKey', character.blockKey);
         } else if (character.lessonVocabularyLinkId) {
           query.set('lessonVocabularyLinkId', character.lessonVocabularyLinkId);
@@ -146,7 +147,11 @@ export function WritingPracticeModal({
           query.set('expectedPublishedRevisionId', expectedPublishedRevisionId);
         }
 
-        const res = await fetch(`/api/characters/${character.characterId}?${query.toString()}`);
+        const res = await fetch(
+          lessonId
+            ? `/api/characters/${character.characterId}?${query.toString()}`
+            : `/api/write/characters/${character.characterId}?${query.toString()}`
+        );
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
           throw new Error(errData.error?.message || 'Không thể tải dữ liệu nét chữ.');
@@ -179,21 +184,18 @@ export function WritingPracticeModal({
   // 2. Start writing session on mount or demand
   const ensureSession = useCallback(async (): Promise<string> => {
     if (sessionId) return sessionId;
-    if (!expectedPublishedRevisionId) {
+    if (lessonId && !expectedPublishedRevisionId) {
       throw new Error('Không xác định được phiên bản bài học. Vui lòng tải lại bài học.');
     }
 
-    const payload: Record<string, any> = {
-      contextId,
-      lessonId,
-      expectedPublishedRevisionId,
-      requestId: sessionRequestId,
-    };
-    if (character.lessonVocabularyLinkId) payload.characterId = character.characterId;
-    if (character.blockKey) payload.blockKey = character.blockKey;
-    if (character.lessonVocabularyLinkId) payload.lessonVocabularyLinkId = character.lessonVocabularyLinkId;
+    const payload: Record<string, any> = lessonId
+      ? { contextId, lessonId, expectedPublishedRevisionId, requestId: sessionRequestId }
+      : { contextId, characterId: character.characterId, requestId: sessionRequestId };
+    if (lessonId && character.lessonVocabularyLinkId) payload.characterId = character.characterId;
+    if (lessonId && character.blockKey) payload.blockKey = character.blockKey;
+    if (lessonId && character.lessonVocabularyLinkId) payload.lessonVocabularyLinkId = character.lessonVocabularyLinkId;
 
-    const res = await fetch('/api/writing/sessions', {
+    const res = await fetch(lessonId ? '/api/writing/sessions' : '/api/write/sessions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
