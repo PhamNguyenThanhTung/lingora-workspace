@@ -20,6 +20,7 @@
     "db:product:migrate": "npm run db:product:migrate -w lingora-admin",
     "db:product:seed": "npm run db:product:seed -w lingora-admin",
     "db:product:seed:demo": "node --experimental-strip-types scripts/seed-demo-course.mjs",
+    "db:product:seed:core": "node --experimental-strip-types scripts/seed-core-courses.mjs",
     "test:components": "npm run test:components -w lingora-admin && npm run test:components -w lingora-web",
     "test:integration:characters": "node scripts/local-test-db.mjs node --experimental-strip-types lingora-admin/tests/feature/characters-catalogue-postgres.test.mjs",
     "test:integration:strokes": "node scripts/local-test-db.mjs node --experimental-strip-types lingora-admin/tests/feature/characters-strokes-postgres.test.mjs",
