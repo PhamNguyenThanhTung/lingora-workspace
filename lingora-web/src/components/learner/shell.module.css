@@ -182,7 +182,7 @@
 /* ---------- content ---------- */
 .main {
   min-width: 0;
-  padding: 16px 14px 96px;
+  padding: 16px 14px 168px;
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
@@ -278,8 +278,21 @@
   min-height: 0;
   background: none;
 }
+/* Hide only what the shell already shows (brand + role badge); keep the page's own links such as "← Lộ trình học". */
 .main :global(.app-header) {
+  position: static;
+  min-height: 0;
+  padding: 0 0 12px;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  justify-content: flex-start;
+}
+.main :global(.app-header .brand-section) {
   display: none;
+}
+.main :global(.app-header .user-nav) {
+  margin: 0;
 }
 .main :global(.content-area) {
   padding: 0;

@@ -113,10 +113,13 @@ const MOCK_NULL_CONTEXT_DATA: LearnerContextEnvelope['data'] = {
 function homeDto(data: LearnerContextEnvelope['data']): any {
   return {
     ...data,
+    contexts: data.contexts.map((c) => ({ ...c, levelCode: (c.workingLevel ?? c.selectedStartLevel)?.code ?? null, requiredProgress: { requiredDone: 0, requiredTotal: 0 } })),
     selectedContextId: data.contexts[0]?.id ?? null,
     plan: null,
     continueLearning: null,
     path: [],
+    sections: [],
+    currentLevel: null,
     pathStatus: null,
     pathMessage: null,
     reviewDue: 0,
@@ -144,13 +147,41 @@ function jaPathData(): any {
     node(4, 'LOCKED', 2, 'Bài 4: こんにちは'),
     node(5, 'LOCKED', 2, 'Bài 5: ありがとう'),
   ];
+  const section = (levelId: string, code: string, state: string, nodes: any[]) => {
+    const units = [...new Set(nodes.map((n) => n.unitPosition))].map((position) => {
+      const un = nodes.filter((n) => n.unitPosition === position);
+      const req = un.filter((n) => n.isRequired);
+      return { unitId: `u${position}`, position, title: un[0].unitTitle, progress: { done: req.filter((n) => n.state === 'COMPLETED').length, total: req.length }, nodes: un };
+    });
+    const req = nodes.filter((n) => n.isRequired);
+    return { levelId, levelCode: code, levelLabel: code, position: 1, state, progress: { requiredDone: req.filter((n) => n.state === 'COMPLETED').length, requiredTotal: req.length }, canSkipTo: false, units };
+  };
   return {
     ...base,
-    contexts: [ctx],
+    contexts: [{ ...ctx, levelCode: 'N5', requiredProgress: { requiredDone: 1, requiredTotal: 4 } }],
     selectedContextId: 'ctx-ja',
+    sections: [section('lvl-n5', 'N5', 'CURRENT', path)],
     path,
     pathStatus: 'READY',
     continueLearning: { lessonId: 'l2', title: 'Bài 2: かきくけこ', unitTitle: 'ひらがな', href: '/learn/ctx-ja/l2', status: 'READY' },
+  };
+}
+
+function profileMock(): any {
+  return {
+    displayName: 'Nguyễn Văn Học',
+    activatedAt: '2026-10-01T00:00:00.000Z',
+    uiLocale: 'vi',
+    timezone: 'Asia/Ho_Chi_Minh',
+    rowVersion: '3',
+    contexts: homeDto(MOCK_VALID_DATA).contexts,
+    totals: { xp: 120, gems: 5, lessonsCompleted: 4, srsCards: 12 },
+    streak: { current: 3, longest: 7 },
+    calendar28: ['2026-11-26', '2026-11-27'],
+    achievements: [
+      { code: 'FIRST_LESSON', title: 'Bài học đầu tiên', description: 'Hoàn thành bài học đầu tiên.', isUnlocked: true, awardedAt: '2026-10-02T00:00:00.000Z' },
+      { code: 'STREAK_7', title: 'Chuỗi 7 ngày', description: 'Học 7 ngày liên tiếp.', isUnlocked: false, awardedAt: null },
+    ],
   };
 }
 
@@ -244,7 +275,7 @@ function HarnessRoot() {
       );
     }
     case 'profile-valid':
-      return framed(MOCK_VALID_DATA, 'profile', <ProfileView data={homeDto(MOCK_VALID_DATA)} />);
+      return framed(MOCK_VALID_DATA, 'profile', <ProfileView profile={profileMock()} today="2026-11-27" />);
     case 'home-403':
       return (
         <HomeView

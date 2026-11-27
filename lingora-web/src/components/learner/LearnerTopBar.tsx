@@ -13,7 +13,6 @@ export function LearnerTopBar({ shell }: { shell: ShellData }) {
         contexts={contexts}
         selectedContextId={selectedContextId}
         uiLocale={learner.uiLocale || 'vi'}
-        selectedProgress={shell.selectedProgress}
       />
       {shell.gamificationStatus !== 'UNAVAILABLE' && (
         <div className={styles.stats}>

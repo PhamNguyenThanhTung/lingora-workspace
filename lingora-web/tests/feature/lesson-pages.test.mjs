@@ -77,6 +77,10 @@ test('Production Navigation: /home -> enterContextBtn -> /learn/[contextId] cata
     // 2. Navigated to /learn/[contextId]
     await page.waitForURL(`${origin}/learn/${contextId}`);
     await page.locator('#catalogueView').waitFor({ state: 'visible' });
+    // Inside the learner shell the catalogue keeps its h1 and its back link; only the duplicate brand is hidden.
+    assert.equal(await page.locator('#learnerShell #courseHeading').isVisible(), true);
+    assert.equal(await page.locator('#learnerShell #backToHomeBtn').isVisible(), true);
+    assert.equal(await page.locator('#catalogueView .brand-section').isVisible(), false);
 
     // Course heading
     const courseHeading = await page.locator('#courseHeading').textContent();

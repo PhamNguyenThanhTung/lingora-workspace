@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import type { PathSectionDto } from '../types.ts';
+import type { PathSectionDto } from '../../../server/context/home-dto.ts';
 import { numberedTitle, hasNumberPrefix } from '../../../shared/lesson-title.ts';
 import { waveOffset } from '../helpers.ts';
 import { LangText } from '../LangText.tsx';

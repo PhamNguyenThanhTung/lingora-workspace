@@ -1,7 +1,6 @@
 import React from 'react';
 import type { HomeDto } from '../../../../server/context/home-dto.ts';
 import { getSections, languageName } from '../../../../components/learner/helpers.ts';
-import type { HomeWithSections } from '../../../../components/learner/types.ts';
 import styles from './sections.module.css';
 
 /** Overview of the levels ("phần") of a path. View only; the "jump ahead" action arrives in phase 2. */
@@ -22,7 +21,7 @@ export function SectionsView({ data, errorMessage }: { data?: HomeDto; errorMess
 
   const uiLocale = data.learner.uiLocale || 'vi';
   const ctx = data.contexts.find((c) => c.id === data.selectedContextId) ?? null;
-  const sections = getSections(data as HomeWithSections, uiLocale);
+  const sections = getSections(data);
 
   return (
     <div id="sectionsView" className={styles.root}>

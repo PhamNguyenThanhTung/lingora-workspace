@@ -9,7 +9,6 @@ import type { LoadLearnerHomeResult } from '../../server/context/home-loader.ts'
 import { PathMap } from '../../components/learner/path/PathMap.tsx';
 import { LangText } from '../../components/learner/LangText.tsx';
 import { getSections, setContextCookie } from '../../components/learner/helpers.ts';
-import type { HomeWithSections } from '../../components/learner/types.ts';
 import { ContextManager } from './ContextManager';
 import { useContextActions } from './useContextActions';
 import styles from './home.module.css';
@@ -25,7 +24,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   const [isRetrying, startRetry] = useTransition();
   const [logoutError, setLogoutError] = useState<string | null>(null);
 
-  const homeData = data as Partial<HomeWithSections> | undefined;
+  const homeData = data as Partial<HomeDto> | undefined;
   const actions = useContextActions(data?.contexts ?? []);
   const { contexts, pendingContexts, isRecovering, handleResume, handleOpenStartLevel } = actions;
 
@@ -125,7 +124,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   const selectedContext = contexts.find((context) => context.id === selectedContextId);
   const pathUsable = selectedContext?.status === 'ACTIVE' && selectedContext.course.isActive;
   const continueLearning = pathUsable ? homeData?.continueLearning ?? null : null;
-  const sections = pathUsable ? getSections({ ...homeData, contexts }, uiLocale) : [];
+  const sections = pathUsable ? getSections(homeData ?? {}) : [];
 
   // SCR-L-06: progress counts eligible required lessons; optional lessons stay out of it.
   const requiredNodes = sections

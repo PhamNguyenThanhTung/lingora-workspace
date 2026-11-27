@@ -13,7 +13,6 @@ interface LanguageSwitcherProps {
   contexts: LearningContextSummaryDto[];
   selectedContextId: string | null;
   uiLocale?: string;
-  selectedProgress?: { done: number; total: number } | null;
 }
 
 function Badge({ code }: { code: string }) {
@@ -24,7 +23,7 @@ function Badge({ code }: { code: string }) {
   );
 }
 
-export function LanguageSwitcher({ contexts, selectedContextId, uiLocale = 'vi', selectedProgress }: LanguageSwitcherProps) {
+export function LanguageSwitcher({ contexts, selectedContextId, uiLocale = 'vi' }: LanguageSwitcherProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -124,7 +123,8 @@ export function LanguageSwitcher({ contexts, selectedContextId, uiLocale = 'vi',
                 const isPaused = ctx.status !== 'ACTIVE';
                 const level = contextLevelCode(ctx);
                 const levelLabel = ctx.workingLevel ? getLocalizedText(ctx.workingLevel.label, uiLocale) : 'Chưa chọn trình độ';
-                const progress = isCurrent ? selectedProgress : null;
+                const rp = ctx.requiredProgress;
+                const progress = rp ? { done: rp.requiredDone, total: rp.requiredTotal } : null;
                 const percent = progress && progress.total > 0 ? Math.round((progress.done * 100) / progress.total) : 0;
                 const inner = (
                   <>

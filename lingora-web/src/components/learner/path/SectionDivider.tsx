@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PathSectionDto } from '../types.ts';
+import type { PathSectionDto } from '../../../server/context/home-dto.ts';
 import styles from './path.module.css';
 
 /** Separates two levels on the map. The "jump ahead" button arrives in phase 2; until then it only explains. */

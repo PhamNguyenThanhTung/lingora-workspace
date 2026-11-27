@@ -1,6 +1,6 @@
 import type { LearningContextSummaryDto } from '../../server/context/dto.ts';
-import type { HomeDto, PathNodeDto } from '../../server/context/home-dto.ts';
-import type { HomeWithSections, PathSectionDto, ShellData } from './types.ts';
+import type { HomeDto, PathSectionDto } from '../../server/context/home-dto.ts';
+import type { ShellData } from './types.ts';
 
 export function getLocalizedText(obj: unknown, locale = 'vi'): string {
   if (!obj || typeof obj !== 'object') return typeof obj === 'string' ? obj : '';
@@ -13,7 +13,7 @@ export function languageName(ctx: LearningContextSummaryDto, locale = 'vi'): str
 }
 
 export function contextLevelCode(ctx: LearningContextSummaryDto): string | null {
-  return (ctx.workingLevel ?? ctx.selectedStartLevel)?.code ?? null;
+  return ctx.levelCode ?? null;
 }
 
 /** Badge colours per language code (no flags: a language is not a country). Text/background pairs are AA. */
@@ -57,61 +57,12 @@ export function reviewHrefFor(selectedContextId: string | null | undefined): str
   return selectedContextId ? `/review?contextId=${selectedContextId}` : '/review';
 }
 
-function requiredProgress(nodes: PathNodeDto[]) {
-  const required = nodes.filter((n) => n.isRequired && n.state !== 'COMING_SOON');
-  return {
-    requiredDone: required.filter((n) => n.state === 'COMPLETED').length,
-    requiredTotal: required.length,
-  };
-}
-
-/**
- * Sections for the map. Uses the server `sections` (plan §2.1) when present; until U1 ships them,
- * groups the flat `path` by chapter under the learner's working level.
- */
-export function getSections(home: Partial<HomeWithSections>, uiLocale = 'vi'): PathSectionDto[] {
-  if (home.sections?.length) return home.sections;
-  const nodes = home.path ?? [];
-  if (!nodes.length) return [];
-  const ctx = home.contexts?.find((c) => c.id === home.selectedContextId);
-  const level = ctx?.workingLevel ?? null;
-  const units: PathSectionDto['units'] = [];
-  for (const node of nodes) {
-    let unit = units.find((u) => u.position === node.unitPosition && u.title === node.unitTitle);
-    if (!unit) {
-      unit = {
-        unitId: `unit-${node.unitPosition}`,
-        position: node.unitPosition,
-        title: node.unitTitle,
-        progress: { done: 0, total: 0 },
-        nodes: [],
-      };
-      units.push(unit);
-    }
-    unit.nodes.push(node);
-  }
-  for (const unit of units) {
-    const required = unit.nodes.filter((n) => n.isRequired && n.state !== 'COMING_SOON');
-    unit.progress = { done: required.filter((n) => n.state === 'COMPLETED').length, total: required.length };
-  }
-  const progress = requiredProgress(nodes);
-  return [
-    {
-      levelId: level?.id ?? 'current',
-      levelCode: level?.code ?? home.currentLevel?.code ?? '',
-      levelLabel: level ? getLocalizedText(level.label, uiLocale) : home.currentLevel?.label ?? '',
-      position: level?.position ?? 1,
-      state: progress.requiredTotal > 0 && progress.requiredDone === progress.requiredTotal ? 'COMPLETED' : 'CURRENT',
-      progress,
-      canSkipTo: false,
-      units,
-    },
-  ];
+/** Sections of the path, exactly as the server sends them (plan §2.1). */
+export function getSections(home: Pick<Partial<HomeDto>, 'sections'>): PathSectionDto[] {
+  return home.sections ?? [];
 }
 
 export function toShellData(home: HomeDto): ShellData {
-  const nodes = home.path ?? [];
-  const progress = requiredProgress(nodes);
   return {
     learner: home.learner,
     contexts: home.contexts,
@@ -125,8 +76,5 @@ export function toShellData(home: HomeDto): ShellData {
     gamificationStatus: home.gamificationStatus,
     gamificationMessage: home.gamificationMessage,
     recentAchievement: home.recentAchievement,
-    selectedProgress: progress.requiredTotal
-      ? { done: progress.requiredDone, total: progress.requiredTotal }
-      : null,
   };
 }
