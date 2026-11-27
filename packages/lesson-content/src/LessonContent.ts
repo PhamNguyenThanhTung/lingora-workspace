@@ -20,6 +20,11 @@ import type {
   TextRun,
 } from './schema.ts';
 import { isSafeRichTextUrl } from './schema.ts';
+import {
+  formatPhonetic,
+  normalizeLanguageCode,
+  resolveContentLang,
+} from './language.ts';
 
 const h = React.createElement;
 
@@ -28,6 +33,7 @@ export interface LessonContentProps {
     | LessonPresentationDto
     | {
         contentSchemaVersion?: number;
+        languageCode?: string | null;
         blocks?: PresentationBlock[];
         vocabulary?: PublicVocabularyDto[];
         exercises?: PublicExerciseDto[];
@@ -35,6 +41,7 @@ export interface LessonContentProps {
     | null;
   className?: string;
   locale?: string;
+  languageCode?: string | null;
   onStartWritingPractice?: (character: {
     characterId: string;
     blockKey?: string;
@@ -153,7 +160,11 @@ function renderTextBlock(block: { content: TextContent }, key: string): React.Re
   );
 }
 
-function renderExampleBlock(block: { content: ExampleContent }, key: string): React.ReactNode {
+function renderExampleBlock(
+  block: { content: ExampleContent },
+  key: string,
+  contentLang?: string
+): React.ReactNode {
   return h(
     'div',
     {
@@ -174,6 +185,7 @@ function renderExampleBlock(block: { content: ExampleContent }, key: string): Re
       'div',
       {
         className: 'lingora-example-text',
+        ...(contentLang ? { lang: contentLang } : {}),
         style: {
           fontWeight: 600,
           fontSize: 'var(--font-size-body, 16px)',
@@ -200,7 +212,11 @@ function renderExampleBlock(block: { content: ExampleContent }, key: string): Re
   );
 }
 
-function renderDialogueBlock(block: { content: DialogueContent }, key: string): React.ReactNode {
+function renderDialogueBlock(
+  block: { content: DialogueContent },
+  key: string,
+  contentLang?: string
+): React.ReactNode {
   return h(
     'div',
     {
@@ -244,6 +260,7 @@ function renderDialogueBlock(block: { content: DialogueContent }, key: string): 
             'span',
             {
               className: 'lingora-dialogue-text',
+              ...(contentLang ? { lang: contentLang } : {}),
               style: { fontSize: 'var(--font-size-body, 16px)', color: 'var(--text-main, #172033)' },
             },
             line.text
@@ -401,7 +418,11 @@ function renderDividerBlock(key: string): React.ReactNode {
   });
 }
 
-function renderGrammarBlock(block: { content: GrammarContent }, key: string): React.ReactNode {
+function renderGrammarBlock(
+  block: { content: GrammarContent },
+  key: string,
+  contentLang?: string
+): React.ReactNode {
   return h(
     'div',
     {
@@ -459,7 +480,12 @@ function renderGrammarBlock(block: { content: GrammarContent }, key: string): Re
             h(
               'div',
               { key: `ex-${exIdx}`, style: { fontSize: 'var(--font-size-sub, 14px)' } },
-              h('div', { style: { fontWeight: 600, color: 'var(--text-main, #172033)' } }, `• ${ex.text}`),
+              h(
+                'div',
+                { style: { fontWeight: 600, color: 'var(--text-main, #172033)' } },
+                '• ',
+                h('span', contentLang ? { lang: contentLang } : null, ex.text)
+              ),
               ex.translation
                 ? h(
                     'div',
@@ -484,11 +510,13 @@ function renderGrammarBlock(block: { content: GrammarContent }, key: string): Re
 function renderCharacterBlock(
   block: any,
   key: string,
-  onStartWritingPractice?: (char: any) => void
+  onStartWritingPractice?: (char: any) => void,
+  contentLang?: string
 ): React.ReactNode {
   const content = block.content || block;
   const glyph = content.glyph || block.glyph || '';
   const scriptType = content.scriptType || block.scriptType || '';
+  const charLang = resolveContentLang({ languageCode: contentLang, scriptType });
   const strokeCount = content.strokeCount ?? block.strokeCount ?? 0;
   const showMeaning = content.showMeaning ?? block.showMeaning ?? false;
   const showReading = content.showReading ?? block.showReading ?? false;
@@ -545,6 +573,7 @@ function renderCharacterBlock(
           {
             id: `character-glyph-${block.blockKey}`,
             className: 'character-glyph',
+            ...(charLang ? { lang: charLang } : {}),
             style: {
               fontSize: '48px',
               fontWeight: 700,
@@ -728,7 +757,8 @@ function renderUnsupportedBlock(
 
 function renderVocabularySection(
   vocabulary: PublicVocabularyDto[],
-  locale = 'vi'
+  locale = 'vi',
+  contentLang?: string
 ): React.ReactNode {
   if (!vocabulary || vocabulary.length === 0) return null;
 
@@ -767,6 +797,7 @@ function renderVocabularySection(
         const meaningVi = snap.meaningLabels?.vi || '';
         const meaningEn = snap.meaningLabels?.en || '';
         const meaningCustom = snap.meaningLabels?.[locale] || '';
+        const formattedPhonetic = formatPhonetic(snap.phonetic, contentLang);
 
         return h(
           'div',
@@ -787,6 +818,7 @@ function renderVocabularySection(
             h(
               'span',
               {
+                ...(contentLang ? { lang: contentLang } : {}),
                 style: {
                   fontSize: '18px',
                   fontWeight: 700,
@@ -795,7 +827,7 @@ function renderVocabularySection(
               },
               snap.canonicalForm || ''
             ),
-            snap.phonetic
+            formattedPhonetic
               ? h(
                   'span',
                   {
@@ -804,7 +836,7 @@ function renderVocabularySection(
                       color: 'var(--text-muted, #59677d)',
                     },
                   },
-                  `/${snap.phonetic.replace(/^\/+|\/+$/g, '')}/`
+                  formattedPhonetic
                 )
               : null
           ),
@@ -816,8 +848,12 @@ function renderVocabularySection(
                   'aria-label': 'Các chữ trong từ',
                   style: { display: 'flex', gap: '10px', margin: '8px 0', flexWrap: 'wrap' },
                 },
-                [...snap.characters].sort((a, b) => a.position - b.position).map((character) =>
-                  h(
+                [...snap.characters].sort((a, b) => a.position - b.position).map((character) => {
+                  const charLang = resolveContentLang({
+                    languageCode: contentLang,
+                    scriptType: character.scriptType,
+                  });
+                  return h(
                     'span',
                     {
                       key: `${character.characterId}-${character.position}`,
@@ -825,7 +861,11 @@ function renderVocabularySection(
                       'data-character-position': character.position,
                       style: { display: 'inline-flex', alignItems: 'baseline', gap: '5px' },
                     },
-                    h('strong', { style: { fontSize: '20px' } }, character.glyph),
+                    h(
+                      'strong',
+                      { ...(charLang ? { lang: charLang } : {}), style: { fontSize: '20px' } },
+                      character.glyph
+                    ),
                     h(
                       'span',
                       { style: { fontSize: '12px', color: 'var(--text-muted, #64748b)' } },
@@ -833,8 +873,8 @@ function renderVocabularySection(
                         .filter((value): value is string => typeof value === 'string' && value.length > 0)
                         .join(' · ')
                     )
-                  )
-                )
+                  );
+                })
               )
             : null,
           snap.partOfSpeech
@@ -873,6 +913,7 @@ function renderVocabularySection(
             ? h(
                 'div',
                 {
+                  ...(contentLang ? { lang: contentLang } : {}),
                   style: {
                     marginTop: '8px',
                     paddingTop: '6px',
@@ -911,7 +952,8 @@ function previewShuffle<T>(items: T[], seed: string): T[] {
 function renderExercisesSection(
   exercises: PublicExerciseDto[],
   audioErrors: Record<string, boolean>,
-  onAudioError: (id: string) => void
+  onAudioError: (id: string) => void,
+  contentLang?: string
 ): React.ReactNode {
   if (!exercises || exercises.length === 0) return null;
 
@@ -1029,6 +1071,7 @@ function renderExercisesSection(
             ? h(
                 'div',
                 {
+                  ...(contentLang ? { lang: contentLang } : {}),
                   style: {
                     padding: '12px 16px',
                     backgroundColor: 'var(--canvas-bg, #f6f8fc)',
@@ -1053,6 +1096,7 @@ function renderExercisesSection(
                     'span',
                     {
                       key: t.id,
+                      ...(contentLang ? { lang: contentLang } : {}),
                       style: {
                         padding: '6px 12px',
                         backgroundColor: 'var(--canvas-bg, #f6f8fc)',
@@ -1152,7 +1196,7 @@ function renderExercisesSection(
                         },
                       },
                       h('span', { style: { fontWeight: 600 } }, 'Câu gốc: '),
-                      promptData.sourceSentence
+                      h('span', contentLang ? { lang: contentLang } : null, promptData.sourceSentence)
                     )
                   : null,
                 promptData.targetPattern
@@ -1167,7 +1211,7 @@ function renderExercisesSection(
                         },
                       },
                       h('span', { style: { fontWeight: 600 } }, 'Cấu trúc mẫu: '),
-                      promptData.targetPattern
+                      h('span', contentLang ? { lang: contentLang } : null, promptData.targetPattern)
                     )
                   : null
               )
@@ -1186,6 +1230,10 @@ export function LessonContent(props: LessonContentProps): React.ReactElement {
   };
 
   const presentation = props.presentation;
+  const contentLang = normalizeLanguageCode(
+    props.languageCode ??
+      (presentation && 'languageCode' in presentation ? presentation.languageCode : undefined)
+  );
   const blocks = (Array.isArray(presentation?.blocks) ? [...presentation.blocks] : []).sort(
     (a, b) => a.position - b.position
   );
@@ -1232,10 +1280,10 @@ export function LessonContent(props: LessonContentProps): React.ReactElement {
         renderedBlocks.push(renderTextBlock(block as any, key));
         break;
       case 'EXAMPLE':
-        renderedBlocks.push(renderExampleBlock(block as any, key));
+        renderedBlocks.push(renderExampleBlock(block as any, key, contentLang));
         break;
       case 'DIALOGUE':
-        renderedBlocks.push(renderDialogueBlock(block as any, key));
+        renderedBlocks.push(renderDialogueBlock(block as any, key, contentLang));
         break;
       case 'CALLOUT':
         renderedBlocks.push(renderCalloutBlock(block as any, key));
@@ -1249,19 +1297,21 @@ export function LessonContent(props: LessonContentProps): React.ReactElement {
         renderedBlocks.push(renderDividerBlock(key));
         break;
       case 'GRAMMAR':
-        renderedBlocks.push(renderGrammarBlock(block as any, key));
+        renderedBlocks.push(renderGrammarBlock(block as any, key, contentLang));
         break;
       case 'VOCABULARY':
         renderedBlocks.push(
           h(
             React.Fragment,
             { key },
-            renderVocabularySection(vocabulary, props.locale)
+            renderVocabularySection(vocabulary, props.locale, contentLang)
           )
         );
         break;
       case 'CHARACTER':
-        renderedBlocks.push(renderCharacterBlock(block as any, key, props.onStartWritingPractice));
+        renderedBlocks.push(
+          renderCharacterBlock(block as any, key, props.onStartWritingPractice, contentLang)
+        );
         break;
       case 'UNSUPPORTED':
         renderedBlocks.push(renderUnsupportedBlock(block as any, key));
@@ -1288,10 +1338,10 @@ export function LessonContent(props: LessonContentProps): React.ReactElement {
       renderedBlocks
     ),
     !hasExplicitVocabBlock && vocabulary.length > 0
-      ? renderVocabularySection(vocabulary, props.locale)
+      ? renderVocabularySection(vocabulary, props.locale, contentLang)
       : null,
     exercises.length > 0
-      ? renderExercisesSection(exercises, audioErrors, handleAudioError)
+      ? renderExercisesSection(exercises, audioErrors, handleAudioError, contentLang)
       : null
   );
 }

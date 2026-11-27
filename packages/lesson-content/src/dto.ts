@@ -1,4 +1,5 @@
 import type { LessonBlock } from './schema.ts';
+import { normalizeLanguageCode } from './language.ts';
 
 export interface UnsupportedBlockDto {
   blockKey: string;
@@ -86,6 +87,7 @@ export interface PublicExerciseDto {
 
 export interface LessonPresentationDto {
   contentSchemaVersion: number;
+  languageCode?: string;
   blocks: PresentationBlock[];
   vocabulary: PublicVocabularyDto[];
   exercises: PublicExerciseDto[];
@@ -240,15 +242,19 @@ export function sanitizePublicVocabulary(raw: unknown): PublicVocabularyDto | nu
 }
 
 export function toLessonPresentationDto(
-  content: { contentSchemaVersion?: number; blocks: PresentationBlock[] } | PresentationBlock[],
+  content: { contentSchemaVersion?: number; languageCode?: string | null; blocks: PresentationBlock[] } | PresentationBlock[],
   publicVocabulary: unknown[] = [],
-  publicExercises: unknown[] = []
+  publicExercises: unknown[] = [],
+  languageCode?: string | null
 ): LessonPresentationDto {
   const contentSchemaVersion = Array.isArray(content)
     ? 1
     : typeof content.contentSchemaVersion === 'number'
       ? content.contentSchemaVersion
       : 1;
+
+  const rawLanguageCode = languageCode ?? (Array.isArray(content) ? undefined : content.languageCode);
+  const normalizedLanguageCode = normalizeLanguageCode(rawLanguageCode);
 
   const rawBlocks = Array.isArray(content) ? content : content.blocks ?? [];
   const blocks = [...rawBlocks].sort((a, b) => a.position - b.position);
@@ -265,6 +271,7 @@ export function toLessonPresentationDto(
 
   return {
     contentSchemaVersion,
+    ...(normalizedLanguageCode ? { languageCode: normalizedLanguageCode } : {}),
     blocks,
     vocabulary: cleanVocab,
     exercises: cleanExercises,
