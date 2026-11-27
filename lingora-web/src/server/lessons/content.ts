@@ -31,6 +31,8 @@ const snapshot = z.object({
   senseKey: text.optional(),
   meaningLabels: z.record(text, text),
   phonetic: text.nullable().optional(),
+  reading: text.nullable().optional(),
+  romanization: text.nullable().optional(),
   partOfSpeech: text.nullable().optional(),
   example: text.nullable().optional(),
   characters: z.array(z.object({

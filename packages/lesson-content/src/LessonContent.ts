@@ -21,7 +21,7 @@ import type {
 } from './schema.ts';
 import { isSafeRichTextUrl } from './schema.ts';
 import {
-  formatPhonetic,
+  formatReading,
   normalizeLanguageCode,
   resolveContentLang,
 } from './language.ts';
@@ -797,7 +797,12 @@ function renderVocabularySection(
         const meaningVi = snap.meaningLabels?.vi || '';
         const meaningEn = snap.meaningLabels?.en || '';
         const meaningCustom = snap.meaningLabels?.[locale] || '';
-        const formattedPhonetic = formatPhonetic(snap.phonetic, contentLang);
+        const formattedReading = formatReading({
+          reading: snap.reading,
+          romanization: snap.romanization,
+          phonetic: snap.phonetic,
+          languageCode: contentLang,
+        });
 
         return h(
           'div',
@@ -814,7 +819,7 @@ function renderVocabularySection(
           },
           h(
             'div',
-            { style: { display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px' } },
+            { style: { display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' } },
             h(
               'span',
               {
@@ -827,16 +832,38 @@ function renderVocabularySection(
               },
               snap.canonicalForm || ''
             ),
-            formattedPhonetic
+            formattedReading
               ? h(
                   'span',
                   {
+                    className: 'lingora-vocab-reading',
                     style: {
                       fontSize: 'var(--font-size-sub, 14px)',
                       color: 'var(--text-muted, #59677d)',
+                      display: 'inline-flex',
+                      alignItems: 'baseline',
+                      gap: '6px',
+                      flexWrap: 'wrap',
                     },
                   },
-                  formattedPhonetic
+                  h(
+                    'span',
+                    formattedReading.source === 'reading' && contentLang ? { lang: contentLang } : null,
+                    formattedReading.primary
+                  ),
+                  formattedReading.romanization
+                    ? h(
+                        'span',
+                        {
+                          className: 'lingora-vocab-romanization',
+                          style: {
+                            fontSize: '0.85em',
+                            opacity: 0.85,
+                          },
+                        },
+                        `(${formattedReading.romanization})`
+                      )
+                    : null
                 )
               : null
           ),

@@ -446,6 +446,23 @@ test('LNG-01/02/03: ReviewDetailView joins ja REORDER without spaces, attaches l
                   example: 'わたしは学生です。',
                 },
               },
+              {
+                id: 'v-ja-2',
+                vocabularyId: 'vc-ja-2',
+                position: 2,
+                isCore: true,
+                displaySnapshot: {
+                  schemaVersion: 1,
+                  languageId: 'lang-ja',
+                  canonicalForm: '先生',
+                  senseKey: 'default',
+                  meaningLabels: { vi: 'giáo viên' },
+                  reading: 'せんせい',
+                  romanization: 'sensei',
+                  partOfSpeech: 'noun',
+                  example: '先生はお元気ですか。',
+                },
+              },
             ],
             reviews: [],
           },
@@ -461,6 +478,8 @@ test('LNG-01/02/03: ReviewDetailView joins ja REORDER without spaces, attaches l
     assert.equal(await page.locator('.lingora-example-text').getAttribute('lang'), 'ja');
     const jaVocabCell = page.locator('#sectionVocabulary, table').last();
     assert.match(await jaVocabCell.innerText(), /がくせい \/ gakusei/);
+    assert.match(await jaVocabCell.innerText(), /せんせい/);
+    assert.match(await jaVocabCell.innerText(), /\(sensei\)/);
     assert.equal((await jaVocabCell.innerText()).includes('/がくせい'), false);
     assert.equal(await page.locator('[lang="ja"]').count() >= 4, true);
 

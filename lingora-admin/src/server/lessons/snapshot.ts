@@ -48,6 +48,8 @@ export const vocabularySnapshotSchema = z.object({
   senseKey: z.string().trim().min(1).max(100).optional(),
   meaningLabels: labels.refine(v => Object.values(v).some(s => s.trim())),
   phonetic: z.string().max(300).nullable().optional(),
+  reading: z.string().max(300).nullable().optional(),
+  romanization: z.string().max(300).nullable().optional(),
   partOfSpeech: z.string().max(100).nullable().optional(),
   example: z.string().max(4000).nullable().optional(),
   characters: z.array(vocabularyCharacterSnapshotSchema).optional(),
@@ -101,5 +103,5 @@ export function sameVocabularyMetadata(concept: any, input: any): boolean {
   const optional = (s: string | null | undefined) => s?.trim() || null;
   return concept.canonicalForm.normalize('NFC').trim() === input.canonicalForm.normalize('NFC').trim() &&
     ['vi', 'en'].every(locale => optional(concept.meaningLabels?.[locale]) === optional(input.meaningLabels[locale])) &&
-    ['phonetic', 'partOfSpeech', 'example'].every(key => optional(concept[key]) === optional(input[key]));
+    ['phonetic', 'reading', 'romanization', 'partOfSpeech', 'example'].every(key => optional(concept[key]) === optional(input[key]));
 }

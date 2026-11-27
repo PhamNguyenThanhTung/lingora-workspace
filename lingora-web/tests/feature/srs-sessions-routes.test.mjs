@@ -32,6 +32,7 @@ mock.module('next/headers.js', {
 });
 
 const sessionsRoute = await import('../../src/app/api/srs/sessions/route.ts');
+const sessionRevealRoute = await import('../../src/app/api/srs/sessions/[sessionId]/reveal/route.ts');
 const sessionDetailRoute = await import('../../src/app/api/srs/sessions/[sessionId]/route.ts');
 const sessionReviewsRoute = await import('../../src/app/api/srs/sessions/[sessionId]/reviews/route.ts');
 const sessionWritingAttemptsRoute = await import('../../src/app/api/srs/sessions/[sessionId]/writing-attempts/route.ts');
@@ -419,5 +420,53 @@ describe('S5-03: SRS Sessions API Route Handlers', () => {
       if (priorLearners === undefined) delete process.env.WRITING_SRS_LEARNER_IDS;
       else process.env.WRITING_SRS_LEARNER_IDS = priorLearners;
     }
+  });
+
+  test('EXT-01: POST /api/srs/sessions/:sessionId/reveal returns reading and romanization', async () => {
+    state.vocabularyConcepts.push({
+      id: 'vocab-ja-1',
+      canonicalForm: '学生',
+      senseKey: 'default',
+      phonetic: null,
+      reading: 'がくせい',
+      romanization: 'gakusei',
+      partOfSpeech: 'noun',
+      meaningLabels: { vi: 'học sinh' },
+      example: 'わたしは学生です。',
+    });
+    const cardId = randomUUID();
+    const sessionId = randomUUID();
+    state.srsCards.push({
+      id: cardId,
+      learnerId: state.account.id,
+      vocabularyId: 'vocab-ja-1',
+      stage: 1,
+      dueAt: new Date(Date.now() - 3600 * 1000),
+      lastReviewedAt: null,
+      enrollmentSource: 'CORE_COMPLETION',
+      rowVersion: 1n,
+    });
+    state.srsReviewSessions.push({
+      id: sessionId,
+      learnerId: state.account.id,
+      status: 'ACTIVE',
+      sessionLimit: 20,
+      cardIds: [cardId],
+      currentIndex: 0,
+      completedCount: 0,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+      rowVersion: 1n,
+    });
+
+    const req = new Request(`http://localhost:3000/api/srs/sessions/${sessionId}/reveal`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ cardId }),
+    });
+    const res = await sessionRevealRoute.POST(req, { params: Promise.resolve({ sessionId }) });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.data.reading, 'がくせい');
+    assert.equal(body.data.romanization, 'gakusei');
   });
 });

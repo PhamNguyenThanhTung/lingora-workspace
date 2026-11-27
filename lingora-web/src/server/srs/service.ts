@@ -42,6 +42,8 @@ function toPromptCardDto(card: {
     canonicalForm: string;
     meaningLabels: unknown;
     phonetic: string | null;
+    reading?: string | null;
+    romanization?: string | null;
     partOfSpeech: string | null;
     example: string | null;
   };
@@ -53,9 +55,11 @@ function toPromptCardDto(card: {
 
   return {
     canonicalForm: card.vocabulary.canonicalForm,
-    phonetic: card.vocabulary.phonetic,
-    partOfSpeech: card.vocabulary.partOfSpeech,
-    example: card.vocabulary.example,
+    phonetic: card.vocabulary.phonetic ?? null,
+    reading: card.vocabulary.reading ?? null,
+    romanization: card.vocabulary.romanization ?? null,
+    partOfSpeech: card.vocabulary.partOfSpeech ?? null,
+    example: card.vocabulary.example ?? null,
     meaningLabels,
   };
 }
@@ -114,6 +118,8 @@ export async function startSrsReview(
           canonicalForm: true,
           meaningLabels: true,
           phonetic: true,
+          reading: true,
+          romanization: true,
           partOfSpeech: true,
           example: true,
         },
@@ -229,6 +235,8 @@ export async function respondSrsReview(
               canonicalForm: true,
               meaningLabels: true,
               phonetic: true,
+              reading: true,
+              romanization: true,
               partOfSpeech: true,
               example: true,
             },
@@ -387,6 +395,8 @@ export async function respondSrsReview(
             canonicalForm: true,
             meaningLabels: true,
             phonetic: true,
+            reading: true,
+            romanization: true,
             partOfSpeech: true,
             example: true,
           },

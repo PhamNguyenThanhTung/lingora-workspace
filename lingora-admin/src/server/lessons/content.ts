@@ -13,6 +13,8 @@ import {
   characterBlockAuthorInputSchema,
   MAX_BLOCKS_PER_REVISION,
   MAX_BLOCK_PAYLOAD_BYTES,
+  isValidJapaneseReading,
+  isValidRomanization,
   type LessonBlock,
 } from '@lingora/lesson-content';
 
@@ -460,6 +462,26 @@ export const vocabularyCreateSchema = z
       .string({ message: 'Phiên âm (phonetic) phải là chuỗi ký tự' })
       .trim()
       .max(300, 'Phiên âm tối đa 300 ký tự')
+      .optional()
+      .nullable(),
+    reading: z
+      .string({ message: 'Cách đọc (reading) phải là chuỗi ký tự' })
+      .trim()
+      .max(300, 'Cách đọc tối đa 300 ký tự')
+      .refine(
+        isValidJapaneseReading,
+        { message: 'Cách đọc tiếng Nhật chỉ được chứa hiragana, katakana, dấu kéo dài (ー), dấu chấm giữa (・) và khoảng trắng' }
+      )
+      .optional()
+      .nullable(),
+    romanization: z
+      .string({ message: 'Phiên âm Latin (romanization) phải là chuỗi ký tự' })
+      .trim()
+      .max(300, 'Phiên âm Latin tối đa 300 ký tự')
+      .refine(
+        isValidRomanization,
+        { message: 'Phiên âm Latin chỉ được chứa ký tự Latin, dấu nối và khoảng trắng' }
+      )
       .optional()
       .nullable(),
     partOfSpeech: z

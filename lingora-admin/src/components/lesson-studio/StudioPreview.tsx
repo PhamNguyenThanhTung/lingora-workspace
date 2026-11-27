@@ -25,6 +25,8 @@ export interface StudioPreviewProps {
       meaningVi?: string | null;
       meaningEn?: string | null;
       phonetic?: string | null;
+      reading?: string | null;
+      romanization?: string | null;
       partOfSpeech?: string | null;
       example?: string | null;
     };
@@ -66,6 +68,8 @@ export function StudioPreview({
           en: v.displayInfo.meaningEn || '',
         },
         phonetic: v.displayInfo.phonetic || null,
+        reading: v.displayInfo.reading || null,
+        romanization: v.displayInfo.romanization || null,
         partOfSpeech: v.displayInfo.partOfSpeech || null,
         example: v.displayInfo.example || null,
       },

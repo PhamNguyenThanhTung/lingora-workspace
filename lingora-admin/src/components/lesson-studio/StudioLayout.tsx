@@ -31,6 +31,8 @@ export interface StudioLayoutProps {
       meaningVi?: string | null;
       meaningEn?: string | null;
       phonetic?: string | null;
+      reading?: string | null;
+      romanization?: string | null;
       partOfSpeech?: string | null;
       example?: string | null;
     };

@@ -425,3 +425,48 @@ test('Ôn nhanh UI: a failing SRS call never blocks or breaks the lesson', async
     assert.equal(server.fixture.attempts.length, 1);
   });
 });
+
+test('EXT-01: WarmUpStep displays Japanese reading and romanization after reveal', async () => {
+  const prevLangCode = server.fixture.contexts[0].language.code;
+  server.fixture.contexts[0].language.code = 'ja';
+  server.fixture.srsReviewSessions = [];
+  server.fixture.srsReviewOperations = [];
+  server.fixture.srsMemoryStates = [];
+  server.fixture.xpEvents = [];
+  server.fixture.vocabularyConcepts = [
+    ...(server.fixture.vocabularyConcepts ?? []),
+    {
+      id: 'vocab-concept-ja-warmup',
+      canonicalForm: '学生',
+      senseKey: 'default',
+      phonetic: null,
+      reading: 'がくせい',
+      romanization: 'gakusei',
+      partOfSpeech: 'noun',
+      meaningLabels: { vi: 'học sinh' },
+      example: 'わたしは学生です。',
+    },
+  ];
+  server.fixture.srsCards = [
+    warmUpCard('vocab-concept-ja-warmup', 400),
+  ];
+
+  try {
+    await withLearner(async (page) => {
+      await page.goto(`${origin}/learn/${contextId}/${lesson1Id}`);
+      await page.locator('#startPracticeBtn').click();
+      await page.locator('#warmUpBox').waitFor({ state: 'visible' });
+      assert.equal((await page.locator('.srs-canonical-form').textContent()).trim(), '学生');
+      assert.equal(await page.locator('.srs-phonetic').count(), 0);
+
+      await page.locator('#warmUpRevealBtn').click();
+      await page.locator('#warmUpAnswer').waitFor({ state: 'visible' });
+      const phoneticText = await page.locator('#warmUpAnswer .srs-phonetic').textContent();
+      assert.match(phoneticText, /がくせい/);
+      assert.match(phoneticText, /\(gakusei\)/);
+      assert.equal(await page.locator('#warmUpAnswer .srs-phonetic').getAttribute('lang'), 'ja');
+    });
+  } finally {
+    server.fixture.contexts[0].language.code = prevLangCode;
+  }
+});

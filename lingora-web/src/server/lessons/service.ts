@@ -174,7 +174,7 @@ export async function loadLearnerLessonDetail(contextId: string, lessonId: strin
       contentSchemaVersion: parsed.contentSchemaVersion,
       contentBlocks,
       blocks: parsed.blocks,
-      presentation: toLessonPresentationDto(parsed, cleanVocabulary, cleanExercises),
+      presentation: toLessonPresentationDto(parsed, cleanVocabulary, cleanExercises, c.language.code),
       topicIds: rev.topicIds,
       skillIds: rev.skillIds,
       purposeTags: rev.purposeTags,

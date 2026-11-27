@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { formatPhonetic, resolveContentLang } from '@lingora/lesson-content';
+import { formatReading, resolveContentLang } from '@lingora/lesson-content';
 
 /** "Ôn nhanh": at most 3 due SRS cards shown before the lesson exercises start. */
 export const WARM_UP_LIMIT = 3;
@@ -22,6 +22,8 @@ interface WarmUpRevealedDto {
   cardId: string;
   meaningLabels: Record<string, string>;
   phonetic: string | null;
+  reading?: string | null;
+  romanization?: string | null;
   partOfSpeech: string | null;
   example: string | null;
 }
@@ -183,11 +185,32 @@ export function WarmUpStep({ session, onFinish, languageCode = null }: WarmUpSte
                 Object.values(revealed.meaningLabels ?? {})[0] ||
                 '(Không có nghĩa)'}
             </div>
-            {formatPhonetic(revealed.phonetic, languageCode) && (
-              <div className="srs-phonetic" lang={contentLang} style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                {formatPhonetic(revealed.phonetic, languageCode)}
-              </div>
-            )}
+            {(() => {
+              const formatted = formatReading({
+                reading: revealed.reading,
+                romanization: revealed.romanization,
+                phonetic: revealed.phonetic,
+                languageCode,
+              });
+              if (!formatted) return null;
+              return (
+                <div
+                  className="srs-phonetic"
+                  lang={formatted.source === 'reading' ? contentLang : undefined}
+                  style={{
+                    color: 'var(--text-muted)',
+                    fontFamily: formatted.source === 'reading' ? undefined : 'monospace',
+                  }}
+                >
+                  <span>{formatted.primary}</span>
+                  {formatted.romanization && (
+                    <span className="srs-romanization" style={{ fontSize: '0.85em', marginLeft: '6px', opacity: 0.85 }}>
+                      ({formatted.romanization})
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>
               <button
                 type="button"

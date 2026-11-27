@@ -22,6 +22,11 @@ const OPENING_PUNCT_END_RE =
 
 const LATIN_OR_DIGIT_CHAR_RE = /[\p{Script=Latin}\p{Number}]/u;
 
+// Japanese kana reading: hiragana, katakana (including full/half-width), 'ー', '・', and whitespace.
+const JAPANESE_READING_RE = /^[\u3041-\u3096\u3099-\u309F\u30A1-\u30FF\uFF65-\uFF9F\s]+$/u;
+// Romanization (romaji): Latin letters (including macrons/diacritics), hyphens, and whitespace.
+const ROMANIZATION_RE = /^[\p{Script=Latin}\-\s]+$/u;
+
 const SCRIPT_TYPE_FALLBACK_LANG: Record<string, string> = {
   HIRAGANA: 'ja',
   KATAKANA: 'ja',
@@ -221,4 +226,76 @@ export function formatPhonetic(
   if (!stripped) return null;
 
   return `/${stripped}/`;
+}
+
+/**
+ * Returns true when `value` (if non-empty after trim) contains only Japanese
+ * kana (hiragana/katakana), `ー`, `・`, and whitespace.
+ */
+export function isValidJapaneseReading(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return true;
+  return JAPANESE_READING_RE.test(trimmed);
+}
+
+/**
+ * Returns true when `value` (if non-empty after trim) contains only Latin
+ * characters, hyphens, and whitespace.
+ */
+export function isValidRomanization(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return true;
+  return ROMANIZATION_RE.test(trimmed);
+}
+
+export interface FormattedReading {
+  primary: string;
+  romanization: string | null;
+  text: string;
+  source: 'reading' | 'romanization' | 'phonetic';
+}
+
+/**
+ * Formats vocabulary reading/phonetic consistently across admin and learner UIs.
+ * Prefers structured `reading` (with optional `romanization` beside it) and
+ * falls back to `formatPhonetic(phonetic, languageCode)` for legacy entries.
+ */
+export function formatReading(options: {
+  reading?: string | null;
+  romanization?: string | null;
+  phonetic?: string | null;
+  languageCode?: string | null;
+}): FormattedReading | null {
+  const reading = typeof options.reading === 'string' ? options.reading.trim() : '';
+  const romanization = typeof options.romanization === 'string' ? options.romanization.trim() : '';
+
+  if (reading) {
+    return {
+      primary: reading,
+      romanization: romanization || null,
+      text: romanization ? `${reading} (${romanization})` : reading,
+      source: 'reading',
+    };
+  }
+
+  const formattedPhonetic = formatPhonetic(options.phonetic, options.languageCode);
+  if (formattedPhonetic) {
+    return {
+      primary: formattedPhonetic,
+      romanization: romanization || null,
+      text: romanization ? `${formattedPhonetic} (${romanization})` : formattedPhonetic,
+      source: 'phonetic',
+    };
+  }
+
+  if (romanization) {
+    return {
+      primary: romanization,
+      romanization: null,
+      text: romanization,
+      source: 'romanization',
+    };
+  }
+
+  return null;
 }
