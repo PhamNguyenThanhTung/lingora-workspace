@@ -95,7 +95,8 @@ async function main() {
       { id: actors.teacherBId, expectedRole: 'TEACHER', displayName: 'Trần Thu Hà', email: 'teacher.thuha@lingora.test' },
     ];
     for (const actor of actorSpecs) await demo.assertActorSafe(prisma, actor);
-    await demo.assertCurriculumSafe(prisma, actors);
+    // Core courses use their own ids (c0000000-…); the demo-course collision check (e0000000-…) does not apply and
+    // would block seeding on databases that already hold a demo course. Core collisions are checked in provisionCoreCourse.
 
     if (!(await prisma.language.findUnique({ where: { code: 'en' } }))) {
       const { seed } = await import('../lingora-admin/prisma/product/seed.mjs');

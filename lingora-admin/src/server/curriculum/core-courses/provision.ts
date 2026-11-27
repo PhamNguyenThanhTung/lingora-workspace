@@ -26,6 +26,12 @@ export interface CoreProvisionResult {
   published: number;
 }
 
+/** Existing names may omit locales (older seeds); every locale that IS present must match. */
+function namesCompatible(existing: unknown, expected: Record<string, string>): boolean {
+  const ex = existing as Record<string, string>;
+  return Object.entries(ex).every(([k, v]) => expected[k] === v) && Object.keys(ex).length > 0;
+}
+
 function sameJson(a: unknown, b: unknown): boolean {
   return JSON.stringify(a, Object.keys(a as object).sort()) === JSON.stringify(b, Object.keys(b as object).sort());
 }
@@ -49,7 +55,7 @@ export async function ensureReferenceData(prisma: PrismaClient, keys: LanguageKe
       update: {},
       create: { id: fw.id, code: fw.code, version: fw.version, names: fw.names },
     });
-    if (framework.id !== fw.id || !sameJson(framework.names, fw.names)) {
+    if (framework.id !== fw.id || !namesCompatible(framework.names, fw.names)) {
       throw new Error(`[core-courses] MISMATCH: framework ${fw.code} ${fw.version} already exists with different configuration.`);
     }
     for (const lv of fw.levels) {
