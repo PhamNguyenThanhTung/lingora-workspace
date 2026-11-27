@@ -12,6 +12,7 @@ import type {
   TextRun,
 } from '@lingora/lesson-content';
 import styles from './studio-styles';
+import { AudioPreviewPlayer } from '../AudioPreviewPlayer';
 
 interface TextDocumentEditorProps {
   document: BoundedTextDocument;
@@ -1127,6 +1128,13 @@ export function BlockEditor({ block, onChange, disabled = false, lessonId }: Blo
             <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
               Yêu cầu HTTPS với tên miền công khai, tệp audio .mp3/.wav/.m4a trực tiếp.
             </div>
+            {(mediaContent.url || '').trim() !== '' && (
+              <AudioPreviewPlayer
+                url={mediaContent.url || ''}
+                label="Nghe thử âm thanh"
+                idPrefix={`media-block-audio-${blockKey}`}
+              />
+            )}
           </div>
           <div className={styles.formGroup}>
             <label className={styles.formLabel} htmlFor={`mediaCaption-${blockKey}`}>

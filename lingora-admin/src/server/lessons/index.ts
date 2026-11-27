@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { revisionChildRelations, unsupportedChildren, sameVocabularyMetadata, vocabularySnapshotSchema } from './snapshot.ts';
 import {
   persistLessonRevisionBlocks,
@@ -28,6 +29,10 @@ import {
   type ExerciseType,
   type TeacherLessonAuthorBlock,
 } from './content.ts';
+import {
+  buildVocabularyCandidateForms,
+  classifyVocabularyCandidateMatch,
+} from './vocabulary-candidates.ts';
 
 export { isValidUuid };
 export {
@@ -835,6 +840,25 @@ export function handleLessonPrismaError(err: unknown, op: string): { status: num
   if (err && typeof err === 'object' && 'code' in err) {
     const prismaErr = err as { code: string; meta?: any };
     if (prismaErr.code === 'P2002') {
+      const targetStr = Array.isArray(prismaErr.meta?.target)
+        ? prismaErr.meta.target.join(',')
+        : String(prismaErr.meta?.target || prismaErr.meta?.constraint || '');
+      if (
+        op === 'saveTeacherLessonDraft' &&
+        (targetStr.includes('vocabulary_concepts') ||
+          (targetStr.includes('normalized_form') && targetStr.includes('sense_key')))
+      ) {
+        return {
+          status: 409,
+          body: {
+            error: {
+              code: 'VOCABULARY_IDENTITY_CONFLICT',
+              message:
+                'Từ vựng với nét nghĩa này vừa được tạo ở một phiên khác. Hãy tìm và chọn từ có sẵn, hoặc đổi ô "Nét nghĩa" để tạo nghĩa khác.',
+            },
+          },
+        };
+      }
       return {
         status: 409,
         body: {
@@ -2009,17 +2033,61 @@ export async function getTeacherVocabularyOptions(
       };
     }
 
-    const normalizedTerm = normalizeVocabularyTerm(trimmedQ);
-    const concepts = await prisma.vocabularyConcept.findMany({
+    const langId = courseLanguageId.toLowerCase();
+    const candidateForms = buildVocabularyCandidateForms(trimmedQ);
+    const exactOrFormConcepts = await prisma.vocabularyConcept.findMany({
       where: {
-        languageId: courseLanguageId.toLowerCase(),
-        normalizedForm: normalizedTerm,
+        languageId: langId,
+        normalizedForm: candidateForms.length === 1 ? candidateForms[0] : { in: candidateForms },
       },
       orderBy: {
         senseKey: 'asc',
       },
       take: 20,
     });
+
+    const conceptMap = new Map<string, any>();
+    for (const c of exactOrFormConcepts) {
+      conceptMap.set(c.id, c);
+    }
+
+    // For Latin-script queries (e.g. "cafe" -> "café"), scan bounded same-language
+    // candidates so diacritic variants are suggested without cross-language mixing
+    // and without collapsing Japanese voiced kana marks or kana/kanji.
+    if (conceptMap.size < 20 && /\p{Script=Latin}/u.test(trimmedQ)) {
+      const langConcepts = await prisma.vocabularyConcept.findMany({
+        where: {
+          languageId: langId,
+        },
+        orderBy: {
+          senseKey: 'asc',
+        },
+        take: 500,
+      });
+      for (const c of langConcepts) {
+        if (conceptMap.has(c.id)) continue;
+        if (classifyVocabularyCandidateMatch(trimmedQ, c.canonicalForm) !== null) {
+          conceptMap.set(c.id, c);
+          if (conceptMap.size >= 20) break;
+        }
+      }
+    }
+
+    const matchRank = (c: any): number => {
+      const kind = classifyVocabularyCandidateMatch(trimmedQ, c.canonicalForm);
+      if (kind === 'exact') return 0;
+      if (kind === 'variant') return 1;
+      if (kind === 'diacritic') return 2;
+      return 3;
+    };
+
+    const concepts = [...conceptMap.values()]
+      .sort((a, b) => {
+        const diff = matchRank(a) - matchRank(b);
+        if (diff !== 0) return diff;
+        return String(a.senseKey || '').localeCompare(String(b.senseKey || ''));
+      })
+      .slice(0, 20);
 
     const dtos: VocabularyOptionDto[] = concepts.map((c: any) => ({
       id: c.id,
@@ -2319,17 +2387,18 @@ export async function getTeacherCharacterOptions(
   }
 }
 
-async function pinVocabularyCharacters(
+async function fetchVocabularyCharacterSnapshotsMap(
   tx: any,
-  vocabularyId: string,
-  languageId: string,
-  snapshot: Record<string, any>
-): Promise<Record<string, any>> {
-  if (Array.isArray(snapshot.characters)) return snapshot;
+  vocabularyIds: string[],
+  languageId: string
+): Promise<Map<string, any[]>> {
+  const result = new Map<string, any[]>();
+  const uniqueIds = [...new Set(vocabularyIds.map((id) => id.toLowerCase()))];
+  if (uniqueIds.length === 0) return result;
 
   const mappings = await tx.vocabularyCharacter.findMany({
     where: {
-      vocabularyId,
+      vocabularyId: { in: uniqueIds },
       vocabulary: { languageId },
       character: { languageId },
     },
@@ -2349,9 +2418,10 @@ async function pinVocabularyCharacters(
     },
   });
 
-  return {
-    ...snapshot,
-    characters: mappings.map((mapping: any) => ({
+  for (const mapping of mappings) {
+    const vId = String(mapping.vocabularyId).toLowerCase();
+    const list = result.get(vId) || [];
+    list.push({
       characterId: mapping.characterId.toLowerCase(),
       position: mapping.position,
       glyph: mapping.character.glyph,
@@ -2361,7 +2431,21 @@ async function pinVocabularyCharacters(
       romanization: mapping.character.romanization,
       strokeCount: mapping.character.strokeCount,
       strokeVersion: mapping.character.strokeData?.version ?? null,
-    })),
+    });
+    result.set(vId, list);
+  }
+  return result;
+}
+
+function attachVocabularyCharacters(
+  vocabularyId: string,
+  snapshot: Record<string, any>,
+  charactersMap: Map<string, any[]>
+): Record<string, any> {
+  if (Array.isArray(snapshot.characters)) return snapshot;
+  return {
+    ...snapshot,
+    characters: charactersMap.get(vocabularyId.toLowerCase()) || [],
   };
 }
 
@@ -2717,13 +2801,17 @@ export async function saveTeacherLessonDraft(
         });
       }
 
-      // 9. Fetch course target language
+      // 9. Fetch course target language and full unit/course context once
       const unit = await tx.unit.findUnique({
         where: { id: currentLesson.unitId.toLowerCase() },
         select: {
           id: true,
+          courseId: true,
+          position: true,
+          code: true,
+          names: true,
           course: {
-            select: { id: true, languageId: true },
+            select: { id: true, names: true, languageId: true },
           },
         },
       });
@@ -2770,8 +2858,15 @@ export async function saveTeacherLessonDraft(
         }
       }
 
-      // Check sourceLinkId and vocabularyId validity & language matching
+      // Batch vocabulary lookups and cache concepts for Step 16 (H7 latency)
+      const conceptById = new Map<string, any>();
+      const conceptByNormSense = new Map<string, any>();
+      const resolvedConceptIdPerIndex: string[] = [];
+
       if (inputVocabulary !== undefined) {
+        const requestedConceptIds: string[] = [];
+        const requestedCreateNorms: string[] = [];
+
         for (const voc of inputVocabulary) {
           if (voc.sourceLinkId) {
             const pred = predVocabMap.get(voc.sourceLinkId.toLowerCase());
@@ -2783,9 +2878,26 @@ export async function saveTeacherLessonDraft(
             }
           }
           if (voc.vocabularyId) {
-            const concept = await tx.vocabularyConcept.findUnique({
-              where: { id: voc.vocabularyId.toLowerCase() },
-            });
+            requestedConceptIds.push(voc.vocabularyId.toLowerCase());
+          }
+          if (voc.create) {
+            requestedCreateNorms.push(normalizeVocabularyTerm(voc.create.canonicalForm));
+          }
+        }
+
+        const uniqueRequestedConceptIds = [...new Set(requestedConceptIds)];
+        if (uniqueRequestedConceptIds.length > 0) {
+          const foundById = await tx.vocabularyConcept.findMany({
+            where: { id: { in: uniqueRequestedConceptIds } },
+          });
+          for (const c of foundById) {
+            conceptById.set(c.id.toLowerCase(), c);
+          }
+        }
+
+        for (const voc of inputVocabulary) {
+          if (voc.vocabularyId) {
+            const concept = conceptById.get(voc.vocabularyId.toLowerCase());
             if (!concept) {
               throw new ControlledDraftError(404, {
                 code: 'RELATION_NOT_FOUND',
@@ -2800,11 +2912,8 @@ export async function saveTeacherLessonDraft(
             }
           }
         }
-      }
 
-      // Resolve vocabulary concept targets & check duplicate links / identity conflicts
-      const resolvedConceptIdPerIndex: string[] = [];
-      if (inputVocabulary !== undefined) {
+        // Resolve vocabulary concept targets & check duplicate links / identity conflicts
         for (let i = 0; i < inputVocabulary.length; i++) {
           const voc = inputVocabulary[i];
           if (voc.sourceLinkId) {
@@ -2825,6 +2934,7 @@ export async function saveTeacherLessonDraft(
               },
             });
             if (existing) {
+              conceptByNormSense.set(`${norm}\0${sense}`, existing);
               const existingVi = (existing.meaningLabels?.vi || '').trim();
               const existingEn = (existing.meaningLabels?.en || '').trim();
               const inputVi = (voc.create.meaningLabels.vi || '').trim();
@@ -2871,7 +2981,7 @@ export async function saveTeacherLessonDraft(
         }
       }
 
-      // 11. Lock retained ItemIdentity rows in sorted UUID order
+      // 11. Lock retained ItemIdentity rows in sorted UUID order (single statement when >1)
       const retainedItemIdsToLock: string[] = [];
       if (inputExercises === undefined) {
         if (highestRev?.exercises) {
@@ -2888,9 +2998,14 @@ export async function saveTeacherLessonDraft(
         }
       }
       const sortedItemIds = [...new Set(retainedItemIdsToLock)].sort();
-      for (const itId of sortedItemIds) {
+      if (sortedItemIds.length === 1) {
+        const itId = sortedItemIds[0];
         await tx.$queryRaw`
           SELECT id::text FROM app.item_identities WHERE id = ${itId}::uuid FOR UPDATE
+        `;
+      } else if (sortedItemIds.length > 1) {
+        await tx.$queryRaw`
+          SELECT id::text FROM app.item_identities WHERE id = ANY(${sortedItemIds}::uuid[]) ORDER BY id FOR UPDATE
         `;
       }
 
@@ -2946,16 +3061,14 @@ export async function saveTeacherLessonDraft(
         },
       });
 
+      let persistedBlocks: any[] = [];
       if (targetContentSchemaVersion === 1) {
         if (inputBlocks !== undefined) {
           if (inputBlocks.length > 0) {
-            await resolveAndPersistLessonRevisionBlocks(tx, newRev.id, courseLanguageId, inputBlocks);
+            persistedBlocks = await resolveAndPersistLessonRevisionBlocks(tx, newRev.id, courseLanguageId, inputBlocks);
           }
         } else if (highestRev && highestRev.contentSchemaVersion === 1) {
-          const predBlocks = await tx.lessonContentBlock.findMany({
-            where: { lessonRevisionId: highestRev.id.toLowerCase() },
-            orderBy: { position: 'asc' },
-          });
+          const predBlocks = Array.isArray(highestRev.blocks) ? highestRev.blocks : [];
           if (predBlocks.length > 0) {
             await tx.lessonContentBlock.createMany({
               data: predBlocks.map((b: any) => ({
@@ -2967,57 +3080,136 @@ export async function saveTeacherLessonDraft(
                 content: b.content,
               })),
             });
+            persistedBlocks = predBlocks.map((b: any) => ({
+              blockKey: b.blockKey,
+              type: b.type,
+              position: b.position,
+              schemaVersion: b.schemaVersion,
+              content: b.content,
+            }));
           }
         }
       }
 
-      // 14. Persist Exercises
+      // 14. Persist Exercises (batched for H7 save/submit latency)
+      const teacherLower = teacherAccountId.toLowerCase();
+      const identitiesToCreate: any[] = [];
+      const itemRevisionsToCreate: any[] = [];
+      const secretsToCreate: any[] = [];
+      const lessonExercisesToCreate: any[] = [];
+      const assembledExercises: any[] = [];
+
+      const exerciseSourceItemIds: string[] = [];
       if (inputExercises === undefined) {
-        // Clone predecessor exercises
         if (highestRev?.exercises) {
           for (const pred of highestRev.exercises) {
-            const maxRevRow = await tx.itemRevision.findFirst({
-              where: { itemId: pred.itemId.toLowerCase() },
-              orderBy: { revisionNo: 'desc' },
+            exerciseSourceItemIds.push(pred.itemId.toLowerCase());
+          }
+        }
+      } else {
+        for (const exInput of inputExercises) {
+          if (exInput.sourceExerciseId) {
+            const pred = predExercisesMap.get(exInput.sourceExerciseId.toLowerCase())!;
+            exerciseSourceItemIds.push(pred.itemId.toLowerCase());
+          }
+        }
+      }
+
+      const maxExerciseRevNoByItemId = new Map<string, number>();
+      const uniqueExSourceItemIds = [...new Set(exerciseSourceItemIds)];
+      if (uniqueExSourceItemIds.length > 0) {
+        const revRows = await tx.itemRevision.findMany({
+          where: { itemId: { in: uniqueExSourceItemIds } },
+          orderBy: { revisionNo: 'desc' },
+          distinct: ['itemId'],
+          select: { itemId: true, revisionNo: true },
+        });
+        for (const r of revRows) {
+          const idLower = String(r.itemId).toLowerCase();
+          const prevMax = maxExerciseRevNoByItemId.get(idLower) ?? 0;
+          if (r.revisionNo > prevMax) {
+            maxExerciseRevNoByItemId.set(idLower, r.revisionNo);
+          }
+        }
+      }
+
+      if (inputExercises === undefined) {
+        if (highestRev?.exercises) {
+          for (const pred of highestRev.exercises) {
+            const targetItemId = pred.itemId.toLowerCase();
+            const nextRevNo = (maxExerciseRevNoByItemId.get(targetItemId) ?? 0) + 1;
+            maxExerciseRevNoByItemId.set(targetItemId, nextRevNo);
+            const newItemRevId = randomUUID();
+            const newSecretId = randomUUID();
+            const newLessonExerciseId = randomUUID();
+            const gradingData = pred.itemRevision.gradingSecret.gradingData;
+            const feedbackData = pred.itemRevision.gradingSecret.feedbackData || undefined;
+
+            itemRevisionsToCreate.push({
+              id: newItemRevId,
+              itemId: targetItemId,
+              revisionNo: nextRevNo,
+              type: pred.itemRevision.type,
+              promptData: pred.itemRevision.promptData,
+              practiceSkillIds: pred.itemRevision.practiceSkillIds || [],
+              practiceCoverageSnapshot: pred.itemRevision.practiceCoverageSnapshot || undefined,
+              schemaVersion: 1,
+              exactFingerprint: pred.itemRevision.exactFingerprint,
+              createdBy: teacherLower,
+              creationAssignmentEpisodeId: latestEpisode.id,
+              authoringLessonRevisionId: newRev.id,
+              rowVersion: 1n,
             });
-            const nextRevNo = (maxRevRow?.revisionNo ?? 0) + 1;
-            const newItemRev = await tx.itemRevision.create({
-              data: {
-                itemId: pred.itemId.toLowerCase(),
+            secretsToCreate.push({
+              id: newSecretId,
+              itemRevisionId: newItemRevId,
+              gradingData,
+              feedbackData,
+              schemaVersion: 1,
+            });
+            lessonExercisesToCreate.push({
+              id: newLessonExerciseId,
+              lessonRevisionId: newRev.id,
+              itemRevisionId: newItemRevId,
+              itemId: targetItemId,
+              position: pred.position,
+              isCore: pred.isCore,
+            });
+            assembledExercises.push({
+              id: newLessonExerciseId,
+              lessonRevisionId: newRev.id,
+              itemRevisionId: newItemRevId,
+              itemId: targetItemId,
+              position: pred.position,
+              isCore: pred.isCore,
+              item: { id: targetItemId, origin: 'PRACTICE' },
+              itemRevision: {
+                id: newItemRevId,
+                itemId: targetItemId,
                 revisionNo: nextRevNo,
                 type: pred.itemRevision.type,
                 promptData: pred.itemRevision.promptData,
-                practiceSkillIds: pred.itemRevision.practiceSkillIds || [],
-                practiceCoverageSnapshot: pred.itemRevision.practiceCoverageSnapshot || undefined,
                 schemaVersion: 1,
-                exactFingerprint: pred.itemRevision.exactFingerprint,
-                createdBy: teacherAccountId.toLowerCase(),
+                createdBy: teacherLower,
                 creationAssignmentEpisodeId: latestEpisode.id,
                 authoringLessonRevisionId: newRev.id,
-                rowVersion: 1n,
-              },
-            });
-            await tx.itemGradingSecret.create({
-              data: {
-                itemRevisionId: newItemRev.id,
-                gradingData: pred.itemRevision.gradingSecret.gradingData,
-                feedbackData: pred.itemRevision.gradingSecret.feedbackData || undefined,
-                schemaVersion: 1,
-              },
-            });
-            await tx.lessonExercise.create({
-              data: {
-                lessonRevisionId: newRev.id,
-                itemRevisionId: newItemRev.id,
-                itemId: pred.itemId.toLowerCase(),
-                position: pred.position,
-                isCore: pred.isCore,
+                assessmentBlueprintId: null,
+                blueprintGeneration: null,
+                isDraftOmitted: false,
+                frozenAt: null,
+                _count: { mediaBindings: 0, assessmentVersionItems: 0, provenanceVersionItems: 0 },
+                gradingSecret: {
+                  id: newSecretId,
+                  itemRevisionId: newItemRevId,
+                  gradingData,
+                  feedbackData: feedbackData ?? null,
+                  schemaVersion: 1,
+                },
               },
             });
           }
         }
       } else {
-        // Insert supplied exercises
         for (const exInput of inputExercises) {
           const feedbackData = exInput.feedbackData?.explanation?.trim() ? { explanation: exInput.feedbackData.explanation.trim() } : undefined;
           const fp = computeExerciseFingerprint({
@@ -3038,122 +3230,197 @@ export async function saveTeacherLessonDraft(
             targetItemId = pred.itemId.toLowerCase();
             sourceSkillIds = pred.itemRevision?.practiceSkillIds || [];
             sourceCoverageSnapshot = pred.itemRevision?.practiceCoverageSnapshot || undefined;
-            const maxRevRow = await tx.itemRevision.findFirst({
-              where: { itemId: targetItemId },
-              orderBy: { revisionNo: 'desc' },
-            });
-            nextRevNo = (maxRevRow?.revisionNo ?? 0) + 1;
+            nextRevNo = (maxExerciseRevNoByItemId.get(targetItemId) ?? 0) + 1;
+            maxExerciseRevNoByItemId.set(targetItemId, nextRevNo);
           } else {
-            const newIdentity = await tx.itemIdentity.create({
-              data: {
-                origin: 'PRACTICE',
-                createdBy: teacherAccountId.toLowerCase(),
-                exactFingerprint: fp,
-              },
-            });
-            targetItemId = newIdentity.id;
+            targetItemId = randomUUID();
             nextRevNo = 1;
+            identitiesToCreate.push({
+              id: targetItemId,
+              origin: 'PRACTICE',
+              createdBy: teacherLower,
+              exactFingerprint: fp,
+            });
           }
 
-          const newItemRev = await tx.itemRevision.create({
-            data: {
+          const newItemRevId = randomUUID();
+          const newSecretId = randomUUID();
+          const newLessonExerciseId = randomUUID();
+          const isCore = exInput.isCore ?? true;
+
+          itemRevisionsToCreate.push({
+            id: newItemRevId,
+            itemId: targetItemId,
+            revisionNo: nextRevNo,
+            type: exInput.type,
+            promptData: exInput.promptData,
+            practiceSkillIds: sourceSkillIds,
+            practiceCoverageSnapshot: sourceCoverageSnapshot,
+            schemaVersion: 1,
+            exactFingerprint: fp,
+            createdBy: teacherLower,
+            creationAssignmentEpisodeId: latestEpisode.id,
+            authoringLessonRevisionId: newRev.id,
+            rowVersion: 1n,
+          });
+          secretsToCreate.push({
+            id: newSecretId,
+            itemRevisionId: newItemRevId,
+            gradingData: exInput.gradingData,
+            feedbackData,
+            schemaVersion: 1,
+          });
+          lessonExercisesToCreate.push({
+            id: newLessonExerciseId,
+            lessonRevisionId: newRev.id,
+            itemRevisionId: newItemRevId,
+            itemId: targetItemId,
+            position: exInput.position,
+            isCore,
+          });
+          assembledExercises.push({
+            id: newLessonExerciseId,
+            lessonRevisionId: newRev.id,
+            itemRevisionId: newItemRevId,
+            itemId: targetItemId,
+            position: exInput.position,
+            isCore,
+            item: { id: targetItemId, origin: 'PRACTICE' },
+            itemRevision: {
+              id: newItemRevId,
               itemId: targetItemId,
               revisionNo: nextRevNo,
               type: exInput.type,
               promptData: exInput.promptData,
-              practiceSkillIds: sourceSkillIds,
-              practiceCoverageSnapshot: sourceCoverageSnapshot,
               schemaVersion: 1,
-              exactFingerprint: fp,
-              createdBy: teacherAccountId.toLowerCase(),
+              createdBy: teacherLower,
               creationAssignmentEpisodeId: latestEpisode.id,
               authoringLessonRevisionId: newRev.id,
-              rowVersion: 1n,
-            },
-          });
-
-          await tx.itemGradingSecret.create({
-            data: {
-              itemRevisionId: newItemRev.id,
-              gradingData: exInput.gradingData,
-              feedbackData,
-              schemaVersion: 1,
-            },
-          });
-
-          await tx.lessonExercise.create({
-            data: {
-              lessonRevisionId: newRev.id,
-              itemRevisionId: newItemRev.id,
-              itemId: targetItemId,
-              position: exInput.position,
-              isCore: exInput.isCore ?? true,
+              assessmentBlueprintId: null,
+              blueprintGeneration: null,
+              isDraftOmitted: false,
+              frozenAt: null,
+              _count: { mediaBindings: 0, assessmentVersionItems: 0, provenanceVersionItems: 0 },
+              gradingSecret: {
+                id: newSecretId,
+                itemRevisionId: newItemRevId,
+                gradingData: exInput.gradingData,
+                feedbackData: feedbackData ?? null,
+                schemaVersion: 1,
+              },
             },
           });
         }
       }
 
-      // 15. Preserve assessment item lineage on the successor DRAFT. Item revisions
-      // are append-only, so clone each exact payload/secret into a new revision owned
-      // by this source revision and the current assignment episode.
-      if (highestRev?.authoredItemRevisions) {
+      if (identitiesToCreate.length > 0) {
+        await tx.itemIdentity.createMany({ data: identitiesToCreate });
+      }
+      if (itemRevisionsToCreate.length > 0) {
+        await tx.itemRevision.createMany({ data: itemRevisionsToCreate });
+      }
+      if (secretsToCreate.length > 0) {
+        await tx.itemGradingSecret.createMany({ data: secretsToCreate });
+      }
+      if (lessonExercisesToCreate.length > 0) {
+        await tx.lessonExercise.createMany({ data: lessonExercisesToCreate });
+      }
+      assembledExercises.sort((a, b) => a.position - b.position);
+
+      // 15. Preserve assessment item lineage on the successor DRAFT (batched).
+      const copiedAssessmentItems: any[] = [];
+      if (highestRev?.authoredItemRevisions && highestRev.authoredItemRevisions.length > 0) {
+        const assessmentItemIds = [...new Set(highestRev.authoredItemRevisions.map((p: any) => p.itemId.toLowerCase()))];
+        const maxAssessRevNoByItemId = new Map<string, number>();
+        const assessRevRows = await tx.itemRevision.findMany({
+          where: { itemId: { in: assessmentItemIds } },
+          orderBy: { revisionNo: 'desc' },
+          distinct: ['itemId'],
+          select: { itemId: true, revisionNo: true },
+        });
+        for (const r of assessRevRows) {
+          const idLower = String(r.itemId).toLowerCase();
+          const prevMax = maxAssessRevNoByItemId.get(idLower) ?? 0;
+          if (r.revisionNo > prevMax) {
+            maxAssessRevNoByItemId.set(idLower, r.revisionNo);
+          }
+        }
+
+        const assessRevsToCreate: any[] = [];
+        const assessSecretsToCreate: any[] = [];
         for (const pred of highestRev.authoredItemRevisions) {
-          const maxRevRow = await tx.itemRevision.findFirst({
-            where: { itemId: pred.itemId.toLowerCase() },
-            orderBy: { revisionNo: 'desc' },
-            select: { revisionNo: true },
+          const targetItemId = pred.itemId.toLowerCase();
+          const nextRevNo = (maxAssessRevNoByItemId.get(targetItemId) ?? 0) + 1;
+          maxAssessRevNoByItemId.set(targetItemId, nextRevNo);
+          const copiedId = randomUUID();
+          const secretId = randomUUID();
+          assessRevsToCreate.push({
+            id: copiedId,
+            itemId: targetItemId,
+            revisionNo: nextRevNo,
+            type: pred.type,
+            promptData: pred.promptData,
+            schemaVersion: pred.schemaVersion,
+            exactFingerprint: pred.exactFingerprint,
+            createdBy: teacherLower,
+            creationAssignmentEpisodeId: latestEpisode.id,
+            authoringLessonRevisionId: newRev.id,
+            assessmentBlueprintId: pred.assessmentBlueprintId,
+            blueprintGeneration: pred.blueprintGeneration,
+            isDraftOmitted: pred.isDraftOmitted,
+            frozenAt: null,
+            rowVersion: 1n,
           });
-          const copiedItemRevision = await tx.itemRevision.create({
-            data: {
-              itemId: pred.itemId.toLowerCase(),
-              revisionNo: (maxRevRow?.revisionNo ?? 0) + 1,
-              type: pred.type,
-              promptData: pred.promptData,
-              schemaVersion: pred.schemaVersion,
-              exactFingerprint: pred.exactFingerprint,
-              createdBy: teacherAccountId.toLowerCase(),
-              creationAssignmentEpisodeId: latestEpisode.id,
-              authoringLessonRevisionId: newRev.id,
-              assessmentBlueprintId: pred.assessmentBlueprintId,
-              blueprintGeneration: pred.blueprintGeneration,
-              isDraftOmitted: pred.isDraftOmitted,
-              frozenAt: null,
-              rowVersion: 1n,
-            },
+          assessSecretsToCreate.push({
+            id: secretId,
+            itemRevisionId: copiedId,
+            gradingData: pred.gradingSecret.gradingData,
+            feedbackData: pred.gradingSecret.feedbackData ?? undefined,
+            schemaVersion: pred.gradingSecret.schemaVersion,
           });
-          await tx.itemGradingSecret.create({
-            data: {
-              itemRevisionId: copiedItemRevision.id,
+          copiedAssessmentItems.push({
+            ...pred,
+            id: copiedId,
+            itemId: targetItemId,
+            revisionNo: nextRevNo,
+            createdBy: teacherLower,
+            creationAssignmentEpisodeId: latestEpisode.id,
+            authoringLessonRevisionId: newRev.id,
+            frozenAt: null,
+            _count: { mediaBindings: 0, assessmentVersionItems: 0, provenanceVersionItems: 0 },
+            gradingSecret: {
+              id: secretId,
+              itemRevisionId: copiedId,
               gradingData: pred.gradingSecret.gradingData,
-              feedbackData: pred.gradingSecret.feedbackData ?? undefined,
+              feedbackData: pred.gradingSecret.feedbackData ?? null,
               schemaVersion: pred.gradingSecret.schemaVersion,
             },
           });
         }
+        await tx.itemRevision.createMany({ data: assessRevsToCreate });
+        await tx.itemGradingSecret.createMany({ data: assessSecretsToCreate });
       }
 
-      // 16. Persist Vocabulary
+      // 16. Persist Vocabulary (batched lookups, concept creates, character pins, and link inserts)
+      const langLower = courseLanguageId.toLowerCase();
+      const pendingVocabLinks: Array<{
+        id: string;
+        vocabularyId: string;
+        position: number;
+        isCore: boolean;
+        baseSnapshot: Record<string, any>;
+      }> = [];
+      const newConceptsToCreate: any[] = [];
+
       if (inputVocabulary === undefined) {
-        // Preserve the predecessor meaning while pinning characters on this new revision.
         if (highestRev?.vocabularyLinks) {
           for (const pred of highestRev.vocabularyLinks) {
-            const snapshot = await pinVocabularyCharacters(
-              tx,
-              pred.vocabularyId.toLowerCase(),
-              courseLanguageId.toLowerCase(),
-              pred.displaySnapshot as Record<string, any>
-            );
-            if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
-              throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
-            }
-            await tx.lessonVocabularyLink.create({
-              data: {
-                lessonRevisionId: newRev.id,
-                vocabularyId: pred.vocabularyId.toLowerCase(),
-                position: pred.position,
-                isCore: pred.isCore,
-                displaySnapshot: snapshot,
-              },
+            pendingVocabLinks.push({
+              id: randomUUID(),
+              vocabularyId: pred.vocabularyId.toLowerCase(),
+              position: pred.position,
+              isCore: pred.isCore,
+              baseSnapshot: pred.displaySnapshot as Record<string, any>,
             });
           }
         }
@@ -3161,182 +3428,210 @@ export async function saveTeacherLessonDraft(
         for (const vocInput of inputVocabulary) {
           if (vocInput.sourceLinkId) {
             const pred = predVocabMap.get(vocInput.sourceLinkId.toLowerCase())!;
-            const snapshot = await pinVocabularyCharacters(
-              tx,
-              pred.vocabularyId.toLowerCase(),
-              courseLanguageId.toLowerCase(),
-              pred.displaySnapshot as Record<string, any>
-            );
-            if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
-              throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
-            }
-            await tx.lessonVocabularyLink.create({
-              data: {
-                lessonRevisionId: newRev.id,
-                vocabularyId: pred.vocabularyId.toLowerCase(),
-                position: vocInput.position,
-                isCore: vocInput.isCore ?? true,
-                displaySnapshot: snapshot,
-              },
+            pendingVocabLinks.push({
+              id: randomUUID(),
+              vocabularyId: pred.vocabularyId.toLowerCase(),
+              position: vocInput.position,
+              isCore: vocInput.isCore ?? true,
+              baseSnapshot: pred.displaySnapshot as Record<string, any>,
             });
           } else if (vocInput.vocabularyId) {
-            const concept = await tx.vocabularyConcept.findUnique({
-              where: { id: vocInput.vocabularyId.toLowerCase() },
-            });
-            const baseSnapshot = {
-              schemaVersion: 1,
-              languageId: concept.languageId,
-              canonicalForm: concept.canonicalForm,
-              senseKey: concept.senseKey,
-              meaningLabels: concept.meaningLabels,
-              phonetic: concept.phonetic || null,
-              partOfSpeech: concept.partOfSpeech || null,
-              example: concept.example || null,
-            };
-            const snapshot = await pinVocabularyCharacters(
-              tx,
-              concept.id.toLowerCase(),
-              courseLanguageId.toLowerCase(),
-              baseSnapshot
-            );
-            if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
-              throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
-            }
-            await tx.lessonVocabularyLink.create({
-              data: {
-                lessonRevisionId: newRev.id,
-                vocabularyId: concept.id.toLowerCase(),
-                position: vocInput.position,
-                isCore: vocInput.isCore ?? true,
-                displaySnapshot: snapshot,
+            const concept = conceptById.get(vocInput.vocabularyId.toLowerCase())!;
+            pendingVocabLinks.push({
+              id: randomUUID(),
+              vocabularyId: concept.id.toLowerCase(),
+              position: vocInput.position,
+              isCore: vocInput.isCore ?? true,
+              baseSnapshot: {
+                schemaVersion: 1,
+                languageId: concept.languageId,
+                canonicalForm: concept.canonicalForm,
+                senseKey: concept.senseKey,
+                meaningLabels: concept.meaningLabels,
+                phonetic: concept.phonetic || null,
+                partOfSpeech: concept.partOfSpeech || null,
+                example: concept.example || null,
               },
             });
           } else if (vocInput.create) {
             const c = vocInput.create;
             const norm = normalizeVocabularyTerm(c.canonicalForm);
             const sense = c.senseKey.trim();
-            let concept = await tx.vocabularyConcept.findUnique({
-              where: {
-                languageId_normalizedForm_senseKey: {
-                  languageId: courseLanguageId.toLowerCase(),
-                  normalizedForm: norm,
-                  senseKey: sense,
+            let concept = conceptByNormSense.get(`${norm}\0${sense}`);
+            if (!concept) {
+              concept = await tx.vocabularyConcept.findUnique({
+                where: {
+                  languageId_normalizedForm_senseKey: {
+                    languageId: langLower,
+                    normalizedForm: norm,
+                    senseKey: sense,
+                  },
                 },
-              },
-            });
-            if (concept && (concept.languageId.toLowerCase() !== courseLanguageId.toLowerCase() || !sameVocabularyMetadata(concept, c))) {
+              });
+              if (concept) {
+                conceptByNormSense.set(`${norm}\0${sense}`, concept);
+              }
+            }
+            if (concept && (concept.languageId.toLowerCase() !== langLower || !sameVocabularyMetadata(concept, c))) {
               throw new ControlledDraftError(409, {code: 'VOCABULARY_IDENTITY_CONFLICT', message: 'Khái niệm đã tồn tại với thông tin khác. Hãy chọn từ có sẵn hoặc dùng nét nghĩa khác.'});
             }
             if (!concept) {
-              concept = await tx.vocabularyConcept.create({
-                data: {
-                  languageId: courseLanguageId.toLowerCase(),
-                  canonicalForm: c.canonicalForm.normalize('NFC').trim(),
-                  normalizedForm: norm,
-                  senseKey: sense,
-                  meaningLabels: {
-                    ...(c.meaningLabels.vi?.trim() ? { vi: c.meaningLabels.vi.trim() } : {}),
-                    ...(c.meaningLabels.en?.trim() ? { en: c.meaningLabels.en.trim() } : {}),
-                  },
-                  phonetic: c.phonetic?.trim() || null,
-                  partOfSpeech: c.partOfSpeech?.trim() || null,
-                  example: c.example?.trim() || null,
-                  createdBy: teacherAccountId.toLowerCase(),
-                  rowVersion: 1n,
+              const newConceptId = randomUUID();
+              concept = {
+                id: newConceptId,
+                languageId: langLower,
+                canonicalForm: c.canonicalForm.normalize('NFC').trim(),
+                normalizedForm: norm,
+                senseKey: sense,
+                meaningLabels: {
+                  ...(c.meaningLabels.vi?.trim() ? { vi: c.meaningLabels.vi.trim() } : {}),
+                  ...(c.meaningLabels.en?.trim() ? { en: c.meaningLabels.en.trim() } : {}),
                 },
-              });
+                phonetic: c.phonetic?.trim() || null,
+                partOfSpeech: c.partOfSpeech?.trim() || null,
+                example: c.example?.trim() || null,
+                createdBy: teacherLower,
+                rowVersion: 1n,
+              };
+              newConceptsToCreate.push(concept);
+              conceptByNormSense.set(`${norm}\0${sense}`, concept);
             }
-            const baseSnapshot = {
-              schemaVersion: 1,
-              languageId: concept.languageId,
-              canonicalForm: concept.canonicalForm,
-              senseKey: concept.senseKey,
-              meaningLabels: concept.meaningLabels,
-              phonetic: concept.phonetic || null,
-              partOfSpeech: concept.partOfSpeech || null,
-              example: concept.example || null,
-            };
-            const snapshot = await pinVocabularyCharacters(
-              tx,
-              concept.id.toLowerCase(),
-              courseLanguageId.toLowerCase(),
-              baseSnapshot
-            );
-            if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
-              throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
-            }
-            await tx.lessonVocabularyLink.create({
-              data: {
-                lessonRevisionId: newRev.id,
-                vocabularyId: concept.id.toLowerCase(),
-                position: vocInput.position,
-                isCore: vocInput.isCore ?? true,
-                displaySnapshot: snapshot,
+            pendingVocabLinks.push({
+              id: randomUUID(),
+              vocabularyId: concept.id.toLowerCase(),
+              position: vocInput.position,
+              isCore: vocInput.isCore ?? true,
+              baseSnapshot: {
+                schemaVersion: 1,
+                languageId: concept.languageId,
+                canonicalForm: concept.canonicalForm,
+                senseKey: concept.senseKey,
+                meaningLabels: concept.meaningLabels,
+                phonetic: concept.phonetic || null,
+                partOfSpeech: concept.partOfSpeech || null,
+                example: concept.example || null,
               },
             });
           }
         }
       }
 
-      // 16. Increment Lesson.rowVersion once; leave activeRevisionId unchanged
-      await tx.lesson.update({
+      if (newConceptsToCreate.length > 0) {
+        await tx.vocabularyConcept.createMany({ data: newConceptsToCreate });
+      }
+
+      const vocabIdsNeedingCharPin = pendingVocabLinks
+        .filter((item) => !Array.isArray(item.baseSnapshot.characters))
+        .map((item) => item.vocabularyId);
+      const charactersMap = await fetchVocabularyCharacterSnapshotsMap(tx, vocabIdsNeedingCharPin, langLower);
+
+      const vocabLinksToCreate: any[] = [];
+      const assembledVocabLinks: any[] = [];
+      for (const item of pendingVocabLinks) {
+        const snapshot = attachVocabularyCharacters(item.vocabularyId, item.baseSnapshot, charactersMap);
+        if (!vocabularySnapshotSchema.safeParse(snapshot).success) {
+          throw new ControlledDraftError(409, {code: 'UNSUPPORTED_DRAFT_CONTENT', message: 'Khái niệm từ vựng có cấu trúc không được hỗ trợ.'});
+        }
+        vocabLinksToCreate.push({
+          id: item.id,
+          lessonRevisionId: newRev.id,
+          vocabularyId: item.vocabularyId,
+          position: item.position,
+          isCore: item.isCore,
+          displaySnapshot: snapshot,
+        });
+        assembledVocabLinks.push({
+          id: item.id,
+          lessonRevisionId: newRev.id,
+          vocabularyId: item.vocabularyId,
+          position: item.position,
+          isCore: item.isCore,
+          displaySnapshot: snapshot,
+          vocabulary: { id: item.vocabularyId, languageId: langLower },
+        });
+      }
+
+      if (vocabLinksToCreate.length > 0) {
+        await tx.lessonVocabularyLink.createMany({ data: vocabLinksToCreate });
+      }
+      assembledVocabLinks.sort((a, b) => a.position - b.position);
+
+      // 16b. Increment Lesson.rowVersion once; leave activeRevisionId unchanged
+      const updatedLesson = await tx.lesson.update({
         where: { id: lessonId.toLowerCase() },
         data: {
           rowVersion: { increment: 1n },
         },
       });
 
-      // 17. Return authoritative TeacherLessonDetailDto
-      const fullLesson = await tx.lesson.findUnique({
-        where: { id: lessonId.toLowerCase() },
-        include: {
-          unit: {
-            select: {
-              id: true,
-              courseId: true,
-              position: true,
-              code: true,
-              names: true,
-              course: {
-                select: {
-                  id: true,
-                  names: true,
-                  languageId: true,
-                },
+      // 17. Return authoritative TeacherLessonDetailDto without re-loading deep historical trees
+      const teacherRef = { id: teacherAcc.id, displayName: teacherAcc.displayName ?? null };
+      const newRevFull = {
+        ...newRev,
+        creator: teacherRef,
+        lastEditor: teacherRef,
+        blocks: persistedBlocks,
+        exercises: assembledExercises,
+        vocabularyLinks: assembledVocabLinks,
+        authoredItemRevisions: copiedAssessmentItems,
+        reviews: [],
+        reviewComments: [],
+        _count: {
+          exercises: assembledExercises.length,
+          vocabularyLinks: assembledVocabLinks.length,
+          mediaBindings: 0,
+          authoredItemRevisions: assembledExercises.length + copiedAssessmentItems.length,
+          attempts: 0,
+          assessmentVersionItems: 0,
+        },
+      };
+
+      let priorRevisions: any[] = [];
+      if (highestRev) {
+        priorRevisions = await tx.lessonRevision.findMany({
+          where: {
+            lessonId: lessonId.toLowerCase(),
+            id: { not: newRev.id },
+          },
+          orderBy: { revisionNo: 'desc' },
+          select: {
+            id: true,
+            revisionNo: true,
+            status: true,
+            title: true,
+            contentBlocks: true,
+            contentSchemaVersion: true,
+            changeSummary: true,
+            createdAt: true,
+            createdBy: true,
+            lastEditedBy: true,
+            rowVersion: true,
+            creator: { select: { id: true, displayName: true } },
+            lastEditor: { select: { id: true, displayName: true } },
+            reviewComments: {
+              orderBy: { createdAt: 'asc' },
+              include: {
+                author: { select: { id: true, displayName: true } },
+                resolvedBy: { select: { id: true, displayName: true } },
               },
             },
           },
-          assignment: {
-            include: {
-              currentTeacher: {
-                select: { id: true, displayName: true, status: true },
-              },
-            },
-          },
-          revisions: {
-            orderBy: { revisionNo: 'desc' },
-            include: {
-              creator: { select: { id: true, displayName: true } },
-              lastEditor: { select: { id: true, displayName: true } },
-              ...revisionChildRelations,
-              reviews: {
-                orderBy: { occurredAt: 'desc' },
-                select: { action: true, occurredAt: true, comment: true },
-              },
-              _count: {
-                select: {
-                  exercises: true,
-                  vocabularyLinks: true,
-                  mediaBindings: true,
-                  authoredItemRevisions: true,
-                  attempts: true,
-                  assessmentVersionItems: true,
-                },
-              },
-            },
+        });
+      }
+
+      const fullLesson = {
+        ...updatedLesson,
+        unit,
+        assignment: {
+          ...assignment,
+          currentTeacher: {
+            id: teacherAcc.id,
+            displayName: teacherAcc.displayName ?? null,
+            status: teacherAcc.status,
           },
         },
-      });
+        revisions: [newRevFull, ...priorRevisions],
+      };
 
       return {
         status: 200,

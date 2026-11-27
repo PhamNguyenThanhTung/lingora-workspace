@@ -12,6 +12,11 @@ const TEST_URL = `http://127.0.0.1:${TEST_PORT}`;
 const SCREENSHOT_DIR = (await import('node:path')).join(process.env.LINGORA_TEST_ARTIFACTS_DIR ?? (await import('node:os')).tmpdir(), 'lingora-test-artifacts', 'slice-3-final-patch');
 (await import('node:fs')).mkdirSync(SCREENSHOT_DIR, { recursive: true });
 
+async function waitForCourseModalReady(page) {
+  await page.waitForSelector('#courseFormModal', { state: 'visible' });
+  await page.waitForFunction(() => document.activeElement?.id === 'inputCourseNameVi');
+}
+
 describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', () => {
   let server;
   let browser;
@@ -46,12 +51,14 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
 
     // 1. Open create modal
     await page.click('#btnOpenCreateCourse');
-    await page.waitForSelector('#courseFormModal', { state: 'visible' });
-
-    // Initial focus on vi input
-    await page.waitForFunction(() => document.activeElement?.id === 'inputCourseNameVi');
+    await waitForCourseModalReady(page);
     const isViFocused = await page.evaluate(() => document.activeElement?.id === 'inputCourseNameVi');
     assert.equal(isViFocused, true, 'Vi input must be focused on open');
+
+    // G14: only learnable languages are offered ("Tiếng Việt" has is_learnable = false)
+    const languageOptions = await page.$$eval('#selectCourseLanguage option', (opts) => opts.map((o) => o.textContent.trim()));
+    assert.equal(languageOptions.some((label) => label.includes('(vi)')), false, 'Non-learnable language must not be selectable');
+    assert.equal(languageOptions.some((label) => label.includes('(en)')), true);
 
     // Select language & framework
     await page.selectOption('#selectCourseLanguage', '22222222-2222-4222-8222-222222222222');
@@ -96,7 +103,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
 
     // 3. Dependent level updates: changing framework immediately clears stale level
     await page.click('#btnOpenCreateCourse');
-    await page.waitForSelector('#courseFormModal', { state: 'visible' });
+    await waitForCourseModalReady(page);
 
     await page.selectOption('#selectCourseLanguage', '22222222-2222-4222-8222-222222222222');
     await page.selectOption('#selectCourseFramework', '11111111-1111-4111-8111-111111111111');
@@ -117,7 +124,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
     await page.waitForSelector('#courseFormModal', { state: 'hidden' });
 
     await page.click('#btnOpenCreateCourse');
-    await page.waitForSelector('#courseFormModal', { state: 'visible' });
+    await waitForCourseModalReady(page);
     const freshValues = await page.evaluate(() => ({
       vi: document.querySelector('#inputCourseNameVi')?.value,
       en: document.querySelector('#inputCourseNameEn')?.value,
@@ -143,7 +150,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
     await page.waitForSelector('#btnOpenCreateCourse', { state: 'visible' });
 
     await page.click('#btnOpenCreateCourse');
-    await page.waitForSelector('#courseFormModal', { state: 'visible' });
+    await waitForCourseModalReady(page);
 
     await page.selectOption('#selectCourseLanguage', '22222222-2222-4222-8222-222222222222');
     await page.selectOption('#selectCourseFramework', '11111111-1111-4111-8111-111111111111');
@@ -297,7 +304,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
 
     // 2. Add an empty course first to test clean deletion
     await page.click('#btnOpenCreateCourse');
-    await page.waitForSelector('#courseFormModal', { state: 'visible' });
+    await waitForCourseModalReady(page);
     await page.selectOption('#selectCourseLanguage', '22222222-2222-4222-8222-222222222222');
     await page.selectOption('#selectCourseFramework', '11111111-1111-4111-8111-111111111111');
     await page.waitForFunction(() => {
@@ -530,7 +537,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
     }, { activeAdminId, otherAccountId });
 
     await page.click('#btnOpenCreateCourse');
-    await page.waitForSelector('#courseFormModal', { state: 'visible' });
+    await waitForCourseModalReady(page);
 
     await page.selectOption('#selectCourseLanguage', '22222222-2222-4222-8222-222222222222');
     await page.selectOption('#selectCourseFramework', '11111111-1111-4111-8111-111111111111');
@@ -621,7 +628,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
 
     // Trigger 403
     await page3.click('#btnOpenCreateCourse');
-    await page3.waitForSelector('#courseFormModal', { state: 'visible' });
+    await waitForCourseModalReady(page3);
     await page3.selectOption('#selectCourseLanguage', '22222222-2222-4222-8222-222222222222');
     await page3.selectOption('#selectCourseFramework', '11111111-1111-4111-8111-111111111111');
     await page3.waitForFunction(() => {
@@ -699,7 +706,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
     await page1.goto(`${TEST_URL}?state=courses-populated`, { waitUntil: 'domcontentloaded' });
     await page1.waitForSelector('#btnOpenCreateCourse', { state: 'visible' });
     await page1.click('#btnOpenCreateCourse');
-    await page1.waitForSelector('#courseFormModal', { state: 'visible' });
+    await waitForCourseModalReady(page1);
     await page1.selectOption('#selectCourseLanguage', '22222222-2222-4222-8222-222222222222');
     await page1.selectOption('#selectCourseFramework', '11111111-1111-4111-8111-111111111111');
     await page1.waitForFunction(() => {
@@ -1190,7 +1197,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
         interceptUrl: '**/api/frameworks/*/levels',
         action: async (page) => {
           await page.click('#btnOpenCreateCourse');
-          await page.waitForSelector('#courseFormModal', { state: 'visible' });
+          await waitForCourseModalReady(page);
           await page.selectOption('#selectCourseFramework', '11111111-1111-4111-8111-111111111111');
         },
         modalSelector: '#courseFormModal',

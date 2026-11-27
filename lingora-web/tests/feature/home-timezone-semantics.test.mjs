@@ -103,6 +103,74 @@ describe('Home Timezone Semantics, Midnight Boundary & Cross-System Consistency'
       assert.deepEqual(normalizeStoredTimezone(null), { ok: false });
       assert.deepEqual(normalizeStoredTimezone(undefined), { ok: false });
     });
+
+    test('normalizeStoredTimezone preserves caller IANA link aliases verbatim across ICU versions', () => {
+      for (const alias of ['Asia/Ho_Chi_Minh', 'Asia/Saigon', 'Asia/Kolkata', 'Asia/Calcutta']) {
+        assert.deepEqual(normalizeStoredTimezone(alias), { ok: true, timezone: alias });
+        assert.deepEqual(normalizeStoredTimezone(`  ${alias}  `), { ok: true, timezone: alias });
+        assert.equal(isValidTimezone(alias), true);
+      }
+
+      const instant = new Date('2026-11-18T17:00:00.000Z');
+      assert.equal(
+        computeQualifyingLocalDate(instant, 'Asia/Ho_Chi_Minh').localDateStr,
+        computeQualifyingLocalDate(instant, 'Asia/Saigon').localDateStr
+      );
+      assert.equal(
+        computeQualifyingLocalDate(instant, 'Asia/Kolkata').localDateStr,
+        computeQualifyingLocalDate(instant, 'Asia/Calcutta').localDateStr
+      );
+    });
+
+    test('computeQualifyingLocalDate computes exact midnight boundaries across DST transitions (America/New_York)', () => {
+      // EDT (UTC-4): 2026-07-15 03:59:59Z = 23:59:59 Jul 14; 04:00:00Z = 00:00:00 Jul 15
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-07-15T03:59:59.999Z'), 'America/New_York').localDateStr,
+        '2026-07-14'
+      );
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-07-15T04:00:00.000Z'), 'America/New_York').localDateStr,
+        '2026-07-15'
+      );
+
+      // Spring-forward day (2026-03-08: EST UTC-5 -> EDT UTC-4 at 02:00 local)
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-03-08T04:59:59.999Z'), 'America/New_York').localDateStr,
+        '2026-03-07'
+      );
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-03-08T05:00:00.000Z'), 'America/New_York').localDateStr,
+        '2026-03-08'
+      );
+      // Following midnight uses EDT (UTC-4)
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-03-09T03:59:59.999Z'), 'America/New_York').localDateStr,
+        '2026-03-08'
+      );
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-03-09T04:00:00.000Z'), 'America/New_York').localDateStr,
+        '2026-03-09'
+      );
+
+      // Fall-back day (2026-11-01: EDT UTC-4 -> EST UTC-5 at 02:00 local)
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-11-01T03:59:59.999Z'), 'America/New_York').localDateStr,
+        '2026-10-31'
+      );
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-11-01T04:00:00.000Z'), 'America/New_York').localDateStr,
+        '2026-11-01'
+      );
+      // Following midnight uses EST (UTC-5)
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-11-02T04:59:59.999Z'), 'America/New_York').localDateStr,
+        '2026-11-01'
+      );
+      assert.equal(
+        computeQualifyingLocalDate(new Date('2026-11-02T05:00:00.000Z'), 'America/New_York').localDateStr,
+        '2026-11-02'
+      );
+    });
   });
 
   describe('MIDNIGHT TEST: Semantic divergence between UTC and Asia/Bangkok at 18:00Z', () => {

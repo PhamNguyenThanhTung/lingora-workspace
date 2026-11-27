@@ -187,7 +187,7 @@ export function startIsolatedServer(port = 3007) {
                 ],
               },
               language: {
-                findMany: async () => [{ id: langId, code: 'en', names: { vi: 'Tiếng Anh' } }],
+                findMany: async () => [{ id: langId, code: 'en', names: { vi: 'Tiếng Anh' }, isLearnable: true }],
               },
               framework: {
                 findMany: async () => [{ id: fwId, code: 'CEFR', version: '2020', names: { vi: 'Khung Châu Âu' } }],

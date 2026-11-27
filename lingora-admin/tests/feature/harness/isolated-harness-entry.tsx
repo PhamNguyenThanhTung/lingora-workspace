@@ -122,7 +122,8 @@ const MOCK_LANGUAGES: LanguageDto[] = [
     id: '66666666-6666-4666-8666-666666666666',
     code: 'vi',
     names: { vi: 'Tiếng Việt', en: 'Vietnamese' },
-    isLearnable: true,
+    // G14: mirrors production data — vi is a UI locale but not a learnable language.
+    isLearnable: false,
     isUiLocale: true,
   },
   {

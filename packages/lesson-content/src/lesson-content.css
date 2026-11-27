@@ -144,3 +144,20 @@
 .lingora-exercises-section {
   margin-bottom: 24px;
 }
+
+.lingora-lesson-content [lang] {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.lingora-lesson-content [lang='ja'],
+.lingora-lesson-content [lang^='ja-'] {
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Meiryo', 'Noto Sans JP', sans-serif;
+  line-break: strict;
+}
+
+.lingora-lesson-content [lang='zh'],
+.lingora-lesson-content [lang^='zh-'] {
+  font-family: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans TC', sans-serif;
+  line-break: strict;
+}

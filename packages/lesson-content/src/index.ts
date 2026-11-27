@@ -4,3 +4,4 @@ export * from './dto.ts';
 export * from './legacy.ts';
 export * from './LessonContent.ts';
 export * from './grader.ts';
+export * from './language.ts';

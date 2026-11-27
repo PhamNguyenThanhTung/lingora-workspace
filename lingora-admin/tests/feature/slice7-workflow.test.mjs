@@ -163,6 +163,39 @@ describe('S7-WORKFLOW: exact revision submit, review and publication', () => {
     assert.equal(detail.data.data.assignmentEpisode.teacherName, 'Cô Hương');
   });
 
+  test('H9: review history names an admin without display_name by role instead of "Người dùng"', async () => {
+    fixture.state.accounts.get(adminId).displayName = null;
+
+    const draft = await createDraft('H9 history');
+    const submitted = await submitTeacherLesson(teacherId, lessonId, {
+      revisionId: draft.highestRevision.id,
+      expectedLessonRowVersion: draft.rowVersion,
+      expectedRevisionRowVersion: draft.highestRevision.rowVersion,
+    }, fixture.db);
+    assert.equal(submitted.status, 200);
+
+    const revision = fixture.state.revisions.get(draft.highestRevision.id);
+    const approved = await approveReview(adminId, submitted.data.submissionId, {
+      expectedRevisionRowVersion: revision.rowVersion.toString(), comment: 'Duyệt.',
+    }, fixture.db);
+    assert.equal(approved.status, 200);
+
+    const detail = await getReviewDetail(adminId, submitted.data.submissionId, fixture.db);
+    assert.equal(detail.status, 200);
+    const history = detail.data.data.reviews;
+    const submitEvent = history.find(event => event.action === 'SUBMIT');
+    const approveEvent = history.find(event => event.action === 'APPROVE');
+
+    // Teacher keeps the real display name.
+    assert.equal(submitEvent.actor.displayName, 'Cô Hương');
+    assert.equal(submitEvent.actor.role, 'TEACHER');
+    // Admin has no display_name in the accounts table -> role label, never a generic fallback.
+    assert.equal(approveEvent.actor.displayName, 'Quản trị viên');
+    assert.equal(approveEvent.actor.role, 'ADMIN');
+    assert.equal(history.some(event => event.actor.displayName === 'Người dùng'), false);
+    assert.equal(history.some(event => event.actor.displayName == null), false);
+  });
+
   test('request changes keeps the old snapshot; successor copies frozen items and publish stays isolated', async () => {
     const firstDraft = await createDraft('First');
     const firstSubmit = await submitTeacherLesson(teacherId, lessonId, {

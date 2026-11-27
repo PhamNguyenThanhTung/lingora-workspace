@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { CourseDto } from '@/server/courses';
 import type { LanguageDto } from '@/server/languages';
 import type { FrameworkDto } from '@/server/frameworks';
@@ -8,6 +8,7 @@ import { CourseFormModal } from './CourseFormModal';
 import { CourseDeleteModal } from './CourseDeleteModal';
 import { SessionLostModal } from './SessionLostModal';
 import { removeDraft, clearAllDrafts } from './draftStorage';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface CoursesCatalogProps {
   initialCourses?: CourseDto[];
@@ -53,16 +54,7 @@ export function CoursesCatalog({
   const openCreateBtnRef = useRef<HTMLButtonElement>(null);
 
   const anyModalOpen = isFormModalOpen || isDeleteModalOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   const fetchCourses = async () => {
     setIsLoading(true);
@@ -173,24 +165,19 @@ export function CoursesCatalog({
     const title = deleted ? deleted.names.vi || deleted.names.en || 'Khóa học' : 'Khóa học';
     setMutationStatus(`Đã xóa khóa học "${title}" thành công.`);
 
-    setTimeout(() => {
+    scheduleFocusRestore(() => {
       if (nextList.length === 0) {
-        const emptyBtn = document.getElementById('btnEmptyCreateCourse') || openCreateBtnRef.current;
-        emptyBtn?.focus();
-      } else {
-        const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
-        const targetId = nextList[targetIndex].id;
-        const btn =
-          document.getElementById(`btn-delete-course-${targetId}`) ||
-          document.getElementById(`btn-edit-course-${targetId}`) ||
-          document.getElementById(`linkCourseUnits-${targetId}`);
-        if (btn) {
-          btn.focus();
-        } else {
-          openCreateBtnRef.current?.focus();
-        }
+        return document.getElementById('btnEmptyCreateCourse') || openCreateBtnRef.current;
       }
-    }, 50);
+      const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
+      const targetId = nextList[targetIndex].id;
+      return (
+        document.getElementById(`btn-delete-course-${targetId}`) ||
+        document.getElementById(`btn-edit-course-${targetId}`) ||
+        document.getElementById(`linkCourseUnits-${targetId}`) ||
+        openCreateBtnRef.current
+      );
+    });
   };
 
   const getCourseDisplayName = (names: Record<string, string>) => {

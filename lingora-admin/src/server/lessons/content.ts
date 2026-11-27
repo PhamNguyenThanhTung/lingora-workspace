@@ -17,7 +17,11 @@ import {
 } from '@lingora/lesson-content';
 
 import { isValidUuid, type ApiErrorEnvelope } from '../frameworks/index.ts';
-export { isValidUuid };
+import {
+  normalizeVocabularyTermKey,
+  isValidAudioReferenceUrl,
+} from './vocabulary-candidates.ts';
+export { isValidUuid, isValidAudioReferenceUrl };
 
 export class ControlledDraftError extends Error {
   status: number;
@@ -126,56 +130,7 @@ export function computeExerciseFingerprint(payload: {
 // =============================================================================
 
 export function normalizeVocabularyTerm(canonicalForm: string): string {
-  return canonicalForm
-    .normalize('NFC')
-    .trim()
-    .replace(/\s+/g, ' ')
-    .toLowerCase();
-}
-
-// =============================================================================
-// Audio Reference URL Validator
-// =============================================================================
-
-export function isValidAudioReferenceUrl(rawUrl: string): boolean {
-  if (typeof rawUrl !== 'string') return false;
-  const trimmed = rawUrl.trim();
-  if (trimmed.length === 0 || trimmed.length > 2048) return false;
-  try {
-    const parsed = new URL(trimmed);
-    if (parsed.protocol !== 'https:') return false;
-    if (parsed.username !== '' || parsed.password !== '') return false;
-    if (parsed.search !== '' || parsed.searchParams.size > 0) return false;
-    if (parsed.hash !== '') return false;
-    if (parsed.port !== '' && parsed.port !== '443') return false;
-
-    const hostname = parsed.hostname.toLowerCase();
-    // No IP literals (IPv4 or IPv6)
-    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) return false;
-    if (hostname.includes(':') || hostname.startsWith('[') || hostname.endsWith(']')) return false;
-
-    // Must have a dot
-    if (!hostname.includes('.')) return false;
-
-    // Reject localhost / local / internal
-    if (
-      hostname === 'localhost' ||
-      hostname.endsWith('.localhost') ||
-      hostname.endsWith('.local') ||
-      hostname.endsWith('.internal')
-    ) {
-      return false;
-    }
-
-    // Valid DNS label check
-    if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(hostname)) {
-      return false;
-    }
-
-    return true;
-  } catch {
-    return false;
-  }
+  return normalizeVocabularyTermKey(canonicalForm);
 }
 
 // =============================================================================

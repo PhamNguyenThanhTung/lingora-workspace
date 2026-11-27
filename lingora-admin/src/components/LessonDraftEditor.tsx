@@ -23,40 +23,11 @@ import type { ReviewCommentDto } from '@/server/lessons/comments';
 import { StudioLayout, StudioPreview } from './lesson-studio';
 import { generateBlockKey } from './lesson-studio/block-operations';
 import { studioCss } from './lesson-studio/studio-styles';
-
-function isValidAudioReferenceUrl(rawUrl: string): boolean {
-  if (typeof rawUrl !== 'string') return false;
-  const trimmed = rawUrl.trim();
-  if (trimmed.length > 2048) return false;
-  try {
-    const parsed = new URL(trimmed);
-    if (parsed.protocol !== 'https:') return false;
-    if (parsed.username || parsed.password) return false;
-    if (parsed.search || parsed.hash) return false;
-    if (parsed.port && parsed.port !== '443') return false;
-
-    const hostname = parsed.hostname.toLowerCase();
-    if (
-      !hostname.includes('.') ||
-      hostname.endsWith('.') ||
-      hostname.startsWith('.') ||
-      hostname === 'localhost' ||
-      hostname.endsWith('.localhost') ||
-      hostname.endsWith('.local') ||
-      hostname.endsWith('.internal')
-    ) {
-      return false;
-    }
-
-    if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname) || hostname.startsWith('[') || hostname.endsWith(']')) {
-      return false;
-    }
-
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { AudioPreviewPlayer } from './AudioPreviewPlayer';
+import {
+  classifyVocabularyCandidateMatch,
+  isValidAudioReferenceUrl,
+} from '@/server/lessons/vocabulary-candidates';
 
 export interface LessonDraftEditorProps {
   initialLesson: LessonDetailDto | TeacherLessonDetailDto;
@@ -356,10 +327,14 @@ export function LessonDraftEditor({
   const [vocabIsCore, setVocabIsCore] = useState(true);
   // Search tab
   const [vocabSearchQuery, setVocabSearchQuery] = useState('');
+  const [submitConfirmOpen, setSubmitConfirmOpen] = useState(false);
   const [vocabSearchResults, setVocabSearchResults] = useState<VocabularyOptionDto[]>([]);
+  // Last query that completed a search, so the modal can show a "no results" state.
+  const [vocabSearchedQuery, setVocabSearchedQuery] = useState<string | null>(null);
   const [isSearchingVocab, setIsSearchingVocab] = useState(false);
   const vocabSearchGeneration = useRef(0);
   const searchingVocabRef = useRef(false);
+  const vocabSearchComposingRef = useRef(false);
   const [selectedVocabId, setSelectedVocabId] = useState<string | null>(null);
   const [selectedVocabOption, setSelectedVocabOption] = useState<VocabularyOptionDto | null>(null);
   // Create tab
@@ -371,6 +346,55 @@ export function LessonDraftEditor({
   const [vocabPartOfSpeech, setVocabPartOfSpeech] = useState('');
   const [vocabExample, setVocabExample] = useState('');
   const [vocabModalError, setVocabModalError] = useState<string | null>(null);
+  // G16 duplicate warning candidates in Create tab
+  const [vocabDuplicateCandidates, setVocabDuplicateCandidates] = useState<VocabularyOptionDto[]>([]);
+  const [isCheckingVocabDuplicates, setIsCheckingVocabDuplicates] = useState(false);
+  const [vocabDuplicateConfirmed, setVocabDuplicateConfirmed] = useState(false);
+  const vocabDuplicateGeneration = useRef(0);
+
+  useEffect(() => {
+    setVocabDuplicateConfirmed(false);
+  }, [vocabCanonicalForm, vocabSenseKey, vocabTab, vocabModalOpen]);
+
+  useEffect(() => {
+    if (!vocabModalOpen || vocabTab !== 'create') {
+      vocabDuplicateGeneration.current++;
+      setVocabDuplicateCandidates([]);
+      setIsCheckingVocabDuplicates(false);
+      return;
+    }
+    const q = vocabCanonicalForm.trim();
+    if (!q) {
+      vocabDuplicateGeneration.current++;
+      setVocabDuplicateCandidates([]);
+      setIsCheckingVocabDuplicates(false);
+      return;
+    }
+    const generation = ++vocabDuplicateGeneration.current;
+    const timer = setTimeout(async () => {
+      setIsCheckingVocabDuplicates(true);
+      try {
+        const res = await fetch(
+          `/api/teacher/lessons/${lesson.id}/vocabulary-options?q=${encodeURIComponent(q)}`,
+          { headers: { Origin: window.location.origin } }
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (generation !== vocabDuplicateGeneration.current) return;
+        const list = Array.isArray(data?.data) ? (data.data as VocabularyOptionDto[]) : [];
+        setVocabDuplicateCandidates(
+          list.filter((opt) => classifyVocabularyCandidateMatch(q, opt.canonicalForm) !== null)
+        );
+      } catch {
+        // Non-blocking advisory check; ignore transient network errors.
+      } finally {
+        if (generation === vocabDuplicateGeneration.current) {
+          setIsCheckingVocabDuplicates(false);
+        }
+      }
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [vocabModalOpen, vocabTab, vocabCanonicalForm, lesson.id]);
 
   useEffect(() => {
     if (!sessionLost) return;
@@ -822,6 +846,20 @@ export function LessonDraftEditor({
     }
   };
 
+  // H8: ask for confirmation first — submitting locks the editor until review ends.
+  const handleRequestSubmitForReview = () => {
+    if (previewOnly || isPendingRef.current) return;
+    if (isDirty) {
+      setGeneralError('Vui lòng lưu bản nháp trước khi nộp duyệt.');
+      return;
+    }
+    if (!highestRev) {
+      setGeneralError('Chưa có bản sửa đổi nào để nộp duyệt.');
+      return;
+    }
+    setSubmitConfirmOpen(true);
+  };
+
   const handleSubmitForReview = async () => {
     if (previewOnly || isPendingRef.current) return;
     if (isDirty) {
@@ -833,6 +871,7 @@ export function LessonDraftEditor({
       return;
     }
 
+    setSubmitConfirmOpen(false);
     isPendingRef.current = true;
     setIsPending(true);
     setGeneralError(null);
@@ -1298,6 +1337,7 @@ export function LessonDraftEditor({
     setVocabIsCore(true);
     setVocabSearchQuery('');
     setVocabSearchResults([]);
+    setVocabSearchedQuery(null);
     setSelectedVocabId(null);
     setSelectedVocabOption(null);
     setVocabCanonicalForm('');
@@ -1308,7 +1348,31 @@ export function LessonDraftEditor({
     setVocabPartOfSpeech('');
     setVocabExample('');
     setVocabModalError(null);
+    setVocabDuplicateCandidates([]);
+    setVocabDuplicateConfirmed(false);
     setVocabModalOpen(true);
+  };
+
+  const handleReuseDuplicateVocabulary = (opt: VocabularyOptionDto) => {
+    setVocabModalError(null);
+    const pos = Number(vocabPosition) || vocabulary.length + 1;
+    const item: StagedVocabulary = {
+      localId: Math.random().toString(),
+      vocabularyId: opt.id,
+      position: pos,
+      isCore: vocabIsCore,
+      displayInfo: {
+        canonicalForm: opt.canonicalForm,
+        senseKey: opt.senseKey,
+        meaningVi: opt.meaningLabels?.vi,
+        meaningEn: opt.meaningLabels?.en,
+        phonetic: opt.phonetic || undefined,
+        partOfSpeech: opt.partOfSpeech || undefined,
+        example: opt.example || undefined,
+      },
+    };
+    setVocabulary((prev) => [...prev, item]);
+    setVocabModalOpen(false);
   };
 
   const handleSearchVocabulary = async () => {
@@ -1317,6 +1381,7 @@ export function LessonDraftEditor({
     const generation = ++vocabSearchGeneration.current;
     searchingVocabRef.current = true;
     setSelectedVocabId(null); setSelectedVocabOption(null); setVocabSearchResults([]);
+    setVocabSearchedQuery(null);
     setIsSearchingVocab(true);
     setVocabModalError(null);
     try {
@@ -1330,7 +1395,10 @@ export function LessonDraftEditor({
         return;
       }
       const data = await res.json();
-      if (generation === vocabSearchGeneration.current) setVocabSearchResults(Array.isArray(data.data) ? data.data : []);
+      if (generation === vocabSearchGeneration.current) {
+        setVocabSearchResults(Array.isArray(data.data) ? data.data : []);
+        setVocabSearchedQuery(q);
+      }
     } catch {
       setVocabModalError('Lỗi kết nối khi tìm kiếm từ vựng.');
     } finally {
@@ -1384,6 +1452,39 @@ export function LessonDraftEditor({
       }
       if (!vi && !en) {
         setVocabModalError('Vui lòng nhập ít nhất một nghĩa (tiếng Việt hoặc tiếng Anh).');
+        return;
+      }
+
+      const normalizedSense = senseKey.toLowerCase();
+      const matchingStaged = vocabulary.filter(
+        (v) =>
+          classifyVocabularyCandidateMatch(canonicalForm, v.displayInfo.canonicalForm) !== null &&
+          (v.displayInfo.senseKey || 'default').trim().toLowerCase() === normalizedSense
+      );
+      if (matchingStaged.length > 0) {
+        setVocabModalError(`Từ "${matchingStaged[0].displayInfo.canonicalForm}" với nét nghĩa "${senseKey}" đã có trong bài học hiện tại.`);
+        return;
+      }
+
+      const sameSenseCatalogExact = vocabDuplicateCandidates.find(
+        (c) =>
+          classifyVocabularyCandidateMatch(canonicalForm, c.canonicalForm) === 'exact' &&
+          (c.senseKey || 'default').trim().toLowerCase() === normalizedSense
+      );
+      if (sameSenseCatalogExact) {
+        setVocabModalError(`Từ "${sameSenseCatalogExact.canonicalForm}" (nét nghĩa "${sameSenseCatalogExact.senseKey}") đã có trong kho từ vựng của ngôn ngữ này. Hãy bấm "Dùng từ này" để tái sử dụng hoặc đổi ô "Nét nghĩa".`);
+        return;
+      }
+
+      const sameSenseCatalogVariant = vocabDuplicateCandidates.find((c) => {
+        const kind = classifyVocabularyCandidateMatch(canonicalForm, c.canonicalForm);
+        return (
+          (kind === 'variant' || kind === 'diacritic') &&
+          (c.senseKey || 'default').trim().toLowerCase() === normalizedSense
+        );
+      });
+      if (sameSenseCatalogVariant && !vocabDuplicateConfirmed) {
+        setVocabModalError(`Đã có từ gần giống "${sameSenseCatalogVariant.canonicalForm}" với cùng nét nghĩa "${sameSenseCatalogVariant.senseKey}". Hãy bấm "Dùng từ này", đổi nét nghĩa, hoặc đánh dấu xác nhận tạo mục từ riêng.`);
         return;
       }
 
@@ -1603,9 +1704,6 @@ export function LessonDraftEditor({
           <span className="badge" style={{ background: '#f1f5f9', color: '#334155', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }}>
             Đơn vị: {lesson.unitContext.code}
           </span>
-          <span className="badge" style={{ background: '#fef3c7', color: '#92400e', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }} id="badgeLessonToken">
-            Phiên bản: #{lesson.rowVersion}
-          </span>
           {highestRev && (
             <span className="badge" style={{ background: '#f3e8ff', color: '#6b21a8', fontSize: '12px', padding: '2px 8px', borderRadius: '4px' }} id="badgeRevisionNo">
               Bản sửa đổi: #{highestRev.revisionNo}
@@ -1619,8 +1717,11 @@ export function LessonDraftEditor({
         <h1 className="page-title" id="draftEditorTitle" style={{ fontSize: '24px' }}>
           Soạn thảo nội dung — Bài học #{lesson.position}
         </h1>
-        <p className="page-description" style={{ margin: 0 }}>
-          {unitName}. Soạn các đoạn văn, bài tập và từ vựng, sau đó lưu bản nháp nguyên khối.
+        <p className="page-description" style={{ margin: 0 }} id="draftEditorContextLine">
+          Chương: {unitName} · Khóa: {courseName}
+        </p>
+        <p className="page-description" style={{ margin: '4px 0 0' }}>
+          Soạn các đoạn văn, bài tập và từ vựng, sau đó lưu bản nháp nguyên khối.
         </p>
         {previewOnly && (
           <p role="note" className="page-description" style={{ marginTop: '8px' }}>
@@ -2250,9 +2351,11 @@ export function LessonDraftEditor({
                       <td id={`exercisePrompt-${idx}`}>
                         <div style={{ fontWeight: 500 }}>{ex.promptData?.prompt || '—'}</div>
                         {ex.type === 'LISTENING' && ex.promptData?.audioUrl && (
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            Âm thanh: {ex.promptData.audioUrl}
-                          </div>
+                          <AudioPreviewPlayer
+                            url={ex.promptData.audioUrl}
+                            idPrefix={`exercise-audio-${idx}`}
+                            showUrlSummary
+                          />
                         )}
                       </td>
                       <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
@@ -2498,7 +2601,7 @@ export function LessonDraftEditor({
                 type="button"
                 className="btn btn-primary"
                 id="btnSubmitForReview"
-                onClick={handleSubmitForReview}
+                onClick={handleRequestSubmitForReview}
                 disabled={isPending || isReloading || isStaleConflict || sessionLost || !editorActuallyEditable || isDirty}
                 style={{ minWidth: '160px' }}
               >
@@ -2911,6 +3014,13 @@ export function LessonDraftEditor({
                     <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
                       Liên kết âm thanh tham chiếu tác giả. Hệ thống chỉ lưu tham chiếu URL hợp lệ, không tải về hoặc lưu trữ tệp.
                     </div>
+                    {lisAudioUrl.trim() !== '' && (
+                      <AudioPreviewPlayer
+                        url={lisAudioUrl}
+                        label="Nghe thử âm thanh"
+                        idPrefix="listening-modal-audio"
+                      />
+                    )}
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '12px' }}>
@@ -3181,7 +3291,18 @@ export function LessonDraftEditor({
               </div>
             )}
 
-            <form onSubmit={handleSaveVocabularyModal} id="vocabForm">
+            <form
+              onSubmit={handleSaveVocabularyModal}
+              id="vocabForm"
+              onKeyDown={(e) => {
+                if (
+                  e.key === 'Enter' &&
+                  (e.nativeEvent.isComposing || (e.nativeEvent as any).keyCode === 229 || vocabSearchComposingRef.current)
+                ) {
+                  e.preventDefault();
+                }
+              }}
+            >
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                 <div className="form-group">
                   <label htmlFor="inputVocabPosition" className="form-label">
@@ -3225,9 +3346,22 @@ export function LessonDraftEditor({
                         className="form-input"
                         value={vocabSearchQuery}
                         onChange={(e) => setVocabSearchQuery(e.target.value)}
+                        onCompositionStart={() => {
+                          vocabSearchComposingRef.current = true;
+                        }}
+                        onCompositionEnd={() => {
+                          vocabSearchComposingRef.current = false;
+                        }}
                         placeholder="Ví dụ: hello, learn..."
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
+                            if (
+                              e.nativeEvent.isComposing ||
+                              (e.nativeEvent as any).keyCode === 229 ||
+                              vocabSearchComposingRef.current
+                            ) {
+                              return;
+                            }
                             e.preventDefault();
                             handleSearchVocabulary();
                           }
@@ -3287,6 +3421,28 @@ export function LessonDraftEditor({
                     </div>
                   )}
 
+                  {!isSearchingVocab && vocabSearchedQuery && vocabSearchResults.length === 0 && (
+                    <div
+                      id="vocabSearchEmptyState"
+                      role="status"
+                      style={{ marginTop: '4px', padding: '10px 12px', background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '6px', fontSize: '13px', color: '#92400e' }}
+                    >
+                      <div>Không tìm thấy từ &ldquo;{vocabSearchedQuery}&rdquo;.</div>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        id="btnCreateVocabFromSearch"
+                        style={{ marginTop: '8px', fontSize: '12px', padding: '4px 8px' }}
+                        onClick={() => {
+                          setVocabCanonicalForm(vocabSearchedQuery);
+                          setVocabTab('create');
+                        }}
+                      >
+                        Tạo từ vựng mới &ldquo;{vocabSearchedQuery}&rdquo;
+                      </button>
+                    </div>
+                  )}
+
                   {selectedVocabOption && (
                     <div style={{ marginTop: '12px', padding: '8px 12px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', fontSize: '13px' }}>
                       Đã chọn: <strong>{selectedVocabOption.canonicalForm}</strong> ({selectedVocabOption.senseKey})
@@ -3325,6 +3481,129 @@ export function LessonDraftEditor({
                       />
                     </div>
                   </div>
+
+                  {(() => {
+                    const q = vocabCanonicalForm.trim();
+                    const normalizedSense = (vocabSenseKey.trim() || 'default').toLowerCase();
+                    const stagedMatches = q
+                      ? vocabulary.filter((v) => classifyVocabularyCandidateMatch(q, v.displayInfo.canonicalForm) !== null)
+                      : [];
+                    if (!isCheckingVocabDuplicates && vocabDuplicateCandidates.length === 0 && stagedMatches.length === 0) {
+                      return null;
+                    }
+                    const needsVariantConfirm = vocabDuplicateCandidates.some((c) => {
+                      const kind = classifyVocabularyCandidateMatch(q, c.canonicalForm);
+                      return (
+                        (kind === 'variant' || kind === 'diacritic') &&
+                        (c.senseKey || 'default').trim().toLowerCase() === normalizedSense
+                      );
+                    });
+                    return (
+                      <div
+                        id="vocabDuplicateWarning"
+                        role="status"
+                        style={{
+                          marginBottom: '12px',
+                          padding: '10px 12px',
+                          background: '#fffbeb',
+                          border: '1px solid #fcd34d',
+                          borderRadius: '6px',
+                          fontSize: '12px',
+                          color: '#78350f',
+                        }}
+                      >
+                        {isCheckingVocabDuplicates && vocabDuplicateCandidates.length === 0 && stagedMatches.length === 0 ? (
+                          <div>Đang kiểm tra từ vựng tương tự cùng ngôn ngữ...</div>
+                        ) : (
+                          <>
+                            <div style={{ fontWeight: 600, marginBottom: '6px' }}>
+                              Cảnh báo có từ giống hoặc gần giống trong cùng ngôn ngữ:
+                            </div>
+                            {stagedMatches.map((s, idx) => (
+                              <div
+                                key={`staged-${s.localId}`}
+                                id={`vocabStagedDuplicate-${idx}`}
+                                style={{
+                                  padding: '6px 8px',
+                                  background: '#fef3c7',
+                                  borderRadius: '4px',
+                                  marginBottom: '4px',
+                                }}
+                              >
+                                Đã có trong bài học này: <strong>{s.displayInfo.canonicalForm}</strong> ({s.displayInfo.senseKey || 'default'})
+                                {s.displayInfo.meaningVi ? ` — ${s.displayInfo.meaningVi}` : ''}
+                              </div>
+                            ))}
+                            {vocabDuplicateCandidates.map((cand, idx) => {
+                              const sameSense = (cand.senseKey || 'default').trim().toLowerCase() === normalizedSense;
+                              return (
+                                <div
+                                  key={cand.id}
+                                  id={`vocabCatalogDuplicate-${idx}`}
+                                  style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '6px 8px',
+                                    background: '#ffffff',
+                                    border: '1px solid #fde68a',
+                                    borderRadius: '4px',
+                                    marginBottom: '4px',
+                                  }}
+                                >
+                                  <div>
+                                    <strong>{cand.canonicalForm}</strong>{' '}
+                                    <span className="badge" style={{ fontSize: '11px', background: '#e2e8f0' }}>
+                                      {cand.senseKey}
+                                    </span>
+                                    {sameSense && (
+                                      <span style={{ marginLeft: '6px', color: '#b45309', fontWeight: 600 }}>
+                                        (trùng nét nghĩa)
+                                      </span>
+                                    )}
+                                    <div style={{ color: '#64748b' }}>
+                                      {cand.meaningLabels?.vi ? `vi: ${cand.meaningLabels.vi} ` : ''}
+                                      {cand.meaningLabels?.en ? `en: ${cand.meaningLabels.en}` : ''}
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    id={`btnReuseDuplicateVocab-${idx}`}
+                                    onClick={() => handleReuseDuplicateVocabulary(cand)}
+                                    style={{ fontSize: '11px', padding: '4px 8px', whiteSpace: 'nowrap' }}
+                                  >
+                                    Dùng từ này
+                                  </button>
+                                </div>
+                              );
+                            })}
+                            {needsVariantConfirm && (
+                              <label
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '6px',
+                                  marginTop: '6px',
+                                  fontWeight: 500,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  id="checkboxConfirmDuplicateVocab"
+                                  checked={vocabDuplicateConfirmed}
+                                  onChange={(e) => setVocabDuplicateConfirmed(e.target.checked)}
+                                />
+                                Xác nhận tạo mục từ riêng dù có từ gần giống ở trên
+                              </label>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                     <div className="form-group">
@@ -3423,6 +3702,82 @@ export function LessonDraftEditor({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Submit-for-review confirmation (H8) */}
+      {submitConfirmOpen && (
+        <div
+          id="submitConfirmBackdrop"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1100,
+            padding: '16px',
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isPendingRef.current) setSubmitConfirmOpen(false);
+          }}
+        >
+          <div
+            id="submitConfirmModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="submitConfirmTitle"
+            aria-describedby="submitConfirmBody"
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && !isPendingRef.current) {
+                e.stopPropagation();
+                setSubmitConfirmOpen(false);
+              }
+            }}
+            style={{
+              background: '#ffffff',
+              borderRadius: '8px',
+              maxWidth: '460px',
+              width: '100%',
+              padding: '24px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <h2 id="submitConfirmTitle" style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px', color: '#0f172a' }}>
+              Nộp bài học để kiểm duyệt?
+            </h2>
+            <div id="submitConfirmBody" style={{ fontSize: '14px', color: '#334155', lineHeight: 1.5 }}>
+              <p style={{ margin: 0 }}>
+                Sau khi nộp, bản sửa đổi <strong>#{highestRev?.revisionNo}</strong> sẽ bị khóa và bạn
+                không thể chỉnh sửa cho đến khi Quản trị viên phê duyệt hoặc yêu cầu chỉnh sửa.
+              </p>
+              <p style={{ margin: '8px 0 0' }}>
+                Hãy kiểm tra lại nội dung trước khi tiếp tục.
+              </p>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                id="btnCancelSubmitConfirm"
+                autoFocus
+                onClick={() => setSubmitConfirmOpen(false)}
+                disabled={isPending}
+              >
+                Quay lại chỉnh sửa
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                id="btnConfirmSubmitForReview"
+                onClick={handleSubmitForReview}
+                disabled={isPending}
+              >
+                {isPending ? 'Đang xử lý...' : 'Xác nhận nộp duyệt'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { CourseDto } from '@/server/courses';
 import type { UnitDto } from '@/server/units';
 import type { LevelDto } from '@/server/levels';
@@ -8,6 +8,7 @@ import { UnitFormModal } from './UnitFormModal';
 import { UnitDeleteModal } from './UnitDeleteModal';
 import { SessionLostModal } from './SessionLostModal';
 import { removeDraft, clearAllDrafts } from './draftStorage';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface UnitsCatalogProps {
   course: CourseDto;
@@ -58,16 +59,7 @@ export function UnitsCatalog({
   const openCreateBtnRef = useRef<HTMLButtonElement>(null);
 
   const anyModalOpen = isFormModalOpen || isDeleteModalOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   const fetchUnits = async () => {
     setIsLoading(true);
@@ -230,23 +222,18 @@ export function UnitsCatalog({
     const title = deleted ? deleted.code : 'Đơn vị bài học';
     setMutationStatus(`Đã xóa đơn vị bài học "${title}" thành công.`);
 
-    setTimeout(() => {
+    scheduleFocusRestore(() => {
       if (nextList.length === 0) {
-        const emptyBtn = document.getElementById('btnEmptyCreateUnit') || openCreateBtnRef.current;
-        emptyBtn?.focus();
-      } else {
-        const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
-        const targetId = nextList[targetIndex].id;
-        const btn =
-          document.getElementById(`btn-delete-unit-${targetId}`) ||
-          document.getElementById(`btn-edit-unit-${targetId}`);
-        if (btn) {
-          btn.focus();
-        } else {
-          openCreateBtnRef.current?.focus();
-        }
+        return document.getElementById('btnEmptyCreateUnit') || openCreateBtnRef.current;
       }
-    }, 50);
+      const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
+      const targetId = nextList[targetIndex].id;
+      return (
+        document.getElementById(`btn-delete-unit-${targetId}`) ||
+        document.getElementById(`btn-edit-unit-${targetId}`) ||
+        openCreateBtnRef.current
+      );
+    });
   };
 
   const getUnitDisplayName = (names: Record<string, string>) => {
