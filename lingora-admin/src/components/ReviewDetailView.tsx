@@ -2,7 +2,7 @@
 
 import { exerciseTypeLabel, LessonContent } from '@lingora/lesson-content/LessonContent';
 import {
-  formatPhonetic,
+  formatReading,
   formatReorderTokens,
   normalizeLanguageCode,
   resolveContentLang,
@@ -919,9 +919,23 @@ export function ReviewDetailView({
                       <td>
                         <div lang={contentLang} style={{ fontWeight: 600 }}>{snap.canonicalForm || '—'}</div>
                         {(() => {
-                          const formattedPhonetic = formatPhonetic(snap.phonetic, contentLang);
-                          if (!formattedPhonetic) return null;
-                          return <div style={{ fontSize: '11px', color: '#64748b' }}>{formattedPhonetic}</div>;
+                          const formatted = formatReading({
+                            reading: snap.reading,
+                            romanization: snap.romanization,
+                            phonetic: snap.phonetic,
+                            languageCode: contentLang,
+                          });
+                          if (!formatted) return null;
+                          return (
+                            <div style={{ fontSize: '11px', color: '#64748b' }}>
+                              <span lang={formatted.source === 'reading' ? contentLang : undefined}>{formatted.primary}</span>
+                              {formatted.romanization && (
+                                <span style={{ fontSize: '0.9em', marginLeft: '4px', opacity: 0.85 }}>
+                                  ({formatted.romanization})
+                                </span>
+                              )}
+                            </div>
+                          );
                         })()}
                         {snap.partOfSpeech && (
                           <span className="badge" style={{ fontSize: '10px', background: '#f1f5f9', color: '#475569' }}>

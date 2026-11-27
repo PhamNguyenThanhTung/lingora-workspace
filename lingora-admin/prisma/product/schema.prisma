@@ -335,6 +335,8 @@ model VocabularyConcept {
   senseKey       String    @map("sense_key") @db.Text
   meaningLabels  Json      @map("meaning_labels") @db.JsonB
   phonetic       String?   @db.Text
+  reading        String?   @db.Text
+  romanization   String?   @db.Text
   partOfSpeech   String?   @map("part_of_speech") @db.Text
   example        String?   @db.Text
   createdBy      String    @map("created_by") @db.Uuid

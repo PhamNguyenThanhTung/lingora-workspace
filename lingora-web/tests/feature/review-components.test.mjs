@@ -926,3 +926,58 @@ test('S6-10.2d ReviewView: rollout disable on submission refreshes session and a
     assert.equal(refreshCalled, true);
   });
 });
+
+test('EXT-01: ReviewView reveals Japanese reading and romanization without leaking before reveal', async () => {
+  const prevLangCode = server.fixture.contexts[0].language.code;
+  const ctxLangId = server.fixture.contexts[0].languageId;
+  server.fixture.contexts[0].language.code = 'ja';
+  const cardId = randomUUID();
+  server.fixture.vocabularyConcepts.push({
+    id: 'vocab-ja-review-1',
+    languageId: ctxLangId,
+    canonicalForm: '学生',
+    senseKey: 'default',
+    phonetic: null,
+    reading: 'がくせい',
+    romanization: 'gakusei',
+    partOfSpeech: 'noun',
+    meaningLabels: { vi: 'học sinh' },
+    example: 'わたしは学生です。',
+  });
+  server.fixture.srsCards = [
+    {
+      id: cardId,
+      learnerId: server.fixture.account.id,
+      vocabularyId: 'vocab-ja-review-1',
+      stage: 1,
+      dueAt: new Date(Date.now() - 3600 * 1000),
+      lastReviewedAt: null,
+      enrollmentSource: 'CORE_COMPLETION',
+      sourceAttemptId: null,
+      sourceLessonVocabularyId: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      rowVersion: 1n,
+    },
+  ];
+
+  try {
+    await withLearner(async (page) => {
+      await page.goto(`${origin}/review`);
+      await page.locator('#startReviewBtn').waitFor({ state: 'visible' });
+      await page.locator('#startReviewBtn').click();
+      await page.locator('#srsReviewCard').waitFor({ state: 'visible' });
+      assert.equal(await page.locator('.srs-canonical-form').textContent(), '学生');
+      assert.equal(await page.locator('.srs-phonetic').count(), 0);
+
+      await page.locator('#revealAnswerBtn').click();
+      await page.locator('#srsAnswerSection').waitFor({ state: 'visible' });
+      const readingText = await page.locator('.srs-phonetic').textContent();
+      assert.match(readingText, /がくせい/);
+      assert.match(readingText, /\(gakusei\)/);
+      assert.equal(await page.locator('.srs-phonetic').getAttribute('lang'), 'ja');
+    });
+  } finally {
+    server.fixture.contexts[0].language.code = prevLangCode;
+  }
+});

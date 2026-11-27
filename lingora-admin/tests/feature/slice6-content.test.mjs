@@ -1711,4 +1711,115 @@ describe('S6-CONTENT: Exercises, Vocabulary & Revision Integrity Suite', () => {
     assert.equal(saved.data.data.presentation?.languageCode, 'ja-JP');
   });
 
+  test('EXT-01: Japanese reading & romanization save, reload, conflict, validation, non-ja reject, and successor copy', async () => {
+    // 1. Japanese course saves reading & romanization and returns them in detail + lookup + presentation
+    fixture.state.courses.get(courseId).language = { code: 'ja' };
+    const savedJa = await saveTeacherLessonDraft(teacherId, lessonId, {
+      title: { vi: 'Từ vựng tiếng Nhật' },
+      contentBlocks: [{ type: 'paragraph', text: 'Bài 1' }],
+      expectedRowVersion: '1',
+      vocabulary: [
+        {
+          position: 1,
+          isCore: true,
+          create: {
+            canonicalForm: '学生',
+            senseKey: 'default',
+            meaningLabels: { vi: 'học sinh', en: 'student' },
+            reading: 'がくせい',
+            romanization: 'gakusei',
+          },
+        },
+      ],
+    }, fixture.db);
+    assert.equal(savedJa.status, 200);
+    assert.equal(savedJa.data.data.vocabulary[0].displaySnapshot.reading, 'がくせい');
+    assert.equal(savedJa.data.data.vocabulary[0].displaySnapshot.romanization, 'gakusei');
+
+    const reloaded = await getTeacherLessonDetail(teacherId, lessonId, fixture.db);
+    assert.equal(reloaded.status, 200);
+    assert.equal(reloaded.data.data.vocabulary[0].displaySnapshot.reading, 'がくせい');
+    assert.equal(reloaded.data.data.vocabulary[0].displaySnapshot.romanization, 'gakusei');
+    assert.equal(reloaded.data.data.presentation?.vocabulary[0].displaySnapshot.reading, 'がくせい');
+    assert.equal(reloaded.data.data.presentation?.vocabulary[0].displaySnapshot.romanization, 'gakusei');
+
+    const options = await getTeacherVocabularyOptions(teacherId, lessonId, '学生', fixture.db);
+    assert.equal(options.status, 200);
+    assert.equal(options.data.data[0].reading, 'がくせい');
+    assert.equal(options.data.data[0].romanization, 'gakusei');
+
+    // 2. Duplicate canonicalForm + senseKey with different reading -> 409 VOCABULARY_IDENTITY_CONFLICT
+    const conflictRes = await saveTeacherLessonDraft(teacherId, lessonId, {
+      title: { vi: 'Từ vựng tiếng Nhật' },
+      contentBlocks: [{ type: 'paragraph', text: 'Bài 1' }],
+      expectedRowVersion: savedJa.data.data.rowVersion,
+      vocabulary: [
+        {
+          position: 1,
+          isCore: true,
+          create: {
+            canonicalForm: '学生',
+            senseKey: 'default',
+            meaningLabels: { vi: 'học sinh', en: 'student' },
+            reading: 'がくしょう',
+            romanization: 'gakusei',
+          },
+        },
+      ],
+    }, fixture.db);
+    assert.equal(conflictRes.status, 409);
+    assert.equal(conflictRes.error?.code, 'VOCABULARY_IDENTITY_CONFLICT');
+
+    // 3. Invalid reading (Latin or kanji) -> 400 VALIDATION_ERROR; invalid romanization (kana) -> 400
+    for (const badCreate of [
+      { canonicalForm: '本', senseKey: 'default', meaningLabels: { vi: 'sách' }, reading: 'hon' },
+      { canonicalForm: '本', senseKey: 'default', meaningLabels: { vi: 'sách' }, reading: 'ほん本' },
+      { canonicalForm: '本', senseKey: 'default', meaningLabels: { vi: 'sách' }, romanization: 'ほん' },
+    ]) {
+      const badRes = await saveTeacherLessonDraft(teacherId, lessonId, {
+        title: { vi: 'Invalid reading' },
+        contentBlocks: [],
+        expectedRowVersion: savedJa.data.data.rowVersion,
+        vocabulary: [{ position: 1, isCore: true, create: badCreate }],
+      }, fixture.db);
+      assert.equal(badRes.status, 400);
+      assert.equal(badRes.error?.code, 'VALIDATION_ERROR');
+    }
+
+    // 4. Successor copy from PUBLISHED revision preserves reading & romanization
+    const rev1 = [...fixture.state.revisions.values()].find(r => r.id === savedJa.data.data.highestRevision.id);
+    rev1.status = 'PUBLISHED';
+    rev1.publishedAt = new Date();
+    const successorRes = await saveTeacherLessonDraft(teacherId, lessonId, {
+      title: { vi: 'Từ vựng tiếng Nhật v2' },
+      contentBlocks: [{ type: 'paragraph', text: 'Bài 1 v2' }],
+      expectedRowVersion: savedJa.data.data.rowVersion,
+    }, fixture.db);
+    assert.equal(successorRes.status, 200);
+    assert.equal(successorRes.data.data.vocabulary[0].displaySnapshot.reading, 'がくせい');
+    assert.equal(successorRes.data.data.vocabulary[0].displaySnapshot.romanization, 'gakusei');
+
+    // 5. Non-Japanese course rejects reading / romanization with 400
+    fixture.state.courses.get(courseId).language = { code: 'fr' };
+    const nonJaRes = await saveTeacherLessonDraft(teacherId, lessonId, {
+      title: { vi: 'Tiếng Pháp' },
+      contentBlocks: [],
+      expectedRowVersion: successorRes.data.data.rowVersion,
+      vocabulary: [
+        {
+          position: 1,
+          isCore: true,
+          create: {
+            canonicalForm: 'bonjour',
+            senseKey: 'default',
+            meaningLabels: { vi: 'xin chào' },
+            reading: 'ボンジュール',
+          },
+        },
+      ],
+    }, fixture.db);
+    assert.equal(nonJaRes.status, 400);
+    assert.equal(nonJaRes.error?.code, 'VALIDATION_ERROR');
+  });
+
 });

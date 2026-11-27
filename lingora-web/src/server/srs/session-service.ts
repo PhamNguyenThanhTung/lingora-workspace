@@ -133,6 +133,8 @@ export interface SrsRevealedCardDto {
   cardId: string;
   meaningLabels: Record<string, string>;
   phonetic: string | null;
+  reading: string | null;
+  romanization: string | null;
   partOfSpeech: string | null;
   example: string | null;
 }
@@ -844,7 +846,7 @@ export async function revealSessionCurrentItem(
     const card = await tx.srsCard.findUnique({
       where: { id: parsed.data.cardId, learnerId: verifiedUserId },
       include: {
-        vocabulary: { select: { meaningLabels: true, phonetic: true, partOfSpeech: true, example: true } },
+        vocabulary: { select: { meaningLabels: true, phonetic: true, reading: true, romanization: true, partOfSpeech: true, example: true } },
       },
     });
     if (!card) return staleCardError();
@@ -853,8 +855,16 @@ export async function revealSessionCurrentItem(
     const meaningLabels = labels && typeof labels === 'object' && !Array.isArray(labels)
       ? Object.fromEntries(Object.entries(labels).filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
       : {};
-    const { phonetic, partOfSpeech, example } = card.vocabulary;
-    return { cardId: card.id, meaningLabels, phonetic, partOfSpeech, example };
+    const { phonetic, reading, romanization, partOfSpeech, example } = card.vocabulary;
+    return {
+      cardId: card.id,
+      meaningLabels,
+      phonetic: phonetic ?? null,
+      reading: reading ?? null,
+      romanization: romanization ?? null,
+      partOfSpeech: partOfSpeech ?? null,
+      example: example ?? null,
+    };
   });
 }
 

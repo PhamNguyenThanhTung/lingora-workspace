@@ -643,4 +643,42 @@ describe('Slice 10: Learner Lesson Catalogue, Detail & Consumption', () => {
     const ids = body.data.exercises.map(e => e.id);
     assert.ok(!ids.includes('ex-assessment-1'), 'Authored assessment items must be excluded from practice lesson');
   });
+
+  test('EXT-01: Learner lesson detail preserves reading and romanization on Japanese vocabulary snapshots', async () => {
+    state.vocabulary.push({
+      id: 'vocab-link-ja-1',
+      lessonRevisionId: revision1Id,
+      vocabularyId: 'vocab-concept-ja-1',
+      position: 2,
+      isCore: true,
+      displaySnapshot: {
+        schemaVersion: 1,
+        languageId: state.languages[0].id,
+        canonicalForm: '学生',
+        senseKey: 'default',
+        phonetic: null,
+        reading: 'がくせい',
+        romanization: 'gakusei',
+        partOfSpeech: 'noun',
+        meaningLabels: { vi: 'học sinh', en: 'student' },
+        example: 'わたしは学生です。',
+      },
+    });
+
+    const req = new Request('http://localhost:3000/api/learner/contexts/' + contextId + '/lessons/' + lesson1Id, {
+      headers: authHeaders(),
+    });
+    const res = await lessonDetailRoute.GET(req, { params: Promise.resolve({ contextId, lessonId: lesson1Id }) });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    const jaVocab = body.data.vocabulary.find(v => v.id === 'vocab-link-ja-1');
+    assert.ok(jaVocab);
+    assert.equal(jaVocab.displaySnapshot.reading, 'がくせい');
+    assert.equal(jaVocab.displaySnapshot.romanization, 'gakusei');
+
+    const presJaVocab = body.data.revision.presentation.vocabulary.find(v => v.id === 'vocab-link-ja-1');
+    assert.ok(presJaVocab);
+    assert.equal(presJaVocab.displaySnapshot.reading, 'がくせい');
+    assert.equal(presJaVocab.displaySnapshot.romanization, 'gakusei');
+  });
 });

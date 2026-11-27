@@ -5,9 +5,12 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { LessonContent } from '../src/LessonContent.ts';
 import {
   formatPhonetic,
+  formatReading,
   formatReorderTokens,
   getBaseLanguageCode,
   isNoSpaceLanguage,
+  isValidJapaneseReading,
+  isValidRomanization,
   joinTokensByLanguage,
   normalizeLanguageCode,
   resolveContentLang,
@@ -900,4 +903,86 @@ test('LNG-03: formatPhonetic normalizes en/fr IPA slashes and leaves ja/zh readi
   assert.ok(frVocabHtml.includes('>/bɔ̃.ʒuʁ/<'));
   assert.ok(frVocabHtml.includes('>/ka.fe/<'));
   assert.ok(!frVocabHtml.includes('//'));
+});
+
+test('EXT-01: formatReading, reading/romanization validators, and LessonContent vocab reading rendering', () => {
+  // Validators
+  assert.equal(isValidJapaneseReading('がくせい'), true);
+  assert.equal(isValidJapaneseReading('コーヒー・ショップ'), true);
+  assert.equal(isValidJapaneseReading('お とうさん'), true);
+  assert.equal(isValidJapaneseReading(''), true);
+  assert.equal(isValidJapaneseReading('gakusei'), false);
+  assert.equal(isValidJapaneseReading('学生'), false);
+  assert.equal(isValidJapaneseReading('がく生'), false);
+  assert.equal(isValidJapaneseReading('123'), false);
+
+  assert.equal(isValidRomanization('gakusei'), true);
+  assert.equal(isValidRomanization('tōkyō'), true);
+  assert.equal(isValidRomanization('kon-nichiwa'), true);
+  assert.equal(isValidRomanization('ohayou gozaimasu'), true);
+  assert.equal(isValidRomanization(''), true);
+  assert.equal(isValidRomanization('がくせい'), false);
+  assert.equal(isValidRomanization('学生'), false);
+  assert.equal(isValidRomanization('123'), false);
+
+  // formatReading prefers structured reading (+ optional romanization) and falls back to formatPhonetic
+  assert.deepEqual(
+    formatReading({ reading: 'がくせい', romanization: 'gakusei', phonetic: 'legacy', languageCode: 'ja' }),
+    { primary: 'がくせい', romanization: 'gakusei', text: 'がくせい (gakusei)', source: 'reading' }
+  );
+  assert.deepEqual(
+    formatReading({ reading: 'がくせい', romanization: null, phonetic: null, languageCode: 'ja' }),
+    { primary: 'がくせい', romanization: null, text: 'がくせい', source: 'reading' }
+  );
+  assert.deepEqual(
+    formatReading({ reading: null, romanization: null, phonetic: 'がくせい / gakusei', languageCode: 'ja' }),
+    { primary: 'がくせい / gakusei', romanization: null, text: 'がくせい / gakusei', source: 'phonetic' }
+  );
+  assert.deepEqual(
+    formatReading({ reading: null, romanization: null, phonetic: 'ˈkɒfi', languageCode: 'en' }),
+    { primary: '/ˈkɒfi/', romanization: null, text: '/ˈkɒfi/', source: 'phonetic' }
+  );
+  assert.equal(formatReading({ reading: '  ', romanization: '', phonetic: '//', languageCode: 'en' }), null);
+  assert.equal(formatReading({ reading: '  ', romanization: '', phonetic: '   ', languageCode: 'ja' }), null);
+
+  // toLessonPresentationDto preserves reading & romanization and LessonContent renders both
+  const presentation = toLessonPresentationDto(
+    { contentSchemaVersion: 1, blocks: [] },
+    [
+      {
+        id: 'v-ja-new',
+        position: 1,
+        isCore: true,
+        displaySnapshot: {
+          canonicalForm: '学生',
+          senseKey: 'default',
+          reading: 'がくせい',
+          romanization: 'gakusei',
+          meaningLabels: { vi: 'học sinh' },
+        },
+      },
+      {
+        id: 'v-ja-legacy',
+        position: 2,
+        isCore: true,
+        displaySnapshot: {
+          canonicalForm: '先生',
+          phonetic: 'せんせい',
+          meaningLabels: { vi: 'giáo viên' },
+        },
+      },
+    ],
+    [],
+    'ja'
+  );
+  assert.equal(presentation.vocabulary[0].displaySnapshot.reading, 'がくせい');
+  assert.equal(presentation.vocabulary[0].displaySnapshot.romanization, 'gakusei');
+
+  const html = renderToStaticMarkup(h(LessonContent, { presentation }));
+  assert.ok(html.includes('lang="ja"'));
+  assert.ok(html.includes('>学生<'));
+  assert.ok(html.includes('>がくせい<'));
+  assert.ok(html.includes('>(gakusei)<'));
+  assert.ok(html.includes('>先生<'));
+  assert.ok(html.includes('>せんせい<'));
 });

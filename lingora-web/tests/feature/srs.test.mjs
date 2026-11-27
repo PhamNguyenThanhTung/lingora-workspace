@@ -1022,4 +1022,40 @@ describe('P3: Strict SRS Contract & Fault Boundaries (R4)', () => {
       'DB_CLOCK',
     ]);
   });
+
+  test('EXT-01: startSrsReview includes reading and romanization on SrsPromptCardDto when present and null when absent', async () => {
+    state.vocabularyConcepts.push({
+      id: 'vocab-ja-1',
+      canonicalForm: '学生',
+      senseKey: 'default',
+      phonetic: null,
+      reading: 'がくせい',
+      romanization: 'gakusei',
+      partOfSpeech: 'noun',
+      meaningLabels: { vi: 'học sinh', en: 'student' },
+      example: null,
+    });
+    state.srsCards = [
+      {
+        id: randomUUID(),
+        learnerId,
+        vocabularyId: 'vocab-ja-1',
+        stage: 1,
+        dueAt: new Date(Date.now() - 3600 * 1000),
+        lastReviewedAt: null,
+        enrollmentSource: 'CORE_COMPLETION',
+        sourceAttemptId: null,
+        sourceLessonVocabularyId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        rowVersion: 1n,
+      },
+    ];
+
+    const res = await startSrsReview(learnerId, {}, fixtureDb(state));
+    assert.equal(res.done, false);
+    assert.equal(res.card?.canonicalForm, '学生');
+    assert.equal(res.card?.reading, 'がくせい');
+    assert.equal(res.card?.romanization, 'gakusei');
+  });
 });

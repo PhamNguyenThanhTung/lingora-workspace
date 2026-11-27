@@ -100,6 +100,8 @@ export interface LearnerVocabularyDto {
     senseKey?: string;
     meaningLabels: Record<string, string>;
     phonetic?: string | null;
+    reading?: string | null;
+    romanization?: string | null;
     partOfSpeech?: string | null;
     example?: string | null;
     characters?: Array<{

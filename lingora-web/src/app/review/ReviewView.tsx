@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import type { CandidateStrokeInput } from '@lingora/lesson-content';
-import { formatPhonetic, resolveContentLang } from '@lingora/lesson-content';
+import { formatReading, resolveContentLang } from '@lingora/lesson-content';
 import type { SrsFrontPromptCardDto, SrsRevealedCardDto } from '../../server/srs/session-service.ts';
 import type { ReviewContextOptionDto } from '../../server/srs/review-options.ts';
 import { WritingSrsAttempt } from './WritingSrsAttempt.tsx';
@@ -702,20 +702,34 @@ export function ReviewView({ learner, contexts = [], preselectedContextId = null
                   </div>
                 </div>
 
-                {formatPhonetic(revealedCard.phonetic, selectedContext?.languageCode) && (
-                  <div
-                    className="srs-phonetic"
-                    lang={contentLang}
-                    style={{
-                      fontSize: '18px',
-                      color: 'var(--text-muted)',
-                      fontFamily: 'monospace',
-                      marginBottom: '6px',
-                    }}
-                  >
-                    {formatPhonetic(revealedCard.phonetic, selectedContext?.languageCode)}
-                  </div>
-                )}
+                {(() => {
+                  const formatted = formatReading({
+                    reading: revealedCard.reading,
+                    romanization: revealedCard.romanization,
+                    phonetic: revealedCard.phonetic,
+                    languageCode: selectedContext?.languageCode,
+                  });
+                  if (!formatted) return null;
+                  return (
+                    <div
+                      className="srs-phonetic"
+                      lang={formatted.source === 'reading' ? contentLang : undefined}
+                      style={{
+                        fontSize: '18px',
+                        color: 'var(--text-muted)',
+                        fontFamily: formatted.source === 'reading' ? undefined : 'monospace',
+                        marginBottom: '6px',
+                      }}
+                    >
+                      <span>{formatted.primary}</span>
+                      {formatted.romanization && (
+                        <span className="srs-romanization" style={{ fontSize: '0.85em', marginLeft: '6px', opacity: 0.85 }}>
+                          ({formatted.romanization})
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {revealedCard.partOfSpeech && (
                   <span className="srs-part-of-speech badge badge-active" style={{ fontSize: '13px' }}>

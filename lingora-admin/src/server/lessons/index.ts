@@ -13,6 +13,7 @@ import {
   toLegacyParagraphProjection,
   toLessonPresentationDto,
   normalizeLanguageCode,
+  getBaseLanguageCode,
   type PresentationBlock,
   type LessonPresentationDto,
   characterBlockPersistedSchema,
@@ -97,6 +98,8 @@ export interface TeacherVocabularyDto {
     senseKey?: string | null;
     meaningLabels: Record<string, string>;
     phonetic: string | null;
+    reading?: string | null;
+    romanization?: string | null;
     partOfSpeech: string | null;
     example: string | null;
   };
@@ -109,6 +112,8 @@ export interface VocabularyOptionDto {
   senseKey: string;
   meaningLabels: Record<string, string>;
   phonetic: string | null;
+  reading: string | null;
+  romanization: string | null;
   partOfSpeech: string | null;
   example: string | null;
 }
@@ -698,6 +703,8 @@ export function toTeacherLessonDetailDto(lesson: any, languageId?: string): Teac
           senseKey: typeof snap.senseKey === 'string' ? snap.senseKey : null,
           meaningLabels: parseJsonRecord(snap.meaningLabels),
           phonetic: typeof snap.phonetic === 'string' ? snap.phonetic : null,
+          reading: typeof snap.reading === 'string' ? snap.reading : null,
+          romanization: typeof snap.romanization === 'string' ? snap.romanization : null,
           partOfSpeech: typeof snap.partOfSpeech === 'string' ? snap.partOfSpeech : null,
           example: typeof snap.example === 'string' ? snap.example : null,
         },
@@ -2105,6 +2112,8 @@ export async function getTeacherVocabularyOptions(
       senseKey: c.senseKey,
       meaningLabels: parseJsonRecord(c.meaningLabels),
       phonetic: c.phonetic || null,
+      reading: c.reading || null,
+      romanization: c.romanization || null,
       partOfSpeech: c.partOfSpeech || null,
       example: c.example || null,
     }));
@@ -2832,6 +2841,20 @@ export async function saveTeacherLessonDraft(
           message: 'Không tìm thấy ngôn ngữ mục tiêu của khóa học.',
         });
       }
+      const courseBaseLanguageCode = getBaseLanguageCode(
+        unit?.course?.language?.code ?? (unit?.course as any)?.languageCode
+      );
+      if (inputVocabulary && courseBaseLanguageCode !== 'ja') {
+        const hasJapaneseReadingFields = inputVocabulary.some(
+          (voc) => Boolean(voc.create?.reading?.trim() || voc.create?.romanization?.trim())
+        );
+        if (hasJapaneseReadingFields) {
+          throw new ControlledDraftError(400, {
+            code: 'VALIDATION_ERROR',
+            message: 'Trường cách đọc (reading) và phiên âm Latin (romanization) chỉ hỗ trợ cho khóa học tiếng Nhật.',
+          });
+        }
+      }
 
       const mayCopyFrozenPredecessor = highestRev?.status === 'CHANGES_REQUESTED' || highestRev?.status === 'PUBLISHED';
       if (hasUnsupportedRevisionAssociations(highestRev, courseLanguageId, mayCopyFrozenPredecessor)) {
@@ -2950,6 +2973,10 @@ export async function saveTeacherLessonDraft(
               const inputEn = (voc.create.meaningLabels.en || '').trim();
               const existingPhonetic = existing.phonetic?.trim() || null;
               const inputPhonetic = voc.create.phonetic?.trim() || null;
+              const existingReading = existing.reading?.trim() || null;
+              const inputReading = voc.create.reading?.trim() || null;
+              const existingRomanization = existing.romanization?.trim() || null;
+              const inputRomanization = voc.create.romanization?.trim() || null;
               const existingPos = existing.partOfSpeech?.trim() || null;
               const inputPos = voc.create.partOfSpeech?.trim() || null;
               const existingEx = existing.example?.trim() || null;
@@ -2962,13 +2989,15 @@ export async function saveTeacherLessonDraft(
                 existingVi === inputVi &&
                 existingEn === inputEn &&
                 existingPhonetic === inputPhonetic &&
+                existingReading === inputReading &&
+                existingRomanization === inputRomanization &&
                 existingPos === inputPos &&
                 existingEx === inputEx;
 
               if (!isMatch) {
                 throw new ControlledDraftError(409, {
                   code: 'VOCABULARY_IDENTITY_CONFLICT',
-                  message: `Từ "${existingCanonical}" (nét nghĩa "${sense}") đã có trong kho từ vựng với thông tin khác (nghĩa, phiên âm, loại từ hoặc ví dụ). Hãy chọn từ có sẵn trong danh sách, hoặc đổi ô "Nét nghĩa" để tạo từ mới.`,
+                  message: `Từ "${existingCanonical}" (nét nghĩa "${sense}") đã có trong kho từ vựng với thông tin khác (nghĩa, cách đọc, phiên âm, loại từ hoặc ví dụ). Hãy chọn từ có sẵn trong danh sách, hoặc đổi ô "Nét nghĩa" để tạo từ mới.`,
                 });
               }
               resolvedConceptIdPerIndex[i] = existing.id.toLowerCase();
@@ -3458,6 +3487,8 @@ export async function saveTeacherLessonDraft(
                 senseKey: concept.senseKey,
                 meaningLabels: concept.meaningLabels,
                 phonetic: concept.phonetic || null,
+                reading: concept.reading || null,
+                romanization: concept.romanization || null,
                 partOfSpeech: concept.partOfSpeech || null,
                 example: concept.example || null,
               },
@@ -3497,6 +3528,8 @@ export async function saveTeacherLessonDraft(
                   ...(c.meaningLabels.en?.trim() ? { en: c.meaningLabels.en.trim() } : {}),
                 },
                 phonetic: c.phonetic?.trim() || null,
+                reading: c.reading?.trim() || null,
+                romanization: c.romanization?.trim() || null,
                 partOfSpeech: c.partOfSpeech?.trim() || null,
                 example: c.example?.trim() || null,
                 createdBy: teacherLower,
@@ -3517,6 +3550,8 @@ export async function saveTeacherLessonDraft(
                 senseKey: concept.senseKey,
                 meaningLabels: concept.meaningLabels,
                 phonetic: concept.phonetic || null,
+                reading: concept.reading || null,
+                romanization: concept.romanization || null,
                 partOfSpeech: concept.partOfSpeech || null,
                 example: concept.example || null,
               },

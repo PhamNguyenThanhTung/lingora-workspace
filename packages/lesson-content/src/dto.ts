@@ -61,6 +61,8 @@ export interface PublicVocabularyDisplaySnapshot {
     strokeVersion?: number | null;
   }>;
   phonetic?: string | null;
+  reading?: string | null;
+  romanization?: string | null;
   partOfSpeech?: string | null;
   example?: string | null;
 }
@@ -235,6 +237,8 @@ export function sanitizePublicVocabulary(raw: unknown): PublicVocabularyDto | nu
         ? displaySnapshot.meaningLabels
         : {}) as Record<string, string>,
       phonetic: typeof displaySnapshot.phonetic === 'string' ? displaySnapshot.phonetic : null,
+      reading: typeof displaySnapshot.reading === 'string' ? displaySnapshot.reading : null,
+      romanization: typeof displaySnapshot.romanization === 'string' ? displaySnapshot.romanization : null,
       partOfSpeech: typeof displaySnapshot.partOfSpeech === 'string' ? displaySnapshot.partOfSpeech : null,
       example: typeof displaySnapshot.example === 'string' ? displaySnapshot.example : null,
     },

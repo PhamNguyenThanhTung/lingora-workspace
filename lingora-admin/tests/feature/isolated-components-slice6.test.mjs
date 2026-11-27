@@ -988,6 +988,50 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       assert.match(await page.locator('#vocabTerm-0').innerText(), /gakusei/);
       assert.equal((await page.locator('#vocabTerm-0').innerText()).includes('/gakusei/'), false);
       assert.equal(await page.locator('#studioLivePreviewContainer .lingora-example-text').getAttribute('lang'), 'ja');
+
+      // EXT-01: Japanese course shows reading & romanization inputs in modal, rejects invalid reading, and renders both
+      await page.locator('#btnAddVocabulary').click();
+      await page.locator('#vocabModal').waitFor({ state: 'visible' });
+      await page.locator('#tabVocabCreate').click();
+      await page.locator('#inputVocabReading').waitFor({ state: 'visible' });
+      assert.equal(await page.locator('#inputVocabRomanization').isVisible(), true);
+
+      await page.locator('#inputVocabCanonical').fill('先生');
+      await page.locator('#inputVocabMeaningVi').fill('giáo viên');
+      await page.locator('#inputVocabReading').fill('sensei');
+      await page.locator('#btnSaveVocabModal').click();
+      await page.locator('#errorVocabModal').waitFor({ state: 'visible' });
+
+      await page.locator('#inputVocabReading').fill('せんせい');
+      await page.locator('#inputVocabRomanization').fill('sensei');
+      await page.locator('#btnSaveVocabModal').click();
+      await page.locator('#vocabModal').waitFor({ state: 'hidden' });
+
+      await page.locator('#vocabTerm-1').waitFor({ state: 'visible' });
+      const vocab1Text = await page.locator('#vocabTerm-1').innerText();
+      assert.match(vocab1Text, /先生/);
+      assert.match(vocab1Text, /せんせい/);
+      assert.match(vocab1Text, /\(sensei\)/);
+      const previewText = await page.locator('#studioLivePreviewContainer').innerText();
+      assert.match(previewText, /せんせい/);
+      assert.match(previewText, /\(sensei\)/);
+    } finally {
+      await context.close();
+    }
+  });
+
+  test('EXT-01: Non-Japanese course hides reading & romanization inputs in LessonDraftEditor', { timeout: 20000 }, async () => {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    const page = await context.newPage();
+    page.setDefaultTimeout(6000);
+    try {
+      await page.goto(`${TEST_URL}/?state=page-teacher-draft-wire`);
+      await page.locator('#btnAddVocabulary').click();
+      await page.locator('#vocabModal').waitFor({ state: 'visible' });
+      await page.locator('#tabVocabCreate').click();
+      await page.locator('#inputVocabPhonetic').waitFor({ state: 'visible' });
+      assert.equal(await page.locator('#inputVocabReading').count(), 0);
+      assert.equal(await page.locator('#inputVocabRomanization').count(), 0);
     } finally {
       await context.close();
     }

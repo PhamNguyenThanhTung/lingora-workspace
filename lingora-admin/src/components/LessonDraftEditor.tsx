@@ -17,7 +17,10 @@ import type { AssessmentBlueprintDto, TeacherAssessmentItemDto } from '@/server/
 import {
   characterBlockAuthorInputContentSchema,
   characterBlockAuthorInputSchema,
-  formatPhonetic,
+  formatReading,
+  getBaseLanguageCode,
+  isValidJapaneseReading,
+  isValidRomanization,
   normalizeLanguageCode,
   type LessonBlock,
 } from '@lingora/lesson-content';
@@ -62,6 +65,8 @@ export interface StagedVocabulary {
     senseKey: string;
     meaningLabels: { vi?: string; en?: string };
     phonetic?: string;
+    reading?: string;
+    romanization?: string;
     partOfSpeech?: string;
     example?: string;
   };
@@ -73,6 +78,8 @@ export interface StagedVocabulary {
     meaningVi?: string | null;
     meaningEn?: string | null;
     phonetic?: string | null;
+    reading?: string | null;
+    romanization?: string | null;
     partOfSpeech?: string | null;
     example?: string | null;
   };
@@ -87,6 +94,7 @@ export function LessonDraftEditor({
   const courseLanguageCode = normalizeLanguageCode(
     lesson.courseContext?.languageCode ?? lesson.presentation?.languageCode
   );
+  const isJapaneseCourse = getBaseLanguageCode(courseLanguageCode) === 'ja';
 
   // Form input state initialized from currentDraft
   const initialTitle = initialLesson.currentDraft?.title || {};
@@ -162,6 +170,8 @@ export function LessonDraftEditor({
         meaningVi: v.displaySnapshot?.meaningLabels?.vi,
         meaningEn: v.displaySnapshot?.meaningLabels?.en,
         phonetic: v.displaySnapshot?.phonetic,
+        reading: v.displaySnapshot?.reading,
+        romanization: v.displaySnapshot?.romanization,
         partOfSpeech: v.displaySnapshot?.partOfSpeech,
         example: v.displaySnapshot?.example,
       },
@@ -227,6 +237,8 @@ export function LessonDraftEditor({
             ...(v.displaySnapshot?.meaningLabels?.en ? { en: v.displaySnapshot.meaningLabels.en } : {}),
           },
           phonetic: v.displaySnapshot?.phonetic || null,
+          reading: v.displaySnapshot?.reading || null,
+          romanization: v.displaySnapshot?.romanization || null,
           partOfSpeech: v.displaySnapshot?.partOfSpeech || null,
           example: v.displaySnapshot?.example || null,
         },
@@ -270,6 +282,8 @@ export function LessonDraftEditor({
             ...(v.displayInfo.meaningEn ? { en: v.displayInfo.meaningEn } : {}),
           },
           phonetic: v.displayInfo.phonetic || null,
+          reading: v.displayInfo.reading || null,
+          romanization: v.displayInfo.romanization || null,
           partOfSpeech: v.displayInfo.partOfSpeech || null,
           example: v.displayInfo.example || null,
         },
@@ -348,6 +362,8 @@ export function LessonDraftEditor({
   const [vocabMeaningVi, setVocabMeaningVi] = useState('');
   const [vocabMeaningEn, setVocabMeaningEn] = useState('');
   const [vocabPhonetic, setVocabPhonetic] = useState('');
+  const [vocabReading, setVocabReading] = useState('');
+  const [vocabRomanization, setVocabRomanization] = useState('');
   const [vocabPartOfSpeech, setVocabPartOfSpeech] = useState('');
   const [vocabExample, setVocabExample] = useState('');
   const [vocabModalError, setVocabModalError] = useState<string | null>(null);
@@ -562,6 +578,8 @@ export function LessonDraftEditor({
             meaningVi: v.displaySnapshot?.meaningLabels?.vi,
             meaningEn: v.displaySnapshot?.meaningLabels?.en,
             phonetic: v.displaySnapshot?.phonetic,
+            reading: v.displaySnapshot?.reading,
+            romanization: v.displaySnapshot?.romanization,
             partOfSpeech: v.displaySnapshot?.partOfSpeech,
             example: v.displaySnapshot?.example,
           },
@@ -599,6 +617,8 @@ export function LessonDraftEditor({
               ...(v.displaySnapshot?.meaningLabels?.en ? { en: v.displaySnapshot.meaningLabels.en } : {}),
             },
             phonetic: v.displaySnapshot?.phonetic || null,
+            reading: v.displaySnapshot?.reading || null,
+            romanization: v.displaySnapshot?.romanization || null,
             partOfSpeech: v.displaySnapshot?.partOfSpeech || null,
             example: v.displaySnapshot?.example || null,
           },
@@ -652,6 +672,8 @@ export function LessonDraftEditor({
               meaningVi: v.displaySnapshot?.meaningLabels?.vi,
               meaningEn: v.displaySnapshot?.meaningLabels?.en,
               phonetic: v.displaySnapshot?.phonetic,
+              reading: v.displaySnapshot?.reading,
+              romanization: v.displaySnapshot?.romanization,
               partOfSpeech: v.displaySnapshot?.partOfSpeech,
               example: v.displaySnapshot?.example,
             },
@@ -1350,6 +1372,8 @@ export function LessonDraftEditor({
     setVocabMeaningVi('');
     setVocabMeaningEn('');
     setVocabPhonetic('');
+    setVocabReading('');
+    setVocabRomanization('');
     setVocabPartOfSpeech('');
     setVocabExample('');
     setVocabModalError(null);
@@ -1372,6 +1396,8 @@ export function LessonDraftEditor({
         meaningVi: opt.meaningLabels?.vi,
         meaningEn: opt.meaningLabels?.en,
         phonetic: opt.phonetic || undefined,
+        reading: opt.reading || undefined,
+        romanization: opt.romanization || undefined,
         partOfSpeech: opt.partOfSpeech || undefined,
         example: opt.example || undefined,
       },
@@ -1439,6 +1465,8 @@ export function LessonDraftEditor({
           meaningVi: selectedVocabOption.meaningLabels?.vi,
           meaningEn: selectedVocabOption.meaningLabels?.en,
           phonetic: selectedVocabOption.phonetic || undefined,
+          reading: selectedVocabOption.reading || undefined,
+          romanization: selectedVocabOption.romanization || undefined,
           partOfSpeech: selectedVocabOption.partOfSpeech || undefined,
           example: selectedVocabOption.example || undefined,
         },
@@ -1457,6 +1485,17 @@ export function LessonDraftEditor({
       }
       if (!vi && !en) {
         setVocabModalError('Vui lòng nhập ít nhất một nghĩa (tiếng Việt hoặc tiếng Anh).');
+        return;
+      }
+
+      const trimmedReading = isJapaneseCourse ? vocabReading.trim() : '';
+      const trimmedRomanization = isJapaneseCourse ? vocabRomanization.trim() : '';
+      if (isJapaneseCourse && trimmedReading && !isValidJapaneseReading(trimmedReading)) {
+        setVocabModalError('Cách đọc tiếng Nhật chỉ được chứa hiragana, katakana, dấu kéo dài (ー), dấu chấm giữa (・) và khoảng trắng.');
+        return;
+      }
+      if (isJapaneseCourse && trimmedRomanization && !isValidRomanization(trimmedRomanization)) {
+        setVocabModalError('Phiên âm Latin chỉ được chứa ký tự Latin, dấu nối và khoảng trắng.');
         return;
       }
 
@@ -1503,6 +1542,8 @@ export function LessonDraftEditor({
             ...(en ? { en } : {}),
           },
           phonetic: vocabPhonetic.trim() || undefined,
+          ...(isJapaneseCourse && trimmedReading ? { reading: trimmedReading } : {}),
+          ...(isJapaneseCourse && trimmedRomanization ? { romanization: trimmedRomanization } : {}),
           partOfSpeech: vocabPartOfSpeech.trim() || undefined,
           example: vocabExample.trim() || undefined,
         },
@@ -1514,6 +1555,8 @@ export function LessonDraftEditor({
           meaningVi: vi || undefined,
           meaningEn: en || undefined,
           phonetic: vocabPhonetic.trim() || undefined,
+          ...(isJapaneseCourse && trimmedReading ? { reading: trimmedReading } : {}),
+          ...(isJapaneseCourse && trimmedRomanization ? { romanization: trimmedRomanization } : {}),
           partOfSpeech: vocabPartOfSpeech.trim() || undefined,
           example: vocabExample.trim() || undefined,
         },
@@ -2517,11 +2560,21 @@ export function LessonDraftEditor({
                       <td style={{ fontWeight: 600 }} id={`vocabTerm-${idx}`}>
                         <span lang={courseLanguageCode}>{v.displayInfo.canonicalForm}</span>
                         {(() => {
-                          const formattedPhonetic = formatPhonetic(v.displayInfo.phonetic, courseLanguageCode);
-                          if (!formattedPhonetic) return null;
+                          const formatted = formatReading({
+                            reading: v.displayInfo.reading,
+                            romanization: v.displayInfo.romanization,
+                            phonetic: v.displayInfo.phonetic,
+                            languageCode: courseLanguageCode,
+                          });
+                          if (!formatted) return null;
                           return (
                             <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 400 }}>
-                              {formattedPhonetic}
+                              <span lang={formatted.source === 'reading' ? courseLanguageCode : undefined}>{formatted.primary}</span>
+                              {formatted.romanization && (
+                                <span style={{ fontSize: '0.9em', marginLeft: '4px', opacity: 0.85 }}>
+                                  ({formatted.romanization})
+                                </span>
+                              )}
                             </span>
                           );
                         })()}
@@ -3410,6 +3463,20 @@ export function LessonDraftEditor({
                             <span className="badge" style={{ marginLeft: '6px', fontSize: '11px', background: '#e2e8f0' }}>
                               {opt.senseKey}
                             </span>
+                            {(() => {
+                              const formatted = formatReading({
+                                reading: opt.reading,
+                                romanization: opt.romanization,
+                                phonetic: opt.phonetic,
+                                languageCode: courseLanguageCode,
+                              });
+                              if (!formatted) return null;
+                              return (
+                                <div style={{ fontSize: '11px', color: '#475569' }}>
+                                  {formatted.text}
+                                </div>
+                              );
+                            })()}
                             <div style={{ fontSize: '12px', color: '#64748b' }}>
                               {opt.meaningLabels?.vi && `vi: ${opt.meaningLabels.vi} `}
                               {opt.meaningLabels?.en && `en: ${opt.meaningLabels.en}`}
@@ -3573,6 +3640,20 @@ export function LessonDraftEditor({
                                         (trùng nét nghĩa)
                                       </span>
                                     )}
+                                    {(() => {
+                                      const formatted = formatReading({
+                                        reading: cand.reading,
+                                        romanization: cand.romanization,
+                                        phonetic: cand.phonetic,
+                                        languageCode: courseLanguageCode,
+                                      });
+                                      if (!formatted) return null;
+                                      return (
+                                        <div style={{ fontSize: '11px', color: '#475569' }}>
+                                          {formatted.text}
+                                        </div>
+                                      );
+                                    })()}
                                     <div style={{ color: '#64748b' }}>
                                       {cand.meaningLabels?.vi ? `vi: ${cand.meaningLabels.vi} ` : ''}
                                       {cand.meaningLabels?.en ? `en: ${cand.meaningLabels.en}` : ''}
@@ -3646,6 +3727,40 @@ export function LessonDraftEditor({
                       />
                     </div>
                   </div>
+
+                  {isJapaneseCourse && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                      <div className="form-group">
+                        <label htmlFor="inputVocabReading" className="form-label">
+                          Cách đọc kana (tùy chọn)
+                        </label>
+                        <input
+                          type="text"
+                          id="inputVocabReading"
+                          className="form-input"
+                          lang={courseLanguageCode}
+                          value={vocabReading}
+                          onChange={(e) => setVocabReading(e.target.value)}
+                          placeholder="Ví dụ: がくせい"
+                          maxLength={300}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="inputVocabRomanization" className="form-label">
+                          Romaji (tùy chọn)
+                        </label>
+                        <input
+                          type="text"
+                          id="inputVocabRomanization"
+                          className="form-input"
+                          value={vocabRomanization}
+                          onChange={(e) => setVocabRomanization(e.target.value)}
+                          placeholder="Ví dụ: gakusei"
+                          maxLength={300}
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                     <div className="form-group">
