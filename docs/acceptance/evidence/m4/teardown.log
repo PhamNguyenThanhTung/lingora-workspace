@@ -1,0 +1,5 @@
+Source SHA: 5e834293e0ce21a6dd14452c6ad75224aa45a0fb
+Teardown: agent sent SIGTERM to disposable wrapper and stack child in the same sweep; DB shutdown raced the child disconnect. Not a product runtime failure.
+Port 3100: closed
+Port 3200: closed
+Port 3443: closed
