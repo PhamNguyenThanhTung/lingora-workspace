@@ -53,6 +53,15 @@ beforeEach(async () => {
   setLearnerPrismaForTest(db);
 });
 
+async function readContextRowVersion(client, contextId) {
+  const row = await client.learningContext.findUnique({
+    where: { id: contextId },
+    select: { rowVersion: true },
+  });
+  assert.ok(row, 'Context must exist when reading current rowVersion');
+  return row.rowVersion;
+}
+
 test('Real PostgreSQL: simultaneous same-language create leaves exactly one row and serializes via actor lock', async () => {
   // Clear ctxA so Learner A has 0 contexts for Language 1
   await db.learningContext.deleteMany({ where: { learnerId: f.learnerA } });
@@ -403,15 +412,27 @@ test('Real PostgreSQL: PAUSED denies submitPracticeResponse, finalize and commit
   );
 
   // Resume context
-  await patchLearningContext(f.learnerA, f.ctxA, { status: 'ACTIVE', expectedRowVersion: '2' }, db);
+  const beforeResumeVersion = await readContextRowVersion(db, f.ctxA);
+  await patchLearningContext(
+    f.learnerA,
+    f.ctxA,
+    { status: 'ACTIVE', expectedRowVersion: beforeResumeVersion.toString() },
+    db
+  );
 
   // Finalize succeeds after resume
   await finalizePracticeAttempt(f.ctxA, f.lesson, attemptId, {
     operationKey: finalKey,
   }, f.learnerA);
 
-  // Pause again
-  await patchLearningContext(f.learnerA, f.ctxA, { status: 'PAUSED', expectedRowVersion: '3' }, db);
+  // Pause again (finalize may advance workingLevel and increment rowVersion)
+  const beforePauseAgainVersion = await readContextRowVersion(db, f.ctxA);
+  await patchLearningContext(
+    f.learnerA,
+    f.ctxA,
+    { status: 'PAUSED', expectedRowVersion: beforePauseAgainVersion.toString() },
+    db
+  );
 
   // 4. Committed finalize replay ALSO rejected while PAUSED
   await assert.rejects(
@@ -1388,9 +1409,11 @@ test('Real PostgreSQL: Overlapping Pause vs Learning schedules (Reading start/co
     });
     setLearnerPrismaForTest(instrumentedLearningDb2);
 
+    const beforePause2Version = await readContextRowVersion(db, f.ctxA);
     const learningPromise2 = c.execute(bag2);
 
     let pausePromise2;
+    let pauseOutcome2;
     const pausePidDeferred2 = deferred();
     const instrumentedPauseDb2 = instrument(other, {
       enter: async (tx, pid) => {
@@ -1403,19 +1426,38 @@ test('Real PostgreSQL: Overlapping Pause vs Learning schedules (Reading start/co
       pausePromise2 = patchLearningContext(
         f.learnerA,
         f.ctxA,
-        { status: 'PAUSED', expectedRowVersion: '1' },
+        { status: 'PAUSED', expectedRowVersion: beforePause2Version.toString() },
         instrumentedPauseDb2
       );
+      pauseOutcome2 = Promise.allSettled([pausePromise2]);
       const pausePid2 = await bounded(pausePidDeferred2.promise, `Pause entered for ${c.name}`);
       await waitForBlockingPid(pausePid2, learningPid2);
     } finally {
       releaseLearning2.resolve();
     }
 
-    await learningPromise2;
-    const pauseRes2 = await pausePromise2;
-    assert.equal(pauseRes2.status, 'PAUSED');
-    assert.equal(pauseRes2.rowVersion, '2');
+    const learningRes2 = await learningPromise2;
+    const [pauseSettled2] = await pauseOutcome2;
+    if (learningRes2?.levelUp) {
+      assert.equal(pauseSettled2.status, 'rejected', 'Concurrent Pause with pre-level-up rowVersion must fail CAS');
+      assert.equal(pauseSettled2.reason.status, 409);
+      assert.equal(pauseSettled2.reason.code, 'STALE_ROW_VERSION');
+      const afterLevelUpVersion = await readContextRowVersion(db, f.ctxA);
+      assert.equal(afterLevelUpVersion, beforePause2Version + 1n);
+      const pauseRes2 = await patchLearningContext(
+        f.learnerA,
+        f.ctxA,
+        { status: 'PAUSED', expectedRowVersion: afterLevelUpVersion.toString() },
+        db
+      );
+      assert.equal(pauseRes2.status, 'PAUSED');
+      assert.equal(pauseRes2.rowVersion, (afterLevelUpVersion + 1n).toString());
+    } else {
+      assert.equal(pauseSettled2.status, 'fulfilled');
+      const pauseRes2 = pauseSettled2.value;
+      assert.equal(pauseRes2.status, 'PAUSED');
+      assert.equal(pauseRes2.rowVersion, (beforePause2Version + 1n).toString());
+    }
 
     // Learning write was preserved
     await c.assertCommitted(bag2);
@@ -1522,14 +1564,15 @@ test('Real PostgreSQL: Nonempty mature SRS card state and valid review history p
   assert.ok(snapshotBefore.cards[0].includes('654321'), 'Microsecond precision in last_reviewed_at preserved');
 
   // 6. Pause context
+  const beforeSrsPauseVersion = await readContextRowVersion(db, f.ctxA);
   const pausedRes = await patchLearningContext(
     f.learnerA,
     f.ctxA,
-    { status: 'PAUSED', expectedRowVersion: '1' },
+    { status: 'PAUSED', expectedRowVersion: beforeSrsPauseVersion.toString() },
     db
   );
   assert.equal(pausedRes.status, 'PAUSED');
-  assert.equal(pausedRes.rowVersion, '2');
+  assert.equal(pausedRes.rowVersion, (beforeSrsPauseVersion + 1n).toString());
 
   // 7. Verify in-flight / subsequent learning calls are blocked while PAUSED
   await assert.rejects(
@@ -1546,14 +1589,15 @@ test('Real PostgreSQL: Nonempty mature SRS card state and valid review history p
   assert.deepEqual(snapshotWhilePaused, snapshotBefore, 'All SRS cards and review operations must be 100% identical while paused');
 
   // 9. Resume context
+  const beforeSrsResumeVersion = await readContextRowVersion(db, f.ctxA);
   const resumedRes = await patchLearningContext(
     f.learnerA,
     f.ctxA,
-    { status: 'ACTIVE', expectedRowVersion: '2' },
+    { status: 'ACTIVE', expectedRowVersion: beforeSrsResumeVersion.toString() },
     db
   );
   assert.equal(resumedRes.status, 'ACTIVE');
-  assert.equal(resumedRes.rowVersion, '3');
+  assert.equal(resumedRes.rowVersion, (beforeSrsResumeVersion + 1n).toString());
 
   // 10. Snapshot after Resume must match snapshotBefore with deep equality!
   const snapshotAfterResume = await takeLearnerFullSnapshot(db, f.learnerA, f.ctxA);

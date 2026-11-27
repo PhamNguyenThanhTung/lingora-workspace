@@ -1,6 +1,6 @@
 import 'server-only';
 import { contextSelect, fail, labels, loadLessonHierarchy, validId, type Db } from '../lessons/service.ts';
-import type { PathNodeDto, ContinueLearningDto, PathStatus } from './home-dto.ts';
+import type { PathNodeDto, ContinueLearningDto, PathStatus, PathSectionDto } from './home-dto.ts';
 
 function formatTitle(titleObj: unknown): string {
   if (typeof titleObj === 'string') return titleObj;
@@ -12,6 +12,8 @@ export interface PathResult {
   status: PathStatus;
   message?: string;
   path: PathNodeDto[];
+  sections: PathSectionDto[];
+  currentLevel: { code: string; label: string } | null;
   continueLearning: ContinueLearningDto | null;
 }
 
@@ -34,6 +36,8 @@ export async function buildLearningPath(
       status: 'PAUSED',
       message: 'Lộ trình học đang tạm dừng.',
       path: [],
+      sections: [],
+      currentLevel: c.workingLevel ? { code: c.workingLevel.code, label: formatTitle(c.workingLevel.label) } : null,
       continueLearning: null,
     };
   }
@@ -43,6 +47,8 @@ export async function buildLearningPath(
       status: 'COURSE_INACTIVE',
       message: 'Khóa học hiện đang tạm khóa.',
       path: [],
+      sections: [],
+      currentLevel: c.workingLevel ? { code: c.workingLevel.code, label: formatTitle(c.workingLevel.label) } : null,
       continueLearning: null,
     };
   }
@@ -52,6 +58,8 @@ export async function buildLearningPath(
       status: 'NO_WORKING_LEVEL',
       message: 'Lộ trình chưa được xếp lớp trình độ học.',
       path: [],
+      sections: [],
+      currentLevel: null,
       continueLearning: null,
     };
   }
@@ -120,15 +128,6 @@ export async function buildLearningPath(
     }
   }
 
-  if (pathNodes.length === 0) {
-    return {
-      status: 'EMPTY_CURRICULUM',
-      message: 'Chưa có bài học nào trong lộ trình này.',
-      path: [],
-      continueLearning: null,
-    };
-  }
-
   const open = [...openAttempts, ...openReading]
     .sort((a, b) => b.startedAt.valueOf() - a.startedAt.valueOf())
     .find(row => available.get(row.lessonId)?.revisionId === row.lessonRevisionId);
@@ -140,8 +139,25 @@ export async function buildLearningPath(
     continueLearning = { lessonId, title, unitTitle, href, status: open ? 'IN_PROGRESS' : 'READY' };
   }
 
+  const levels = await db.level.findMany({ where: { frameworkId: c.course.frameworkId }, orderBy: [{ position: 'asc' }, { id: 'asc' }] });
+  const next = levels.find(level => level.position > c.workingLevel!.position);
+  const sections: PathSectionDto[] = levels.map(level => {
+    const sectionUnits = units.filter(unit => unit.levelId === level.id).map(unit => {
+      const nodes = pathNodes.filter(node => unit.lessons.some(lesson => lesson.id === node.lessonId));
+      return { unitId: unit.id, position: unit.position, title: formatTitle(unit.names), progress: { done: nodes.filter(node => node.state === 'COMPLETED').length, total: nodes.filter(node => node.state !== 'COMING_SOON').length }, nodes };
+    });
+    const nodes = sectionUnits.flatMap(unit => unit.nodes);
+    const required = nodes.filter(node => node.isRequired && node.state !== 'COMING_SOON');
+    const requiredDone = required.filter(node => node.state === 'COMPLETED').length;
+    const hasPublished = nodes.some(node => node.state !== 'COMING_SOON');
+    const state = !hasPublished ? 'COMING_SOON' : level.id === c.workingLevel!.id ? 'CURRENT' : level.position < c.workingLevel!.position ? 'COMPLETED' : level.id === next?.id ? 'NEXT' : 'LOCKED';
+    return { levelId: level.id, levelCode: level.code, levelLabel: formatTitle(level.label), position: level.position, state, progress: { requiredDone, requiredTotal: required.length }, canSkipTo: false, units: sectionUnits };
+  });
   return {
-    status: 'READY',
+    status: pathNodes.length ? 'READY' : 'EMPTY_CURRICULUM',
+    ...(pathNodes.length ? {} : { message: 'Chưa có bài học nào trong lộ trình này.' }),
+    sections,
+    currentLevel: { code: c.workingLevel.code, label: formatTitle(c.workingLevel.label) },
     path: pathNodes,
     continueLearning,
   };

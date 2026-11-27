@@ -1,3 +1,4 @@
+import { requiredProgress } from './progress.ts';
 import { verifyLearnerIdentity, type CookieAdapter } from '../auth/index.ts';
 import { getLearnerPrisma } from '../db/index.ts';
 import { describeDbError } from '../db/safe-error.ts';
@@ -68,6 +69,7 @@ export async function loadLearnerContext(
         status: true,
         rowVersion: true,
         startSource: true,
+        lessonCompletions: { select: { lessonId: true } },
         language: {
           select: {
             id: true,
@@ -82,6 +84,7 @@ export async function loadLearnerContext(
             frameworkId: true,
             names: true,
             isActive: true,
+            units: { select: { levelId: true, lessons: { where: { isRequired: true, availability: 'AVAILABLE', activeRevision: { status: 'PUBLISHED' } }, select: { id: true } } } },
             framework: {
               select: {
                 id: true,
@@ -183,6 +186,8 @@ export async function loadLearnerContext(
 
   const contextsDto: LearningContextSummaryDto[] = rawContexts.map((c) => ({
     id: c.id,
+    levelCode: c.workingLevel?.code ?? null,
+    requiredProgress: requiredProgress(c),
     status: c.status,
     rowVersion: (c.rowVersion ?? 1n).toString(),
     startSource: c.startSource ?? null,
