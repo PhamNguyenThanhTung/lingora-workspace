@@ -74,6 +74,8 @@ test('production Teacher page submits the persisted revision through its actual 
     });
 
     await page.locator('#btnSubmitForReview').click();
+    await page.locator('#submitConfirmModal').waitFor();
+    await page.locator('#btnConfirmSubmitForReview').click();
     await page.waitForFunction(() => document.querySelector('#btnSubmitForReview')?.disabled);
     assert.equal(captured.path, path);
     assert.equal(captured.method, 'POST');
@@ -110,12 +112,16 @@ test('production Teacher submit failure keeps the lesson usable for a valid retr
 
     const titleBefore = await page.locator('#inputDraftTitleVi').inputValue();
     await page.locator('#btnSubmitForReview').click();
+    await page.locator('#submitConfirmModal').waitFor();
+    await page.locator('#btnConfirmSubmitForReview').click();
     await page.locator('#draftSaveError').waitFor();
     assert.equal(await page.locator('#reviewActionSuccess').count(), 0);
     assert.equal(await page.locator('#inputDraftTitleVi').inputValue(), titleBefore);
     assert.equal(await page.locator('#btnSubmitForReview').isDisabled(), false);
 
     await page.locator('#btnSubmitForReview').click();
+    await page.locator('#submitConfirmModal').waitFor();
+    await page.locator('#btnConfirmSubmitForReview').click();
     await page.locator('#inReviewNotice').waitFor();
     assert.equal(attempts, 2);
   });
@@ -139,6 +145,8 @@ test('production Teacher page exposes stale reload and handles 401/403 without f
         return fulfill(route, 404, {});
       });
       await page.locator('#btnSubmitForReview').click();
+    await page.locator('#submitConfirmModal').waitFor();
+    await page.locator('#btnConfirmSubmitForReview').click();
       if (status === 401) {
         await page.locator('#sessionLostModal').waitFor();
         assert.equal(await page.locator('#reviewActionSuccess').count(), 0);
@@ -159,6 +167,9 @@ test('production Teacher page exposes stale reload and handles 401/403 without f
 test('production Admin review page calls pinned approve and publish endpoints and reconciles each DTO', async () => {
   await withPage('page-review-detail-wire', async (page) => {
     await page.locator('#reviewActionsPanel').waitFor();
+    // H3: the review header shows the revision number, never the concurrency row version.
+    assert.match(await page.locator('#badgeRevisionNo').innerText(), /Bản sửa đổi: #\d+/);
+    assert.equal((await page.locator('.review-header').innerText()).includes('Phiên bản'), false);
     const detail = await page.evaluate(() => window.__PAGE_PROPS__.initialDetail);
     assert.deepEqual(detail.exercises.map(ex => ex.type), ['FILL_BLANK', 'REORDER', 'GRAMMAR', 'MCQ', 'LISTENING']);
     await page.getByText('I ____ coffee every morning.').waitFor();
@@ -295,4 +306,41 @@ test('production Admin review handles 401 and 403 without false success', async 
       assert.equal(detail.submissionId, '88888888-8888-4888-8888-888888888001');
     });
   }
+});
+
+test('LNG-04 (G9): ReviewDetailView renders preload=none audio player with error/retry without blocking Approve', async () => {
+  await withPage('page-review-detail-wire', async (page) => {
+    await page.locator('#reviewActionsPanel').waitFor();
+    const detail = await page.evaluate(() => window.__PAGE_PROPS__.initialDetail);
+
+    const reviewAudio = page.locator('#review-exercise-audio-4-player');
+    await reviewAudio.waitFor({ state: 'visible' });
+    assert.equal(await reviewAudio.getAttribute('preload'), 'none');
+    assert.equal(await reviewAudio.getAttribute('autoplay'), null);
+    assert.equal(await reviewAudio.evaluate((el) => el.controls), true);
+
+    // Simulated audio load failure shows error + Retry button, and Approve stays interactive
+    await reviewAudio.evaluate((el) => el.dispatchEvent(new Event('error')));
+    await page.locator('#review-exercise-audio-4-error').waitFor({ state: 'visible' });
+    await page.locator('#review-exercise-audio-4-retry').click();
+    await page.locator('#review-exercise-audio-4-error').waitFor({ state: 'hidden' });
+
+    await page.route('**/api/**', async (route) => {
+      const path = new URL(route.request().url()).pathname;
+      if (path === `/api/reviews/${detail.submissionId}/approve`) {
+        return fulfill(route, 200, {
+          data: {
+            ...detail,
+            revision: { ...detail.revision, status: 'APPROVED', rowVersion: '3' },
+            reviewHistory: [],
+          },
+        });
+      }
+      return fulfill(route, 404, {});
+    });
+
+    assert.equal(await page.locator('#btnApprove').isDisabled(), false);
+    await page.locator('#btnApprove').click();
+    await page.locator('#reviewActionSuccess').waitFor({ state: 'visible' });
+  });
 });

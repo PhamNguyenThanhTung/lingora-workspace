@@ -48,6 +48,7 @@ const {
   createCourse,
   updateCourse,
   deleteCourse,
+  LANGUAGE_NOT_LEARNABLE_MESSAGE,
 } = await import('../../src/server/courses/index.ts');
 
 const {
@@ -435,6 +436,7 @@ describe('S3-03: Courses CRUD Service & Transaction Mechanics', () => {
   const seedLvl21 = '00000000-0000-0000-0000-000000000021';
   const otherLvl99 = '00000000-0000-0000-0000-000000000099';
   const seedLangEn = '00000000-0000-0000-0000-000000000002';
+  const seedLangVi = '00000000-0000-0000-0000-000000000003';
 
   afterEach(() => {
     setProductPrismaForTest(null);
@@ -442,7 +444,7 @@ describe('S3-03: Courses CRUD Service & Transaction Mechanics', () => {
 
   test('createCourse enforces Framework-Level consistency (defaultStartLevel must belong to Course framework)', async () => {
     const mockPrisma = {
-      language: { findUnique: async () => ({ id: seedLangEn }) },
+      language: { findUnique: async () => ({ id: seedLangEn, isLearnable: true }) },
       framework: { findUnique: async () => ({ id: seedFw10 }) },
       level: { findUnique: async () => ({ id: otherLvl99, frameworkId: seedFw20 }) }, // Belongs to different framework!
     };
@@ -460,10 +462,87 @@ describe('S3-03: Courses CRUD Service & Transaction Mechanics', () => {
     assert.ok(res.error?.fields?.defaultStartLevelId);
   });
 
+  test('G14: createCourse rejects a language with is_learnable = false (400, Vietnamese message)', async () => {
+    const mockPrisma = {
+      language: { findUnique: async () => ({ id: seedLangVi, isLearnable: false }) },
+      framework: { findUnique: async () => ({ id: seedFw10 }) },
+      level: { findUnique: async () => ({ id: seedLvl21, frameworkId: seedFw10 }) },
+      course: { create: async () => { throw new Error('must not reach course.create'); } },
+    };
+
+    const res = await createCourse({
+      languageId: seedLangVi,
+      frameworkId: seedFw10,
+      defaultStartLevelId: seedLvl21,
+      names: { vi: 'Khóa học tiếng Việt' },
+      isActive: true,
+    }, mockPrisma);
+
+    assert.equal(res.status, 400);
+    assert.equal(res.error?.code, 'LANGUAGE_NOT_LEARNABLE');
+    assert.equal(res.error?.message, LANGUAGE_NOT_LEARNABLE_MESSAGE);
+    assert.match(res.error?.message, /Học được/);
+    assert.equal(res.error?.fields?.languageId, LANGUAGE_NOT_LEARNABLE_MESSAGE);
+  });
+
+  test('G14: updateCourse rejects switching to a non-learnable language but allows editing a course already on one', async () => {
+    const mockCourse = {
+      id: seedCourse30,
+      frameworkId: seedFw10,
+      languageId: seedLangVi,
+      defaultStartLevelId: seedLvl21,
+      names: { vi: 'Khóa cũ' },
+      isActive: true,
+      curriculumGeneration: 1n,
+      rowVersion: 1n,
+    };
+    const makeTx = (currentLanguageId, targetIsLearnable) => ({
+      $queryRaw: async () => [{
+        id: seedCourse30,
+        framework_id: seedFw10,
+        language_id: currentLanguageId,
+        curriculum_generation: 1n,
+        row_version: 1n,
+        is_active: true,
+      }],
+      language: { findUnique: async () => ({ id: seedLangVi, isLearnable: targetIsLearnable }) },
+      framework: { findUnique: async () => ({ id: seedFw10 }) },
+      level: { findUnique: async () => ({ id: seedLvl21, frameworkId: seedFw10 }) },
+      course: {
+        findUnique: async () => mockCourse,
+        update: async ({ data }) => ({ ...mockCourse, ...data, curriculumGeneration: 2n, rowVersion: 2n }),
+      },
+      unit: { findFirst: async () => null },
+      learningContext: { findFirst: async () => null },
+      assessmentBlueprint: { findFirst: async () => null },
+    });
+
+    const payload = {
+      languageId: seedLangVi,
+      frameworkId: seedFw10,
+      defaultStartLevelId: seedLvl21,
+      names: { vi: 'Khóa mới' },
+      isActive: true,
+    };
+
+    // Switching the language of an English course to the non-learnable vi => rejected
+    const switched = await updateCourse(seedCourse30, payload, {
+      $transaction: async (fn) => fn(makeTx(seedLangEn, false)),
+    });
+    assert.equal(switched.status, 400);
+    assert.equal(switched.error?.code, 'LANGUAGE_NOT_LEARNABLE');
+
+    // Same (unchanged) language on legacy data => still editable
+    const unchanged = await updateCourse(seedCourse30, payload, {
+      $transaction: async (fn) => fn(makeTx(seedLangVi, false)),
+    });
+    assert.equal(unchanged.status, 200);
+  });
+
   test('createCourse allows duplicate course name and relations (no natural uniqueness)', async () => {
     let createdCount = 0;
     const mockPrisma = {
-      language: { findUnique: async () => ({ id: seedLangEn }) },
+      language: { findUnique: async () => ({ id: seedLangEn, isLearnable: true }) },
       framework: { findUnique: async () => ({ id: seedFw10 }) },
       level: { findUnique: async () => ({ id: seedLvl21, frameworkId: seedFw10 }) },
       course: {
@@ -522,7 +601,7 @@ describe('S3-03: Courses CRUD Service & Transaction Mechanics', () => {
           is_active: true,
         }];
       },
-      language: { findUnique: async () => ({ id: seedLangEn }) },
+      language: { findUnique: async () => ({ id: seedLangEn, isLearnable: true }) },
       framework: { findUnique: async () => ({ id: seedFw10 }) },
       level: { findUnique: async () => ({ id: seedLvl21, frameworkId: seedFw10 }) },
       course: {
@@ -1280,7 +1359,7 @@ describe('S3-07: Acceptance Matrix - Active Admin Positives, UUID Casing, Rollba
         findUnique: async () => ({ id: adminId, role: 'ADMIN', status: 'ACTIVE', displayName: 'Admin' }),
       },
       language: {
-        findUnique: async () => ({ id: seedLangEn, code: 'en' }),
+        findUnique: async () => ({ id: seedLangEn, code: 'en', isLearnable: true }),
         findMany: async () => [{ id: seedLangEn, code: 'en', names: { vi: 'Tiếng Anh' } }],
       },
       framework: {
@@ -1631,7 +1710,7 @@ describe('S3-07: Acceptance Matrix - Active Admin Positives, UUID Casing, Rollba
     const upperLangId = '00000000-0000-0000-0000-00000000000A';
 
     const mockPrisma = {
-      language: { findUnique: async () => ({ id: upperLangId.toLowerCase() }) },
+      language: { findUnique: async () => ({ id: upperLangId.toLowerCase(), isLearnable: true }) },
       framework: { findUnique: async () => ({ id: upperFwId.toLowerCase() }) },
       level: { findUnique: async () => ({ id: upperLvlId.toLowerCase(), frameworkId: upperFwId.toLowerCase(), position: 1 }) },
       course: {

@@ -32,6 +32,9 @@ export interface CourseDto {
 
 export { isValidUuid };
 
+export const LANGUAGE_NOT_LEARNABLE_MESSAGE =
+  'Ngôn ngữ này chưa được bật "Học được" nên không thể dùng làm ngôn ngữ học của khóa học.';
+
 export const createCourseSchema = z.object({
   languageId: z.string({ message: 'Ngôn ngữ học là bắt buộc' })
     .trim()
@@ -507,7 +510,7 @@ export async function createCourse(
   try {
     const lang = await prisma.language.findUnique({
       where: { id: targetLangId },
-      select: { id: true },
+      select: { id: true, isLearnable: true },
     });
     if (!lang) {
       return {
@@ -517,6 +520,18 @@ export async function createCourse(
           message: 'Ngôn ngữ học không tồn tại trong hệ thống.',
           fields: {
             languageId: 'Ngôn ngữ học không tồn tại trong hệ thống.',
+          },
+        },
+      };
+    }
+    if (!lang.isLearnable) {
+      return {
+        status: 400,
+        error: {
+          code: 'LANGUAGE_NOT_LEARNABLE',
+          message: LANGUAGE_NOT_LEARNABLE_MESSAGE,
+          fields: {
+            languageId: LANGUAGE_NOT_LEARNABLE_MESSAGE,
           },
         },
       };
@@ -763,7 +778,7 @@ export async function updateCourse(
       // Validate relations
       const lang = await tx.language.findUnique({
         where: { id: targetLangId },
-        select: { id: true },
+        select: { id: true, isLearnable: true },
       });
       if (!lang) {
         return {
@@ -773,6 +788,20 @@ export async function updateCourse(
             message: 'Ngôn ngữ học không tồn tại trong hệ thống.',
             fields: {
               languageId: 'Ngôn ngữ học không tồn tại trong hệ thống.',
+            },
+          },
+        };
+      }
+      // Only enforce when the target language actually changes, so courses that
+      // already point at a non-learnable language stay editable.
+      if (targetLangId !== currentLangId && !lang.isLearnable) {
+        return {
+          status: 400,
+          error: {
+            code: 'LANGUAGE_NOT_LEARNABLE',
+            message: LANGUAGE_NOT_LEARNABLE_MESSAGE,
+            fields: {
+              languageId: LANGUAGE_NOT_LEARNABLE_MESSAGE,
             },
           },
         };

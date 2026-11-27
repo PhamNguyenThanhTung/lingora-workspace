@@ -32,8 +32,18 @@ import { revisionChildRelations, unsupportedChildren } from './snapshot.ts';
 // Status Labels
 // =============================================================================
 
-import { WORKFLOW_STATUS_LABELS, getWorkflowStatusLabel } from './workflow-status.ts';
-export { WORKFLOW_STATUS_LABELS, getWorkflowStatusLabel };
+import {
+  WORKFLOW_STATUS_LABELS,
+  getWorkflowStatusLabel,
+  getAccountRoleLabel,
+  resolveActorDisplayName,
+} from './workflow-status.ts';
+export {
+  WORKFLOW_STATUS_LABELS,
+  getWorkflowStatusLabel,
+  getAccountRoleLabel,
+  resolveActorDisplayName,
+};
 
 function hasSupportedV1Blocks(rawBlocks: unknown): boolean {
   if (!Array.isArray(rawBlocks)) return false;
@@ -157,6 +167,7 @@ export interface ReviewHistoryEventDto {
   actor: {
     id: string;
     displayName: string | null;
+    role: string | null;
   };
   occurredAt: string;
   comment: string | null;
@@ -485,7 +496,14 @@ export async function submitTeacherLesson(
 
       const unit = await tx.unit.findUnique({
         where: { id: currentLesson.unitId.toLowerCase() },
-        select: { course: { select: { languageId: true } } },
+        select: {
+          id: true,
+          courseId: true,
+          position: true,
+          code: true,
+          names: true,
+          course: { select: { id: true, names: true, languageId: true } },
+        },
       });
       const courseLanguageId = unit?.course?.languageId;
       if (!courseLanguageId || unsupportedChildren(highestRev, courseLanguageId)) {
@@ -499,18 +517,20 @@ export async function submitTeacherLesson(
         await validatePersistedRevisionCharacterBlocks(tx, courseLanguageId, highestRev.blocks);
       }
 
-      // 8. Freeze exact referenced ItemRevisions
+      // 8. Freeze exact referenced ItemRevisions (single statement: one round trip
+      // instead of one per exercise — H7 save/submit latency).
       const now = new Date();
-      for (const ex of exercises) {
-        await tx.itemRevision.update({
-          where: { id: ex.itemRevisionId },
+      const frozenItemRevisionIds = [...new Set(exercises.map((ex: any) => ex.itemRevisionId))];
+      if (frozenItemRevisionIds.length > 0) {
+        await tx.itemRevision.updateMany({
+          where: { id: { in: frozenItemRevisionIds } },
           data: { frozenAt: now },
         });
       }
 
       // 9. Update LessonRevision to IN_REVIEW
       const nextRevRowVersion = (highestRev.rowVersion ?? 1n) + 1n;
-      await tx.lessonRevision.update({
+      const updatedHighestRev = await tx.lessonRevision.update({
         where: { id: highestRev.id },
         data: {
           status: 'IN_REVIEW',
@@ -523,7 +543,7 @@ export async function submitTeacherLesson(
       });
 
       // 10. Increment Lesson.rowVersion
-      await tx.lesson.update({
+      const updatedLesson = await tx.lesson.update({
         where: { id: lessonId.toLowerCase() },
         data: {
           rowVersion: { increment: 1n },
@@ -545,56 +565,66 @@ export async function submitTeacherLesson(
         },
       });
 
-      // 12. Fetch authoritative updated lesson
-      const fullLesson = await tx.lesson.findUnique({
-        where: { id: lessonId.toLowerCase() },
-        include: {
-          unit: {
-            select: {
-              id: true,
-              courseId: true,
-              position: true,
-              code: true,
-              names: true,
-              course: {
-                select: {
-                  id: true,
-                  names: true,
-                  languageId: true,
-                },
-              },
-            },
-          },
-          assignment: {
+      // 12. Return authoritative updated lesson without re-loading deep revision trees
+      const revisionSummaries = await tx.lessonRevision.findMany({
+        where: { lessonId: lessonId.toLowerCase() },
+        orderBy: { revisionNo: 'desc' },
+        select: {
+          id: true,
+          revisionNo: true,
+          status: true,
+          title: true,
+          contentBlocks: true,
+          contentSchemaVersion: true,
+          changeSummary: true,
+          createdAt: true,
+          createdBy: true,
+          lastEditedBy: true,
+          rowVersion: true,
+          creator: { select: { id: true, displayName: true } },
+          lastEditor: { select: { id: true, displayName: true } },
+          reviewComments: {
+            orderBy: { createdAt: 'asc' },
             include: {
-              currentTeacher: {
-                select: { id: true, displayName: true, status: true },
-              },
-            },
-          },
-          revisions: {
-            orderBy: { revisionNo: 'desc' },
-            include: {
-              creator: { select: { id: true, displayName: true } },
-              lastEditor: { select: { id: true, displayName: true } },
-              ...revisionChildRelations,
-              reviews: {
-                orderBy: { occurredAt: 'desc' },
-              },
-              _count: {
-                select: {
-                  exercises: true,
-                  vocabularyLinks: true,
-                  mediaBindings: true,
-                  authoredItemRevisions: true,
-                  attempts: true,
-                  assessmentVersionItems: true,
-                },
-              },
+              author: { select: { id: true, displayName: true } },
+              resolvedBy: { select: { id: true, displayName: true } },
             },
           },
         },
       });
+
+      const mergedRevisions = revisionSummaries.map((rev: any) => {
+        if (rev.id.toLowerCase() !== highestRev.id.toLowerCase()) {
+          return rev;
+        }
+        return {
+          ...rev,
+          ...updatedHighestRev,
+          creator: rev.creator,
+          lastEditor: rev.lastEditor,
+          reviewComments: rev.reviewComments ?? highestRev.reviewComments ?? [],
+          blocks: highestRev.blocks ?? [],
+          exercises: highestRev.exercises ?? [],
+          vocabularyLinks: highestRev.vocabularyLinks ?? [],
+          authoredItemRevisions: highestRev.authoredItemRevisions ?? [],
+          reviews: [reviewEvent],
+          _count: highestRev._count,
+        };
+      });
+
+      const fullLesson = {
+        ...updatedLesson,
+        unit,
+        assignment: {
+          ...assignment,
+          currentTeacher: {
+            id: teacherAcc.id,
+            displayName: teacherAcc.displayName ?? null,
+            status: teacherAcc.status,
+          },
+        },
+        revisions: mergedRevisions,
+      };
 
       return {
         status: 200,
@@ -831,7 +861,7 @@ export async function getReviewDetail(
         lessonRevisionId: rev.id,
       },
       include: {
-        actor: { select: { id: true, displayName: true } },
+        actor: { select: { id: true, displayName: true, role: true } },
       },
       orderBy: {
         occurredAt: 'asc',
@@ -844,7 +874,9 @@ export async function getReviewDetail(
       actionLabel: getWorkflowStatusLabel(rh.action),
       actor: {
         id: rh.actorId,
-        displayName: rh.actor?.displayName || null,
+        // Admin accounts can have no display_name; fall back to the role label.
+        displayName: resolveActorDisplayName(rh.actor),
+        role: rh.actor?.role || null,
       },
       occurredAt: (rh.occurredAt instanceof Date ? rh.occurredAt : new Date(rh.occurredAt)).toISOString(),
       comment: rh.comment || null,

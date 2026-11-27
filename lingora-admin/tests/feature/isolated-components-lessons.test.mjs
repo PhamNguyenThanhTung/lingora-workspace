@@ -553,6 +553,11 @@ describe('S5-LESSONS: Isolated Component State & Interaction Suite', () => {
     const title = await page.textContent('#draftEditorTitle');
     assert.ok(title.includes('Soạn thảo nội dung — Bài học #1'));
 
+    // H4: the unit/course context is explicitly labelled so the unit name cannot be
+    // mistaken for the lesson number.
+    const contextLine = await page.textContent('#draftEditorContextLine');
+    assert.match(contextLine, /^Chương: .+ · Khóa: .+/);
+
     // Assert that if the editor is hooked to a wrong endpoint (mutant), submit fails and displays error
     await page.evaluate(() => {
       // Mutant injection: simulate wrong endpoint or 404

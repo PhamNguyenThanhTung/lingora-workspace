@@ -480,6 +480,13 @@ export function CourseFormModal({
 
   if (!isOpen || (!mounted && typeof document === 'undefined')) return null;
 
+  // G14: only languages flagged "Học được" (is_learnable) can be a course target
+  // language. Keep the already-saved language of an existing course selectable so
+  // editing legacy data does not silently change it.
+  const selectableLanguages = languagesList.filter(
+    (lang) => lang.isLearnable || lang.id === initialData?.languageId
+  );
+
   const modalContent = (
     <div
       id="courseFormModal"
@@ -571,11 +578,11 @@ export function CourseFormModal({
                 <option value="">
                   {isLoadingLanguages
                     ? 'Đang tải danh sách ngôn ngữ...'
-                    : languagesList.length === 0
+                    : selectableLanguages.length === 0
                     ? '-- Không có ngôn ngữ khả dụng --'
                     : '-- Chọn ngôn ngữ học --'}
                 </option>
-                {languagesList.map((lang) => (
+                {selectableLanguages.map((lang) => (
                   <option key={lang.id} value={lang.id}>
                     {lang.names.vi || lang.names.en || lang.code} ({lang.code})
                   </option>

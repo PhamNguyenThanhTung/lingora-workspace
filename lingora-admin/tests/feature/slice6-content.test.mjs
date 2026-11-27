@@ -54,6 +54,12 @@ const {
   computeExerciseFingerprint,
   normalizeVocabularyTerm,
 } = await import('../../src/server/lessons/content.ts');
+const {
+  normalizeVocabularyCandidateKey,
+  stripLatinDiacritics,
+  buildVocabularyCandidateForms,
+  classifyVocabularyCandidateMatch,
+} = await import('../../src/server/lessons/vocabulary-candidates.ts');
 
 const { setProductPrismaForTest } = await import('../../src/server/db/index.js');
 const { GET: getTeacherLessonDetailRoute } = await import('../../src/app/api/teacher/lessons/[lessonId]/route.ts');
@@ -1569,6 +1575,116 @@ describe('S6-CONTENT: Exercises, Vocabulary & Revision Integrity Suite', () => {
     fixture.state.accounts.get(teacherBId).status='DISABLED';
     const denied = await getTeacherVocabularyOptionsRoute(new Request('http://localhost:3000/api/teacher/lessons/'+lessonId+'/vocabulary-options?q=hello'),params);
     assert.equal(denied.status,403); assert.equal((await denied.json()).error.code,'ACCOUNT_INACTIVE');
+  });
+
+  // ===========================================================================
+  // 9. LNG-05 (G16): Vocabulary Candidate Normalization, Lookup & Conflict
+  // ===========================================================================
+
+  test('LNG-05: candidate normalization handles NFC, whitespace, curly quotes and Latin diacritics without merging Japanese kana/kanji', () => {
+    // NFC vs NFD
+    assert.equal(classifyVocabularyCandidateMatch('cafe\u0301', 'café'), 'exact');
+    assert.equal(classifyVocabularyCandidateMatch('か\u3099くせい', 'がくせい'), 'exact');
+
+    // Whitespace + case
+    assert.equal(classifyVocabularyCandidateMatch('  Hello   World ', 'hello world'), 'exact');
+
+    // Curly vs straight quotes
+    assert.equal(normalizeVocabularyCandidateKey('don\u2019t'), "don't");
+    assert.equal(classifyVocabularyCandidateMatch('don\u2019t', "don't"), 'variant');
+    assert.equal(classifyVocabularyCandidateMatch('l\u2019eau', "l'eau"), 'variant');
+    assert.ok(buildVocabularyCandidateForms("don't").includes('don\u2019t'));
+
+    // Latin diacritics are candidate suggestions only
+    assert.equal(stripLatinDiacritics('café naïve'), 'cafe naive');
+    assert.equal(classifyVocabularyCandidateMatch('cafe', 'café'), 'diacritic');
+    assert.equal(classifyVocabularyCandidateMatch('café', 'cafe'), 'diacritic');
+
+    // Japanese voiced kana marks, hiragana/katakana, and kana/kanji NEVER collapse
+    assert.equal(stripLatinDiacritics('がくせい'), 'がくせい');
+    assert.equal(classifyVocabularyCandidateMatch('がくせい', 'かくせい'), null);
+    assert.equal(classifyVocabularyCandidateMatch('がくせい', 'ガクセイ'), null);
+    assert.equal(classifyVocabularyCandidateMatch('がくせい', '学生'), null);
+  });
+
+  test('LNG-05: getTeacherVocabularyOptions matches same-language quote/diacritic candidates and isolates other languages', async () => {
+    const enDontId = 'e1111111-1111-4111-8111-111111111111';
+    const enCafeId = 'e2222222-2222-4222-8222-222222222222';
+    const frDontId = 'f2222222-2222-4222-8222-222222222222';
+    fixture.state.vocabularyConcepts.set(enDontId, {
+      id: enDontId, languageId: langEnId, canonicalForm: "don't", normalizedForm: "don't", senseKey: 'default',
+      meaningLabels: { vi: 'đừng' }, phonetic: null, partOfSpeech: null, example: null,
+      createdBy: teacherId, frozenAt: null, rowVersion: 1n, createdAt: new Date(), updatedAt: new Date(),
+    });
+    fixture.state.vocabularyConcepts.set(enCafeId, {
+      id: enCafeId, languageId: langEnId, canonicalForm: 'café', normalizedForm: 'café', senseKey: 'place',
+      meaningLabels: { vi: 'quán cà phê' }, phonetic: null, partOfSpeech: 'noun', example: null,
+      createdBy: teacherId, frozenAt: null, rowVersion: 1n, createdAt: new Date(), updatedAt: new Date(),
+    });
+    fixture.state.vocabularyConcepts.set(frDontId, {
+      id: frDontId, languageId: langFrId, canonicalForm: "don't", normalizedForm: "don't", senseKey: 'fr-other',
+      meaningLabels: { vi: 'tiếng Pháp' }, phonetic: null, partOfSpeech: null, example: null,
+      createdBy: teacherId, frozenAt: null, rowVersion: 1n, createdAt: new Date(), updatedAt: new Date(),
+    });
+
+    const quoteLookup = await getTeacherVocabularyOptions(teacherId, lessonId, 'don\u2019t', fixture.db);
+    assert.equal(quoteLookup.status, 200);
+    assert.deepEqual(quoteLookup.data.data.map((d) => d.id), [enDontId]);
+
+    const diacriticLookup = await getTeacherVocabularyOptions(teacherId, lessonId, 'cafe', fixture.db);
+    assert.equal(diacriticLookup.status, 200);
+    assert.deepEqual(diacriticLookup.data.data.map((d) => d.id), [enCafeId]);
+  });
+
+  test('LNG-05: homograph with distinct senseKey creates cleanly and concurrent P2002 surfaces VOCABULARY_IDENTITY_CONFLICT', async () => {
+    const firstId = 'e3333333-3333-4333-8333-333333333333';
+    fixture.state.vocabularyConcepts.set(firstId, {
+      id: firstId, languageId: langEnId, canonicalForm: 'bank', normalizedForm: 'bank', senseKey: 'finance',
+      meaningLabels: { vi: 'ngân hàng' }, phonetic: '/bæŋk/', partOfSpeech: 'noun', example: null,
+      createdBy: teacherId, frozenAt: null, rowVersion: 1n, createdAt: new Date(), updatedAt: new Date(),
+    });
+
+    const distinctSenseRes = await saveTeacherLessonDraft(teacherId, lessonId, {
+      title: { vi: 'Bài từ đồng hình' },
+      contentBlocks: [],
+      expectedRowVersion: '1',
+      vocabulary: [
+        {
+          position: 1,
+          isCore: true,
+          create: { canonicalForm: 'bank', senseKey: 'river', meaningLabels: { vi: 'bờ sông' } },
+        },
+      ],
+    }, fixture.db);
+    assert.equal(distinctSenseRes.status, 200);
+    assert.equal(distinctSenseRes.data.data.vocabulary[0].displaySnapshot.senseKey, 'river');
+
+    // Simulate concurrent insert P2002 on vocabulary_concepts_lang_norm_sense_key
+    const origCreateMany = fixture.db.vocabularyConcept.createMany;
+    fixture.db.vocabularyConcept.createMany = async () => {
+      throw Object.assign(new Error('Unique constraint failed'), {
+        code: 'P2002',
+        meta: { target: ['language_id', 'normalized_form', 'sense_key'] },
+      });
+    };
+    try {
+      const conflictRes = await saveTeacherLessonDraft(teacherId, lessonId, {
+        title: { vi: 'Bài xung đột đồng thời' },
+        contentBlocks: [],
+        expectedRowVersion: distinctSenseRes.data.data.rowVersion,
+        vocabulary: [
+          {
+            position: 1,
+            isCore: true,
+            create: { canonicalForm: 'concurrent-word', senseKey: 'default', meaningLabels: { vi: 'từ đồng thời' } },
+          },
+        ],
+      }, fixture.db);
+      assert.equal(conflictRes.status, 409);
+      assert.equal(conflictRes.error?.code, 'VOCABULARY_IDENTITY_CONFLICT');
+    } finally {
+      fixture.db.vocabularyConcept.createMany = origCreateMany;
+    }
   });
 
 });
