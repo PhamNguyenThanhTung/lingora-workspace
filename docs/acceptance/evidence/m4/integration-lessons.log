@@ -1,0 +1,25 @@
+
+> lingora-workspace@1.0.0 test:integration:lessons
+> node scripts/local-test-db.mjs npm run test:integration:lessons -w lingora-web
+
+
+> lingora-web@1.0.0 test:integration:lessons
+> node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/lesson-concurrency.test.mjs
+
+(node:200193) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ production service: concurrent starts/completes and retries keep one immutable row (352.107921ms)
+✔ production service: independent learners share parents; publisher waits until both commit (250.241461ms)
+✔ production service: completion transaction begun before later start uses post-lock DB clock (93.870639ms)
+✔ production service: completion samples clock only after competing consumption lock releases (88.501601ms)
+✔ production service: first-start locks context; consumption-only history forbids reassignment (231.233468ms)
+✔ production service: context reassignment winning before locks rejects stale candidate without writes (74.934612ms)
+✔ production service: publication X→Y leaves completed X intact and stale committed retry conflicts (151.181155ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1448.743014

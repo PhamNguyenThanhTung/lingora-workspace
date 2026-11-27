@@ -1,0 +1,38 @@
+
+> lingora-workspace@1.0.0 test:integration:sample
+> node scripts/local-test-db.mjs node --experimental-strip-types --experimental-test-module-mocks lingora-admin/tests/feature/sample-curriculum-postgres.test.mjs
+
+[seed] Seeding canonical configuration with semantic mismatch detection...
+[seed] Language verified: en (00000000-0000-0000-0000-000000000001)
+[seed] Language verified: vi (00000000-0000-0000-0000-000000000002)
+[seed] Framework verified: CEFR v2020 (00000000-0000-0000-0000-000000000010)
+[seed] Level verified: A1 pos 1 (00000000-0000-0000-0000-000000000021)
+[seed] Level verified: A2 pos 2 (00000000-0000-0000-0000-000000000022)
+[seed] Level verified: B1 pos 3 (00000000-0000-0000-0000-000000000023)
+[seed] Level verified: B2 pos 4 (00000000-0000-0000-0000-000000000024)
+[seed] DEV Course created: 00000000-0000-0000-0000-000000000030
+[seed] DEV Unit verified: DEV-UNIT-01 (00000000-0000-0000-0000-000000000040)
+[seed] DEV Planned Lesson verified: pos 1 (00000000-0000-0000-0000-000000000050)
+[seed] Seeding completed successfully (all semantic records verified idempotent).
+▶ P1: Real PostgreSQL Actor Preflight & Boundary Safeguards (R1)
+  ✔ test wrapper child-env override sets SAMPLE_CURRICULUM_DATABASE_URL (0.460084ms)
+  ✔ network guard negative control blocks forbidden outbound destination before connect (0.534802ms)
+  ✔ actor preflight rejects same-role DISABLED at a later slot and preserves zero changes (11.249173ms)
+  ✔ actor preflight rejects wrong role at a later slot and preserves existing rows (3.944084ms)
+✔ P1: Real PostgreSQL Actor Preflight & Boundary Safeguards (R1) (91.251847ms)
+▶ P2: Real PostgreSQL Sample Curriculum Persistence & Invariant Proof (R2)
+  ✔ (a) clean provision and exact second-run identity/count/history preservation (363.822158ms)
+  ✔ (b) identical titles with changed paragraph content rejected with conflict (261.91481ms)
+  ✔ (c) same-title draft/PLANNED content rejected before mutation (260.567454ms)
+  ✔ (d) extra successor revision rejected before mutation (229.84487ms)
+  ✔ (e) global later-vocabulary conflict preflights and fails closed before lesson writes (21.127067ms)
+  ✔ (f) PUBLISHED+PLANNED activation with no new revision (258.464173ms)
+✔ P2: Real PostgreSQL Sample Curriculum Persistence & Invariant Proof (R2) (1396.719197ms)
+ℹ tests 10
+ℹ suites 2
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1495.39132

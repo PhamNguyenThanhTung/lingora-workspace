@@ -1,0 +1,371 @@
+{
+  "lessons": [
+    {
+      "id": "00000000-0000-0000-0000-000000000050",
+      "unitId": "00000000-0000-0000-0000-000000000040",
+      "position": 1,
+      "isRequired": true,
+      "availability": "AVAILABLE",
+      "activeRevisionId": "748abde4-6b51-4529-8609-c23caeae8171",
+      "createdAt": "2026-11-27T03:13:49.258Z",
+      "updatedAt": "2026-11-27T03:13:49.410Z",
+      "rowVersion": "5",
+      "revisions": [
+        {
+          "id": "748abde4-6b51-4529-8609-c23caeae8171",
+          "revisionNo": 1,
+          "title": {
+            "en": "Lesson 1: Basic Greetings",
+            "vi": "Bài 1: Chào hỏi cơ bản"
+          },
+          "status": "PUBLISHED",
+          "createdBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "submittedBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "approvedBy": "cccccccc-0000-4000-8000-000000000001",
+          "publishedBy": "cccccccc-0000-4000-8000-000000000001"
+        }
+      ]
+    },
+    {
+      "id": "38551064-6711-4ac6-b752-c30a4cab61f7",
+      "unitId": "00000000-0000-0000-0000-000000000040",
+      "position": 2,
+      "isRequired": false,
+      "availability": "AVAILABLE",
+      "activeRevisionId": "38685b7d-9ef1-4399-8303-e8ec8d08c3fc",
+      "createdAt": "2026-11-27T03:13:49.423Z",
+      "updatedAt": "2026-11-27T03:14:59.624Z",
+      "rowVersion": "5",
+      "revisions": [
+        {
+          "id": "38685b7d-9ef1-4399-8303-e8ec8d08c3fc",
+          "revisionNo": 1,
+          "title": {
+            "en": "Lesson 2: Self Introductions",
+            "vi": "Bài 2: Giới thiệu bản thân"
+          },
+          "status": "PUBLISHED",
+          "createdBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "submittedBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "approvedBy": "cccccccc-0000-4000-8000-000000000001",
+          "publishedBy": "cccccccc-0000-4000-8000-000000000001"
+        }
+      ]
+    },
+    {
+      "id": "115748bc-f0a6-41a8-8092-166b5423d128",
+      "unitId": "00000000-0000-0000-0000-000000000040",
+      "position": 3,
+      "isRequired": true,
+      "availability": "AVAILABLE",
+      "activeRevisionId": "b4c88379-e020-40d2-8d2c-ab16b2dc30af",
+      "createdAt": "2026-11-27T03:13:49.522Z",
+      "updatedAt": "2026-11-27T03:13:49.598Z",
+      "rowVersion": "5",
+      "revisions": [
+        {
+          "id": "b4c88379-e020-40d2-8d2c-ab16b2dc30af",
+          "revisionNo": 1,
+          "title": {
+            "en": "Lesson 3: Daily Routines",
+            "vi": "Bài 3: Thói quen hàng ngày"
+          },
+          "status": "PUBLISHED",
+          "createdBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "submittedBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "approvedBy": "cccccccc-0000-4000-8000-000000000001",
+          "publishedBy": "cccccccc-0000-4000-8000-000000000001"
+        }
+      ]
+    },
+    {
+      "id": "99bb9d8f-eaf4-4261-913a-362ef26d1780",
+      "unitId": "00000000-0000-0000-0000-000000000040",
+      "position": 4,
+      "isRequired": true,
+      "availability": "AVAILABLE",
+      "activeRevisionId": "15d4a1c9-6be5-4feb-b057-0247b877776a",
+      "createdAt": "2026-11-27T03:13:49.605Z",
+      "updatedAt": "2026-11-27T03:14:57.853Z",
+      "rowVersion": "8",
+      "revisions": [
+        {
+          "id": "7f91e3ff-d62f-4325-b331-114f94eded4c",
+          "revisionNo": 1,
+          "title": {
+            "en": "Lesson 4: Your Family",
+            "vi": "Bài 4: Gia đình của bạn"
+          },
+          "status": "DRAFT",
+          "createdBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "submittedBy": null,
+          "approvedBy": null,
+          "publishedBy": null
+        },
+        {
+          "id": "e7977aa9-7b4a-44ae-92a4-48e76a14199a",
+          "revisionNo": 2,
+          "title": {
+            "en": "Lesson 4: Your Family",
+            "vi": "Bài 4: Gia đình của bạn"
+          },
+          "status": "DRAFT",
+          "createdBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "submittedBy": null,
+          "approvedBy": null,
+          "publishedBy": null
+        },
+        {
+          "id": "4aa32e10-cb89-45cb-bccb-65ed4f5a795a",
+          "revisionNo": 3,
+          "title": {
+            "en": "Lesson 4: Your Family",
+            "vi": "Bài 4: Gia đình của bạn – chỉnh sửa"
+          },
+          "status": "CHANGES_REQUESTED",
+          "createdBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "submittedBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "approvedBy": null,
+          "publishedBy": null
+        },
+        {
+          "id": "15d4a1c9-6be5-4feb-b057-0247b877776a",
+          "revisionNo": 4,
+          "title": {
+            "en": "Lesson 4: Your Family",
+            "vi": "Bài 99: Gia đình – giữ số Admin"
+          },
+          "status": "PUBLISHED",
+          "createdBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "submittedBy": "aaaaaaaa-1111-4111-8111-111111111111",
+          "approvedBy": "cccccccc-0000-4000-8000-000000000001",
+          "publishedBy": "cccccccc-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  ],
+  "completions": [
+    {
+      "id": "7c1c2dc2-16ff-40f2-a267-6cab063fa12c",
+      "contextId": "54abdbce-9dac-47dc-833d-f3cc22e6c557",
+      "lessonId": "00000000-0000-0000-0000-000000000050",
+      "firstAttemptId": "198f2ecb-469c-4de1-bddf-fdfea6e148e4",
+      "completedAt": "2026-11-27T03:16:40.965Z",
+      "createdAt": "2026-11-27T03:16:40.965Z"
+    },
+    {
+      "id": "4a2e6cf4-d57a-47c7-9bce-51b63d105979",
+      "contextId": "54abdbce-9dac-47dc-833d-f3cc22e6c557",
+      "lessonId": "115748bc-f0a6-41a8-8092-166b5423d128",
+      "firstAttemptId": "6d83fc50-77d0-472b-863b-768715b55238",
+      "completedAt": "2026-11-27T03:17:45.809Z",
+      "createdAt": "2026-11-27T03:17:45.809Z"
+    },
+    {
+      "id": "70296a90-a718-435a-8ca9-4e549689c66a",
+      "contextId": "54abdbce-9dac-47dc-833d-f3cc22e6c557",
+      "lessonId": "99bb9d8f-eaf4-4261-913a-362ef26d1780",
+      "firstAttemptId": "0be0da51-a3b4-48ee-862d-bde5a08f9e02",
+      "completedAt": "2026-11-27T03:17:53.190Z",
+      "createdAt": "2026-11-27T03:17:53.190Z"
+    }
+  ],
+  "cards": [
+    {
+      "id": "ac3d17fe-75fe-4a24-9b0c-3b01b0557c15",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "3c49841d-d6e3-47e4-bd5f-5adb8e699d59",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:16:40.965Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "198f2ecb-469c-4de1-bddf-fdfea6e148e4",
+      "sourceLessonVocabularyId": "0e695b6e-844b-487f-ae6d-d8dca005cdac",
+      "createdAt": "2026-11-27T03:16:40.965Z",
+      "updatedAt": "2026-11-27T03:16:40.965Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "fedf0e0a-5332-444a-b038-c1f5d65e33df",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "d50fc357-39b6-4b87-bbb3-bd528d2e3297",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:16:40.965Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "198f2ecb-469c-4de1-bddf-fdfea6e148e4",
+      "sourceLessonVocabularyId": "bd023fa4-84de-491c-a3f4-ff150854719c",
+      "createdAt": "2026-11-27T03:16:40.965Z",
+      "updatedAt": "2026-11-27T03:16:40.965Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "b673de71-bfdf-400d-92a1-12ce87009515",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "e9d67910-65b8-4e56-a7f0-cd2c0d48b086",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:16:40.965Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "198f2ecb-469c-4de1-bddf-fdfea6e148e4",
+      "sourceLessonVocabularyId": "3f35c5f3-420c-4e91-b1d6-e7617eb301f1",
+      "createdAt": "2026-11-27T03:16:40.965Z",
+      "updatedAt": "2026-11-27T03:16:40.965Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "9720ea00-86f0-4f21-8d2a-7763c06822f0",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "7a0a85b5-c3cc-4d4d-84ad-cb409f441520",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:16:40.965Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "198f2ecb-469c-4de1-bddf-fdfea6e148e4",
+      "sourceLessonVocabularyId": "a1430612-b94d-478a-a929-bfe681a8b844",
+      "createdAt": "2026-11-27T03:16:40.965Z",
+      "updatedAt": "2026-11-27T03:16:40.965Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "b67264c1-c04b-4416-8496-75dbe8985d64",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "f27207b8-ee49-4a04-aae7-473ae783983b",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:16:40.965Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "198f2ecb-469c-4de1-bddf-fdfea6e148e4",
+      "sourceLessonVocabularyId": "f1301e69-9a3e-4028-be94-7a97edc19f4a",
+      "createdAt": "2026-11-27T03:16:40.965Z",
+      "updatedAt": "2026-11-27T03:16:40.965Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "8ed70151-bf16-4e84-bc88-b906e7c7f10f",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "3c454617-0159-4aad-bae3-c28dcfe9c578",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:16:40.965Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "198f2ecb-469c-4de1-bddf-fdfea6e148e4",
+      "sourceLessonVocabularyId": "513e2205-9f12-4492-8960-12e008b3fcf6",
+      "createdAt": "2026-11-27T03:16:40.965Z",
+      "updatedAt": "2026-11-27T03:16:40.965Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "52505b38-c6a3-4dfa-88b8-6f43461ea136",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "5d86314f-1b2a-4aab-855e-e51a15f11a82",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:17:45.809Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "6d83fc50-77d0-472b-863b-768715b55238",
+      "sourceLessonVocabularyId": "86159a31-33d6-4fb2-a006-b12c069beb06",
+      "createdAt": "2026-11-27T03:17:45.809Z",
+      "updatedAt": "2026-11-27T03:17:45.809Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "489697ff-8443-45b7-8715-77d8e781cb98",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "7fe32761-324d-49d7-84cd-efa55715a9c6",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:17:45.809Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "6d83fc50-77d0-472b-863b-768715b55238",
+      "sourceLessonVocabularyId": "ec802e4a-698a-4325-83c4-dc351a923092",
+      "createdAt": "2026-11-27T03:17:45.809Z",
+      "updatedAt": "2026-11-27T03:17:45.809Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "a921fac3-7090-475d-a6fa-dec60d3b0aa4",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "dd7c9e65-d31b-415b-9a8c-eaf6600a6ea6",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:17:45.809Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "6d83fc50-77d0-472b-863b-768715b55238",
+      "sourceLessonVocabularyId": "a3502689-1030-4306-9481-0c43d82871e9",
+      "createdAt": "2026-11-27T03:17:45.809Z",
+      "updatedAt": "2026-11-27T03:17:45.809Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "1811df5a-950e-437f-9b98-f9a7a167bfd9",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "45cf212f-284b-4001-9cf8-03edc619df27",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:17:45.809Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "6d83fc50-77d0-472b-863b-768715b55238",
+      "sourceLessonVocabularyId": "055d78fd-8da4-4d3c-882d-5e0f921dedf0",
+      "createdAt": "2026-11-27T03:17:45.809Z",
+      "updatedAt": "2026-11-27T03:17:45.809Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "18adb7fc-6594-4a12-8339-0d0d77c8166e",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "e5c7f6cc-cf64-466a-8712-29ac46439c85",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:17:45.809Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "6d83fc50-77d0-472b-863b-768715b55238",
+      "sourceLessonVocabularyId": "5931490a-ed1e-409c-be1c-cc5ec58a03d6",
+      "createdAt": "2026-11-27T03:17:45.809Z",
+      "updatedAt": "2026-11-27T03:17:45.809Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "43e01ecb-43b5-410e-b950-030f6b8e42fa",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "2519ade4-e26b-4209-ae0f-b2b57166172d",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:17:45.809Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "6d83fc50-77d0-472b-863b-768715b55238",
+      "sourceLessonVocabularyId": "0c50e8af-a7a4-4ece-97e7-33879e0e521e",
+      "createdAt": "2026-11-27T03:17:45.809Z",
+      "updatedAt": "2026-11-27T03:17:45.809Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "8e138c65-c070-4a85-8b58-99aae2c27f2f",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "a609ce97-535a-45ef-9798-ccd4aa0543fd",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:17:53.190Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "0be0da51-a3b4-48ee-862d-bde5a08f9e02",
+      "sourceLessonVocabularyId": "602688ea-8400-4d95-bb5a-6e5823a06c5e",
+      "createdAt": "2026-11-27T03:17:53.190Z",
+      "updatedAt": "2026-11-27T03:17:53.190Z",
+      "rowVersion": "1"
+    },
+    {
+      "id": "0487d8c0-3973-4da2-be34-f0be78595074",
+      "learnerId": "4746cc51-83e1-4aeb-9e50-7d3d6c481299",
+      "vocabularyId": "e776752c-560e-487f-ab90-e9473201d955",
+      "stage": 1,
+      "dueAt": "2026-11-27T03:17:53.190Z",
+      "lastReviewedAt": null,
+      "enrollmentSource": "CORE_COMPLETION",
+      "sourceAttemptId": "0be0da51-a3b4-48ee-862d-bde5a08f9e02",
+      "sourceLessonVocabularyId": "33707e06-3858-47a9-91b5-fed5df9e162b",
+      "createdAt": "2026-11-27T03:17:53.190Z",
+      "updatedAt": "2026-11-27T03:17:53.190Z",
+      "rowVersion": "1"
+    }
+  ]
+}

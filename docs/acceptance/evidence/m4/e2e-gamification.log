@@ -1,0 +1,40 @@
+
+> lingora-workspace@1.0.0 test:e2e:gamification
+> node scripts/local-test-db.mjs npm run test:e2e:gamification -w lingora-web
+
+
+> lingora-web@1.0.0 test:e2e:gamification
+> node --experimental-strip-types tests/feature/home-path-e2e.test.mjs
+
+=== Sprint 4 Home, Path & Gamification E2E Acceptance ===
+✔ Synthetic Auth Provider listening on http://127.0.0.1:35731
+[seed] Seeding canonical configuration with semantic mismatch detection...
+[seed] Language verified: en (00000000-0000-0000-0000-000000000001)
+[seed] Language verified: vi (00000000-0000-0000-0000-000000000002)
+[seed] Framework verified: CEFR v2020 (00000000-0000-0000-0000-000000000010)
+[seed] Level verified: A1 pos 1 (00000000-0000-0000-0000-000000000021)
+[seed] Level verified: A2 pos 2 (00000000-0000-0000-0000-000000000022)
+[seed] Level verified: B1 pos 3 (00000000-0000-0000-0000-000000000023)
+[seed] Level verified: B2 pos 4 (00000000-0000-0000-0000-000000000024)
+[seed] DEV Course created: 00000000-0000-0000-0000-000000000030
+[seed] DEV Unit verified: DEV-UNIT-01 (00000000-0000-0000-0000-000000000040)
+[seed] DEV Planned Lesson verified: pos 1 (00000000-0000-0000-0000-000000000050)
+[seed] Seeding completed successfully (all semantic records verified idempotent).
+✔ Base canonical seed applied
+✔ Synthetic actors seeded in PostgreSQL
+✔ Sample curriculum ready: lesson1=00000000-0000-0000-0000-000000000050, lesson2=8c337851-2f2f-4e98-8770-fc621690414a
+✔ Pre-created active LearningContext: 55555555-0000-4000-8000-000000000001
+Starting lingora-web on port 42049...
+✔ lingora-web ready at http://127.0.0.1:42049
+Navigating to /home...
+✔ Captured 01-home-initial-desktop.png: Initial Home, Gamification & Learning Path
+Clicking continue learning CTA...
+✔ Navigated to Lesson 1 Practice: /learn/55555555-0000-4000-8000-000000000001/00000000-0000-0000-0000-000000000050
+✔ Practice finalized: #practiceCelebrationBox is visible
+✔ Captured 02-practice-celebration-desktop.png: Practice Completion Celebration
+✔ Captured 03-home-updated-gamification-desktop.png: Updated Home with Gamification & Path Progression
+✔ SRS review persists exactly +1 XP and one daily review after reload
+✔ Captured 04-home-mobile-390px.png: Mobile 390px Viewport Home & Gamification
+=============================================================
+🎉 SPRINT 4 HOME, PATH & GAMIFICATION E2E ACCEPTANCE: PASSED! 🎉
+=============================================================

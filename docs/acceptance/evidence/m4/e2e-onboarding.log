@@ -1,0 +1,59 @@
+
+> lingora-workspace@1.0.0 test:e2e:onboarding
+> node scripts/local-test-db.mjs npm run test:e2e:onboarding -w lingora-web
+
+
+> lingora-web@1.0.0 test:e2e:onboarding
+> node --experimental-strip-types tests/feature/onboarding-e2e.test.mjs
+
+=== Sprint 3 Core End-to-End Acceptance Test ===
+✔ Synthetic Supabase Auth provider listening on http://127.0.0.1:38095
+[seed] Seeding canonical configuration with semantic mismatch detection...
+[seed] Language verified: en (00000000-0000-0000-0000-000000000001)
+[seed] Language verified: vi (00000000-0000-0000-0000-000000000002)
+[seed] Framework verified: CEFR v2020 (00000000-0000-0000-0000-000000000010)
+[seed] Level verified: A1 pos 1 (00000000-0000-0000-0000-000000000021)
+[seed] Level verified: A2 pos 2 (00000000-0000-0000-0000-000000000022)
+[seed] Level verified: B1 pos 3 (00000000-0000-0000-0000-000000000023)
+[seed] Level verified: B2 pos 4 (00000000-0000-0000-0000-000000000024)
+[seed] DEV Course created: 00000000-0000-0000-0000-000000000030
+[seed] DEV Unit verified: DEV-UNIT-01 (00000000-0000-0000-0000-000000000040)
+[seed] DEV Planned Lesson verified: pos 1 (00000000-0000-0000-0000-000000000050)
+[seed] Seeding completed successfully (all semantic records verified idempotent).
+✔ Base canonical seed (languages, frameworks, levels) applied
+✔ Synthetic actors verified and seeded in PostgreSQL
+✔ Sample A1 Curriculum provisioned: course=00000000-0000-0000-0000-000000000030, lessons=3
+Starting lingora-web on port 35957...
+✔ lingora-web ready at http://127.0.0.1:35957
+
+--- Scenario 1: Learner 1 DEFAULT Onboarding ---
+✔ Preview rendered accurately with starting level and goal
+Reloading browser at Step 6 to verify state & preview auto-recovery...
+✔ Auto-recovery on reload at Step 6 verified
+✔ Onboarding completed; success confirmation displayed
+✔ Started the first lesson through the server-provided href
+✔ PostgreSQL assertions PASS for Learner 1 (DEFAULT branch)
+
+--- Scenario 2: Learner 2 SELF_REPORT Onboarding ---
+✔ Learner 2 SELF_REPORT onboarding completed and first lesson opened
+✔ PostgreSQL assertions PASS for Learner 2 (SELF_REPORT provenance verified)
+
+--- Scenario 3: Goal Update & Plan Replacement ---
+✔ HomeView goal update used CAS version 1 and persisted version 2
+✔ PostgreSQL assertions PASS for Plan Replacement and Preferences preservation
+
+--- Scenario 4: S12 Cross-Device Confirmation (Items 13-16) ---
+✔ Registration in context A received D1 link in mailbox
+✔ Anti-prefetch verified: 0 verify requests on GET
+✔ Context B arrived at /auth/verify
+✔ Verify form submit completed, redirected to /login?confirmed=1
+✔ Context B logged in successfully and reached Home
+✔ Context A also logged in successfully and reached Home
+✔ Replay spent link redirected to /login?error=confirmation_failed with resend form
+✔ Resend form triggered new confirmation link generation
+✔ New confirmation link verified and redirected to /login?confirmed=1
+✔ Responsive 360px and 390px layout verified without horizontal overflow
+
+=============================================================
+🎉 SPRINT 3 CORE E2E ACCEPTANCE: ALL SCENARIOS PASSED! 🎉
+=============================================================

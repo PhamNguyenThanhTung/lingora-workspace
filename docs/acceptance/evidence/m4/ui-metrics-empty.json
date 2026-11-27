@@ -1,0 +1,41 @@
+[
+  {
+    "screen": "empty",
+    "viewport": [
+      375,
+      812
+    ],
+    "url": "/review",
+    "width": 375,
+    "scrollWidth": 375,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "empty",
+    "viewport": [
+      768,
+      1024
+    ],
+    "url": "/review",
+    "width": 768,
+    "scrollWidth": 768,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  },
+  {
+    "screen": "empty",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "/review",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "lang": "vi",
+    "smallTargets": [],
+    "violations": []
+  }
+]

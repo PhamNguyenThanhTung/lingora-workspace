@@ -1,0 +1,7 @@
+home {"screen":"home","browserZoom":2,"width":720,"height":450,"dpr":2.000000074233867,"scrollWidth":712,"clipped":[]}
+catalogue {"screen":"catalogue","browserZoom":2,"width":720,"height":450,"dpr":2.000000074233867,"scrollWidth":720,"clipped":[]}
+lesson-reader {"screen":"lesson-reader","browserZoom":2,"width":720,"height":450,"dpr":2.000000074233867,"scrollWidth":712,"clipped":[]}
+result {"screen":"result","browserZoom":2,"width":720,"height":450,"dpr":2.000000074233867,"scrollWidth":712,"clipped":[]}
+practice-before {"screen":"practice-before","browserZoom":2,"width":720,"height":450,"dpr":2.000000074233867,"scrollWidth":720,"clipped":[]}
+srs-before-reveal {"screen":"srs-before-reveal","browserZoom":2,"width":720,"height":450,"dpr":2.000000074233867,"scrollWidth":712,"clipped":[]}
+srs-after-reveal {"screen":"srs-after-reveal","browserZoom":2,"width":720,"height":450,"dpr":2.000000074233867,"scrollWidth":712,"clipped":[]}

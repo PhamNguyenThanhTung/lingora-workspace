@@ -1,0 +1,71 @@
+ACTION #btnSaveDraft 200 {"data":{"id":"99bb9d8f-eaf4-4261-913a-362ef26d1780","unitId":"00000000-0000-0000-0000-000000000040","position":4,"isRequired":true,"availability":"PLANNED","rowVersion":"2","courseContext":{"id":"00000000-0000-0000-0000-000000000030","names":{"en":"[DEV] English Core Curriculum","vi":"[DEV] Chương trình tiếng Anh chuẩn"},"languageCode":"en","languageId":"00000000-0000-0000-0000-000000000001"},"unitContext":{"id":"00000000-0000-0000-0000-000000000040","code":"DEV-UNIT-01","names":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"}},"assignment":{"id":"a9162ed0-8c5d-42cd-b142-d8a98e
+J01 all five types reload PASS
+DUPLICATE Thêm từ vựng vào bản nháp
+1. Tra cứu từ có sẵn
+2. Tạo từ vựng mới
+Vị trí trong bài học
+Phân loại
+Từ vựng cốt lõi
+Từ / Cụm từ gốc *
+Nét nghĩa (senseKey)
+Cảnh báo có từ giống hoặc gần giống trong cùng ngôn ngữ:
+Đã có trong bài học này: family (m4-0) — gia đình
+family m4-0
+vi: gia đình en: a group of related people
+Dùng từ này
+Ý nghĩa tiếng Việt *
+Ý nghĩa tiếng Anh
+Phiên âm (tùy chọn)
+Từ loại (tùy chọn)
+Ví dụ minh họa (tùy chọn)
+Đóng
+Thêm vào bản nháp
+ACTION #btnSaveDraft 200 {"data":{"id":"99bb9d8f-eaf4-4261-913a-362ef26d1780","unitId":"00000000-0000-0000-0000-000000000040","position":4,"isRequired":true,"availability":"PLANNED","rowVersion":"3","courseContext":{"id":"00000000-0000-0000-0000-000000000030","names":{"en":"[DEV] English Core Curriculum","vi":"[DEV] Chương trình tiếng Anh chuẩn"},"languageCode":"en","languageId":"00000000-0000-0000-0000-000000000001"},"unitContext":{"id":"00000000-0000-0000-0000-000000000040","code":"DEV-UNIT-01","names":{"en":"[DEV] Unit 1: Foundations","vi":"[DEV] Bài 1: Nền tảng"}},"assignment":{"id":"a9162ed0-8c5d-42cd-b142-d8a98e
+J02 stale replay 409 {"error":{"code":"STALE_LESSON","message":"Dữ liệu bài học đã bị thay đổi bởi tác vụ khác. Vui lòng tải lại dữ liệu mới nhất."}}
+J02 offline save retains input [ 'Lỗi kết nối máy chủ khi lưu bản nháp. Vui lòng thử lại.', '' ]
+J02 local backup restored PASS
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.click: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('#btnSubmitForReview')[22m
+[2m    - locator resolved to <button disabled type="button" class="btn btn-primary" id="btnSubmitForReview">Nộp kiểm duyệt</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    19 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is not enabled[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+
+    at author (/tmp/lingora-accept-driver.mjs:53:10)
+    at async file:///tmp/lingora-accept-driver.mjs:83:46 {
+  log: [
+    "  - waiting for locator('#btnSubmitForReview')",
+    '    - locator resolved to <button disabled type="button" class="btn btn-primary" id="btnSubmitForReview">Nộp kiểm duyệt</button>',
+    '  - attempting click action',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not enabled',
+    '    - retrying click action',
+    '    - waiting 20ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not enabled',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '    19 × waiting for element to be visible, enabled and stable',
+    '       - element is not enabled',
+    '     - retrying click action',
+    '       - waiting 500ms'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.22.3

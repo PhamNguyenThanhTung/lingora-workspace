@@ -1,0 +1,89 @@
+
+> lingora-workspace@1.0.0 test:integration:onboarding
+> node scripts/local-test-db.mjs npm run test:integration:onboarding -w lingora-web
+
+
+> lingora-web@1.0.0 test:integration:onboarding
+> node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/auth-bootstrap-postgres.test.mjs tests/feature/context-concurrency.test.mjs tests/feature/onboarding-plan-postgres.test.mjs
+
+(node:200942) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Package A: Real PostgreSQL Production Bootstrap
+  ▶ PostgreSQL Safety Guard Verification (Subprocess Negative Tests)
+    ✔ fails before client creation if SLICE11_TEST_DATABASE_OWNED is missing or not 1 (174.83165ms)
+    ✔ fails before client creation if SLICE11_TEST_DATABASE_URL is non-loopback (155.338892ms)
+    ✔ fails before client creation if only DATABASE_URL is set (NEVER fallback) (161.845757ms)
+  ✔ PostgreSQL Safety Guard Verification (Subprocess Negative Tests) (492.873153ms)
+  ✔ bootstrap creates fixed LEARNER ACTIVE Account and AuditEvent in real PostgreSQL (14.976223ms)
+  ✔ real concurrent bootstrap convergence: same identity, two clients -> exactly one Account + one audit (7.197353ms)
+learner.bootstrap_tx_failed { category: 'UNAVAILABLE' }
+  ✔ injected failure at audit write AFTER real account insert rolls back entire transaction (no Account, no audit) (4.700835ms)
+  ✔ bootstrap is idempotent and converges via ON CONFLICT DO NOTHING without duplicating audit (6.971413ms)
+  ✔ staff reservation in app_private.provisioning_requests blocks bootstrap by normalized email (5.355167ms)
+  ✔ staff reservation blocks bootstrap by authUserId or providerCorrelationId (9.770614ms)
+  ✔ staff private app_metadata marker rejects bootstrap and creates no account (3.060641ms)
+  ✔ existing DISABLED account is strictly not reactivated or altered by bootstrap (3.414094ms)
+  ✔ existing TEACHER account is strictly not converted or altered by bootstrap (3.197012ms)
+✔ Package A: Real PostgreSQL Production Bootstrap (655.420674ms)
+(node:200943) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Real PostgreSQL: simultaneous same-language create leaves exactly one row and serializes via actor lock (398.18372ms)
+✔ Real PostgreSQL: concurrent create with exact same contextId converges on one row (228.924064ms)
+✔ Real PostgreSQL: different-language concurrent creates never exceed two ACTIVE capacity (214.460712ms)
+✔ Real PostgreSQL: replay at capacity returns existing row without 409 (198.003222ms)
+✔ Real PostgreSQL: duplicate PAUSED create does not implicitly resume or recreate (188.105805ms)
+✔ Real PostgreSQL: two resume contenders compete for last active slot (221.45198ms)
+✔ Real PostgreSQL: Pause and Resume update status/rowVersion/updatedAt ONLY (210.997182ms)
+✔ Real PostgreSQL: Language invalidation during create fails 409 LANGUAGE_NOT_LEARNABLE (186.400809ms)
+✔ Real PostgreSQL: Language invalidation during resume fails 403 LANGUAGE_NOT_LEARNABLE (191.540847ms)
+✔ Real PostgreSQL: PAUSED denies submitPracticeResponse, finalize and committed replays (304.596285ms)
+✔ Real PostgreSQL: Post-write injected failure proves context transaction rollback (213.399966ms)
+✔ Real PostgreSQL: Level reorder writer held before selector locks; selector waits via pg_blocking_pids and derives fresh position (232.946607ms)
+✔ Real PostgreSQL: Learner holds Level shared lock; competing level reorder blocks via pg_blocking_pids until learner commits (214.821645ms)
+✔ Real PostgreSQL: Lesson writer withdraws lowest lesson while selector waits via pg_blocking_pids; fresh selection chooses Level 2 (218.786844ms)
+✔ Real PostgreSQL: Learner holds Lesson shared lock; competing lesson withdrawal blocks via pg_blocking_pids until learner commits (226.656718ms)
+✔ Real PostgreSQL: Lesson writer withdraws all lessons; create fails 409 COURSE_NO_AVAILABLE_LESSONS without row (189.433538ms)
+✔ Real PostgreSQL: Initial lower Lesson PLANNED, selector holds after complete set acquisition; competing activation blocks via pg_blocking_pids (214.896435ms)
+✔ Real PostgreSQL: Real publishReview waits for selector; subsequent DEFAULT locks the exact replacement revision (277.649753ms)
+✔ Real PostgreSQL: Real createLesson waits behind Course SHARE via pg_blocking_pids; reverse order blocks selector on Course SHARE (258.443828ms)
+✔ Real PostgreSQL: Two distinct learners on same Course reach concurrent held barrier and complete successfully without serialization (196.542736ms)
+✔ Real PostgreSQL: Overlapping Pause vs Learning schedules (Reading start/complete, Practice start/response/finalize) prove true pg_blocking_pids serialization (658.991656ms)
+✔ Real PostgreSQL: Nonempty mature SRS card state and valid review history preserved across Pause and Resume with microsecond snapshot precision (286.835681ms)
+✔ Real PostgreSQL R6: simultaneous startLearningContext on unconfigured context converges with one winner and replay (216.917862ms)
+✔ Real PostgreSQL R6: startLearningContext with stale rowVersion or already configured fails 409 (208.375601ms)
+✔ Real PostgreSQL R6: startLearningContext rejects context with learning history (409 CONTEXT_HAS_HISTORY) (183.708093ms)
+(node:200949) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Real PostgreSQL: First completeOnboarding creates 1 LearningContext and exactly 1 ACTIVE LearningPlan atomically (368.3548ms)
+✔ Real PostgreSQL: Double-submit with same contextId & intent converges idempotently on same context and plan (262.882402ms)
+✔ Real PostgreSQL: Explicit DEFAULT course choice is part of the idempotency fingerprint (242.654348ms)
+✔ Complete rejects an explicit DEFAULT course that went inactive after preview (198.189331ms)
+✔ Real PostgreSQL: Reusing contextId with conflicting payload fails 409 CONTEXT_CONFLICT (198.798551ms)
+✔ Real PostgreSQL: Foreign contextId fails with 409 CONTEXT_CONFLICT (208.864849ms)
+✔ Real PostgreSQL: Stale preview expectation fails with 409 RECOMMENDATION_CHANGED (203.669551ms)
+✔ Real PostgreSQL: Capacity rule limits to 2 ACTIVE contexts (187.136543ms)
+✔ Real PostgreSQL: GET plan returns READY, plan summary, and dynamic nextLesson (200.972284ms)
+✔ Real PostgreSQL: Existing context update plan with CAS and multiple REPLACED rows (272.559657ms)
+✔ Real PostgreSQL: Partial unique index prevents multiple simultaneous ACTIVE plans for same context (228.719767ms)
+✔ Real PostgreSQL R1: SELF_REPORT valid writes provenance { levelId } and 1 ACTIVE plan (211.714663ms)
+✔ Real PostgreSQL R1: SELF_REPORT with invalid framework fails 400 LEVEL_INVALID and writes 0 rows (195.623437ms)
+✔ Real PostgreSQL R1: SELF_REPORT on level without published lessons fails 409 RECOMMENDATION_CHANGED and writes 0 rows (196.958322ms)
+✔ Real PostgreSQL R3: Preferences patch retains unmentioned fields and preserves onboardingCompletedAt (249.630964ms)
+✔ Real PostgreSQL R3: No-op update returns active plan, records receipt, and does not bump rowVersion (229.605709ms)
+✔ Real PostgreSQL R3: Update replay with conflicting payload fails 409 OPERATION_CONFLICT (226.418339ms)
+✔ Real PostgreSQL R3: Complete replay after plan is replaced fails 409 CONTEXT_PLAN_REPLACED (224.346837ms)
+✔ Real PostgreSQL R2: Disabled account fails under lock with 403 ACCOUNT_INACTIVE (198.317863ms)
+✔ Real PostgreSQL R2: Withdrawing all lessons makes GET plan return CURRICULUM_UNAVAILABLE (201.534377ms)
+✔ Existing learner can create and replace a plan while keeping completed practice and SRS (299.841432ms)
+✔ Complete holds its selected Lesson lock through commit (497.989613ms)
+✔ Complete rejects a preview after the course loses its published lessons (208.322634ms)
+✔ A failed plan insert rolls back both onboarding and plan replacement (235.512439ms)
+✔ Complete waits for a lesson withdrawal already in flight and rechecks the lowest level (236.25667ms)
+ℹ tests 62
+ℹ suites 2
+ℹ pass 62
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6391.59614

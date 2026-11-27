@@ -1,0 +1,474 @@
+
+> lingora-workspace@1.0.0 test:components
+> npm run test:components -w lingora-admin && npm run test:components -w lingora-web
+
+
+> lingora-admin@1.0.0 test:components
+> node tests/feature/isolated-components.test.mjs && node tests/feature/isolated-components-frameworks.test.mjs && node tests/feature/isolated-components-courses.test.mjs && node tests/feature/isolated-components-teachers.test.mjs && node tests/feature/isolated-components-lessons.test.mjs && node tests/feature/isolated-components-lessons-acceptance.test.mjs && node tests/feature/isolated-components-slice6.test.mjs && node tests/feature/isolated-components-slice6-acceptance.test.mjs && node tests/feature/isolated-components-slice7.test.mjs && node tests/feature/isolated-components-slice8.test.mjs && node tests/feature/isolated-components-audit.test.mjs && node tests/feature/isolated-components-mobile-editor.test.mjs
+
+▶ STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests
+  ✔ R2: DeleteConfirmModal held pending locks, disables buttons, prevents Escape/backdrop dismiss and duplicate submit (1204.998928ms)
+  ✔ R2: DeleteConfirmModal failure retains dialog and enables retry (250.830097ms)
+  ✔ R2: LanguageFormModal focuses server field error after disabled controls become enabled (494.465782ms)
+  ✔ R2/R9: POST create held pending locks, prevents duplicate submit, retries on 503, reconciles 201 to catalog (1345.363532ms)
+  ✔ R2/R9: PATCH edit held pending locks, prevents duplicate submit, retries on 503, reconciles 200 to catalog (1323.909066ms)
+  ✔ R9: Modal keyboard focus trapping (Tab and Shift+Tab) in LanguageFormModal and DeleteConfirmModal (561.858557ms)
+  ✔ R9: 403 Forbidden vs 503 Service Unavailable error distinctions in forms (1105.593928ms)
+  ✔ R7: Untouched edit modal does NOT create dirty draft, dirty edit saves draft, discard clears it (482.876186ms)
+  ✔ R7: 401 session expiry on form submit retains draft in storage and opens non-dismissible SessionLostModal (1378.865166ms)
+  ✔ R7/R9b: Recovered edit survives a second reload unchanged, reopen after discard displays authoritative server data (677.965544ms)
+  ✔ R7/R9b: Teacher holding view entry prunes drafts belonging to other accounts (290.716369ms)
+  ✔ R7/R9b: Draft TTL expiration, storage failure resilience, and logout clearing (619.038151ms)
+  ✔ TST-02: Mount draft scan preserves active own draft while pruning other-account drafts (308.678747ms)
+  ✔ TST-02: Keyboard Escape/Enter focus restoration and rapid close/reopen do not steal focus (852.826156ms)
+  ✔ TST-02: restoreFocusAfterClose guards inert/disabled/disconnected/open-dialog targets and leaks zero timers or observers (552.058498ms)
+✔ STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests (11626.896647ms)
+ℹ tests 15
+ℹ suites 1
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11630.392678
+▶ S2-04: Frameworks & Levels Isolated Component State & Interaction Suite
+  ✔ Framework modal keeps input focus after immediate dismiss and reopen (337.167608ms)
+  ✔ Level modal keeps input focus after immediate dismiss and reopen (279.288193ms)
+  ✔ FrameworkFormModal POST create held pending locks, prevents duplicate submit, retries on 409 duplicate error, reconciles 201 to catalog and reopens cleanly (1506.380595ms)
+  ✔ FrameworkFormModal PATCH edit held pending locks, Escape/backdrop suppression, clears vi locale (R2), reconciles 200, fresh reopen displays authoritative server data (1180.998389ms)
+  ✔ FrameworkDeleteModal held pending locks, disables buttons, prevents Escape/backdrop dismiss and duplicate submit (994.030686ms)
+  ✔ FrameworkDeleteModal in-use error (409) retains modal and shows clear explanation (469.439775ms)
+  ✔ FrameworkDeleteModal successful deletion, focus restoration to surviving row action, and status clearance (R5) (597.810126ms)
+  ✔ LevelsCatalog displays parent identity banner and back link (200.256109ms)
+  ✔ LevelFormModal create pending locks, prevents duplicate submit, distinguishes code vs position conflict and retains inputs (1602.410473ms)
+  ✔ LevelFormModal PATCH edit held pending locks, clears vi label (R2), reconciles 200, fresh reopen (1152.426003ms)
+  ✔ LevelDeleteModal held pending locks, in-use restriction (409) vs successful deletion and focus restoration (R5) (1010.47482ms)
+  ✔ FrameworksCatalog and LevelsCatalog on 403 show permission denial and suppress mutation controls (R4) (936.257061ms)
+  ✔ Both actual denial logout buttons remove real accepted drafts, preserve unrelated storage, and handle cleanup failure (Gate 4) (2071.8075ms)
+  ✔ Frameworks and Levels empty states render truthful guidance and create triggers (303.030591ms)
+  ✔ Frameworks and Levels loading skeletons and fetch error retry success (R6 UI) (604.85728ms)
+  ✔ R1: Production FrameworkDetailPage renders into real LevelsCatalog UI, invokes POST with exact parent framework id in URL and payload, and visibly reconciles 201 (552.114338ms)
+  ✔ R1: Production FrameworksPage renders into real FrameworksCatalog UI, invokes POST with valid payload, and visibly reconciles 201 (465.003617ms)
+  ✔ R3: Framework form modal edit 404 displays error, retains inputs, does not update table, and dismisses cleanly (522.085985ms)
+  ✔ R3: Framework delete modal 404 displays error, keeps modal open with buttons re-enabled, retains table row, and dismisses cleanly (590.445207ms)
+  ✔ R3: Level form modal edit 404 displays error, retains inputs, does not update table, and dismisses cleanly (525.311749ms)
+  ✔ R3: Level delete modal 404 displays error, keeps modal open with buttons re-enabled, retains table row, and dismisses cleanly (582.336039ms)
+✔ S2-04: Frameworks & Levels Isolated Component State & Interaction Suite (16660.005796ms)
+ℹ tests 21
+ℹ suites 1
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16663.799345
+▶ S3-04: Courses & Units Isolated Component State & Interaction Suite
+  ✔ CourseFormModal POST create held pending locks, prevents duplicate submit, dependent level updates, and reopens cleanly (1531.253439ms)
+  ✔ CourseFormModal in-memory retry on 503 preserves user inputs, clears errors on edit, and submits successfully (607.112786ms)
+  ✔ CourseFormModal PATCH edit held pending lock, Escape/backdrop blocked, and clears vi locale (1194.572449ms)
+  ✔ CourseDeleteModal held pending locks, in-use error (409) retention vs successful deletion and focus restoration (R5) (1299.013796ms)
+  ✔ UnitFormModal POST create held pending locks, prevents duplicate submit, retries on 409 duplicate (Course, Level, position), and reopens cleanly (1572.664601ms)
+  ✔ UnitDeleteModal held pending locks, in-use restriction (409) vs successful deletion and focus restoration (R5) (1158.63589ms)
+  ✔ CoursesCatalog and UnitsCatalog on 403 suppress mutation controls and logout cleans up active drafts (1592.297717ms)
+  ✔ UnitFormModal PATCH edit modal populates current values and reconciles catalogue table row on success (462.943877ms)
+  ✔ 401 triggers SessionLostModal and 503 triggers retry view in CoursesCatalog and UnitsCatalog (1699.764283ms)
+  ✔ Real production pages compile and wire navigation links correctly (384.569032ms)
+  ✔ Visual layout and keyboard checks across responsive viewports with zero console errors (1226.865382ms)
+  ✔ S3-FINAL-PATCH Regression A: Unit dependency retry preserves user inputs, retains/clears selection, locks pending mutation, reconciles server DTO, and reopens clean (2343.987851ms)
+  ✔ S3-FINAL-PATCH Regression B: Table-driven Course & Unit dependency 403 closes modal, releases inert, shows denial banner with usable Logout (1579.192571ms)
+  ✔ S3-FINAL-PATCH Regression C: Real catalogue -> generated href -> real detail compiler props with initialLevelsError -> retry callback -> create/edit callback -> server DTO reconciliation (671.803192ms)
+✔ S3-04: Courses & Units Isolated Component State & Interaction Suite (17780.4517ms)
+ℹ tests 14
+ℹ suites 1
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17784.437641
+▶ S4-TEACHERS: Isolated Component State & Interaction Suite
+  ✔ TeacherCreateModal POST create held pending locks, prevents duplicate submit, retries on 409 duplicate error, and reconciles 201 to catalog (1035.861464ms)
+  ✔ TeacherStatusModal disable enforces nonblank reason, pending lock, and reconciles DISABLED status (904.904837ms)
+  ✔ TeacherStatusModal enable flow successfully reconciles ACTIVE status (323.122255ms)
+  ✔ Broken Auth identity (orphan) displays explicit notice and disables mutation controls (247.681533ms)
+  ✔ 403 Forbidden closes mutation modal, releases inert, hides mutation controls and provides usable Logout (325.635118ms)
+  ✔ Production TeachersPage wires to actual catalogue, invokes exact POST/PATCH API URLs and payload (Mutant D kill) (546.989854ms)
+  ✔ Responsive viewports 1440x960 and 1100x800 layout integrity and screenshots (1013.735938ms)
+✔ S4-TEACHERS: Isolated Component State & Interaction Suite (4565.85743ms)
+▶ S4-TEACHERS: Activation runtime and mutation failure recovery
+  ✔ create 401 dismisses modal truthfully and leaves recovery usable (380.614258ms)
+  ✔ create 403 dismisses modal truthfully and leaves recovery usable (395.700452ms)
+  ✔ status 401 dismisses modal truthfully and leaves recovery usable (388.513605ms)
+  ✔ status 403 dismisses modal truthfully and leaves recovery usable (373.706896ms)
+  ✔ status held request locks confirmation/dismissal, failure retains reason then reconciles server result (424.098294ms)
+  ✔ real invite fragment bootstraps SSR-compatible cookies, clears URL/drafts, serializes submit and clears passwords after failure (399.704747ms)
+  ✔ unrecognized/expired invite cannot fall back to an ambient session (type=recovery) (176.765976ms)
+  ✔ unrecognized/expired invite cannot fall back to an ambient session (error=access_denied) (179.333391ms)
+✔ S4-TEACHERS: Activation runtime and mutation failure recovery (2785.859892ms)
+ℹ tests 15
+ℹ suites 2
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7356.06848
+▶ S5-LESSONS: Isolated Component State & Interaction Suite
+  ✔ LessonFormModal POST create held pending locks, prevents duplicate submit, retries on 409 duplicate position, and reconciles 201 to catalog (1016.276651ms)
+  ✔ LessonFormModal PATCH edit held pending lock, sends expectedRowVersion and reconciles 200 (493.176783ms)
+  ✔ LessonAssignModal displays current disabled teacher, filters options to active, and reconciles assignment (427.044874ms)
+  ✔ UnitsCatalog table row renders link pointing to /courses/[courseId]/units/[unitId] (210.178853ms)
+  ✔ Production UnitLessonsPage wires real page compiler props, renders LessonsCatalog, and wires API URLs (359.342253ms)
+  ✔ TeacherLessonsCatalog renders assigned lessons and link to draft editor (200.425092ms)
+  ✔ LessonDraftEditor handles paragraph add/remove, pending locks, 409 conflict, token reload and successful save (543.980094ms)
+  ✔ Production TeacherLessonDetailPage surfaces an endpoint failure (318.52923ms)
+  ✔ Empty states and usable Logout on permission denial (294.678294ms)
+✔ S5-LESSONS: Isolated Component State & Interaction Suite (4055.885055ms)
+ℹ tests 9
+ℹ suites 1
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4059.368311
+✔ Production Admin callbacks call exact create/edit/assignment APIs and reconcile distinct DTOs (1658.833904ms)
+✔ Production Teacher callback sends exact whitelist and renders authoritative title/body/history (452.020436ms)
+✔ Teacher pending save blocks duplicates/navigation; 503 preserves input and retry reconciles (418.373811ms)
+✔ Teacher stale recovery loads latest body and token explicitly before allowing retry (443.918069ms)
+✔ Teacher save handles 401 with accepted login/logout flow (579.839694ms)
+✔ Teacher recovery handles 401 with accepted login/logout flow (618.286704ms)
+✔ Teacher list handles 401 with accepted login/logout flow (528.805111ms)
+✔ Teacher save handles 403 with accepted login/logout flow (360.550357ms)
+✔ Teacher recovery handles 403 with accepted login/logout flow (415.300337ms)
+✔ Teacher list handles 403 with accepted login/logout flow (328.886689ms)
+✔ Production Teacher list uses real assigned props and unsupported draft stays read-only (473.114686ms)
+✔ Teacher save DRAFT_NOT_EDITABLE switches to read-only without false success (314.609837ms)
+✔ Teacher save UNSUPPORTED_DRAFT_CONTENT switches to read-only without false success (331.921182ms)
+✔ Production options503 is visible and retry restores assignment choices (518.128868ms)
+✔ Admin stale edit retains input and refreshes catalogue token before retry (1098.886883ms)
+✔ Admin stale assign retains input and refreshes catalogue token before retry (1104.538537ms)
+✔ Admin mutation 401 releases editing modal and preserves usable auth controls (574.051823ms)
+✔ Admin mutation 403 releases editing modal and preserves usable auth controls (572.398718ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10825.111452
+▶ S6-CONTENT: Production Page Component Callback & DTO Reconciliation Suite
+  ✔ Production Teacher page stages all 5 exercise types and vocabulary, submits exact API contract, and reconciles server DTO (2070.440629ms)
+  ✔ H5: Enter runs the vocabulary search and an empty result offers the create tab prefilled (361.145362ms)
+  ✔ Exercise modal switching type resets payload and errors cleanly so old fields do not submit (415.058479ms)
+  ✔ "Gỡ khỏi bản nháp" removes items from staged draft without false success before Save (480.56215ms)
+  ✔ Teacher 409 STALE_LESSON preserves staged inputs and reload token replaces all arrays authoritatively (584.059447ms)
+  ✔ Mutant F Killer: verifies production Save callback triggers exact draft URL and method with staged content (449.256894ms)
+  ✔ F5: legacy paragraph editor previews staged unsaved content with the learner renderer and hides grading answers (597.13872ms)
+  ✔ ADM-02 IME: Enter during IME composition does not trigger vocabulary search (391.85984ms)
+  ✔ LNG-04 (G9): LISTENING editor modal and exercise table render preload=none audio player with error/retry without blocking save (495.213177ms)
+  ✔ LNG-05 (G16): Create vocabulary tab warns on same-language curly-quote duplicate, allows reuse or distinct senseKey (887.237017ms)
+  ✔ LNG-02/03: LessonDraftEditor and StudioPreview apply languageCode lang and formatPhonetic for ja vs fr (270.172235ms)
+✔ S6-CONTENT: Production Page Component Callback & DTO Reconciliation Suite (7176.8019ms)
+ℹ tests 11
+ℹ suites 1
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7180.22874
+✔ REORDER edit preserves a nontrivial saved correctOrder and allows explicit order changes (1006.11251ms)
+✔ FILL_BLANK edit preserves commas inside accepted answers (451.58377ms)
+✔ GRAMMAR edit preserves commas inside accepted answers (465.370984ms)
+✔ Vocabulary membership position/core edit preserves source identity and snapshot display (417.163761ms)
+✔ Draft 400 preserves staged child content and retries exact callback (452.175103ms)
+✔ Draft 409 preserves staged child content and retries exact callback (447.580589ms)
+✔ Draft 503 preserves staged child content and retries exact callback (450.58753ms)
+✔ Draft 401 with staged children enters the accepted terminal auth view (379.188719ms)
+✔ Draft 403 with staged children enters the accepted terminal auth view (373.927471ms)
+✔ REVISION_CONFLICT blocks repeated saves until authoritative content reload (422.853206ms)
+✔ Pending child save locks edits/navigation and suppresses synchronous duplicate submissions (375.264745ms)
+✔ Vocabulary lookup 503 has recoverable input or accepted terminal auth view (495.052342ms)
+✔ Vocabulary lookup 401 has recoverable input or accepted terminal auth view (419.097788ms)
+✔ Vocabulary lookup 403 has recoverable input or accepted terminal auth view (444.535087ms)
+✔ Studio backup is scoped to the signed-in teacher (1512.071645ms)
+✔ Studio saves rich-text links that use an allowed relative path (545.748145ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8687.188334
+✔ production Admin review queue page renders the server-provided submission DTO (517.832529ms)
+✔ production Teacher page submits the persisted revision through its actual API callback (370.493751ms)
+✔ production Teacher submit failure keeps the lesson usable for a valid retry (443.053726ms)
+✔ production Teacher page exposes stale reload and handles 401/403 without false success (1104.889888ms)
+✔ production Admin review page calls pinned approve and publish endpoints and reconciles each DTO (431.444027ms)
+✔ production Admin request-changes callback shows stale conflict and reloads the exact submission (376.200799ms)
+✔ production Admin review handles 401 and 403 without false success (974.707047ms)
+✔ LNG-04 (G9): ReviewDetailView renders preload=none audio player with error/retry without blocking Approve (379.822016ms)
+✔ LNG-01/02/03: ReviewDetailView joins ja REORDER without spaces, attaches lang, and formats ja vs fr phonetic (358.438436ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4987.228284
+✔ Admin production callback creates a strict Blueprint, preserves failed selections, then retrieves exact revision pins (751.263032ms)
+✔ Teacher production assessment form reuses exercise fields and posts the exact Blueprint/source revision payload (564.974367ms)
+✔ Blueprint conflict refresh reconciles immutable scope and keeps composition for retry (345.313981ms)
+✔ Delayed conflict refresh cannot overwrite the Blueprint selected while its request was in flight (305.981246ms)
+✔ Assembly lists stay independent when either dependency fails (336.671478ms)
+✔ Stale Blueprint generation conflict refreshes Blueprint and eligible items before retry (423.503136ms)
+✔ Assessment catalogue exposes a retry after its initial data request fails (235.816242ms)
+✔ Assessment catalogue exposes a retry after its Level request fails (249.843977ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3241.220106
+▶ Audit Events: Isolated Component & Browser Suite
+  ✔ Populated table renders Sidebar active link with aria-current="page", table caption, permanent 31-day guidance and safe labels (346.004039ms)
+  ✔ Keyset pagination: Next advances page and Back returns to prior page waiting for completed responses (312.760248ms)
+  ✔ Failed Next and Back preserve prior view state and history; Retry applies transition exactly once (426.738047ms)
+  ✔ Failed Apply and Reset preserve page, rows and inputs; Retry commits the same transition once (796.625506ms)
+  ✔ Obsolete slower response does not overwrite newer completed response (guarded through body parsing) (281.317031ms)
+  ✔ Filter Apply updates results and resets pagination stack; Reset restores defaults (334.071402ms)
+  ✔ Pending button locking prevents duplicate clicks and shows status aria-busy (280.290252ms)
+  ✔ Compiled production page props wire into browser DOM via page-audit-wire (249.262536ms)
+  ✔ Error state displays recoverable error with Retry button and keyboard focus (289.40895ms)
+  ✔ Access denial on later 403 purges privileged rows and displays Access Denied banner (245.670074ms)
+  ✔ Empty state renders clear message when no events exist (204.427479ms)
+  ✔ Audit controls fit at 320, 375, 768, 1024 and 1440px without hiding overflow (1685.098196ms)
+✔ Audit Events: Isolated Component & Browser Suite (5622.951546ms)
+ℹ tests 12
+ℹ suites 1
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5626.397102
+▶ F12: Teacher lesson editor on a 375x812 viewport
+  ✔ legacy paragraph mode fits 375px, with and without the preview open (525.235768ms)
+  ✔ Lesson Studio V1 mode fits 375px on the canvas and the preview tab (337.103815ms)
+✔ F12: Teacher lesson editor on a 375x812 viewport (1027.966256ms)
+ℹ tests 2
+ℹ suites 1
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1031.050593
+
+> lingora-web@1.0.0 test:components
+> node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/isolated-components.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/production-pages.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/lesson-pages.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/practice-components.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/review-components.test.mjs && node --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs tests/feature/writing-practice-components.test.mjs && node --experimental-strip-types tests/feature/register-components.test.mjs && node --experimental-strip-types tests/feature/onboarding-components.test.mjs && node --experimental-strip-types tests/feature/confirmation-verify-components.test.mjs
+
+(node:196552) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ Slice 9: Isolated Component State & Interaction Tests
+  ✔ LoginForm: autofocuses email input and handles empty validation (228.656208ms)
+  ✔ LoginForm: shows pending state and disables button during submission (220.040926ms)
+  ✔ LoginForm: handles invalid credentials by preserving email, clearing password, and focusing password (267.478815ms)
+  ✔ LoginForm: handles account inactive (403) error cleanly (228.813695ms)
+  ✔ LoginForm: successful login navigates to /home (214.060967ms)
+  ✔ LoginForm: keyboard Enter submit works correctly (174.028797ms)
+  ✔ HomeView: renders valid learner identity and context summary (217.182114ms)
+  ✔ HomeView R8: narrow mobile 390px viewport preserves header bounding boxes without multi-line button wrapping (192.559355ms)
+  ✔ HomeView: null context displays "Chọn trình độ bắt đầu" and opens recovery form on click (259.634192ms)
+  ✔ HomeView: empty context displays "Bạn chưa có lộ trình học." and keeps Logout usable (162.086021ms)
+  ✔ HomeView: 403 Forbidden renders accessible denial with Logout and no redirect loop (159.973625ms)
+  ✔ HomeView: 503 Service Unavailable renders retry button and Logout (178.144804ms)
+  ✔ HomeView: 409 Context Inconsistent renders safe support message and retry (153.193578ms)
+  ✔ HomeView: 404 Not Found renders "Không tìm thấy nội dung" with link to /home (156.366053ms)
+  ✔ HomeView: clicking Logout invokes logout API and navigates to /login (234.408802ms)
+  ✔ HomeView: goal editor fetches plan via GET, saves changed preferences, and handles stale 409 (334.500623ms)
+✔ Slice 9: Isolated Component State & Interaction Tests (3878.414506ms)
+ℹ tests 16
+ℹ suites 1
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3881.483494
+(node:196846) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ actual LoginPage/Form → real login route/session → actual HomePage/loader → UI; logout leaves no authenticated request (1034.244968ms)
+✔ actual HomePage preserves empty success and reacts to current role/status on same session (584.43799ms)
+learner.context_load_failed { category: 'UNAVAILABLE', errorName: 'Error', reason: 'OTHER' }
+learner.context_load_failed { category: 'UNAVAILABLE', errorName: 'Error', reason: 'OTHER' }
+✔ actual HomePage context503 → actual retry callback → loader and visible successful context (425.207442ms)
+✔ actual HomePage inconsistent409 → actual retry returns owned data; invalid session redirects401 (492.972349ms)
+✔ actual logout transport failure retains home, shows failure, and real retry logs out (430.666417ms)
+✔ actual HomePage Pause / Resume button callbacks, rowVersion reconciliation & enter link visibility (406.672368ms)
+✔ actual HomePage stale rowVersion 409 displays alert with reload action (336.010345ms)
+✔ actual HomePage options persistent 503 has bounded request count, stable error alert, and manual retry succeeds (521.249138ms)
+✔ actual HomePage options persistent 403 has bounded request count, stable error alert, and manual retry (502.029782ms)
+✔ actual HomePage denied states do not fetch options (629.428709ms)
+✔ actual HomePage sends adding another language through onboarding and respects the active limit (407.212472ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5805.972263
+(node:197115) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Production Navigation: /home -> enterContextBtn -> /learn/[contextId] catalogue renders units, lessons and lock states (944.790995ms)
+✔ Mutation F Control & Production Callback: "Mở nội dung" sends start -> reconciles to "Đang đọc" -> reveals content -> "Hoàn thành đọc nội dung" sends complete -> "Đã đọc" (643.614593ms)
+✔ Stale publication error: 409 PUBLICATION_CHANGED displays safe reload prompt (415.232092ms)
+✔ Audio failure handling: Listening exercise handles audio error gracefully without crashing (409.155585ms)
+✔ Gating persistence on catalogue: Completing reading on Lesson 1 does NOT unlock Lesson 2 without LessonCompletion (619.933359ms)
+✔ Next-style refresh preserves document but remounts X player for unstarted Y (584.042172ms)
+✔ actual player pending/network failure → usable content → actual retry; session and disabled denial never succeed (635.212925ms)
+✔ Optional lesson stays open, completion beats the reading state, and no numbering is duplicated (412.324549ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4692.154768
+(node:197333) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Practice UI: Start attempt -> submit responses across 5 exercise types -> finalize -> view score -> redo (1903.847566ms)
+✔ Practice UI: Audio error handling displays graceful non-crashing alert (1002.964266ms)
+✔ production callbacks retry the exact start, response and finalize after transport loss following commit (832.918985ms)
+✔ actual stale409 and preserved React refresh recover from X to a separately pinned Y (586.257791ms)
+✔ attempt-only loading failure renders retryable error instead of a false unstarted Practice (386.659585ms)
+✔ real session loss and disabled errors stop mutations and offer recovery (722.112413ms)
+✔ mismatched successful DTO never becomes false UI success and exact command retry reconciles (493.866204ms)
+✔ Ôn nhanh UI: warm-up reviews at most 3 due cards, skips this lesson words, then starts the lesson (768.359829ms)
+✔ Ôn nhanh UI: the warm-up is skippable without rating anything (434.394809ms)
+✔ Ôn nhanh UI: a failing SRS call never blocks or breaks the lesson (378.281691ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7540.226686
+(node:197561) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ P5 SRS UI: Home header navigation exposes "Ôn từ vựng" button linking to /review (928.633588ms)
+✔ P5 SRS UI: Empty due list -> click Start -> renders done box and return home link (471.305373ms)
+✔ P5 SRS UI: Due card progression: prompt -> reveal -> rate -> next card -> done (desktop) (629.921782ms)
+✔ P5 SRS UI: Narrow mobile viewport (~390px) responsive layout & keyboard accessible (451.421424ms)
+✔ P5 SRS UI R5: Network failure before response -> retains pending operation, locks rating buttons, retry sends exact same operationKey (564.15709ms)
+✔ P5 SRS UI R5: POST committed on server but response dropped -> retry idempotently succeeds without duplicate operation (583.21955ms)
+✔ P5 SRS UI R5: Invalid or expired token locks card and displays restart button (585.582834ms)
+✔ P5 SRS UI: a stale rating refreshes the prompt and can end the session (627.998564ms)
+✔ P5 SRS UI: Account-wide SRS functions with paused learning context (377.170564ms)
+✔ S6-09 WRITING SRS UI hides glyphs until every character is graded, then offers four ratings (659.864379ms)
+✔ S6-10.2e Canvas limits: caps at 128 strokes, 256 points/stroke, and 4096 total points, and allows clearing at limit (443.599499ms)
+✔ S6-10.2e ReviewView: definitive 400 releases canvas; ambiguous failure retains key and replays exact payload (687.569501ms)
+✔ S6-10.2d ReviewView: rollout disable on submission refreshes session and advances without infinite retry loop (486.008222ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7523.20648
+(node:197856) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+▶ S6-07: Writing Practice UI (Màn luyện viết)
+  ✔ 1. Modal Mounting & DEMO stage: Displays glyph, details, step counter, and auto-play controls (262.907311ms)
+  ✔ 1a. Animation-only character opens the demo without exposing writing stages (183.81737ms)
+  ✔ 1b. Guided-writing-only character starts on tracing with animation controls hidden (208.705077ms)
+  ✔ 2. DEMO stage animation: Play/Pause toggles, Replay resets, step forward/backward updates counter (362.023742ms)
+  ✔ 3. Keyboard navigation: Space toggles play/pause in DEMO, Escape closes modal (188.609413ms)
+  ✔ 4. TRACE stage: Displays ghost template in background and updates stroke progress on drawing (277.009161ms)
+  ✔ 5. TRACE stage controls: Undo removes last stroke, Reset clears all strokes (383.82339ms)
+  ✔ 6. FREEHAND stage: Strictly verifies NO ghost template is rendered in background (229.339081ms)
+  ✔ 7. FREEHAND stage controls: Pointer drawing tracks strokes, Ctrl+Z / Undo works (339.85034ms)
+  ✔ 8. Submit attempt: Evaluates strokes, transitions to RESULT stage, displays score, band badge, and comparison canvas (495.194851ms)
+  ✔ 9. Network Resilience: On submit error, preserves drawn strokes and enables retry with SAME operationKey (427.856871ms)
+  ✔ 9b. Invalid geometry unlocks correction and resubmits edited strokes with a new operationKey (483.636517ms)
+  ✔ 9a. Session creation retry reuses one stable requestId (382.502602ms)
+  ✔ 10. Session completion & retry: Complete calls API and shows completion notice; Retry resets with new operationKey (546.294775ms)
+  ✔ 10a. Lost completion response stays locked until idempotent completion retry succeeds (582.013315ms)
+  ✔ 10b. Rewrite is disabled while completion is pending, preventing a closed-session race (378.107352ms)
+  ✔ 11. Responsive Viewports: Renders cleanly and handles touch pointer drawing on 360px and 390px mobile viewports (549.375517ms)
+  ✔ 12. ARIA Live region announces status updates for accessibility (294.937897ms)
+✔ S6-07: Writing Practice UI (Màn luyện viết) (7043.957356ms)
+ℹ tests 18
+ℹ suites 1
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7047.177223
+▶ Package A: Dedicated Registration UI & Component Tests
+  ✔ RegisterForm: initial focus, empty email and password validation (269.804567ms)
+  ✔ RegisterForm: submits POST /api/auth/register and shows pending state (463.121117ms)
+  ✔ RegisterForm: server error displays in #registerAlert and clears password field (194.300691ms)
+  ✔ RegisterForm: includes navigation link to /login (112.809702ms)
+  ✔ LoginForm: contains link to /register (122.592507ms)
+  ✔ LoginForm: handles ?confirmed=1 query parameter with success message (137.737862ms)
+  ✔ LoginForm: handles ?error=confirmation_failed query parameter with error message (138.258634ms)
+✔ Package A: Dedicated Registration UI & Component Tests (1571.191855ms)
+ℹ tests 7
+ℹ suites 1
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1574.073291
+▶ Sprint 3: Onboarding Wizard Component & Flow Tests
+  ✔ Full wizard flow (DEFAULT): 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 with complete submission (681.781423ms)
+  ✔ SELF_REPORT selection: enables level picker, sends selected startLevelId (503.573301ms)
+  ✔ Changing language resets course and level selection (741.168849ms)
+  ✔ sessionStorage draft persistence & recovery across reload (481.204393ms)
+  ✔ Handling 409 RECOMMENDATION_CHANGED during completion updates preview gracefully (425.597744ms)
+  ✔ Reload at Step 6 automatically refetches preview and allows completion (549.547148ms)
+  ✔ Mobile viewport (390px) responsive layout without horizontal clipping (145.161833ms)
+  ✔ Step 1: Keyboard and native control selection of language (220.137907ms)
+  ✔ Step 1: Unavailable and already-owned language states communicated by name and disabled (196.541536ms)
+  ✔ Step 1: Options failure displays accessible error with explicit retry action (285.110023ms)
+  ✔ Step 5: Simplified start labels (“Mới bắt đầu” and “Tôi biết trình độ của mình”) preserve DEFAULT/SELF_REPORT (553.947568ms)
+  ✔ DEFAULT course choice is optional, survives reload, and matches preview and completion (515.941753ms)
+  ✔ A legacy DEFAULT draft does not treat its old SELF_REPORT courseId as an explicit choice (237.432114ms)
+✔ Sprint 3: Onboarding Wizard Component & Flow Tests (5688.187823ms)
+ℹ tests 13
+ℹ suites 1
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5691.437766
+▶ S12-XDEVICE 5.11 - 5.12: Component Tests (/auth/verify, LoginForm, ResendConfirmationForm)
+  ✔ 11a. /auth/verify with valid token & type renders form action="/auth/confirm", hidden inputs, button "Xác nhận email" (156.761112ms)
+  ✔ 11b. /auth/verify with invalid token or type: NO form action="/auth/confirm", renders error and ResendConfirmationForm (123.270817ms)
+  ✔ 12a. LoginForm: displays correct notification for error query params and shows resend block when applicable (318.902405ms)
+  ✔ 12b. LoginForm: 403 unconfirmed email from login route shows resend block prefilled with email (218.214202ms)
+  ✔ 12c. ResendConfirmationForm: pending, 429 rate limit message, 200 success and 60s cooldown (322.621468ms)
+  ✔ 16. Layout on narrow mobile viewports (360px and 390px) does not overflow horizontally (268.825452ms)
+✔ S12-XDEVICE 5.11 - 5.12: Component Tests (/auth/verify, LoginForm, ResendConfirmationForm) (1551.070692ms)
+ℹ tests 6
+ℹ suites 1
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1554.159138

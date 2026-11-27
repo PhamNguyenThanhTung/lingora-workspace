@@ -1,0 +1,5 @@
+Source SHA: 5e834293e0ce21a6dd14452c6ad75224aa45a0fb
+Command: git ls-tree -r --name-only HEAD; search tracked filenames for bench/latency; review package scripts and scripts/lingora-admin/tests for Save/Submit timing.
+Matched benchmark/latency filenames: 0
+
+No L3 Save/Submit benchmark command in package.json. No timing fixture with median/p95 in scripts or lingora-admin/tests.

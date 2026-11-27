@@ -1,0 +1,27 @@
+[
+  {
+    "file": "2026-11-27-acc04-slice12-owner-evidence.md",
+    "sha256": "bd52e78f562722e0dd864a94464f023b3199fab5677de23841fa04596223252a",
+    "bytes": 5201
+  },
+  {
+    "file": "2026-11-27-cnt01-lesson7-lesson8-audit.md",
+    "sha256": "c1da5826261217020f0898432ff7febc3184683c70dce1dcf901b42176f8ea04",
+    "bytes": 8831
+  },
+  {
+    "file": "2026-11-27-doc01-findings-reconciliation.md",
+    "sha256": "a3cca19b1ab1c3a918d2fde01a5d37e873f902e2c8609ceb1f44be768f6dc480",
+    "bytes": 12567
+  },
+  {
+    "file": "2026-11-27-doc02-media-and-scripts-index.md",
+    "sha256": "2f3211eb4e809f9ac61f0825570c10a4cdb0bbd47d2578207b377580e00e1249",
+    "bytes": 10074
+  },
+  {
+    "file": "2026-11-27-doc03-worktree-inventory.md",
+    "sha256": "c0d0eb3cbb1457ae15888edfb26dde74f48175d6243eceeed8cceed57998c6c4",
+    "bytes": 6068
+  }
+]

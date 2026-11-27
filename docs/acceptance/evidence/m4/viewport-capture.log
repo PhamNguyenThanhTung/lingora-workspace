@@ -1,0 +1,9 @@
+practice-before 375 { width: 375, scrollWidth: 375, dialog: true }
+practice-before 768 { width: 768, scrollWidth: 768, dialog: true }
+practice-before 1440 { width: 1440, scrollWidth: 1440, dialog: true }
+practice-after-wrong 375 { width: 375, scrollWidth: 375, dialog: true }
+practice-after-wrong 768 { width: 768, scrollWidth: 768, dialog: true }
+practice-after-wrong 1440 { width: 1440, scrollWidth: 1440, dialog: true }
+result 375 { width: 375, scrollWidth: 375, dialog: false }
+result 768 { width: 768, scrollWidth: 768, dialog: false }
+result 1440 { width: 1440, scrollWidth: 1440, dialog: false }

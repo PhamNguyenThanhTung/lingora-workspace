@@ -1,0 +1,345 @@
+
+> lingora-workspace@1.0.0 build
+> npm run build -w lingora-admin && npm run build -w lingora-web
+
+
+> lingora-admin@1.0.0 build
+> npm run db:product:generate && next build
+
+
+> lingora-admin@1.0.0 db:product:generate
+> DATABASE_URL="${DATABASE_URL:-postgresql://[REDACTED]@127.0.0.1:5432/placeholder?schema=app}" DIRECT_URL="${DIRECT_URL:-postgresql://[REDACTED]@127.0.0.1:5432/placeholder?schema=app}" prisma generate --schema prisma/product/schema.prisma
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Prisma schema loaded from prisma/product/schema.prisma
+┌─────────────────────────────────────────────────────────┐
+│  Update available 6.19.3 -> 8.0.0-rc.36                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+✔ Generated Prisma Client (v6.19.3) to ./generated/product-client in 298ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+▲ Next.js 16.4.5 (Turbopack)
+✓ Running next.config.mjs took 18ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.2s
+  Running TypeScript ...
+  Finished TypeScript in 1107ms ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/3) ...
+✓ Generating static pages using 15 workers (3/3) in 93ms
+Turbopack build encountered 2 warnings:
+./lingora-admin/generated/product-client/index.js:951:20
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m949 |[0m   }) ?? alternativePaths[[35m0[0m]
+  [90m950 |[0m
+[33m[1m>[0m [90m951 |[0m   config.dirname = path.join(process.cwd(), alternativePath)
+  [90m    |[0m                    [33m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m952 |[0m   config.isBundled = [36mtrue[0m
+  [90m953 |[0m }
+  [90m954 |[0m
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: path.join(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import traces:
+  #1 [Server Component]:
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-admin/src/server/audit/index.ts
+    ./lingora-admin/src/app/audit-events/page.tsx
+
+  #2 [App Route]:
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-admin/src/server/audit/index.ts
+    ./lingora-admin/src/app/api/audit-events/route.ts
+
+  #3 [App Route]:
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-admin/src/server/db/index.js
+    ./lingora-admin/src/server/assessments/teacher-items.ts
+    ./lingora-admin/src/app/api/teacher/lessons/[lessonId]/assessment-items/route.ts
+
+
+./lingora-admin/generated/product-client/runtime/library.js:7:1711
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m 5 |[0m ...[35m31[0m?[35m3[0m:[35m2[0m:[35m1[0m}[36mif[0m([32m"CI"[0m[36min[0m [33mG[0m)[36mreturn[0m[[32m"TRAVIS"[0m,[32m"CIRCLECI"[0m,[32m"APPVEYOR"[0m,[32m"GITLAB_CI"[0m,[32m"GITHUB_ACTIONS"[0m.[32m..[0m
+  [90m 6 |[0m ...
+[33m[1m>[0m [90m 7 |[0m ...process.cwd(),[32m".env.vault"[0m);[36mreturn[0m [33mFi[0m.existsSync(r)?r:[36mnull[0m}[36mfunction[0m [33mPs[0m(e){[36mreturn[0m e[[35m0[0m]==.[32m..[0m
+  [90m   |[0m                                       [33m[1m^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m ...d:i,selections:o}=n.match(r);[36mreturn[0m i&&o&&[33mObject[0m.keys(o).forEach(s=>t(s,o[s])),i}[36mif[0m(ui(...
+  [90m 9 |[0m ...[36mrn[0m{libssl:o,strategy:[32m"ldconfig"[0m}}[36mlet[0m i=[36mawait[0m [33mYt[0m([32m"openssl version -v"[0m);[36mif[0m(i){ee([32m`Found o...[0m
+  [90m10 |[0m ...raseUp:()=>[33mSc[0m,exitAlternativeScreen:()=>[33mOc[0m,iTerm:()=>[33mLc[0m,image:()=>[33mNc[0m,link:()=>_c,scroll...
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: fs.existsSync(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import traces:
+  #1 [App Route]:
+    ./lingora-admin/generated/product-client/runtime/library.js
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-admin/src/server/audit/index.ts
+    ./lingora-admin/src/app/api/audit-events/route.ts
+
+  #2 [Server Component]:
+    ./lingora-admin/generated/product-client/runtime/library.js
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-admin/src/server/audit/index.ts
+    ./lingora-admin/src/app/audit-events/page.tsx
+
+  #3 [App Route]:
+    ./lingora-admin/generated/product-client/runtime/library.js
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-admin/src/server/db/index.js
+    ./lingora-admin/src/server/assessments/teacher-items.ts
+    ./lingora-admin/src/app/api/teacher/lessons/[lessonId]/assessment-items/route.ts
+
+
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ○ /activate-teacher
+├ ƒ /api/assessment-blueprints
+├ ƒ /api/assessment-blueprints/[blueprintId]
+├ ƒ /api/assessment-blueprints/[blueprintId]/eligible-items
+├ ƒ /api/assessment-blueprints/[blueprintId]/versions
+├ ƒ /api/assessment-versions/[versionId]
+├ ƒ /api/audit-events
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/teacher-activation
+├ ƒ /api/courses
+├ ƒ /api/courses/[courseId]
+├ ƒ /api/courses/[courseId]/units
+├ ƒ /api/courses/[courseId]/units/[unitId]
+├ ƒ /api/courses/[courseId]/units/[unitId]/lessons
+├ ƒ /api/courses/[courseId]/units/[unitId]/lessons/[lessonId]
+├ ƒ /api/courses/[courseId]/units/[unitId]/lessons/[lessonId]/activate
+├ ƒ /api/courses/[courseId]/units/[unitId]/lessons/[lessonId]/assignment
+├ ƒ /api/courses/[courseId]/units/[unitId]/lessons/teacher-options
+├ ƒ /api/frameworks
+├ ƒ /api/frameworks/[frameworkId]
+├ ƒ /api/frameworks/[frameworkId]/levels
+├ ƒ /api/frameworks/[frameworkId]/levels/[levelId]
+├ ƒ /api/languages
+├ ƒ /api/languages/[id]
+├ ƒ /api/lessons/[lessonId]/comments
+├ ƒ /api/lessons/[lessonId]/comments/[commentId]/reopen
+├ ƒ /api/lessons/[lessonId]/comments/[commentId]/resolve
+├ ƒ /api/lessons/[lessonId]/revisions/[revisionId]/comments
+├ ƒ /api/reviews
+├ ƒ /api/reviews/[submissionId]
+├ ƒ /api/reviews/[submissionId]/approve
+├ ƒ /api/reviews/[submissionId]/publish
+├ ƒ /api/reviews/[submissionId]/request-changes
+├ ƒ /api/teacher/lessons
+├ ƒ /api/teacher/lessons/[lessonId]
+├ ƒ /api/teacher/lessons/[lessonId]/assessment-blueprints
+├ ƒ /api/teacher/lessons/[lessonId]/assessment-items
+├ ƒ /api/teacher/lessons/[lessonId]/character-options
+├ ƒ /api/teacher/lessons/[lessonId]/draft
+├ ƒ /api/teacher/lessons/[lessonId]/submit
+├ ƒ /api/teacher/lessons/[lessonId]/vocabulary-options
+├ ƒ /api/teachers
+├ ƒ /api/teachers/[accountId]
+├ ƒ /assessments
+├ ƒ /audit-events
+├ ƒ /courses
+├ ƒ /courses/[courseId]
+├ ƒ /courses/[courseId]/units/[unitId]
+├ ƒ /dashboard
+├ ƒ /frameworks
+├ ƒ /frameworks/[frameworkId]
+├ ƒ /holding
+├ ƒ /languages
+├ ƒ /login
+├ ƒ /my-lessons
+├ ƒ /my-lessons/[lessonId]
+├ ƒ /review
+├ ƒ /review/[submissionId]
+├ ƒ /teacher-preview
+├ ƒ /teacher-preview/[lessonId]
+└ ƒ /teachers
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> lingora-web@1.0.0 build
+> npm --prefix .. run db:product:generate -w lingora-admin && node scripts/prepare-prisma-runtime.mjs && next build
+
+
+> lingora-admin@1.0.0 db:product:generate
+> DATABASE_URL="${DATABASE_URL:-postgresql://[REDACTED]@127.0.0.1:5432/placeholder?schema=app}" DIRECT_URL="${DIRECT_URL:-postgresql://[REDACTED]@127.0.0.1:5432/placeholder?schema=app}" prisma generate --schema prisma/product/schema.prisma
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Prisma schema loaded from prisma/product/schema.prisma
+
+✔ Generated Prisma Client (v6.19.3) to ./generated/product-client in 275ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+▲ Next.js 16.4.5 (Turbopack)
+✓ Running next.config.mjs took 15ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.8s
+  Running TypeScript ...
+  Finished TypeScript in 1307ms ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/3) ...
+✓ Generating static pages using 15 workers (3/3) in 84ms
+Turbopack build encountered 2 warnings:
+./lingora-admin/generated/product-client/index.js:951:20
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m949 |[0m   }) ?? alternativePaths[[35m0[0m]
+  [90m950 |[0m
+[33m[1m>[0m [90m951 |[0m   config.dirname = path.join(process.cwd(), alternativePath)
+  [90m    |[0m                    [33m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m952 |[0m   config.isBundled = [36mtrue[0m
+  [90m953 |[0m }
+  [90m954 |[0m
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: path.join(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import traces:
+  App Route:
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-web/src/server/context/onboarding-service.ts
+    ./lingora-web/src/app/api/learner/onboarding/preview/route.ts
+
+  Server Component:
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-web/src/server/db/index.ts
+    ./lingora-web/src/server/auth/index.ts
+    ./lingora-web/src/app/learn/[contextId]/page.tsx
+
+
+./lingora-admin/generated/product-client/runtime/library.js:7:1711
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m 5 |[0m ...[35m31[0m?[35m3[0m:[35m2[0m:[35m1[0m}[36mif[0m([32m"CI"[0m[36min[0m [33mG[0m)[36mreturn[0m[[32m"TRAVIS"[0m,[32m"CIRCLECI"[0m,[32m"APPVEYOR"[0m,[32m"GITLAB_CI"[0m,[32m"GITHUB_ACTIONS"[0m.[32m..[0m
+  [90m 6 |[0m ...
+[33m[1m>[0m [90m 7 |[0m ...process.cwd(),[32m".env.vault"[0m);[36mreturn[0m [33mFi[0m.existsSync(r)?r:[36mnull[0m}[36mfunction[0m [33mPs[0m(e){[36mreturn[0m e[[35m0[0m]==.[32m..[0m
+  [90m   |[0m                                       [33m[1m^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m ...d:i,selections:o}=n.match(r);[36mreturn[0m i&&o&&[33mObject[0m.keys(o).forEach(s=>t(s,o[s])),i}[36mif[0m(ui(...
+  [90m 9 |[0m ...[36mrn[0m{libssl:o,strategy:[32m"ldconfig"[0m}}[36mlet[0m i=[36mawait[0m [33mYt[0m([32m"openssl version -v"[0m);[36mif[0m(i){ee([32m`Found o...[0m
+  [90m10 |[0m ...raseUp:()=>[33mSc[0m,exitAlternativeScreen:()=>[33mOc[0m,iTerm:()=>[33mLc[0m,image:()=>[33mNc[0m,link:()=>_c,scroll...
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: fs.existsSync(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import traces:
+  App Route:
+    ./lingora-admin/generated/product-client/runtime/library.js
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-web/src/server/context/onboarding-service.ts
+    ./lingora-web/src/app/api/learner/onboarding/preview/route.ts
+
+  Server Component:
+    ./lingora-admin/generated/product-client/runtime/library.js
+    ./lingora-admin/generated/product-client/index.js
+    ./lingora-web/src/server/db/index.ts
+    ./lingora-web/src/server/auth/index.ts
+    ./lingora-web/src/app/learn/[contextId]/page.tsx
+
+
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/register
+├ ƒ /api/auth/resend-confirmation
+├ ƒ /api/characters/[characterId]
+├ ƒ /api/learner/context
+├ ƒ /api/learner/context/options
+├ ƒ /api/learner/contexts/[contextId]
+├ ƒ /api/learner/contexts/[contextId]/lessons
+├ ƒ /api/learner/contexts/[contextId]/lessons/[lessonId]
+├ ƒ /api/learner/contexts/[contextId]/lessons/[lessonId]/attempts
+├ ƒ /api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]
+├ ƒ /api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/finalize
+├ ƒ /api/learner/contexts/[contextId]/lessons/[lessonId]/attempts/[attemptId]/responses
+├ ƒ /api/learner/contexts/[contextId]/lessons/[lessonId]/consumption
+├ ƒ /api/learner/contexts/[contextId]/path
+├ ƒ /api/learner/contexts/[contextId]/plan
+├ ƒ /api/learner/contexts/[contextId]/start
+├ ƒ /api/learner/home
+├ ƒ /api/learner/onboarding/complete
+├ ƒ /api/learner/onboarding/preview
+├ ƒ /api/learner/review/respond
+├ ƒ /api/learner/review/start
+├ ƒ /api/srs/sessions
+├ ƒ /api/srs/sessions/[sessionId]
+├ ƒ /api/srs/sessions/[sessionId]/complete
+├ ƒ /api/srs/sessions/[sessionId]/reveal
+├ ƒ /api/srs/sessions/[sessionId]/reviews
+├ ƒ /api/srs/sessions/[sessionId]/writing-attempts
+├ ƒ /api/writing/sessions
+├ ƒ /api/writing/sessions/[sessionId]/attempts
+├ ƒ /api/writing/sessions/[sessionId]/characters/[characterId]/attempts
+├ ƒ /api/writing/sessions/[sessionId]/complete
+├ ƒ /auth/confirm
+├ ƒ /auth/verify
+├ ƒ /home
+├ ƒ /learn/[contextId]
+├ ƒ /learn/[contextId]/[lessonId]
+├ ƒ /login
+├ ƒ /onboarding
+├ ƒ /register
+└ ƒ /review
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

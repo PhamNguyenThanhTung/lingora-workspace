@@ -1,0 +1,31 @@
+
+> lingora-workspace@1.0.0 test:integration:practice
+> node scripts/local-test-db.mjs npm run test:integration:practice -w lingora-web
+
+
+> lingora-web@1.0.0 test:integration:practice
+> node --experimental-strip-types --experimental-test-module-mocks --import ./tests/feature/harness/server-only.mjs --test tests/feature/practice-concurrency.test.mjs
+
+(node:200437) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Real PostgreSQL: Practice attempt lifecycle, atomic D2 core enrollment & completion triggers (264.546494ms)
+✔ Real PostgreSQL: Immutability triggers reject direct modification of completed attempts & responses (108.950658ms)
+✔ Real PostgreSQL: D2 existing SRS cards remain untouched on completion (no-reset) (109.223983ms)
+✔ Real PostgreSQL: D3 stale publication X -> Y blocks new writes but allows committed replay (140.958477ms)
+✔ Real PostgreSQL: Concurrent finalizations with same operation key deduplicate safely (133.197879ms)
+✔ real PostgreSQL: same start and concurrent response commands have one canonical persisted outcome (158.076939ms)
+✔ real PostgreSQL: independent learners hold shared parents together while an exclusive publisher waits (232.152109ms)
+✔ real PostgreSQL: late failure rolls back attempt, first completion, enrollment and receipt; retry succeeds (138.185523ms)
+✔ real PostgreSQL: current unfinished redo resumes while completed performance ties use id DESC (211.214128ms)
+✔ real PostgreSQL: completion and qualifying local day share one midnight-boundary clock sample (117.338643ms)
+✔ real publisher wins: supported Y publication makes unfinished X finalize409 without any partial writes (191.663476ms)
+✔ real finalizer wins: publisher waits; X completion and exact child grades survive supported Y publication (197.577124ms)
+✔ real PostgreSQL: five exact types produce N5+K3 evidence and completion at a low score, never from partial work (293.794054ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2512.433539

@@ -1,0 +1,923 @@
+[
+  {
+    "id": "fa4bd37f-595d-4d06-9cc0-ed1f614f9ebf",
+    "unitId": "e0000000-0000-4000-8000-000000000013",
+    "position": 1,
+    "isRequired": true,
+    "availability": "AVAILABLE",
+    "activeRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+    "createdAt": "2026-11-27T03:24:36.939Z",
+    "updatedAt": "2026-11-27T03:24:37.008Z",
+    "rowVersion": "5",
+    "activeRevision": {
+      "id": "13def654-c195-42d3-85d2-6048c77b02f9",
+      "lessonId": "fa4bd37f-595d-4d06-9cc0-ed1f614f9ebf",
+      "revisionNo": 1,
+      "priorRevisionId": null,
+      "changeSummary": null,
+      "assignmentId": "8e4f1ed1-c1a9-4170-853a-2e1036bad771",
+      "creationAssignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+      "status": "PUBLISHED",
+      "title": {
+        "en": "Lesson 7: Ordering Food",
+        "vi": "Gọi món"
+      },
+      "contentSchemaVersion": 1,
+      "contentBlocks": [],
+      "topicIds": [],
+      "skillIds": [],
+      "purposeTags": [],
+      "coverageCatalogGeneration": null,
+      "coverageSnapshot": null,
+      "submittedAssignmentGeneration": "1",
+      "assignmentScopeSnapshot": {
+        "scope": {},
+        "requirement": {},
+        "schema_version": 1
+      },
+      "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+      "lastEditedBy": "bbbbbbbb-2222-4222-8222-222222222222",
+      "submittedBy": "bbbbbbbb-2222-4222-8222-222222222222",
+      "submittedAt": "2026-11-27T03:24:36.989Z",
+      "approvedBy": "cccccccc-0000-4000-8000-000000000001",
+      "approvedAt": "2026-11-27T03:24:36.995Z",
+      "publishedBy": "cccccccc-0000-4000-8000-000000000001",
+      "publishedAt": "2026-11-27T03:24:37.006Z",
+      "endedAt": null,
+      "createdAt": "2026-11-27T03:24:36.965Z",
+      "updatedAt": "2026-11-27T03:24:37.007Z",
+      "rowVersion": "4",
+      "reviews": [
+        {
+          "id": "12c7215e-c9e3-4c10-acb2-1e890adaa353",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "assessmentVersionId": null,
+          "action": "SUBMIT",
+          "actorId": "bbbbbbbb-2222-4222-8222-222222222222",
+          "assignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-11-27T03:24:36.989Z",
+          "revisionRowVersion": "2",
+          "comment": null,
+          "createdAt": "2026-11-27T03:24:36.992Z"
+        },
+        {
+          "id": "65aa3ada-4c21-44bf-a73c-7e5edeaf081d",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "assessmentVersionId": null,
+          "action": "APPROVE",
+          "actorId": "cccccccc-0000-4000-8000-000000000001",
+          "assignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-11-27T03:24:36.995Z",
+          "revisionRowVersion": "3",
+          "comment": null,
+          "createdAt": "2026-11-27T03:24:36.996Z"
+        },
+        {
+          "id": "c3de9578-1a8b-4483-ac8c-7e9b45cebc92",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "assessmentVersionId": null,
+          "action": "PUBLISH",
+          "actorId": "cccccccc-0000-4000-8000-000000000001",
+          "assignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-11-27T03:24:37.006Z",
+          "revisionRowVersion": "4",
+          "comment": null,
+          "createdAt": "2026-11-27T03:24:37.008Z"
+        }
+      ],
+      "exercises": [
+        {
+          "id": "3449a0cc-deca-4540-b5f4-596c259483c3",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "itemRevisionId": "a238df80-8643-433b-a897-e88b675ae867",
+          "itemId": "dc579304-4e73-4100-805b-7b6d5cae22d7",
+          "position": 1,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:36.970Z",
+          "itemRevision": {
+            "id": "a238df80-8643-433b-a897-e88b675ae867",
+            "itemId": "dc579304-4e73-4100-805b-7b6d5cae22d7",
+            "revisionNo": 1,
+            "type": "MCQ",
+            "promptData": {
+              "prompt": "Khi muốn xin hóa đơn thanh toán tại quán ăn một cách lịch sự, câu nào sau đây là phù hợp nhất?",
+              "options": [
+                {
+                  "id": "opt-7-1",
+                  "text": "Could we have the bill, please?"
+                },
+                {
+                  "id": "opt-7-2",
+                  "text": "Give me the bill now."
+                },
+                {
+                  "id": "opt-7-3",
+                  "text": "I want to pay money."
+                }
+              ]
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "18180d50e82a3716dba995ce3b6c30be7117309324b14d93f6fb105a5189ef0f",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+            "authoringLessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:36.989Z",
+            "createdAt": "2026-11-27T03:24:36.967Z",
+            "updatedAt": "2026-11-27T03:24:36.989Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "9a058ef6-3260-45dc-9cac-c216f7548040",
+              "itemRevisionId": "a238df80-8643-433b-a897-e88b675ae867",
+              "gradingData": {
+                "correctOptionId": "opt-7-1"
+              },
+              "feedbackData": {
+                "explanation": "'Could we have the bill, please?' là mẫu câu lịch sự chuẩn mực để xin hóa đơn."
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:36.969Z",
+              "updatedAt": "2026-11-27T03:24:36.969Z"
+            }
+          }
+        },
+        {
+          "id": "8e3e83c7-fc89-48e3-839d-d0758761c42a",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "itemRevisionId": "f5d77b2b-2c06-43cf-b1fb-c17da4d5fb2d",
+          "itemId": "778d59cf-c354-4838-af48-5baedc6a0dac",
+          "position": 2,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:36.970Z",
+          "itemRevision": {
+            "id": "f5d77b2b-2c06-43cf-b1fb-c17da4d5fb2d",
+            "itemId": "778d59cf-c354-4838-af48-5baedc6a0dac",
+            "revisionNo": 1,
+            "type": "MCQ",
+            "promptData": {
+              "prompt": "Câu nào dưới đây là cách gọi cà phê lịch sự nhất?",
+              "options": [
+                {
+                  "id": "opt-7-4",
+                  "text": "I would like a coffee, please."
+                },
+                {
+                  "id": "opt-7-5",
+                  "text": "Give me coffee."
+                },
+                {
+                  "id": "opt-7-6",
+                  "text": "Coffee now."
+                }
+              ]
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "72d69493f8aa038d415826d87b5caad22cfaf11ef7e870157474a6720e53e46b",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+            "authoringLessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:36.989Z",
+            "createdAt": "2026-11-27T03:24:36.967Z",
+            "updatedAt": "2026-11-27T03:24:36.989Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "f96e0c8f-ff18-4b6f-a4b0-21d1f1d9f762",
+              "itemRevisionId": "f5d77b2b-2c06-43cf-b1fb-c17da4d5fb2d",
+              "gradingData": {
+                "correctOptionId": "opt-7-4"
+              },
+              "feedbackData": {
+                "explanation": "Mẫu câu 'I would like + [món], please' là cách gọi món chuẩn mực và lịch sự."
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:36.969Z",
+              "updatedAt": "2026-11-27T03:24:36.969Z"
+            }
+          }
+        },
+        {
+          "id": "ab6517b9-f911-48e0-92dc-4c52ec642480",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "itemRevisionId": "66f35414-7f72-4028-8d5c-a6d6e621bcd7",
+          "itemId": "89ebe340-b258-4ff6-a07f-fe9fd28aa450",
+          "position": 3,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:36.970Z",
+          "itemRevision": {
+            "id": "66f35414-7f72-4028-8d5c-a6d6e621bcd7",
+            "itemId": "89ebe340-b258-4ff6-a07f-fe9fd28aa450",
+            "revisionNo": 1,
+            "type": "FILL_BLANK",
+            "promptData": {
+              "prompt": "Điền từ xin thực đơn: Làm ơn cho tôi xem thực đơn.",
+              "sentence": "Can I have the ____, please?"
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "57174c3775504a68a2f46146edefbb647137bd206a73b62e341bc5b99cacc687",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+            "authoringLessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:36.989Z",
+            "createdAt": "2026-11-27T03:24:36.967Z",
+            "updatedAt": "2026-11-27T03:24:36.989Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "44a3017f-8938-4d64-b307-75e1ae93d2e0",
+              "itemRevisionId": "66f35414-7f72-4028-8d5c-a6d6e621bcd7",
+              "gradingData": {
+                "caseSensitive": false,
+                "acceptedAnswers": [
+                  "menu"
+                ]
+              },
+              "feedbackData": {
+                "explanation": "'menu' có nghĩa là thực đơn trong nhà hàng."
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:36.969Z",
+              "updatedAt": "2026-11-27T03:24:36.969Z"
+            }
+          }
+        },
+        {
+          "id": "bd0f098b-4bea-4d73-95fc-8e6eeda4f243",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "itemRevisionId": "52e41110-6541-4004-8d94-443d0fe13275",
+          "itemId": "8617cc66-69ef-4584-96e5-e2d620fce93b",
+          "position": 4,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:36.970Z",
+          "itemRevision": {
+            "id": "52e41110-6541-4004-8d94-443d0fe13275",
+            "itemId": "8617cc66-69ef-4584-96e5-e2d620fce93b",
+            "revisionNo": 1,
+            "type": "REORDER",
+            "promptData": {
+              "prompt": "Sắp xếp các từ thành câu gọi trà:",
+              "tokens": [
+                {
+                  "id": "t7-1",
+                  "text": "I"
+                },
+                {
+                  "id": "t7-2",
+                  "text": "would"
+                },
+                {
+                  "id": "t7-3",
+                  "text": "like"
+                },
+                {
+                  "id": "t7-4",
+                  "text": "some"
+                },
+                {
+                  "id": "t7-5",
+                  "text": "tea."
+                }
+              ]
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "4d43ec37ed8eb6d06f58f0d61225339c6c0b7d971d14826d18cec4bd2e42b84b",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+            "authoringLessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:36.989Z",
+            "createdAt": "2026-11-27T03:24:36.967Z",
+            "updatedAt": "2026-11-27T03:24:36.989Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "58cb38ce-8d2f-4808-9d40-7a75b59c3baf",
+              "itemRevisionId": "52e41110-6541-4004-8d94-443d0fe13275",
+              "gradingData": {
+                "correctOrder": [
+                  "t7-1",
+                  "t7-2",
+                  "t7-3",
+                  "t7-4",
+                  "t7-5"
+                ]
+              },
+              "feedbackData": {
+                "explanation": "'I would like some tea.' có nghĩa là 'Cho tôi xin một chút trà.'"
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:36.969Z",
+              "updatedAt": "2026-11-27T03:24:36.969Z"
+            }
+          }
+        },
+        {
+          "id": "3f1ac610-4949-419c-97be-c864a4526f2b",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "itemRevisionId": "7a655623-2ef7-43bf-83aa-4f970b24cdd4",
+          "itemId": "bb97db8e-b4df-4470-ae6d-29e4a69ed327",
+          "position": 5,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:36.970Z",
+          "itemRevision": {
+            "id": "7a655623-2ef7-43bf-83aa-4f970b24cdd4",
+            "itemId": "bb97db8e-b4df-4470-ae6d-29e4a69ed327",
+            "revisionNo": 1,
+            "type": "GRAMMAR",
+            "promptData": {
+              "prompt": "Viết câu yêu cầu một ly nước theo mẫu:",
+              "targetPattern": "Can I have + a glass of + water, please?",
+              "sourceSentence": "water (nước uống)"
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "a982a02201dd9fa0963bd38cdcacb348eef50678279cc4911d590175957240bd",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+            "authoringLessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:36.989Z",
+            "createdAt": "2026-11-27T03:24:36.967Z",
+            "updatedAt": "2026-11-27T03:24:36.989Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "7d7f386a-34c0-4fcc-9a78-c68440dda47b",
+              "itemRevisionId": "7a655623-2ef7-43bf-83aa-4f970b24cdd4",
+              "gradingData": {
+                "caseSensitive": false,
+                "acceptedAnswers": [
+                  "Can I have a glass of water, please?",
+                  "Can I have a glass of water, please",
+                  "Can I have a glass of water please"
+                ]
+              },
+              "feedbackData": {
+                "explanation": "Cấu trúc: 'Can I have a glass of water, please?'"
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:36.969Z",
+              "updatedAt": "2026-11-27T03:24:36.969Z"
+            }
+          }
+        },
+        {
+          "id": "f6494014-b094-453e-a7f4-8635f77ce3f0",
+          "lessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+          "itemRevisionId": "8fc92f5a-4e39-468e-891b-de519ddce312",
+          "itemId": "bf0acd0b-399b-4b03-866a-970734d62381",
+          "position": 6,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:36.970Z",
+          "itemRevision": {
+            "id": "8fc92f5a-4e39-468e-891b-de519ddce312",
+            "itemId": "bf0acd0b-399b-4b03-866a-970734d62381",
+            "revisionNo": 1,
+            "type": "MCQ",
+            "promptData": {
+              "prompt": "Từ 'chicken' trong thực đơn có nghĩa là gì?",
+              "options": [
+                {
+                  "id": "opt-7-7",
+                  "text": "Thịt gà"
+                },
+                {
+                  "id": "opt-7-8",
+                  "text": "Thịt bò"
+                },
+                {
+                  "id": "opt-7-9",
+                  "text": "Cá"
+                }
+              ]
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "3fbded4ba3696f58d5c4f9bb1c94bedca66dd0a3e5bb7880c7945a75b0bcf9a2",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "86ea28e5-82c7-47d6-b403-5a4d2c4a8175",
+            "authoringLessonRevisionId": "13def654-c195-42d3-85d2-6048c77b02f9",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:36.989Z",
+            "createdAt": "2026-11-27T03:24:36.967Z",
+            "updatedAt": "2026-11-27T03:24:36.989Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "6687795e-2786-4b09-be71-e710d1e806d7",
+              "itemRevisionId": "8fc92f5a-4e39-468e-891b-de519ddce312",
+              "gradingData": {
+                "correctOptionId": "opt-7-7"
+              },
+              "feedbackData": {
+                "explanation": "'chicken' có nghĩa là thịt gà."
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:36.969Z",
+              "updatedAt": "2026-11-27T03:24:36.969Z"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "dc0736b4-b5dd-4d62-9f4c-74f8a3d09c3c",
+    "unitId": "e0000000-0000-4000-8000-000000000013",
+    "position": 2,
+    "isRequired": true,
+    "availability": "AVAILABLE",
+    "activeRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+    "createdAt": "2026-11-27T03:24:37.016Z",
+    "updatedAt": "2026-11-27T03:24:37.084Z",
+    "rowVersion": "5",
+    "activeRevision": {
+      "id": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+      "lessonId": "dc0736b4-b5dd-4d62-9f4c-74f8a3d09c3c",
+      "revisionNo": 1,
+      "priorRevisionId": null,
+      "changeSummary": null,
+      "assignmentId": "272542f5-cd7f-4cda-b534-465ecef27b71",
+      "creationAssignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+      "status": "PUBLISHED",
+      "title": {
+        "en": "Lesson 8: Asking for Directions",
+        "vi": "Hỏi đường"
+      },
+      "contentSchemaVersion": 1,
+      "contentBlocks": [],
+      "topicIds": [],
+      "skillIds": [],
+      "purposeTags": [],
+      "coverageCatalogGeneration": null,
+      "coverageSnapshot": null,
+      "submittedAssignmentGeneration": "1",
+      "assignmentScopeSnapshot": {
+        "scope": {},
+        "requirement": {},
+        "schema_version": 1
+      },
+      "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+      "lastEditedBy": "bbbbbbbb-2222-4222-8222-222222222222",
+      "submittedBy": "bbbbbbbb-2222-4222-8222-222222222222",
+      "submittedAt": "2026-11-27T03:24:37.063Z",
+      "approvedBy": "cccccccc-0000-4000-8000-000000000001",
+      "approvedAt": "2026-11-27T03:24:37.069Z",
+      "publishedBy": "cccccccc-0000-4000-8000-000000000001",
+      "publishedAt": "2026-11-27T03:24:37.081Z",
+      "endedAt": null,
+      "createdAt": "2026-11-27T03:24:37.040Z",
+      "updatedAt": "2026-11-27T03:24:37.082Z",
+      "rowVersion": "4",
+      "reviews": [
+        {
+          "id": "2375c042-0246-4fc4-b282-3dea79c7aa39",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "assessmentVersionId": null,
+          "action": "SUBMIT",
+          "actorId": "bbbbbbbb-2222-4222-8222-222222222222",
+          "assignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-11-27T03:24:37.063Z",
+          "revisionRowVersion": "2",
+          "comment": null,
+          "createdAt": "2026-11-27T03:24:37.066Z"
+        },
+        {
+          "id": "3ef3ee6f-09f8-499a-9735-99233ca47d38",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "assessmentVersionId": null,
+          "action": "APPROVE",
+          "actorId": "cccccccc-0000-4000-8000-000000000001",
+          "assignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-11-27T03:24:37.069Z",
+          "revisionRowVersion": "3",
+          "comment": null,
+          "createdAt": "2026-11-27T03:24:37.071Z"
+        },
+        {
+          "id": "d24d6f9b-d100-4c22-b484-16604087bfc9",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "assessmentVersionId": null,
+          "action": "PUBLISH",
+          "actorId": "cccccccc-0000-4000-8000-000000000001",
+          "assignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+          "assignmentGeneration": "1",
+          "assignmentScopeSnapshot": {
+            "scope": {},
+            "requirement": {},
+            "schema_version": 1
+          },
+          "blueprintGeneration": null,
+          "feedbackItemIds": [],
+          "occurredAt": "2026-11-27T03:24:37.081Z",
+          "revisionRowVersion": "4",
+          "comment": null,
+          "createdAt": "2026-11-27T03:24:37.083Z"
+        }
+      ],
+      "exercises": [
+        {
+          "id": "4967da48-bec8-4866-9f18-a0e152890ce9",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "itemRevisionId": "48935a1c-e359-48d1-a0c6-5a1f6d531bcd",
+          "itemId": "501324a4-82dc-4a44-980d-912ea1b7fd40",
+          "position": 1,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:37.045Z",
+          "itemRevision": {
+            "id": "48935a1c-e359-48d1-a0c6-5a1f6d531bcd",
+            "itemId": "501324a4-82dc-4a44-980d-912ea1b7fd40",
+            "revisionNo": 1,
+            "type": "LISTENING",
+            "promptData": {
+              "prompt": "Nghe đoạn âm thanh và cho biết người nói bảo rẽ hướng nào ở ngân hàng?",
+              "options": [
+                {
+                  "id": "opt-8-1",
+                  "text": "Turn left (Rẽ trái)"
+                },
+                {
+                  "id": "opt-8-2",
+                  "text": "Turn right (Rẽ phải)"
+                },
+                {
+                  "id": "opt-8-3",
+                  "text": "Go back (Quay lại)"
+                }
+              ],
+              "audioUrl": "https://sncfyvpzwedqgwfpffkh.supabase.co/storage/v1/object/public/lingora-media/audio/unit3-lesson8-directions.mp3"
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "ad1391451736ad215016371b6b812adecaa9276993824be3cfc6b86d71a86313",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+            "authoringLessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:37.063Z",
+            "createdAt": "2026-11-27T03:24:37.043Z",
+            "updatedAt": "2026-11-27T03:24:37.064Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "dc79ee1b-1df4-4555-a5d9-e7586fd80730",
+              "itemRevisionId": "48935a1c-e359-48d1-a0c6-5a1f6d531bcd",
+              "gradingData": {
+                "transcript": "Excuse me. Go straight and turn left at the bank.",
+                "correctOptionId": "opt-8-1"
+              },
+              "feedbackData": {
+                "explanation": "Người nói trong đoạn băng phát âm: 'Excuse me. Go straight and turn left at the bank.'"
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:37.044Z",
+              "updatedAt": "2026-11-27T03:24:37.044Z"
+            }
+          }
+        },
+        {
+          "id": "fc49b1fc-3d84-4457-8698-8543f3248a0f",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "itemRevisionId": "f425163d-ed11-4ed3-aea0-d69ef0033828",
+          "itemId": "a4befb4d-63ae-46ba-9934-d4567aea19d0",
+          "position": 2,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:37.045Z",
+          "itemRevision": {
+            "id": "f425163d-ed11-4ed3-aea0-d69ef0033828",
+            "itemId": "a4befb4d-63ae-46ba-9934-d4567aea19d0",
+            "revisionNo": 1,
+            "type": "FILL_BLANK",
+            "promptData": {
+              "prompt": "Điền từ chỉ hướng rẽ phải: Rẽ phải ở hiệu sách.",
+              "sentence": "Turn ____ at the bookstore."
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "3c2cca3d0eaa9059f05dab21cf172acfd64554e59731c8a59a3508e96b873617",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+            "authoringLessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:37.063Z",
+            "createdAt": "2026-11-27T03:24:37.043Z",
+            "updatedAt": "2026-11-27T03:24:37.064Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "558810f1-a0c4-4eee-9920-fdf899246c2f",
+              "itemRevisionId": "f425163d-ed11-4ed3-aea0-d69ef0033828",
+              "gradingData": {
+                "caseSensitive": false,
+                "acceptedAnswers": [
+                  "right"
+                ]
+              },
+              "feedbackData": {
+                "explanation": "'right' có nghĩa là bên phải ('Turn right' = rẽ phải)."
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:37.044Z",
+              "updatedAt": "2026-11-27T03:24:37.044Z"
+            }
+          }
+        },
+        {
+          "id": "caede27f-4fd6-4883-9495-89b7bd615100",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "itemRevisionId": "b0f28a8a-41d4-4259-93d5-5be8363c25ba",
+          "itemId": "fb77a6bd-b2e0-49e3-9fd1-29c90b6fe1b2",
+          "position": 3,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:37.045Z",
+          "itemRevision": {
+            "id": "b0f28a8a-41d4-4259-93d5-5be8363c25ba",
+            "itemId": "fb77a6bd-b2e0-49e3-9fd1-29c90b6fe1b2",
+            "revisionNo": 1,
+            "type": "REORDER",
+            "promptData": {
+              "prompt": "Sắp xếp các từ thành câu chỉ đường đi thẳng trên con phố này:",
+              "tokens": [
+                {
+                  "id": "t8-1",
+                  "text": "Go"
+                },
+                {
+                  "id": "t8-2",
+                  "text": "straight"
+                },
+                {
+                  "id": "t8-3",
+                  "text": "on"
+                },
+                {
+                  "id": "t8-4",
+                  "text": "this"
+                },
+                {
+                  "id": "t8-5",
+                  "text": "street."
+                }
+              ]
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "ccbcdd778cf56ad206d7fa68d8db43c1a89fa8a567cdb054bac9078a68d7b111",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+            "authoringLessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:37.063Z",
+            "createdAt": "2026-11-27T03:24:37.043Z",
+            "updatedAt": "2026-11-27T03:24:37.064Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "ec63d283-258b-4883-87e9-1a7b79e494ec",
+              "itemRevisionId": "b0f28a8a-41d4-4259-93d5-5be8363c25ba",
+              "gradingData": {
+                "correctOrder": [
+                  "t8-1",
+                  "t8-2",
+                  "t8-3",
+                  "t8-4",
+                  "t8-5"
+                ]
+              },
+              "feedbackData": {
+                "explanation": "'Go straight on this street.' có nghĩa là 'Đi thẳng trên con đường này.'"
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:37.044Z",
+              "updatedAt": "2026-11-27T03:24:37.044Z"
+            }
+          }
+        },
+        {
+          "id": "5ffff131-32a6-4359-8665-cc6023b4d141",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "itemRevisionId": "b2116c41-23c8-46b3-b635-6a8ac68a5219",
+          "itemId": "168eb020-31bf-476b-9464-6d3f15d21ac8",
+          "position": 4,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:37.045Z",
+          "itemRevision": {
+            "id": "b2116c41-23c8-46b3-b635-6a8ac68a5219",
+            "itemId": "168eb020-31bf-476b-9464-6d3f15d21ac8",
+            "revisionNo": 1,
+            "type": "GRAMMAR",
+            "promptData": {
+              "prompt": "Viết câu chỉ đường rẽ trái tại nhà ga:",
+              "targetPattern": "Turn left + at + the station",
+              "sourceSentence": "station (nhà ga)"
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "9fc7070db3cd5b0ff2547afa64db7abffb33f5403b3d06b3f9d8cc9046845c30",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+            "authoringLessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:37.063Z",
+            "createdAt": "2026-11-27T03:24:37.043Z",
+            "updatedAt": "2026-11-27T03:24:37.064Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "92d088e3-76cc-41a1-9357-7f842dbceb5a",
+              "itemRevisionId": "b2116c41-23c8-46b3-b635-6a8ac68a5219",
+              "gradingData": {
+                "caseSensitive": false,
+                "acceptedAnswers": [
+                  "Turn left at the station.",
+                  "Turn left at the station"
+                ]
+              },
+              "feedbackData": {
+                "explanation": "Cấu trúc: 'Turn left at the station.'"
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:37.044Z",
+              "updatedAt": "2026-11-27T03:24:37.044Z"
+            }
+          }
+        },
+        {
+          "id": "b39854dd-b244-4d06-94cb-6232c8a992f4",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "itemRevisionId": "e78b1303-c4ae-4d07-9aed-b822731d119b",
+          "itemId": "1888deb4-1b59-4054-a412-18a04e8f2316",
+          "position": 5,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:37.045Z",
+          "itemRevision": {
+            "id": "e78b1303-c4ae-4d07-9aed-b822731d119b",
+            "itemId": "1888deb4-1b59-4054-a412-18a04e8f2316",
+            "revisionNo": 1,
+            "type": "MCQ",
+            "promptData": {
+              "prompt": "Từ 'near' trong tiếng Anh có nghĩa là gì?",
+              "options": [
+                {
+                  "id": "opt-8-4",
+                  "text": "Gần"
+                },
+                {
+                  "id": "opt-8-5",
+                  "text": "Xa"
+                },
+                {
+                  "id": "opt-8-6",
+                  "text": "Thẳng"
+                }
+              ]
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "13bf0a7b5efff78a8cea35b87ce581d8aeee985c8d45ea5dad200fc05cf09d9a",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+            "authoringLessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:37.063Z",
+            "createdAt": "2026-11-27T03:24:37.043Z",
+            "updatedAt": "2026-11-27T03:24:37.064Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "c251bb0e-14cb-4277-9ccf-ce0c4d71bec6",
+              "itemRevisionId": "e78b1303-c4ae-4d07-9aed-b822731d119b",
+              "gradingData": {
+                "correctOptionId": "opt-8-4"
+              },
+              "feedbackData": {
+                "explanation": "'near' có nghĩa là gần."
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:37.044Z",
+              "updatedAt": "2026-11-27T03:24:37.044Z"
+            }
+          }
+        },
+        {
+          "id": "70367c8d-148c-499c-b8ee-48d0dc6cf7cc",
+          "lessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+          "itemRevisionId": "d1da77f4-8a74-4ead-8c3d-867c0cd39879",
+          "itemId": "7f2cb807-ad01-4e18-a9f4-63b9843bbf98",
+          "position": 6,
+          "isCore": true,
+          "createdAt": "2026-11-27T03:24:37.045Z",
+          "itemRevision": {
+            "id": "d1da77f4-8a74-4ead-8c3d-867c0cd39879",
+            "itemId": "7f2cb807-ad01-4e18-a9f4-63b9843bbf98",
+            "revisionNo": 1,
+            "type": "FILL_BLANK",
+            "promptData": {
+              "prompt": "Điền từ chỉ vị trí gần: Ngân hàng ở gần nhà hàng.",
+              "sentence": "The bank is ____ the restaurant."
+            },
+            "practiceSkillIds": [],
+            "practiceCoverageSnapshot": null,
+            "schemaVersion": 1,
+            "exactFingerprint": "9b928f5129f32600a1646b99f6b186e2603f2b67f526d9e72eadd50bec2576d5",
+            "createdBy": "bbbbbbbb-2222-4222-8222-222222222222",
+            "creationAssignmentEpisodeId": "8720dcef-ae8f-479c-9e2c-f9e0e8452a47",
+            "authoringLessonRevisionId": "fc70e5fb-f70e-42eb-8445-582f80dc4551",
+            "assessmentBlueprintId": null,
+            "blueprintGeneration": null,
+            "isDraftOmitted": false,
+            "frozenAt": "2026-11-27T03:24:37.063Z",
+            "createdAt": "2026-11-27T03:24:37.043Z",
+            "updatedAt": "2026-11-27T03:24:37.064Z",
+            "rowVersion": "1",
+            "gradingSecret": {
+              "id": "d5ec303a-1233-4e6b-9e95-b017d10a05f8",
+              "itemRevisionId": "d1da77f4-8a74-4ead-8c3d-867c0cd39879",
+              "gradingData": {
+                "caseSensitive": false,
+                "acceptedAnswers": [
+                  "near"
+                ]
+              },
+              "feedbackData": {
+                "explanation": "'near' nghĩa là ở gần."
+              },
+              "schemaVersion": 1,
+              "createdAt": "2026-11-27T03:24:37.044Z",
+              "updatedAt": "2026-11-27T03:24:37.044Z"
+            }
+          }
+        }
+      ]
+    }
+  }
+]
