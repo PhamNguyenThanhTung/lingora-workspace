@@ -13,6 +13,7 @@ import {
   enforceIdentityAndPrune,
   type LanguageDraftData,
 } from './draftStorage';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface LanguagesCatalogProps {
   initialLanguages?: LanguageDto[];
@@ -61,6 +62,10 @@ export function LanguagesCatalog({
 
   // Draft recovery prompt state
   const [pendingDraft, setPendingDraft] = useState<LanguageDraftData | null>(null);
+  // Mirrors the `data-initialized` convention of the modals: exposes when the
+  // mount-time draft prune/scan has actually run, so callers never read storage
+  // or the recovery banner while the effect is still pending after hydration.
+  const [draftScanDone, setDraftScanDone] = useState(false);
 
   // Check for saved draft on mount and clean up expired / other account drafts
   useEffect(() => {
@@ -71,20 +76,12 @@ export function LanguagesCatalog({
     } else {
       setPendingDraft(null);
     }
+    setDraftScanDone(true);
   }, [account.id]);
 
-  // Inert background toggle: sets inert on #appContainer when any modal is open
+  // Inert background toggle + safe focus restoration across close/reopen/unmount
   const anyModalOpen = isFormModalOpen || isDeleteConfirmOpen || isDeleteBlockedOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   // Fetch languages catalogue
   const fetchLanguages = async () => {
@@ -251,20 +248,15 @@ export function LanguagesCatalog({
         return next.sort((a, b) => a.code.localeCompare(b.code));
       });
       showMutationStatus('Đã thêm ngôn ngữ');
-      setTimeout(() => openCreateBtnRef.current?.focus(), 50);
+      scheduleFocusRestore(() => openCreateBtnRef.current);
     } else {
       setLanguages((prev) =>
         prev.map((l) => (l.id === saved.id ? saved : l))
       );
       showMutationStatus('Đã cập nhật ngôn ngữ');
-      setTimeout(() => {
-        const btn = document.getElementById(`btn-edit-${saved.code}`);
-        if (btn) {
-          btn.focus();
-        } else {
-          openCreateBtnRef.current?.focus();
-        }
-      }, 50);
+      scheduleFocusRestore(
+        () => document.getElementById(`btn-edit-${saved.code}`) || openCreateBtnRef.current
+      );
     }
   };
 
@@ -277,23 +269,18 @@ export function LanguagesCatalog({
     showMutationStatus('Đã xóa ngôn ngữ');
 
     // Focus restoration per baseline §5.2
-    setTimeout(() => {
+    scheduleFocusRestore(() => {
       if (nextList.length === 0) {
-        const emptyBtn = document.getElementById('emptyCreateBtn') || openCreateBtnRef.current;
-        emptyBtn?.focus();
-      } else {
-        const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
-        const targetCode = nextList[targetIndex].code;
-        const btn =
-          document.getElementById(`btn-delete-${targetCode}`) ||
-          document.getElementById(`btn-edit-${targetCode}`);
-        if (btn) {
-          btn.focus();
-        } else {
-          openCreateBtnRef.current?.focus();
-        }
+        return document.getElementById('emptyCreateBtn') || openCreateBtnRef.current;
       }
-    }, 50);
+      const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
+      const targetCode = nextList[targetIndex].code;
+      return (
+        document.getElementById(`btn-delete-${targetCode}`) ||
+        document.getElementById(`btn-edit-${targetCode}`) ||
+        openCreateBtnRef.current
+      );
+    });
   };
 
   const handleDeleteBlocked = (lang: LanguageDto) => {
@@ -304,7 +291,7 @@ export function LanguagesCatalog({
 
   return (
     <>
-      <main className="page-content">
+      <main className="page-content" data-draft-scan={draftScanDone ? 'done' : 'pending'}>
         {/* Permission Denied Banner with Logout Action */}
         {forbiddenBanner && (
           <div

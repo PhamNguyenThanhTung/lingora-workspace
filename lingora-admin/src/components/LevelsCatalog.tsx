@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { FrameworkDto } from '@/server/frameworks';
 import type { LevelDto } from '@/server/levels';
 import { LevelFormModal } from './LevelFormModal';
 import { LevelDeleteModal } from './LevelDeleteModal';
 import { SessionLostModal } from './SessionLostModal';
 import { removeDraft, clearAllDrafts } from './draftStorage';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface LevelsCatalogProps {
   framework: FrameworkDto;
@@ -50,18 +51,9 @@ export function LevelsCatalog({
   const triggerRef = useRef<HTMLElement | null>(null);
   const openCreateBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Background inert when any modal is open
+  // Background inert + safe focus restoration when any modal is open/closed
   const anyModalOpen = isFormModalOpen || isDeleteModalOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   const fetchLevels = async () => {
     setIsLoading(true);
@@ -175,23 +167,18 @@ export function LevelsCatalog({
       deleted ? `Đã xóa cấp độ ${deleted.code} thành công.` : 'Đã xóa cấp độ thành công.'
     );
 
-    setTimeout(() => {
+    scheduleFocusRestore(() => {
       if (nextList.length === 0) {
-        const emptyBtn = document.getElementById('btnEmptyCreateLevel') || openCreateBtnRef.current;
-        emptyBtn?.focus();
-      } else {
-        const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
-        const targetId = nextList[targetIndex].id;
-        const btn =
-          document.getElementById(`btn-delete-level-${targetId}`) ||
-          document.getElementById(`btn-edit-level-${targetId}`);
-        if (btn) {
-          btn.focus();
-        } else {
-          openCreateBtnRef.current?.focus();
-        }
+        return document.getElementById('btnEmptyCreateLevel') || openCreateBtnRef.current;
       }
-    }, 50);
+      const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
+      const targetId = nextList[targetIndex].id;
+      return (
+        document.getElementById(`btn-delete-level-${targetId}`) ||
+        document.getElementById(`btn-edit-level-${targetId}`) ||
+        openCreateBtnRef.current
+      );
+    });
   };
 
   const getFrameworkDisplayName = (fw: FrameworkDto) => {

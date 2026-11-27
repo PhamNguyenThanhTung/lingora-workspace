@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { FrameworkDto } from '@/server/frameworks';
 import { FrameworkFormModal } from './FrameworkFormModal';
 import { FrameworkDeleteModal } from './FrameworkDeleteModal';
 import { SessionLostModal } from './SessionLostModal';
 import { removeDraft, clearAllDrafts } from './draftStorage';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface FrameworksCatalogProps {
   initialFrameworks?: FrameworkDto[];
@@ -47,18 +48,9 @@ export function FrameworksCatalog({
   const triggerRef = useRef<HTMLElement | null>(null);
   const openCreateBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Background inert when any modal is open
+  // Background inert + safe focus restoration when any modal is open/closed
   const anyModalOpen = isFormModalOpen || isDeleteModalOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   const fetchFrameworks = async () => {
     setIsLoading(true);
@@ -168,24 +160,19 @@ export function FrameworksCatalog({
         : 'Đã xóa khung năng lực thành công.'
     );
 
-    setTimeout(() => {
+    scheduleFocusRestore(() => {
       if (nextList.length === 0) {
-        const emptyBtn = document.getElementById('btnEmptyCreateFramework') || openCreateBtnRef.current;
-        emptyBtn?.focus();
-      } else {
-        const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
-        const targetId = nextList[targetIndex].id;
-        const btn =
-          document.getElementById(`btn-delete-framework-${targetId}`) ||
-          document.getElementById(`btn-edit-framework-${targetId}`) ||
-          document.getElementById(`btn-view-levels-${targetId}`);
-        if (btn) {
-          btn.focus();
-        } else {
-          openCreateBtnRef.current?.focus();
-        }
+        return document.getElementById('btnEmptyCreateFramework') || openCreateBtnRef.current;
       }
-    }, 50);
+      const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
+      const targetId = nextList[targetIndex].id;
+      return (
+        document.getElementById(`btn-delete-framework-${targetId}`) ||
+        document.getElementById(`btn-edit-framework-${targetId}`) ||
+        document.getElementById(`btn-view-levels-${targetId}`) ||
+        openCreateBtnRef.current
+      );
+    });
   };
 
   const getDisplayName = (names: Record<string, string>) => {

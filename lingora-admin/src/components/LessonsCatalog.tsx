@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { CourseDto } from '@/server/courses';
 import type { UnitDto } from '@/server/units';
 import type { LessonDetailDto, LessonSummaryDto, TeacherOptionDto } from '@/server/lessons';
@@ -8,6 +8,7 @@ import { LessonFormModal } from './LessonFormModal';
 import { LessonAssignModal } from './LessonAssignModal';
 import { SessionLostModal } from './SessionLostModal';
 import { removeDraft, clearAllDrafts } from './draftStorage';
+import { useModalInertAndFocusRestore } from './focusRestore';
 
 export interface LessonsCatalogProps {
   course: CourseDto;
@@ -62,17 +63,7 @@ export function LessonsCatalog({
   const openCreateBtnRef = useRef<HTMLButtonElement>(null);
 
   const anyModalOpen = isFormModalOpen || isAssignModalOpen || isSessionLostOpen;
-  useEffect(() => {
-    const container = document.getElementById('appContainer');
-    if (container) {
-      if (anyModalOpen) {
-        container.setAttribute('inert', '');
-      } else {
-        container.removeAttribute('inert');
-      }
-    }
-    return () => container?.removeAttribute('inert');
-  }, [anyModalOpen]);
+  const scheduleFocusRestore = useModalInertAndFocusRestore(anyModalOpen);
 
   const fetchTeachers = async () => {
     setLoadingTeachers(true);
@@ -178,13 +169,7 @@ export function LessonsCatalog({
       setMutationStatus(`Đã cập nhật thành công bài học #${saved.position}.`);
     }
 
-    setTimeout(() => {
-      if (triggerRef.current && typeof triggerRef.current.focus === 'function') {
-        triggerRef.current.focus();
-      } else {
-        openCreateBtnRef.current?.focus();
-      }
-    }, 50);
+    scheduleFocusRestore(() => triggerRef.current || openCreateBtnRef.current);
   };
 
   const handleAssignSuccess = (updated: LessonDetailDto | LessonSummaryDto) => {
@@ -198,13 +183,7 @@ export function LessonsCatalog({
     const teacherName = updated.assignment?.currentTeacher?.displayName || 'giáo viên';
     setMutationStatus(`Đã cập nhật phân công bài học #${updated.position} cho ${teacherName}.`);
 
-    setTimeout(() => {
-      if (triggerRef.current && typeof triggerRef.current.focus === 'function') {
-        triggerRef.current.focus();
-      } else {
-        openCreateBtnRef.current?.focus();
-      }
-    }, 50);
+    scheduleFocusRestore(() => triggerRef.current || openCreateBtnRef.current);
   };
 
   const handleActivate = async (lesson: LessonSummaryDto) => {

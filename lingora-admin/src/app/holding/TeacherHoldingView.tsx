@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { removeDraft, clearAllDrafts, enforceIdentityAndPrune } from '@/components/draftStorage';
 
@@ -11,10 +11,14 @@ export interface TeacherHoldingViewProps {
 
 export function TeacherHoldingView({ displayName, accountId }: TeacherHoldingViewProps) {
   const router = useRouter();
+  // Exposes when the mount-time prune has actually run, so callers never read
+  // storage while the effect is still pending after hydration.
+  const [draftScanDone, setDraftScanDone] = useState(false);
 
   // Prune any lingering drafts from previous accounts upon entering holding view per R7
   useEffect(() => {
     enforceIdentityAndPrune(accountId);
+    setDraftScanDone(true);
   }, [accountId]);
 
   const handleLogout = async () => {
@@ -41,7 +45,7 @@ export function TeacherHoldingView({ displayName, accountId }: TeacherHoldingVie
   };
 
   return (
-    <main className="holding-view-wrapper">
+    <main className="holding-view-wrapper" data-draft-scan={draftScanDone ? 'done' : 'pending'}>
       <div className="holding-card">
         <div className="holding-brand">Lingora</div>
         <h1 className="holding-title">
