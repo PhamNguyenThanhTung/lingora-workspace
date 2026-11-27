@@ -70,7 +70,7 @@ export function startIsolatedServer(port = 3007) {
         res.setHeader('Access-Control-Allow-Origin', `http://localhost:${port}`);
         res.setHeader('Cache-Control', 'no-store, private');
 
-        if (pathname === '/' || pathname === '/index.html' || /^\/(dashboard|languages|frameworks|courses|teachers|assessments|review|audit-events|my-lessons)(\/[^.]*)?$/.test(pathname)) {
+        if (pathname === '/' || pathname === '/index.html' || /^\/(dashboard|languages|characters|frameworks|courses|teachers|assessments|review|audit-events|my-lessons)(\/[^.]*)?$/.test(pathname)) {
           const state = url.searchParams.get('state');
           let injectedScript = '';
 

@@ -13,6 +13,62 @@ export type WritingScriptType = (typeof WRITING_SCRIPT_TYPES)[number];
 export const HANZI_SYSTEMS = ['SIMPLIFIED', 'TRADITIONAL'] as const;
 export type HanziSystem = (typeof HANZI_SYSTEMS)[number];
 
+export const ALLOWED_SCRIPTS_BY_LANGUAGE: Record<string, readonly WritingScriptType[]> = {
+  ja: ['HIRAGANA', 'KATAKANA', 'KANJI'],
+  zh: ['HANZI_SIMPLIFIED', 'HANZI_TRADITIONAL'],
+};
+
+export function getAllowedScriptsForLanguageCode(languageCode: string): readonly WritingScriptType[] {
+  if (typeof languageCode !== 'string') return [];
+  const primary = languageCode.trim().toLowerCase().replace(/_/g, '-').split('-')[0];
+  return ALLOWED_SCRIPTS_BY_LANGUAGE[primary] ?? [];
+}
+
+export function isScriptTypeAllowedForLanguage(
+  languageCode: string,
+  scriptType: WritingScriptType
+): boolean {
+  return getAllowedScriptsForLanguageCode(languageCode).includes(scriptType);
+}
+
+export const listCharactersQuerySchema = z
+  .object({
+    languageId: z.preprocess(
+      (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+      z.string().uuid({ message: 'languageId phải là UUID hợp lệ' }).optional()
+    ),
+    scriptType: z.preprocess(
+      (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+      z
+        .enum(WRITING_SCRIPT_TYPES, {
+          message: 'scriptType phải thuộc HIRAGANA, KATAKANA, KANJI, HANZI_SIMPLIFIED, HANZI_TRADITIONAL',
+        })
+        .optional()
+    ),
+    search: z.preprocess(
+      (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+      z.string().trim().max(300, 'Từ khóa tìm kiếm tối đa 300 ký tự').optional()
+    ),
+    limit: z.preprocess(
+      (val) => (val === undefined || val === null || (typeof val === 'string' && val.trim() === '') ? 20 : val),
+      z.coerce
+        .number({ message: 'limit phải là số nguyên' })
+        .int('limit phải là số nguyên')
+        .min(1, 'limit tối thiểu là 1')
+        .max(100, 'limit tối đa là 100')
+    ),
+    offset: z.preprocess(
+      (val) => (val === undefined || val === null || (typeof val === 'string' && val.trim() === '') ? 0 : val),
+      z.coerce
+        .number({ message: 'offset phải là số nguyên' })
+        .int('offset phải là số nguyên')
+        .min(0, 'offset phải >= 0')
+    ),
+  })
+  .strict();
+
+export type ListCharactersQueryInput = z.infer<typeof listCharactersQuerySchema>;
+
 const graphemeSegmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
 
 export function isVariationSelector(codePoint: number): boolean {

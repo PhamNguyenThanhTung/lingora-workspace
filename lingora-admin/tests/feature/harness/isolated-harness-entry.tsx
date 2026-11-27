@@ -16,6 +16,8 @@ import { ReviewDetailView } from '../../../src/components/ReviewDetailView';
 import { ReviewQueueCatalog } from '../../../src/components/ReviewQueueCatalog';
 import { AssessmentCatalog } from '../../../src/components/AssessmentCatalog';
 import { AuditEventsCatalog } from '../../../src/components/AuditEventsCatalog';
+import { CharacterCatalogue } from '../../../src/components/CharacterCatalogue';
+import type { CharacterCatalogueItemDto } from '../../../src/server/characters';
 import type { AuditEventDto, AuditFilters } from '../../../src/server/audit/types';
 import { TeacherHoldingView } from '../../../src/app/holding/TeacherHoldingView';
 import { AccessDeniedView } from '../../../src/components/AccessDeniedView';
@@ -1015,6 +1017,108 @@ function IsolatedHarnessApp() {
     return (
       <AppShell account={pageProps.account}>
         <AuditEventsCatalog {...pageProps} />
+      </AppShell>
+    );
+  }
+
+  // --- EXT-02 Character Catalogue States ---
+  if (state === 'characters-populated') {
+    const mockCharacters: CharacterCatalogueItemDto[] = [
+      {
+        id: '99990001-0000-4000-8000-000000000001',
+        languageId: '44444444-4444-4444-8444-444444444444',
+        languageCode: 'ja',
+        languageNames: { vi: 'Tiếng Nhật', en: 'Japanese' },
+        glyph: 'あ',
+        scriptType: 'HIRAGANA',
+        meaning: 'âm a',
+        primaryReading: 'あ',
+        romanization: 'a',
+        strokeCount: 3,
+        metadata: {},
+        hasStrokes: false,
+        strokeVersion: null,
+      },
+      {
+        id: '99990001-0000-4000-8000-000000000002',
+        languageId: '44444444-4444-4444-8444-444444444444',
+        languageCode: 'ja',
+        languageNames: { vi: 'Tiếng Nhật', en: 'Japanese' },
+        glyph: '日',
+        scriptType: 'KANJI',
+        meaning: 'mặt trời, ngày',
+        primaryReading: 'にち',
+        romanization: 'nichi',
+        strokeCount: 4,
+        metadata: { jlptLevel: 'N5' },
+        hasStrokes: true,
+        strokeVersion: 1,
+      },
+      {
+        id: '99990001-0000-4000-8000-000000000003',
+        languageId: '77777777-7777-4777-8777-777777777777',
+        languageCode: 'zh-cn',
+        languageNames: { vi: 'Tiếng Trung (Giản thể)', en: 'Chinese (Simplified)' },
+        glyph: '人',
+        scriptType: 'HANZI_SIMPLIFIED',
+        meaning: 'người',
+        primaryReading: 'rén',
+        romanization: 'ren',
+        strokeCount: 2,
+        metadata: { pinyin: ['rén'] },
+        hasStrokes: false,
+        strokeVersion: null,
+      },
+    ];
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CharacterCatalogue
+          initialCharacters={mockCharacters}
+          initialTotal={25}
+          initialLimit={20}
+          initialOffset={0}
+          initialLanguages={MOCK_LANGUAGES}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'characters-empty') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CharacterCatalogue
+          initialCharacters={[]}
+          initialTotal={0}
+          initialLimit={20}
+          initialOffset={0}
+          initialLanguages={MOCK_LANGUAGES}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'characters-loading') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CharacterCatalogue
+          isLoading={true}
+          initialLanguages={MOCK_LANGUAGES}
+          account={MOCK_ADMIN}
+        />
+      </AppShell>
+    );
+  }
+
+  if (state === 'characters-fetch-error') {
+    return (
+      <AppShell account={MOCK_ADMIN}>
+        <CharacterCatalogue
+          initialError="Không thể kết nối đến máy chủ Lingora (503 Service Unavailable)."
+          initialLanguages={MOCK_LANGUAGES}
+          account={MOCK_ADMIN}
+        />
       </AppShell>
     );
   }
