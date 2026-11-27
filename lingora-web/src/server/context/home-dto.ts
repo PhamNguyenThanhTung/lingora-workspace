@@ -33,6 +33,8 @@ export interface HomeDto {
   plan: LearningPlanDto | null;
   continueLearning: ContinueLearningDto | null;
   path: PathNodeDto[];
+  sections: PathSectionDto[];
+  currentLevel: { code: string; label: string } | null;
   pathStatus: PathStatus | null;
   pathMessage: string | null;
   reviewDue: number;
@@ -44,4 +46,15 @@ export interface HomeDto {
   totalGems?: number;
   quests: QuestDto[];
   recentAchievement: AchievementDto | null;
+}
+
+export interface PathSectionDto {
+  levelId: string;
+  levelCode: string;
+  levelLabel: string;
+  position: number;
+  state: 'COMPLETED' | 'CURRENT' | 'NEXT' | 'LOCKED' | 'COMING_SOON';
+  progress: { requiredDone: number; requiredTotal: number };
+  canSkipTo: boolean;
+  units: Array<{ unitId: string; position: number; title: string; progress: { done: number; total: number }; nodes: PathNodeDto[] }>;
 }

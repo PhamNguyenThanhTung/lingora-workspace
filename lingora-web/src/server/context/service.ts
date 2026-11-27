@@ -1,3 +1,4 @@
+import { requiredProgress } from './progress.ts';
 import 'server-only';
 import { Prisma } from '../../../../lingora-admin/generated/product-client/index.js';
 import { getLearnerPrisma } from '../db/index.ts';
@@ -41,6 +42,7 @@ export const contextSelectWithRowVersion = {
   status: true,
   rowVersion: true,
   startSource: true,
+  lessonCompletions: { select: { lessonId: true } },
   selectedStartLevelId: true,
   workingLevelId: true,
   language: { select: { id: true, code: true, names: true } },
@@ -51,6 +53,7 @@ export const contextSelectWithRowVersion = {
       frameworkId: true,
       names: true,
       isActive: true,
+      units: { select: { levelId: true, lessons: { where: { isRequired: true, availability: 'AVAILABLE', activeRevision: { status: 'PUBLISHED' } }, select: { id: true } } } },
       framework: { select: { id: true, code: true, version: true, names: true } },
     },
   },
@@ -60,6 +63,8 @@ export const contextSelectWithRowVersion = {
 
 export function mapContextToSummaryDto(c: any): LearningContextSummaryDto {
   return {
+    levelCode: c.workingLevel?.code ?? null,
+    requiredProgress: requiredProgress(c),
     id: c.id,
     status: c.status,
     rowVersion: (c.rowVersion ?? 1n).toString(),

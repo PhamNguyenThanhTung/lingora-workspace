@@ -14,6 +14,8 @@ const learner: LearnerDto = {
 const existingContexts: LearningContextSummaryDto[] = new URLSearchParams(window.location.search).has('owned-ja')
   ? [{
       id: 'ctx-ja-owned',
+      levelCode: null,
+      requiredProgress: { requiredDone: 0, requiredTotal: 0 },
       status: 'ACTIVE',
       rowVersion: '1',
       startSource: 'DEFAULT',

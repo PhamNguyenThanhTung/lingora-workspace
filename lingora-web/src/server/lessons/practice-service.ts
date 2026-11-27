@@ -1,3 +1,4 @@
+import { advanceCompletedLevel, type LevelUpDto } from '../context/level-progression.ts';
 import 'server-only';
 import type { Prisma, PrismaClient } from '../../../../lingora-admin/generated/product-client/index.js';
 import { getLearnerPrisma } from '../db/index.ts';
@@ -733,7 +734,7 @@ export async function finalizePracticeAttempt(
   attemptId: string,
   input: FinalizePostInput,
   verifiedUserId: string
-): Promise<PracticeFinalizeResultDto> {
+): Promise<PracticeFinalizeResultDto & { levelUp: LevelUpDto | null }> {
   contextId = validId(contextId);
   lessonId = validId(lessonId);
   attemptId = validId(attemptId);
@@ -773,7 +774,7 @@ export async function finalizePracticeAttempt(
 
     // 2. Shared parent locks: Course -> Context -> Lesson
     await tx.$queryRaw`SELECT id::text FROM app.courses WHERE id = ${candidate.courseId}::uuid FOR SHARE`;
-    await tx.$queryRaw`SELECT id::text FROM app.learning_contexts WHERE id = ${contextId}::uuid FOR SHARE`;
+    await tx.$queryRaw`SELECT id::text FROM app.learning_contexts WHERE id = ${contextId}::uuid FOR UPDATE`;
     await tx.$queryRaw`SELECT id::text FROM app.lessons WHERE id = ${lessonId}::uuid FOR SHARE`;
 
     // 3. Attempt lock
@@ -817,6 +818,7 @@ export async function finalizePracticeAttempt(
       return {
         attempt: attemptDto,
         isFirstCompletion: isFirst,
+        levelUp: sr?.levelUp ?? null,
         lessonXp: sr?.lessonXp ?? 0,
         questXp: sr?.questXp ?? 0,
         earnedAchievements: sr?.earnedAchievements ?? [],
@@ -933,6 +935,8 @@ export async function finalizePracticeAttempt(
     });
     const isFirstCompletion = completion?.firstAttemptId === attemptId;
 
+    const levelUp = isFirstCompletion ? await advanceCompletedLevel(tx, c) : null;
+
     // D2: Approved Core Vocabulary Enrollment
     const coreVocabLinks = await tx.lessonVocabularyLink.findMany({
       where: {
@@ -1030,6 +1034,7 @@ export async function finalizePracticeAttempt(
           responseCount: expectedTotal,
           completedAt: completedAt.toISOString(),
           isFirstCompletion,
+          levelUp,
           lessonXp: gamificationResult.lessonXp,
           questXp: gamificationResult.questXp,
           earnedAchievements: gamificationResult.earnedAchievements as unknown as Prisma.InputJsonValue,
@@ -1047,6 +1052,7 @@ export async function finalizePracticeAttempt(
     return {
       attempt: attemptDto,
       isFirstCompletion,
+      levelUp,
       lessonXp: gamificationResult.lessonXp,
       questXp: gamificationResult.questXp,
       earnedAchievements: gamificationResult.earnedAchievements,

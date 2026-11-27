@@ -19,6 +19,8 @@ const MOCK_VALID_DATA: LearnerContextEnvelope['data'] = {
   contexts: [
     {
       id: 'ctx-1',
+      levelCode: 'A2',
+      requiredProgress: { requiredDone: 0, requiredTotal: 0 },
       status: 'ACTIVE',
       rowVersion: '1',
       startSource: 'DEFAULT',
@@ -76,6 +78,8 @@ const MOCK_NULL_CONTEXT_DATA: LearnerContextEnvelope['data'] = {
   contexts: [
     {
       id: 'ctx-null-1',
+      levelCode: null,
+      requiredProgress: { requiredDone: 0, requiredTotal: 0 },
       status: 'ACTIVE',
       rowVersion: '1',
       startSource: null,
