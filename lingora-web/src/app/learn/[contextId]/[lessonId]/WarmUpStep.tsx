@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { formatPhonetic, resolveContentLang } from '@lingora/lesson-content';
 
 /** "Ôn nhanh": at most 3 due SRS cards shown before the lesson exercises start. */
 export const WARM_UP_LIMIT = 3;
@@ -26,6 +27,7 @@ interface WarmUpRevealedDto {
 }
 
 interface WarmUpStepProps {
+  languageCode?: string | null;
   session: WarmUpSessionDto;
   /** Called when the warm-up is finished, skipped, or cannot continue; the lesson then starts. */
   onFinish: () => void;
@@ -40,7 +42,8 @@ function isMeaningCard(item: unknown): item is WarmUpCardDto {
  * (reveal + REMEMBERED/FORGOTTEN) and is completely separate from the lesson attempt, so it
  * never changes the lesson score, XP or accuracy. Any failure just continues to the lesson.
  */
-export function WarmUpStep({ session, onFinish }: WarmUpStepProps) {
+export function WarmUpStep({ session, onFinish, languageCode = null }: WarmUpStepProps) {
+  const contentLang = resolveContentLang({ languageCode });
   const [current, setCurrent] = useState<WarmUpSessionDto>(session);
   const [revealed, setRevealed] = useState<WarmUpRevealedDto | null>(null);
   const [isBusy, setIsBusy] = useState(false);
@@ -146,6 +149,7 @@ export function WarmUpStep({ session, onFinish }: WarmUpStepProps) {
         <div style={{ textAlign: 'center', padding: '12px 0' }}>
           <div
             className="srs-canonical-form"
+            lang={contentLang}
             style={{ fontSize: '30px', fontWeight: 700, color: 'var(--text-main)' }}
           >
             {card.canonicalForm}
@@ -179,9 +183,9 @@ export function WarmUpStep({ session, onFinish }: WarmUpStepProps) {
                 Object.values(revealed.meaningLabels ?? {})[0] ||
                 '(Không có nghĩa)'}
             </div>
-            {revealed.phonetic && (
-              <div className="srs-phonetic" style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                /{revealed.phonetic.replace(/^\/+|\/+$/g, '')}/
+            {formatPhonetic(revealed.phonetic, languageCode) && (
+              <div className="srs-phonetic" lang={contentLang} style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+                {formatPhonetic(revealed.phonetic, languageCode)}
               </div>
             )}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>

@@ -389,6 +389,7 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
             revisionId={revision.id}
             exercises={exercises}
             initialAttempt={data.latestAttempt}
+            languageCode={data.languageCode}
           />
         )}
       </main>

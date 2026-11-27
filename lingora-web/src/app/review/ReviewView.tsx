@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import type { CandidateStrokeInput } from '@lingora/lesson-content';
+import { formatPhonetic, resolveContentLang } from '@lingora/lesson-content';
 import type { SrsFrontPromptCardDto, SrsRevealedCardDto } from '../../server/srs/session-service.ts';
 import type { ReviewContextOptionDto } from '../../server/srs/review-options.ts';
 import { WritingSrsAttempt } from './WritingSrsAttempt.tsx';
@@ -71,6 +72,7 @@ export function ReviewView({ learner, contexts = [], preselectedContextId = null
     return (contexts.find(option => option.dueCount > 0) ?? contexts[0]).contextId;
   });
   const selectedContext = contexts.find(option => option.contextId === selectedContextId) ?? null;
+  const contentLang = resolveContentLang({ languageCode: selectedContext?.languageCode });
   const [sessionLanguageName, setSessionLanguageName] = useState<string | null>(null);
 
   const busyRef = useRef(false);
@@ -586,6 +588,7 @@ export function ReviewView({ learner, contexts = [], preselectedContextId = null
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
               <div
                 className="srs-canonical-form"
+                lang={'skill' in card ? undefined : contentLang}
                 style={{
                   fontSize: '32px',
                   fontWeight: 700,
@@ -614,7 +617,7 @@ export function ReviewView({ learner, contexts = [], preselectedContextId = null
                   <div style={{ display: 'grid', gap: '12px' }}>
                     {writingCard.writing.revealedCharacters.map((character, index) => (
                       <div key={`${character.glyph}-${index}`} style={{ display: 'flex', gap: '16px', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px' }}>
-                        <span lang="ja" style={{ fontSize: '36px', minWidth: '48px', textAlign: 'center' }}>{character.glyph}</span>
+                        <span lang={contentLang} style={{ fontSize: '36px', minWidth: '48px', textAlign: 'center' }}>{character.glyph}</span>
                         <div>
                           <strong>Điểm {character.score}/100 · {character.passed ? 'Đạt' : 'Cần luyện thêm'}</strong>
                           <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
@@ -696,9 +699,10 @@ export function ReviewView({ learner, contexts = [], preselectedContextId = null
                   </div>
                 </div>
 
-                {revealedCard.phonetic && (
+                {formatPhonetic(revealedCard.phonetic, selectedContext?.languageCode) && (
                   <div
                     className="srs-phonetic"
+                    lang={contentLang}
                     style={{
                       fontSize: '18px',
                       color: 'var(--text-muted)',
@@ -706,7 +710,7 @@ export function ReviewView({ learner, contexts = [], preselectedContextId = null
                       marginBottom: '6px',
                     }}
                   >
-                    /{revealedCard.phonetic.replace(/^\/+|\/+$/g, '')}/
+                    {formatPhonetic(revealedCard.phonetic, selectedContext?.languageCode)}
                   </div>
                 )}
 

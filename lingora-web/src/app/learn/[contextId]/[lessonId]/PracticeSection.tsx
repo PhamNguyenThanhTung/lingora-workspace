@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { exerciseTypeLabel } from '@lingora/lesson-content/LessonContent';
+import { resolveContentLang } from '@lingora/lesson-content';
 import type { LearnerExerciseDto, PracticeAttemptDto } from '../../../../server/lessons/dto.ts';
 import { WarmUpStep, WARM_UP_LIMIT, type WarmUpSessionDto } from './WarmUpStep.tsx';
 
@@ -12,6 +13,8 @@ interface PracticeSectionProps {
   revisionId: string;
   exercises: LearnerExerciseDto[];
   initialAttempt?: PracticeAttemptDto | null;
+  /** Target-language code of the learning context; drives `lang` on foreign-language text (UI stays vi). */
+  languageCode?: string | null;
 }
 type PracticePrompt = { prompt: string; options?: Array<{id: string; text: string}>; tokens?: Array<{id: string; text: string}>; sentence?: string; sourceSentence?: string; targetPattern?: string; audioUrl?: string };
 type Command = { kind: 'start' | 'response' | 'finalize'; path: string; body: Record<string, unknown> };
@@ -36,7 +39,8 @@ function seededShuffle<T>(items: T[], seed: string): T[] {
   return original.reverse();
 }
 
-export function PracticeSection({ contextId, lessonId, revisionId, exercises, initialAttempt = null }: PracticeSectionProps) {
+export function PracticeSection({ contextId, lessonId, revisionId, exercises, initialAttempt = null, languageCode = null }: PracticeSectionProps) {
+  const contentLang = resolveContentLang({ languageCode });
   const router = useRouter();
   const [attempt, setAttempt] = useState<PracticeAttemptDto | null>(initialAttempt);
   const [isActionPending, setIsActionPending] = useState(false);
@@ -338,6 +342,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
       {warmUpSession && !attempt && (
         <WarmUpStep
           session={warmUpSession}
+          languageCode={languageCode}
           onFinish={() => {
             setWarmUpSession(null);
             void handleStartAttempt();
@@ -855,13 +860,18 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
                     </span>
                   </div>
 
-                  <p className="review-prompt" style={{ marginBottom: '10px', fontWeight: 500 }}>
+                  <p className="review-prompt" style={{ marginBottom: entry.sourceSentence ? '4px' : '10px', fontWeight: 500 }}>
                     {entry.prompt}
                   </p>
+                  {entry.sourceSentence && (
+                    <p className="review-source-sentence" lang={contentLang} style={{ margin: '0 0 10px', color: 'var(--text-muted)', fontSize: 'var(--font-size-sub)' }}>
+                      Câu gốc: {entry.sourceSentence}
+                    </p>
+                  )}
 
                   <div style={{ fontSize: 'var(--font-size-sub)', marginBottom: '6px' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Câu trả lời của bạn: </span>
-                    <span className="review-user-answer" style={{ fontWeight: 600 }}>
+                    <span className="review-user-answer" lang={contentLang} style={{ fontWeight: 600 }}>
                       {entry.userResponse || '(Chưa có câu trả lời)'}
                     </span>
                   </div>
@@ -876,7 +886,7 @@ export function PracticeSection({ contextId, lessonId, revisionId, exercises, in
 
                   <div style={{ fontSize: 'var(--font-size-sub)', marginBottom: '6px' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Đáp án đúng: </span>
-                    <span className="review-correct-answer" style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
+                    <span className="review-correct-answer" lang={contentLang} style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
                       {entry.correctAnswer}
                     </span>
                   </div>
