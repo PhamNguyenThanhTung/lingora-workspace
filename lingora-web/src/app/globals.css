@@ -1857,3 +1857,10 @@ input[type='checkbox'] {
   height: 20px;
   flex: 0 0 auto;
 }
+
+/* Unstyled <button>/<select>/<textarea> must not fall back to the browser's system font. */
+button,
+select,
+textarea {
+  font-family: inherit;
+}
