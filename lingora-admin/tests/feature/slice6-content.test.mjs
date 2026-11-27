@@ -1687,4 +1687,28 @@ describe('S6-CONTENT: Exercises, Vocabulary & Revision Integrity Suite', () => {
     }
   });
 
+  test('LNG-02: toTeacherLessonDetailDto threads normalized languageCode to courseContext and presentation', async () => {
+    fixture.state.courses.get(courseId).language = { code: 'ja_jp' };
+    const saved = await saveTeacherLessonDraft(teacherId, lessonId, {
+      title: { vi: 'Bài tiếng Nhật' },
+      contentBlocks: [{ type: 'paragraph', text: 'Giới thiệu' }],
+      expectedRowVersion: '1',
+      vocabulary: [
+        {
+          position: 1,
+          isCore: true,
+          create: {
+            canonicalForm: '学生',
+            senseKey: 'default',
+            meaningLabels: { vi: 'học sinh' },
+            phonetic: 'がくせい / gakusei',
+          },
+        },
+      ],
+    }, fixture.db);
+    assert.equal(saved.status, 200);
+    assert.equal(saved.data.data.courseContext.languageCode, 'ja-JP');
+    assert.equal(saved.data.data.presentation?.languageCode, 'ja-JP');
+  });
+
 });

@@ -344,3 +344,231 @@ test('LNG-04 (G9): ReviewDetailView renders preload=none audio player with error
     await page.locator('#reviewActionSuccess').waitFor({ state: 'visible' });
   });
 });
+
+test('LNG-01/02/03: ReviewDetailView joins ja REORDER without spaces, attaches lang, and formats ja vs fr phonetic', async () => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const page = await context.newPage();
+  page.setDefaultTimeout(6000);
+  try {
+    // 1. Japanese review detail
+    await page.route('**/?state=page-review-detail-wire*', async (route) => {
+      const response = await route.fetch();
+      let html = await response.text();
+      html = html.replace(
+        /<script>window\.__PAGE_PROPS__ = .*?;<\/script>/,
+        () => `<script>window.__PAGE_PROPS__ = ${JSON.stringify({
+          account: { id: '00000000-0000-4000-8000-000000000001', role: 'ADMIN', status: 'ACTIVE', displayName: 'Admin' },
+          initialDetail: {
+            submissionId: '88888888-8888-4888-8888-888888888001',
+            assignmentEpisode: null,
+            lesson: {
+              id: '55555555-5555-4555-8555-555555555001',
+              position: 1,
+              unitId: '44444444-4444-4444-8444-444444444040',
+              unitCode: 'JA-01',
+              unitName: { vi: 'Bài 1' },
+              courseId: '33333333-3333-4333-8333-333333333030',
+              courseName: { vi: 'Tiếng Nhật N5' },
+              languageCode: 'ja',
+              rowVersion: '1',
+              activeRevisionId: null,
+              availability: 'PLANNED',
+            },
+            revision: {
+              id: '77777777-7777-4777-8777-777777777001',
+              revisionNo: 1,
+              status: 'IN_REVIEW',
+              statusLabel: 'Đang chờ duyệt',
+              title: { vi: 'Giới thiệu bản thân' },
+              contentSchemaVersion: 1,
+              contentBlocks: [],
+              blocks: [
+                {
+                  blockKey: 'ex-1',
+                  type: 'EXAMPLE',
+                  position: 1,
+                  schemaVersion: 1,
+                  content: { text: 'わたしは田中です。', translation: 'Tôi là Tanaka.' },
+                },
+              ],
+              presentation: {
+                contentSchemaVersion: 1,
+                languageCode: 'ja',
+                blocks: [],
+                vocabulary: [],
+                exercises: [],
+              },
+              changeSummary: null,
+              rowVersion: '1',
+              createdAt: '2026-11-27T00:00:00.000Z',
+              submittedAt: '2026-11-27T00:00:00.000Z',
+              approvedAt: null,
+              publishedAt: null,
+              endedAt: null,
+              submitter: { id: '1', displayName: 'GV' },
+              approver: null,
+              publisher: null,
+            },
+            exercises: [
+              {
+                id: 'ex-ja-1',
+                itemId: 'item-1',
+                itemRevisionId: 'irev-1',
+                position: 1,
+                isCore: true,
+                type: 'REORDER',
+                promptData: {
+                  prompt: 'Sắp xếp câu tiếng Nhật',
+                  tokens: [
+                    { id: 't1', text: 'わたしは' },
+                    { id: 't2', text: '田中' },
+                    { id: 't3', text: 'です' },
+                  ],
+                },
+                gradingData: { correctOrder: ['t1', 't2', 't3'] },
+                feedbackData: null,
+              },
+            ],
+            vocabulary: [
+              {
+                id: 'v-ja-1',
+                vocabularyId: 'vc-ja-1',
+                position: 1,
+                isCore: true,
+                displaySnapshot: {
+                  schemaVersion: 1,
+                  languageId: 'lang-ja',
+                  canonicalForm: '学生',
+                  senseKey: 'default',
+                  meaningLabels: { vi: 'học sinh' },
+                  phonetic: 'がくせい / gakusei',
+                  partOfSpeech: 'noun',
+                  example: 'わたしは学生です。',
+                },
+              },
+            ],
+            reviews: [],
+          },
+        })};</script>`
+      );
+      await route.fulfill({ response, body: html });
+    });
+
+    await page.goto(`${TEST_URL}/?state=page-review-detail-wire`);
+    await page.locator('#exerciseAnswer-0').waitFor({ state: 'visible' });
+    assert.equal((await page.locator('#exerciseAnswer-0').innerText()).trim(), 'わたしは田中です');
+    assert.equal(await page.locator('#exerciseAnswer-0').getAttribute('lang'), 'ja');
+    assert.equal(await page.locator('.lingora-example-text').getAttribute('lang'), 'ja');
+    const jaVocabCell = page.locator('#sectionVocabulary, table').last();
+    assert.match(await jaVocabCell.innerText(), /がくせい \/ gakusei/);
+    assert.equal((await jaVocabCell.innerText()).includes('/がくせい'), false);
+    assert.equal(await page.locator('[lang="ja"]').count() >= 4, true);
+
+    // 2. French review detail: single /.../ phonetic pair and lang="fr"
+    await page.unrouteAll();
+    await page.route('**/?state=page-review-detail-wire*', async (route) => {
+      const response = await route.fetch();
+      let html = await response.text();
+      html = html.replace(
+        /<script>window\.__PAGE_PROPS__ = .*?;<\/script>/,
+        () => `<script>window.__PAGE_PROPS__ = ${JSON.stringify({
+          account: { id: '00000000-0000-4000-8000-000000000001', role: 'ADMIN', status: 'ACTIVE', displayName: 'Admin' },
+          initialDetail: {
+            submissionId: '88888888-8888-4888-8888-888888888002',
+            assignmentEpisode: null,
+            lesson: {
+              id: '55555555-5555-4555-8555-555555555002',
+              position: 1,
+              unitId: '44444444-4444-4444-8444-444444444040',
+              unitCode: 'FR-01',
+              unitName: { vi: 'Bài 1' },
+              courseId: '33333333-3333-4333-8333-333333333030',
+              courseName: { vi: 'Tiếng Pháp A1' },
+              languageCode: 'fr',
+              rowVersion: '1',
+              activeRevisionId: null,
+              availability: 'PLANNED',
+            },
+            revision: {
+              id: '77777777-7777-4777-8777-777777777002',
+              revisionNo: 1,
+              status: 'IN_REVIEW',
+              statusLabel: 'Đang chờ duyệt',
+              title: { vi: 'Chào hỏi tiếng Pháp' },
+              contentSchemaVersion: 1,
+              contentBlocks: [],
+              blocks: [],
+              presentation: {
+                contentSchemaVersion: 1,
+                languageCode: 'fr',
+                blocks: [],
+                vocabulary: [],
+                exercises: [],
+              },
+              changeSummary: null,
+              rowVersion: '1',
+              createdAt: '2026-11-27T00:00:00.000Z',
+              submittedAt: '2026-11-27T00:00:00.000Z',
+              approvedAt: null,
+              publishedAt: null,
+              endedAt: null,
+              submitter: { id: '1', displayName: 'GV' },
+              approver: null,
+              publisher: null,
+            },
+            exercises: [
+              {
+                id: 'ex-fr-1',
+                itemId: 'item-2',
+                itemRevisionId: 'irev-2',
+                position: 1,
+                isCore: true,
+                type: 'REORDER',
+                promptData: {
+                  prompt: 'Sắp xếp câu tiếng Pháp',
+                  tokens: [
+                    { id: 't1', text: 'Bonjour' },
+                    { id: 't2', text: 'mon' },
+                    { id: 't3', text: 'ami' },
+                  ],
+                },
+                gradingData: { correctOrder: ['t1', 't2', 't3'] },
+                feedbackData: null,
+              },
+            ],
+            vocabulary: [
+              {
+                id: 'v-fr-1',
+                vocabularyId: 'vc-fr-1',
+                position: 1,
+                isCore: true,
+                displaySnapshot: {
+                  schemaVersion: 1,
+                  languageId: 'lang-fr',
+                  canonicalForm: 'café',
+                  senseKey: 'default',
+                  meaningLabels: { vi: 'cà phê' },
+                  phonetic: 'ka.fe',
+                  partOfSpeech: 'noun',
+                  example: 'Un café, s’il vous plaît.',
+                },
+              },
+            ],
+            reviews: [],
+          },
+        })};</script>`
+      );
+      await route.fulfill({ response, body: html });
+    });
+
+    await page.goto(`${TEST_URL}/?state=page-review-detail-wire`);
+    await page.locator('#exerciseAnswer-0').waitFor({ state: 'visible' });
+    assert.equal((await page.locator('#exerciseAnswer-0').innerText()).trim(), 'Bonjour mon ami');
+    assert.equal(await page.locator('#exerciseAnswer-0').getAttribute('lang'), 'fr');
+    const frPageText = await page.locator('table').last().innerText();
+    assert.match(frPageText, /\/ka\.fe\//);
+    assert.equal(frPageText.includes('//ka.fe//'), false);
+  } finally {
+    await context.close();
+  }
+});

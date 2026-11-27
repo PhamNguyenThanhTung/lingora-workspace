@@ -490,6 +490,7 @@ export function CourseFormModal({
   const modalContent = (
     <div
       id="courseFormModal"
+      data-initialized={initialized ? 'true' : 'false'}
       className="modal-overlay"
       role="dialog"
       aria-modal="true"

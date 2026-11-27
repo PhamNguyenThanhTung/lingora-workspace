@@ -898,4 +898,98 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       assert.equal(await page.locator('[id^="vocabRow-"]').count(), 2);
     });
   });
+
+  test('LNG-02/03: LessonDraftEditor and StudioPreview apply languageCode lang and formatPhonetic for ja vs fr', { timeout: 20000 }, async () => {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    const page = await context.newPage();
+    page.setDefaultTimeout(6000);
+    try {
+      await page.route('**/?state=page-teacher-draft-wire*', async (route) => {
+        const response = await route.fetch();
+        let html = await response.text();
+        html = html.replace(
+          /<script>window\.__PAGE_PROPS__ = .*?;<\/script>/,
+          () => `<script>window.__PAGE_PROPS__ = ${JSON.stringify({
+            account: { id: '11111111-1111-4111-8111-111111111111', role: 'TEACHER', status: 'ACTIVE', displayName: 'GV' },
+            initialLesson: {
+              id: '55555555-5555-4555-8555-555555555001',
+              unitId: '44444444-4444-4444-8444-444444444040',
+              position: 1,
+              isRequired: true,
+              availability: 'PLANNED',
+              rowVersion: '1',
+              courseContext: { id: 'c1', languageId: 'lang-ja', languageCode: 'ja', names: { vi: 'Tiếng Nhật N5' } },
+              unitContext: { id: 'u1', code: 'JA-01', names: { vi: 'Bài 1' } },
+              assignment: null,
+              highestRevision: {
+                id: '77777777-7777-4777-8777-777777777001',
+                revisionNo: 1,
+                author: { id: '11111111-1111-4111-8111-111111111111', displayName: 'GV' },
+                createdAt: '2026-11-27T00:00:00.000Z',
+                changeSummary: null,
+                status: 'DRAFT',
+                rowVersion: '1',
+              },
+              isEditable: true,
+              editabilityReason: null,
+              currentDraft: {
+                title: { vi: 'Bài tiếng Nhật' },
+                contentBlocks: [],
+                contentSchemaVersion: 1,
+                blocks: [
+                  {
+                    blockKey: 'ex-1',
+                    type: 'EXAMPLE',
+                    position: 1,
+                    schemaVersion: 1,
+                    content: { text: 'おはようございます', translation: 'Chào buổi sáng' },
+                  },
+                ],
+              },
+              contentSchemaVersion: 1,
+              blocks: [
+                {
+                  blockKey: 'ex-1',
+                  type: 'EXAMPLE',
+                  position: 1,
+                  schemaVersion: 1,
+                  content: { text: 'おはようございます', translation: 'Chào buổi sáng' },
+                },
+              ],
+              revisions: [],
+              exercises: [],
+              vocabulary: [
+                {
+                  id: 'vl-1',
+                  vocabularyId: 'vc-1',
+                  position: 1,
+                  isCore: true,
+                  displaySnapshot: {
+                    schemaVersion: 1,
+                    languageId: 'lang-ja',
+                    canonicalForm: '学生',
+                    senseKey: 'default',
+                    meaningLabels: { vi: 'học sinh' },
+                    phonetic: 'gakusei',
+                    partOfSpeech: 'noun',
+                    example: 'わたしは学生です。',
+                  },
+                },
+              ],
+            },
+          })};</script>`
+        );
+        await route.fulfill({ response, body: html });
+      });
+
+      await page.goto(`${TEST_URL}/?state=page-teacher-draft-wire`);
+      await page.locator('#vocabTerm-0').waitFor({ state: 'visible' });
+      assert.equal(await page.locator('#vocabTerm-0 span[lang="ja"]').innerText(), '学生');
+      assert.match(await page.locator('#vocabTerm-0').innerText(), /gakusei/);
+      assert.equal((await page.locator('#vocabTerm-0').innerText()).includes('/gakusei/'), false);
+      assert.equal(await page.locator('#studioLivePreviewContainer .lingora-example-text').getAttribute('lang'), 'ja');
+    } finally {
+      await context.close();
+    }
+  });
 });

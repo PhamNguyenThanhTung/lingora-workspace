@@ -46,7 +46,7 @@ describe('S3-04: Courses & Units Isolated Component State & Interaction Suite', 
 
     // 1. Open create modal
     await page.click('#btnOpenCreateCourse');
-    await page.waitForSelector('#courseFormModal', { state: 'visible' });
+    await page.waitForSelector('#courseFormModal[data-initialized="true"]', { state: 'visible' });
 
     // Initial focus on vi input
     await page.waitForFunction(() => document.activeElement?.id === 'inputCourseNameVi');
