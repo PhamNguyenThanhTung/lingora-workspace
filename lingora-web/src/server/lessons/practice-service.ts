@@ -17,6 +17,7 @@ import {
   type PracticeScoreDto,
   type PracticeReviewEntryDto,
 } from './dto.ts';
+import { formatReorderTokens } from '@lingora/lesson-content';
 import { publicExercise } from './content.ts';
 import {
   gradePracticeExercise,
@@ -155,7 +156,12 @@ export function deriveQueueState(
   };
 }
 
-function formatUserResponseText(type: string, promptData: any, input: unknown): string {
+async function loadContextLanguageCode(db: Db, contextId: string): Promise<string | null> {
+  const ctx = await db.learningContext.findUnique({ where: { id: contextId }, select: { language: { select: { code: true } } } });
+  return ctx?.language?.code ?? null;
+}
+
+function formatUserResponseText(type: string, promptData: any, input: unknown, languageCode?: string | null): string {
   if (!input || typeof input !== 'object') return '';
   const data = input as any;
   if (type === 'MCQ' || type === 'LISTENING') {
@@ -167,8 +173,7 @@ function formatUserResponseText(type: string, promptData: any, input: unknown): 
   if (type === 'REORDER') {
     const tokenIds = Array.isArray(data.tokenIds) ? data.tokenIds : [];
     const tokens = Array.isArray(promptData?.tokens) ? promptData.tokens : [];
-    const tokenMap = new Map<string, string>(tokens.map((t: any) => [t.id, t.text]));
-    return tokenIds.map((id: string) => tokenMap.get(id) || id).join(' ');
+    return formatReorderTokens(tokenIds, tokens, languageCode);
   }
   if (type === 'FILL_BLANK' || type === 'GRAMMAR') {
     return typeof data.text === 'string' ? data.text.trim() : '';
@@ -176,7 +181,7 @@ function formatUserResponseText(type: string, promptData: any, input: unknown): 
   return '';
 }
 
-function formatCorrectAnswerText(type: string, promptData: any, gradingData: any): string {
+function formatCorrectAnswerText(type: string, promptData: any, gradingData: any, languageCode?: string | null): string {
   if (!gradingData || typeof gradingData !== 'object') return '';
   if (type === 'MCQ' || type === 'LISTENING') {
     const correctOptionId = gradingData.correctOptionId;
@@ -187,8 +192,7 @@ function formatCorrectAnswerText(type: string, promptData: any, gradingData: any
   if (type === 'REORDER') {
     const correctOrder = Array.isArray(gradingData.correctOrder) ? gradingData.correctOrder : [];
     const tokens = Array.isArray(promptData?.tokens) ? promptData.tokens : [];
-    const tokenMap = new Map<string, string>(tokens.map((t: any) => [t.id, t.text]));
-    return correctOrder.map((id: string) => tokenMap.get(id) || id).join(' ');
+    return formatReorderTokens(correctOrder, tokens, languageCode);
   }
   if (type === 'FILL_BLANK' || type === 'GRAMMAR') {
     const acceptedAnswers = gradingData.acceptedAnswers;
@@ -201,13 +205,13 @@ function formatCorrectAnswerText(type: string, promptData: any, gradingData: any
 }
 
 /** Đáp án đúng + giải thích, chỉ dùng cho câu học viên đã trả lời sai (request đầu và replay dùng chung). */
-function wrongAnswerHints(exercise: ExerciseWithSecret | undefined) {
+function wrongAnswerHints(exercise: ExerciseWithSecret | undefined, languageCode?: string | null) {
   const secret = exercise?.itemRevision.gradingSecret;
   if (!exercise || !secret) return { correctAnswer: null, explanation: null };
   const raw = (secret.feedbackData as any)?.explanation;
   return {
     correctAnswer:
-      formatCorrectAnswerText(exercise.itemRevision.type, exercise.itemRevision.promptData, secret.gradingData) || null,
+      formatCorrectAnswerText(exercise.itemRevision.type, exercise.itemRevision.promptData, secret.gradingData, languageCode) || null,
     explanation: typeof raw === 'string' && raw.trim() ? raw.trim() : null,
   };
 }
@@ -220,7 +224,8 @@ export function buildPracticeReviewEntries(
     queuePosition: number;
     isCorrect: boolean;
     input: unknown;
-  }>
+  }>,
+  languageCode?: string | null
 ): PracticeReviewEntryDto[] {
   const responsesByExercise = new Map<
     string,
@@ -234,7 +239,7 @@ export function buildPracticeReviewEntries(
     const list = responsesByExercise.get(resp.lessonExerciseId) || [];
     list.push({
       ordinal: resp.responseOrdinal,
-      text: formatUserResponseText(type, promptData, resp.input),
+      text: formatUserResponseText(type, promptData, resp.input, languageCode),
       isCorrect: resp.isCorrect,
     });
     responsesByExercise.set(resp.lessonExerciseId, list);
@@ -257,21 +262,26 @@ export function buildPracticeReviewEntries(
     const lastResponse = exerciseResponses[exerciseResponses.length - 1];
 
     let prompt = '';
+    let sourceSentence: string | null = null;
     if (type === 'FILL_BLANK') {
       prompt = promptData?.sentence || promptData?.prompt || '';
     } else if (type === 'GRAMMAR') {
-      prompt = promptData?.sourceSentence || promptData?.prompt || '';
+      // G10: the task instruction leads; the source sentence is only secondary context.
+      prompt = promptData?.prompt || promptData?.sourceSentence || '';
+      const src = typeof promptData?.sourceSentence === 'string' ? promptData.sourceSentence.trim() : '';
+      sourceSentence = src && src !== prompt ? src : null;
     } else {
       prompt = promptData?.prompt || '';
     }
 
-    const correctAnswer = formatCorrectAnswerText(type, promptData, gradingData);
+    const correctAnswer = formatCorrectAnswerText(type, promptData, gradingData, languageCode);
 
     return {
       lessonExerciseId: ex.id,
       position: ex.position,
       type,
       prompt,
+      sourceSentence,
       userResponse: lastResponse?.text || '',
       userResponses: exerciseResponses,
       isCorrect,
@@ -346,7 +356,7 @@ export async function buildAttemptDto(
 
   let reviewEntries: PracticeReviewEntryDto[] | null = null;
   if (isCompleted) {
-    reviewEntries = buildPracticeReviewEntries(coreExercises, attempt.responses);
+    reviewEntries = buildPracticeReviewEntries(coreExercises, attempt.responses, await loadContextLanguageCode(db, attempt.contextId));
   }
 
   const responsesDto: PracticeResponseDto[] = attempt.responses.map(r => ({
@@ -627,7 +637,7 @@ export async function submitPracticeResponse(
       };
       if (!existingOp.isCorrect) {
         const exercises = await loadRevisionCoreExercises(tx, attempt.lessonRevisionId);
-        Object.assign(responseDto, wrongAnswerHints(exercises.find((e: any) => e.id === existingOp.lessonExerciseId)));
+        Object.assign(responseDto, wrongAnswerHints(exercises.find((e: any) => e.id === existingOp.lessonExerciseId), await loadContextLanguageCode(tx, contextId)));
       }
       return { response: responseDto, attempt: attemptDto };
     }
@@ -710,7 +720,7 @@ export async function submitPracticeResponse(
       accentHint: gradeResult.accentHint ?? null,
     };
     if (!gradeResult.isCorrect) {
-      Object.assign(responseDto, wrongAnswerHints(queue.nextExercise));
+      Object.assign(responseDto, wrongAnswerHints(queue.nextExercise, await loadContextLanguageCode(tx, contextId)));
     }
 
     return { response: responseDto, attempt: updatedAttemptDto };

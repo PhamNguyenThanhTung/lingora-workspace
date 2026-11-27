@@ -107,3 +107,21 @@ test('unsupported private grading schema fails closed before persisting any resp
  const attempt=await start();state.exercises[0].itemRevision.gradingSecret.schemaVersion=2;
  await assert.rejects(post(attempt.id,attempt.nextExercise.id,{optionId:'opt-1'}),rejection('GRADING_CONFIG_ERROR',500));assert.equal(state.responses.length,0);
 });
+
+test('LNG: review entries join REORDER tokens by the context language and lead GRAMMAR with the prompt (G10)',async()=>{
+ for(const [code,words,expected] of [['en',['How','are','you?'],'How are you?'],['ja',['私は','学生','です。'],'私は学生です。']]){
+  state.contexts[0].language={...state.contexts[0].language,code};
+  const re=state.exercises.find(e=>e.itemRevision.type==='REORDER').itemRevision;
+  re.promptData.tokens=re.promptData.tokens.map((t,i)=>({...t,text:words[i]}));
+  state.attempts.length=0;state.responses.length=0;
+  const attempt=await fill(await start());
+  const done=await finalizePracticeAttempt(contextId,lesson1Id,attempt.id,{operationKey:randomUUID()},learnerId);
+  const entries=(done.attempt??done).reviewEntries;
+  const reorder=entries.find(e=>e.type==='REORDER');
+  assert.equal(reorder.correctAnswer,expected,code);
+  assert.equal(reorder.userResponse,expected,code);
+  const grammar=entries.find(e=>e.type==='GRAMMAR');
+  assert.equal(grammar.prompt,'Nhận diện cấu trúc:');
+  assert.equal(grammar.sourceSentence,'I am a student.');
+ }
+});

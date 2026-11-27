@@ -87,6 +87,9 @@ export function HomeView({ data, errorState }: HomeViewProps) {
   const pathUsable = selectedContext?.status === 'ACTIVE' && selectedContext.course.isActive;
   const continueLearning = pathUsable ? homeData?.continueLearning ?? null : null;
   const pathNodes = pathUsable ? homeData?.path ?? [] : [];
+  // Only the first CURRENT node gets the call-to-action bubble, so the map has a single focal point.
+  const firstCurrentIndex = pathNodes.findIndex((node) => node.state === 'CURRENT');
+  const pathBubbleText = homeData?.continueLearning?.status === 'IN_PROGRESS' ? 'TIẾP TỤC' : 'BẮT ĐẦU';
 
   useEffect(() => {
     if (data?.contexts) {
@@ -584,23 +587,17 @@ export function HomeView({ data, errorState }: HomeViewProps) {
           <span className="brand-title">Lingora</span>
           <span className="badge badge-active">Học viên</span>
         </div>
-        <div className="user-nav" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <a
-            href={reviewHref}
-            id="reviewNavBtn"
-            className="btn btn-outline"
-            style={{ textDecoration: 'none', padding: '6px 14px', fontSize: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}
-          >
+        <div className="user-nav">
+          <a href={reviewHref} id="reviewNavBtn" className="btn btn-secondary btn-sm">
             Ôn từ vựng{reviewDue > 0 ? ` (${reviewDue})` : ''}
           </a>
           {identityNode}
           <button
             type="button"
             id="logoutBtn"
-            className="btn btn-outline"
+            className="btn btn-secondary btn-sm"
             onClick={handleLogout}
             disabled={isLoggingOut}
-            style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             {isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}
           </button>
@@ -723,9 +720,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
       )}
 
       <main className="content-area">
-        <h1 style={{ fontSize: 'var(--font-size-heading)', fontWeight: 700, marginBottom: '4px' }}>
-          Chào {displayName}!
-        </h1>
+        <h1 className="home-greeting">Chào {displayName}! 👋</h1>
 
         {/* Empty Context State */}
         {contexts.length === 0 ? (
@@ -745,72 +740,58 @@ export function HomeView({ data, errorState }: HomeViewProps) {
         ) : (
           <div>
             {selectedContext && (
-              <p style={{ margin: '0 0 12px', color: 'var(--text-muted)' }}>
+              <p className="home-subline">
                 {selectedLanguage} · {selectedWorkingLevel}
               </p>
             )}
 
-            {continueLearning ? (
-              <div
-                id="continueLearningBanner"
-                style={{
-                  marginBottom: '12px',
-                  padding: '16px 20px',
-                  backgroundColor: 'var(--primary-bg-subtle, #eff6ff)',
-                  border: '1px solid var(--primary-color, #2563eb)',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '12px',
-                }}
-              >
-                <div>
-                  <span className="badge badge-active" style={{ marginBottom: '4px', fontSize: '0.75rem' }}>
-                    {continueLearning.status === 'IN_PROGRESS' ? 'Đang làm bài' : 'Bài học tiếp theo'}
-                  </span>
-                  <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '2px 0' }}>
-                    {continueLearning.title}
-                  </h2>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    {continueLearning.unitTitle}
-                  </span>
+            {/* Stat bar: streak / XP / gems, the first thing a learner sees */}
+            {homeData?.gamificationStatus !== 'UNAVAILABLE' && (
+              <div className="stat-bar">
+                <div id="currentStreakDisplay" className="stat-pill stat-pill--streak">
+                  <span className="stat-pill__icon home-stats__icon" aria-hidden="true">🔥</span>
+                  <strong id="streakBadge" className="stat-pill__value">{streak.currentStreak} ngày</strong>
+                  <span className="stat-pill__label">Chuỗi ngày</span>
                 </div>
+                <div id="totalXpDisplay" className="stat-pill stat-pill--xp">
+                  <span className="stat-pill__icon home-stats__icon" aria-hidden="true">⚡</span>
+                  <strong id="totalXpBadge" className="stat-pill__value">{totalXp} XP</strong>
+                  <span className="stat-pill__label">Điểm KN</span>
+                </div>
+                <div id="totalGemsDisplay" className="stat-pill stat-pill--gems">
+                  <span className="stat-pill__icon home-stats__icon" aria-hidden="true">💎</span>
+                  <strong id="totalGemsBadge" className="stat-pill__value">{totalGems}</strong>
+                  <span className="stat-pill__label">Kim cương</span>
+                </div>
+              </div>
+            )}
+
+            {continueLearning ? (
+              <div id="continueLearningBanner" className="hero-card">
+                <span className="hero-card__kicker">
+                  {continueLearning.status === 'IN_PROGRESS' ? 'Đang làm bài' : 'Bài học tiếp theo'}
+                </span>
+                <h2 className="hero-card__title">{continueLearning.title}</h2>
+                <span className="hero-card__meta">{continueLearning.unitTitle}</span>
                 <a
                   href={continueLearning.href}
                   id="continueLearningBtn"
-                  className="btn btn-primary"
-                  style={{ textDecoration: 'none', padding: '8px 20px', fontSize: '0.95rem' }}
+                  className="btn hero-card__cta"
                 >
                   {continueLearning.status === 'IN_PROGRESS' ? 'Tiếp tục học' : 'Bắt đầu học'}
                 </a>
               </div>
             ) : (
-              <section
-                id="continueLearningFallback"
-                role="status"
-                style={{
-                  marginBottom: '12px',
-                  padding: '16px 20px',
-                  border: '1px solid var(--border-color, #e2e8f0)',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '12px',
-                }}
-              >
+              <section id="continueLearningFallback" role="status" className="hero-card hero-card--muted">
                 <div>
-                  <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 4px' }}>
+                  <h2 className="hero-card__title" style={{ marginTop: 0 }}>
                     {allPublishedDone ? '🎉 Bạn đã học hết các bài hiện có'
                       : pathStatus === 'PAUSED' ? 'Lộ trình đang tạm dừng'
                       : pathStatus === 'NO_WORKING_LEVEL' ? 'Chọn trình độ để bắt đầu'
                       : pathStatus === 'COURSE_INACTIVE' ? 'Khóa học hiện chưa mở'
                       : 'Chưa có bài học tiếp theo'}
                   </h2>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                  <span className="hero-card__meta">
                     {allPublishedDone ? 'Chúc mừng! Hãy ôn lại từ vựng hoặc làm lại bài để củng cố; bài mới sẽ xuất hiện ở đây khi được phát hành.' : homeData?.pathMessage || (pathStatus === 'PAUSED'
                       ? 'Tiếp tục lộ trình khi bạn sẵn sàng.'
                       : pathStatus === 'NO_WORKING_LEVEL'
@@ -825,7 +806,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 {selectedContext && pathStatus === 'PAUSED' ? (
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn hero-card__cta"
                     onClick={() => handleResume(selectedContext)}
                     disabled={!!pendingContexts[selectedContext.id]}
                   >
@@ -834,22 +815,22 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 ) : selectedContext && pathStatus === 'NO_WORKING_LEVEL' ? (
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn hero-card__cta"
                     onClick={() => handleOpenStartLevel(selectedContext)}
                     disabled={!!pendingContexts[selectedContext.id] || isRecovering}
                   >
                     Chọn trình độ bắt đầu
                   </button>
                 ) : reviewDue > 0 ? (
-                  <a href={reviewHref} className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                  <a href={reviewHref} className="btn hero-card__cta">
                     Ôn tập {reviewDue} nội dung đến hạn
                   </a>
                 ) : pathStatus === 'EMPTY_CURRICULUM' && selectedContext ? (
-                  <a href={`/learn/${selectedContext.id}`} className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                  <a href={`/learn/${selectedContext.id}`} className="btn hero-card__cta">
                     Xem danh sách bài học
                   </a>
                 ) : (
-                  <a href="#contextList" className="btn btn-outline" style={{ textDecoration: 'none' }}>
+                  <a href="#contextList" className="btn btn-secondary btn-block">
                     Xem lộ trình
                   </a>
                 )}
@@ -857,7 +838,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
             )}
 
             {homeData && contexts.length > 1 && (
-              <label style={{ display: 'block', marginBottom: '14px' }}>
+              <label style={{ display: 'block', margin: '16px 0', fontWeight: 700 }}>
                 Lộ trình đang xem
                 <select
                   aria-label="Lộ trình đang xem"
@@ -865,12 +846,20 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                   value={homeData.selectedContextId ?? ''}
                   onChange={event => router.push('/home?contextId=' + encodeURIComponent(event.target.value))}
                 >
-                  {contexts.map(ctx => <option key={ctx.id} value={ctx.id}>{getLocalizedText(ctx.course.names, uiLocale)}</option>)}
+                  {contexts.map(ctx => {
+                    const language = getLocalizedText(ctx.targetLanguage.names, uiLocale) || ctx.targetLanguage.code;
+                    const levelCode = (ctx.workingLevel ?? ctx.selectedStartLevel)?.code;
+                    return (
+                      <option key={ctx.id} value={ctx.id}>
+                        {levelCode ? `${language} · ${levelCode}` : language}
+                      </option>
+                    );
+                  })}
                 </select>
               </label>
             )}
             {publishedPathCount > 0 && (
-              <p id="pathProgressSummary" style={{ margin: '0 0 18px', color: 'var(--text-muted)' }}>
+              <p id="pathProgressSummary" className="home-goal-line home-goal-line--target" style={{ margin: '0 0 16px' }}>
                 {completedPathCount}/{publishedPathCount} bài đã hoàn thành
               </p>
             )}
@@ -880,15 +869,8 @@ export function HomeView({ data, errorState }: HomeViewProps) {
               <div
                 id="gamificationUnavailableAlert"
                 role="status"
-                style={{
-                  marginBottom: '20px',
-                  padding: '14px 16px',
-                  backgroundColor: 'var(--surface-bg, #ffffff)',
-                  border: '1px solid #ecc94b',
-                  borderRadius: '8px',
-                  fontSize: '0.9rem',
-                  color: 'var(--text-muted)',
-                }}
+                className="alert-box is-warning"
+                style={{ marginTop: 0, marginBottom: '20px', fontSize: 'var(--font-size-sub)', color: 'var(--accent-ink)' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '1.2rem' }}>⚠️</span>
@@ -903,35 +885,15 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                 id="gamificationOverview"
                 className="home-stats"
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '14px' }}>
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                    <div id="currentStreakDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="home-stats__icon" aria-hidden="true">🔥</span>
-                      <div>
-                        <strong id="streakBadge" style={{ fontSize: '1rem', display: 'block' }}>{streak.currentStreak} ngày</strong>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Kỷ lục: {streak.longestStreak} ngày</span>
-                      </div>
-                    </div>
-                    <div id="totalXpDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="home-stats__icon" aria-hidden="true">⚡</span>
-                      <div>
-                        <strong id="totalXpBadge" style={{ fontSize: '1rem', display: 'block' }}>{totalXp} XP</strong>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Tổng điểm</span>
-                      </div>
-                    </div>
-                    <div id="totalGemsDisplay" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="home-stats__icon" aria-hidden="true">💎</span>
-                      <div>
-                        <strong id="totalGemsBadge" style={{ fontSize: '1rem', display: 'block' }}>{totalGems}</strong>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Kim cương</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id="dailyGoalDisplay" style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    <span>Mục tiêu: {dailyProgress.dailyGoalMinutes} phút • {dailyProgress.completedLessonsToday} bài học • {dailyProgress.reviewsCompletedToday} từ đã ôn</span>
-                  </div>
+                <div id="dailyGoalDisplay" className="home-goal-line" style={{ marginBottom: '12px' }}>
+                  <span aria-hidden="true">⏱️</span>
+                  <span>Mục tiêu: {dailyProgress.dailyGoalMinutes} phút • {dailyProgress.completedLessonsToday} bài học • {dailyProgress.reviewsCompletedToday} từ đã ôn</span>
                 </div>
+                {streak.longestStreak > 0 && (
+                  <p style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '10px' }}>
+                    Kỷ lục chuỗi ngày: {streak.longestStreak} ngày
+                  </p>
+                )}
 
                 {streak.today && (
                   <details style={{ margin: '0 0 12px' }}>
@@ -956,8 +918,8 @@ export function HomeView({ data, errorState }: HomeViewProps) {
 
                 {/* Daily Quests */}
                 {quests.length > 0 && (
-                  <div style={{ borderTop: '1px solid var(--border-subtle, #f1f5f9)', paddingTop: '12px' }}>
-                    <h3 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '8px' }}>Nhiệm vụ hàng ngày</h3>
+                  <div style={{ borderTop: '2px solid var(--border-subtle)', paddingTop: '14px', marginTop: '4px' }}>
+                    <h3 className="section-title" style={{ fontSize: 'var(--font-size-body)' }}>Nhiệm vụ hôm nay</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px' }}>
                       {quests.map((q) => (
                         <div
@@ -965,9 +927,11 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                           id={`quest-${q.id}`}
                           className={`quest-item home-quest${q.isCompleted ? ' is-done' : ''}`}
                         >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                            <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{q.title}</span>
-                            <span className={`badge ${q.isCompleted ? 'badge-active' : 'badge-paused'}`} style={{ fontSize: '0.75rem' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                            <span style={{ fontSize: 'var(--font-size-sub)', fontWeight: 800 }}>
+                              {q.isCompleted ? '✅ ' : '🎯 '}{q.title}
+                            </span>
+                            <span className={`badge ${q.isCompleted ? 'badge-success' : 'badge-paused'}`}>
                               +{q.xpReward} XP
                             </span>
                           </div>
@@ -978,8 +942,8 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                                 style={{ width: `${Math.round((q.progress / q.target) * 100)}%` }}
                               />
                             </div>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                              {q.progress}/{q.target}
+                            <span style={{ fontSize: 'var(--font-size-ref)', fontWeight: 800, color: 'var(--text-muted)' }}>
+                              {`${q.progress}/${q.target}`}
                             </span>
                           </div>
                         </div>
@@ -993,17 +957,20 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                   <div
                     id="recentAchievementBanner"
                     style={{
-                      marginTop: '12px',
-                      padding: '8px 12px',
-                      backgroundColor: '#fef3c7',
-                      borderRadius: '6px',
+                      marginTop: '14px',
+                      padding: '12px 14px',
+                      backgroundColor: 'var(--accent-soft)',
+                      color: 'var(--accent-ink)',
+                      border: '2px solid #FBD5AE',
+                      borderRadius: 'var(--radius-md)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px',
-                      fontSize: '0.85rem',
+                      gap: '10px',
+                      fontSize: 'var(--font-size-sub)',
+                      fontWeight: 600,
                     }}
                   >
-                    <span>🏆</span>
+                    <span style={{ fontSize: '22px' }} aria-hidden="true">🏆</span>
                     <span>
                       <strong>Thành tựu mới:</strong> {recentAchievement.title} - {recentAchievement.description}
                     </span>
@@ -1015,7 +982,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
             {/* Learning Path (zig-zag map) */}
             {pathNodes.length > 0 && (
               <section id="learningPathSection" className="path-map">
-                <h2 className="path-map__title">Lộ trình bài học</h2>
+                <h2 className="section-title path-map__title">Lộ trình bài học</h2>
                 <div id="learningPathList" className="path-map__list">
                   {pathNodes.map((node, index) => {
                     const isNavigable = node.state === 'COMPLETED' || node.state === 'CURRENT' || node.state === 'AVAILABLE';
@@ -1026,7 +993,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                     const unitNodes = pathNodes.filter((n) => n.unitTitle === node.unitTitle && n.isRequired);
                     const unitDone = unitNodes.filter((n) => n.state === 'COMPLETED').length;
                     const unitOptional = pathNodes.filter((n) => n.unitTitle === node.unitTitle && !n.isRequired).length;
-                    const offset = [0, 28, 44, 28, 0, -28, -44, -28][index % 8];
+                    const offset = [0, 24, 40, 24, 0, -24, -40, -24][index % 8];
                     // G15: teacher titles already carry "Bài N:" most of the time; only number the rest.
                     const nodeTitle = node.state === 'COMING_SOON'
                       ? node.title
@@ -1038,8 +1005,13 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                       : node.state === 'LOCKED' ? 'Đang khóa'
                       : 'Sắp ra mắt';
                     const medallion = (
-                      <span className={`path-medallion path-medallion--${node.state.toLowerCase()}`} aria-hidden="true">
-                        {node.state === 'COMPLETED' ? '✓' : isLocked ? '🔒' : node.state === 'CURRENT' ? '★' : index + 1}
+                      <span className="path-node__medal">
+                        {index === firstCurrentIndex && (
+                          <span className="path-bubble" aria-hidden="true">{pathBubbleText}</span>
+                        )}
+                        <span className={`path-medallion path-medallion--${node.state.toLowerCase()}`} aria-hidden="true">
+                          {node.state === 'COMPLETED' ? '✓' : isLocked ? '🔒' : node.state === 'CURRENT' ? '★' : index + 1}
+                        </span>
                       </span>
                     );
                     return (
@@ -1077,11 +1049,11 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                           <span className="path-node__meta">
                             {node.score != null && <span className="path-node__score">{node.score}%</span>}
                             {!node.isRequired && node.state !== 'COMING_SOON' && (
-                              <span className="badge badge-default path-node__optional">Tùy chọn</span>
+                              <span className="path-node__optional">Tùy chọn</span>
                             )}
-                            <span className={`badge ${node.state === 'COMPLETED' || node.state === 'CURRENT' ? 'badge-active' : 'badge-paused'}`}>
-                              {stateLabel}
-                            </span>
+                            {/* The state wording stays in the DOM for assistive tech (and tests);
+                                the medallion carries it visually. */}
+                            <span className="sr-only">{stateLabel}</span>
                           </span>
                         </div>
                       </React.Fragment>
@@ -1158,7 +1130,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                     </div>
 
                     {/* Goal update section for context */}
-                    <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--border-color, #e2e8f0)' }}>
+                    <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--border-strong)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Mục tiêu học:</span>
                         <button
@@ -1174,7 +1146,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                       </div>
 
                       {editingGoalContextId === ctx.id && (
-                        <div id={`goalEditor-${ctx.id}`} style={{ marginTop: '8px', padding: '12px', background: 'var(--subtle-bg, #f8fafc)', borderRadius: '6px' }}>
+                        <div id={`goalEditor-${ctx.id}`} style={{ marginTop: '8px', padding: '12px', background: 'var(--surface-sunken)', borderRadius: '6px' }}>
                           {isLoadingPlan[ctx.id] ? (
                             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
                               Đang tải thông tin mục tiêu...
@@ -1319,9 +1291,9 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                         style={{
                           marginTop: '14px',
                           padding: '14px',
-                          border: '1px solid var(--border-color, #e2e8f0)',
+                          border: '1px solid var(--border-strong)',
                           borderRadius: '6px',
-                          background: 'var(--subtle-bg, #f8fafc)',
+                          background: 'var(--surface-sunken)',
                         }}
                       >
                         <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px' }}>

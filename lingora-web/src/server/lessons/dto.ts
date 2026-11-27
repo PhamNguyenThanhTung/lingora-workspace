@@ -113,6 +113,8 @@ export interface LearnerVocabularyDto {
 export interface LearnerLessonDetailDto {
   contextId: string;
   lessonId: string;
+  /** Target-language code of the learning context (drives `lang` on foreign-language text). */
+  languageCode: string;
   unit: {
     id: string;
     position: number;
@@ -208,6 +210,8 @@ export interface PracticeReviewEntryDto {
   position: number;
   type: string;
   prompt: string;
+  /** G10: GRAMMAR source sentence, shown only as secondary context after the prompt. */
+  sourceSentence: string | null;
   userResponse: string;
   userResponses: Array<{
     ordinal: number;

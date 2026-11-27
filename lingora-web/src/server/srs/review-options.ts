@@ -13,6 +13,8 @@ export interface ReviewContextOptionDto {
   contextId: string;
   languageId: string;
   languageName: string;
+  /** Target-language code (BCP-47-ish); drives `lang` on foreign-language card text. */
+  languageCode: string | null;
   dueCount: number;
 }
 
@@ -65,6 +67,7 @@ export async function listReviewContextOptions(
         contextId: context.id,
         languageId: context.languageId,
         languageName: localizedName(context.language?.names, context.language?.code ?? ''),
+        languageCode: context.language?.code ?? null,
         dueCount: await countDueSrsCards(db, learnerId, context.languageId, now),
       })),
     );

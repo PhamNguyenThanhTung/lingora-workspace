@@ -209,7 +209,7 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
         {/* Navigation Breadcrumb */}
         <nav aria-label="Breadcrumb" style={{ marginBottom: '16px' }}>
           <span style={{ fontSize: 'var(--font-size-sub)', color: 'var(--text-muted)' }}>
-            <a href={`/learn/${data.contextId}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <a href={`/learn/${data.contextId}`} style={{ color: 'inherit', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: '44px' }}>
               {numberedTitle('Chương', unit.position, unitTitle)}
             </a>{' '}
             / {lessonTitle}
@@ -389,6 +389,7 @@ function LessonPlayer({ data, errorState }: LessonPlayerViewProps) {
             revisionId={revision.id}
             exercises={exercises}
             initialAttempt={data.latestAttempt}
+            languageCode={data.languageCode}
           />
         )}
       </main>

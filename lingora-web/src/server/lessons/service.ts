@@ -166,7 +166,7 @@ export async function loadLearnerLessonDetail(contextId: string, lessonId: strin
   const cleanVocabulary = vocabulary.map(publicVocabulary);
 
   return {
-    contextId: c.id, lessonId: l.id, unit: { id: l.unit.id, position: l.unit.position, names: labels(l.unit.names) },
+    contextId: c.id, lessonId: l.id, languageCode: c.language.code, unit: { id: l.unit.id, position: l.unit.position, names: labels(l.unit.names) },
     revision: {
       id: rev.id,
       revisionNo: rev.revisionNo,
