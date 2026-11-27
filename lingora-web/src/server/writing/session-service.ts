@@ -22,8 +22,9 @@ export interface WritingSessionDto {
   sessionId: string;
   learnerId: string;
   contextId: string;
-  lessonId: string;
-  lessonRevisionId: string;
+  lessonId: string | null;
+  lessonRevisionId: string | null;
+  practiceKind?: string;
   characterId: string;
   glyph: string;
   strokeCount: number;
@@ -98,6 +99,7 @@ function sessionDto(session: any, character: any, isReplay: boolean): WritingSes
     contextId: session.contextId,
     lessonId: session.lessonId,
     lessonRevisionId: session.lessonRevisionId,
+    practiceKind: session.practiceKind,
     characterId: session.characterId,
     glyph: character.glyph,
     strokeCount: character.strokeCount,
@@ -310,8 +312,8 @@ export async function startWritingSession(
     });
     if (existing && (
       existing.contextId.toLowerCase() !== cleanContextId ||
-      existing.lessonId.toLowerCase() !== cleanLessonId ||
-      existing.lessonRevisionId.toLowerCase() !== activeRev.id.toLowerCase() ||
+      (existing.lessonId ?? "").toLowerCase() !== cleanLessonId ||
+      (existing.lessonRevisionId ?? "").toLowerCase() !== activeRev.id.toLowerCase() ||
       existing.sourceKey !== sourceKey ||
       (characterId && existing.characterId.toLowerCase() !== characterId.toLowerCase())
     )) {
@@ -548,12 +550,16 @@ export async function submitWritingAttempt(
       });
       if (!candidateSession) fail(404, 'NOT_FOUND', 'Phiên luyện viết không tồn tại.');
 
-      await lockLearningParents(
-        tx,
-        candidateSession.contextId,
-        candidateSession.lessonId,
-        verifiedUserId
-      );
+      // Free practice ("Luyện viết") sessions are not tied to a lesson: only the owned context is checked.
+      const isFree = candidateSession.practiceKind === 'FREE';
+      if (!isFree) {
+        await lockLearningParents(
+          tx,
+          candidateSession.contextId,
+          candidateSession.lessonId,
+          verifiedUserId
+        );
+      }
       const session = await lockAndReadWritingSession(tx, cleanSessionId, verifiedUserId);
       if (
         session.contextId !== candidateSession.contextId ||
@@ -569,13 +575,14 @@ export async function submitWritingAttempt(
       }
 
       const context = await ownedContext(tx, session.contextId, verifiedUserId);
-      const lesson = await authorizedLesson(tx, context, session.lessonId);
-      if (lesson.activeRevision.id.toLowerCase() !== session.lessonRevisionId.toLowerCase()) {
-        fail(409, 'REVISION_STALE', 'Bài học đã được xuất bản phiên bản mới.');
+      if (!isFree) {
+        const lesson = await authorizedLesson(tx, context, session.lessonId);
+        if (lesson.activeRevision.id.toLowerCase() !== session.lessonRevisionId.toLowerCase()) {
+          fail(409, 'REVISION_STALE', 'Bài học đã được xuất bản phiên bản mới.');
+        }
+        await lockActiveRevision(tx, session.lessonId, session.lessonRevisionId);
+        await validateWritingSessionSource(tx, session, lesson);
       }
-      await lockActiveRevision(tx, session.lessonId, session.lessonRevisionId);
-
-      await validateWritingSessionSource(tx, session, lesson);
 
       const existingAttempt = await tx.writingAttempt.findFirst({
         where: { learnerId: verifiedUserId, operationKey: cleanOpKey },
@@ -722,21 +729,26 @@ export async function completeWritingSession(
     });
     if (!candidateSession) fail(404, 'NOT_FOUND', 'Phiên luyện viết không tồn tại.');
 
-    await lockLearningParents(
-      tx,
-      candidateSession.contextId,
-      candidateSession.lessonId,
-      verifiedUserId
-    );
+    const isFree = candidateSession.practiceKind === 'FREE';
+    if (!isFree) {
+      await lockLearningParents(
+        tx,
+        candidateSession.contextId,
+        candidateSession.lessonId,
+        verifiedUserId
+      );
+    }
     const session = await lockAndReadWritingSession(tx, cleanSessionId, verifiedUserId);
 
     const context = await ownedContext(tx, session.contextId, verifiedUserId);
-    const lesson = await authorizedLesson(tx, context, session.lessonId);
-    if (lesson.activeRevision.id.toLowerCase() !== session.lessonRevisionId.toLowerCase()) {
-      fail(409, 'REVISION_STALE', 'Bài học đã được xuất bản phiên bản mới.');
+    if (!isFree) {
+      const lesson = await authorizedLesson(tx, context, session.lessonId);
+      if (lesson.activeRevision.id.toLowerCase() !== session.lessonRevisionId.toLowerCase()) {
+        fail(409, 'REVISION_STALE', 'Bài học đã được xuất bản phiên bản mới.');
+      }
+      await lockActiveRevision(tx, session.lessonId, session.lessonRevisionId);
+      await validateWritingSessionSource(tx, session, lesson);
     }
-    await lockActiveRevision(tx, session.lessonId, session.lessonRevisionId);
-    await validateWritingSessionSource(tx, session, lesson);
 
     if (session.status === 'COMPLETED') {
       return {

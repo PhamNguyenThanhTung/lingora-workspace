@@ -3,13 +3,14 @@ import { redirect } from 'next/navigation';
 import { LearnerShell } from '../../components/learner/LearnerShell.tsx';
 import { loadLearnerHomeRemembering } from '../../components/learner/load-shell.ts';
 import { toShellData } from '../../components/learner/helpers.ts';
+import { listFreePracticeCharacters } from '../../server/writing/free-practice-service.ts';
+import { WriteHub } from './WriteHub.tsx';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * "Luyện viết" hub. Stroke practice itself is launched from a lesson's character blocks
- * (WritingPracticeModal), so this page explains that and routes the learner to their path
- * instead of 404-ing from the sidebar link.
+ * "Luyện viết": standalone stroke practice over the kana / kanji / hanzi of the selected path's language,
+ * independent of lessons (free-practice sessions, see server/writing/free-practice-service.ts).
  */
 export default async function WritePage(props?: { searchParams?: Promise<{ contextId?: string }> }) {
   const cookieStore = await cookies();
@@ -32,16 +33,32 @@ export default async function WritePage(props?: { searchParams?: Promise<{ conte
   }
 
   const shell = toShellData(result.data);
+  const contextId = shell.selectedContextId;
+  let characters: Awaited<ReturnType<typeof listFreePracticeCharacters>> = [];
+  let loadError: string | null = null;
+  if (contextId) {
+    try {
+      characters = await listFreePracticeCharacters(contextId, result.data.learner.id);
+    } catch (err: any) {
+      loadError = err?.error?.message || err?.message || 'Không thể tải danh sách chữ.';
+    }
+  }
+
   return (
     <LearnerShell shell={shell} active="write" quests={false}>
-      <div id="writeView">
-        <h1 style={{ fontSize: 'var(--font-size-title)', fontWeight: 800, marginBottom: 14 }}>Luyện viết</h1>
-        <p style={{ marginBottom: 14 }}>
-          Luyện viết chữ (kana, Hán tự) được mở ngay trong bài học: khi bài có chữ cần tập, bấm vào chữ để xem nét và tập viết theo.
-          Chưa có bài nào trong lộ trình hiện tại có chữ để luyện viết.
-        </p>
-        <a href="/home" className="btn btn-primary" style={{ textDecoration: 'none' }}>Về lộ trình học</a>
-      </div>
+      {loadError ? (
+        <div className="alert-box is-warning" role="alert">
+          <p className="alert-message">{loadError}</p>
+        </div>
+      ) : contextId && characters.length > 0 ? (
+        <WriteHub contextId={contextId} characters={characters} />
+      ) : (
+        <div id="writeView">
+          <h1 style={{ fontSize: 'var(--font-size-title)', fontWeight: 800, marginBottom: 14 }}>Luyện viết</h1>
+          <p style={{ marginBottom: 14 }}>Lộ trình này chưa có chữ để luyện viết (Luyện viết hiện dành cho tiếng Nhật và tiếng Trung).</p>
+          <a href="/home" className="btn btn-primary" style={{ textDecoration: 'none' }}>Về lộ trình học</a>
+        </div>
+      )}
     </LearnerShell>
   );
 }
