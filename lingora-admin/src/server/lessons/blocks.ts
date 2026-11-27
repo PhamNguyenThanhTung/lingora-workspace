@@ -198,20 +198,19 @@ export async function resolveTeacherAuthorBlocks(
   courseLanguageId: string,
   authorBlocks: TeacherLessonAuthorBlock[]
 ): Promise<PersistedLessonBlock[]> {
-  const resolvedBlocks: PersistedLessonBlock[] = [];
+  const uniqueCharIds = [
+    ...new Set(
+      authorBlocks
+        .filter((b): b is Extract<TeacherLessonAuthorBlock, { type: 'CHARACTER' }> => b.type === 'CHARACTER')
+        .map((b) => b.content.characterId.toLowerCase())
+    ),
+  ];
 
-  for (const block of authorBlocks) {
-    if (block.type !== 'CHARACTER') {
-      resolvedBlocks.push(block);
-      continue;
-    }
-
-    const characterId = block.content.characterId.toLowerCase();
-
-    // 1. Fetch character from catalogue scoped by both characterId and courseLanguageId
-    const char = await tx.writingCharacter.findFirst({
+  const charMap = new Map<string, any>();
+  if (uniqueCharIds.length > 0) {
+    const chars = await tx.writingCharacter.findMany({
       where: {
-        id: characterId,
+        id: { in: uniqueCharIds },
         languageId: courseLanguageId.toLowerCase(),
       },
       select: {
@@ -230,6 +229,21 @@ export async function resolveTeacherAuthorBlocks(
         },
       },
     });
+    for (const c of chars) {
+      charMap.set(c.id.toLowerCase(), c);
+    }
+  }
+
+  const resolvedBlocks: PersistedLessonBlock[] = [];
+
+  for (const block of authorBlocks) {
+    if (block.type !== 'CHARACTER') {
+      resolvedBlocks.push(block);
+      continue;
+    }
+
+    const characterId = block.content.characterId.toLowerCase();
+    const char = charMap.get(characterId);
 
     if (!char) {
       throw new ControlledDraftError(400, {
@@ -333,10 +347,11 @@ export async function resolveAndPersistLessonRevisionBlocks(
   lessonRevisionId: string,
   courseLanguageId: string,
   inputBlocks: TeacherLessonAuthorBlock[]
-): Promise<void> {
+): Promise<PersistedLessonBlock[]> {
   if (!inputBlocks || inputBlocks.length === 0) {
-    return;
+    return [];
   }
   const resolved = await resolveTeacherAuthorBlocks(tx, courseLanguageId, inputBlocks);
   await persistLessonRevisionBlocks(tx, lessonRevisionId, resolved);
+  return resolved;
 }

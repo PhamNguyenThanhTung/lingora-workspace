@@ -7,6 +7,7 @@ import type { ReviewCommentDto } from '@/server/lessons/comments';
 import { getAccountRoleLabel } from '@/server/lessons/workflow-status';
 import { LessonContent } from '@lingora/lesson-content/LessonContent';
 import { BlockComments } from './lesson-studio/BlockComments';
+import { AudioPreviewPlayer } from './AudioPreviewPlayer';
 
 export interface ReviewDetailViewProps {
   initialDetail: ReviewDetailDto;
@@ -771,9 +772,11 @@ export function ReviewDetailView({
                   <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>CÂU HỎI / PROMPT:</div>
                   <div style={{ fontSize: '14px', marginTop: '2px' }}>{ex.promptData?.prompt || '—'}</div>
                   {ex.promptData?.audioUrl && (
-                    <div style={{ fontSize: '12px', color: '#0284c7', marginTop: '4px' }}>
-                      Âm thanh: {ex.promptData.audioUrl}
-                    </div>
+                    <AudioPreviewPlayer
+                      url={ex.promptData.audioUrl}
+                      idPrefix={`review-exercise-audio-${idx}`}
+                      showUrlSummary
+                    />
                   )}
                 </div>
 

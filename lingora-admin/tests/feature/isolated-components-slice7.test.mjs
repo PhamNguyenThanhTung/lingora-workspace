@@ -307,3 +307,40 @@ test('production Admin review handles 401 and 403 without false success', async 
     });
   }
 });
+
+test('LNG-04 (G9): ReviewDetailView renders preload=none audio player with error/retry without blocking Approve', async () => {
+  await withPage('page-review-detail-wire', async (page) => {
+    await page.locator('#reviewActionsPanel').waitFor();
+    const detail = await page.evaluate(() => window.__PAGE_PROPS__.initialDetail);
+
+    const reviewAudio = page.locator('#review-exercise-audio-4-player');
+    await reviewAudio.waitFor({ state: 'visible' });
+    assert.equal(await reviewAudio.getAttribute('preload'), 'none');
+    assert.equal(await reviewAudio.getAttribute('autoplay'), null);
+    assert.equal(await reviewAudio.evaluate((el) => el.controls), true);
+
+    // Simulated audio load failure shows error + Retry button, and Approve stays interactive
+    await reviewAudio.evaluate((el) => el.dispatchEvent(new Event('error')));
+    await page.locator('#review-exercise-audio-4-error').waitFor({ state: 'visible' });
+    await page.locator('#review-exercise-audio-4-retry').click();
+    await page.locator('#review-exercise-audio-4-error').waitFor({ state: 'hidden' });
+
+    await page.route('**/api/**', async (route) => {
+      const path = new URL(route.request().url()).pathname;
+      if (path === `/api/reviews/${detail.submissionId}/approve`) {
+        return fulfill(route, 200, {
+          data: {
+            ...detail,
+            revision: { ...detail.revision, status: 'APPROVED', rowVersion: '3' },
+            reviewHistory: [],
+          },
+        });
+      }
+      return fulfill(route, 404, {});
+    });
+
+    assert.equal(await page.locator('#btnApprove').isDisabled(), false);
+    await page.locator('#btnApprove').click();
+    await page.locator('#reviewActionSuccess').waitFor({ state: 'visible' });
+  });
+});

@@ -745,4 +745,157 @@ describe('S6-CONTENT: Production Page Component Callback & DTO Reconciliation Su
       assert.equal(await page.locator('#btnTogglePreview').getAttribute('aria-expanded'), 'false');
     });
   });
+
+  test('ADM-02 IME: Enter during IME composition does not trigger vocabulary search', { timeout: 15000 }, async () => {
+    await withPage('page-teacher-draft-wire', async (page) => {
+      let searchCount = 0;
+      await page.route('**/api/**', async (route) => {
+        const url = new URL(route.request().url());
+        if (url.pathname.includes('/vocabulary-options')) {
+          searchCount++;
+          return fulfill(route, 200, { data: [] });
+        }
+        return fulfill(route, 200, { data: [] });
+      });
+
+      await page.locator('#btnAddVocabulary').click();
+      await page.locator('#vocabModal').waitFor({ state: 'visible' });
+      await page.locator('#inputVocabSearch').fill('tieng');
+
+      // Simulate active IME composition before Enter
+      await page.evaluate(() => {
+        const input = document.querySelector('#inputVocabSearch');
+        input.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true, data: 'tieng' }));
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+      });
+      await page.waitForTimeout(80);
+      assert.equal(searchCount, 0, 'Enter during IME composition must not fire search');
+
+      // Finish IME composition, then Enter triggers search normally
+      await page.evaluate(() => {
+        const input = document.querySelector('#inputVocabSearch');
+        input.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true, data: 'tiếng' }));
+      });
+      await page.locator('#inputVocabSearch').press('Enter');
+      await page.locator('#vocabSearchEmptyState').waitFor({ state: 'visible' });
+      assert.equal(searchCount, 1, 'Enter after compositionend must trigger search once');
+    });
+  });
+
+  test('LNG-04 (G9): LISTENING editor modal and exercise table render preload=none audio player with error/retry without blocking save', { timeout: 20000 }, async () => {
+    await withPage('page-teacher-draft-wire', async (page) => {
+      const pageProps = await page.evaluate(() => window.__PAGE_PROPS__);
+      const lessonId = pageProps.initialLesson.id;
+      let saveCount = 0;
+
+      await page.route('**/api/**', async (route) => {
+        const req = route.request();
+        if (req.method() === 'PATCH' && req.url().includes(`/api/teacher/lessons/${lessonId}/draft`)) {
+          saveCount++;
+          return fulfill(route, 200, {
+            data: {
+              ...pageProps.initialLesson,
+              rowVersion: '2',
+              highestRevision: {
+                ...pageProps.initialLesson.highestRevision,
+                revisionNo: 2,
+              },
+            },
+          });
+        }
+        return fulfill(route, 200, { data: [] });
+      });
+
+      await page.locator('#btnAddExercise').click();
+      await page.locator('#exerciseModal').waitFor({ state: 'visible' });
+      await page.locator('#selectExerciseType').selectOption('LISTENING');
+      await page.locator('#inputExercisePrompt').fill('Nghe đoạn hội thoại');
+      await page.locator('#inputListeningAudioUrl').fill('https://media.lingora.test/audio/sample.mp3');
+      await page.locator('#inputListeningOptionText-0').fill('Option A');
+      await page.locator('#inputListeningOptionText-1').fill('Option B');
+
+      const modalAudio = page.locator('#listening-modal-audio-player');
+      await modalAudio.waitFor({ state: 'visible' });
+      assert.equal(await modalAudio.getAttribute('preload'), 'none');
+      assert.equal(await modalAudio.getAttribute('autoplay'), null);
+      assert.equal(await modalAudio.evaluate((el) => el.controls), true);
+
+      // Simulate audio failure in modal and verify Retry button appears and works
+      await modalAudio.evaluate((el) => el.dispatchEvent(new Event('error')));
+      await page.locator('#listening-modal-audio-error').waitFor({ state: 'visible' });
+      await page.locator('#listening-modal-audio-retry').click();
+      await page.locator('#listening-modal-audio-error').waitFor({ state: 'hidden' });
+
+      // Save exercise into staged table and verify table player + error does not block Save Draft
+      await page.locator('#btnSaveExerciseModal').click();
+      await page.locator('#exerciseModal').waitFor({ state: 'hidden' });
+
+      const tableAudio = page.locator('#exercise-audio-0-player');
+      await tableAudio.waitFor({ state: 'visible' });
+      assert.equal(await tableAudio.getAttribute('preload'), 'none');
+      await tableAudio.evaluate((el) => el.dispatchEvent(new Event('error')));
+      await page.locator('#exercise-audio-0-error').waitFor({ state: 'visible' });
+
+      assert.equal(await page.locator('#btnSaveDraft').isDisabled(), false);
+      await page.locator('#btnSaveDraft').click();
+      await page.locator('#draftSaveSuccess').waitFor({ state: 'visible' });
+      assert.equal(saveCount, 1);
+    });
+  });
+
+  test('LNG-05 (G16): Create vocabulary tab warns on same-language curly-quote duplicate, allows reuse or distinct senseKey', { timeout: 20000 }, async () => {
+    await withPage('page-teacher-draft-wire', async (page) => {
+      await page.route('**/api/**', async (route) => {
+        const url = new URL(route.request().url());
+        if (url.pathname.includes('/vocabulary-options')) {
+          return fulfill(route, 200, {
+            data: [
+              {
+                id: 'dddddddd-dddd-4ddd-8ddd-dddddddd0001',
+                canonicalForm: "don't",
+                senseKey: 'default',
+                meaningLabels: { vi: 'đừng', en: 'do not' },
+                phonetic: '/doʊnt/',
+                partOfSpeech: 'verb',
+                example: null,
+              },
+            ],
+          });
+        }
+        return fulfill(route, 200, { data: [] });
+      });
+
+      await page.locator('#btnAddVocabulary').click();
+      await page.locator('#vocabModal').waitFor({ state: 'visible' });
+      await page.locator('#tabVocabCreate').click();
+
+      // Enter curly-quote variant with same default senseKey
+      await page.locator('#inputVocabCanonical').fill('don\u2019t');
+      await page.locator('#inputVocabMeaningVi').fill('không được');
+      await page.locator('#vocabDuplicateWarning').waitFor({ state: 'visible' });
+      assert.match(await page.locator('#vocabDuplicateWarning').innerText(), /don't/);
+
+      // Without confirmation checkbox or different senseKey, same-sense variant warns before creating duplicate
+      await page.locator('#btnSaveVocabModal').click();
+      await page.locator('#errorVocabModal').waitFor({ state: 'visible' });
+
+      // Clicking "Dùng từ này" reuses the existing concept directly
+      await page.locator('#btnReuseDuplicateVocab-0').click();
+      await page.locator('#vocabModal').waitFor({ state: 'hidden' });
+      assert.equal(await page.locator('[id^="vocabRow-"]').count(), 1);
+      assert.match(await page.locator('#vocabTerm-0').innerText(), /don't/);
+
+      // Creating a different senseKey for a homograph succeeds without blocking
+      await page.locator('#btnAddVocabulary').click();
+      await page.locator('#vocabModal').waitFor({ state: 'visible' });
+      await page.locator('#tabVocabCreate').click();
+      await page.locator('#inputVocabCanonical').fill("don't");
+      await page.locator('#inputVocabSenseKey').fill('colloquial');
+      await page.locator('#inputVocabMeaningVi').fill('đừng nhé');
+      await page.locator('#vocabDuplicateWarning').waitFor({ state: 'visible' });
+      await page.locator('#btnSaveVocabModal').click();
+      await page.locator('#vocabModal').waitFor({ state: 'hidden' });
+      assert.equal(await page.locator('[id^="vocabRow-"]').count(), 2);
+    });
+  });
 });

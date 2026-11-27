@@ -496,7 +496,14 @@ export async function submitTeacherLesson(
 
       const unit = await tx.unit.findUnique({
         where: { id: currentLesson.unitId.toLowerCase() },
-        select: { course: { select: { languageId: true } } },
+        select: {
+          id: true,
+          courseId: true,
+          position: true,
+          code: true,
+          names: true,
+          course: { select: { id: true, names: true, languageId: true } },
+        },
       });
       const courseLanguageId = unit?.course?.languageId;
       if (!courseLanguageId || unsupportedChildren(highestRev, courseLanguageId)) {
@@ -523,7 +530,7 @@ export async function submitTeacherLesson(
 
       // 9. Update LessonRevision to IN_REVIEW
       const nextRevRowVersion = (highestRev.rowVersion ?? 1n) + 1n;
-      await tx.lessonRevision.update({
+      const updatedHighestRev = await tx.lessonRevision.update({
         where: { id: highestRev.id },
         data: {
           status: 'IN_REVIEW',
@@ -536,7 +543,7 @@ export async function submitTeacherLesson(
       });
 
       // 10. Increment Lesson.rowVersion
-      await tx.lesson.update({
+      const updatedLesson = await tx.lesson.update({
         where: { id: lessonId.toLowerCase() },
         data: {
           rowVersion: { increment: 1n },
@@ -558,56 +565,66 @@ export async function submitTeacherLesson(
         },
       });
 
-      // 12. Fetch authoritative updated lesson
-      const fullLesson = await tx.lesson.findUnique({
-        where: { id: lessonId.toLowerCase() },
-        include: {
-          unit: {
-            select: {
-              id: true,
-              courseId: true,
-              position: true,
-              code: true,
-              names: true,
-              course: {
-                select: {
-                  id: true,
-                  names: true,
-                  languageId: true,
-                },
-              },
-            },
-          },
-          assignment: {
+      // 12. Return authoritative updated lesson without re-loading deep revision trees
+      const revisionSummaries = await tx.lessonRevision.findMany({
+        where: { lessonId: lessonId.toLowerCase() },
+        orderBy: { revisionNo: 'desc' },
+        select: {
+          id: true,
+          revisionNo: true,
+          status: true,
+          title: true,
+          contentBlocks: true,
+          contentSchemaVersion: true,
+          changeSummary: true,
+          createdAt: true,
+          createdBy: true,
+          lastEditedBy: true,
+          rowVersion: true,
+          creator: { select: { id: true, displayName: true } },
+          lastEditor: { select: { id: true, displayName: true } },
+          reviewComments: {
+            orderBy: { createdAt: 'asc' },
             include: {
-              currentTeacher: {
-                select: { id: true, displayName: true, status: true },
-              },
-            },
-          },
-          revisions: {
-            orderBy: { revisionNo: 'desc' },
-            include: {
-              creator: { select: { id: true, displayName: true } },
-              lastEditor: { select: { id: true, displayName: true } },
-              ...revisionChildRelations,
-              reviews: {
-                orderBy: { occurredAt: 'desc' },
-              },
-              _count: {
-                select: {
-                  exercises: true,
-                  vocabularyLinks: true,
-                  mediaBindings: true,
-                  authoredItemRevisions: true,
-                  attempts: true,
-                  assessmentVersionItems: true,
-                },
-              },
+              author: { select: { id: true, displayName: true } },
+              resolvedBy: { select: { id: true, displayName: true } },
             },
           },
         },
       });
+
+      const mergedRevisions = revisionSummaries.map((rev: any) => {
+        if (rev.id.toLowerCase() !== highestRev.id.toLowerCase()) {
+          return rev;
+        }
+        return {
+          ...rev,
+          ...updatedHighestRev,
+          creator: rev.creator,
+          lastEditor: rev.lastEditor,
+          reviewComments: rev.reviewComments ?? highestRev.reviewComments ?? [],
+          blocks: highestRev.blocks ?? [],
+          exercises: highestRev.exercises ?? [],
+          vocabularyLinks: highestRev.vocabularyLinks ?? [],
+          authoredItemRevisions: highestRev.authoredItemRevisions ?? [],
+          reviews: [reviewEvent],
+          _count: highestRev._count,
+        };
+      });
+
+      const fullLesson = {
+        ...updatedLesson,
+        unit,
+        assignment: {
+          ...assignment,
+          currentTeacher: {
+            id: teacherAcc.id,
+            displayName: teacherAcc.displayName ?? null,
+            status: teacherAcc.status,
+          },
+        },
+        revisions: mergedRevisions,
+      };
 
       return {
         status: 200,

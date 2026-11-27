@@ -558,6 +558,30 @@ export function lessonsFixture() {
         changed(rev, data);
         return structuredClone(rev);
       },
+      findMany: async ({ where, orderBy, include, select }) => {
+        let rows = [...state.revisions.values()].filter(r => matches(r, where));
+        if (orderBy?.revisionNo === 'desc') {
+          rows.sort((a, b) => b.revisionNo - a.revisionNo);
+        } else if (orderBy?.revisionNo === 'asc') {
+          rows.sort((a, b) => a.revisionNo - b.revisionNo);
+        }
+        const relSource = select || include || {};
+        return rows.map((r) => {
+          const rev = structuredClone(r);
+          if (relSource.creator) {
+            const u = state.accounts.get(rev.createdBy);
+            rev.creator = u ? structuredClone(u) : null;
+          }
+          if (relSource.lastEditor) {
+            const u = state.accounts.get(rev.lastEditedBy);
+            rev.lastEditor = u ? structuredClone(u) : null;
+          }
+          if (relSource.reviewComments) {
+            rev.reviewComments = [];
+          }
+          return rev;
+        });
+      },
       findUnique: async ({ where, include }) => {
         const rev = state.revisions.get(where.id?.toLowerCase());
         if (!rev) return null;
@@ -673,6 +697,25 @@ export function lessonsFixture() {
         state.itemIdentities.set(row.id, row);
         return structuredClone(row);
       },
+      createMany: async ({ data }) => {
+        for (const item of data) {
+          if (fail.itemIdentityCreate) throw new Error('itemIdentity create failed');
+          assert.equal(item.origin, 'PRACTICE', 'Item exercise origin must be PRACTICE');
+          assert.ok(item.exactFingerprint && item.exactFingerprint.trim().length > 0, 'exactFingerprint required');
+          const row = {
+            id: item.id || randomUUID(),
+            origin: item.origin,
+            createdBy: item.createdBy.toLowerCase(),
+            variantOfId: item.variantOfId || null,
+            exactFingerprint: item.exactFingerprint,
+            practiceExposedAt: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+          state.itemIdentities.set(row.id, row);
+        }
+        return { count: data.length };
+      },
     },
     itemRevision: {
       findUnique: async ({ where }) => {
@@ -744,6 +787,44 @@ export function lessonsFixture() {
         rows.forEach(r => changed(r, data));
         return { count: rows.length };
       },
+      createMany: async ({ data }) => {
+        for (const item of data) {
+          if (fail.itemRevisionCreate) throw new Error('itemRevision create failed');
+          assert.ok(state.itemIdentities.has(item.itemId), 'itemRevision item FK');
+          assert.ok(state.revisions.has(item.authoringLessonRevisionId), 'itemRevision authoringLessonRevision FK');
+          const ep = state.histories.get(item.creationAssignmentEpisodeId);
+          assert.ok(ep, 'itemRevision creation episode FK');
+          assert.equal(ep.nextTeacherId, item.createdBy, 'itemRevision created_by must match episode nextTeacherId');
+          const parentRev = state.revisions.get(item.authoringLessonRevisionId);
+          assert.equal(ep.assignmentId, parentRev.assignmentId, 'episode assignment must match lesson revision assignment');
+          if ([...state.itemRevisions.values()].some(r => r.itemId === item.itemId && r.revisionNo === item.revisionNo)) {
+            throw Object.assign(new Error('duplicate item revision'), { code: 'P2002' });
+          }
+          const row = {
+            id: item.id || randomUUID(),
+            itemId: item.itemId.toLowerCase(),
+            revisionNo: item.revisionNo,
+            type: item.type,
+            promptData: structuredClone(item.promptData),
+            practiceSkillIds: item.practiceSkillIds || [],
+            practiceCoverageSnapshot: item.practiceCoverageSnapshot || null,
+            schemaVersion: item.schemaVersion || 1,
+            exactFingerprint: item.exactFingerprint,
+            createdBy: item.createdBy.toLowerCase(),
+            creationAssignmentEpisodeId: item.creationAssignmentEpisodeId,
+            authoringLessonRevisionId: item.authoringLessonRevisionId,
+            assessmentBlueprintId: item.assessmentBlueprintId || null,
+            blueprintGeneration: item.blueprintGeneration ?? null,
+            isDraftOmitted: item.isDraftOmitted ?? false,
+            frozenAt: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            rowVersion: 1n,
+          };
+          state.itemRevisions.set(row.id, row);
+        }
+        return { count: data.length };
+      },
     },
     itemGradingSecret: {
       findUnique: async ({ where }) => {
@@ -770,6 +851,26 @@ export function lessonsFixture() {
         };
         state.itemGradingSecrets.set(row.id, row);
         return structuredClone(row);
+      },
+      createMany: async ({ data }) => {
+        for (const item of data) {
+          if (fail.gradingSecretCreate) throw new Error('gradingSecret create failed');
+          assert.ok(state.itemRevisions.has(item.itemRevisionId), 'gradingSecret itemRevision FK');
+          if ([...state.itemGradingSecrets.values()].some(s => s.itemRevisionId === item.itemRevisionId.toLowerCase())) {
+            throw Object.assign(new Error('duplicate grading secret'), { code: 'P2002' });
+          }
+          const row = {
+            id: item.id || randomUUID(),
+            itemRevisionId: item.itemRevisionId.toLowerCase(),
+            gradingData: structuredClone(item.gradingData),
+            feedbackData: item.feedbackData ? structuredClone(item.feedbackData) : null,
+            schemaVersion: item.schemaVersion || 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+          state.itemGradingSecrets.set(row.id, row);
+        }
+        return { count: data.length };
       },
     },
     lessonExercise: {
@@ -829,6 +930,33 @@ export function lessonsFixture() {
         state.lessonExercises.set(row.id, row);
         return structuredClone(row);
       },
+      createMany: async ({ data }) => {
+        for (const item of data) {
+          if (fail.lessonExerciseCreate) throw new Error('lessonExercise create failed');
+          assert.ok(state.revisions.has(item.lessonRevisionId), 'lessonExercise revision FK');
+          assert.ok(state.itemRevisions.has(item.itemRevisionId), 'lessonExercise itemRevision FK');
+          assert.ok(state.itemIdentities.has(item.itemId), 'lessonExercise item FK');
+          assert.equal(state.itemRevisions.get(item.itemRevisionId).itemId, item.itemId, 'composite item revision identity FK');
+          assert.ok(Number.isInteger(item.position) && item.position > 0 && item.position <= 2147483647, 'positive int32 position');
+          if ([...state.lessonExercises.values()].some(e => e.lessonRevisionId === item.lessonRevisionId && e.position === item.position)) {
+            throw Object.assign(new Error('duplicate exercise position'), { code: 'P2002' });
+          }
+          if ([...state.lessonExercises.values()].some(e => e.lessonRevisionId === item.lessonRevisionId && e.itemId === item.itemId)) {
+            throw Object.assign(new Error('duplicate exercise item'), { code: 'P2002' });
+          }
+          const row = {
+            id: item.id || randomUUID(),
+            lessonRevisionId: item.lessonRevisionId.toLowerCase(),
+            itemRevisionId: item.itemRevisionId.toLowerCase(),
+            itemId: item.itemId.toLowerCase(),
+            position: item.position,
+            isCore: item.isCore ?? true,
+            createdAt: new Date(),
+          };
+          state.lessonExercises.set(row.id, row);
+        }
+        return { count: data.length };
+      },
     },
     vocabularyConcept: {
       findUnique: async ({ where }) => {
@@ -878,6 +1006,34 @@ export function lessonsFixture() {
         state.vocabularyConcepts.set(row.id, row);
         return structuredClone(row);
       },
+      createMany: async ({ data }) => {
+        for (const item of data) {
+          if (fail.vocabularyConceptCreate) throw new Error('vocabularyConcept create failed');
+          if ([...state.vocabularyConcepts.values()].some(
+            v => v.languageId === item.languageId.toLowerCase() && v.normalizedForm === item.normalizedForm && v.senseKey === item.senseKey
+          )) {
+            throw Object.assign(new Error('duplicate vocabulary concept'), { code: 'P2002', meta: { target: 'vocabulary_concepts_lang_norm_sense_key' } });
+          }
+          const row = {
+            id: item.id || randomUUID(),
+            languageId: item.languageId.toLowerCase(),
+            canonicalForm: item.canonicalForm,
+            normalizedForm: item.normalizedForm,
+            senseKey: item.senseKey,
+            meaningLabels: structuredClone(item.meaningLabels),
+            phonetic: item.phonetic || null,
+            partOfSpeech: item.partOfSpeech || null,
+            example: item.example || null,
+            createdBy: item.createdBy.toLowerCase(),
+            frozenAt: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            rowVersion: 1n,
+          };
+          state.vocabularyConcepts.set(row.id, row);
+        }
+        return { count: data.length };
+      },
     },
     vocabularyCharacter: {
       findMany: async () => [],
@@ -918,6 +1074,30 @@ export function lessonsFixture() {
         };
         state.lessonVocabularyLinks.set(row.id, row);
         return structuredClone(row);
+      },
+      createMany: async ({ data }) => {
+        for (const item of data) {
+          if (fail.lessonVocabularyLinkCreate) throw new Error('lessonVocabularyLink create failed');
+          assert.ok(state.revisions.has(item.lessonRevisionId), 'lessonVocabularyLink revision FK');
+          assert.ok(state.vocabularyConcepts.has(item.vocabularyId), 'lessonVocabularyLink vocabulary FK');
+          if ([...state.lessonVocabularyLinks.values()].some(v => v.lessonRevisionId === item.lessonRevisionId && v.position === item.position)) {
+            throw Object.assign(new Error('duplicate vocabulary position'), { code: 'P2002' });
+          }
+          if ([...state.lessonVocabularyLinks.values()].some(v => v.lessonRevisionId === item.lessonRevisionId && v.vocabularyId === item.vocabularyId)) {
+            throw Object.assign(new Error('duplicate vocabulary link'), { code: 'P2002' });
+          }
+          const row = {
+            id: item.id || randomUUID(),
+            lessonRevisionId: item.lessonRevisionId.toLowerCase(),
+            vocabularyId: item.vocabularyId.toLowerCase(),
+            position: item.position,
+            isCore: item.isCore ?? true,
+            displaySnapshot: structuredClone(item.displaySnapshot),
+            createdAt: new Date(),
+          };
+          state.lessonVocabularyLinks.set(row.id, row);
+        }
+        return { count: data.length };
       },
     },
     mediaBinding: {
@@ -1074,6 +1254,13 @@ export function lessonsFixture() {
       }
 
       if (q.includes('FROM app.item_identities') && q.includes('FOR UPDATE')) {
+        if (Array.isArray(args[0])) {
+          const ids = args[0].map((id) => String(id).toLowerCase()).sort();
+          return ids
+            .map((id) => state.itemIdentities.get(id))
+            .filter(Boolean)
+            .map((item) => ({ id: item.id }));
+        }
         const id = args[0]?.toLowerCase();
         const item = state.itemIdentities.get(id);
         if (!item) return [];

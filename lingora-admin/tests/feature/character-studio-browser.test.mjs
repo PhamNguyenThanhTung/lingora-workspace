@@ -1469,6 +1469,7 @@ async function run() {
     await teacherAPage.fill('#inputExercisePrompt', 'Chọn nghĩa đúng của chữ 日');
     await teacherAPage.fill('#inputMcqOptionText-0', 'Mặt trời');
     await teacherAPage.fill('#inputMcqOptionText-1', 'Cây cối');
+    await teacherAPage.click('#radioMcqCorrectOption-0');
     await teacherAPage.click('#btnSaveExerciseModal');
     await teacherAPage.waitForSelector('#exercisesTable');
 
