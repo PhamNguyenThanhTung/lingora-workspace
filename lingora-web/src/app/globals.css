@@ -175,6 +175,9 @@ html, body {
 }
 
 .brand-title {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: var(--font-size-title);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -275,7 +278,7 @@ html, body {
 }
 
 .btn-sm {
-  min-height: 38px;
+  min-height: 44px;
   padding: 6px 14px;
   font-size: var(--font-size-sub);
   border-radius: var(--radius-sm);
@@ -1419,6 +1422,8 @@ input[type='text'].form-input {
 .practice-sheet__msg { flex: 1; min-width: 0; }
 
 .practice-sheet__close {
+  min-width: 44px;
+  min-height: 44px;
   border: none;
   background: transparent;
   font-family: var(--font-family);
@@ -1814,6 +1819,15 @@ input[type='text'].form-input {
    Reduced motion
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
+  /* Catch-all (UI-05): no decorative motion anywhere, including future components. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
   .practice-session,
   .practice-combo,
   .practice-chip,

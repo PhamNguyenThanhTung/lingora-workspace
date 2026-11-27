@@ -386,6 +386,9 @@ export function ReviewView({ learner, contexts = [], preselectedContextId = null
             href="/home"
             id="backHomeHeaderBtn"
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              minHeight: '44px',
               textDecoration: 'none',
               color: 'var(--primary-color)',
               fontWeight: 700,
