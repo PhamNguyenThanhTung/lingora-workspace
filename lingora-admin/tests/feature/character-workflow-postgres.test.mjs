@@ -12,9 +12,11 @@ const {
   publishReview,
   saveTeacherLessonDraft,
   getReviewDetail,
+  getTeacherCharacterOptions,
+  getTeacherLessonDetail,
 } = await import('../../src/server/lessons/index.ts');
 
-const { createStroke } = await import('../../src/server/characters/index.ts');
+const { createStroke, createAdminCharacter } = await import('../../src/server/characters/index.ts');
 
 const { ownedUrl } = validateOwnedDatabaseUrl();
 
@@ -1567,5 +1569,162 @@ describe('S6-04a3: Validate persisted CHARACTER references and snapshots at subm
     assert.equal(rev.contentBlocks.length, 2);
     assert.equal(rev.blocks.length, 2);
     assert.equal(rev.blocks[0].type, 'TEXT');
+  });
+
+  test('EXT-02 END-TO-END: Admin creates static character -> Teacher picks in Japanese course (excluded in Chinese) -> publish -> active snapshot preserves static character', async () => {
+    // 1. Admin creates a new Japanese Kanji character without strokes
+    const createdRes = await createAdminCharacter(
+      {
+        languageId: jaLang.id,
+        glyph: '学',
+        scriptType: 'KANJI',
+        strokeCount: 8,
+        meaning: 'học tập',
+        primaryReading: 'がく',
+        romanization: 'gaku',
+        metadata: { jlptLevel: 'N5' },
+      },
+      prisma
+    );
+    assert.equal(createdRes.status, 201);
+    const createdChar = createdRes.data.data;
+    assert.equal(createdChar.glyph, '学');
+    assert.equal(createdChar.hasStrokes, false);
+
+    // 2. Create a Japanese lesson and a Chinese lesson assigned to teacherId
+    const { lesson: jaTestLesson } = await createTestLesson();
+
+    const zhCourse = await prisma.course.create({
+      data: {
+        language: { connect: { id: zhLang.id } },
+        framework: { connect: { id: '00000000-0000-0000-0000-000000000010' } },
+        defaultStartLevel: { connect: { id: '00000000-0000-0000-0000-000000000021' } },
+        names: { vi: 'Khóa học Tiếng Trung EXT-02', en: 'Chinese EXT-02' },
+        isActive: true,
+      },
+    });
+    const zhUnit = await prisma.unit.create({
+      data: {
+        course: { connect: { id: zhCourse.id } },
+        level: { connect: { id: '00000000-0000-0000-0000-000000000021' } },
+        code: 'ZH-U1-EXT02',
+        position: 1,
+        names: { vi: 'Bài mở đầu Trung ngữ' },
+      },
+    });
+    const zhLesson = await prisma.lesson.create({
+      data: {
+        unitId: zhUnit.id,
+        position: 1,
+        isRequired: true,
+        availability: 'PLANNED',
+        rowVersion: 1n,
+      },
+    });
+    const zhAssign = await prisma.contentAssignment.create({
+      data: {
+        lessonId: zhLesson.id,
+        currentTeacherId: teacherId,
+        createdBy: adminId,
+        scopeGeneration: 1n,
+      },
+    });
+    await prisma.assignmentHistory.create({
+      data: {
+        assignmentId: zhAssign.id,
+        eventType: 'ASSIGNED',
+        nextTeacherId: teacherId,
+        changedBy: adminId,
+        sequenceNo: 1,
+        scopeGeneration: 1n,
+        reason: 'EXT-02 scope check',
+      },
+    });
+
+    // 3. Japanese teacher finds 学 via character-options; Chinese teacher MUST NOT see Japanese 学
+    const jaOptions = await getTeacherCharacterOptions(teacherId, jaTestLesson.id, '学', prisma);
+    assert.equal(jaOptions.status, 200);
+    const matchedJa = jaOptions.data.data.find((item) => item.id === createdChar.id);
+    assert.ok(matchedJa, 'Japanese teacher must find newly created Japanese character 学');
+    assert.equal(matchedJa.hasStrokes, false);
+
+    const zhOptions = await getTeacherCharacterOptions(teacherId, zhLesson.id, '学', prisma);
+    assert.equal(zhOptions.status, 200);
+    assert.equal(
+      zhOptions.data.data.some((item) => item.id === createdChar.id),
+      false,
+      'Chinese course teacher MUST NOT see Japanese character 学'
+    );
+
+    // 4. Japanese teacher selects 学 (static, no stroke animation or guided writing), saves draft, and reloads
+    const saveRes = await saveDraft({
+      lessonId: jaTestLesson.id,
+      title: 'Bài học chữ 学 từ danh mục Admin',
+      blocks: [
+        {
+          blockKey: 'char_gaku_ext02',
+          type: 'CHARACTER',
+          position: 1,
+          schemaVersion: 1,
+          content: {
+            characterId: createdChar.id,
+            showMeaning: true,
+            showReading: true,
+            showStrokeAnimation: false,
+            guidedWriting: false,
+          },
+        },
+      ],
+    });
+    assert.equal(saveRes.status, 200);
+    const revId = saveRes.data.data.highestRevision.id;
+
+    const reloaded = await getTeacherLessonDetail(teacherId, jaTestLesson.id, prisma);
+    assert.equal(reloaded.status, 200);
+    const reloadedBlock = reloaded.data.data.blocks[0];
+    assert.equal(reloadedBlock.type, 'CHARACTER');
+    assert.equal(reloadedBlock.selectedLabel.glyph, '学');
+    assert.equal(reloadedBlock.content.characterId, createdChar.id);
+    assert.equal(reloadedBlock.content.showStrokeAnimation, false);
+    assert.equal(reloadedBlock.content.guidedWriting, false);
+
+    // 5. Submit, Admin review, Approve, Publish
+    const submitRes = await submit(revId, jaTestLesson.id);
+    assert.equal(submitRes.status, 200);
+    const submissionId = submitRes.data.submissionId;
+
+    const reviewDetail = await getReviewDetail(adminId, submissionId, prisma);
+    assert.equal(reviewDetail.status, 200);
+    assert.equal(reviewDetail.data.data.revision.blocks[0].glyph, '学');
+
+    const approveRes = await approve(submissionId, revId);
+    assert.equal(approveRes.status, 200);
+
+    const publishRes = await publish(submissionId, revId, {}, jaTestLesson.id);
+    assert.equal(publishRes.status, 200);
+
+    // 6. Active published revision snapshot has exact static character 学
+    const publishedLesson = await prisma.lesson.findUniqueOrThrow({
+      where: { id: jaTestLesson.id },
+      include: {
+        activeRevision: {
+          include: {
+            blocks: { orderBy: { position: 'asc' } },
+          },
+        },
+      },
+    });
+    assert.equal(publishedLesson.activeRevisionId, revId);
+    const pubBlock = publishedLesson.activeRevision.blocks[0];
+    assert.equal(pubBlock.type, 'CHARACTER');
+    assert.equal(pubBlock.content.characterId, createdChar.id);
+    assert.equal(pubBlock.content.showStrokeAnimation, false);
+    assert.equal(pubBlock.content.guidedWriting, false);
+    assert.equal(pubBlock.content.snapshot.glyph, '学');
+    assert.equal(pubBlock.content.snapshot.scriptType, 'KANJI');
+    assert.equal(pubBlock.content.snapshot.strokeCount, 8);
+    assert.equal(pubBlock.content.snapshot.meaning, 'học tập');
+    assert.equal(pubBlock.content.snapshot.primaryReading, 'がく');
+    assert.equal(pubBlock.content.snapshot.romanization, 'gaku');
   });
 });

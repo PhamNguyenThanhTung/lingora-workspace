@@ -14,6 +14,11 @@ import {
   listCharacters,
   countCharacters,
   createCharacter,
+  getAllowedScriptsForLanguageCode,
+  isScriptTypeAllowedForLanguage,
+  listCharactersQuerySchema,
+  listCharacterCatalogue,
+  createAdminCharacter,
 } from '../../src/server/characters/index.ts';
 
 describe('S6-01: Character Validator & Unicode / NFC Rules', () => {
@@ -353,5 +358,188 @@ describe('S6-01: Language-Scoped Catalogue Lookup Unit Logic', () => {
     const zhList = await listCharacters({ languageId: langZhId }, mockDb);
     assert.equal(zhList.length, 1);
     assert.equal(zhList[0].languageId, langZhId);
+  });
+});
+
+describe('EXT-02: Language/Script Compatibility & Admin Catalogue Service Helpers', () => {
+  const langJaId = randomUUID();
+  const langZhId = randomUUID();
+  const langEnId = randomUUID();
+
+  test('getAllowedScriptsForLanguageCode and isScriptTypeAllowedForLanguage enforce ja/zh rules', () => {
+    assert.deepEqual(getAllowedScriptsForLanguageCode('ja'), ['HIRAGANA', 'KATAKANA', 'KANJI']);
+    assert.deepEqual(getAllowedScriptsForLanguageCode('ja-JP'), ['HIRAGANA', 'KATAKANA', 'KANJI']);
+    assert.deepEqual(getAllowedScriptsForLanguageCode('zh'), ['HANZI_SIMPLIFIED', 'HANZI_TRADITIONAL']);
+    assert.deepEqual(getAllowedScriptsForLanguageCode('zh_CN'), ['HANZI_SIMPLIFIED', 'HANZI_TRADITIONAL']);
+    assert.deepEqual(getAllowedScriptsForLanguageCode('en'), []);
+    assert.deepEqual(getAllowedScriptsForLanguageCode('fr'), []);
+
+    assert.equal(isScriptTypeAllowedForLanguage('ja', 'KANJI'), true);
+    assert.equal(isScriptTypeAllowedForLanguage('ja', 'HIRAGANA'), true);
+    assert.equal(isScriptTypeAllowedForLanguage('ja', 'HANZI_SIMPLIFIED'), false);
+    assert.equal(isScriptTypeAllowedForLanguage('zh', 'HANZI_TRADITIONAL'), true);
+    assert.equal(isScriptTypeAllowedForLanguage('zh', 'HIRAGANA'), false);
+    assert.equal(isScriptTypeAllowedForLanguage('en', 'KANJI'), false);
+  });
+
+  test('listCharactersQuerySchema parses defaults and rejects invalid query params', () => {
+    const empty = listCharactersQuerySchema.safeParse({});
+    assert.equal(empty.success, true);
+    if (empty.success) {
+      assert.equal(empty.data.limit, 20);
+      assert.equal(empty.data.offset, 0);
+      assert.equal(empty.data.languageId, undefined);
+      assert.equal(empty.data.scriptType, undefined);
+      assert.equal(empty.data.search, undefined);
+    }
+
+    const withEmptyStrings = listCharactersQuerySchema.safeParse({
+      languageId: '',
+      scriptType: '',
+      search: '   ',
+      limit: '',
+      offset: '',
+    });
+    assert.equal(withEmptyStrings.success, true);
+
+    assert.equal(listCharactersQuerySchema.safeParse({ languageId: 'not-uuid' }).success, false);
+    assert.equal(listCharactersQuerySchema.safeParse({ scriptType: 'LATIN' }).success, false);
+    assert.equal(listCharactersQuerySchema.safeParse({ limit: '0' }).success, false);
+    assert.equal(listCharactersQuerySchema.safeParse({ limit: '101' }).success, false);
+    assert.equal(listCharactersQuerySchema.safeParse({ limit: 'abc' }).success, false);
+    assert.equal(listCharactersQuerySchema.safeParse({ offset: '-1' }).success, false);
+    assert.equal(listCharactersQuerySchema.safeParse({ unknown: 'x' }).success, false);
+  });
+
+  test('createAdminCharacter maps language mismatch, missing language, and P2002 duplicate cleanly', async () => {
+    const languages = new Map([
+      [langJaId, { id: langJaId, code: 'ja', names: { vi: 'Tiếng Nhật' } }],
+      [langZhId, { id: langZhId, code: 'zh', names: { vi: 'Tiếng Trung' } }],
+      [langEnId, { id: langEnId, code: 'en', names: { vi: 'Tiếng Anh' } }],
+    ]);
+
+    const mockDb = {
+      language: {
+        findUnique: async ({ where }) => languages.get(where.id) ?? null,
+      },
+      writingCharacter: {
+        create: async ({ data }) => {
+          if (data.glyph === '日' && data.languageId === langJaId) {
+            const p2002 = new Error('Unique constraint failed on the fields: (`language_id`,`glyph`)');
+            p2002.code = 'P2002';
+            throw p2002;
+          }
+          return {
+            id: randomUUID(),
+            ...data,
+          };
+        },
+      },
+    };
+
+    const missingLangRes = await createAdminCharacter(
+      {
+        languageId: randomUUID(),
+        glyph: '日',
+        scriptType: 'KANJI',
+        strokeCount: 4,
+      },
+      mockDb
+    );
+    assert.equal(missingLangRes.status, 400);
+    assert.equal(missingLangRes.error?.code, 'VALIDATION_ERROR');
+
+    const mismatchRes = await createAdminCharacter(
+      {
+        languageId: langZhId,
+        glyph: 'あ',
+        scriptType: 'HIRAGANA',
+        strokeCount: 3,
+      },
+      mockDb
+    );
+    assert.equal(mismatchRes.status, 400);
+    assert.equal(mismatchRes.error?.code, 'VALIDATION_ERROR');
+
+    const enMismatchRes = await createAdminCharacter(
+      {
+        languageId: langEnId,
+        glyph: '日',
+        scriptType: 'KANJI',
+        strokeCount: 4,
+      },
+      mockDb
+    );
+    assert.equal(enMismatchRes.status, 400);
+
+    const dupRes = await createAdminCharacter(
+      {
+        languageId: langJaId,
+        glyph: '日',
+        scriptType: 'KANJI',
+        strokeCount: 4,
+      },
+      mockDb
+    );
+    assert.equal(dupRes.status, 409);
+    assert.equal(dupRes.error?.code, 'CHARACTER_DUPLICATE');
+    assert.ok(!dupRes.error?.message.includes('Unique constraint failed'));
+
+    const okRes = await createAdminCharacter(
+      {
+        languageId: langJaId,
+        glyph: '\u304B\u3099', // NFD -> NFC 'が'
+        scriptType: 'HIRAGANA',
+        strokeCount: 4,
+      },
+      mockDb
+    );
+    assert.equal(okRes.status, 201);
+    assert.equal(okRes.data?.data.glyph, 'が');
+    assert.equal(okRes.data?.data.hasStrokes, false);
+    assert.equal(okRes.data?.data.languageCode, 'ja');
+  });
+
+  test('listCharacterCatalogue returns hasStrokes flag without exposing stroke geometry', async () => {
+    const mockDb = {
+      writingCharacter: {
+        findMany: async () => [
+          {
+            id: randomUUID(),
+            languageId: langJaId,
+            glyph: '日',
+            scriptType: 'KANJI',
+            meaning: 'sun',
+            primaryReading: 'にち',
+            romanization: 'nichi',
+            strokeCount: 4,
+            metadata: {},
+            language: { id: langJaId, code: 'ja', names: { vi: 'Tiếng Nhật' } },
+            strokeData: { version: 1 },
+          },
+          {
+            id: randomUUID(),
+            languageId: langJaId,
+            glyph: '木',
+            scriptType: 'KANJI',
+            meaning: 'tree',
+            primaryReading: 'き',
+            romanization: 'ki',
+            strokeCount: 4,
+            metadata: {},
+            language: { id: langJaId, code: 'ja', names: { vi: 'Tiếng Nhật' } },
+            strokeData: null,
+          },
+        ],
+        count: async () => 2,
+      },
+    };
+
+    const res = await listCharacterCatalogue({ languageId: langJaId, limit: '20', offset: '0' }, mockDb);
+    assert.equal(res.status, 200);
+    assert.equal(res.data?.total, 2);
+    assert.equal(res.data?.data[0].hasStrokes, true);
+    assert.equal(res.data?.data[1].hasStrokes, false);
+    assert.equal('strokes' in res.data.data[0], false);
   });
 });
