@@ -1,11 +1,16 @@
 'use client';
 
-import { exerciseTypeLabel } from '@lingora/lesson-content/LessonContent';
+import { exerciseTypeLabel, LessonContent } from '@lingora/lesson-content/LessonContent';
+import {
+  formatPhonetic,
+  formatReorderTokens,
+  normalizeLanguageCode,
+  resolveContentLang,
+} from '@lingora/lesson-content';
 import React, { useState, useRef, useEffect } from 'react';
 import type { ReviewDetailDto, AdminCharacterBlock } from '@/server/lessons/workflow';
 import type { ReviewCommentDto } from '@/server/lessons/comments';
 import { getAccountRoleLabel } from '@/server/lessons/workflow-status';
-import { LessonContent } from '@lingora/lesson-content/LessonContent';
 import { BlockComments } from './lesson-studio/BlockComments';
 import { AudioPreviewPlayer } from './AudioPreviewPlayer';
 
@@ -20,8 +25,8 @@ export interface ReviewDetailViewProps {
   };
 }
 
-/** F13: show the correct answer as text instead of raw grading JSON and option IDs. */
-function describeCorrectAnswer(ex: any): string {
+/** F13 / LNG-01: show the correct answer as text instead of raw grading JSON and option IDs. */
+function describeCorrectAnswer(ex: any, languageCode?: string | null): string {
   const g = ex.gradingData ?? {};
   const p = ex.promptData ?? {};
   if (typeof g.correctOptionId === 'string') {
@@ -32,8 +37,7 @@ function describeCorrectAnswer(ex: any): string {
     return g.acceptedAnswers.join('  |  ') + (g.caseSensitive ? '  (phân biệt hoa/thường)' : '');
   }
   if (Array.isArray(g.correctOrder)) {
-    const byId = new Map<string, string>((p.tokens ?? []).map((t: any) => [t.id, t.text]));
-    return g.correctOrder.map((id: string) => byId.get(id) ?? id).join(' ');
+    return formatReorderTokens(g.correctOrder, p.tokens, languageCode) || '—';
   }
   return '—';
 }
@@ -44,6 +48,9 @@ export function ReviewDetailView({
   account,
 }: ReviewDetailViewProps) {
   const [detail, setDetail] = useState<ReviewDetailDto>(initialDetail);
+  const contentLang = normalizeLanguageCode(
+    detail.lesson.languageCode ?? detail.revision.presentation?.languageCode
+  );
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState<ReviewCommentDto[]>([]);
   const [isPending, setIsPending] = useState(false);
@@ -554,6 +561,10 @@ export function ReviewDetailView({
                   {block.type === 'CHARACTER' ? (
                     (() => {
                       const charBlock = block as AdminCharacterBlock;
+                      const charLang = resolveContentLang({
+                        languageCode: contentLang,
+                        scriptType: charBlock.scriptType,
+                      });
                       return (
                         <div
                           id={`review-character-card-${charBlock.blockKey}`}
@@ -566,6 +577,7 @@ export function ReviewDetailView({
                         >
                           <div
                             id={`review-character-glyph-${charBlock.blockKey}`}
+                            lang={charLang}
                             style={{
                               fontSize: '40px',
                               fontWeight: 'bold',
@@ -660,8 +672,11 @@ export function ReviewDetailView({
 
                             {charBlock.showReading && (
                               <div id={`review-character-reading-${charBlock.blockKey}`} style={{ fontSize: '13px', color: '#475569', marginTop: '2px' }}>
-                                <strong>Cách đọc:</strong> {charBlock.primaryReading || charBlock.romanization || '(trống)'}
-                                {charBlock.romanization && charBlock.primaryReading ? ` (${charBlock.romanization})` : ''}
+                                <strong>Cách đọc:</strong>{' '}
+                                <span lang={charLang}>
+                                  {charBlock.primaryReading || charBlock.romanization || '(trống)'}
+                                  {charBlock.romanization && charBlock.primaryReading ? ` (${charBlock.romanization})` : ''}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -670,8 +685,10 @@ export function ReviewDetailView({
                     })()
                   ) : (
                     <LessonContent
+                      languageCode={contentLang}
                       presentation={{
                         contentSchemaVersion: 1,
+                        ...(contentLang ? { languageCode: contentLang } : {}),
                         blocks: [block as any],
                         vocabulary: block.type === 'VOCABULARY'
                           ? detail.revision.presentation?.vocabulary || []
@@ -786,7 +803,7 @@ export function ReviewDetailView({
                     <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
                       {ex.promptData.options.map((opt: any) => (
                         <li key={opt.id} style={{ margin: '2px 0' }}>
-                          {opt.text}{ex.gradingData?.correctOptionId === opt.id ? ' ✓' : ''}
+                          <span lang={contentLang}>{opt.text}</span>{ex.gradingData?.correctOptionId === opt.id ? ' ✓' : ''}
                         </li>
                       ))}
                     </ul>
@@ -795,13 +812,13 @@ export function ReviewDetailView({
 
                 {ex.type === 'FILL_BLANK' && ex.promptData?.sentence && (
                   <div style={{ marginBottom: '8px', fontSize: '13px' }}>
-                    <strong>Câu cần điền:</strong> {ex.promptData.sentence}
+                    <strong>Câu cần điền:</strong> <span lang={contentLang}>{ex.promptData.sentence}</span>
                   </div>
                 )}
                 {ex.type === 'REORDER' && Array.isArray(ex.promptData?.tokens) && (
                   <div style={{ marginBottom: '8px', fontSize: '13px' }}>
                     <div style={{ fontWeight: 600 }}>Các cụm từ cần sắp xếp:</div>
-                    <ol style={{ margin: '4px 0 0 20px', padding: 0 }}>
+                    <ol lang={contentLang} style={{ margin: '4px 0 0 20px', padding: 0 }}>
                       {ex.promptData.tokens.map((token: any) => (
                         <li key={token.id}>{token.text}</li>
                       ))}
@@ -810,15 +827,15 @@ export function ReviewDetailView({
                 )}
                 {ex.type === 'GRAMMAR' && (
                   <div style={{ marginBottom: '8px', fontSize: '13px' }}>
-                    {ex.promptData?.sourceSentence && <div><strong>Câu gốc:</strong> {ex.promptData.sourceSentence}</div>}
-                    {ex.promptData?.targetPattern && <div><strong>Mẫu ngữ pháp:</strong> {ex.promptData.targetPattern}</div>}
+                    {ex.promptData?.sourceSentence && <div><strong>Câu gốc:</strong> <span lang={contentLang}>{ex.promptData.sourceSentence}</span></div>}
+                    {ex.promptData?.targetPattern && <div><strong>Mẫu ngữ pháp:</strong> <span lang={contentLang}>{ex.promptData.targetPattern}</span></div>}
                   </div>
                 )}
 
                 <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '4px', fontSize: '13px' }}>
                   <div style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>ĐÁP ÁN ĐÚNG:</div>
-                  <div id={`exerciseAnswer-${idx}`} style={{ margin: '4px 0 0', fontSize: '14px', color: '#0f172a' }}>
-                    {describeCorrectAnswer(ex)}
+                  <div id={`exerciseAnswer-${idx}`} lang={contentLang} style={{ margin: '4px 0 0', fontSize: '14px', color: '#0f172a' }}>
+                    {describeCorrectAnswer(ex, contentLang)}
                   </div>
                   <details style={{ marginTop: '6px' }}>
                     <summary style={{ cursor: 'pointer', fontSize: '12px', color: '#64748b' }}>Dữ liệu chấm điểm thô</summary>
@@ -900,8 +917,12 @@ export function ReviewDetailView({
                         </span>
                       </td>
                       <td>
-                        <div style={{ fontWeight: 600 }}>{snap.canonicalForm || '—'}</div>
-                        {snap.phonetic && <div style={{ fontSize: '11px', color: '#64748b' }}>{snap.phonetic}</div>}
+                        <div lang={contentLang} style={{ fontWeight: 600 }}>{snap.canonicalForm || '—'}</div>
+                        {(() => {
+                          const formattedPhonetic = formatPhonetic(snap.phonetic, contentLang);
+                          if (!formattedPhonetic) return null;
+                          return <div style={{ fontSize: '11px', color: '#64748b' }}>{formattedPhonetic}</div>;
+                        })()}
                         {snap.partOfSpeech && (
                           <span className="badge" style={{ fontSize: '10px', background: '#f1f5f9', color: '#475569' }}>
                             {snap.partOfSpeech}
@@ -912,7 +933,7 @@ export function ReviewDetailView({
                         {snap.meaningLabels?.vi && <div>vi: {snap.meaningLabels.vi}</div>}
                         {snap.meaningLabels?.en && <div style={{ color: '#64748b' }}>en: {snap.meaningLabels.en}</div>}
                       </td>
-                      <td style={{ fontSize: '12px', color: '#475569' }}>{snap.example || '—'}</td>
+                      <td lang={snap.example ? contentLang : undefined} style={{ fontSize: '12px', color: '#475569' }}>{snap.example || '—'}</td>
                     </tr>
                   );
                 })}

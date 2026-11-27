@@ -9,10 +9,12 @@ import type {
   PublicExerciseType,
 } from '@lingora/lesson-content';
 import { LessonContent } from '@lingora/lesson-content/LessonContent';
+import { normalizeLanguageCode } from '@lingora/lesson-content';
 import styles from './studio-styles';
 
 export interface StudioPreviewProps {
   blocks: LessonBlock[];
+  languageCode?: string | null;
   vocabulary?: Array<{
     localId: string;
     position: number;
@@ -42,11 +44,13 @@ export interface StudioPreviewProps {
 
 export function StudioPreview({
   blocks,
+  languageCode,
   vocabulary = [],
   exercises = [],
   title,
 }: StudioPreviewProps) {
   const [deviceView, setDeviceView] = useState<'desktop' | 'mobile'>('desktop');
+  const normalizedLanguageCode = normalizeLanguageCode(languageCode);
 
   // Xây dựng LessonPresentationDto trực tiếp theo thời gian thực (live preview)
   const presentation: LessonPresentationDto = useMemo(() => {
@@ -80,11 +84,12 @@ export function StudioPreview({
 
     return {
       contentSchemaVersion: 1,
+      ...(normalizedLanguageCode ? { languageCode: normalizedLanguageCode } : {}),
       blocks,
       vocabulary: publicVocab,
       exercises: publicExercises,
     };
-  }, [blocks, vocabulary, exercises]);
+  }, [blocks, normalizedLanguageCode, vocabulary, exercises]);
 
   const hasContent = blocks.length > 0 || vocabulary.length > 0 || exercises.length > 0;
 
@@ -150,7 +155,7 @@ export function StudioPreview({
               Bản xem trước bài học sẽ hiển thị tại đây khi bạn thêm nội dung ở bảng bên trái.
             </div>
           ) : (
-            <LessonContent presentation={presentation} />
+            <LessonContent presentation={presentation} languageCode={normalizedLanguageCode} />
           )}
         </div>
       </div>
