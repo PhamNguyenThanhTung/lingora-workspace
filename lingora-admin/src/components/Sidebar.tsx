@@ -10,6 +10,7 @@ export const adminNavGroups: { label: string; items: { href: string; label: stri
   ] },
   { label: 'Quản lý nội dung', items: [
     { href: '/languages', label: 'Quản lý ngôn ngữ', id: 'navLanguages', icon: 'languages' },
+    { href: '/characters', label: 'Danh mục ký tự', id: 'navCharacters', icon: 'characters' },
     { href: '/frameworks', label: 'Khung năng lực', id: 'navFrameworks', icon: 'frameworks' },
     { href: '/courses', label: 'Khóa học', id: 'navCourses', icon: 'courses' },
     { href: '/assessments', label: 'Đánh giá', id: 'navAssessments', icon: 'assessments' },
