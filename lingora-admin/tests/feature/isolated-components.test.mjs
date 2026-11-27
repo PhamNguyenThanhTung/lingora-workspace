@@ -144,7 +144,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     await page.goto(`${TEST_URL}?state=populated-table`, { waitUntil: 'domcontentloaded' });
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
 
     await page.fill('#langCodeInput', 'vi'); // duplicate code triggers 409
@@ -166,7 +166,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     await page.goto(`${TEST_URL}?state=populated-table`, { waitUntil: 'domcontentloaded' });
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
 
     // 1. Held pending and duplicate click prevention
@@ -206,7 +206,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // 2. Retry on 503 test
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
 
     await page.fill('#langCodeInput', 'err503');
@@ -245,7 +245,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // Open edit modal for row 'ja'
     await page.click('#btn-edit-ja');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
 
     // Verify immutable code field is disabled
     const codeDisabled = await page.evaluate(() => document.querySelector('#langCodeInput')?.disabled);
@@ -286,7 +286,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // 2. Retry on 503 for PATCH
     await page.click('#btn-edit-fr');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.fill('#langViInput', 'err503');
     await page.click('#submitLanguageFormBtn');
 
@@ -309,7 +309,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // 1. LanguageFormModal focus trapping
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForTimeout(100);
 
     // Initial focus on code input
@@ -363,7 +363,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     await page.goto(`${TEST_URL}?state=populated-table`, { waitUntil: 'domcontentloaded' });
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
 
     // 1. POST create 403: closes modal, shows forbidden banner with Logout, no session-loss modal or inline retry
@@ -397,7 +397,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // 2. PATCH edit 403: closes edit modal, shows forbidden banner with Logout
     await page.click('#btn-edit-vi');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langViInput');
 
     await page.fill('#langViInput', 'err403');
@@ -414,7 +414,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     // 3. 503 Service Unavailable retains retryable modal and input (distinct from 403)
     await page.goto(`${TEST_URL}?state=populated-table`, { waitUntil: 'domcontentloaded' });
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
 
     await page.fill('#langCodeInput', 'err503');
@@ -452,7 +452,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // Open edit modal for 'vi' row
     await page.click('#btn-edit-vi');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForTimeout(100);
 
     // 1. Untouched edit check
@@ -490,7 +490,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     await page.goto(`${TEST_URL}?state=populated-table`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#openCreateBtn', { state: 'visible' });
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
 
     // Synchronize with initialized autofocus timer (50ms)
     await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
@@ -559,7 +559,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // Explicit recovery preserves draft and permits intentional retry
     await page.click('#draftRecoverBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langViInput');
     assert.equal(await page.inputValue('#langCodeInput'), 'expire401', 'Recovered modal must retain code');
     assert.equal(await page.inputValue('#langViInput'), 'Tiếng Thử Nghiệm Hết Hạn', 'Recovered modal must retain vi');
@@ -570,7 +570,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // Truthful message on storage-save failure: when saveDraft fails, SessionLostModal must NOT claim draft saved
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
     await page.fill('#langCodeInput', 'expire401');
     await page.fill('#langViInput', 'Tiếng Lỗi Lưu');
@@ -630,7 +630,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // Click "Khôi phục" -> edit modal opens with recovered draft data
     await page.click('#draftRecoverBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     const recoveredVi = await page.evaluate(() => document.querySelector('#langViInput')?.value);
     assert.equal(recoveredVi, 'Tiếng Việt Bản Nháp 1', 'Modal must load recovered draft values');
 
@@ -644,7 +644,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // Reopen edit modal for 'vi': MUST display authoritative server data per S-R9b
     await page.click('#btn-edit-vi');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.querySelector('#langViInput')?.value === 'Tiếng Việt');
     const authoritativeVi = await page.evaluate(() => document.querySelector('#langViInput')?.value);
     assert.equal(authoritativeVi, 'Tiếng Việt', 'Reopened edit modal after discard must display authoritative server data');
@@ -675,6 +675,8 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
     // Teacher visits holding view
     await page.goto(`${TEST_URL}?state=teacher-holding`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.holding-title', { state: 'visible' });
+    // The prune runs in a mount effect; wait for the view to report it finished.
+    await page.waitForSelector('main.holding-view-wrapper[data-draft-scan="done"]');
 
     // Verify admin draft was pruned upon teacher view entry
     const adminDraftAfterTeacher = await page.evaluate(() =>
@@ -703,8 +705,11 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
       }));
     });
 
-    // Reload: expired draft should be pruned by enforceIdentityAndPrune
+    // Reload: expired draft should be pruned by enforceIdentityAndPrune.
+    // The prune runs in a mount effect, so wait for the catalogue to report the
+    // scan finished instead of reading storage straight after domcontentloaded.
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('main.page-content[data-draft-scan="done"]');
     const draftAfterTtl = await page.evaluate(() =>
       sessionStorage.getItem('lingora_draft_lang_00000000-0000-4000-8000-000000000001')
     );
@@ -712,7 +717,7 @@ describe('STAB-1 R2 / R7 / R9: Isolated Component State & Interaction Tests', ()
 
     // 2. Storage failure resilience: simulate quota exceeded error
     await page.click('#openCreateBtn');
-    await page.waitForSelector('#languageFormModal', { state: 'visible' });
+    await page.waitForSelector('#languageFormModal[data-initialized="true"]', { state: 'visible' });
     await page.waitForFunction(() => document.activeElement?.id === 'langCodeInput');
 
     await page.evaluate(() => {

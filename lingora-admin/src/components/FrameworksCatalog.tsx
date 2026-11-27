@@ -6,6 +6,7 @@ import { FrameworkFormModal } from './FrameworkFormModal';
 import { FrameworkDeleteModal } from './FrameworkDeleteModal';
 import { SessionLostModal } from './SessionLostModal';
 import { removeDraft, clearAllDrafts } from './draftStorage';
+import { restoreFocusAfterClose } from './focusRestore';
 
 export interface FrameworksCatalogProps {
   initialFrameworks?: FrameworkDto[];
@@ -168,24 +169,19 @@ export function FrameworksCatalog({
         : 'Đã xóa khung năng lực thành công.'
     );
 
-    setTimeout(() => {
+    restoreFocusAfterClose(() => {
       if (nextList.length === 0) {
-        const emptyBtn = document.getElementById('btnEmptyCreateFramework') || openCreateBtnRef.current;
-        emptyBtn?.focus();
-      } else {
-        const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
-        const targetId = nextList[targetIndex].id;
-        const btn =
-          document.getElementById(`btn-delete-framework-${targetId}`) ||
-          document.getElementById(`btn-edit-framework-${targetId}`) ||
-          document.getElementById(`btn-view-levels-${targetId}`);
-        if (btn) {
-          btn.focus();
-        } else {
-          openCreateBtnRef.current?.focus();
-        }
+        return document.getElementById('btnEmptyCreateFramework') || openCreateBtnRef.current;
       }
-    }, 50);
+      const targetIndex = prevIndex < nextList.length ? prevIndex : nextList.length - 1;
+      const targetId = nextList[targetIndex].id;
+      return (
+        document.getElementById(`btn-delete-framework-${targetId}`) ||
+        document.getElementById(`btn-edit-framework-${targetId}`) ||
+        document.getElementById(`btn-view-levels-${targetId}`) ||
+        openCreateBtnRef.current
+      );
+    });
   };
 
   const getDisplayName = (names: Record<string, string>) => {
