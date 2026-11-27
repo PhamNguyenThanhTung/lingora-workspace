@@ -943,7 +943,7 @@ export function HomeView({ data, errorState }: HomeViewProps) {
                               />
                             </div>
                             <span style={{ fontSize: 'var(--font-size-ref)', fontWeight: 800, color: 'var(--text-muted)' }}>
-                              {q.progress}/{q.target}
+                              {`${q.progress}/${q.target}`}
                             </span>
                           </div>
                         </div>
