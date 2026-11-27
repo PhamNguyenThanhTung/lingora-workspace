@@ -359,7 +359,7 @@ export const EN_A2_UNITS: UnitSpec[] = [
         intro: 'Bạn muốn hỏi và kể về trải nghiệm đã có trong đời. Bài này giới thiệu hiện tại hoàn thành với ever, never, already, yet.',
         vocab: [
           ['ever', '/ˈevə/', 'adverb', 'từng, bao giờ', 'Have you ever been to Japan?', 'Bạn đã bao giờ đến Nhật chưa?'],
-          ['never', '/ˈnevə/', 'adverb', 'chưa bao giờ', 'I have never eaten sushi.', 'Tôi chưa bao giờ ăn sushi.'],
+          ['never', '/ˈnevə/', 'adverb', 'không bao giờ; chưa bao giờ', 'I have never eaten sushi.', 'Tôi chưa bao giờ ăn sushi.'],
           ['already', '/ɔːlˈredi/', 'adverb', 'đã … rồi', 'I have already finished my homework.', 'Tôi đã làm xong bài tập rồi.'],
           ['yet', '/jet/', 'adverb', 'chưa (câu phủ định/hỏi)', 'Have you eaten yet?', 'Bạn đã ăn chưa?'],
           ['try', '/traɪ/', 'verb', 'thử', 'I want to try Japanese food.', 'Tôi muốn thử món Nhật.'],
