@@ -6,6 +6,10 @@ import { CatalogueView } from '../../../src/app/learn/[contextId]/CatalogueView'
 import { LessonPlayerView } from '../../../src/app/learn/[contextId]/[lessonId]/LessonPlayerView';
 import { WritingPracticeModal } from '../../../src/app/learn/[contextId]/[lessonId]/WritingPracticeModal';
 import { ReviewView } from '../../../src/app/review/ReviewView';
+import { ProfileView } from '../../../src/app/profile/ProfileView';
+import { QuestsView } from '../../../src/app/quests/QuestsView';
+import { SectionsView } from '../../../src/app/learn/[contextId]/sections/SectionsView';
+import { LearnerShell } from '../../../src/components/learner/LearnerShell';
 import type { LearnerContextEnvelope } from '../../../src/server/context/dto.ts';
 
 const MOCK_VALID_DATA: LearnerContextEnvelope['data'] = {
@@ -105,16 +109,117 @@ const MOCK_NULL_CONTEXT_DATA: LearnerContextEnvelope['data'] = {
   ],
 };
 
+/** Minimal learner-home payload around the context-only mocks, so the shell has everything it shows. */
+function homeDto(data: LearnerContextEnvelope['data']): any {
+  return {
+    ...data,
+    contexts: data.contexts.map((c) => ({ ...c, levelCode: (c.workingLevel ?? c.selectedStartLevel)?.code ?? null, requiredProgress: { requiredDone: 0, requiredTotal: 0 } })),
+    selectedContextId: data.contexts[0]?.id ?? null,
+    plan: null,
+    continueLearning: null,
+    path: [],
+    sections: [],
+    currentLevel: null,
+    pathStatus: null,
+    pathMessage: null,
+    reviewDue: 0,
+    gamificationStatus: 'AVAILABLE',
+    dailyProgress: { dailyGoalMinutes: 10, completedLessonsToday: 0, reviewsCompletedToday: 0 },
+    streak: { currentStreak: 3, longestStreak: 7, activeDays: ['2026-11-26', '2026-11-27'], todayCompleted: true, today: '2026-11-27' },
+    totalXp: 120,
+    totalGems: 5,
+    quests: [],
+    recentAchievement: null,
+  };
+}
+
+function jaPathData(): any {
+  const base = homeDto(MOCK_VALID_DATA);
+  const ctx = { ...MOCK_VALID_DATA.contexts[0], id: 'ctx-ja', targetLanguage: { id: 'lang-ja', code: 'ja', names: { vi: 'Tiếng Nhật', en: 'Japanese' } } };
+  const node = (n: number, state: string, unit: number, title: string, required = true) => ({
+    lessonId: `l${n}`, title, unitTitle: unit === 1 ? 'ひらがな' : 'Chào hỏi', unitPosition: unit,
+    state, score: state === 'COMPLETED' ? 90 : null, position: n, isRequired: required, href: `/learn/ctx-ja/l${n}`,
+  });
+  const path = [
+    node(1, 'COMPLETED', 1, 'Bài 1: あいうえお'),
+    node(2, 'CURRENT', 1, 'Bài 2: かきくけこ'),
+    node(3, 'AVAILABLE', 1, 'Bài 3: Tùy chọn', false),
+    node(4, 'LOCKED', 2, 'Bài 4: こんにちは'),
+    node(5, 'LOCKED', 2, 'Bài 5: ありがとう'),
+  ];
+  const section = (levelId: string, code: string, state: string, nodes: any[]) => {
+    const units = [...new Set(nodes.map((n) => n.unitPosition))].map((position) => {
+      const un = nodes.filter((n) => n.unitPosition === position);
+      const req = un.filter((n) => n.isRequired);
+      return { unitId: `u${position}`, position, title: un[0].unitTitle, progress: { done: req.filter((n) => n.state === 'COMPLETED').length, total: req.length }, nodes: un };
+    });
+    const req = nodes.filter((n) => n.isRequired);
+    return { levelId, levelCode: code, levelLabel: code, position: 1, state, progress: { requiredDone: req.filter((n) => n.state === 'COMPLETED').length, requiredTotal: req.length }, canSkipTo: false, units };
+  };
+  return {
+    ...base,
+    contexts: [{ ...ctx, levelCode: 'N5', requiredProgress: { requiredDone: 1, requiredTotal: 4 } }],
+    selectedContextId: 'ctx-ja',
+    sections: [section('lvl-n5', 'N5', 'CURRENT', path)],
+    path,
+    pathStatus: 'READY',
+    continueLearning: { lessonId: 'l2', title: 'Bài 2: かきくけこ', unitTitle: 'ひらがな', href: '/learn/ctx-ja/l2', status: 'READY' },
+  };
+}
+
+function profileMock(): any {
+  return {
+    displayName: 'Nguyễn Văn Học',
+    activatedAt: '2026-10-01T00:00:00.000Z',
+    uiLocale: 'vi',
+    timezone: 'Asia/Ho_Chi_Minh',
+    rowVersion: '3',
+    contexts: homeDto(MOCK_VALID_DATA).contexts,
+    totals: { xp: 120, gems: 5, lessonsCompleted: 4, srsCards: 12 },
+    streak: { current: 3, longest: 7 },
+    calendar28: ['2026-11-26', '2026-11-27'],
+    achievements: [
+      { code: 'FIRST_LESSON', title: 'Bài học đầu tiên', description: 'Hoàn thành bài học đầu tiên.', isUnlocked: true, awardedAt: '2026-10-02T00:00:00.000Z' },
+      { code: 'STREAK_7', title: 'Chuỗi 7 ngày', description: 'Học 7 ngày liên tiếp.', isUnlocked: false, awardedAt: null },
+    ],
+  };
+}
+
+function framed(data: LearnerContextEnvelope['data'], active: 'home' | 'profile', view: React.ReactNode) {
+  return (
+    <LearnerShell shell={homeDto(data)} active={active}>
+      {view}
+    </LearnerShell>
+  );
+}
+
+function renderPage(page: any) {
+  if (page.kind === 'login') return <LoginForm {...page.props} />;
+  if (page.kind === 'home') return <HomeView {...page.props} />;
+  if (page.kind === 'catalogue') return <CatalogueView {...page.props} />;
+  if (page.kind === 'lessonPlayer') return <LessonPlayerView {...page.props} />;
+  if (page.kind === 'writingPractice') return <WritingPracticeModal {...page.props} />;
+  if (page.kind === 'review') return <ReviewView {...page.props} />;
+  if (page.kind === 'profile') return <ProfileView {...page.props} />;
+  if (page.kind === 'quests') return <QuestsView {...page.props} />;
+  if (page.kind === 'sections') return <SectionsView {...page.props} />;
+  return null;
+}
+
 function HarnessRoot() {
   const bootstrap = document.getElementById('production-page');
   if (bootstrap) {
     const page = JSON.parse(bootstrap.textContent || '{}');
-    if (page.kind === 'login') return <LoginForm {...page.props} />;
-    if (page.kind === 'home') return <HomeView {...page.props} />;
-    if (page.kind === 'catalogue') return <CatalogueView {...page.props} />;
-    if (page.kind === 'lessonPlayer') return <LessonPlayerView {...page.props} />;
-    if (page.kind === 'writingPractice') return <WritingPracticeModal {...page.props} />;
-    if (page.kind === 'review') return <ReviewView {...page.props} />;
+    const view = renderPage(page);
+    if (view) {
+      return page.frame ? (
+        <LearnerShell shell={page.frame.shell} active={page.frame.active} quests={page.frame.quests}>
+          {view}
+        </LearnerShell>
+      ) : (
+        view
+      );
+    }
   }
   const params = new URLSearchParams(window.location.search);
   const state = params.get('state') || 'login';
@@ -156,11 +261,21 @@ function HarnessRoot() {
         />
       );
     case 'home-valid':
-      return <HomeView data={MOCK_VALID_DATA} />;
+      return framed(MOCK_VALID_DATA, 'home', <HomeView data={homeDto(MOCK_VALID_DATA)} />);
     case 'home-null-context':
-      return <HomeView data={MOCK_NULL_CONTEXT_DATA} />;
+      return framed(MOCK_NULL_CONTEXT_DATA, 'home', <HomeView data={homeDto(MOCK_NULL_CONTEXT_DATA)} />);
     case 'home-empty':
-      return <HomeView data={MOCK_EMPTY_DATA} />;
+      return framed(MOCK_EMPTY_DATA, 'home', <HomeView data={homeDto(MOCK_EMPTY_DATA)} />);
+    case 'path-ja': {
+      const data = jaPathData();
+      return (
+        <LearnerShell shell={data} active="home">
+          <HomeView data={data} />
+        </LearnerShell>
+      );
+    }
+    case 'profile-valid':
+      return framed(MOCK_VALID_DATA, 'profile', <ProfileView profile={profileMock()} today="2026-11-27" />);
     case 'home-403':
       return (
         <HomeView

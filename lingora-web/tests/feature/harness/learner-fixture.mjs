@@ -19,7 +19,7 @@ export const revision2Id = 'aaaaaaaa-1111-4111-8111-111111111111';
 export const contextId = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
 
 export const confirmedUser = () => ({ id: learnerId, email: fixtureEmail, email_confirmed_at: '2026-10-31T00:00:00Z' });
-export const account = () => ({ id: learnerId, role: 'LEARNER', status: 'ACTIVE', displayName: 'Learner A', uiLocale: 'vi', timezone: 'Asia/Ho_Chi_Minh' });
+export const account = () => ({ id: learnerId, role: 'LEARNER', status: 'ACTIVE', displayName: 'Learner A', uiLocale: 'vi', timezone: 'Asia/Ho_Chi_Minh', rowVersion: 1n, activatedAt: new Date('2026-10-01T00:00:00.000Z') });
 
 export const languageRow = () => ({ id: languageId, code: 'en', names: { vi: 'Tiếng Anh', en: 'English' }, isLearnable: true, isUiLocale: true });
 export const courseRow = () => ({
@@ -412,6 +412,13 @@ export function fixtureDb(state) {
         if (state.dbFailure) throw new Error('Simulated database outage');
         return first([state.account].filter(Boolean), args);
       },
+      updateMany: async ({ where, data }) => {
+        const row = state.account;
+        if (!row || (where.id && row.id !== where.id) || (where.rowVersion !== undefined && row.rowVersion !== where.rowVersion)) return { count: 0 };
+        if (data.displayName !== undefined) row.displayName = data.displayName;
+        if (typeof data.rowVersion === 'object') row.rowVersion = row.rowVersion + BigInt(data.rowVersion.increment);
+        return { count: 1 };
+      },
     },
     language: {
       findUnique: async args => first(state.languages, args),
@@ -606,6 +613,7 @@ export function fixtureDb(state) {
       findMany: async args => many(state.strokeData || [], args),
     },
     lessonCompletion: {
+      count: async () => state.completions.length,
       findUnique: async args => {
         const where = args.where.contextId_lessonId || args.where;
         return first(state.completions, { ...args, where });

@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { loadLearnerHome } from '../../server/context/home-loader.ts';
+import { loadLearnerHomeRemembering } from '../../components/learner/load-shell.ts';
+import { LearnerShell } from '../../components/learner/LearnerShell.tsx';
+import { toShellData } from '../../components/learner/helpers.ts';
 import { HomeView } from './HomeView';
 
 export const dynamic = 'force-dynamic';
@@ -10,9 +12,7 @@ export default async function HomePage(props?: {
 }) {
   const cookieStore = await cookies();
   const searchParams = props?.searchParams ? await props.searchParams : undefined;
-  const result = await loadLearnerHome(cookieStore, {
-    contextId: searchParams?.contextId,
-  });
+  const result = await loadLearnerHomeRemembering(cookieStore, searchParams?.contextId);
 
   if (!result.ok) {
     if (result.status === 401) {
@@ -21,5 +21,9 @@ export default async function HomePage(props?: {
     return <HomeView errorState={result} />;
   }
 
-  return <HomeView data={result.data} />;
+  return (
+    <LearnerShell shell={toShellData(result.data)} active="home">
+      <HomeView data={result.data} />
+    </LearnerShell>
+  );
 }

@@ -1,0 +1,90 @@
+.root {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+.progress {
+  font-size: var(--font-size-sub);
+  font-weight: 800;
+  color: var(--success-ink);
+}
+.sectionsLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 800;
+  color: var(--primary-ink);
+}
+
+/* "Continue" banner: a card above the map on wide screens, a floating pill above the tab bar on phones. */
+.continue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-bg);
+  border: 2px solid var(--border-strong);
+  box-shadow: var(--shadow-sm);
+  min-width: 0;
+}
+.continueText {
+  min-width: 0;
+}
+.continueKicker {
+  display: block;
+  font-size: var(--font-size-ref);
+  font-weight: 800;
+  color: var(--primary-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.continueTitle {
+  display: block;
+  font-size: var(--font-size-body);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.continueBtn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 var(--press) 0 var(--primary-deep);
+}
+
+@media (max-width: 767px) {
+  .continue {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0));
+    z-index: 35;
+    padding: 8px 8px 8px 14px;
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-md);
+  }
+  .continueTitle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .continueKicker {
+    display: none;
+  }
+}

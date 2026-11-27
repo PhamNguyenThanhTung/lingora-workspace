@@ -78,22 +78,21 @@ async function withLearner(run, options = {}) {
     await page.locator('#loginPassword').fill(fixturePassword);
     await page.locator('#loginPassword').press('Enter');
     await page.waitForURL(`${origin}/home`);
-    await page.getByText('Learner A', { exact: true }).waitFor();
+    await page.locator('#learnerShell').waitFor();
     await run(page);
   } finally {
     await context.close();
   }
 }
 
-test('P5 SRS UI: Home header navigation exposes "Ôn từ vựng" button linking to /review', async () => {
+test('P5 SRS UI (plan 8.2-8.4): learner frame has no review entry point; /review still opens by URL', async () => {
+  // The review tab, the "Ôn từ vựng" top-bar button and the "Ôn ngay" quest tile were removed;
+  // the /review page itself is retired in a later workstream, so it is only reached by URL here.
   await withLearner(async (page) => {
-    const navBtn = page.locator('#reviewNavBtn');
-    await navBtn.waitFor({ state: 'visible' });
-    const text = await navBtn.textContent();
-    assert.match(text, /Ôn từ vựng/);
-    await navBtn.click();
-    // G11: the home link carries the selected context so /review opens on the same language.
-    await page.waitForURL(url => url.pathname === '/review');
+    assert.equal(await page.locator('#reviewNavBtn').count(), 0);
+    assert.equal(await page.locator('#reviewNowBtn').count(), 0);
+    assert.equal(await page.locator('[data-nav="review"]').count(), 0);
+    await page.goto(`${origin}/review`);
     await page.locator('#srsInitialBox').waitFor({ state: 'visible' });
   });
 });

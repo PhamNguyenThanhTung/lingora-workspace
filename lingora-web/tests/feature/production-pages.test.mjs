@@ -10,11 +10,13 @@ after(async()=>{await browser?.close();await new Promise(resolve=>server?.close(
 beforeEach(()=>Object.assign(server.fixture,{account:account(),contexts:[contextRow()],expired:false,dbFailure:false,contextFailure:false}));
 async function withLearner(run){
   const context=await browser.newContext();const page=await context.newPage();page.setDefaultTimeout(6000);
+  // Plan 1.1: context cards now live inside the collapsed <details id="contextManager">; open it whenever it renders.
+  await page.addInitScript(()=>{new MutationObserver(()=>{const d=document.getElementById('contextManager');if(d&&!d.dataset.testOpened){d.dataset.testOpened='1';d.open=true;}}).observe(document,{childList:true,subtree:true});});
   try{
     await page.goto(`${origin}/home`);await page.waitForURL(`${origin}/login`);
     await page.locator('#loginEmail').fill(fixtureEmail);await page.locator('#loginPassword').fill(fixturePassword);
     await page.locator('#loginPassword').press('Enter');await page.waitForURL(`${origin}/home`);
-    await page.getByText('Learner A',{exact:true}).waitFor();
+    await page.locator('#learnerShell').waitFor();
     await run(page);
   }finally{await context.close();}
 }
@@ -24,6 +26,7 @@ test('actual LoginPage/Form → real login route/session → actual HomePage/loa
     const response=await page.request.get(`${origin}/api/learner/context`);
     assert.equal(response.status(),200);assert.equal((await response.json()).data.learner.id,learnerId);
     await page.goto(`${origin}/login`);await page.waitForURL(`${origin}/home`);
+    await page.goto(`${origin}/profile`);
     await page.locator('#logoutBtn').click();await page.waitForURL(`${origin}/login`);
     assert.equal((await page.request.get(`${origin}/api/learner/context`)).status(),401);
     await page.goto(`${origin}/home`);await page.waitForURL(`${origin}/login`);
@@ -60,9 +63,10 @@ test('actual HomePage inconsistent409 → actual retry returns owned data; inval
 });
 test('actual logout transport failure retains home, shows failure, and real retry logs out',async()=>{
   await withLearner(async page=>{
+    await page.goto(`${origin}/profile`);
     await page.route('**/api/auth/logout',route=>route.abort());
     await page.locator('#logoutBtn').click();await page.locator('#logoutAlert').waitFor();
-    assert.equal(new URL(page.url()).pathname,'/home');assert.ok(await page.locator('#logoutBtn').isEnabled());
+    assert.equal(new URL(page.url()).pathname,'/profile');assert.ok(await page.locator('#logoutBtn').isEnabled());
     assert.equal((await page.request.get(`${origin}/api/learner/context`)).status(),200);
     await page.unroute('**/api/auth/logout');await page.locator('#logoutBtn').click();await page.waitForURL(`${origin}/login`);
     assert.equal((await page.request.get(`${origin}/api/learner/context`)).status(),401);
@@ -229,6 +233,7 @@ test('actual HomePage sends adding another language through onboarding and respe
     server.fixture.contexts = [ctx1, ctx2];
 
     await page.reload();
+    await page.locator('#languageSwitcherBtn').click();
     const addLanguageLink = page.locator('#addOnboardingLanguageBtn');
     await addLanguageLink.waitFor();
     assert.equal(await addLanguageLink.getAttribute('href'), '/onboarding');
@@ -237,7 +242,10 @@ test('actual HomePage sends adding another language through onboarding and respe
 
     ctx2.status = 'ACTIVE';
     await page.reload();
-    await page.getByText('Bạn đang học tối đa hai ngôn ngữ.', { exact: true }).waitFor();
-    assert.equal(await page.locator('#addOnboardingLanguageBtn').count(), 0);
+    await page.locator('#languageSwitcherBtn').click();
+    // Plan 1.2: at the limit the entry stays visible but disabled, with the reason beside it.
+    await page.locator('#languageSwitcherLimit').waitFor();
+    assert.match(await page.locator('#languageSwitcherLimit').innerText(), /tối đa hai ngôn ngữ/);
+    assert.equal(await page.locator('#addOnboardingLanguageBtn').getAttribute('aria-disabled'), 'true');
   });
 });

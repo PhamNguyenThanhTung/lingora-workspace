@@ -63,7 +63,7 @@ async function withLearner(run) {
     await page.locator('#loginPassword').fill(fixturePassword);
     await page.locator('#loginPassword').press('Enter');
     await page.waitForURL(`${origin}/home`);
-    await page.getByText('Learner A', { exact: true }).waitFor();
+    await page.locator('#learnerShell').waitFor();
     await run(page);
   } finally {
     await context.close();

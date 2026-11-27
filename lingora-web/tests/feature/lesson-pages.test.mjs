@@ -58,7 +58,7 @@ async function withLearner(run) {
     await page.locator('#loginPassword').fill(fixturePassword);
     await page.locator('#loginPassword').press('Enter');
     await page.waitForURL(`${origin}/home`);
-    await page.getByText('Learner A', { exact: true }).waitFor();
+    await page.locator('#learnerShell').waitFor();
     await run(page);
   } finally {
     await context.close();
@@ -68,6 +68,8 @@ async function withLearner(run) {
 test('Production Navigation: /home -> enterContextBtn -> /learn/[contextId] catalogue renders units, lessons and lock states', async () => {
   await withLearner(async (page) => {
     // 1. Verify link on /home exists for actionable context
+    // Plan 1.1: the context cards moved into the collapsed "Quản lý lộ trình" section.
+    await page.locator('#contextManager > summary').click();
     const enterBtn = page.locator(`#enterContextBtn-${contextId}`);
     await enterBtn.waitFor({ state: 'visible' });
     await enterBtn.click();
@@ -75,6 +77,10 @@ test('Production Navigation: /home -> enterContextBtn -> /learn/[contextId] cata
     // 2. Navigated to /learn/[contextId]
     await page.waitForURL(`${origin}/learn/${contextId}`);
     await page.locator('#catalogueView').waitFor({ state: 'visible' });
+    // Inside the learner shell the catalogue keeps its h1 and its back link; only the duplicate brand is hidden.
+    assert.equal(await page.locator('#learnerShell #courseHeading').isVisible(), true);
+    assert.equal(await page.locator('#learnerShell #backToHomeBtn').isVisible(), true);
+    assert.equal(await page.locator('#catalogueView .brand-section').isVisible(), false);
 
     // Course heading
     const courseHeading = await page.locator('#courseHeading').textContent();
@@ -344,8 +350,9 @@ test('Optional lesson stays open, completion beats the reading state, and no num
   await withLearner(async (page) => {
     // Home path: unit banner and lesson titles are numbered exactly once, optional node is open.
     await page.locator('#learningPathSection').waitFor({ state: 'visible' });
-    const banner = await page.locator('.path-chapter__name').first().textContent();
-    assert.equal(banner.trim(), 'Chương 1: Chào hỏi');
+    const banner = await page.locator('#pathChapterBanner').textContent();
+    assert.match(banner, /Chương 1/);
+    assert.match(banner, /Chào hỏi/);
     // Required-only progress (SCR-L-06): 1 of the 2 required lessons is done.
     assert.match((await page.locator('#pathProgressSummary').innerText()).trim(), /^1\/2 bài đã hoàn thành$/);
     const optionalNode = page.locator(`#pathNode-${optionalLessonId}`);
@@ -355,7 +362,7 @@ test('Optional lesson stays open, completion beats the reading state, and no num
     assert.match(await optionalNode.textContent(), /Tùy chọn/);
     // The optional lesson keeps its slot: between required lesson 1 and required lesson 3.
     assert.deepEqual(
-      await page.locator('.path-node').evaluateAll(nodes => nodes.map(n => n.id)),
+      await page.locator('#learningPathList li[id^="pathNode-"]').evaluateAll(nodes => nodes.map(n => n.id)),
       [`pathNode-${lesson1Id}`, `pathNode-${optionalLessonId}`, `pathNode-${lesson2Id}`]
     );
 

@@ -379,13 +379,15 @@ async function run() {
     // Verify updated Streak = 1
     const updatedStreakText = await page.textContent('#streakBadge');
     assert.match(updatedStreakText, /1/, 'Updated streak must be 1');
-    await page.getByText('Lịch học 28 ngày', { exact: true }).click();
+    // The 28-day calendar moved to the profile page (plan 1.7); the quests stay in the quest column.
+    await page.goto(`${webOrigin}/profile`);
     const calendarDays = page.locator('#streakCalendar li');
     assert.equal(await calendarDays.count(), 28);
     assert.match(await calendarDays.last().getAttribute('aria-label'), / đã học$/);
 
-    // Verify Daily Quest LESSON_1 is completed and claimed
-    const lessonQuestEl = page.locator('.quest-item').filter({ hasText: 'Hoàn thành 1 bài học' });
+    // Verify Daily Quest LESSON_1 is completed and claimed (quest column on /home)
+    await page.goto(`${webOrigin}/home`);
+    const lessonQuestEl = page.locator('[id^="quest-"]').filter({ hasText: 'Hoàn thành 1 bài học' });
     await lessonQuestEl.waitFor({ timeout: 10000 });
     const questHtml = await lessonQuestEl.innerHTML();
     assert.ok(questHtml.includes('1/1') || questHtml.includes('badge-active'), 'Daily quest must show completed/claimed');
