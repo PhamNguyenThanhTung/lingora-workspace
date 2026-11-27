@@ -638,4 +638,20 @@ describe('S7-WORKFLOW: exact revision submit, review and publication', () => {
     const body = await validRes.json();
     assert.equal(body.data?.availability, 'AVAILABLE');
   });
+
+  test('LNG-02: getReviewDetail threads course languageCode to lesson and revision presentation', async () => {
+    fixture.state.courses.get(courseId).language = { code: 'ja' };
+    const draft = await createDraft('Japanese review draft');
+    const submitted = await submitTeacherLesson(teacherId, lessonId, {
+      revisionId: draft.highestRevision.id,
+      expectedLessonRowVersion: draft.rowVersion,
+      expectedRevisionRowVersion: draft.highestRevision.rowVersion,
+    }, fixture.db);
+    assert.equal(submitted.status, 200);
+
+    const detail = await getReviewDetail(adminId, submitted.data.submissionId, fixture.db);
+    assert.equal(detail.status, 200);
+    assert.equal(detail.data.data.lesson.languageCode, 'ja');
+    assert.equal(detail.data.data.revision.presentation?.languageCode, 'ja');
+  });
 });

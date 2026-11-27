@@ -12,6 +12,7 @@ import {
   parsePersistedLessonContent,
   toLegacyParagraphProjection,
   toLessonPresentationDto,
+  normalizeLanguageCode,
   type PresentationBlock,
   type LessonPresentationDto,
   characterBlockPersistedSchema,
@@ -157,6 +158,7 @@ export interface LessonSummaryDto {
   courseContext: {
     id: string;
     names: Record<string, string>;
+    languageCode?: string;
   };
   unitContext: {
     id: string;
@@ -502,6 +504,7 @@ export function toLessonSummaryDto(lesson: any): LessonSummaryDto {
   }
 
   const { isEditable, editabilityReason } = evaluateEditability(highestRev, course.languageId);
+  const courseLanguageCode = normalizeLanguageCode(course.language?.code ?? course.languageCode);
 
   return {
     id: lesson.id,
@@ -513,6 +516,7 @@ export function toLessonSummaryDto(lesson: any): LessonSummaryDto {
     courseContext: {
       id: course.id || '',
       names: parseJsonRecord(course.names),
+      ...(courseLanguageCode ? { languageCode: courseLanguageCode } : {}),
     },
     unitContext: {
       id: unit.id || '',
@@ -740,10 +744,14 @@ export function toTeacherLessonDetailDto(lesson: any, languageId?: string): Teac
     }
   }
 
+  const courseLanguageCode = normalizeLanguageCode(
+    baseDetail.courseContext.languageCode ?? lesson.unit?.course?.language?.code ?? lesson.unit?.course?.languageCode
+  );
   const presentation = toLessonPresentationDto(
     parsedContent,
     vocabulary,
-    exercises
+    exercises,
+    courseLanguageCode
   );
 
   let latestFeedback: TeacherLessonDetailDto['latestFeedback'] = null;
@@ -945,7 +953,7 @@ const revisionRelations = {
   _count: { select: { exercises: true, vocabularyLinks: true, mediaBindings: true, authoredItemRevisions: true, attempts: true, assessmentVersionItems: true } },
 };
 const lessonRelations = {
-  unit: { select: { id: true, courseId: true, position: true, code: true, names: true, course: { select: { id: true, names: true, languageId: true } } } },
+  unit: { select: { id: true, courseId: true, position: true, code: true, names: true, course: { select: { id: true, names: true, languageId: true, language: { select: { code: true } } } } } },
   assignment: { include: { currentTeacher: { select: { id: true, displayName: true, status: true } } } },
   revisions: { orderBy: { revisionNo: 'desc' }, include: revisionRelations },
 };
@@ -1883,6 +1891,7 @@ export async function getTeacherLessonDetail(
                 id: true,
                 names: true,
                 languageId: true,
+                language: { select: { code: true } },
               },
             },
           },
@@ -2811,7 +2820,7 @@ export async function saveTeacherLessonDraft(
           code: true,
           names: true,
           course: {
-            select: { id: true, names: true, languageId: true },
+            select: { id: true, names: true, languageId: true, language: { select: { code: true } } },
           },
         },
       });

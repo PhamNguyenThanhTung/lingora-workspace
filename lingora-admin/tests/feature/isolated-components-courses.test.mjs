@@ -13,7 +13,7 @@ const SCREENSHOT_DIR = (await import('node:path')).join(process.env.LINGORA_TEST
 (await import('node:fs')).mkdirSync(SCREENSHOT_DIR, { recursive: true });
 
 async function waitForCourseModalReady(page) {
-  await page.waitForSelector('#courseFormModal', { state: 'visible' });
+  await page.waitForSelector('#courseFormModal[data-initialized="true"]', { state: 'visible' });
   await page.waitForFunction(() => document.activeElement?.id === 'inputCourseNameVi');
 }
 

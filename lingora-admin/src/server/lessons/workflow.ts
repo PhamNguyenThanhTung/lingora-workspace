@@ -4,6 +4,7 @@ import {
   toLegacyParagraphProjection,
   toLessonPresentationDto,
   validateLessonBlocks,
+  normalizeLanguageCode,
   type PresentationBlock,
   type LessonPresentationDto,
   characterBlockPersistedSchema,
@@ -211,6 +212,8 @@ export interface ReviewDetailDto {
     unitName: Record<string, string>;
     courseId: string;
     courseName: Record<string, string>;
+    languageId?: string;
+    languageCode?: string;
     rowVersion: string;
     activeRevisionId: string | null;
     availability: string;
@@ -502,7 +505,7 @@ export async function submitTeacherLesson(
           position: true,
           code: true,
           names: true,
-          course: { select: { id: true, names: true, languageId: true } },
+          course: { select: { id: true, names: true, languageId: true, language: { select: { code: true } } } },
         },
       });
       const courseLanguageId = unit?.course?.languageId;
@@ -830,7 +833,11 @@ export async function getReviewDetail(
               include: {
                 unit: {
                   include: {
-                    course: true,
+                    course: {
+                      include: {
+                        language: { select: { code: true } },
+                      },
+                    },
                   },
                 },
               },
@@ -971,41 +978,45 @@ export async function getReviewDetail(
       return block;
     });
 
-    const detailDto: ReviewDetailDto = {
-      submissionId: submission.id,
-      assignmentEpisode: submission.assignmentEpisode
-        ? {
-            id: submission.assignmentEpisode.id,
-            sequenceNo: submission.assignmentEpisode.sequenceNo,
-            scopeGeneration: submission.assignmentEpisode.scopeGeneration.toString(),
-            teacherName: submission.assignmentEpisode.nextTeacher?.displayName || null,
-            scopeSnapshot: submission.assignmentEpisode.scopeSnapshot,
-          }
-        : null,
-      lesson: {
-        id: lesson.id || rev.lessonId,
-        position: lesson.position || 0,
-        unitId: unit.id || '',
-        unitCode: unit.code || '',
-        unitName: parseJsonRecord(unit.names),
-        courseId: course.id || '',
-        courseName: parseJsonRecord(course.names),
-        rowVersion: (lesson.rowVersion ?? 1n).toString(),
-        activeRevisionId: lesson.activeRevisionId || null,
-        availability: lesson.availability || 'PLANNED',
-      },
-      revision: {
-        id: rev.id,
-        revisionNo: rev.revisionNo,
-        status: rev.status,
-        statusLabel: getWorkflowStatusLabel(rev.status),
-        title: parseJsonRecord(rev.title),
-        contentSchemaVersion: parsedContent.contentSchemaVersion,
-        contentBlocks: parsedContent.contentSchemaVersion === 1
-          ? toLegacyParagraphProjection(parsedContent.blocks)
-          : (Array.isArray(rev.contentBlocks) ? rev.contentBlocks : []),
-        blocks: adminBlocks,
-        presentation: toLessonPresentationDto(parsedContent, vocabulary, exercises),
+      const courseLanguageCode = normalizeLanguageCode(course.language?.code ?? course.languageCode);
+
+      const detailDto: ReviewDetailDto = {
+        submissionId: submission.id,
+        assignmentEpisode: submission.assignmentEpisode
+          ? {
+              id: submission.assignmentEpisode.id,
+              sequenceNo: submission.assignmentEpisode.sequenceNo,
+              scopeGeneration: submission.assignmentEpisode.scopeGeneration.toString(),
+              teacherName: submission.assignmentEpisode.nextTeacher?.displayName || null,
+              scopeSnapshot: submission.assignmentEpisode.scopeSnapshot,
+            }
+          : null,
+        lesson: {
+          id: lesson.id || rev.lessonId,
+          position: lesson.position || 0,
+          unitId: unit.id || '',
+          unitCode: unit.code || '',
+          unitName: parseJsonRecord(unit.names),
+          courseId: course.id || '',
+          courseName: parseJsonRecord(course.names),
+          ...(course.languageId ? { languageId: course.languageId } : {}),
+          ...(courseLanguageCode ? { languageCode: courseLanguageCode } : {}),
+          rowVersion: (lesson.rowVersion ?? 1n).toString(),
+          activeRevisionId: lesson.activeRevisionId || null,
+          availability: lesson.availability || 'PLANNED',
+        },
+        revision: {
+          id: rev.id,
+          revisionNo: rev.revisionNo,
+          status: rev.status,
+          statusLabel: getWorkflowStatusLabel(rev.status),
+          title: parseJsonRecord(rev.title),
+          contentSchemaVersion: parsedContent.contentSchemaVersion,
+          contentBlocks: parsedContent.contentSchemaVersion === 1
+            ? toLegacyParagraphProjection(parsedContent.blocks)
+            : (Array.isArray(rev.contentBlocks) ? rev.contentBlocks : []),
+          blocks: adminBlocks,
+          presentation: toLessonPresentationDto(parsedContent, vocabulary, exercises, courseLanguageCode),
         changeSummary: rev.changeSummary || null,
         rowVersion: (rev.rowVersion ?? 1n).toString(),
         createdAt: (rev.createdAt instanceof Date ? rev.createdAt : new Date(rev.createdAt)).toISOString(),

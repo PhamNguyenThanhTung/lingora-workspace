@@ -20,6 +20,7 @@ export interface StudioLayoutProps {
   blocks: any[];
   onBlocksChange: (blocks: any[]) => void;
   lessonId?: string;
+  languageCode?: string | null;
   vocabulary?: Array<{
     localId: string;
     position: number;
@@ -59,6 +60,7 @@ export function StudioLayout({
   blocks,
   onBlocksChange,
   lessonId,
+  languageCode,
   vocabulary = [],
   exercises = [],
   title,
@@ -213,6 +215,7 @@ export function StudioLayout({
         <div className="studio-col-preview">
           <StudioPreview
             blocks={blocks}
+            languageCode={languageCode}
             vocabulary={vocabulary}
             exercises={exercises}
             title={title}

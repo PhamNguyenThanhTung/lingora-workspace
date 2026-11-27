@@ -17,6 +17,8 @@ import type { AssessmentBlueprintDto, TeacherAssessmentItemDto } from '@/server/
 import {
   characterBlockAuthorInputContentSchema,
   characterBlockAuthorInputSchema,
+  formatPhonetic,
+  normalizeLanguageCode,
   type LessonBlock,
 } from '@lingora/lesson-content';
 import type { ReviewCommentDto } from '@/server/lessons/comments';
@@ -82,6 +84,9 @@ export function LessonDraftEditor({
   account,
 }: LessonDraftEditorProps) {
   const [lesson, setLesson] = useState<TeacherLessonDetailDto>(initialLesson as TeacherLessonDetailDto);
+  const courseLanguageCode = normalizeLanguageCode(
+    lesson.courseContext?.languageCode ?? lesson.presentation?.languageCode
+  );
 
   // Form input state initialized from currentDraft
   const initialTitle = initialLesson.currentDraft?.title || {};
@@ -2150,6 +2155,7 @@ export function LessonDraftEditor({
               blocks={blocks}
               onBlocksChange={setBlocks}
               lessonId={lesson.id}
+              languageCode={courseLanguageCode}
               vocabulary={vocabulary}
               exercises={exercises}
               title={{ vi: titleVi, en: titleEn }}
@@ -2245,6 +2251,7 @@ export function LessonDraftEditor({
                   <style dangerouslySetInnerHTML={{ __html: studioCss }} />
                   <StudioPreview
                     blocks={legacyPreviewBlocks}
+                    languageCode={courseLanguageCode}
                     vocabulary={vocabulary}
                     exercises={exercises}
                     title={{ vi: titleVi, en: titleEn }}
@@ -2508,12 +2515,16 @@ export function LessonDraftEditor({
                         </span>
                       </td>
                       <td style={{ fontWeight: 600 }} id={`vocabTerm-${idx}`}>
-                        {v.displayInfo.canonicalForm}
-                        {v.displayInfo.phonetic && (
-                          <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 400 }}>
-                            {v.displayInfo.phonetic}
-                          </span>
-                        )}
+                        <span lang={courseLanguageCode}>{v.displayInfo.canonicalForm}</span>
+                        {(() => {
+                          const formattedPhonetic = formatPhonetic(v.displayInfo.phonetic, courseLanguageCode);
+                          if (!formattedPhonetic) return null;
+                          return (
+                            <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 400 }}>
+                              {formattedPhonetic}
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td id={`vocabSense-${idx}`}>
                         <span className="badge" style={{ background: '#f1f5f9', color: '#334155', fontSize: '11px' }}>
@@ -3395,7 +3406,7 @@ export function LessonDraftEditor({
                           }}
                         >
                           <div>
-                            <span style={{ fontWeight: 600 }}>{opt.canonicalForm}</span>
+                            <span style={{ fontWeight: 600 }} lang={courseLanguageCode}>{opt.canonicalForm}</span>
                             <span className="badge" style={{ marginLeft: '6px', fontSize: '11px', background: '#e2e8f0' }}>
                               {opt.senseKey}
                             </span>
@@ -3530,7 +3541,7 @@ export function LessonDraftEditor({
                                   marginBottom: '4px',
                                 }}
                               >
-                                Đã có trong bài học này: <strong>{s.displayInfo.canonicalForm}</strong> ({s.displayInfo.senseKey || 'default'})
+                                Đã có trong bài học này: <strong lang={courseLanguageCode}>{s.displayInfo.canonicalForm}</strong> ({s.displayInfo.senseKey || 'default'})
                                 {s.displayInfo.meaningVi ? ` — ${s.displayInfo.meaningVi}` : ''}
                               </div>
                             ))}
@@ -3553,7 +3564,7 @@ export function LessonDraftEditor({
                                   }}
                                 >
                                   <div>
-                                    <strong>{cand.canonicalForm}</strong>{' '}
+                                    <strong lang={courseLanguageCode}>{cand.canonicalForm}</strong>{' '}
                                     <span className="badge" style={{ fontSize: '11px', background: '#e2e8f0' }}>
                                       {cand.senseKey}
                                     </span>
