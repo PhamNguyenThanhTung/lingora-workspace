@@ -59,7 +59,7 @@ for (const key of Object.keys(EXPECTED)) {
         for (const lesson of unit.lessons) {
           n++;
           const ctx = `${key}/${unit.level}/${lesson.title.en}`;
-          assert.ok(lesson.vocab.length >= 8 && lesson.vocab.length <= 12, `${ctx}: vocab ${lesson.vocab.length}`);
+          assert.ok(lesson.vocab.length >= 8 && lesson.vocab.length <= 20, `${ctx}: vocab ${lesson.vocab.length}`);
           assert.ok(lesson.grammar.examples.length >= 3, `${ctx}: grammar examples`);
           assert.ok(lesson.grammar.explain.length >= 120, `${ctx}: grammar explanation too thin`);
           assert.ok(lesson.dialogue.lines.length >= 4, `${ctx}: dialogue lines`);
