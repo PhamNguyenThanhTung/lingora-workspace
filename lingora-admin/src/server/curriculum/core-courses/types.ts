@@ -40,7 +40,7 @@ export interface LessonSpec {
   title: { vi: string; en: string };
   /** Vietnamese lead paragraph: situation + learning goal ("can-do"). */
   intro: string;
-  /** 8–12 words/phrases. */
+  /** 8–20 words/phrases. */
   vocab: VocabTuple[];
   grammar: { title: string; explain: string; examples: ExampleTuple[] };
   dialogue: { lines: DialogueTuple[] };
